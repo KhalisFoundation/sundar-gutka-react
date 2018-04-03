@@ -1,9 +1,9 @@
 import React from "react";
 import { StackNavigator } from "react-navigation";
 import { Header } from "react-native-elements";
-import HomeScreen from "./Home";
-import SettingsScreen from "./Settings";
-import ReaderScreen from "./Reader";
+import HomeScreen from "./screens/Home";
+import SettingsScreen from "./screens/Settings";
+import ReaderScreen from "./screens/Reader";
 
 const RootStack = StackNavigator(
   {
@@ -51,6 +51,7 @@ const RootStack = StackNavigator(
 );
 
 export default class App extends React.Component {
+  
   render() {
     return <RootStack />;
   }
