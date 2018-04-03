@@ -13,74 +13,112 @@ export default class Settings extends React.Component {
     var bgColor = '#DCE3F4';
     return (
       <View style={{backgroundColor:'#EFEFF4',flex:1}}>
-        <View style={{backgroundColor:'#EFEFF4',flex:1}}>
           <SettingsList borderColor='#c8c7cc' defaultItemSize={50}>
-            <SettingsList.Header headerText='Different Grouping' headerStyle={{marginTop:15}}/>
+            <SettingsList.Header headerText='Display Options' headerStyle={{marginTop:15}}/>
             <SettingsList.Item
               icon={
-                  <Image style={styles.imageStyle} source={require('../images/abouticon.png')}/>
+                  <Image style={styles.imageStyle} source={require('../images/fontsizeicon.png')}/>
               }
-              hasSwitch={true}
-              switchState={this.state.switchValue}
-              switchOnValueChange={this.onValueChange}
-              hasNavArrow={false}
-              title='Airplane Mode'
+              title='Font Size'
+              titleInfo='Medium'
+              titleInfoStyle={styles.titleInfoStyle}
             />
             <SettingsList.Item
-              icon={<Image style={styles.imageStyle} source={require('../images/abouticon.png')}/>}
-              title='Wi-Fi'
-              titleInfo='Bill Wi The Science Fi'
+              icon={<Image style={styles.imageStyle} source={require('../images/fontfaceicon.png')}/>}
+              title='Font Face'
+              titleInfo='Gurbani Akhar'
               titleInfoStyle={styles.titleInfoStyle}
               onPress={() => Alert.alert('Route to Wifi Page')}
             />
             <SettingsList.Item
-              icon={<Image style={styles.imageStyle} source={require('../images/abouticon.png')}/>}
-              title='Blutooth'
-              titleInfo='Off'
+              icon={<Image style={styles.imageStyle} source={require('../images/romanizeicon.png')}/>}
+              hasSwitch={true}
+              switchState={this.state.switchValue}
+              switchOnValueChange={this.onValueChange}
+              hasNavArrow={false}
+              title='Romanized'
+              onPress={() => Alert.alert('Route to Blutooth Page')}
+            />
+            <SettingsList.Item
+              icon={<Image style={styles.imageStyle} source={require('../images/englishicon.png')}/>}
+              hasSwitch={true}
+              switchState={this.state.switchValue}
+              switchOnValueChange={this.onValueChange}
+              hasNavArrow={false}
+              title='English Translations'
+              onPress={() => Alert.alert('Route to Blutooth Page')}
+            />
+            <SettingsList.Item
+              icon={<Image style={styles.imageStyle} source={require('../images/bgcoloricon.png')}/>}
+              hasSwitch={true}
+              switchState={this.state.switchValue}
+              switchOnValueChange={this.onValueChange}
+              hasNavArrow={false}
+              title='Night Mode'
+              onPress={() => Alert.alert('Route to Blutooth Page')}
+            />
+            <SettingsList.Header headerText='Phone Options' headerStyle={{marginTop:15}}/>
+            <SettingsList.Item
+              icon={<Image style={styles.imageStyle} source={require('../images/screenonicon.png')}/>}
+              hasSwitch={true}
+              switchState={this.state.switchValue}
+              switchOnValueChange={this.onValueChange}
+              hasNavArrow={false}
+              title='Keep Screen Awake'
+              onPress={() => Alert.alert('Route to Blutooth Page')}
+            />
+            <SettingsList.Header headerText='Bani Options' headerStyle={{marginTop:15}}/>
+            <SettingsList.Item
+              icon={<Image style={styles.imageStyle} source={require('../images/rearrangeicon.png')}/>}
+              title='Edit Bani Order'
+              onPress={() => Alert.alert('Route to Wifi Page')}
+            />
+            <SettingsList.Item
+              icon={<Image style={styles.imageStyle} source={require('../images/banilengthicon.png')}/>}
+              title='Bani Length'
+              titleInfo='Long (Default)'
               titleInfoStyle={styles.titleInfoStyle}
+              onPress={() => Alert.alert('Route to Wifi Page')}
+            />
+            <SettingsList.Item
+              icon={<Image style={styles.imageStyle} source={require('../images/larivaaricon.png')}/>}
+              hasSwitch={true}
+              switchState={this.state.switchValue}
+              switchOnValueChange={this.onValueChange}
+              hasNavArrow={false}
+              title='Larivaar'
+              onPress={() => Alert.alert('Route to Blutooth Page')}
+            />
+            <SettingsList.Item
+              icon={<Image style={styles.imageStyle} source={require('../images/manglacharanicon.png')}/>}
+              title='Manglacharan Position'
+              titleInfo='Current Saroops (default)'
+              titleInfoStyle={styles.titleInfoStyle}
+              onPress={() => Alert.alert('Route to Wifi Page')}
+            />
+            <SettingsList.Item
+              icon={<Image style={styles.imageStyle} source={require('../images/larivaaricon.png')}/>}
+              title='Padchhed Settings'
+              titleInfo='Sat Subham Sat (default)'
+              titleInfoStyle={styles.titleInfoStyle}
+              onPress={() => Alert.alert('Route to Wifi Page')}
+            />
+            <SettingsList.Header headerText='Other Options' headerStyle={{marginTop:15}}/>
+            <SettingsList.Item
+              icon={<Image style={styles.imageStyle} source={require('../images/analyticsicon.png')}/>}
+              hasSwitch={true}
+              switchState={this.state.switchValue}
+              switchOnValueChange={this.onValueChange}
+              hasNavArrow={false}
+              title='Collect Statistics'
               onPress={() => Alert.alert('Route to Blutooth Page')}
             />
             <SettingsList.Item
               icon={<Image style={styles.imageStyle} source={require('../images/abouticon.png')}/>}
-              title='Cellular'
-              onPress={() => Alert.alert('Route To Cellular Page')}
-            />
-            <SettingsList.Item
-              icon={<Image style={styles.imageStyle} source={require('../images/abouticon.png')}/>}
-              title='Personal Hotspot'
-              titleInfo='Off'
-              titleInfoStyle={styles.titleInfoStyle}
-              onPress={() => Alert.alert('Route To Hotspot Page')}
-            />
-            <SettingsList.Header headerStyle={{marginTop:15}}/>
-            <SettingsList.Item
-              icon={<Image style={styles.imageStyle} source={require('../images/abouticon.png')}/>}
-              title='Notifications'
-              onPress={() => Alert.alert('Route To Notifications Page')}
-            />
-            <SettingsList.Item
-              icon={<Image style={styles.imageStyle} source={require('../images/abouticon.png')}/>}
-              title='Control Center'
-              onPress={() => Alert.alert('Route To Control Center Page')}
-            />
-            <SettingsList.Item
-              icon={<Image style={styles.imageStyle} source={require('../images/abouticon.png')}/>}
-              title='Do Not Disturb'
-              onPress={() => Alert.alert('Route To Do Not Disturb Page')}
-            />
-            <SettingsList.Header headerStyle={{marginTop:15}}/>
-            <SettingsList.Item
-              icon={<Image style={styles.imageStyle} source={require('../images/abouticon.png')}/>}
-              title='General'
-              onPress={() => Alert.alert('Route To General Page')}
-            />
-            <SettingsList.Item
-              icon={<Image style={styles.imageStyle} source={require('../images/abouticon.png')}/>}
-              title='Display & Brightness'
-              onPress={() => Alert.alert('Route To Display Page')}
+              title='About'
+              onPress={() => Alert.alert('Route to Wifi Page')}
             />
           </SettingsList>
-        </View>
       </View>
     );
   }
@@ -92,10 +130,13 @@ export default class Settings extends React.Component {
 const styles = StyleSheet.create({
   imageStyle:{
     marginLeft:15,
-    marginRight:20,
+    marginRight:10,
     alignSelf:'center',
-    width:20,
-    height:24,
+    width:28,
+    height:28,
     justifyContent:'center'
+  },
+  titleInfoStyle:{
+    marginLeft:15
   }
 });
