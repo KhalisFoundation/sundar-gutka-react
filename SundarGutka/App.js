@@ -5,6 +5,8 @@ import { Provider } from "react-redux";
 import { PersistGate } from "redux-persist/integration/react";
 import HomeScreen from "./screens/Home";
 import SettingsScreen from "./screens/Settings";
+import EditBaniOrderScreen from "./screens/EditBaniOrder";
+import AboutScreen from "./screens/About";
 import ReaderScreen from "./screens/Reader";
 import createStore from "./config/store";
 
@@ -51,6 +53,36 @@ const RootStack = StackNavigator(
               onPress: () => navigation.goBack()
             }}
             centerComponent={{ text: "Reader", style: { color: "#fff" } }}
+          />
+        )
+      })
+    },
+    EditBaniOrder: {
+      screen: EditBaniOrderScreen,
+      navigationOptions: ({ navigation }) => ({
+        header: (
+          <Header
+            leftComponent={{
+              icon: "arrow-back",
+              color: "#fff",
+              onPress: () => navigation.goBack()
+            }}
+            centerComponent={{ text: "Edit Bani Order", style: { color: "#fff" } }}
+          />
+        )
+      })
+    },
+    About: {
+      screen: AboutScreen,
+      navigationOptions: ({ navigation }) => ({
+        header: (
+          <Header
+            leftComponent={{
+              icon: "arrow-back",
+              color: "#fff",
+              onPress: () => navigation.goBack()
+            }}
+            centerComponent={{ text: "About", style: { color: "#fff" } }}
           />
         )
       })

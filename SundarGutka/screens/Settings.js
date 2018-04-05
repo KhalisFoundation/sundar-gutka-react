@@ -1,6 +1,5 @@
 import React from "react";
 import { StyleSheet, View, Image } from "react-native";
-import { Header } from "react-native-elements";
 import SettingsList from "react-native-settings-list";
 import { ActionSheetCustom as ActionSheet } from "react-native-actionsheet";
 import { connect } from "react-redux";
@@ -9,6 +8,7 @@ import * as actions from "../actions/actions";
 
 class Settings extends React.Component {
   render() {
+    const { navigate } = this.props.navigation;
     var bgColor = "#DCE3F4";
     return (
       <View style={{ backgroundColor: "#EFEFF4", flex: 1 }}>
@@ -141,7 +141,7 @@ class Settings extends React.Component {
               />
             }
             title="Edit Bani Order"
-            onPress={() => Alert.alert("Route to Wifi Page")}
+            onPress={() => navigate("EditBaniOrder")}
           />
           <SettingsList.Item
             icon={
@@ -267,7 +267,7 @@ class Settings extends React.Component {
               />
             }
             title="About"
-            onPress={() => Alert.alert("Route to Wifi Page")}
+            onPress={() => navigate("About")}
           />
         </SettingsList>
       </View>
