@@ -1,31 +1,121 @@
 /*
  * action types
  */
- 
-export const TOGGLE_NIGHT_MODE = 'TOGGLE_NIGHT_MODE'
+export const SET_FONT_SIZE = "SET_FONT_SIZE";
+export const SET_FONT_FACE = "SET_FONT_FACE";
+export const TOGGLE_ROMANIZED = "TOGGLE_ROMANIZED";
+export const TOGGLE_ENGLISH_TRANSLATIONS = "TOGGLE_ENGLISH_TRANSLATIONS";
+export const TOGGLE_NIGHT_MODE = "TOGGLE_NIGHT_MODE";
+export const TOGGLE_SCREEN_AWAKE = "TOGGLE_SCREEN_AWAKE";
+export const SET_BANI_LENGTH = "SET_BANI_LENGTH";
+export const TOGGLE_LARIVAAR = "TOGGLE_LARIVAAR";
+export const SET_MANGLACHARAN_POSITION = "SET_MANGLACHARAN_POSITION";
+export const SET_PADCHHED_SETTINGS = "SET_PADCHHED_SETTINGS";
+export const TOGGLE_STATISTICS = "TOGGLE_STATISTICS";
 
 /*
  * other constants
  */
- 
-// export const VisibilityFilters = {
-//   SHOW_ALL: 'SHOW_ALL',
-//   SHOW_COMPLETED: 'SHOW_COMPLETED',
-//   SHOW_ACTIVE: 'SHOW_ACTIVE'
-// }
- 
+
+export const FONT_SIZES = [
+  "EXTRA_SMALL",
+  "SMALL",
+  "MEDIUM",
+  "LARGE",
+  "EXTRA_LARGE"
+];
+
+export const fontSizeNames = [
+  "Extra Small",
+  "Small (default)",
+  "Medium",
+  "Large",
+  "Extra Large",
+  "Cancel"
+];
+
+export const FONT_FACES = [
+  "ANMOL_LIPI",
+  "GURBANI_AKHAR",
+  "GURBANI_AKHAR_HEAVY",
+  "GURBANI_AKHAR_THICK"
+];
+
+export const fontFaceNames = [
+  "Anmol Lipi",
+  "Gurbani Akhar (default)",
+  "Gurbani Akhar Heavy",
+  "Gurbani Akhar Thick",
+  "Cancel"
+];
+
+export const BANI_LENGTHS = ["LONG", "MEDIUM", "SHORT"];
+
+export const baniLengthNames = ["Long (default)", "Medium", "Short", "Cancel"];
+
+export const MANGLACHARAN_POSITIONS = [
+  "CURRENT_SAROOPS",
+  "ABOVE_RAAG_HEADINGS"
+];
+
+export const manglacharanPositionNames = [
+  "Current Saroops (default)",
+  "Above Raag Headings",
+  "Cancel"
+];
+
+export const PADCHHED_SETTINGS = ["SAT_SUBHAM_SAT", "MAST_SABH_MAST"];
+
+export const padchhedSettingNames = [
+  "Sat Subham Sat (default)",
+  "Mast Sabh Mast",
+  "Cancel"
+];
+
 /*
  * action creators
  */
- 
-// export function addTodo(text) {
-//   return { type: ADD_TODO, text }
-// }
- 
-export function toggleNightMode(value) {
-  return { type: TOGGLE_NIGHT_MODE, value }
+
+export function setFontSize(size) {
+  return { type: SET_FONT_SIZE, size };
 }
- 
-// export function setVisibilityFilter(filter) {
-//   return { type: SET_VISIBILITY_FILTER, filter }
-// }
+
+export function setFontFace(font) {
+  return { type: SET_FONT_FACE, font };
+}
+
+export function toggleRomanized(value) {
+  return { type: TOGGLE_ROMANIZED, value };
+}
+
+export function toggleEnglishTranslations(value) {
+  return { type: TOGGLE_ENGLISH_TRANSLATIONS, value };
+}
+
+export function toggleNightMode(value) {
+  return { type: TOGGLE_NIGHT_MODE, value };
+}
+
+export function toggleScreenAwake(value) {
+  return { type: TOGGLE_SCREEN_AWAKE, value };
+}
+
+export function setBaniLength(length) {
+  return { type: SET_BANI_LENGTH, length };
+}
+
+export function toggleLarivaar(value) {
+  return { type: TOGGLE_LARIVAAR, value };
+}
+
+export function setManglacharanPosition(position) {
+  return { type: SET_MANGLACHARAN_POSITION, position };
+}
+
+export function setPadchhedSetting(setting) {
+  return { type: SET_PADCHHED_SETTINGS, setting };
+}
+
+export function toggleStatistics(value) {
+  return { type: TOGGLE_STATISTICS, value };
+}

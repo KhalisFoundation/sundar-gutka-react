@@ -1,17 +1,13 @@
 import React from "react";
-import { StyleSheet, Text, View, Image } from "react-native";
+import { StyleSheet, View, Image } from "react-native";
 import { Header } from "react-native-elements";
 import SettingsList from "react-native-settings-list";
 import { ActionSheetCustom as ActionSheet } from "react-native-actionsheet";
-import { toggleNightMode } from "../actions/actions";
-import { connect } from 'react-redux';
+import { connect } from "react-redux";
+import { bindActionCreators } from "redux";
+import * as actions from "../actions/actions";
 
 class Settings extends React.Component {
-  constructor(props) {
-    super(props);
-    this.onValueChange = this.onValueChange.bind(this);
-    this.state = { switchValue: false };
-  }
   render() {
     var bgColor = "#DCE3F4";
     return (
@@ -29,26 +25,23 @@ class Settings extends React.Component {
               />
             }
             title="Font Size"
-            titleInfo="Medium"
+            titleInfo={
+              actions.fontSizeNames[
+                actions.FONT_SIZES.indexOf(this.props.fontSize)
+              ]
+            }
             titleInfoStyle={styles.titleInfoStyle}
             onPress={() => this.FontSizeActionSheet.show()}
           />
           <ActionSheet
             ref={o => (this.FontSizeActionSheet = o)}
             title={"Font Size"}
-            options={[
-              "Extra Small",
-              "Small (default)",
-              "Medium",
-              "Large",
-              "Extra Large",
-              "Cancel"
-            ]}
-            cancelButtonIndex={5}
+            options={actions.fontSizeNames}
+            cancelButtonIndex={actions.FONT_SIZES.length}
             styles={actionSheetStyles}
             onPress={index => {
-              if (index !== 5) {
-                // alert(index);
+              if (index !== actions.FONT_SIZES.length) {
+                this.props.setFontSize(actions.FONT_SIZES[index]);
               }
             }}
           />
@@ -60,24 +53,24 @@ class Settings extends React.Component {
               />
             }
             title="Font Face"
-            titleInfo="Gurbani Akhar"
+            titleInfo={
+              actions.fontFaceNames[
+                actions.FONT_FACES.indexOf(this.props.fontFace)
+              ]
+            }
             titleInfoStyle={styles.titleInfoStyle}
             onPress={() => this.FontFaceActionSheet.show()}
           />
           <ActionSheet
             ref={o => (this.FontFaceActionSheet = o)}
             title={"Font Face"}
-            options={[
-              "Anmol Lipi",
-              "Gurbani Akhar",
-              "Gurbani Akhar Heavy",
-              "Gurbani Akhar Thick",
-              "Cancel"
-            ]}
-            cancelButtonIndex={4}
+            options={actions.fontFaceNames}
+            cancelButtonIndex={actions.FONT_FACES.length}
             styles={actionSheetStyles}
             onPress={index => {
-              /* do something */
+              if (index !== actions.FONT_FACES.length) {
+                this.props.setFontFace(actions.FONT_FACES[index]);
+              }
             }}
           />
           <SettingsList.Item
@@ -88,11 +81,10 @@ class Settings extends React.Component {
               />
             }
             hasSwitch={true}
-            switchState={this.state.switchValue}
-            switchOnValueChange={this.onValueChange}
+            switchState={this.props.romanized}
+            switchOnValueChange={this.props.toggleRomanized}
             hasNavArrow={false}
             title="Romanized"
-            onPress={() => Alert.alert("Route to Blutooth Page")}
           />
           <SettingsList.Item
             icon={
@@ -102,11 +94,10 @@ class Settings extends React.Component {
               />
             }
             hasSwitch={true}
-            switchState={this.state.switchValue}
-            switchOnValueChange={this.onValueChange}
+            switchState={this.props.englishTranslations}
+            switchOnValueChange={this.props.toggleEnglishTranslations}
             hasNavArrow={false}
             title="English Translations"
-            onPress={() => Alert.alert("Route to Blutooth Page")}
           />
           <SettingsList.Item
             icon={
@@ -133,11 +124,10 @@ class Settings extends React.Component {
               />
             }
             hasSwitch={true}
-            switchState={this.state.switchValue}
-            switchOnValueChange={this.onValueChange}
+            switchState={this.props.screenAwake}
+            switchOnValueChange={this.props.toggleScreenAwake}
             hasNavArrow={false}
             title="Keep Screen Awake"
-            onPress={() => Alert.alert("Route to Blutooth Page")}
           />
           <SettingsList.Header
             headerText="Bani Options"
@@ -161,18 +151,24 @@ class Settings extends React.Component {
               />
             }
             title="Bani Length"
-            titleInfo="Long (default)"
+            titleInfo={
+              actions.baniLengthNames[
+                actions.BANI_LENGTHS.indexOf(this.props.baniLength)
+              ]
+            }
             titleInfoStyle={styles.titleInfoStyle}
             onPress={() => this.BaniLengthActionSheet.show()}
           />
           <ActionSheet
             ref={o => (this.BaniLengthActionSheet = o)}
             title={"Bani Length"}
-            options={["Long (default)", "Medium", "Short", "Cancel"]}
-            cancelButtonIndex={3}
+            options={actions.baniLengthNames}
+            cancelButtonIndex={actions.BANI_LENGTHS.length}
             styles={actionSheetStyles}
             onPress={index => {
-              /* do something */
+              if (index !== actions.BANI_LENGTHS.length) {
+                this.props.setBaniLength(actions.BANI_LENGTHS[index]);
+              }
             }}
           />
           <SettingsList.Item
@@ -183,11 +179,10 @@ class Settings extends React.Component {
               />
             }
             hasSwitch={true}
-            switchState={this.state.switchValue}
-            switchOnValueChange={this.onValueChange}
+            switchState={this.props.larivaar}
+            switchOnValueChange={this.props.toggleLarivaar}
             hasNavArrow={false}
             title="Larivaar"
-            onPress={() => Alert.alert("Route to Blutooth Page")}
           />
           <SettingsList.Item
             icon={
@@ -197,22 +192,26 @@ class Settings extends React.Component {
               />
             }
             title="Manglacharan Position"
-            titleInfo="Current Saroops (default)"
+            titleInfo={
+              actions.manglacharanPositionNames[
+                actions.MANGLACHARAN_POSITIONS.indexOf(
+                  this.props.manglacharanPosition
+                )
+              ]
+            }
             titleInfoStyle={styles.titleInfoStyle}
             onPress={() => this.ManglacharanPositionActionSheet.show()}
           />
           <ActionSheet
             ref={o => (this.ManglacharanPositionActionSheet = o)}
             title={"Manglacharan Position"}
-            options={[
-              "Current Saroops (default)",
-              "Above Raag Headings",
-              "Cancel"
-            ]}
-            cancelButtonIndex={2}
+            options={actions.manglacharanPositionNames}
+            cancelButtonIndex={actions.MANGLACHARAN_POSITIONS.length}
             styles={actionSheetStyles}
             onPress={index => {
-              /* do something */
+              if (index !== actions.MANGLACHARAN_POSITIONS.length) {
+                this.props.setManglacharanPosition(actions.MANGLACHARAN_POSITIONS[index]);
+              }
             }}
           />
           <SettingsList.Item
@@ -223,18 +222,24 @@ class Settings extends React.Component {
               />
             }
             title="Padchhed Settings"
-            titleInfo="Sat Subham Sat (default)"
+            titleInfo={
+              actions.padchhedSettingNames[
+                actions.PADCHHED_SETTINGS.indexOf(this.props.padchhedSetting)
+              ]
+            }
             titleInfoStyle={styles.titleInfoStyle}
             onPress={() => this.PadchhedSettingsActionSheet.show()}
           />
           <ActionSheet
             ref={o => (this.PadchhedSettingsActionSheet = o)}
             title={"Padchhed Settings"}
-            options={["Sat Subham Sat (default)", "Mast Sabh Mast", "Cancel"]}
-            cancelButtonIndex={2}
+            options={actions.padchhedSettingNames}
+            cancelButtonIndex={actions.PADCHHED_SETTINGS.length}
             styles={actionSheetStyles}
             onPress={index => {
-              /* do something */
+              if (index !== actions.PADCHHED_SETTINGS.length) {
+                this.props.setPadchhedSetting(actions.PADCHHED_SETTINGS[index]);
+              }
             }}
           />
           <SettingsList.Header
@@ -249,11 +254,10 @@ class Settings extends React.Component {
               />
             }
             hasSwitch={true}
-            switchState={this.state.switchValue}
-            switchOnValueChange={this.onValueChange}
+            switchState={this.props.statistics}
+            switchOnValueChange={this.props.toggleStatistics}
             hasNavArrow={false}
             title="Collect Statistics"
-            onPress={() => Alert.alert("Route to Blutooth Page")}
           />
           <SettingsList.Item
             icon={
@@ -269,24 +273,33 @@ class Settings extends React.Component {
       </View>
     );
   }
-  onValueChange(value, what) {
-    this.setState({ switchValue: value });
-  }
 }
 
-const mapStateToProps = state => {
-  return { nightMode: state.nightMode };
+function mapStateToProps(state) {
+  return {
+    fontSize: state.fontSize,
+    fontFace: state.fontFace,
+    romanized: state.romanized,
+    englishTranslations: state.englishTranslations,
+    nightMode: state.nightMode,
+    screenAwake: state.screenAwake,
+    baniLength: state.baniLength,
+    larivaar: state.larivaar,
+    manglacharanPosition: state.manglacharanPosition,
+    padchhedSetting: state.padchhedSetting,
+    statistics: state.statistics
+  };
 }
 
-const mapDispatchToProps = dispatch => ({
-  toggleNightMode: (value) => {dispatch(toggleNightMode(value))}
-});
+function mapDispatchToProps(dispatch) {
+  return bindActionCreators(actions, dispatch);
+}
 
 const actionSheetStyles = {
   titleText: {
     fontSize: 18
   }
-}
+};
 
 const styles = StyleSheet.create({
   imageStyle: {
@@ -300,6 +313,6 @@ const styles = StyleSheet.create({
   titleInfoStyle: {
     marginLeft: 15
   }
-})
+});
 
 export default connect(mapStateToProps, mapDispatchToProps)(Settings);

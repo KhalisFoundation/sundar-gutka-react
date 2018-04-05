@@ -2,11 +2,11 @@ import React from "react";
 import { StackNavigator } from "react-navigation";
 import { Header } from "react-native-elements";
 import { Provider } from "react-redux";
-import { createStore } from "redux";
+import { PersistGate } from "redux-persist/integration/react";
 import HomeScreen from "./screens/Home";
 import SettingsScreen from "./screens/Settings";
 import ReaderScreen from "./screens/Reader";
-import rootReducer from "./reducers/reducers";
+import createStore from "./config/store";
 
 const RootStack = StackNavigator(
   {
@@ -61,13 +61,15 @@ const RootStack = StackNavigator(
   }
 );
 
-const store = createStore(rootReducer);
+const { store, persistor } = createStore();
 
 export default class App extends React.Component {
   render() {
     return (
       <Provider store={store}>
-        <RootStack />
+        <PersistGate loading={null} persistor={persistor}>
+          <RootStack />
+        </PersistGate>
       </Provider>
     );
   }
