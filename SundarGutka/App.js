@@ -1,9 +1,12 @@
 import React from "react";
 import { StackNavigator } from "react-navigation";
 import { Header } from "react-native-elements";
+import { Provider } from "react-redux";
+import { createStore } from "redux";
 import HomeScreen from "./screens/Home";
 import SettingsScreen from "./screens/Settings";
 import ReaderScreen from "./screens/Reader";
+import rootReducer from "./reducers/reducers";
 
 const RootStack = StackNavigator(
   {
@@ -27,7 +30,11 @@ const RootStack = StackNavigator(
       navigationOptions: ({ navigation }) => ({
         header: (
           <Header
-            leftComponent={{ icon: "arrow-back", color: "#fff", onPress: () => navigation.goBack() }}
+            leftComponent={{
+              icon: "arrow-back",
+              color: "#fff",
+              onPress: () => navigation.goBack()
+            }}
             centerComponent={{ text: "Settings", style: { color: "#fff" } }}
           />
         )
@@ -38,7 +45,11 @@ const RootStack = StackNavigator(
       navigationOptions: ({ navigation }) => ({
         header: (
           <Header
-            leftComponent={{ icon: "arrow-back", color: "#fff", onPress: () => navigation.goBack() }}
+            leftComponent={{
+              icon: "arrow-back",
+              color: "#fff",
+              onPress: () => navigation.goBack()
+            }}
             centerComponent={{ text: "Reader", style: { color: "#fff" } }}
           />
         )
@@ -50,9 +61,14 @@ const RootStack = StackNavigator(
   }
 );
 
+const store = createStore(rootReducer);
+
 export default class App extends React.Component {
-  
   render() {
-    return <RootStack />;
+    return (
+      <Provider store={store}>
+        <RootStack />
+      </Provider>
+    );
   }
 }
