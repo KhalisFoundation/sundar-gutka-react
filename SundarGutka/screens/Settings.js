@@ -9,15 +9,20 @@ import * as actions from "../actions/actions";
 class Settings extends React.Component {
   render() {
     const { navigate } = this.props.navigation;
-    var bgColor = "#DCE3F4";
     return (
-      <View style={{ backgroundColor: "#EFEFF4", flex: 1 }}>
+      <View
+        style={[styles.viewStyle, this.props.nightMode && styles.viewNightMode]}
+      >
         <SettingsList borderColor="#c8c7cc" defaultItemSize={50}>
           <SettingsList.Header
             headerText="Display Options"
-            headerStyle={{ marginTop: 15 }}
+            headerStyle={[
+              styles.headerStyle,
+              this.props.nightMode && styles.headerNightMode
+            ]}
           />
           <SettingsList.Item
+            backgroundColor={this.props.nightMode && "#464646"}
             icon={
               <Image
                 style={styles.imageStyle}
@@ -25,6 +30,7 @@ class Settings extends React.Component {
               />
             }
             title="Font Size"
+            titleStyle={[styles.titleText, this.props.nightMode && styles.titleTextNightMode]}
             titleInfo={
               actions.fontSizeNames[
                 actions.FONT_SIZES.indexOf(this.props.fontSize)
@@ -38,7 +44,6 @@ class Settings extends React.Component {
             title={"Font Size"}
             options={actions.fontSizeNames}
             cancelButtonIndex={actions.FONT_SIZES.length}
-            styles={actionSheetStyles}
             onPress={index => {
               if (index !== actions.FONT_SIZES.length) {
                 this.props.setFontSize(actions.FONT_SIZES[index]);
@@ -46,6 +51,7 @@ class Settings extends React.Component {
             }}
           />
           <SettingsList.Item
+            backgroundColor={this.props.nightMode && "#464646"}
             icon={
               <Image
                 style={styles.imageStyle}
@@ -53,6 +59,7 @@ class Settings extends React.Component {
               />
             }
             title="Font Face"
+            titleStyle={[styles.titleText, this.props.nightMode && styles.titleTextNightMode]}
             titleInfo={
               actions.fontFaceNames[
                 actions.FONT_FACES.indexOf(this.props.fontFace)
@@ -64,9 +71,9 @@ class Settings extends React.Component {
           <ActionSheet
             ref={o => (this.FontFaceActionSheet = o)}
             title={"Font Face"}
+            titleStyle={[styles.titleText, this.props.nightMode && styles.titleTextNightMode]}
             options={actions.fontFaceNames}
             cancelButtonIndex={actions.FONT_FACES.length}
-            styles={actionSheetStyles}
             onPress={index => {
               if (index !== actions.FONT_FACES.length) {
                 this.props.setFontFace(actions.FONT_FACES[index]);
@@ -74,6 +81,7 @@ class Settings extends React.Component {
             }}
           />
           <SettingsList.Item
+            backgroundColor={this.props.nightMode && "#464646"}
             icon={
               <Image
                 style={styles.imageStyle}
@@ -85,8 +93,10 @@ class Settings extends React.Component {
             switchOnValueChange={this.props.toggleRomanized}
             hasNavArrow={false}
             title="Romanized"
+            titleStyle={[styles.titleText, this.props.nightMode && styles.titleTextNightMode]}
           />
           <SettingsList.Item
+            backgroundColor={this.props.nightMode && "#464646"}
             icon={
               <Image
                 style={styles.imageStyle}
@@ -98,8 +108,10 @@ class Settings extends React.Component {
             switchOnValueChange={this.props.toggleEnglishTranslations}
             hasNavArrow={false}
             title="English Translations"
+            titleStyle={[styles.titleText, this.props.nightMode && styles.titleTextNightMode]}
           />
           <SettingsList.Item
+            backgroundColor={this.props.nightMode && "#464646"}
             icon={
               <Image
                 style={styles.imageStyle}
@@ -111,12 +123,17 @@ class Settings extends React.Component {
             switchOnValueChange={this.props.toggleNightMode}
             hasNavArrow={false}
             title="Night Mode"
+            titleStyle={[styles.titleText, this.props.nightMode && styles.titleTextNightMode]}
           />
           <SettingsList.Header
             headerText="Phone Options"
-            headerStyle={{ marginTop: 15 }}
+            headerStyle={[
+              styles.headerStyle,
+              this.props.nightMode && styles.headerNightMode
+            ]}
           />
           <SettingsList.Item
+            backgroundColor={this.props.nightMode && "#464646"}
             icon={
               <Image
                 style={styles.imageStyle}
@@ -128,12 +145,17 @@ class Settings extends React.Component {
             switchOnValueChange={this.props.toggleScreenAwake}
             hasNavArrow={false}
             title="Keep Screen Awake"
+            titleStyle={[styles.titleText, this.props.nightMode && styles.titleTextNightMode]}
           />
           <SettingsList.Header
             headerText="Bani Options"
-            headerStyle={{ marginTop: 15 }}
+            headerStyle={[
+              styles.headerStyle,
+              this.props.nightMode && styles.headerNightMode
+            ]}
           />
           <SettingsList.Item
+            backgroundColor={this.props.nightMode && "#464646"}
             icon={
               <Image
                 style={styles.imageStyle}
@@ -141,9 +163,11 @@ class Settings extends React.Component {
               />
             }
             title="Edit Bani Order"
+            titleStyle={[styles.titleText, this.props.nightMode && styles.titleTextNightMode]}
             onPress={() => navigate("EditBaniOrder")}
           />
           <SettingsList.Item
+            backgroundColor={this.props.nightMode && "#464646"}
             icon={
               <Image
                 style={styles.imageStyle}
@@ -151,6 +175,7 @@ class Settings extends React.Component {
               />
             }
             title="Bani Length"
+            titleStyle={[styles.titleText, this.props.nightMode && styles.titleTextNightMode]}
             titleInfo={
               actions.baniLengthNames[
                 actions.BANI_LENGTHS.indexOf(this.props.baniLength)
@@ -162,9 +187,9 @@ class Settings extends React.Component {
           <ActionSheet
             ref={o => (this.BaniLengthActionSheet = o)}
             title={"Bani Length"}
+            titleStyle={[styles.titleText, this.props.nightMode && styles.titleTextNightMode]}
             options={actions.baniLengthNames}
             cancelButtonIndex={actions.BANI_LENGTHS.length}
-            styles={actionSheetStyles}
             onPress={index => {
               if (index !== actions.BANI_LENGTHS.length) {
                 this.props.setBaniLength(actions.BANI_LENGTHS[index]);
@@ -172,6 +197,7 @@ class Settings extends React.Component {
             }}
           />
           <SettingsList.Item
+            backgroundColor={this.props.nightMode && "#464646"}
             icon={
               <Image
                 style={styles.imageStyle}
@@ -183,8 +209,10 @@ class Settings extends React.Component {
             switchOnValueChange={this.props.toggleLarivaar}
             hasNavArrow={false}
             title="Larivaar"
+            titleStyle={[styles.titleText, this.props.nightMode && styles.titleTextNightMode]}
           />
           <SettingsList.Item
+            backgroundColor={this.props.nightMode && "#464646"}
             icon={
               <Image
                 style={styles.imageStyle}
@@ -192,6 +220,7 @@ class Settings extends React.Component {
               />
             }
             title="Manglacharan Position"
+            titleStyle={[styles.titleText, this.props.nightMode && styles.titleTextNightMode]}
             titleInfo={
               actions.manglacharanPositionNames[
                 actions.MANGLACHARAN_POSITIONS.indexOf(
@@ -205,16 +234,19 @@ class Settings extends React.Component {
           <ActionSheet
             ref={o => (this.ManglacharanPositionActionSheet = o)}
             title={"Manglacharan Position"}
+            titleStyle={[styles.titleText, this.props.nightMode && styles.titleTextNightMode]}
             options={actions.manglacharanPositionNames}
             cancelButtonIndex={actions.MANGLACHARAN_POSITIONS.length}
-            styles={actionSheetStyles}
             onPress={index => {
               if (index !== actions.MANGLACHARAN_POSITIONS.length) {
-                this.props.setManglacharanPosition(actions.MANGLACHARAN_POSITIONS[index]);
+                this.props.setManglacharanPosition(
+                  actions.MANGLACHARAN_POSITIONS[index]
+                );
               }
             }}
           />
           <SettingsList.Item
+            backgroundColor={this.props.nightMode && "#464646"}
             icon={
               <Image
                 style={styles.imageStyle}
@@ -222,6 +254,7 @@ class Settings extends React.Component {
               />
             }
             title="Padchhed Settings"
+            titleStyle={[styles.titleText, this.props.nightMode && styles.titleTextNightMode]}
             titleInfo={
               actions.padchhedSettingNames[
                 actions.PADCHHED_SETTINGS.indexOf(this.props.padchhedSetting)
@@ -233,9 +266,9 @@ class Settings extends React.Component {
           <ActionSheet
             ref={o => (this.PadchhedSettingsActionSheet = o)}
             title={"Padchhed Settings"}
+            titleStyle={[styles.titleText, this.props.nightMode && styles.titleTextNightMode]}
             options={actions.padchhedSettingNames}
             cancelButtonIndex={actions.PADCHHED_SETTINGS.length}
-            styles={actionSheetStyles}
             onPress={index => {
               if (index !== actions.PADCHHED_SETTINGS.length) {
                 this.props.setPadchhedSetting(actions.PADCHHED_SETTINGS[index]);
@@ -244,9 +277,13 @@ class Settings extends React.Component {
           />
           <SettingsList.Header
             headerText="Other Options"
-            headerStyle={{ marginTop: 15 }}
+            headerStyle={[
+              styles.headerStyle,
+              this.props.nightMode && styles.headerNightMode
+            ]}
           />
           <SettingsList.Item
+            backgroundColor={this.props.nightMode && "#464646"}
             icon={
               <Image
                 style={styles.imageStyle}
@@ -258,8 +295,10 @@ class Settings extends React.Component {
             switchOnValueChange={this.props.toggleStatistics}
             hasNavArrow={false}
             title="Collect Statistics"
+            titleStyle={[styles.titleText, this.props.nightMode && styles.titleTextNightMode]}
           />
           <SettingsList.Item
+            backgroundColor={this.props.nightMode && "#464646"}
             icon={
               <Image
                 style={styles.imageStyle}
@@ -267,6 +306,7 @@ class Settings extends React.Component {
               />
             }
             title="About"
+            titleStyle={[styles.titleText, this.props.nightMode && styles.titleTextNightMode]}
             onPress={() => navigate("About")}
           />
         </SettingsList>
@@ -295,12 +335,6 @@ function mapDispatchToProps(dispatch) {
   return bindActionCreators(actions, dispatch);
 }
 
-const actionSheetStyles = {
-  titleText: {
-    fontSize: 18
-  }
-};
-
 const styles = StyleSheet.create({
   imageStyle: {
     marginLeft: 15,
@@ -312,6 +346,25 @@ const styles = StyleSheet.create({
   },
   titleInfoStyle: {
     marginLeft: 15
+  },
+  viewStyle: {
+    backgroundColor: "#EFEFF4",
+    flex: 1
+  },
+  viewNightMode: {
+    backgroundColor: "#000"
+  },
+  headerStyle: {
+    marginTop: 15
+  },
+  headerNightMode: {
+    color: "#fff"
+  },
+  titleText: {
+    fontSize: 16
+  },
+  titleTextNightMode: {
+    color: "#fff"
   }
 });
 
