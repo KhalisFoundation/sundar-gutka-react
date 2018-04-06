@@ -44,12 +44,6 @@ class Home extends React.Component {
   }
 }
 
-function mapStateToProps(state) {
-  return {
-    nightMode: state.nightMode
-  };
-}
-
 const styles = StyleSheet.create({
   container: {
     flex: 1,
@@ -68,5 +62,11 @@ const styles = StyleSheet.create({
     fontSize: 11
   }
 });
+
+function mapStateToProps(state) {
+  return {
+    nightMode: state.nightMode
+  };
+}
 
 export default connect(mapStateToProps)(Home);

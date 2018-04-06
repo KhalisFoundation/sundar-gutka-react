@@ -315,26 +315,6 @@ class Settings extends React.Component {
   }
 }
 
-function mapStateToProps(state) {
-  return {
-    fontSize: state.fontSize,
-    fontFace: state.fontFace,
-    romanized: state.romanized,
-    englishTranslations: state.englishTranslations,
-    nightMode: state.nightMode,
-    screenAwake: state.screenAwake,
-    baniLength: state.baniLength,
-    larivaar: state.larivaar,
-    manglacharanPosition: state.manglacharanPosition,
-    padchhedSetting: state.padchhedSetting,
-    statistics: state.statistics
-  };
-}
-
-function mapDispatchToProps(dispatch) {
-  return bindActionCreators(actions, dispatch);
-}
-
 const styles = StyleSheet.create({
   imageStyle: {
     marginLeft: 15,
@@ -367,5 +347,25 @@ const styles = StyleSheet.create({
     color: "#fff"
   }
 });
+
+function mapStateToProps(state) {
+  return {
+    fontSize: state.fontSize,
+    fontFace: state.fontFace,
+    romanized: state.romanized,
+    englishTranslations: state.englishTranslations,
+    nightMode: state.nightMode,
+    screenAwake: state.screenAwake,
+    baniLength: state.baniLength,
+    larivaar: state.larivaar,
+    manglacharanPosition: state.manglacharanPosition,
+    padchhedSetting: state.padchhedSetting,
+    statistics: state.statistics
+  };
+}
+
+function mapDispatchToProps(dispatch) {
+  return bindActionCreators(actions, dispatch);
+}
 
 export default connect(mapStateToProps, mapDispatchToProps)(Settings);

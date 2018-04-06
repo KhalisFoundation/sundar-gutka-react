@@ -7,11 +7,13 @@ export const TOGGLE_ROMANIZED = "TOGGLE_ROMANIZED";
 export const TOGGLE_ENGLISH_TRANSLATIONS = "TOGGLE_ENGLISH_TRANSLATIONS";
 export const TOGGLE_NIGHT_MODE = "TOGGLE_NIGHT_MODE";
 export const TOGGLE_SCREEN_AWAKE = "TOGGLE_SCREEN_AWAKE";
+export const SET_BANI_ORDER = "SET_BANI_ORDER";
 export const SET_BANI_LENGTH = "SET_BANI_LENGTH";
 export const TOGGLE_LARIVAAR = "TOGGLE_LARIVAAR";
 export const SET_MANGLACHARAN_POSITION = "SET_MANGLACHARAN_POSITION";
 export const SET_PADCHHED_SETTINGS = "SET_PADCHHED_SETTINGS";
 export const TOGGLE_STATISTICS = "TOGGLE_STATISTICS";
+export const SET_MERGED_BANI_DATA = "SET_MERGED_BANI_DATA"
 
 /*
  * other constants
@@ -100,6 +102,10 @@ export function toggleScreenAwake(value) {
   return { type: TOGGLE_SCREEN_AWAKE, value };
 }
 
+export function setBaniOrder(order) {
+  return { type: SET_BANI_ORDER, order };
+}
+
 export function setBaniLength(length) {
   return { type: SET_BANI_LENGTH, length };
 }
@@ -118,4 +124,8 @@ export function setPadchhedSetting(setting) {
 
 export function toggleStatistics(value) {
   return { type: TOGGLE_STATISTICS, value };
+}
+
+export function setMergedBaniData(list) {
+  return { type: SET_MERGED_BANI_DATA, list };
 }

@@ -1,4 +1,5 @@
 import { combineReducers } from "redux";
+import { defaultBaniOrderArray } from "../utils/helpers";
 import {
   SET_FONT_SIZE,
   SET_FONT_FACE,
@@ -6,11 +7,13 @@ import {
   TOGGLE_ENGLISH_TRANSLATIONS,
   TOGGLE_NIGHT_MODE,
   TOGGLE_SCREEN_AWAKE,
+  SET_BANI_ORDER,
   SET_BANI_LENGTH,
   TOGGLE_LARIVAAR,
   SET_MANGLACHARAN_POSITION,
   SET_PADCHHED_SETTINGS,
-  TOGGLE_STATISTICS
+  TOGGLE_STATISTICS,
+  SET_MERGED_BANI_DATA
 } from "../actions/actions";
 
 function fontSize(state = "SMALL", action) {
@@ -67,6 +70,15 @@ function screenAwake(state = false, action) {
   }
 }
 
+function baniOrder(state = defaultBaniOrderArray, action) {
+  switch (action.type) {
+    case SET_BANI_ORDER:
+      return action.order;
+    default:
+      return state;
+  }
+}
+
 function baniLength(state = "LONG", action) {
   switch (action.type) {
     case SET_BANI_LENGTH:
@@ -112,6 +124,15 @@ function statistics(state = true, action) {
   }
 }
 
+function mergedBaniData(state = null, action) {
+  switch (action.type) {
+    case SET_MERGED_BANI_DATA:
+      return action.list;
+    default:
+      return state;
+  }
+}
+
 // Combine all the reducers
 const rootReducer = combineReducers({
   fontSize,
@@ -120,11 +141,13 @@ const rootReducer = combineReducers({
   englishTranslations,
   nightMode,
   screenAwake,
+  baniOrder,
   baniLength,
   larivaar,
   manglacharanPosition,
   padchhedSetting,
-  statistics
+  statistics,
+  mergedBaniData
 });
 
 export default rootReducer;

@@ -9,6 +9,11 @@ import EditBaniOrderScreen from "./screens/EditBaniOrder";
 import AboutScreen from "./screens/About";
 import ReaderScreen from "./screens/Reader";
 import createStore from "./config/store";
+import { setBaniOrder, setMergedBaniData } from "./actions/actions";
+import { defaultBaniOrderArray } from "./utils/helpers";
+import Database from "./utils/database";
+import { mergedBaniList } from "./utils/helpers";
+
 
 const RootStack = StackNavigator(
   {
@@ -67,7 +72,15 @@ const RootStack = StackNavigator(
               color: "#fff",
               onPress: () => navigation.goBack()
             }}
-            centerComponent={{ text: "Edit Bani Order", style: { color: "#fff" } }}
+            centerComponent={{
+              text: "Edit Bani Order",
+              style: { color: "#fff" }
+            }}
+            rightComponent={{
+              icon: "refresh",
+              color: "#fff",
+              onPress: () => store.dispatch(setBaniOrder(defaultBaniOrderArray))
+            }}
           />
         )
       })
@@ -96,6 +109,12 @@ const RootStack = StackNavigator(
 const { store, persistor } = createStore();
 
 export default class App extends React.Component {
+  componentDidMount() {
+    Database.getBaniList().then(baniList => {
+      store.dispatch(setMergedBaniData(mergedBaniList(baniList)));
+    });
+  }
+
   render() {
     return (
       <Provider store={store}>
