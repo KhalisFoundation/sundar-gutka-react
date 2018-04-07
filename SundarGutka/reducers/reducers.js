@@ -25,7 +25,7 @@ function fontSize(state = "SMALL", action) {
   }
 }
 
-function fontFace(state = "GURBANI_AKHAR", action) {
+function fontFace(state = "GurbaniAkharSG", action) {
   switch (action.type) {
     case SET_FONT_FACE:
       return action.font;

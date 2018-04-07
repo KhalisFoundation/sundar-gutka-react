@@ -1,55 +1,79 @@
 import React from "react";
-import { StyleSheet, FlatList, View } from "react-native";
-import { List, ListItem } from "react-native-elements";
 import { connect } from "react-redux";
+import { bindActionCreators } from "redux";
+import { NavigationActions } from "react-navigation";
+import Database from "../utils/database";
+import { mergedBaniList } from "../utils/helpers";
+import * as actions from "../actions/actions";
+import BaniList from "../components/BaniList";
 
 class Home extends React.Component {
   constructor(props) {
     super(props);
 
     this.state = {
-      data: []
+      data: [],
+      isLoading: true
     };
   }
 
   reorder(arr, index) {
-    var temp = new Array(index.length);
+    var ordered = new Array(index.length);
 
-    // arr[i] should be present at index[i] index
     for (var i = 0; i < index.length; i++) {
-      temp[index[i]] = arr[i];
+      ordered[i] = arr[index[i]];
     }
-    // Copy temp[] to arr[]
-    for (var i = 0; i < index.length; i++) {
-      arr[i] = temp[i];
-    }
+    return ordered;
+  }
 
-    return arr;
+  sortBani() {
+    this.setState({
+      data: this.reorder(
+        this.props.mergedBaniData.baniOrder,
+        this.props.baniOrder
+      )
+    });
   }
 
   componentWillMount() {
-    this.state.data = this.reorder(this.props.mergedBaniData.baniOrder, this.props.baniOrder);
+    Database.getBaniList().then(baniList => {
+      this.props.setMergedBaniData(mergedBaniList(baniList));
+      this.sortBani();
+      this.setState({
+        isLoading: false
+      });
+    });
+  }
+
+  componentDidUpdate(prevProps) {
+    if (prevProps.baniOrder != this.props.baniOrder) {
+      this.sortBani();
+    }
+  }
+
+  handleOnPress(item, navigator) {
+    if(!item.folder) {
+      navigator.navigate("Reader", { id: item.id });
+    } else {
+      navigator.navigate("FolderBani", { data: item.folder });
+    }
   }
 
   render() {
     return (
-      <List style={styles.container}>
-        <FlatList
-          data={this.state.data}
-          renderItem={({ item }) => <ListItem title={item.gurmukhi} />}
-          keyExtractor={item => item.gurmukhi}
-        />
-      </List>
+      <BaniList
+        data={this.state.data}
+        nightMode={this.props.nightMode}
+        fontSize={this.props.fontSize}
+        fontFace={this.props.fontFace}
+        romanized={this.props.romanized}
+        navigation={this.props.navigation}
+        isLoading={this.state.isLoading}
+        onPress={this.handleOnPress}
+      />
     );
   }
 }
-
-const styles = StyleSheet.create({
-  container: {
-    flex: 1,
-    backgroundColor: "#fff"
-  }
-});
 
 function mapStateToProps(state) {
   return {
@@ -62,4 +86,8 @@ function mapStateToProps(state) {
   };
 }
 
-export default connect(mapStateToProps)(Home);
+function mapDispatchToProps(dispatch) {
+  return bindActionCreators(actions, dispatch);
+}
+
+export default connect(mapStateToProps, mapDispatchToProps)(Home);

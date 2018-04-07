@@ -1,14 +1,13 @@
 import React from "react";
 import { StyleSheet, Text, View } from "react-native";
-import { StackNavigator } from "react-navigation";
-import HomeScreen from "./Home";
-import SettingsScreen from "./Settings";
+import { connect } from "react-redux";
 
-export default class Home extends React.Component {
+class Reader extends React.Component {
   render() {
+    const {params} = this.props.navigation.state
     return (
       <View style={styles.container}>
-        <Text>hi</Text>
+        <Text>{JSON.stringify(params)}</Text>
       </View>
     );
   }
@@ -20,3 +19,11 @@ const styles = StyleSheet.create({
     backgroundColor: "#fff"
   }
 });
+
+function mapStateToProps(state) {
+  return {
+    nightMode: state.nightMode
+  };
+}
+
+export default connect(mapStateToProps)(Reader);

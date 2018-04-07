@@ -6,7 +6,8 @@ import rootReducer from "../reducers/reducers";
 
 const persistConfig = {
   key: "root",
-  storage
+  storage,
+  blacklist: ['mergedBaniData'] // navigation will not be persisted
 };
 
 const persistedReducer = persistReducer(persistConfig, rootReducer);

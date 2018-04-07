@@ -7,9 +7,12 @@
     "test": "jest"
   },
   "rnpm": {
-    "assets": ["./assets/fonts/"]
+    "assets": [
+      "./assets/fonts/"
+    ]
   },
   "dependencies": {
+    "npm": "^5.8.0",
     "react": "^16.3.0-alpha.1",
     "react-native": "0.54.4",
     "react-native-actionsheet": "^2.4.0",

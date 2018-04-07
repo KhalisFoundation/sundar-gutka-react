@@ -14,6 +14,7 @@ import SQLite from "react-native-sqlite-storage";
 import { connect } from "react-redux";
 import { bindActionCreators } from "redux";
 import * as actions from "../actions/actions";
+import { fontSizeForList } from "../utils/helpers";
 
 const window = Dimensions.get("window");
 
@@ -23,7 +24,7 @@ class EditBaniOrder extends React.Component {
       <View
         style={[
           styles.container,
-          this.props.nightMode && styles.containerNightMode
+          this.props.nightMode && { backgroundColor: "#464646" }
         ]}
       >
         <SortableList
@@ -122,12 +123,26 @@ class Row extends React.Component {
 
     return (
       <Animated.View
-        style={[styles.row, nightMode && styles.rowNightMode, this._style]}
+        style={[
+          styles.row,
+          nightMode && { backgroundColor: "#000" },
+          this._style
+        ]}
       >
-        
-        {data.folder && <Image source={require("../images/foldericon.png")} style={styles.image}/>}
+        {data.folder && (
+          <Image
+            source={require("../images/foldericon.png")}
+            style={styles.image}
+          />
+        )}
 
-        <Text style={[nightMode ? styles.textNightMode : styles.text, !romanized && styles[fontFace], styles[fontSize]]}>
+        <Text
+          style={[
+            { color: nightMode ? "#fff" : "#222222" },
+            !romanized && { fontFamily: fontFace },
+            { fontSize: fontSizeForList(fontSize) }
+          ]}
+        >
           {romanized ? data.roman : data.gurmukhi}
         </Text>
       </Animated.View>
@@ -147,10 +162,6 @@ const styles = StyleSheet.create({
         paddingTop: 0
       }
     })
-  },
-
-  containerNightMode: {
-    backgroundColor: "#464646"
   },
 
   list: {
@@ -187,60 +198,11 @@ const styles = StyleSheet.create({
     })
   },
 
-  rowNightMode: {
-    backgroundColor: "#000"
-  },
-
   image: {
     width: 50,
     height: 50,
-    marginRight: 30,
-    borderRadius: 25,
-  },
-
-  text: {
-    color: "#222222"
-  },
-
-  textNightMode: {
-    color: "#fff"
-  },
-  
-  ANMOL_LIPI: {
-    fontFamily: "AnmolLipiSG"
-  },
-
-  GURBANI_AKHAR: {
-    fontFamily: "GurbaniAkharSG"
-  },
-
-  GURBANI_AKHAR_HEAVY: {
-    fontFamily: "GurbaniAkharHeavySG"
-  },
-
-  GURBANI_AKHAR_THICK: {
-    fontFamily: "GurbaniAkharThickSG"
-  },
-
-  EXTRA_SMALL: {
-    fontSize: 12,
-  },
-
-  SMALL: {
-    fontSize: 17,
-  },
-
-  MEDIUM: {
-    fontSize: 22,
-  },
-
-  LARGE: {
-    fontSize: 27,
-  },
-
-  EXTRA_LARGE: {
-    fontSize: 32,
-  }
+    marginRight: 20
+   }
 });
 
 function mapStateToProps(state) {

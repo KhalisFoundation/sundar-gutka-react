@@ -37,10 +37,10 @@ export const fontSizeNames = [
 ];
 
 export const FONT_FACES = [
-  "ANMOL_LIPI",
-  "GURBANI_AKHAR",
-  "GURBANI_AKHAR_HEAVY",
-  "GURBANI_AKHAR_THICK"
+  "AnmolLipiSG",
+  "GurbaniAkharSG",
+  "GurbaniAkharHeavySG",
+  "GurbaniAkharThickSG"
 ];
 
 export const fontFaceNames = [

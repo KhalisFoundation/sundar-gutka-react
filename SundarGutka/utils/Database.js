@@ -22,17 +22,25 @@ class Database {
 
   static getBaniList() {
     return new Promise(function(resolve, reject) {
-      db.executeSql("SELECT ID, Gurmukhi, Transliteration FROM Banis", [], results => {
-        var totalResults = {};
-        var len = results.rows.length;
-        for (let i = 0; i < len; i++) {
-          let row = results.rows.item(i);
-          totalResults[row.ID] = {gurmukhi: row.Gurmukhi, roman: row.Transliteration};
+      db.executeSql(
+        "SELECT ID, Gurmukhi, Transliteration FROM Banis",
+        [],
+        results => {
+          var totalResults = {};
+          var len = results.rows.length;
+          for (let i = 0; i < len; i++) {
+            let row = results.rows.item(i);
+            totalResults[row.ID] = {
+              gurmukhi: row.Gurmukhi,
+              roman: row.Transliteration
+            };
+          }
+          resolve(totalResults);
         }
-        resolve(totalResults);
-      });
+      );
     });
   }
+  
 }
 
 export default Database;

@@ -11,22 +11,47 @@ export const defaultBaniOrderArray = Array(
 export const mergedBaniList = baniList => {
   const defaultBani = require("../config/defaultBaniOrder.json");
   const mergedData = { baniOrder: [] };
-  for (var i = 0; i < defaultBani.baniOrder.length; i++) {
-    var obj = defaultBani.baniOrder[i];
+
+  defaultBani.baniOrder.forEach(obj => {
     if (obj.id) {
       var baniItem = baniList[obj.id];
       mergedData.baniOrder.push({
-        id: baniItem.ID,
+        id: obj.id,
         gurmukhi: baniItem.gurmukhi,
         roman: baniItem.roman
       });
     } else {
+      var folder = [];
+      obj.folder.forEach(item => {
+        var baniItem = baniList[item.id];
+        folder.push({
+          id: item.id,
+          gurmukhi: baniItem.gurmukhi,
+          roman: baniItem.roman
+        });
+      });
+
       mergedData.baniOrder.push({
-        folder: obj.folder,
         gurmukhi: obj.gurmukhi,
-        roman: obj.roman
+        roman: obj.roman,
+        folder
       });
     }
-  }
+  });
   return mergedData;
+};
+
+export const fontSizeForList = SIZE => {
+  switch (SIZE) {
+    case "EXTRA_SMALL":
+      return 12;
+    case "SMALL":
+      return 17;
+    case "MEDIUM":
+      return 22;
+    case "LARGE":
+      return 27;
+    case "EXTRA_LARGE":
+      return 32;
+  }
 };
