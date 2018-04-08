@@ -1,6 +1,7 @@
 import React from "react";
 import { connect } from "react-redux";
 import { bindActionCreators } from "redux";
+import KeepAwake from "react-native-keep-awake";
 import Database from "../utils/database";
 import { mergedBaniList } from "../utils/helpers";
 import * as actions from "../actions/actions";
@@ -34,7 +35,16 @@ class Home extends React.Component {
     });
   }
 
+  changeKeepAwake(shouldBeAwake) {
+    if (shouldBeAwake) {
+      KeepAwake.activate();
+    } else {
+      KeepAwake.deactivate();
+    }
+  }
+
   componentWillMount() {
+    this.changeKeepAwake(this.props.screenAwake);
     Database.getBaniList().then(baniList => {
       this.props.setMergedBaniData(mergedBaniList(baniList));
       this.sortBani();
@@ -47,6 +57,8 @@ class Home extends React.Component {
   componentDidUpdate(prevProps) {
     if (prevProps.baniOrder != this.props.baniOrder) {
       this.sortBani();
+    } else if (prevProps.screenAwake != this.props.screenAwake) {
+      this.changeKeepAwake(this.props.screenAwake);
     }
   }
 
@@ -82,7 +94,8 @@ function mapStateToProps(state) {
     mergedBaniData: state.mergedBaniData,
     romanized: state.romanized,
     fontSize: state.fontSize,
-    fontFace: state.fontFace
+    fontFace: state.fontFace,
+    screenAwake: state.screenAwake
   };
 }
 
