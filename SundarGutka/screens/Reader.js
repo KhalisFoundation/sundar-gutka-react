@@ -22,7 +22,11 @@ class Reader extends React.Component {
   }
 
   componentWillMount() {
-    Database.getShabadForId(this.props.currentShabad, this.props.baniLength, this.props.larivaar).then(shabad => {
+    Database.getShabadForId(
+      this.props.currentShabad,
+      this.props.baniLength,
+      this.props.larivaar
+    ).then(shabad => {
       this.setState({
         data: shabad,
         isLoading: false
@@ -80,8 +84,14 @@ class Reader extends React.Component {
                   },
                   { fontFamily: this.props.fontFace },
                   { padding: 5 },
-                  { fontWeight: (item.header === 0) ? "normal" : "bold" },
-                  { textAlign: (item.header === 0) ? "left" : (item.header === 1 || item.header == 2) ? "center" : "right" },
+                  {
+                    textAlign:
+                      item.header === 0
+                        ? "left"
+                        : item.header === 1 || item.header == 2
+                          ? "center"
+                          : "right"
+                  },
                   {
                     fontSize: fontSizeForReader(
                       this.props.fontSize,
@@ -103,8 +113,15 @@ class Reader extends React.Component {
                       )
                     },
                     { padding: 5 },
-                    { fontWeight: (item.header === 0) ? "normal" : "bold" },
-                    { textAlign: (item.header === 0) ? "left" : (item.header === 1 || item.header == 2) ? "center" : "right" },
+                    { fontWeight: item.header === 0 ? "normal" : "bold" },
+                    {
+                      textAlign:
+                        item.header === 0
+                          ? "left"
+                          : item.header === 1 || item.header == 2
+                            ? "center"
+                            : "right"
+                    },
                     {
                       fontSize: fontSizeForReader(
                         this.props.fontSize,
@@ -128,8 +145,15 @@ class Reader extends React.Component {
                         )
                       },
                       { padding: 5 },
-                      { fontWeight: (item.header === 0) ? "normal" : "bold" },
-                      { textAlign: (item.header === 0) ? "left" : (item.header === 1 || item.header == 2) ? "center" : "right" },
+                      { fontWeight: item.header === 0 ? "normal" : "bold" },
+                      {
+                        textAlign:
+                          item.header === 0
+                            ? "left"
+                            : item.header === 1 || item.header == 2
+                              ? "center"
+                              : "right"
+                      },
                       {
                         fontSize: fontSizeForReader(
                           this.props.fontSize,
