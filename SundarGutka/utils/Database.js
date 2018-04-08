@@ -27,18 +27,62 @@ class Database {
     });
   }
 
-  static getShabadForId(shabadId) {
+  static getShabadForId(shabadId, length, larivaar) {
+    var baniLength;
+    switch (length) {
+      case "LONG":
+        baniLength = "existsBuddhaDal";
+        break;
+      case "MEDIUM":
+        baniLength = "existsTaksal";
+        break;
+      default:
+        baniLength = "existsStandard";
+    }
     return new Promise(function(resolve) {
       db.executeSql(
-        "SELECT Seq, Header, Gurmukhi, Transliteration, English FROM mv_Banis_Shabad WHERE Bani = " + shabadId + ";",
+        "SELECT ID, header, Gurmukhi, Transliteration, English FROM mv_Banis_Shabad WHERE Bani = " +
+          shabadId +
+          " AND " +
+          baniLength +
+          " = 1 ORDER BY Seq ASC;",
         [],
         results => {
-          var totalResults = new Array(results.rows.length)
+          var totalResults = new Array(results.rows.length);
+          var len = results.rows.length;
+          for (let i = 0; i < len; i++) {
+            let row = results.rows.item(i);
+            let gurmukhi = larivaar
+              ? row.Gurmukhi.replace(/ /g, "")
+              : row.Gurmukhi;
+            totalResults[i] = {
+              id: "" + row.ID,
+              gurmukhi: gurmukhi,
+              roman: row.Transliteration,
+              englishTranslations: row.English,
+              header: row.header
+            };
+          }
+          resolve(totalResults);
+        }
+      );
+    });
+  }
+
+  static getBookmarksForId(shabadId) {
+    return new Promise(function(resolve) {
+      db.executeSql(
+        "SELECT BaniShabadID, Gurmukhi, Transliteration FROM Banis_Bookmarks WHERE Bani = " +
+          shabadId +
+          " ORDER BY Seq ASC;",
+        [],
+        results => {
+          var totalResults = new Array(results.rows.length);
           var len = results.rows.length;
           for (let i = 0; i < len; i++) {
             let row = results.rows.item(i);
             totalResults[i] = {
-              seq: '' + row.Seq,
+              shabadId: row.BaniShabadID,
               gurmukhi: row.Gurmukhi,
               roman: row.Transliteration
             };

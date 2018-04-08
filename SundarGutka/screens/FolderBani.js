@@ -1,25 +1,13 @@
 import React from "react";
 import { connect } from "react-redux";
 import { bindActionCreators } from "redux";
-import { NavigationActions } from "react-navigation";
-import Database from "../utils/database";
 import * as actions from "../actions/actions";
 import BaniList from "../components/BaniList";
 
 class FolderBani extends React.Component {
-  constructor(props) {
-    super(props);
-
-    this.state = {
-      data: [],
-      isLoading: false
-    };
-  }
-
   handleOnPress(item, navigator) {
-    Database.getShabadForId(item.id).then(shabad => {
-      navigator.navigate("Reader", { id: item.id, shabad: shabad });
-    });
+    this.props.setCurrentShabad(item.id);
+    navigator.navigate("Reader");
   }
 
   render() {
@@ -33,8 +21,7 @@ class FolderBani extends React.Component {
         fontFace={this.props.fontFace}
         romanized={this.props.romanized}
         navigation={this.props.navigation}
-        isLoading={this.state.isLoading}
-        onPress={this.handleOnPress}
+        onPress={this.handleOnPress.bind(this)}
       />
     );
   }

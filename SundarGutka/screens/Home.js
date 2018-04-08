@@ -1,7 +1,6 @@
 import React from "react";
 import { connect } from "react-redux";
 import { bindActionCreators } from "redux";
-import { NavigationActions } from "react-navigation";
 import Database from "../utils/database";
 import { mergedBaniList } from "../utils/helpers";
 import * as actions from "../actions/actions";
@@ -53,9 +52,8 @@ class Home extends React.Component {
 
   handleOnPress(item, navigator) {
     if (!item.folder) {
-      Database.getShabadForId(item.id).then(shabad => {
-        navigator.navigate("Reader", { id: item.id, shabad: shabad });
-      });
+      this.props.setCurrentShabad(item.id);
+      navigator.navigate("Reader");
     } else {
       navigator.navigate("FolderBani", { data: item.folder });
     }
@@ -71,7 +69,7 @@ class Home extends React.Component {
         romanized={this.props.romanized}
         navigation={this.props.navigation}
         isLoading={this.state.isLoading}
-        onPress={this.handleOnPress}
+        onPress={this.handleOnPress.bind(this)}
       />
     );
   }

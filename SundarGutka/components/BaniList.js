@@ -2,6 +2,7 @@ import React, { Component } from "react";
 import { StyleSheet, FlatList, View, ActivityIndicator } from "react-native";
 import { List, ListItem, Avatar } from "react-native-elements";
 import { fontSizeForList } from "../utils/helpers";
+import LoadingIndicator from "../components/LoadingIndicator";
 
 class BaniList extends Component {
   render() {
@@ -16,17 +17,7 @@ class BaniList extends Component {
       onPress
     } = this.props;
     if (isLoading) {
-      return (
-        <View
-          style={[
-            styles.container,
-            styles.loading,
-            nightMode && { backgroundColor: "#000" }
-          ]}
-        >
-          <ActivityIndicator size="small" color="#0000ff" />
-        </View>
-      );
+      return <LoadingIndicator nightMode={this.props.nightMode} />;
     }
     return (
       <List

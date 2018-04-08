@@ -7,7 +7,7 @@ import rootReducer from "../reducers/reducers";
 const persistConfig = {
   key: "root",
   storage,
-  blacklist: ['navigation', 'mergedBaniData'] // content will not be persisted
+  blacklist: ['navigation', 'mergedBaniData', 'currentShabad', 'scrollIndex'] // content will not be persisted
 };
 
 const persistedReducer = persistReducer(persistConfig, rootReducer);

@@ -28,7 +28,8 @@ const FolderNavigation = TabNavigator({
             onPress: () => navigation.navigate("Settings")
           }}
         />
-      )
+      ),
+      tabBarVisible: false
     })
   },
   FolderBani: {
@@ -48,7 +49,8 @@ const FolderNavigation = TabNavigator({
             onPress: () => navigation.navigate("Settings")
           }}
         />
-      )
+      ),
+      tabBarVisible: false
     })
   }
 });
@@ -124,7 +126,7 @@ const RootStack = StackNavigator({
           rightComponent={{
             icon: "refresh",
             color: "#fff",
-            onPress: () => alert("pressedBookmark")
+            onPress: () => store.dispatch(setBaniOrder(defaultBaniOrderArray))
           }}
         />
       )

@@ -13,7 +13,9 @@ import {
   SET_MANGLACHARAN_POSITION,
   SET_PADCHHED_SETTINGS,
   TOGGLE_STATISTICS,
-  SET_MERGED_BANI_DATA
+  SET_MERGED_BANI_DATA,
+  SET_CURRENT_SHABAD,
+  SET_SCROLL_INDEX
 } from "../actions/actions";
 
 function fontSize(state = "SMALL", action) {
@@ -133,6 +135,24 @@ function mergedBaniData(state = null, action) {
   }
 }
 
+function currentShabad(state = null, action) {
+  switch (action.type) {
+    case SET_CURRENT_SHABAD:
+      return action.shabadId;
+    default:
+      return state;
+  }
+}
+
+function scrollIndex(state = -1, action) {
+  switch (action.type) {
+    case SET_SCROLL_INDEX:
+      return action.index;
+    default:
+      return state;
+  }
+}
+
 // Combine all the reducers
 const rootReducer = combineReducers({
   fontSize,
@@ -147,7 +167,9 @@ const rootReducer = combineReducers({
   manglacharanPosition,
   padchhedSetting,
   statistics,
-  mergedBaniData
+  mergedBaniData,
+  currentShabad,
+  scrollIndex
 });
 
 export default rootReducer;

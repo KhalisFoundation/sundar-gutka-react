@@ -1,10 +1,10 @@
 import React from "react";
 import { connect } from "react-redux";
 import { bindActionCreators } from "redux";
-import { NavigationActions } from "react-navigation";
 import Database from "../utils/database";
-import * as actions from "../actions/actions";
 import BaniList from "../components/BaniList";
+import LoadingIndicator from "../components/LoadingIndicator";
+import * as actions from "../actions/actions";
 
 class FolderBani extends React.Component {
   constructor(props) {
@@ -12,27 +12,38 @@ class FolderBani extends React.Component {
 
     this.state = {
       data: [],
-      isLoading: false
+      isLoading: true
     };
   }
 
+  componentWillMount() {
+    Database.getBookmarksForId(this.props.currentShabad).then(bookmarks => {
+      this.setState({
+        data: bookmarks,
+        isLoading: false
+      });
+    });
+  }
+
   handleOnPress(item, navigator) {
-    alert(JSON.stringify(item))
+    this.props.setScrollIndex(item.shabadId);
+    this.props.navigation.goBack();
   }
 
   render() {
-    const { params } = this.props.navigation.state;
-
+    if (this.state.isLoading) {
+      return <LoadingIndicator nightMode={this.props.nightMode} />;
+    }
     return (
       <BaniList
-        data={params.data}
+        data={this.state.data}
         nightMode={this.props.nightMode}
         fontSize={this.props.fontSize}
         fontFace={this.props.fontFace}
         romanized={this.props.romanized}
         navigation={this.props.navigation}
         isLoading={this.state.isLoading}
-        onPress={this.handleOnPress}
+        onPress={this.handleOnPress.bind(this)}
       />
     );
   }
@@ -43,7 +54,8 @@ function mapStateToProps(state) {
     nightMode: state.nightMode,
     romanized: state.romanized,
     fontSize: state.fontSize,
-    fontFace: state.fontFace
+    fontFace: state.fontFace,
+    currentShabad: state.currentShabad
   };
 }
 

@@ -14,6 +14,9 @@ export const SET_MANGLACHARAN_POSITION = "SET_MANGLACHARAN_POSITION";
 export const SET_PADCHHED_SETTINGS = "SET_PADCHHED_SETTINGS";
 export const TOGGLE_STATISTICS = "TOGGLE_STATISTICS";
 export const SET_MERGED_BANI_DATA = "SET_MERGED_BANI_DATA"
+export const SET_CURRENT_SHABAD = "SET_CURRENT_SHABAD"
+export const SET_SCROLL_INDEX = "SET_SCROLL_INDEX"
+
 
 /*
  * other constants
@@ -128,4 +131,12 @@ export function toggleStatistics(value) {
 
 export function setMergedBaniData(list) {
   return { type: SET_MERGED_BANI_DATA, list };
+}
+
+export function setCurrentShabad(shabadId) {
+  return { type: SET_CURRENT_SHABAD, shabadId };
+}
+
+export function setScrollIndex(index) {
+  return { type: SET_SCROLL_INDEX, index };
 }
