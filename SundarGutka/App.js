@@ -10,6 +10,7 @@ import SettingsScreen from "./screens/Settings";
 import EditBaniOrderScreen from "./screens/EditBaniOrder";
 import AboutScreen from "./screens/About";
 import ReaderScreen from "./screens/Reader";
+import BookmarksScreen from "./screens/Bookmarks";
 import createStore from "./config/store";
 import { setBaniOrder } from "./actions/actions";
 import { defaultBaniOrderArray } from "./utils/helpers";
@@ -82,6 +83,26 @@ const RootStack = StackNavigator({
             onPress: () => navigation.goBack()
           }}
           centerComponent={{ text: "Reader", style: { color: "#fff" } }}
+          rightComponent={{
+            icon: "bookmark",
+            color: "#fff",
+            onPress: () => navigation.navigate("Bookmarks")
+          }}
+        />
+      )
+    })
+  },
+  Bookmarks: {
+    screen: BookmarksScreen,
+    navigationOptions: ({ navigation }) => ({
+      header: (
+        <Header
+          leftComponent={{
+            icon: "arrow-back",
+            color: "#fff",
+            onPress: () => navigation.goBack()
+          }}
+          centerComponent={{ text: "Bookmarks", style: { color: "#fff" } }}
         />
       )
     })
@@ -103,7 +124,7 @@ const RootStack = StackNavigator({
           rightComponent={{
             icon: "refresh",
             color: "#fff",
-            onPress: () => store.dispatch(setBaniOrder(defaultBaniOrderArray))
+            onPress: () => alert("pressedBookmark")
           }}
         />
       )

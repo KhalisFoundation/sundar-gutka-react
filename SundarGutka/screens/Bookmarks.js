@@ -17,9 +17,7 @@ class FolderBani extends React.Component {
   }
 
   handleOnPress(item, navigator) {
-    Database.getShabadForId(item.id).then(shabad => {
-      navigator.navigate("Reader", { id: item.id, shabad: shabad });
-    });
+    alert(JSON.stringify(item))
   }
 
   render() {

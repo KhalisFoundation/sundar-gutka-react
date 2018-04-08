@@ -52,8 +52,10 @@ class Home extends React.Component {
   }
 
   handleOnPress(item, navigator) {
-    if(!item.folder) {
-      navigator.navigate("Reader", { id: item.id });
+    if (!item.folder) {
+      Database.getShabadForId(item.id).then(shabad => {
+        navigator.navigate("Reader", { id: item.id, shabad: shabad });
+      });
     } else {
       navigator.navigate("FolderBani", { data: item.folder });
     }
