@@ -27,7 +27,8 @@ class Reader extends React.Component {
       this.props.baniLength,
       this.props.larivaar,
       this.props.padchhedSetting,
-      this.props.manglacharanPosition
+      this.props.manglacharanPosition,
+      this.props.paragraphMode
     ).then(shabad => {
       this.setState({
         data: shabad,
@@ -53,6 +54,10 @@ class Reader extends React.Component {
     }
     this.flatListRef.scrollToIndex({ animated: false, index: viewPosition });
   }
+
+  // getItemLayout = (data, index) => {
+  //   return { length: 200, offset: 200 * index, index };
+  // };
 
   render() {
     if (this.state.isLoading) {
@@ -199,6 +204,7 @@ function mapStateToProps(state) {
     padchhedSetting: state.padchhedSetting,
     manglacharanPosition: state.manglacharanPosition,
     englishTranslations: state.englishTranslations,
+    paragraphMode: state.paragraphMode
   };
 }
 

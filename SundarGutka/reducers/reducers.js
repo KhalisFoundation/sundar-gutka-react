@@ -15,7 +15,9 @@ import {
   TOGGLE_STATISTICS,
   SET_MERGED_BANI_DATA,
   SET_CURRENT_SHABAD,
-  SET_SCROLL_INDEX
+  SET_SCROLL_INDEX,
+  TOGGLE_STATUS_BAR,
+  TOGGLE_PARAGRAPH_MODE
 } from "../actions/actions";
 
 function fontSize(state = "SMALL", action) {
@@ -153,6 +155,24 @@ function scrollIndex(state = -1, action) {
   }
 }
 
+function statusBar(state = true, action) {
+  switch (action.type) {
+    case TOGGLE_STATUS_BAR:
+      return action.hidden;
+    default:
+      return state;
+  }
+}
+
+function paragraphMode(state = true, action) {
+  switch (action.type) {
+    case TOGGLE_PARAGRAPH_MODE:
+      return action.paragraph;
+    default:
+      return state;
+  }
+}
+
 // Combine all the reducers
 const rootReducer = combineReducers({
   fontSize,
@@ -169,7 +189,9 @@ const rootReducer = combineReducers({
   statistics,
   mergedBaniData,
   currentShabad,
-  scrollIndex
+  scrollIndex,
+  statusBar,
+  paragraphMode
 });
 
 export default rootReducer;

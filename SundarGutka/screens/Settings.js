@@ -53,17 +53,6 @@ class Settings extends React.Component {
             titleInfoStyle={styles.titleInfoStyle}
             onPress={() => this.FontSizeActionSheet.show()}
           />
-          {/* <ActionSheet
-            ref={o => (this.FontSizeActionSheet = o)}
-            title={"Font Size"}
-            options={actions.fontSizeNames}
-            cancelButtonIndex={actions.FONT_SIZES.length}
-            onPress={index => {
-              if (index !== actions.FONT_SIZES.length) {
-                this.props.setFontSize(actions.FONT_SIZES[index]);
-              }
-            }}
-          /> */}
           <SettingsList.Item
             backgroundColor={this.props.nightMode ? "#464646" : "#fff"}
             icon={
@@ -135,6 +124,24 @@ class Settings extends React.Component {
             switchOnValueChange={this.props.toggleNightMode}
             hasNavArrow={false}
             title="Night Mode"
+            titleStyle={[
+              styles.titleText,
+              this.props.nightMode && { color: "#fff" }
+            ]}
+          />
+          <SettingsList.Item
+            backgroundColor={this.props.nightMode ? "#464646" : "#fff"}
+            icon={
+              <Image
+                style={styles.imageStyle}
+                source={require("../images/bgcoloricon.png")}
+              />
+            }
+            hasSwitch={true}
+            switchState={this.props.statusBar}
+            switchOnValueChange={this.props.toggleStatusBar}
+            hasNavArrow={false}
+            title="Hide Status Bar"
             titleStyle={[
               styles.titleText,
               this.props.nightMode && { color: "#fff" }
@@ -221,6 +228,24 @@ class Settings extends React.Component {
             switchOnValueChange={this.props.toggleLarivaar}
             hasNavArrow={false}
             title="Larivaar"
+            titleStyle={[
+              styles.titleText,
+              this.props.nightMode && { color: "#fff" }
+            ]}
+          />
+          <SettingsList.Item
+            backgroundColor={this.props.nightMode ? "#464646" : "#fff"}
+            icon={
+              <Image
+                style={styles.imageStyle}
+                source={require("../images/larivaaricon.png")}
+              />
+            }
+            hasSwitch={true}
+            switchState={this.props.paragraphMode}
+            switchOnValueChange={this.props.toggleParagraphMode}
+            hasNavArrow={false}
+            title="Paragraph Mode"
             titleStyle={[
               styles.titleText,
               this.props.nightMode && { color: "#fff" }
@@ -473,7 +498,9 @@ function mapStateToProps(state) {
     larivaar: state.larivaar,
     manglacharanPosition: state.manglacharanPosition,
     padchhedSetting: state.padchhedSetting,
-    statistics: state.statistics
+    statistics: state.statistics,
+    statusBar: state.statusBar,
+    paragraphMode: state.paragraphMode
   };
 }
 

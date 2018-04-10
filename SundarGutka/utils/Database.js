@@ -27,7 +27,14 @@ class Database {
     });
   }
 
-  static getShabadForId(baniId, length, larivaar, padcched, mangalPosition) {
+  static getShabadForId(
+    baniId,
+    length,
+    larivaar,
+    padcched,
+    mangalPosition,
+    paragraphMode
+  ) {
     var baniLength;
     switch (length) {
       case "LONG":
@@ -41,41 +48,96 @@ class Database {
     }
     return new Promise(function(resolve) {
       db.executeSql(
-        "SELECT ID, header, Gurmukhi, Transliteration, English FROM mv_Banis_Shabad WHERE Bani = " +
-        baniId +
+        "SELECT ID, Paragraph, header, Gurmukhi, Transliteration, English FROM mv_Banis_Shabad WHERE Bani = " +
+          baniId +
           " AND " +
           baniLength +
           " = 1 AND (MangalPosition IS NULL OR MangalPosition = " +
-          (mangalPosition == "CURRENT_SAROOPS" ? "'current'" : "'above'") + ")ORDER BY Seq ASC;",
+          (mangalPosition == "CURRENT_SAROOPS" ? "'current'" : "'above'") +
+          ")ORDER BY Seq ASC;",
         [],
         results => {
           var totalResults = new Array(results.rows.length);
           var len = results.rows.length;
+
+          var gurmukhi;
+          var paragraphId;
+          var transliteration;
+          var englishTranslation;
+          var paragraphHeader;
+          var currentParagraph;
+          var paragraphOngoing = false;
+
           for (let i = 0; i < len; i++) {
             let row = results.rows.item(i);
-            let gurmukhi = larivaar
+
+            let curGurmukhi = larivaar
               ? row.Gurmukhi.replace(/ /g, "")
               : row.Gurmukhi;
 
             if (
-              (baniId == 9 || baniId == 21) &&
-              padcched == "MAST_SABH_MAST"
+              (baniId === 9 || baniId === 21) &&
+              padcched === "MAST_SABH_MAST"
             ) {
-              gurmukhi = gurmukhi.replace(
+              curGurmukhi = curGurmukhi.replace(
                 /smwpqm squ suBm squ/g,
                 "smwpq msqu suB msqu"
               );
             }
 
-            totalResults[i] = {
-              id: "" + row.ID,
-              gurmukhi: gurmukhi,
-              roman: row.Transliteration,
-              englishTranslations: row.English,
-              header: row.header
-            };
+            if (paragraphMode) {
+              if (currentParagraph !== row.Paragraph) {
+                if (paragraphOngoing) {
+                  totalResults[i] = {
+                    id: "" + paragraphId,
+                    gurmukhi: gurmukhi,
+                    roman: transliteration,
+                    englishTranslations: englishTranslation,
+                    header: paragraphHeader
+                  };
+                  paragraphOngoing = false;
+                }
+
+                paragraphId = row.ID;
+                paragraphHeader = row.header;
+                gurmukhi = curGurmukhi;
+                transliteration = row.Transliteration;
+                englishTranslation = row.English;
+                currentParagraph = row.Paragraph;
+                paragraphOngoing = true;
+              } else {
+                gurmukhi += larivaar ? curGurmukhi : "\n" + curGurmukhi;
+                transliteration += "\n" + row.Transliteration;
+                englishTranslation += " " + row.English;
+                currentParagraph = row.Paragraph;
+              }
+
+              if (i === len - 1) {
+                totalResults[i] = {
+                  id: "" + paragraphId,
+                  gurmukhi: gurmukhi,
+                  roman: transliteration,
+                  englishTranslations: englishTranslation,
+                  header: paragraphHeader
+                };
+              }
+            } else {
+              totalResults[i] = {
+                id: "" + row.ID,
+                gurmukhi: curGurmukhi,
+                roman: row.Transliteration,
+                englishTranslations: row.English,
+                header: row.header
+              };
+            }
           }
-          resolve(totalResults);
+          var cleanArray = [];
+          if (paragraphMode) {
+            for (let i of totalResults) i && cleanArray.push(i); // copy each non-empty value to the 'temp' array
+            resolve(cleanArray);
+          } else {
+            resolve(totalResults);
+          }
         }
       );
     });
@@ -85,7 +147,7 @@ class Database {
     return new Promise(function(resolve) {
       db.executeSql(
         "SELECT BaniShabadID, Gurmukhi, Transliteration FROM Banis_Bookmarks WHERE Bani = " +
-        baniId +
+          baniId +
           " ORDER BY Seq ASC;",
         [],
         results => {
