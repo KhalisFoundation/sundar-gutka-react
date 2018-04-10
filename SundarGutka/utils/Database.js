@@ -27,7 +27,7 @@ class Database {
     });
   }
 
-  static getShabadForId(shabadId, length, larivaar, padcched) {
+  static getShabadForId(baniId, length, larivaar, padcched, mangalPosition) {
     var baniLength;
     switch (length) {
       case "LONG":
@@ -42,10 +42,11 @@ class Database {
     return new Promise(function(resolve) {
       db.executeSql(
         "SELECT ID, header, Gurmukhi, Transliteration, English FROM mv_Banis_Shabad WHERE Bani = " +
-          shabadId +
+        baniId +
           " AND " +
           baniLength +
-          " = 1 ORDER BY Seq ASC;",
+          " = 1 AND (MangalPosition IS NULL OR MangalPosition = " +
+          (mangalPosition == "CURRENT_SAROOPS" ? "'current'" : "'above'") + ")ORDER BY Seq ASC;",
         [],
         results => {
           var totalResults = new Array(results.rows.length);
@@ -57,7 +58,7 @@ class Database {
               : row.Gurmukhi;
 
             if (
-              (shabadId == 9 || shabadId == 21) &&
+              (baniId == 9 || baniId == 21) &&
               padcched == "MAST_SABH_MAST"
             ) {
               gurmukhi = gurmukhi.replace(
@@ -80,11 +81,11 @@ class Database {
     });
   }
 
-  static getBookmarksForId(shabadId) {
+  static getBookmarksForId(baniId) {
     return new Promise(function(resolve) {
       db.executeSql(
         "SELECT BaniShabadID, Gurmukhi, Transliteration FROM Banis_Bookmarks WHERE Bani = " +
-          shabadId +
+        baniId +
           " ORDER BY Seq ASC;",
         [],
         results => {

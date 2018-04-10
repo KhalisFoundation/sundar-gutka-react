@@ -26,7 +26,8 @@ class Reader extends React.Component {
       this.props.currentShabad,
       this.props.baniLength,
       this.props.larivaar,
-      this.props.padchhedSetting
+      this.props.padchhedSetting,
+      this.props.manglacharanPosition
     ).then(shabad => {
       this.setState({
         data: shabad,
@@ -196,6 +197,7 @@ function mapStateToProps(state) {
     baniLength: state.baniLength,
     larivaar: state.larivaar,
     padchhedSetting: state.padchhedSetting,
+    manglacharanPosition: state.manglacharanPosition,
     englishTranslations: state.englishTranslations,
   };
 }
