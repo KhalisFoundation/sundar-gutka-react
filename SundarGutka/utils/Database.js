@@ -66,7 +66,6 @@ class Database {
           var englishTranslation;
           var paragraphHeader;
           var currentParagraph;
-          var paragraphOngoing = false;
 
           for (let i = 0; i < len; i++) {
             let row = results.rows.item(i);
@@ -87,7 +86,7 @@ class Database {
 
             if (paragraphMode) {
               if (currentParagraph !== row.Paragraph) {
-                if (paragraphOngoing) {
+                if (i !== 0) {
                   totalResults[i] = {
                     id: "" + paragraphId,
                     gurmukhi: gurmukhi,
@@ -95,16 +94,13 @@ class Database {
                     englishTranslations: englishTranslation,
                     header: paragraphHeader
                   };
-                  paragraphOngoing = false;
                 }
-
                 paragraphId = row.ID;
                 paragraphHeader = row.header;
                 gurmukhi = curGurmukhi;
                 transliteration = row.Transliteration;
                 englishTranslation = row.English;
                 currentParagraph = row.Paragraph;
-                paragraphOngoing = true;
               } else {
                 gurmukhi += larivaar ? curGurmukhi : "\n" + curGurmukhi;
                 transliteration += "\n" + row.Transliteration;
