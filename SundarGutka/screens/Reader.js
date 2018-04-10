@@ -25,7 +25,8 @@ class Reader extends React.Component {
     Database.getShabadForId(
       this.props.currentShabad,
       this.props.baniLength,
-      this.props.larivaar
+      this.props.larivaar,
+      this.props.padchhedSetting
     ).then(shabad => {
       this.setState({
         data: shabad,
@@ -194,7 +195,8 @@ function mapStateToProps(state) {
     fontFace: state.fontFace,
     baniLength: state.baniLength,
     larivaar: state.larivaar,
-    englishTranslations: state.englishTranslations
+    padchhedSetting: state.padchhedSetting,
+    englishTranslations: state.englishTranslations,
   };
 }
 

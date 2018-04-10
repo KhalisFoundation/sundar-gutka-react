@@ -27,7 +27,7 @@ class Database {
     });
   }
 
-  static getShabadForId(shabadId, length, larivaar) {
+  static getShabadForId(shabadId, length, larivaar, padcched) {
     var baniLength;
     switch (length) {
       case "LONG":
@@ -55,6 +55,17 @@ class Database {
             let gurmukhi = larivaar
               ? row.Gurmukhi.replace(/ /g, "")
               : row.Gurmukhi;
+
+            if (
+              (shabadId == 9 || shabadId == 21) &&
+              padcched == "MAST_SABH_MAST"
+            ) {
+              gurmukhi = gurmukhi.replace(
+                /smwpqm squ suBm squ/g,
+                "smwpq msqu suB msqu"
+              );
+            }
+
             totalResults[i] = {
               id: "" + row.ID,
               gurmukhi: gurmukhi,

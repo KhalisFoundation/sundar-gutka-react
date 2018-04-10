@@ -13,10 +13,9 @@ export const TOGGLE_LARIVAAR = "TOGGLE_LARIVAAR";
 export const SET_MANGLACHARAN_POSITION = "SET_MANGLACHARAN_POSITION";
 export const SET_PADCHHED_SETTINGS = "SET_PADCHHED_SETTINGS";
 export const TOGGLE_STATISTICS = "TOGGLE_STATISTICS";
-export const SET_MERGED_BANI_DATA = "SET_MERGED_BANI_DATA"
-export const SET_CURRENT_SHABAD = "SET_CURRENT_SHABAD"
-export const SET_SCROLL_INDEX = "SET_SCROLL_INDEX"
-
+export const SET_MERGED_BANI_DATA = "SET_MERGED_BANI_DATA";
+export const SET_CURRENT_SHABAD = "SET_CURRENT_SHABAD";
+export const SET_SCROLL_INDEX = "SET_SCROLL_INDEX";
 
 /*
  * other constants
@@ -35,8 +34,7 @@ export const fontSizeNames = [
   "Small (default)",
   "Medium",
   "Large",
-  "Extra Large",
-  "Cancel"
+  "Extra Large"
 ];
 
 export const FONT_FACES = [
@@ -50,8 +48,7 @@ export const fontFaceNames = [
   "Anmol Lipi",
   "Gurbani Akhar (default)",
   "Gurbani Akhar Heavy",
-  "Gurbani Akhar Thick",
-  "Cancel"
+  "Gurbani Akhar Thick"
 ];
 
 export const BANI_LENGTHS = ["LONG", "MEDIUM", "SHORT"];
@@ -65,16 +62,14 @@ export const MANGLACHARAN_POSITIONS = [
 
 export const manglacharanPositionNames = [
   "Current Saroops (default)",
-  "Above Raag Headings",
-  "Cancel"
+  "Above Raag Headings"
 ];
 
 export const PADCHHED_SETTINGS = ["SAT_SUBHAM_SAT", "MAST_SABH_MAST"];
 
 export const padchhedSettingNames = [
   "Sat Subham Sat (default)",
-  "Mast Sabh Mast",
-  "Cancel"
+  "Mast Sabh Mast"
 ];
 
 /*
