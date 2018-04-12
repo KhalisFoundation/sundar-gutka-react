@@ -7,7 +7,7 @@ import BaniList from "../components/BaniList";
 class FolderBani extends React.Component {
   handleOnPress(item, navigator) {
     this.props.setCurrentShabad(item.id);
-    navigator.navigate("Reader");
+    navigator.navigate("Reader", {shabad: item});
   }
 
   render() {

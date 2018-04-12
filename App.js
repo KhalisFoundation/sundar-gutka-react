@@ -1,6 +1,7 @@
 import React from "react";
+import { StyleSheet } from "react-native";
 import { StackNavigator, TabNavigator } from "react-navigation";
-import { Header } from "react-native-elements";
+import { Header, Icon } from "react-native-elements";
 import { Provider } from "react-redux";
 import { PersistGate } from "redux-persist/integration/react";
 import storage from "redux-persist/lib/storage";
@@ -15,18 +16,28 @@ import createStore from "./config/store";
 import { setBaniOrder } from "./actions/actions";
 import { defaultBaniOrderArray } from "./utils/helpers";
 
+// this.props.romanized
+//                 ? params.item.roman
+//                 : params.item.gurmukhi,
+
 const FolderNavigation = TabNavigator({
   Home: {
     screen: HomeScreen,
     navigationOptions: ({ navigation }) => ({
       header: (
         <Header
-          centerComponent={{ text: "Sundar Gutka", style: { color: "#fff" } }}
-          rightComponent={{
-            icon: "settings",
-            color: "#fff",
-            onPress: () => navigation.navigate("Settings")
+          centerComponent={{
+            text: "Sundar Gutka",
+            style: styles.headerBarStyle
           }}
+          rightComponent={
+            <Icon
+              name="settings"
+              color="#fff"
+              onPress={() => navigation.navigate("Settings")}
+              underlayColor={"#64b5f6"}
+            />
+          }
         />
       ),
       tabBarVisible: false
@@ -37,20 +48,30 @@ const FolderNavigation = TabNavigator({
     navigationOptions: ({ navigation }) => ({
       header: (
         <Header
-          leftComponent={{
-            icon: "arrow-back",
-            color: "#fff",
-            onPress: () => navigation.goBack()
+          leftComponent={
+            <Icon
+              name="arrow-back"
+              color="#fff"
+              onPress={() => navigation.goBack()}
+              underlayColor={"#64b5f6"}
+            />
+          }
+          centerComponent={{
+            text: "Sundar Gutka",
+            style: styles.headerBarStyle
           }}
-          centerComponent={{ text: "Sundar Gutka", style: { color: "#fff" } }}
-          rightComponent={{
-            icon: "settings",
-            color: "#fff",
-            onPress: () => navigation.navigate("Settings")
-          }}
+          rightComponent={
+            <Icon
+              name="settings"
+              color="#fff"
+              onPress={() => navigation.navigate("Settings")}
+              underlayColor={"#64b5f6"}
+            />
+          }
         />
       ),
-      tabBarVisible: false
+      tabBarVisible: false,
+      swipeEnabled: false
     })
   }
 });
@@ -64,20 +85,25 @@ const RootStack = StackNavigator({
     navigationOptions: ({ navigation }) => ({
       header: (
         <Header
-          leftComponent={{
-            icon: "arrow-back",
-            color: "#fff",
-            onPress: () => navigation.goBack()
-          }}
-          centerComponent={{ text: "Settings", style: { color: "#fff" } }}
+          backgroundColor="#DEBB0A"
+          leftComponent={
+            <Icon
+              name="arrow-back"
+              color="#fff"
+              onPress={() => navigation.goBack()}
+              underlayColor={"#64b5f6"}
+            />
+          }
+          centerComponent={{ text: "Settings", style: styles.headerBarStyle }}
         />
       )
     })
   },
   Reader: {
     screen: ReaderScreen,
+
     navigationOptions: {
-      header: null,
+      header: null
     }
   },
   Bookmarks: {
@@ -85,12 +111,16 @@ const RootStack = StackNavigator({
     navigationOptions: ({ navigation }) => ({
       header: (
         <Header
-          leftComponent={{
-            icon: "arrow-back",
-            color: "#fff",
-            onPress: () => navigation.goBack()
-          }}
-          centerComponent={{ text: "Bookmarks", style: { color: "#fff" } }}
+          backgroundColor="#DEBB0A"
+          leftComponent={
+            <Icon
+              name="arrow-back"
+              color="#fff"
+              onPress={() => navigation.goBack()}
+              underlayColor={"#64b5f6"}
+            />
+          }
+          centerComponent={{ text: "Bookmarks", style: styles.headerBarStyle }}
         />
       )
     })
@@ -100,20 +130,29 @@ const RootStack = StackNavigator({
     navigationOptions: ({ navigation }) => ({
       header: (
         <Header
-          leftComponent={{
-            icon: "arrow-back",
-            color: "#fff",
-            onPress: () => navigation.goBack()
-          }}
+          backgroundColor="#003436"
+          leftComponent={
+            <Icon
+              name="arrow-back"
+              color="#fff"
+              onPress={() => navigation.goBack()}
+              underlayColor={"#64b5f6"}
+            />
+          }
           centerComponent={{
             text: "Edit Bani Order",
-            style: { color: "#fff" }
+            style: styles.headerBarStyle
           }}
-          rightComponent={{
-            icon: "refresh",
-            color: "#fff",
-            onPress: () => store.dispatch(setBaniOrder(defaultBaniOrderArray))
-          }}
+          rightComponent={
+            <Icon
+              name="refresh"
+              color="#fff"
+              onPress={() =>
+                store.dispatch(setBaniOrder(defaultBaniOrderArray))
+              }
+              underlayColor={"#64b5f6"}
+            />
+          }
         />
       )
     })
@@ -123,15 +162,26 @@ const RootStack = StackNavigator({
     navigationOptions: ({ navigation }) => ({
       header: (
         <Header
-          leftComponent={{
-            icon: "arrow-back",
-            color: "#fff",
-            onPress: () => navigation.goBack()
-          }}
-          centerComponent={{ text: "About", style: { color: "#fff" } }}
+          backgroundColor="#003436"
+          leftComponent={
+            <Icon
+              name="arrow-back"
+              color="#fff"
+              onPress={() => navigation.goBack()}
+              underlayColor={"#64b5f6"}
+            />
+          }
+          centerComponent={{ text: "About", style: styles.headerBarStyle }}
         />
       )
     })
+  }
+});
+
+const styles = StyleSheet.create({
+  headerBarStyle: {
+    color: "#fff",
+    fontSize: 18
   }
 });
 

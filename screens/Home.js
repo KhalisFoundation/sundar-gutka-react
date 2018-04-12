@@ -73,7 +73,7 @@ class Home extends React.Component {
   handleOnPress(item, navigator) {
     if (!item.folder) {
       this.props.setCurrentShabad(item.id);
-      navigator.navigate("Reader");
+      navigator.navigate("Reader", { item: item });
     } else {
       navigator.navigate("FolderBani", { data: item.folder });
     }

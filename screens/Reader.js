@@ -8,7 +8,7 @@ import {
   Text
 } from "react-native";
 import { connect } from "react-redux";
-import { Header } from "react-native-elements";
+import { Header, Icon } from "react-native-elements";
 import { bindActionCreators } from "redux";
 import Database from "../utils/database";
 import LoadingIndicator from "../components/LoadingIndicator";
@@ -100,11 +100,13 @@ class Reader extends React.Component {
     this.flatListRef.scrollToIndex({ animated: false, index: viewPosition });
   }
 
-  // getItemLayout = (data, index) => {
-  //   return { length: 200, offset: 200 * index, index };
-  // };
+  truncate(n) {
+    return (this.length > n) ? this.substr(0, n-1) + '...' : this;
+  }
 
   render() {
+    const { params } = this.props.navigation.state;
+
     if (this.state.isLoading) {
       return <LoadingIndicator nightMode={this.props.nightMode} />;
     }
@@ -121,15 +123,16 @@ class Reader extends React.Component {
             this.flatListRef = ref;
           }}
           data={this.state.data}
-          contentContainerStyle={[{ marginTop: headerHeight }, {paddingBottom: headerHeight}]}
+          contentContainerStyle={[
+            { marginTop: headerHeight },
+            { paddingBottom: headerHeight }
+          ]}
           onScroll={this._onScroll.bind(this)}
           extraData={this.state}
           initialNumToRender={this.state.data.length}
           getItemLayout={this.getItemLayout}
           renderItem={({ item }) => (
-            <View
-              style={styles.itemBlock}
-            >
+            <View style={styles.itemBlock}>
               <Text
                 style={[
                   {
@@ -227,19 +230,34 @@ class Reader extends React.Component {
           keyExtractor={item => item.id}
         />
         <Animated.View style={[styles.header, { height: this.state.height }]}>
-        <Header
-          leftComponent={{
-            icon: "arrow-back",
-            color: "#fff",
-            onPress: () => this.props.navigation.goBack()
-          }}
-          centerComponent={{ text: "Reader", style: { color: "#fff" } }}
-          rightComponent={{
-            icon: "bookmark",
-            color: "#fff",
-            onPress: () => this.props.navigation.navigate("Bookmarks")
-          }}
-        />
+          <Header
+            leftComponent={
+              <Icon
+                name="arrow-back"
+                color="#fff"
+                onPress={() => this.props.navigation.goBack()}
+                underlayColor={"#64b5f6"}
+              />
+            }
+            centerComponent={{
+              text: this.props.romanized
+                ? this.truncate.apply(params.item.roman, [30])
+                : this.truncate.apply(params.item.gurmukhi, [30]),
+              style: {
+                color: "#fff",
+                fontFamily: this.props.romanized ? null : this.props.fontFace,
+                fontSize: 20
+              }
+            }}
+            rightComponent={
+              <Icon
+                name="bookmark"
+                color="#fff"
+                onPress={() => this.props.navigation.navigate("Bookmarks")}
+                underlayColor={"#64b5f6"}
+              />
+            }
+          />
         </Animated.View>
       </View>
     );
@@ -254,12 +272,12 @@ const styles = StyleSheet.create({
     padding: 5
   },
   header: {
-    position: 'absolute',
+    position: "absolute",
     top: 0,
     left: 0,
     right: 0,
-    overflow: 'hidden',
-		height: 200
+    overflow: "hidden",
+    height: 200
   }
 });
 
