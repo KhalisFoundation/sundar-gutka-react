@@ -58,6 +58,7 @@ class Database {
         [],
         results => {
           var totalResults = new Array(results.rows.length);
+          var paragraphResults = new Array();
           var len = results.rows.length;
 
           var gurmukhi;
@@ -65,15 +66,13 @@ class Database {
           var transliteration;
           var englishTranslation;
           var paragraphHeader;
-          var currentParagraph;
+          var prevParagraph;
 
           for (let i = 0; i < len; i++) {
             let row = results.rows.item(i);
-
             let curGurmukhi = larivaar
               ? row.Gurmukhi.replace(/ /g, "")
               : row.Gurmukhi;
-
             if (
               (baniId === 9 || baniId === 21) &&
               padcched === "MAST_SABH_MAST"
@@ -83,39 +82,37 @@ class Database {
                 "smwpq msqu suB msqu"
               );
             }
-
             if (paragraphMode) {
-              if (currentParagraph !== row.Paragraph) {
+              if (prevParagraph !== row.Paragraph) {
                 if (i !== 0) {
-                  totalResults[i] = {
+                  paragraphResults.push({
                     id: "" + paragraphId,
                     gurmukhi: gurmukhi,
                     roman: transliteration,
                     englishTranslations: englishTranslation,
                     header: paragraphHeader
-                  };
+                  });
                 }
                 paragraphId = row.ID;
                 paragraphHeader = row.header;
                 gurmukhi = curGurmukhi;
                 transliteration = row.Transliteration;
                 englishTranslation = row.English;
-                currentParagraph = row.Paragraph;
+                prevParagraph = row.Paragraph;
               } else {
                 gurmukhi += larivaar ? curGurmukhi : "\n" + curGurmukhi;
                 transliteration += "\n" + row.Transliteration;
                 englishTranslation += " " + row.English;
-                currentParagraph = row.Paragraph;
               }
 
               if (i === len - 1) {
-                totalResults[i] = {
+                paragraphResults.push({
                   id: "" + paragraphId,
                   gurmukhi: gurmukhi,
                   roman: transliteration,
                   englishTranslations: englishTranslation,
                   header: paragraphHeader
-                };
+                });
               }
             } else {
               totalResults[i] = {
@@ -127,10 +124,8 @@ class Database {
               };
             }
           }
-          var cleanArray = [];
           if (paragraphMode) {
-            for (let i of totalResults) i && cleanArray.push(i); // copy each non-empty value to the 'temp' array
-            resolve(cleanArray);
+            resolve(paragraphResults);
           } else {
             resolve(totalResults);
           }

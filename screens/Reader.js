@@ -10,7 +10,6 @@ import {
 import { connect } from "react-redux";
 import { Header } from "react-native-elements";
 import { bindActionCreators } from "redux";
-import Headroom from "../components/Headroom";
 import Database from "../utils/database";
 import LoadingIndicator from "../components/LoadingIndicator";
 import {
@@ -122,7 +121,7 @@ class Reader extends React.Component {
             this.flatListRef = ref;
           }}
           data={this.state.data}
-          contentContainerStyle={{ marginTop: headerHeight }}
+          contentContainerStyle={[{ marginTop: headerHeight }, {paddingBottom: headerHeight}]}
           onScroll={this._onScroll.bind(this)}
           extraData={this.state}
           getItemLayout={this.getItemLayout}
