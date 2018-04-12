@@ -101,7 +101,7 @@ class Reader extends React.Component {
   }
 
   truncate(n) {
-    return (this.length > n) ? this.substr(0, n-1) + '...' : this;
+    return this.length > n ? this.substr(0, n - 1) + "..." : this + '';
   }
 
   render() {
