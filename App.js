@@ -76,23 +76,9 @@ const RootStack = StackNavigator({
   },
   Reader: {
     screen: ReaderScreen,
-    navigationOptions: ({ navigation }) => ({
-      header: (
-        <Header
-          leftComponent={{
-            icon: "arrow-back",
-            color: "#fff",
-            onPress: () => navigation.goBack()
-          }}
-          centerComponent={{ text: "Reader", style: { color: "#fff" } }}
-          rightComponent={{
-            icon: "bookmark",
-            color: "#fff",
-            onPress: () => navigation.navigate("Bookmarks")
-          }}
-        />
-      )
-    })
+    navigationOptions: {
+      header: null,
+    }
   },
   Bookmarks: {
     screen: BookmarksScreen,
