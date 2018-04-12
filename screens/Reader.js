@@ -124,6 +124,7 @@ class Reader extends React.Component {
           contentContainerStyle={[{ marginTop: headerHeight }, {paddingBottom: headerHeight}]}
           onScroll={this._onScroll.bind(this)}
           extraData={this.state}
+          initialNumToRender={this.state.data.length}
           getItemLayout={this.getItemLayout}
           renderItem={({ item }) => (
             <View
