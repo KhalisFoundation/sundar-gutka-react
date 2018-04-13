@@ -19,7 +19,7 @@ import {
 } from "../utils/helpers";
 import * as actions from "../actions/actions";
 
-const headerHeight = 80;
+const HEADER_HEIGHT = 70; // From react-native-elements Header source
 class Reader extends React.Component {
   constructor(props) {
     super(props);
@@ -27,7 +27,7 @@ class Reader extends React.Component {
     this.state = {
       data: [],
       isLoading: true,
-      height: new Animated.Value(headerHeight), // The header height
+      height: new Animated.Value(HEADER_HEIGHT), // The header height
       visible: true // Is the header currently visible
     };
 
@@ -61,7 +61,7 @@ class Reader extends React.Component {
   _toggleHeader() {
     Animated.timing(this.state.height, {
       duration: this.slideDuration,
-      toValue: this.state.visible ? 0 : headerHeight
+      toValue: this.state.visible ? 0 : HEADER_HEIGHT
     }).start();
     this.setState({ visible: !this.state.visible });
   }
@@ -124,8 +124,8 @@ class Reader extends React.Component {
           }}
           data={this.state.data}
           contentContainerStyle={[
-            { marginTop: headerHeight },
-            { paddingBottom: headerHeight }
+            { marginTop: HEADER_HEIGHT },
+            { paddingBottom: HEADER_HEIGHT }
           ]}
           onScroll={this._onScroll.bind(this)}
           extraData={this.state}
@@ -277,7 +277,7 @@ const styles = StyleSheet.create({
     left: 0,
     right: 0,
     overflow: "hidden",
-    height: 200
+    backgroundColor: 'transparent'
   }
 });
 
