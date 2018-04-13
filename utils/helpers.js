@@ -41,21 +41,6 @@ export const mergedBaniList = baniList => {
   return mergedData;
 };
 
-export const fontSizeForList = SIZE => {
-  switch (SIZE) {
-    case "EXTRA_SMALL":
-      return 12;
-    case "SMALL":
-      return 17;
-    case "MEDIUM":
-      return 22;
-    case "LARGE":
-      return 27;
-    case "EXTRA_LARGE":
-      return 32;
-  }
-};
-
 export const TextType = Object.freeze({
   GURMUKHI: 0,
   TRANSLITERATION: 1,
@@ -77,6 +62,21 @@ export const fontColorForReader = (header, nightMode, text) => {
       return "#00f";
     case TextType.ENGLISH_TRANSLATION:
       return nightMode ? "#c8c7cc" : "#464646";
+  }
+};
+
+export const fontSizeForList = SIZE => {
+  switch (SIZE) {
+    case "EXTRA_SMALL":
+      return 12;
+    case "SMALL":
+      return 17;
+    case "MEDIUM":
+      return 22;
+    case "LARGE":
+      return 27;
+    case "EXTRA_LARGE":
+      return 32;
   }
 };
 

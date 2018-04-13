@@ -16,10 +16,6 @@ import createStore from "./config/store";
 import { setBaniOrder } from "./actions/actions";
 import { defaultBaniOrderArray } from "./utils/helpers";
 
-// this.props.romanized
-//                 ? params.item.roman
-//                 : params.item.gurmukhi,
-
 const FolderNavigation = TabNavigator({
   Home: {
     screen: HomeScreen,
@@ -27,8 +23,8 @@ const FolderNavigation = TabNavigator({
       header: (
         <Header
           centerComponent={{
-            text: "Sundar Gutka",
-            style: styles.headerBarStyle
+            text: "suMdr gutkw",
+            style: [styles.headerBarStyle, {fontFamily: 'GurbaniAkharHeavySG', fontSize: 24}]
           }}
           rightComponent={
             <Icon
@@ -58,8 +54,8 @@ const FolderNavigation = TabNavigator({
             />
           }
           centerComponent={{
-            text: "Sundar Gutka",
-            style: styles.headerBarStyle
+            text: "suMdr gutkw",
+            style: [styles.headerBarStyle, {fontFamily: 'GurbaniAkharHeavySG', fontSize: 24}]
           }}
           rightComponent={
             <Icon
