@@ -68,70 +68,26 @@ export const fontColorForReader = (header, nightMode, text) => {
 export const fontSizeForList = SIZE => {
   switch (SIZE) {
     case "EXTRA_SMALL":
-      return 12;
+      return 16;
     case "SMALL":
-      return 17;
-    case "MEDIUM":
       return 22;
+    case "MEDIUM":
+      return 28;
     case "LARGE":
-      return 27;
+      return 34;
     case "EXTRA_LARGE":
-      return 32;
+      return 46;
   }
 };
 
 export const fontSizeForReader = (SIZE, header) => {
   if (header === 6) {
-    switch (SIZE) {
-      case "EXTRA_SMALL":
-        return 9;
-      case "SMALL":
-        return 13;
-      case "MEDIUM":
-        return 17;
-      case "LARGE":
-        return 20;
-      case "EXTRA_LARGE":
-        return 24;
-    }
+    return fontSizeForList(SIZE) * .75;
   } else if (header === 2) {
-    switch (SIZE) {
-      case "EXTRA_SMALL":
-        return 16;
-      case "SMALL":
-        return 21;
-      case "MEDIUM":
-        return 26;
-      case "LARGE":
-        return 31;
-      case "EXTRA_LARGE":
-        return 36;
-    }
+    return fontSizeForList(SIZE) * 1.1;
   } else if (header === 1) {
-    switch (SIZE) {
-      case "EXTRA_SMALL":
-        return 18;
-      case "SMALL":
-        return 23;
-      case "MEDIUM":
-        return 28;
-      case "LARGE":
-        return 33;
-      case "EXTRA_LARGE":
-        return 38;
-    }
+    return fontSizeForList(SIZE) * 1.2;
   } else {
-    switch (SIZE) {
-      case "EXTRA_SMALL":
-        return 12;
-      case "SMALL":
-        return 17;
-      case "MEDIUM":
-        return 22;
-      case "LARGE":
-        return 27;
-      case "EXTRA_LARGE":
-        return 32;
-    }
+    return fontSizeForList(SIZE);
   }
 };
