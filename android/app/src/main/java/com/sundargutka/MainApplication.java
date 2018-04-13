@@ -10,6 +10,7 @@ import com.facebook.react.shell.MainReactPackage;
 import com.facebook.soloader.SoLoader;
 import com.oblador.vectoricons.VectorIconsPackage;
 
+import org.devio.rn.splashscreen.SplashScreenReactPackage;
 import org.pgsqlite.SQLitePluginPackage;
 
 import java.util.Arrays;
@@ -29,7 +30,8 @@ public class MainApplication extends Application implements ReactApplication {
               new MainReactPackage(),
             new KCKeepAwakePackage(),
               new SQLitePluginPackage(), // register SQLite Plugin here
-              new VectorIconsPackage()
+              new VectorIconsPackage(),
+              new SplashScreenReactPackage()
       );
     }
 

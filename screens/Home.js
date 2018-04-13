@@ -3,6 +3,7 @@ import { connect } from "react-redux";
 import { bindActionCreators } from "redux";
 import KeepAwake from "react-native-keep-awake";
 import { StatusBar } from 'react-native';
+import SplashScreen from 'react-native-splash-screen'
 import Database from "../utils/database";
 import { mergedBaniList } from "../utils/helpers";
 import * as actions from "../actions/actions";
@@ -58,6 +59,10 @@ class Home extends React.Component {
         isLoading: false
       });
     });
+  }
+
+  componentDidMount() {
+      SplashScreen.hide();
   }
 
   componentDidUpdate(prevProps) {
