@@ -40,7 +40,8 @@ const FolderNavigation = TabNavigator({
           }
         />
       ),
-      tabBarVisible: false
+      tabBarVisible: false,
+      swipeEnabled: false
     })
   },
   FolderBani: {
