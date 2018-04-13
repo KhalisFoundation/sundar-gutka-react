@@ -100,8 +100,8 @@ class Database {
                 englishTranslation = row.English;
                 prevParagraph = row.Paragraph;
               } else {
-                gurmukhi += larivaar ? curGurmukhi : "\n" + curGurmukhi;
-                transliteration += "\n" + row.Transliteration;
+                gurmukhi += larivaar ? curGurmukhi : " " + curGurmukhi;
+                transliteration += " " + row.Transliteration;
                 englishTranslation += " " + row.English;
               }
 
