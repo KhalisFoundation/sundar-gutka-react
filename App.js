@@ -6,6 +6,7 @@ import { Provider } from "react-redux";
 import { PersistGate } from "redux-persist/integration/react";
 import storage from "redux-persist/lib/storage";
 import Icon from "react-native-vector-icons/FontAwesome";
+import GLOBAL from './utils/globals';
 import HomeScreen from "./screens/Home";
 import FolderBaniScreen from "./screens/FolderBani";
 import SettingsScreen from "./screens/Settings";
@@ -23,6 +24,7 @@ const FolderNavigation = TabNavigator({
     navigationOptions: ({ navigation }) => ({
       header: (
         <Header
+        backgroundColor={GLOBAL.COLOR.DARK_BLUE}
           centerComponent={{
             text: "suMdr gutkw",
             style: [
@@ -36,7 +38,6 @@ const FolderNavigation = TabNavigator({
               color="#fff"
               size={30}
               onPress={() => navigation.navigate("Settings")}
-              underlayColor={"#64b5f6"}
             />
           }
         />
@@ -50,13 +51,13 @@ const FolderNavigation = TabNavigator({
     navigationOptions: ({ navigation }) => ({
       header: (
         <Header
+        backgroundColor={GLOBAL.COLOR.DARK_BLUE}
           leftComponent={
             <Icon
               name="arrow-left"
               color="#fff"
               size={30}
               onPress={() => navigation.goBack()}
-              underlayColor={"#64b5f6"}
             />
           }
           centerComponent={{
@@ -72,7 +73,6 @@ const FolderNavigation = TabNavigator({
               color="#fff"
               size={30}
               onPress={() => navigation.navigate("Settings")}
-              underlayColor={"#64b5f6"}
             />
           }
         />
@@ -92,14 +92,14 @@ const RootStack = StackNavigator({
     navigationOptions: ({ navigation }) => ({
       header: (
         <Header
-          backgroundColor="#DEBB0A"
+          backgroundColor={GLOBAL.COLOR.YELLOW}
           leftComponent={
             <Icon
               name="arrow-left"
               color="#fff"
               size={30}
               onPress={() => navigation.goBack()}
-              underlayColor={"#64b5f6"}
+              underlayColor={GLOBAL.COLOR.LIGHT_BLUE}
             />
           }
           centerComponent={{ text: "Settings", style: styles.headerBarStyle }}
@@ -119,14 +119,14 @@ const RootStack = StackNavigator({
     navigationOptions: ({ navigation }) => ({
       header: (
         <Header
-          backgroundColor="#DEBB0A"
+          backgroundColor={GLOBAL.COLOR.YELLOW}
           leftComponent={
             <Icon
               name="arrow-left"
               color="#fff"
               size={30}
               onPress={() => navigation.goBack()}
-              underlayColor={"#64b5f6"}
+              underlayColor={GLOBAL.COLOR.LIGHT_BLUE}
             />
           }
           centerComponent={{ text: "Bookmarks", style: styles.headerBarStyle }}
@@ -139,14 +139,14 @@ const RootStack = StackNavigator({
     navigationOptions: ({ navigation }) => ({
       header: (
         <Header
-          backgroundColor="#003436"
+          backgroundColor={GLOBAL.COLOR.DARK_GREEN}
           leftComponent={
             <Icon
               name="arrow-left"
               color="#fff"
               size={30}
               onPress={() => navigation.goBack()}
-              underlayColor={"#64b5f6"}
+              underlayColor={GLOBAL.COLOR.LIGHT_BLUE}
             />
           }
           centerComponent={{
@@ -161,7 +161,7 @@ const RootStack = StackNavigator({
               onPress={() =>
                 store.dispatch(setBaniOrder(defaultBaniOrderArray))
               }
-              underlayColor={"#64b5f6"}
+              underlayColor={GLOBAL.COLOR.LIGHT_BLUE}
             />
           }
         />
@@ -173,14 +173,14 @@ const RootStack = StackNavigator({
     navigationOptions: ({ navigation }) => ({
       header: (
         <Header
-          backgroundColor="#003436"
+          backgroundColor={GLOBAL.COLOR.DARK_GREEN}
           leftComponent={
             <Icon
               name="arrow-left"
               color="#fff"
               size={30}
               onPress={() => navigation.goBack()}
-              underlayColor={"#64b5f6"}
+              underlayColor={GLOBAL.COLOR.LIGHT_BLUE}
             />
           }
           centerComponent={{ text: "About", style: styles.headerBarStyle }}

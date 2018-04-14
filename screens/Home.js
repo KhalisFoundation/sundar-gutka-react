@@ -2,8 +2,8 @@ import React from "react";
 import { connect } from "react-redux";
 import { bindActionCreators } from "redux";
 import KeepAwake from "react-native-keep-awake";
-import { StatusBar } from 'react-native';
-import SplashScreen from 'react-native-splash-screen'
+import { StatusBar } from "react-native";
+import SplashScreen from "react-native-splash-screen";
 import Database from "../utils/database";
 import { mergedBaniList } from "../utils/helpers";
 import * as actions from "../actions/actions";
@@ -20,10 +20,16 @@ class Home extends React.Component {
   }
 
   reorder(arr, index) {
-    var ordered = new Array(index.length);
-
+    var ordered = new Array();
+    var newIndex = new Array();
     for (var i = 0; i < index.length; i++) {
-      ordered[i] = arr[index[i]];
+      if (arr[index[i]]) {
+        ordered.push(arr[index[i]]);
+        newIndex.push(index[i]);
+      }
+    }
+    if(newIndex.length != index.length) {
+      this.props.setBaniOrder(newIndex);
     }
     return ordered;
   }
@@ -62,7 +68,7 @@ class Home extends React.Component {
   }
 
   componentDidMount() {
-      SplashScreen.hide();
+    SplashScreen.hide();
   }
 
   componentDidUpdate(prevProps) {

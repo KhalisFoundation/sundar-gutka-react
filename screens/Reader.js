@@ -11,6 +11,7 @@ import { connect } from "react-redux";
 import { Header } from "react-native-elements";
 import { bindActionCreators } from "redux";
 import Icon from "react-native-vector-icons/FontAwesome";
+import GLOBAL from '../utils/globals';
 import Database from "../utils/database";
 import LoadingIndicator from "../components/LoadingIndicator";
 import {
@@ -232,13 +233,13 @@ class Reader extends React.Component {
         />
         <Animated.View style={[styles.header, { height: this.state.height }]}>
           <Header
+            backgroundColor={GLOBAL.COLOR.DARK_BLUE}
             leftComponent={
               <Icon
                 name="arrow-left"
                 color="#fff"
                 size={30}
                 onPress={() => this.props.navigation.goBack()}
-                underlayColor={"#64b5f6"}
               />
             }
             centerComponent={{
@@ -257,7 +258,6 @@ class Reader extends React.Component {
                 color="#fff"
                 size={30}
                 onPress={() => this.props.navigation.navigate("Bookmarks")}
-                underlayColor={"#64b5f6"}
               />
             }
           />
