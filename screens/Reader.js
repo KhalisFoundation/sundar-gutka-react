@@ -233,11 +233,11 @@ class Reader extends React.Component {
         />
         <Animated.View style={[styles.header, { height: this.state.height }]}>
           <Header
-            backgroundColor={GLOBAL.COLOR.DARK_BLUE}
+            backgroundColor={GLOBAL.COLOR.TOOLBAR_COLOR}
             leftComponent={
               <Icon
                 name="arrow-left"
-                color="#fff"
+                color={GLOBAL.COLOR.TOOLBAR_TINT}
                 size={30}
                 onPress={() => this.props.navigation.goBack()}
               />
@@ -247,7 +247,7 @@ class Reader extends React.Component {
                 ? this.truncate.apply(params.item.roman, [30])
                 : this.truncate.apply(params.item.gurmukhi, [30]),
               style: {
-                color: "#fff",
+                color: GLOBAL.COLOR.TOOLBAR_TINT,
                 fontFamily: this.props.romanized ? null : this.props.fontFace,
                 fontSize: 20
               }
@@ -255,7 +255,7 @@ class Reader extends React.Component {
             rightComponent={
               <Icon
                 name="bookmark"
-                color="#fff"
+                color={GLOBAL.COLOR.TOOLBAR_TINT}
                 size={30}
                 onPress={() => this.props.navigation.navigate("Bookmarks")}
               />
@@ -269,7 +269,8 @@ class Reader extends React.Component {
 
 const styles = StyleSheet.create({
   container: {
-    flex: 1
+    flex: 1,
+    backgroundColor: "#fff"
   },
   itemBlock: {
     padding: 5

@@ -1,9 +1,8 @@
 export default {
   COLOR: {
-    DARK_BLUE: "#0F3274",
-    DARK_GREEN: "#003436",
-    YELLOW: "#DEBB0A",
-    LIGHT_BLUE: "#64b5f6",
-    DARKGRAY: "#999"
+    TOOLBAR_COLOR: "#0F3274",
+    TOOLBAR_COLOR_ALT: "#DEBB0A",
+    TOOLBAR_COLOR_ALT2: "#003436",
+    TOOLBAR_TINT: "#fff"
   }
 };

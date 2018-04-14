@@ -24,7 +24,7 @@ const FolderNavigation = TabNavigator({
     navigationOptions: ({ navigation }) => ({
       header: (
         <Header
-        backgroundColor={GLOBAL.COLOR.DARK_BLUE}
+        backgroundColor={GLOBAL.COLOR.TOOLBAR_COLOR}
           centerComponent={{
             text: "suMdr gutkw",
             style: [
@@ -35,7 +35,7 @@ const FolderNavigation = TabNavigator({
           rightComponent={
             <Icon
               name="cog"
-              color="#fff"
+              color={GLOBAL.COLOR.TOOLBAR_TINT}
               size={30}
               onPress={() => navigation.navigate("Settings")}
             />
@@ -51,11 +51,11 @@ const FolderNavigation = TabNavigator({
     navigationOptions: ({ navigation }) => ({
       header: (
         <Header
-        backgroundColor={GLOBAL.COLOR.DARK_BLUE}
+        backgroundColor={GLOBAL.COLOR.TOOLBAR_COLOR}
           leftComponent={
             <Icon
               name="arrow-left"
-              color="#fff"
+              color={GLOBAL.COLOR.TOOLBAR_TINT}
               size={30}
               onPress={() => navigation.goBack()}
             />
@@ -70,7 +70,7 @@ const FolderNavigation = TabNavigator({
           rightComponent={
             <Icon
               name="cog"
-              color="#fff"
+              color={GLOBAL.COLOR.TOOLBAR_TINT}
               size={30}
               onPress={() => navigation.navigate("Settings")}
             />
@@ -92,14 +92,13 @@ const RootStack = StackNavigator({
     navigationOptions: ({ navigation }) => ({
       header: (
         <Header
-          backgroundColor={GLOBAL.COLOR.YELLOW}
+          backgroundColor={GLOBAL.COLOR.TOOLBAR_COLOR_ALT}
           leftComponent={
             <Icon
               name="arrow-left"
-              color="#fff"
+              color={GLOBAL.COLOR.TOOLBAR_TINT}
               size={30}
               onPress={() => navigation.goBack()}
-              underlayColor={GLOBAL.COLOR.LIGHT_BLUE}
             />
           }
           centerComponent={{ text: "Settings", style: styles.headerBarStyle }}
@@ -119,14 +118,13 @@ const RootStack = StackNavigator({
     navigationOptions: ({ navigation }) => ({
       header: (
         <Header
-          backgroundColor={GLOBAL.COLOR.YELLOW}
+          backgroundColor={GLOBAL.COLOR.TOOLBAR_COLOR_ALT}
           leftComponent={
             <Icon
               name="arrow-left"
-              color="#fff"
+              color={GLOBAL.COLOR.TOOLBAR_TINT}
               size={30}
               onPress={() => navigation.goBack()}
-              underlayColor={GLOBAL.COLOR.LIGHT_BLUE}
             />
           }
           centerComponent={{ text: "Bookmarks", style: styles.headerBarStyle }}
@@ -139,14 +137,13 @@ const RootStack = StackNavigator({
     navigationOptions: ({ navigation }) => ({
       header: (
         <Header
-          backgroundColor={GLOBAL.COLOR.DARK_GREEN}
+          backgroundColor={GLOBAL.COLOR.TOOLBAR_COLOR_ALT2}
           leftComponent={
             <Icon
               name="arrow-left"
-              color="#fff"
+              color={GLOBAL.COLOR.TOOLBAR_TINT}
               size={30}
               onPress={() => navigation.goBack()}
-              underlayColor={GLOBAL.COLOR.LIGHT_BLUE}
             />
           }
           centerComponent={{
@@ -156,12 +153,11 @@ const RootStack = StackNavigator({
           rightComponent={
             <Icon
               name="refresh"
-              color="#fff"
+              color={GLOBAL.COLOR.TOOLBAR_TINT}
               size={30}
               onPress={() =>
                 store.dispatch(setBaniOrder(defaultBaniOrderArray))
               }
-              underlayColor={GLOBAL.COLOR.LIGHT_BLUE}
             />
           }
         />
@@ -173,14 +169,13 @@ const RootStack = StackNavigator({
     navigationOptions: ({ navigation }) => ({
       header: (
         <Header
-          backgroundColor={GLOBAL.COLOR.DARK_GREEN}
+          backgroundColor={GLOBAL.COLOR.TOOLBAR_COLOR_ALT2}
           leftComponent={
             <Icon
               name="arrow-left"
-              color="#fff"
+              color={GLOBAL.COLOR.TOOLBAR_TINT}
               size={30}
               onPress={() => navigation.goBack()}
-              underlayColor={GLOBAL.COLOR.LIGHT_BLUE}
             />
           }
           centerComponent={{ text: "About", style: styles.headerBarStyle }}
@@ -192,7 +187,7 @@ const RootStack = StackNavigator({
 
 const styles = StyleSheet.create({
   headerBarStyle: {
-    color: "#fff",
+    color: GLOBAL.COLOR.TOOLBAR_TINT,
     fontSize: 18
   }
 });
