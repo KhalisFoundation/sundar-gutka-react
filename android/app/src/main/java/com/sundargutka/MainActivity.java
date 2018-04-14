@@ -4,6 +4,9 @@ import android.os.Bundle;
 
 import com.facebook.react.ReactActivity;
 import com.oblador.vectoricons.VectorIconsPackage;
+import org.devio.rn.splashscreen.SplashScreenReactPackage;
+import com.corbt.keepawake.KCKeepAwakePackage;
+import com.oblador.vectoricons.VectorIconsPackage;
 import com.corbt.keepawake.KCKeepAwakePackage;
 
 import org.devio.rn.splashscreen.SplashScreen;

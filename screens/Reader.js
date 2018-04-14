@@ -8,8 +8,9 @@ import {
   Text
 } from "react-native";
 import { connect } from "react-redux";
-import { Header, Icon } from "react-native-elements";
+import { Header } from "react-native-elements";
 import { bindActionCreators } from "redux";
+import Icon from "react-native-vector-icons/FontAwesome";
 import Database from "../utils/database";
 import LoadingIndicator from "../components/LoadingIndicator";
 import {
@@ -101,7 +102,7 @@ class Reader extends React.Component {
   }
 
   truncate(n) {
-    return this.length > n ? this.substr(0, n - 1) + "..." : this + '';
+    return this.length > n ? this.substr(0, n - 1) + "..." : this + "";
   }
 
   render() {
@@ -233,8 +234,9 @@ class Reader extends React.Component {
           <Header
             leftComponent={
               <Icon
-                name="arrow-back"
+                name="arrow-left"
                 color="#fff"
+                size={30}
                 onPress={() => this.props.navigation.goBack()}
                 underlayColor={"#64b5f6"}
               />
@@ -253,6 +255,7 @@ class Reader extends React.Component {
               <Icon
                 name="bookmark"
                 color="#fff"
+                size={30}
                 onPress={() => this.props.navigation.navigate("Bookmarks")}
                 underlayColor={"#64b5f6"}
               />
@@ -277,7 +280,7 @@ const styles = StyleSheet.create({
     left: 0,
     right: 0,
     overflow: "hidden",
-    backgroundColor: 'transparent'
+    backgroundColor: "transparent"
   }
 });
 

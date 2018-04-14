@@ -1,8 +1,7 @@
 import React from "react";
 import { StyleSheet, View, Image, Text } from "react-native";
 import SettingsList from "react-native-settings-list";
-import Ionicons from "react-native-vector-icons/Ionicons";
-import EvilIcons from "react-native-vector-icons/EvilIcons";
+import Icon from "react-native-vector-icons/FontAwesome";
 import {
   ActionSheet,
   ActionSheetItem
@@ -15,7 +14,7 @@ class Settings extends React.Component {
   render() {
     const { navigate } = this.props.navigation;
 
-    const checkedIcon = <Ionicons name="ios-checkmark-outline" size={30} />;
+    const checkedIcon = <Icon name="check" size={30} />;
 
     return (
       <View
@@ -132,9 +131,10 @@ class Settings extends React.Component {
           <SettingsList.Item
             backgroundColor={this.props.nightMode ? "#464646" : "#fff"}
             icon={
-              <Image
+              <Icon
                 style={styles.imageStyle}
-                source={require("../images/bgcoloricon.png")}
+                name="eye-slash"
+                size={30}
               />
             }
             hasSwitch={true}
@@ -236,9 +236,10 @@ class Settings extends React.Component {
           <SettingsList.Item
             backgroundColor={this.props.nightMode ? "#464646" : "#fff"}
             icon={
-              <Image
+              <Icon
                 style={styles.imageStyle}
-                source={require("../images/larivaaricon.png")}
+                name="paragraph"
+                size={30}
               />
             }
             hasSwitch={true}
@@ -325,9 +326,10 @@ class Settings extends React.Component {
           <SettingsList.Item
             backgroundColor={this.props.nightMode ? "#464646" : "#fff"}
             icon={
-              <Image
+              <Icon
                 style={styles.imageStyle}
-                source={require("../images/abouticon.png")}
+                name="question-circle"
+                size={30}
               />
             }
             title="About"

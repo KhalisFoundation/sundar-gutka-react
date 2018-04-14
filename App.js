@@ -1,10 +1,11 @@
 import React from "react";
 import { StyleSheet } from "react-native";
 import { StackNavigator, TabNavigator } from "react-navigation";
-import { Header, Icon } from "react-native-elements";
+import { Header } from "react-native-elements";
 import { Provider } from "react-redux";
 import { PersistGate } from "redux-persist/integration/react";
 import storage from "redux-persist/lib/storage";
+import Icon from "react-native-vector-icons/FontAwesome";
 import HomeScreen from "./screens/Home";
 import FolderBaniScreen from "./screens/FolderBani";
 import SettingsScreen from "./screens/Settings";
@@ -24,12 +25,16 @@ const FolderNavigation = TabNavigator({
         <Header
           centerComponent={{
             text: "suMdr gutkw",
-            style: [styles.headerBarStyle, {fontFamily: 'GurbaniAkharHeavySG', fontSize: 24}]
+            style: [
+              styles.headerBarStyle,
+              { fontFamily: "GurbaniAkharHeavySG", fontSize: 24 }
+            ]
           }}
           rightComponent={
             <Icon
-              name="settings"
+              name="cog"
               color="#fff"
+              size={30}
               onPress={() => navigation.navigate("Settings")}
               underlayColor={"#64b5f6"}
             />
@@ -47,20 +52,25 @@ const FolderNavigation = TabNavigator({
         <Header
           leftComponent={
             <Icon
-              name="arrow-back"
+              name="arrow-left"
               color="#fff"
+              size={30}
               onPress={() => navigation.goBack()}
               underlayColor={"#64b5f6"}
             />
           }
           centerComponent={{
             text: "suMdr gutkw",
-            style: [styles.headerBarStyle, {fontFamily: 'GurbaniAkharHeavySG', fontSize: 24}]
+            style: [
+              styles.headerBarStyle,
+              { fontFamily: "GurbaniAkharHeavySG", fontSize: 24 }
+            ]
           }}
           rightComponent={
             <Icon
-              name="settings"
+              name="cog"
               color="#fff"
+              size={30}
               onPress={() => navigation.navigate("Settings")}
               underlayColor={"#64b5f6"}
             />
@@ -85,8 +95,9 @@ const RootStack = StackNavigator({
           backgroundColor="#DEBB0A"
           leftComponent={
             <Icon
-              name="arrow-back"
+              name="arrow-left"
               color="#fff"
+              size={30}
               onPress={() => navigation.goBack()}
               underlayColor={"#64b5f6"}
             />
@@ -111,8 +122,9 @@ const RootStack = StackNavigator({
           backgroundColor="#DEBB0A"
           leftComponent={
             <Icon
-              name="arrow-back"
+              name="arrow-left"
               color="#fff"
+              size={30}
               onPress={() => navigation.goBack()}
               underlayColor={"#64b5f6"}
             />
@@ -130,8 +142,9 @@ const RootStack = StackNavigator({
           backgroundColor="#003436"
           leftComponent={
             <Icon
-              name="arrow-back"
+              name="arrow-left"
               color="#fff"
+              size={30}
               onPress={() => navigation.goBack()}
               underlayColor={"#64b5f6"}
             />
@@ -144,6 +157,7 @@ const RootStack = StackNavigator({
             <Icon
               name="refresh"
               color="#fff"
+              size={30}
               onPress={() =>
                 store.dispatch(setBaniOrder(defaultBaniOrderArray))
               }
@@ -162,8 +176,9 @@ const RootStack = StackNavigator({
           backgroundColor="#003436"
           leftComponent={
             <Icon
-              name="arrow-back"
+              name="arrow-left"
               color="#fff"
+              size={30}
               onPress={() => navigation.goBack()}
               underlayColor={"#64b5f6"}
             />
