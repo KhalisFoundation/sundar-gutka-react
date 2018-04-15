@@ -4,6 +4,7 @@ import { bindActionCreators } from "redux";
 import KeepAwake from "react-native-keep-awake";
 import { StatusBar } from "react-native";
 import SplashScreen from "react-native-splash-screen";
+import AnalyticsManager from "../utils/analytics";
 import Database from "../utils/database";
 import { mergedBaniList } from "../utils/helpers";
 import * as actions from "../actions/actions";
@@ -28,7 +29,7 @@ class Home extends React.Component {
         newIndex.push(index[i]);
       }
     }
-    if(newIndex.length != index.length) {
+    if (newIndex.length != index.length) {
       this.props.setBaniOrder(newIndex);
     }
     return ordered;
@@ -58,6 +59,7 @@ class Home extends React.Component {
   componentWillMount() {
     this.changeKeepAwake(this.props.screenAwake);
     this.changeStatusBar(this.props.statusBar);
+    AnalyticsManager.getInstance().allowTracking(this.props.statistics);
     Database.getBaniList().then(baniList => {
       this.props.setMergedBaniData(mergedBaniList(baniList));
       this.sortBani();
@@ -69,6 +71,7 @@ class Home extends React.Component {
 
   componentDidMount() {
     SplashScreen.hide();
+    AnalyticsManager.getInstance().trackScreenView("Home Screen");
   }
 
   componentDidUpdate(prevProps) {
@@ -78,6 +81,8 @@ class Home extends React.Component {
       this.changeKeepAwake(this.props.screenAwake);
     } else if (prevProps.statusBar != this.props.statusBar) {
       this.changeStatusBar(this.props.statusBar);
+    } else if (prevProps.statistics != this.props.statistics) {
+      AnalyticsManager.getInstance().allowTracking(this.props.statistics);
     }
   }
 
@@ -115,7 +120,8 @@ function mapStateToProps(state) {
     fontSize: state.fontSize,
     fontFace: state.fontFace,
     screenAwake: state.screenAwake,
-    statusBar: state.statusBar
+    statusBar: state.statusBar,
+    statistics: state.statistics
   };
 }
 

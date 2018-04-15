@@ -1,15 +1,32 @@
 import React from "react";
 import { StyleSheet, Image, Text, Linking, View } from "react-native";
 import { connect } from "react-redux";
+import AnalyticsManager from "../utils/analytics";
 
 class Home extends React.Component {
+  componentDidMount() {
+    AnalyticsManager.getInstance().trackScreenView("About");
+  }
+
   render() {
     return (
-      <View style={[styles.container, this.props.nightMode && styles.nightMode]}>
-        <Text style={[styles.title, this.props.nightMode && styles.nightMode]}>Sundar Gutka</Text>
-        <Text style={[styles.small, this.props.nightMode && styles.nightMode]}>{"\n"}Created By:</Text>
-        
-        <Image source={this.props.nightMode ? require("../images/khalislogo150white.png") : require("../images/khalislogo150.png")} />
+      <View
+        style={[styles.container, this.props.nightMode && {backgroundColor: "#000"}]}
+      >
+        <Text style={[styles.title, this.props.nightMode && styles.nightMode]}>
+          Sundar Gutka
+        </Text>
+        <Text style={[styles.small, this.props.nightMode && styles.nightMode]}>
+          {"\n"}Created By:
+        </Text>
+
+        <Image
+          source={
+            this.props.nightMode
+              ? require("../images/khalislogo150white.png")
+              : require("../images/khalislogo150.png")
+          }
+        />
         <Text style={this.props.nightMode && styles.nightMode}>
           <Text>
             {"\n"}We welcome your comments, suggestions, and corrections!{"\n"}

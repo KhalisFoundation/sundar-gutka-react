@@ -1,3 +1,5 @@
+import AnalyticsManager from "../utils/analytics";
+
 /*
  * action types
  */
@@ -80,26 +82,32 @@ export const padchhedSettingNames = [
  */
 
 export function setFontSize(size) {
+  AnalyticsManager.getInstance().trackEvent("fontSize", size);
   return { type: SET_FONT_SIZE, size };
 }
 
 export function setFontFace(font) {
+  AnalyticsManager.getInstance().trackEvent("fontFace", font);
   return { type: SET_FONT_FACE, font };
 }
 
 export function toggleRomanized(value) {
+  AnalyticsManager.getInstance().trackEvent("romanized", value);
   return { type: TOGGLE_ROMANIZED, value };
 }
 
 export function toggleEnglishTranslations(value) {
+  AnalyticsManager.getInstance().trackEvent("english", value);
   return { type: TOGGLE_ENGLISH_TRANSLATIONS, value };
 }
 
 export function toggleNightMode(value) {
+  AnalyticsManager.getInstance().trackEvent("nightMode", value);
   return { type: TOGGLE_NIGHT_MODE, value };
 }
 
 export function toggleScreenAwake(value) {
+  AnalyticsManager.getInstance().trackEvent("keepAwake", value);
   return { type: TOGGLE_SCREEN_AWAKE, value };
 }
 
@@ -108,23 +116,38 @@ export function setBaniOrder(order) {
 }
 
 export function setBaniLength(length) {
+  AnalyticsManager.getInstance().trackEvent("baniLength", length);
   return { type: SET_BANI_LENGTH, length };
 }
 
 export function toggleLarivaar(value) {
+  AnalyticsManager.getInstance().trackEvent("larivaar", value);
   return { type: TOGGLE_LARIVAAR, value };
 }
 
 export function setManglacharanPosition(position) {
+  AnalyticsManager.getInstance().trackEvent("manglacharan", position);
   return { type: SET_MANGLACHARAN_POSITION, position };
 }
 
 export function setPadchhedSetting(setting) {
+  AnalyticsManager.getInstance().trackEvent("padchhed", setting);
   return { type: SET_PADCHHED_SETTINGS, setting };
 }
 
 export function toggleStatistics(value) {
+  AnalyticsManager.getInstance().trackEvent("statistics", value);
   return { type: TOGGLE_STATISTICS, value };
+}
+
+export function toggleStatusBar(hidden) {
+  AnalyticsManager.getInstance().trackEvent("statusBar", hidden);
+  return { type: TOGGLE_STATUS_BAR, hidden };
+}
+
+export function toggleParagraphMode(paragraph) {
+  AnalyticsManager.getInstance().trackEvent("paragraph", paragraph);
+  return { type: TOGGLE_PARAGRAPH_MODE, paragraph };
 }
 
 export function setMergedBaniData(list) {
@@ -137,12 +160,4 @@ export function setCurrentShabad(shabadId) {
 
 export function setScrollIndex(index) {
   return { type: SET_SCROLL_INDEX, index };
-}
-
-export function toggleStatusBar(hidden) {
-  return { type: TOGGLE_STATUS_BAR, hidden };
-}
-
-export function toggleParagraphMode(paragraph) {
-  return { type: TOGGLE_PARAGRAPH_MODE, paragraph };
 }

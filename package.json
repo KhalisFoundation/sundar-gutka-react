@@ -17,6 +17,7 @@
     "react-native": "0.54.4",
     "react-native-action-sheet-component": "0.0.36",
     "react-native-elements": "^0.19.0",
+    "react-native-google-analytics-bridge": "^5.6.3",
     "react-native-keep-awake": "^3.0.1",
     "react-native-settings-list": "^1.8.0",
     "react-native-sortable-list": "0.0.21",

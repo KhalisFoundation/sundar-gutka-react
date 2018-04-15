@@ -140,12 +140,14 @@ dependencies {
     compile project(':react-native-vector-icons')
     compile project(':react-native-splash-screen')
     compile project(':react-native-keep-awake')
-    implementation project(':react-native-keep-awake')
+    compile project(':react-native-google-analytics-bridge')
     implementation project(':react-native-vector-icons')
+    implementation project(':react-native-splash-screen')
+    implementation project(':react-native-keep-awake')
+    implementation project(':react-native-sqlite-storage')
     implementation fileTree(dir: "libs", include: ["*.jar"])
     implementation "com.android.support:appcompat-v7:27.1.1"
     implementation "com.facebook.react:react-native:+"  // From node_modules
-    implementation project(':react-native-sqlite-storage')
 }
 
 // Run this once to be able to run the application with BUCK

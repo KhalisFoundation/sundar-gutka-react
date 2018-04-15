@@ -8,9 +8,14 @@ import {
 } from "react-native-action-sheet-component";
 import { connect } from "react-redux";
 import { bindActionCreators } from "redux";
+import AnalyticsManager from "../utils/analytics";
 import * as actions from "../actions/actions";
 
 class Settings extends React.Component {
+  componentDidMount() {
+    AnalyticsManager.getInstance().trackScreenView("In App Settings");
+  }
+
   render() {
     const { navigate } = this.props.navigation;
 
@@ -130,13 +135,7 @@ class Settings extends React.Component {
           />
           <SettingsList.Item
             backgroundColor={this.props.nightMode ? "#464646" : "#fff"}
-            icon={
-              <Icon
-                style={styles.imageStyle}
-                name="eye-slash"
-                size={30}
-              />
-            }
+            icon={<Icon style={styles.imageStyle} name="eye-slash" size={30} />}
             hasSwitch={true}
             switchState={this.props.statusBar}
             switchOnValueChange={this.props.toggleStatusBar}
@@ -235,13 +234,7 @@ class Settings extends React.Component {
           />
           <SettingsList.Item
             backgroundColor={this.props.nightMode ? "#464646" : "#fff"}
-            icon={
-              <Icon
-                style={styles.imageStyle}
-                name="paragraph"
-                size={30}
-              />
-            }
+            icon={<Icon style={styles.imageStyle} name="paragraph" size={30} />}
             hasSwitch={true}
             switchState={this.props.paragraphMode}
             switchOnValueChange={this.props.toggleParagraphMode}
@@ -346,7 +339,6 @@ class Settings extends React.Component {
             this.FontSizeActionSheet = actionSheet;
           }}
           position="bottom"
-          onChange={this.onChange}
           defaultValue={this.props.fontSize}
         >
           <View>
@@ -365,7 +357,6 @@ class Settings extends React.Component {
             this.FontFaceActionSheet = actionSheet;
           }}
           position="bottom"
-          onChange={this.onChange}
           defaultValue={this.props.fontFace}
         >
           <View>
@@ -384,7 +375,6 @@ class Settings extends React.Component {
             this.BaniLengthActionSheet = actionSheet;
           }}
           position="bottom"
-          onChange={this.onChange}
           defaultValue={this.props.baniLength}
         >
           <View>
@@ -403,7 +393,6 @@ class Settings extends React.Component {
             this.ManglacharanPositionActionSheet = actionSheet;
           }}
           position="bottom"
-          onChange={this.onChange}
           defaultValue={this.props.manglacharanPosition}
         >
           <View>
@@ -422,7 +411,6 @@ class Settings extends React.Component {
             this.PadchhedSettingsActionSheet = actionSheet;
           }}
           position="bottom"
-          onChange={this.onChange}
           defaultValue={this.props.padchhedSetting}
         >
           <View>

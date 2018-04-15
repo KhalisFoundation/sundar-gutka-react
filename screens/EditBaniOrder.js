@@ -14,11 +14,16 @@ import SQLite from "react-native-sqlite-storage";
 import { connect } from "react-redux";
 import { bindActionCreators } from "redux";
 import * as actions from "../actions/actions";
+import AnalyticsManager from "../utils/analytics";
 import { fontSizeForList } from "../utils/helpers";
 
 const window = Dimensions.get("window");
 
 class EditBaniOrder extends React.Component {
+  componentDidMount() {
+    AnalyticsManager.getInstance().trackScreenView("Index Reorder");
+  }
+
   render() {
     return (
       <View
@@ -202,7 +207,7 @@ const styles = StyleSheet.create({
     width: 50,
     height: 50,
     marginRight: 20
-   }
+  }
 });
 
 function mapStateToProps(state) {

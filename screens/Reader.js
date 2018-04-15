@@ -11,7 +11,7 @@ import { connect } from "react-redux";
 import { Header } from "react-native-elements";
 import { bindActionCreators } from "redux";
 import Icon from "react-native-vector-icons/FontAwesome";
-import GLOBAL from '../utils/globals';
+import GLOBAL from "../utils/globals";
 import Database from "../utils/database";
 import LoadingIndicator from "../components/LoadingIndicator";
 import {
@@ -20,6 +20,7 @@ import {
   TextType
 } from "../utils/helpers";
 import * as actions from "../actions/actions";
+import AnalyticsManager from "../utils/analytics";
 
 const HEADER_HEIGHT = 70; // From react-native-elements Header source
 class Reader extends React.Component {
@@ -84,6 +85,10 @@ class Reader extends React.Component {
     });
   }
 
+  trackScreenForShabad(name) {
+    AnalyticsManager.getInstance().trackScreenView(name);
+  }
+
   componentWillReceiveProps(nextProps) {
     if (nextProps.scrollIndex != -1) {
       this.scrollToItem(nextProps.scrollIndex);
@@ -111,6 +116,10 @@ class Reader extends React.Component {
 
     if (this.state.isLoading) {
       return <LoadingIndicator nightMode={this.props.nightMode} />;
+    } else {
+      {
+        this.trackScreenForShabad(params.item.roman);
+      }
     }
 
     return (
@@ -257,7 +266,10 @@ class Reader extends React.Component {
                 name="bookmark"
                 color={GLOBAL.COLOR.TOOLBAR_TINT}
                 size={30}
-                onPress={() => this.props.navigation.navigate("Bookmarks")}
+                onPress={() => {
+                  this.trackScreenForShabad("Bookmarks for " + params.item.roman);
+                  this.props.navigation.navigate("Bookmarks");
+                }}
               />
             }
           />
