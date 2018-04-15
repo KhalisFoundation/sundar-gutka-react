@@ -71,6 +71,7 @@ class Home extends React.Component {
 
   componentDidMount() {
     SplashScreen.hide();
+    alert(hi);
     AnalyticsManager.getInstance().trackScreenView("Home Screen");
   }
 

@@ -1,22 +1,24 @@
 package com.sundargutka;
 
 import android.os.Bundle;
+import android.os.Handler;
 
 import com.facebook.react.ReactActivity;
-import com.oblador.vectoricons.VectorIconsPackage;
-import org.devio.rn.splashscreen.SplashScreenReactPackage;
-import com.corbt.keepawake.KCKeepAwakePackage;
-import com.oblador.vectoricons.VectorIconsPackage;
-import com.corbt.keepawake.KCKeepAwakePackage;
 
 import org.devio.rn.splashscreen.SplashScreen;
-import org.devio.rn.splashscreen.SplashScreenReactPackage;
 
 public class MainActivity extends ReactActivity {
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         SplashScreen.show(this);  // here
+        Handler handler = new Handler();
+        handler.postDelayed(new Runnable() {
+            public void run() {
+                // Actions to do after 5 seconds
+                SplashScreen.hide(getParent());
+            }
+        }, 5000);
         super.onCreate(savedInstanceState);
     }
 
