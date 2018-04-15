@@ -1,7 +1,6 @@
 package com.sundargutka;
 
 import android.os.Bundle;
-import android.os.Handler;
 
 import com.facebook.react.ReactActivity;
 
@@ -12,13 +11,6 @@ public class MainActivity extends ReactActivity {
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         SplashScreen.show(this);  // here
-        Handler handler = new Handler();
-        handler.postDelayed(new Runnable() {
-            public void run() {
-                // Actions to do after 5 seconds
-                SplashScreen.hide(getParent());
-            }
-        }, 5000);
         super.onCreate(savedInstanceState);
     }
 
