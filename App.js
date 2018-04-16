@@ -37,7 +37,7 @@ const FolderNavigation = TabNavigator({
               name="cog"
               color={GLOBAL.COLOR.TOOLBAR_TINT}
               size={30}
-              onPress={() => navigation.navigate("Settings")}
+              onPress={() => navigation.navigate({key: 'Settings', routeName: "Settings"})}
             />
           }
         />
@@ -72,7 +72,7 @@ const FolderNavigation = TabNavigator({
               name="cog"
               color={GLOBAL.COLOR.TOOLBAR_TINT}
               size={30}
-              onPress={() => navigation.navigate("Settings")}
+              onPress={() => navigation.navigate({key: 'Settings', routeName: "Settings"})}
             />
           }
         />

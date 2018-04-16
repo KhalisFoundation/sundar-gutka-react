@@ -99,8 +99,9 @@ class Reader extends React.Component {
   scrollToItem(index) {
     var viewPosition;
     for (let i = 0; i < this.state.data.length; i++) {
-      if (this.state.data[i].id == index) {
+      if (this.state.data[i].id <= index) {
         viewPosition = i;
+      } else {
         break;
       }
     }
@@ -267,8 +268,13 @@ class Reader extends React.Component {
                 color={GLOBAL.COLOR.TOOLBAR_TINT}
                 size={30}
                 onPress={() => {
-                  this.trackScreenForShabad("Bookmarks for " + params.item.roman);
-                  this.props.navigation.navigate("Bookmarks");
+                  this.trackScreenForShabad(
+                    "Bookmarks for " + params.item.roman
+                  );
+                  this.props.navigation.navigate({
+                    key: "Bookmarks",
+                    routeName: "Bookmarks"
+                  });
                 }}
               />
             }
