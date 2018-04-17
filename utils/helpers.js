@@ -69,15 +69,15 @@ export const fontColorForReader = (header, nightMode, text) => {
 export const fontSizeForList = SIZE => {
   switch (SIZE) {
     case "EXTRA_SMALL":
-      return 16;
+      return 18;
     case "SMALL":
-      return 22;
+      return 24;
     case "MEDIUM":
-      return 28;
+      return 30;
     case "LARGE":
-      return 34;
+      return 36;
     case "EXTRA_LARGE":
-      return 46;
+      return 48;
   }
 };
 
