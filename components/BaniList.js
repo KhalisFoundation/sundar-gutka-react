@@ -51,9 +51,7 @@ class BaniList extends Component {
               ]}
               title={romanized ? item.roman : item.gurmukhi}
               fontFamily={!romanized ? fontFace : null}
-              underlayColor={
-                (color = nightMode ? "#464646" : "#c8c7cc")
-              }
+              underlayColor={(color = nightMode ? "#464646" : "#c8c7cc")}
               onPress={() => onPress(item, navigation)}
             />
           )}

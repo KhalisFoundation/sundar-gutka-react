@@ -29,7 +29,7 @@ export default class AnalyticsManager {
   trackEvent(action, label) {
     if (this._trackingOn) {
       this._tracker.trackEvent("setting", action, {
-        label: '' + label
+        label: "" + label
       });
     }
   }

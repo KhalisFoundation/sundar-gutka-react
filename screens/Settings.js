@@ -191,8 +191,9 @@ class Settings extends React.Component {
               styles.titleText,
               this.props.nightMode && { color: "#fff" }
             ]}
-            onPress={() => navigate({key: 'EditBaniOrder', routeName: "EditBaniOrder"})}
-
+            onPress={() =>
+              navigate({ key: "EditBaniOrder", routeName: "EditBaniOrder" })
+            }
           />
           <SettingsList.Item
             backgroundColor={this.props.nightMode ? "#464646" : "#fff"}
@@ -331,8 +332,7 @@ class Settings extends React.Component {
               styles.titleText,
               this.props.nightMode && { color: "#fff" }
             ]}
-            onPress={() => navigate({key: 'About', routeName: "About"})}
-            
+            onPress={() => navigate({ key: "About", routeName: "About" })}
           />
         </SettingsList>
 

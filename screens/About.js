@@ -11,7 +11,10 @@ class Home extends React.Component {
   render() {
     return (
       <View
-        style={[styles.container, this.props.nightMode && {backgroundColor: "#000"}]}
+        style={[
+          styles.container,
+          this.props.nightMode && { backgroundColor: "#000" }
+        ]}
       >
         <Text style={[styles.title, this.props.nightMode && styles.nightMode]}>
           Sundar Gutka
