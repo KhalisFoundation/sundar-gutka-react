@@ -1,5 +1,5 @@
 import React from "react";
-import { StyleSheet, SafeAreaView } from "react-native";
+import { StyleSheet, SafeAreaView, StatusBar } from "react-native";
 import { StackNavigator, TabNavigator } from "react-navigation";
 import { Header } from "react-native-elements";
 import { Provider } from "react-redux";
@@ -193,21 +193,59 @@ const styles = StyleSheet.create({
   headerBarStyle: {
     color: GLOBAL.COLOR.TOOLBAR_TINT,
     fontSize: 18
-  },
-  safeArea: {
-    flex: 1
   }
 });
 
 const { store, persistor } = createStore();
 
 export default class App extends React.Component {
+  constructor(props) {
+    super(props);
+
+    this.state = {
+      safeAreaNavBarColor: GLOBAL.COLOR.TOOLBAR_COLOR,
+      statusBarType: "light-content"
+    };
+  }
+  _getCurrentRouteName(navState) {
+    if (navState.hasOwnProperty("index")) {
+      this._getCurrentRouteName(navState.routes[navState.index]);
+    } else {
+      if (
+        navState.routeName === "Settings" ||
+        navState.routeName === "Bookmarks"
+      ) {
+        this.setState({ safeAreaNavBarColor: GLOBAL.COLOR.TOOLBAR_COLOR_ALT });
+        this.setState({ statusBarType: "dark-content" });
+      } else if (navState.routeName === "EditBaniOrder") {
+        this.setState({ safeAreaNavBarColor: GLOBAL.COLOR.TOOLBAR_COLOR_ALT2 });
+        this.setState({ statusBarType: "light-content" });
+      } else if (navState.routeName === "Reader") {
+        this.setState({ safeAreaNavBarColor: "transparent" });
+        this.setState({ statusBarType: "dark-content" });
+      } else {
+        this.setState({ safeAreaNavBarColor: GLOBAL.COLOR.TOOLBAR_COLOR });
+        this.setState({ statusBarType: "light-content" });
+      }
+    }
+  }
+
   render() {
     return (
       <Provider store={store}>
         <PersistGate loading={null} persistor={persistor}>
-          <SafeAreaView style={styles.safeArea}>
-            <RootStack />
+          <StatusBar barStyle={this.state.statusBarType} />
+          <SafeAreaView
+            style={[
+              { flex: 1 },
+              { backgroundColor: this.state.safeAreaNavBarColor }
+            ]}
+          >
+            <RootStack
+              onNavigationStateChange={(prevState, newState) => {
+                this._getCurrentRouteName(newState);
+              }}
+            />
           </SafeAreaView>
         </PersistGate>
       </Provider>
