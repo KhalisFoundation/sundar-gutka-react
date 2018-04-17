@@ -195,8 +195,7 @@ const styles = StyleSheet.create({
     fontSize: 18
   },
   safeArea: {
-    flex: 1,
-    backgroundColor: '#ddd'
+    flex: 1
   }
 });
 
@@ -207,7 +206,7 @@ export default class App extends React.Component {
     return (
       <Provider store={store}>
         <PersistGate loading={null} persistor={persistor}>
-        <SafeAreaView style={styles.safeArea}>
+          <SafeAreaView style={styles.safeArea}>
             <RootStack />
           </SafeAreaView>
         </PersistGate>
