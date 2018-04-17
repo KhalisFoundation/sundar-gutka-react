@@ -1,12 +1,12 @@
 import React from "react";
-import { StyleSheet } from "react-native";
+import { StyleSheet, SafeAreaView } from "react-native";
 import { StackNavigator, TabNavigator } from "react-navigation";
 import { Header } from "react-native-elements";
 import { Provider } from "react-redux";
 import { PersistGate } from "redux-persist/integration/react";
 import storage from "redux-persist/lib/storage";
 import Icon from "react-native-vector-icons/FontAwesome";
-import GLOBAL from './utils/globals';
+import GLOBAL from "./utils/globals";
 import HomeScreen from "./screens/Home";
 import FolderBaniScreen from "./screens/FolderBani";
 import SettingsScreen from "./screens/Settings";
@@ -24,7 +24,7 @@ const FolderNavigation = TabNavigator({
     navigationOptions: ({ navigation }) => ({
       header: (
         <Header
-        backgroundColor={GLOBAL.COLOR.TOOLBAR_COLOR}
+          backgroundColor={GLOBAL.COLOR.TOOLBAR_COLOR}
           centerComponent={{
             text: "suMdr gutkw",
             style: [
@@ -37,7 +37,9 @@ const FolderNavigation = TabNavigator({
               name="cog"
               color={GLOBAL.COLOR.TOOLBAR_TINT}
               size={30}
-              onPress={() => navigation.navigate({key: 'Settings', routeName: "Settings"})}
+              onPress={() =>
+                navigation.navigate({ key: "Settings", routeName: "Settings" })
+              }
             />
           }
         />
@@ -51,7 +53,7 @@ const FolderNavigation = TabNavigator({
     navigationOptions: ({ navigation }) => ({
       header: (
         <Header
-        backgroundColor={GLOBAL.COLOR.TOOLBAR_COLOR}
+          backgroundColor={GLOBAL.COLOR.TOOLBAR_COLOR}
           leftComponent={
             <Icon
               name="arrow-left"
@@ -72,7 +74,9 @@ const FolderNavigation = TabNavigator({
               name="cog"
               color={GLOBAL.COLOR.TOOLBAR_TINT}
               size={30}
-              onPress={() => navigation.navigate({key: 'Settings', routeName: "Settings"})}
+              onPress={() =>
+                navigation.navigate({ key: "Settings", routeName: "Settings" })
+              }
             />
           }
         />
@@ -189,6 +193,10 @@ const styles = StyleSheet.create({
   headerBarStyle: {
     color: GLOBAL.COLOR.TOOLBAR_TINT,
     fontSize: 18
+  },
+  safeArea: {
+    flex: 1,
+    backgroundColor: '#ddd'
   }
 });
 
@@ -199,7 +207,9 @@ export default class App extends React.Component {
     return (
       <Provider store={store}>
         <PersistGate loading={null} persistor={persistor}>
-          <RootStack />
+        <SafeAreaView style={styles.safeArea}>
+            <RootStack />
+          </SafeAreaView>
         </PersistGate>
       </Provider>
     );
