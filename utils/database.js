@@ -134,11 +134,28 @@ class Database {
     });
   }
 
-  static getBookmarksForId(baniId) {
+  static getBookmarksForId(baniId, length) {
+    var baniLength;
+    switch (length) {
+      case "LONG":
+        baniLength = "existsBuddhaDal";
+        break;
+      case "MEDIUM":
+        baniLength = "existsTaksal";
+        break;
+      default:
+        baniLength = "existsStandard";
+    }
+
     return new Promise(function(resolve) {
       db.executeSql(
         "SELECT BaniShabadID, Gurmukhi, Transliteration FROM Banis_Bookmarks WHERE Bani = " +
           baniId +
+          " AND BaniShabadID in (SELECT ID from mv_Banis_Shabad where Bani = " +
+          baniId +
+          " AND " +
+          baniLength +
+          " = 1)" +
           " ORDER BY Seq ASC;",
         [],
         results => {

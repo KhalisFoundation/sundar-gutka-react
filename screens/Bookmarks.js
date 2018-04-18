@@ -17,7 +17,7 @@ class FolderBani extends React.Component {
   }
 
   componentWillMount() {
-    Database.getBookmarksForId(this.props.currentShabad).then(bookmarks => {
+    Database.getBookmarksForId(this.props.currentShabad, this.props.baniLength).then(bookmarks => {
       this.setState({
         data: bookmarks,
         isLoading: false
@@ -55,6 +55,7 @@ function mapStateToProps(state) {
     romanized: state.romanized,
     fontSize: state.fontSize,
     fontFace: state.fontFace,
+    baniLength: state.baniLength,
     currentShabad: state.currentShabad
   };
 }
