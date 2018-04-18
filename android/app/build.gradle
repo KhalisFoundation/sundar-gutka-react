@@ -98,10 +98,10 @@ android {
     buildToolsVersion "27.0.3"
 
     defaultConfig {
-        applicationId "com.waheguroonetwork.sundargutka"
+        applicationId "com.WahegurooNetwork.SundarGutka"
         minSdkVersion 16
         targetSdkVersion 27
-        versionCode 1
+        versionCode 50
         versionName "5.0"
         ndk {
             abiFilters "armeabi-v7a", "x86"
