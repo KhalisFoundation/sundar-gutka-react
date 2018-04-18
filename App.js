@@ -1,5 +1,5 @@
 import React from "react";
-import { StyleSheet, SafeAreaView, StatusBar } from "react-native";
+import { Platform, StyleSheet, SafeAreaView, StatusBar } from "react-native";
 import { StackNavigator, TabNavigator } from "react-navigation";
 import { Header } from "react-native-elements";
 import { Provider } from "react-redux";
@@ -239,7 +239,10 @@ export default class App extends React.Component {
     return (
       <Provider store={store}>
         <PersistGate loading={null} persistor={persistor}>
-          <StatusBar barStyle={this.state.statusBarType} />
+          <StatusBar
+            backgroundColor={this.state.safeAreaNavBarColor}
+            barStyle={this.state.statusBarType}
+          />
           <SafeAreaView
             style={[
               { flex: 1 },
