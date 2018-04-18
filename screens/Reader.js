@@ -101,10 +101,13 @@ class Reader extends React.Component {
     for (let i = 0; i < this.state.data.length; i++) {
       if (this.state.data[i].id <= index) {
         viewPosition = i;
-      } else {
+      }
+      
+      if(this.state.data[i].id == index) {
         break;
       }
     }
+    
     this.flatListRef.scrollToIndex({ animated: false, index: viewPosition });
   }
 
@@ -160,7 +163,7 @@ class Reader extends React.Component {
                     textAlign:
                       item.header === 0
                         ? "left"
-                        : item.header === 1 || item.header == 2
+                        : item.header === 1 || item.header === 2
                           ? "center"
                           : "right"
                   },
@@ -190,7 +193,7 @@ class Reader extends React.Component {
                       textAlign:
                         item.header === 0
                           ? "left"
-                          : item.header === 1 || item.header == 2
+                          : item.header === 1 || item.header === 2
                             ? "center"
                             : "right"
                     },
@@ -222,7 +225,7 @@ class Reader extends React.Component {
                         textAlign:
                           item.header === 0
                             ? "left"
-                            : item.header === 1 || item.header == 2
+                            : item.header === 1 || item.header === 2
                               ? "center"
                               : "right"
                       },
