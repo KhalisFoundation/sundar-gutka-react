@@ -216,7 +216,7 @@ export default class App extends React.Component {
       ) {
         this.setState({ safeAreaNavBarColor: GLOBAL.COLOR.TOOLBAR_COLOR_ALT });
         this.setState({ statusBarType: "dark-content" });
-      } else if (navState.routeName === "EditBaniOrder") {
+      } else if (navState.routeName === "EditBaniOrder" || navState.routeName === "About") {
         this.setState({ safeAreaNavBarColor: GLOBAL.COLOR.TOOLBAR_COLOR_ALT2 });
         this.setState({ statusBarType: "light-content" });
       } else if (navState.routeName === "Reader") {
