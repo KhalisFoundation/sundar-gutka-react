@@ -4,7 +4,7 @@
       "extent" : "full-screen",
       "idiom" : "iphone",
       "subtype" : "2436h",
-      "filename" : "splashscreen-X-port.png",
+      "filename" : "iPhoneX-Portrait.png",
       "minimum-system-version" : "11.0",
       "orientation" : "portrait",
       "scale" : "3x"
@@ -13,7 +13,7 @@
       "extent" : "full-screen",
       "idiom" : "iphone",
       "subtype" : "2436h",
-      "filename" : "splashscreen-X-land.png",
+      "filename" : "iPhoneX-Landscape.png",
       "minimum-system-version" : "11.0",
       "orientation" : "landscape",
       "scale" : "3x"
@@ -22,7 +22,7 @@
       "extent" : "full-screen",
       "idiom" : "iphone",
       "subtype" : "736h",
-      "filename" : "Default-Portrait-736h@3x.png",
+      "filename" : "iPhone5.5-Portrait.png",
       "minimum-system-version" : "8.0",
       "orientation" : "portrait",
       "scale" : "3x"
@@ -31,7 +31,7 @@
       "extent" : "full-screen",
       "idiom" : "iphone",
       "subtype" : "736h",
-      "filename" : "Default-Landscape-736h@3x.png",
+      "filename" : "iPhone-Landscape.png",
       "minimum-system-version" : "8.0",
       "orientation" : "landscape",
       "scale" : "3x"
@@ -40,7 +40,7 @@
       "extent" : "full-screen",
       "idiom" : "iphone",
       "subtype" : "667h",
-      "filename" : "Default-667h@2x.png",
+      "filename" : "iPhone4.7-Portrait.png",
       "minimum-system-version" : "8.0",
       "orientation" : "portrait",
       "scale" : "2x"
@@ -48,7 +48,7 @@
     {
       "orientation" : "portrait",
       "idiom" : "ipad",
-      "filename" : "Default-Portrait.png",
+      "filename" : "iPad-Portrait.png",
       "extent" : "full-screen",
       "minimum-system-version" : "7.0",
       "scale" : "1x"
@@ -56,7 +56,7 @@
     {
       "orientation" : "landscape",
       "idiom" : "ipad",
-      "filename" : "Default-Landscape.png",
+      "filename" : "iPad-Landscape.png",
       "extent" : "full-screen",
       "minimum-system-version" : "7.0",
       "scale" : "1x"
@@ -64,7 +64,7 @@
     {
       "orientation" : "portrait",
       "idiom" : "ipad",
-      "filename" : "Default-Portrait@2x.png",
+      "filename" : "iPad-Portrait@2x.png",
       "extent" : "full-screen",
       "minimum-system-version" : "7.0",
       "scale" : "2x"
@@ -72,7 +72,7 @@
     {
       "orientation" : "landscape",
       "idiom" : "ipad",
-      "filename" : "Default-Landscape@2x.png",
+      "filename" : "iPad-Landscape@2x.png",
       "extent" : "full-screen",
       "minimum-system-version" : "7.0",
       "scale" : "2x"
