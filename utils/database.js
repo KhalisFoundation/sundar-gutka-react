@@ -73,6 +73,11 @@ class Database {
             let curGurmukhi = larivaar
               ? row.Gurmukhi.replace(/ /g, "")
               : row.Gurmukhi;
+
+            row.English = row.English == "" ? " " : row.English;
+            row.Transliteration =
+              row.Transliteration == "" ? " " : row.Transliteration;
+
             if (
               (baniId === 9 || baniId === 21) &&
               padcched === "MAST_SABH_MAST"
@@ -82,6 +87,7 @@ class Database {
                 "smwpq msqu suB msqu"
               );
             }
+
             if (paragraphMode) {
               if (prevParagraph !== row.Paragraph) {
                 if (i !== 0) {
@@ -124,6 +130,7 @@ class Database {
               };
             }
           }
+
           if (paragraphMode) {
             resolve(paragraphResults);
           } else {
