@@ -7,7 +7,9 @@
     "test": "jest"
   },
   "rnpm": {
-    "assets": ["./assets/fonts/"]
+    "assets": [
+      "./assets/fonts/"
+    ]
   },
   "dependencies": {
     "npm": "^5.8.0",
