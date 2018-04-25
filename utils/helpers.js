@@ -81,7 +81,11 @@ export const fontSizeForList = SIZE => {
   }
 };
 
-export const fontSizeForReader = (SIZE, header) => {
+export const fontSizeForReader = (SIZE, header, baniId) => {
+
+  if(baniId === 31) {
+    return 24;
+  }
   if (header === 6) {
     return fontSizeForList(SIZE) * 0.75;
   } else if (header === 2) {
