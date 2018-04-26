@@ -1,7 +1,7 @@
 import React, { Component } from "react";
 import { StyleSheet, FlatList, View, ActivityIndicator } from "react-native";
 import { List, ListItem, Avatar } from "react-native-elements";
-import { fontSizeForList } from "../utils/helpers";
+import { baseFontSize } from "../utils/helpers";
 import LoadingIndicator from "../components/LoadingIndicator";
 
 class BaniList extends Component {
@@ -47,7 +47,7 @@ class BaniList extends Component {
               ]}
               titleStyle={[
                 nightMode && { color: "#fff" },
-                { fontSize: fontSizeForList(fontSize) }
+                { fontSize: baseFontSize(fontSize, romanized) }
               ]}
               title={romanized ? item.roman : item.gurmukhi}
               fontFamily={!romanized ? fontFace : null}

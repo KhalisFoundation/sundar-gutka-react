@@ -15,7 +15,7 @@ import { connect } from "react-redux";
 import { bindActionCreators } from "redux";
 import * as actions from "../actions/actions";
 import AnalyticsManager from "../utils/analytics";
-import { fontSizeForList } from "../utils/helpers";
+import { baseFontSize } from "../utils/helpers";
 
 const window = Dimensions.get("window");
 
@@ -145,7 +145,7 @@ class Row extends React.Component {
           style={[
             { color: nightMode ? "#fff" : "#222222" },
             !romanized && { fontFamily: fontFace },
-            { fontSize: fontSizeForList(fontSize) }
+            { fontSize: baseFontSize(fontSize, romanized) }
           ]}
         >
           {romanized ? data.roman : data.gurmukhi}

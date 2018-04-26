@@ -198,7 +198,8 @@ class Reader extends React.Component {
                   {
                     fontSize: fontSizeForReader(
                       this.props.fontSize,
-                      item.header
+                      item.header,
+                      false
                     )
                   }
                 ]}
@@ -228,7 +229,8 @@ class Reader extends React.Component {
                     {
                       fontSize: fontSizeForReader(
                         this.props.fontSize,
-                        item.header
+                        item.header,
+                        true
                       )
                     }
                   ]}
@@ -260,7 +262,8 @@ class Reader extends React.Component {
                       {
                         fontSize: fontSizeForReader(
                           this.props.fontSize,
-                          item.header
+                          item.header,
+                          true
                         )
                       }
                     ]}

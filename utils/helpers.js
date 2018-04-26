@@ -66,29 +66,41 @@ export const fontColorForReader = (header, nightMode, text) => {
   }
 };
 
-export const fontSizeForList = SIZE => {
+export const baseFontSize = (SIZE, romanized) => {
+  var fontSize;
   switch (SIZE) {
     case "EXTRA_SMALL":
-      return 18;
+      fontSize = 16;
+      break;
     case "SMALL":
-      return 24;
+      fontSize = 22;
+      break;
     case "MEDIUM":
-      return 30;
+      fontSize = 28;
+      break;
     case "LARGE":
-      return 36;
+      fontSize = 34;
+      break;
     case "EXTRA_LARGE":
-      return 48;
+      fontSize = 46;
+      break;
   }
+
+  if (romanized) {
+    fontSize = fontSize / 1.25;
+  }
+
+  return fontSize;
 };
 
-export const fontSizeForReader = (SIZE, header) => {
+export const fontSizeForReader = (SIZE, header, romanized) => {
   if (header === 6) {
-    return fontSizeForList(SIZE) * 0.75;
+    return baseFontSize(SIZE, romanized) * 0.75;
   } else if (header === 2) {
-    return fontSizeForList(SIZE) * 1.1;
+    return baseFontSize(SIZE, romanized) * 1.1;
   } else if (header === 1) {
-    return fontSizeForList(SIZE) * 1.2;
+    return baseFontSize(SIZE, romanized) * 1.2;
   } else {
-    return fontSizeForList(SIZE);
+    return baseFontSize(SIZE, romanized);
   }
 };
