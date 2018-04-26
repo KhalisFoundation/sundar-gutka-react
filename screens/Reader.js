@@ -31,7 +31,9 @@ class Reader extends React.Component {
       data: [],
       isLoading: true,
       height: new Animated.Value(HEADER_HEIGHT), // The header height
-      visible: true // Is the header currently visible
+      visible: true, // Is the header currently visible
+      scrollingIndex: -1,
+      scrollingFailed: false
     };
 
     // How long does the slide animation take
@@ -102,18 +104,41 @@ class Reader extends React.Component {
       if (this.state.data[i].id <= index) {
         viewPosition = i;
       }
-      
-      if(this.state.data[i].id == index) {
+
+      if (this.state.data[i].id == index) {
         break;
       }
     }
-    
+    this.state.scrollingIndex = viewPosition;
     this.flatListRef.scrollToIndex({ animated: false, index: viewPosition });
   }
 
   truncate(n) {
     return this.length > n ? this.substr(0, n - 1) + "..." : this + "";
   }
+
+  onScrollToIndexFailed = info => {
+    this.state.scrollingFailed = true;
+    this.flatListRef.scrollToIndex({
+      animated: false,
+      index: info.highestMeasuredFrameIndex
+    });
+  };
+
+  onViewableItemsChanged = info => {
+    if (info.viewableItems[0]) {
+      if (
+        this.state.scrollingFailed &&
+        this.state.scrollingIndex !== info.viewableItems[0].index
+      ) {
+        this.state.scrollingFailed = false;
+        this.flatListRef.scrollToIndex({
+          animated: false,
+          index: this.state.scrollingIndex
+        });
+      }
+    }
+  };
 
   render() {
     const { params } = this.props.navigation.state;
@@ -144,11 +169,14 @@ class Reader extends React.Component {
           ]}
           onScroll={this._onScroll.bind(this)}
           extraData={this.state}
-          initialNumToRender={this.state.data.length}
-          getItemLayout={this.getItemLayout}
+          onScrollToIndexFailed={this.onScrollToIndexFailed}
+          onViewableItemsChanged={this.onViewableItemsChanged}
+          //initialNumToRender={this.state.data.length}
+          //getItemLayout={this.getItemLayout}
           renderItem={({ item }) => (
             <View style={styles.itemBlock}>
               <Text
+                selectable={true}
                 style={[
                   {
                     color: fontColorForReader(
@@ -170,8 +198,7 @@ class Reader extends React.Component {
                   {
                     fontSize: fontSizeForReader(
                       this.props.fontSize,
-                      item.header,
-                      this.props.currentShabad
+                      item.header
                     )
                   }
                 ]}
@@ -201,8 +228,7 @@ class Reader extends React.Component {
                     {
                       fontSize: fontSizeForReader(
                         this.props.fontSize,
-                        item.header,
-                      this.props.currentShabad
+                        item.header
                       )
                     }
                   ]}
@@ -234,8 +260,7 @@ class Reader extends React.Component {
                       {
                         fontSize: fontSizeForReader(
                           this.props.fontSize,
-                          item.header,
-                      this.props.currentShabad
+                          item.header
                         )
                       }
                     ]}
