@@ -21,6 +21,7 @@
     "react-native-keep-awake": "^3.0.1",
     "react-native-settings-list": "^1.8.0",
     "react-native-sortable-list": "0.0.21",
+    "react-native-spinkit": "^1.1.1",
     "react-native-splash-screen": "^3.0.6",
     "react-native-sqlite-storage": "^3.3.4",
     "react-native-vector-icons": "^4.6.0",

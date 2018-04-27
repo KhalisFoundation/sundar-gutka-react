@@ -5,6 +5,7 @@ import {
   StyleSheet,
   FlatList,
   View,
+  Modal,
   Text
 } from "react-native";
 import { connect } from "react-redux";
@@ -29,9 +30,10 @@ class Reader extends React.Component {
 
     this.state = {
       data: [],
-      isLoading: true,
+      isLoading: false,
       height: new Animated.Value(HEADER_HEIGHT), // The header height
       visible: true, // Is the header currently visible
+      isScrolling: false,
       scrollingIndex: -1,
       scrollingFailed: false
     };
@@ -110,6 +112,7 @@ class Reader extends React.Component {
       }
     }
     this.state.scrollingIndex = viewPosition;
+    this.state.isScrolling = true;
     this.flatListRef.scrollToIndex({ animated: false, index: viewPosition });
   }
 
@@ -118,37 +121,43 @@ class Reader extends React.Component {
   }
 
   onScrollToIndexFailed = info => {
-    this.state.scrollingFailed = true;
-    this.flatListRef.scrollToIndex({
-      animated: false,
-      index: info.highestMeasuredFrameIndex
-    });
+    if (this.state.isScrolling && !this.state.scrollingFailed) {
+      //this.state.isLoading = true;
+      this.state.scrollingFailed = true;
+      this.flatListRef.scrollToIndex({
+        animated: false,
+        index: info.highestMeasuredFrameIndex
+      });
+    }
   };
 
   onViewableItemsChanged = info => {
     if (info.viewableItems[0]) {
-      if (
-        this.state.scrollingFailed &&
-        this.state.scrollingIndex !== info.viewableItems[0].index
-      ) {
-        this.state.scrollingFailed = false;
-        this.flatListRef.scrollToIndex({
-          animated: false,
-          index: this.state.scrollingIndex
-        });
+      if (this.state.isScrolling && this.state.scrollingFailed) {
+        if (info.viewableItems[0].index !== this.state.scrollingIndex) {
+          var that = this;
+          that.state.scrollingFailed = false;
+          setTimeout(function() {
+            that.flatListRef.scrollToIndex({
+              animated: false,
+              index: that.state.scrollingIndex
+            });
+          }, 100);
+        }
+      } 
+      if (info.viewableItems[0].index == this.state.scrollingIndex) {
+        this.state.isScrolling = false;
       }
+      this.state.isLoading = false;
     }
+    
   };
 
   render() {
     const { params } = this.props.navigation.state;
 
-    if (this.state.isLoading) {
-      return <LoadingIndicator nightMode={this.props.nightMode} />;
-    } else {
-      {
-        this.trackScreenForShabad(params.item.roman);
-      }
+    {
+      this.trackScreenForShabad(params.item.roman);
     }
 
     return (
@@ -158,6 +167,8 @@ class Reader extends React.Component {
           this.props.nightMode && { backgroundColor: "#000" }
         ]}
       >
+        <LoadingIndicator isLoading={this.state.isLoading} />
+
         <FlatList
           ref={ref => {
             this.flatListRef = ref;

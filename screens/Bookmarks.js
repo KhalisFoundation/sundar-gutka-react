@@ -6,13 +6,13 @@ import BaniList from "../components/BaniList";
 import LoadingIndicator from "../components/LoadingIndicator";
 import * as actions from "../actions/actions";
 
-class FolderBani extends React.Component {
+class Bookmarks extends React.Component {
   constructor(props) {
     super(props);
 
     this.state = {
       data: [],
-      isLoading: true
+      isLoading: false
     };
   }
 
@@ -64,4 +64,4 @@ function mapDispatchToProps(dispatch) {
   return bindActionCreators(actions, dispatch);
 }
 
-export default connect(mapStateToProps, mapDispatchToProps)(FolderBani);
+export default connect(mapStateToProps, mapDispatchToProps)(Bookmarks);

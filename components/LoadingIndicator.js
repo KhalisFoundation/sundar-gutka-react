@@ -1,31 +1,30 @@
 import React, { Component } from "react";
-import { StyleSheet, View, ActivityIndicator } from "react-native";
+import { View, Modal } from "react-native";
+var Spinner = require("react-native-spinkit");
 
 class LoadingIndicator extends Component {
   render() {
-    const { nightMode } = this.props;
+    const { isLoading } = this.props;
     return (
-      <View
-        style={[
-          styles.container,
-          styles.loading,
-          nightMode && { backgroundColor: "#000" }
-        ]}
-      >
-        <ActivityIndicator size="small" color="#0000ff" />
-      </View>
+      <Modal animationType="fade" transparent={true} visible={isLoading}>
+        <View
+          style={{
+            flex: 1,
+            backgroundColor: "rgba(0,0,0,0.5)",
+            justifyContent: "center",
+            alignItems: "center"
+          }}
+        >
+          <Spinner
+            isVisible={true}
+            size={100}
+            type={"FadingCircleAlt"}
+            color={"#fff"}
+          />
+        </View>
+      </Modal>
     );
   }
 }
-
-const styles = StyleSheet.create({
-  loading: {
-    justifyContent: "center"
-  },
-  container: {
-    flex: 1,
-    marginTop: 0
-  }
-});
 
 export default LoadingIndicator;
