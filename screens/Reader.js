@@ -4,9 +4,8 @@ import {
   Dimensions,
   StyleSheet,
   FlatList,
-  View,
   Modal,
-  Text
+  View
 } from "react-native";
 import { connect } from "react-redux";
 import { Header } from "react-native-elements";
@@ -15,6 +14,7 @@ import Icon from "react-native-vector-icons/FontAwesome";
 import GLOBAL from "../utils/globals";
 import Database from "../utils/database";
 import LoadingIndicator from "../components/LoadingIndicator";
+import ReaderBaniItem from "../components/ReaderBaniItem";
 import {
   fontSizeForReader,
   fontColorForReader,
@@ -185,104 +185,14 @@ class Reader extends React.Component {
           //initialNumToRender={this.state.data.length}
           //getItemLayout={this.getItemLayout}
           renderItem={({ item }) => (
-            <View style={styles.itemBlock}>
-              <Text
-                selectable={true}
-                style={[
-                  {
-                    color: fontColorForReader(
-                      item.header,
-                      this.props.nightMode,
-                      TextType.GURMUKHI
-                    )
-                  },
-                  { fontFamily: this.props.fontFace },
-                  { padding: 5 },
-                  {
-                    textAlign:
-                      item.header === 0
-                        ? "left"
-                        : item.header === 1 || item.header === 2
-                          ? "center"
-                          : "right"
-                  },
-                  {
-                    fontSize: fontSizeForReader(
-                      this.props.fontSize,
-                      item.header,
-                      false
-                    )
-                  }
-                ]}
-              >
-                {item.gurmukhi}
-              </Text>
-              {this.props.romanized && (
-                <Text
-                  style={[
-                    {
-                      color: fontColorForReader(
-                        item.header,
-                        this.props.nightMode,
-                        TextType.TRANSLITERATION
-                      )
-                    },
-                    { padding: 5 },
-                    { fontWeight: item.header === 0 ? "normal" : "bold" },
-                    {
-                      textAlign:
-                        item.header === 0
-                          ? "left"
-                          : item.header === 1 || item.header === 2
-                            ? "center"
-                            : "right"
-                    },
-                    {
-                      fontSize: fontSizeForReader(
-                        this.props.fontSize,
-                        item.header,
-                        true
-                      )
-                    }
-                  ]}
-                >
-                  {item.roman}
-                </Text>
-              )}
-              {this.props.englishTranslations &&
-                item.englishTranslations && (
-                  <Text
-                    style={[
-                      {
-                        color: fontColorForReader(
-                          item.header,
-                          this.props.nightMode,
-                          TextType.ENGLISH_TRANSLATION
-                        )
-                      },
-                      { padding: 5 },
-                      { fontWeight: item.header === 0 ? "normal" : "bold" },
-                      {
-                        textAlign:
-                          item.header === 0
-                            ? "left"
-                            : item.header === 1 || item.header === 2
-                              ? "center"
-                              : "right"
-                      },
-                      {
-                        fontSize: fontSizeForReader(
-                          this.props.fontSize,
-                          item.header,
-                          true
-                        )
-                      }
-                    ]}
-                  >
-                    {item.englishTranslations}
-                  </Text>
-                )}
-            </View>
+            <ReaderBaniItem
+              item={item}
+              nightMode={this.props.nightMode}
+              fontSize={this.props.fontSize}
+              fontFace={this.props.fontFace}
+              englishTranslations={this.props.englishTranslations}
+              romanized={this.props.romanized}
+            />
           )}
           keyExtractor={item => item.id}
         />
@@ -334,9 +244,6 @@ const styles = StyleSheet.create({
   container: {
     flex: 1,
     backgroundColor: "#fff"
-  },
-  itemBlock: {
-    padding: 5
   },
   header: {
     position: "absolute",

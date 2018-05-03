@@ -303,13 +303,6 @@
 			remoteGlobalIDString = 641194871EC9FD4A00D4FC03;
 			remoteInfo = "RNSpinkit-tvOS";
 		};
-		9AB764B220902C44003AA5C4 /* PBXContainerItemProxy */ = {
-			isa = PBXContainerItemProxy;
-			containerPortal = 7866C39C160B4FCB9ED6F222 /* STTVTableView.xcodeproj */;
-			proxyType = 2;
-			remoteGlobalIDString = 8E87A9901FAB62CC00B9C54E;
-			remoteInfo = STTVTableView;
-		};
 		9ABEFE3A20730502001364B3 /* PBXContainerItemProxy */ = {
 			isa = PBXContainerItemProxy;
 			containerPortal = 146833FF1AC3E56700842450 /* React.xcodeproj */;
@@ -430,7 +423,6 @@
 		649F9E47DDC64B3AB7C36A81 /* RNVectorIcons.xcodeproj */ = {isa = PBXFileReference; explicitFileType = undefined; fileEncoding = 9; includeInIndex = 0; lastKnownFileType = "wrapper.pb-project"; name = RNVectorIcons.xcodeproj; path = "../node_modules/react-native-vector-icons/RNVectorIcons.xcodeproj"; sourceTree = "<group>"; };
 		66AF89E752B54C2285AA1C19 /* Feather.ttf */ = {isa = PBXFileReference; explicitFileType = undefined; fileEncoding = 9; includeInIndex = 0; lastKnownFileType = unknown; name = Feather.ttf; path = "../node_modules/react-native-vector-icons/Fonts/Feather.ttf"; sourceTree = "<group>"; };
 		697CAB57DC4147DAA018D286 /* EvilIcons.ttf */ = {isa = PBXFileReference; explicitFileType = undefined; fileEncoding = 9; includeInIndex = 0; lastKnownFileType = unknown; name = EvilIcons.ttf; path = "../node_modules/react-native-vector-icons/Fonts/EvilIcons.ttf"; sourceTree = "<group>"; };
-		7866C39C160B4FCB9ED6F222 /* STTVTableView.xcodeproj */ = {isa = PBXFileReference; explicitFileType = undefined; fileEncoding = 9; includeInIndex = 0; lastKnownFileType = "wrapper.pb-project"; name = STTVTableView.xcodeproj; path = "../node_modules/react-native-largelist/ios/STTVTableView.xcodeproj"; sourceTree = "<group>"; };
 		78C398B01ACF4ADC00677621 /* RCTLinking.xcodeproj */ = {isa = PBXFileReference; lastKnownFileType = "wrapper.pb-project"; name = RCTLinking.xcodeproj; path = "../node_modules/react-native/Libraries/LinkingIOS/RCTLinking.xcodeproj"; sourceTree = "<group>"; };
 		7DADDF7A7C924576B74CF56F /* RCTGoogleAnalyticsBridge.xcodeproj */ = {isa = PBXFileReference; explicitFileType = undefined; fileEncoding = 9; includeInIndex = 0; lastKnownFileType = "wrapper.pb-project"; name = RCTGoogleAnalyticsBridge.xcodeproj; path = "../node_modules/react-native-google-analytics-bridge/ios/RCTGoogleAnalyticsBridge/RCTGoogleAnalyticsBridge.xcodeproj"; sourceTree = "<group>"; };
 		832341B01AAA6A8300B99B32 /* RCTText.xcodeproj */ = {isa = PBXFileReference; lastKnownFileType = "wrapper.pb-project"; name = RCTText.xcodeproj; path = "../node_modules/react-native/Libraries/Text/RCTText.xcodeproj"; sourceTree = "<group>"; };
@@ -685,7 +677,6 @@
 				4DDAEEA05B9145BAB7021EA1 /* KCKeepAwake.xcodeproj */,
 				DF66F27936084E6FBB389B0A /* SplashScreen.xcodeproj */,
 				7DADDF7A7C924576B74CF56F /* RCTGoogleAnalyticsBridge.xcodeproj */,
-				7866C39C160B4FCB9ED6F222 /* STTVTableView.xcodeproj */,
 				498B618C2B6749E48B235475 /* RNSpinkit.xcodeproj */,
 			);
 			name = Libraries;
@@ -748,14 +739,6 @@
 			children = (
 				9A7C4D702092552100321734 /* libRNSpinkit.a */,
 				9A7C4D722092552100321734 /* libRNSpinkit.a */,
-			);
-			name = Products;
-			sourceTree = "<group>";
-		};
-		9AB7648520902C44003AA5C4 /* Products */ = {
-			isa = PBXGroup;
-			children = (
-				9AB764B320902C44003AA5C4 /* STTVTableView.framework */,
 			);
 			name = Products;
 			sourceTree = "<group>";
@@ -1017,10 +1000,6 @@
 					ProductGroup = 9ABEFE4C20730502001364B3 /* Products */;
 					ProjectRef = B7EBC7E0ED134C379A8398AA /* SQLite.xcodeproj */;
 				},
-				{
-					ProductGroup = 9AB7648520902C44003AA5C4 /* Products */;
-					ProjectRef = 7866C39C160B4FCB9ED6F222 /* STTVTableView.xcodeproj */;
-				},
 			);
 			projectRoot = "";
 			targets = (
@@ -1255,13 +1234,6 @@
 			fileType = archive.ar;
 			path = libRNSpinkit.a;
 			remoteRef = 9A7C4D712092552100321734 /* PBXContainerItemProxy */;
-			sourceTree = BUILT_PRODUCTS_DIR;
-		};
-		9AB764B320902C44003AA5C4 /* STTVTableView.framework */ = {
-			isa = PBXReferenceProxy;
-			fileType = wrapper.framework;
-			path = STTVTableView.framework;
-			remoteRef = 9AB764B220902C44003AA5C4 /* PBXContainerItemProxy */;
 			sourceTree = BUILT_PRODUCTS_DIR;
 		};
 		9ABEFE3B20730502001364B3 /* libjsinspector.a */ = {
