@@ -3,9 +3,10 @@ import {
   Animated,
   Dimensions,
   StyleSheet,
-  FlatList,
   Modal,
-  View
+  View,
+  WebView,
+  Platform
 } from "react-native";
 import { connect } from "react-redux";
 import { Header } from "react-native-elements";
@@ -32,45 +33,19 @@ class Reader extends React.Component {
       data: [],
       isLoading: false,
       height: new Animated.Value(HEADER_HEIGHT), // The header height
-      visible: true, // Is the header currently visible
-      isScrolling: false,
-      scrollingIndex: -1,
-      scrollingFailed: false
+      visible: true // Is the header currently visible
     };
 
     // How long does the slide animation take
-    this.slideDuration = this.props.slideDuration || 400;
+    this.slideDuration = 400;
+    this.webView = null;
   }
 
-  _onScroll(event) {
-    const currentOffset = event.nativeEvent.contentOffset.y;
-
-    // Ignore scroll events outside the scrollview
-    if (
-      currentOffset < 0 ||
-      currentOffset >
-        event.nativeEvent.contentSize.height -
-          event.nativeEvent.layoutMeasurement.height
-    ) {
-      return;
-    }
-
-    if (
-      (this.state.visible && currentOffset > this.offset) ||
-      (!this.state.visible && currentOffset < this.offset)
-    ) {
-      this._toggleHeader();
-    }
-
-    this.offset = currentOffset;
-  }
-
-  _toggleHeader() {
+  toggleHeader(state) {
     Animated.timing(this.state.height, {
       duration: this.slideDuration,
-      toValue: this.state.visible ? 0 : HEADER_HEIGHT
+      toValue: state == "hide" ? 0 : HEADER_HEIGHT
     }).start();
-    this.setState({ visible: !this.state.visible });
   }
 
   componentWillMount() {
@@ -104,54 +79,163 @@ class Reader extends React.Component {
     var viewPosition;
     for (let i = 0; i < this.state.data.length; i++) {
       if (this.state.data[i].id <= index) {
-        viewPosition = i;
+        viewPosition = index;
       }
 
       if (this.state.data[i].id == index) {
         break;
       }
     }
-    this.state.scrollingIndex = viewPosition;
-    this.state.isScrolling = true;
-    this.flatListRef.scrollToIndex({ animated: false, index: viewPosition });
+    this.webView.postMessage(viewPosition);
   }
 
   truncate(n) {
     return this.length > n ? this.substr(0, n - 1) + "..." : this + "";
   }
 
-  onScrollToIndexFailed = info => {
-    if (this.state.isScrolling && !this.state.scrollingFailed) {
-      //this.state.isLoading = true;
-      this.state.scrollingFailed = true;
-      this.flatListRef.scrollToIndex({
-        animated: false,
-        index: info.highestMeasuredFrameIndex
-      });
-    }
-  };
-
-  onViewableItemsChanged = info => {
-    if (info.viewableItems[0]) {
-      if (this.state.isScrolling && this.state.scrollingFailed) {
-        if (info.viewableItems[0].index !== this.state.scrollingIndex) {
-          var that = this;
-          that.state.scrollingFailed = false;
-          setTimeout(function() {
-            that.flatListRef.scrollToIndex({
-              animated: false,
-              index: that.state.scrollingIndex
-            });
-          }, 100);
-        }
-      } 
-      if (info.viewableItems[0].index == this.state.scrollingIndex) {
-        this.state.isScrolling = false;
+  loadHTML(data) {
+    if (data.length > 0) {
+      let fontSize = this.props.fontSize;
+      let fontFace = this.props.fontFace;
+      let nightMode = this.props.nightMode;
+      let romanized = this.props.romanized;
+      let englishTranslations = this.props.englishTranslations;
+      var html =
+        "<!DOCTYPE html><html><head>" +
+        "<meta name='viewport' content='width=device-width, maximum-scale=1.0, user-scalable=yes'>" +
+        "<style type='text/css'>";
+      if (Platform.OS === "android") {
+        html +=
+          "@font-face{font-family: '" +
+          fontFace +
+          "'; " +
+          "src: url('file:///android_asset/fonts/" +
+          fontFace +
+          ".ttf');}";
       }
-      this.state.isLoading = false;
+      html +=
+        "body { " +
+        "background-color: " +
+        (nightMode ? "#000" : "#fff") +
+        ";" +
+        "color: " +
+        (nightMode ? "#fff" : "#000") +
+        ";" +
+        "padding-top: 3.5em; }";
+      html += "</style><script>" + this.loadScrollJS() + "</script>";
+      html += "</head><body>";
+
+      data.forEach(function(item) {
+        html += "<div style='padding-top: .5em'>";
+        html +=
+          "<div id='" +
+          item.id +
+          "' style=\"padding: .2em; font-family:'" +
+          fontFace +
+          "'; font-size: " +
+          fontSizeForReader(fontSize, item.header, false) +
+          "em; color: " +
+          fontColorForReader(item.header, nightMode, TextType.GURMUKHI) +
+          "; text-align: " +
+          (item.header === 0
+            ? "left"
+            : item.header === 1 || item.header === 2
+              ? "center"
+              : "right") +
+          ';">' +
+          item.gurmukhi +
+          "</div>";
+
+        if (romanized) {
+          html +=
+            "<div style=\"padding: .2em; font-family:'Arial'; font-size: " +
+            fontSizeForReader(fontSize, item.header, true) +
+            "em; color: " +
+            fontColorForReader(
+              item.header,
+              nightMode,
+              TextType.TRANSLITERATION
+            ) +
+            "; text-align: " +
+            (item.header === 0
+              ? "left"
+              : item.header === 1 || item.header === 2
+                ? "center"
+                : "right") +
+            "; font-weight: " +
+            (item.header === 0 ? "normal" : "bold") +
+            ';">' +
+            item.roman +
+            "</div>";
+        }
+
+        if (englishTranslations) {
+          html +=
+            "<div style=\"padding: .2em; font-family:'Arial'; font-size: " +
+            fontSizeForReader(fontSize, item.header, true) +
+            "em; color: " +
+            fontColorForReader(
+              item.header,
+              nightMode,
+              TextType.ENGLISH_TRANSLATION
+            ) +
+            "; text-align: " +
+            (item.header === 0
+              ? "left"
+              : item.header === 1 || item.header === 2
+                ? "center"
+                : "right") +
+            "; font-weight: " +
+            (item.header === 0 ? "normal" : "bold") +
+            ';">' +
+            item.englishTranslations +
+            "</div>";
+        }
+        html += "</div>";
+      });
+      html += "</body></html>";
+      return html;
     }
+  }
+
+  loadScrollJS() {
+    return `
+    function scrollFunc(e) {
+      if (window.scrollY == 0) { window.postMessage('show'); }
+        
+      if ( typeof scrollFunc.y == 'undefined' ) {
+            scrollFunc.y=window.pageYOffset;
+        }
+        
+        var diffY=scrollFunc.y-window.pageYOffset;
     
-  };
+    
+        if( diffY<0 ) {
+            // Scroll down
+            if(diffY<-3) {
+              window.postMessage('hide');
+            }
+        } else if( diffY>5 ) {
+            // Scroll up
+            window.postMessage('show');
+        } else {
+            // First scroll event
+        }
+        scrollFunc.y=window.pageYOffset;
+    }
+    window.onscroll = scrollFunc;
+
+    document.addEventListener("message", function(event) {
+      location.hash = "#" + event.data;
+      setTimeout(function() { window.postMessage('hide'); }, 50);
+      
+        }, false);
+      `;
+  }
+
+  handleMessage(message) {
+    this.toggleHeader(message.nativeEvent.data);
+  }
 
   render() {
     const { params } = this.props.navigation.state;
@@ -169,33 +253,16 @@ class Reader extends React.Component {
       >
         <LoadingIndicator isLoading={this.state.isLoading} />
 
-        <FlatList
-          ref={ref => {
-            this.flatListRef = ref;
+        <WebView
+          ref={webView => (this.webView = webView)}
+          source={{
+            html: this.loadHTML(this.state.data),
+            baseUrl: ""
           }}
-          data={this.state.data}
-          contentContainerStyle={[
-            { marginTop: HEADER_HEIGHT },
-            { paddingBottom: HEADER_HEIGHT }
-          ]}
-          onScroll={this._onScroll.bind(this)}
-          extraData={this.state}
-          onScrollToIndexFailed={this.onScrollToIndexFailed}
-          onViewableItemsChanged={this.onViewableItemsChanged}
-          //initialNumToRender={this.state.data.length}
-          //getItemLayout={this.getItemLayout}
-          renderItem={({ item }) => (
-            <ReaderBaniItem
-              item={item}
-              nightMode={this.props.nightMode}
-              fontSize={this.props.fontSize}
-              fontFace={this.props.fontFace}
-              englishTranslations={this.props.englishTranslations}
-              romanized={this.props.romanized}
-            />
-          )}
-          keyExtractor={item => item.id}
+          //injectedJavaScript={this.loadScrollJS()}
+          onMessage={this.handleMessage.bind(this)}
         />
+
         <Animated.View style={[styles.header, { height: this.state.height }]}>
           <Header
             backgroundColor={GLOBAL.COLOR.TOOLBAR_COLOR}

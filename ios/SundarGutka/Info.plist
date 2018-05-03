@@ -36,7 +36,7 @@
 		</dict>
 	</dict>
 	<key>NSLocationWhenInUseUsageDescription</key>
-	<string></string>
+	<string/>
 	<key>UIAppFonts</key>
 	<array>
 		<string>Entypo.ttf</string>
@@ -54,6 +54,7 @@
 		<string>GurbaniAkharHeavySG.ttf</string>
 		<string>GurbaniAkharSG.ttf</string>
 		<string>GurbaniAkharThickSG.ttf</string>
+		<string>Arial.ttf</string>
 	</array>
 	<key>UIRequiredDeviceCapabilities</key>
 	<array>

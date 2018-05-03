@@ -5,7 +5,6 @@
 	};
 	objectVersion = 46;
 	objects = {
-
 /* Begin PBXBuildFile section */
 		00C302E51ABCBA2D00DB3ED1 /* libRCTActionSheet.a in Frameworks */ = {isa = PBXBuildFile; fileRef = 00C302AC1ABCB8CE00DB3ED1 /* libRCTActionSheet.a */; };
 		00C302E71ABCBA2D00DB3ED1 /* libRCTGeolocation.a in Frameworks */ = {isa = PBXBuildFile; fileRef = 00C302BA1ABCB90400DB3ED1 /* libRCTGeolocation.a */; };
@@ -62,6 +61,7 @@
 		CEDCAAEA81C04DF3821EC5DE /* libKCKeepAwake.a in Frameworks */ = {isa = PBXBuildFile; fileRef = 0BF858ECE41C40E6BE4EADD9 /* libKCKeepAwake.a */; };
 		DFCC7DE125694A908B0489C9 /* SystemConfiguration.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = 3D66D0437E4A48949D9E59A9 /* SystemConfiguration.framework */; };
 		F86B7A993C784181B6712009 /* CoreData.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = 02474FDD8074406FBDB65F61 /* CoreData.framework */; };
+		16FFB5EAB3CD4A3D81435539 /* Arial.ttf in Resources */ = {isa = PBXBuildFile; fileRef = 73E3AB0C27884E2E88F10F8A /* Arial.ttf */; };
 /* End PBXBuildFile section */
 
 /* Begin PBXContainerItemProxy section */
@@ -446,6 +446,7 @@
 		E922FAB29D99492187CCB7F3 /* GurbaniAkharThickSG.ttf */ = {isa = PBXFileReference; explicitFileType = undefined; fileEncoding = 9; includeInIndex = 0; lastKnownFileType = unknown; name = GurbaniAkharThickSG.ttf; path = ../assets/fonts/GurbaniAkharThickSG.ttf; sourceTree = "<group>"; };
 		EAB536A8247D46F38F6547BE /* FontAwesome.ttf */ = {isa = PBXFileReference; explicitFileType = undefined; fileEncoding = 9; includeInIndex = 0; lastKnownFileType = unknown; name = FontAwesome.ttf; path = "../node_modules/react-native-vector-icons/Fonts/FontAwesome.ttf"; sourceTree = "<group>"; };
 		EEEBDA3E2B9149E09C59FFF6 /* MaterialCommunityIcons.ttf */ = {isa = PBXFileReference; explicitFileType = undefined; fileEncoding = 9; includeInIndex = 0; lastKnownFileType = unknown; name = MaterialCommunityIcons.ttf; path = "../node_modules/react-native-vector-icons/Fonts/MaterialCommunityIcons.ttf"; sourceTree = "<group>"; };
+		73E3AB0C27884E2E88F10F8A /* Arial.ttf */ = {isa = PBXFileReference; name = "Arial.ttf"; path = "../assets/fonts/Arial.ttf"; sourceTree = "<group>"; fileEncoding = undefined; lastKnownFileType = unknown; explicitFileType = undefined; includeInIndex = 0; };
 /* End PBXFileReference section */
 
 /* Begin PBXFrameworksBuildPhase section */
@@ -807,6 +808,7 @@
 				34C92CB5C9D842FBA36608F2 /* GurbaniAkharHeavySG.ttf */,
 				8C1C187661EE4AABBDAC038A /* GurbaniAkharSG.ttf */,
 				E922FAB29D99492187CCB7F3 /* GurbaniAkharThickSG.ttf */,
+				73E3AB0C27884E2E88F10F8A /* Arial.ttf */,
 			);
 			name = Resources;
 			sourceTree = "<group>";
@@ -1351,6 +1353,7 @@
 				0CA693BD9F1A464894A67A0A /* GurbaniAkharHeavySG.ttf in Resources */,
 				6D84F33F73A44FA1B284FF32 /* GurbaniAkharSG.ttf in Resources */,
 				2E4745D0172B42FD971BE9E6 /* GurbaniAkharThickSG.ttf in Resources */,
+				16FFB5EAB3CD4A3D81435539 /* Arial.ttf in Resources */,
 			);
 			runOnlyForDeploymentPostprocessing = 0;
 		};
