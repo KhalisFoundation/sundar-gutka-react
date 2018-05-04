@@ -37,7 +37,7 @@ class Reader extends React.Component {
     };
 
     // How long does the slide animation take
-    this.slideDuration = 400;
+    this.slideDuration = 200;
     this.webView = null;
   }
 
@@ -134,7 +134,7 @@ class Reader extends React.Component {
           fontFace +
           "'; font-size: " +
           fontSizeForReader(fontSize, item.header, false) +
-          "em; color: " +
+          "pt; color: " +
           fontColorForReader(item.header, nightMode, TextType.GURMUKHI) +
           "; text-align: " +
           (item.header === 0
@@ -150,7 +150,7 @@ class Reader extends React.Component {
           html +=
             "<div style=\"padding: .2em; font-family:'Arial'; font-size: " +
             fontSizeForReader(fontSize, item.header, true) +
-            "em; color: " +
+            "pt; color: " +
             fontColorForReader(
               item.header,
               nightMode,
@@ -173,7 +173,7 @@ class Reader extends React.Component {
           html +=
             "<div style=\"padding: .2em; font-family:'Arial'; font-size: " +
             fontSizeForReader(fontSize, item.header, true) +
-            "em; color: " +
+            "pt; color: " +
             fontColorForReader(
               item.header,
               nightMode,

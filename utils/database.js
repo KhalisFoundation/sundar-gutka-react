@@ -71,7 +71,7 @@ class Database {
           for (let i = 0; i < len; i++) {
             let row = results.rows.item(i);
             let curGurmukhi = larivaar
-              ? row.Gurmukhi.replace(/ /g, "")
+              ? row.Gurmukhi.replace(/ /g, "<wbr>")
               : row.Gurmukhi;
 
             row.English = row.English == "" ? " " : row.English;
