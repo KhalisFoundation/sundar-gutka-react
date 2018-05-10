@@ -52,7 +52,7 @@ export const fontColorForReader = (header, nightMode, text) => {
   switch (text) {
     case TextType.GURMUKHI: {
       if (header === 1) {
-        return nightMode ? "#4757D1" : "#0066FF";
+        return "#5686a0";
       } else if (header === 2 || header === 6) {
         return nightMode ? "#BFBFBF" : "#727272";
       } else {
@@ -60,7 +60,7 @@ export const fontColorForReader = (header, nightMode, text) => {
       }
     }
     case TextType.TRANSLITERATION:
-      return nightMode ? "#4757D1" : "#0066FF";
+      return "#5686a0";
     case TextType.ENGLISH_TRANSLATION:
       return nightMode ? "#BFBFBF" : "#727272";
   }

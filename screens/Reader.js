@@ -265,6 +265,7 @@ class Reader extends React.Component {
 
         <Animated.View style={[styles.header, { height: this.state.height }]}>
           <Header
+            outerContainerStyles={{ borderBottomWidth: 0 }}
             backgroundColor={GLOBAL.COLOR.TOOLBAR_COLOR}
             leftComponent={
               <Icon

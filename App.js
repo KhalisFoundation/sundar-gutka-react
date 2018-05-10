@@ -24,6 +24,7 @@ const FolderNavigation = TabNavigator({
     navigationOptions: ({ navigation }) => ({
       header: (
         <Header
+          outerContainerStyles={{ borderBottomWidth: 0 }}
           backgroundColor={GLOBAL.COLOR.TOOLBAR_COLOR}
           centerComponent={{
             text: "suMdr gutkw",
@@ -53,6 +54,7 @@ const FolderNavigation = TabNavigator({
     navigationOptions: ({ navigation }) => ({
       header: (
         <Header
+          outerContainerStyles={{ borderBottomWidth: 0 }}
           backgroundColor={GLOBAL.COLOR.TOOLBAR_COLOR}
           leftComponent={
             <Icon
@@ -96,6 +98,7 @@ const RootStack = StackNavigator({
     navigationOptions: ({ navigation }) => ({
       header: (
         <Header
+          outerContainerStyles={{ borderBottomWidth: 0 }}
           backgroundColor={GLOBAL.COLOR.TOOLBAR_COLOR_ALT}
           leftComponent={
             <Icon
@@ -122,6 +125,7 @@ const RootStack = StackNavigator({
     navigationOptions: ({ navigation }) => ({
       header: (
         <Header
+          outerContainerStyles={{ borderBottomWidth: 0 }}
           backgroundColor={GLOBAL.COLOR.TOOLBAR_COLOR_ALT}
           leftComponent={
             <Icon
@@ -141,6 +145,7 @@ const RootStack = StackNavigator({
     navigationOptions: ({ navigation }) => ({
       header: (
         <Header
+          outerContainerStyles={{ borderBottomWidth: 0 }}
           backgroundColor={GLOBAL.COLOR.TOOLBAR_COLOR_ALT2}
           leftComponent={
             <Icon
@@ -173,6 +178,7 @@ const RootStack = StackNavigator({
     navigationOptions: ({ navigation }) => ({
       header: (
         <Header
+          outerContainerStyles={{ borderBottomWidth: 0 }}
           backgroundColor={GLOBAL.COLOR.TOOLBAR_COLOR_ALT2}
           leftComponent={
             <Icon
@@ -216,7 +222,10 @@ export default class App extends React.Component {
       ) {
         this.setState({ safeAreaNavBarColor: GLOBAL.COLOR.TOOLBAR_COLOR_ALT });
         this.setState({ statusBarType: "dark-content" });
-      } else if (navState.routeName === "EditBaniOrder" || navState.routeName === "About") {
+      } else if (
+        navState.routeName === "EditBaniOrder" ||
+        navState.routeName === "About"
+      ) {
         this.setState({ safeAreaNavBarColor: GLOBAL.COLOR.TOOLBAR_COLOR_ALT2 });
         this.setState({ statusBarType: "light-content" });
       } else if (navState.routeName === "Reader") {
