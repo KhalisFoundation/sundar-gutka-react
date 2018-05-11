@@ -2,12 +2,14 @@ import React from "react";
 import {
   StyleSheet,
   Image,
+  View,
   Text,
   Linking,
   ScrollView,
   TouchableHighlight
 } from "react-native";
 import { connect } from "react-redux";
+import VersionNumber from "react-native-version-number";
 import AnalyticsManager from "../utils/analytics";
 
 class Home extends React.Component {
@@ -81,9 +83,27 @@ class Home extends React.Component {
         <Text style={this.props.nightMode && styles.nightMode}>
           {"\n"}Bhul Chuk Maaf!{"\n"}
         </Text>
-        <Text style={[styles.small, this.props.nightMode && styles.nightMode]}>
-          &copy; {new Date().getFullYear()} Khalis Foundation {"\n"}
-        </Text>
+        <Text
+          style={[styles.small, this.props.nightMode && styles.nightMode]}
+        />
+
+        <View style={styles.singleLine}>
+          <View style={styles.leftContainer}>
+            <Text
+              style={[styles.small, this.props.nightMode && styles.nightMode]}
+            >
+              &copy; {new Date().getFullYear()} Khalis Foundation
+            </Text>
+          </View>
+          <Text
+            style={[styles.small, this.props.nightMode && styles.nightMode]}
+          >
+            App Version: {VersionNumber.appVersion} ({
+              VersionNumber.buildVersion
+            })
+            {"\n"}
+          </Text>
+        </View>
       </ScrollView>
     );
   }
@@ -98,6 +118,10 @@ const styles = StyleSheet.create({
   nightMode: {
     backgroundColor: "#000",
     color: "#fff"
+  },
+  singleLine: {
+    flexDirection: "row",
+    justifyContent: "space-between"
   },
   title: {
     fontSize: 20,

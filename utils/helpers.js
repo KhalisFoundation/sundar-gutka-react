@@ -94,7 +94,7 @@ export const baseFontSize = (SIZE, romanized) => {
 };
 
 export const fontSizeForReader = (SIZE, header, romanized) => {
-  let fontSize = baseFontSize(SIZE, romanized);
+  let fontSize = baseFontSize(SIZE, romanized) * 0.75;
   if (header === 6) {
     return fontSize * 0.75;
   } else if (header === 2) {

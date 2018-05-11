@@ -4,6 +4,12 @@ import android.app.Application;
 
 import com.corbt.keepawake.KCKeepAwakePackage;
 import com.facebook.react.ReactApplication;
+import com.apsl.versionnumber.RNVersionNumberPackage;
+import com.oblador.vectoricons.VectorIconsPackage;
+import org.devio.rn.splashscreen.SplashScreenReactPackage;
+import com.react.rnspinkit.RNSpinkitPackage;
+import com.corbt.keepawake.KCKeepAwakePackage;
+import com.idehub.GoogleAnalyticsBridge.GoogleAnalyticsBridgePackage;
 import com.oblador.vectoricons.VectorIconsPackage;
 import org.devio.rn.splashscreen.SplashScreenReactPackage;
 import com.react.rnspinkit.RNSpinkitPackage;
@@ -39,11 +45,12 @@ public class MainApplication extends Application implements ReactApplication {
     protected List<ReactPackage> getPackages() {
       return Arrays.<ReactPackage>asList(
               new MainReactPackage(),
-            new VectorIconsPackage(),
-            new SplashScreenReactPackage(),
-            new RNSpinkitPackage(),
-            new KCKeepAwakePackage(),
-            new GoogleAnalyticsBridgePackage(),
+              new RNVersionNumberPackage(),
+              new VectorIconsPackage(),
+              new SplashScreenReactPackage(),
+              new RNSpinkitPackage(),
+              new KCKeepAwakePackage(),
+              new GoogleAnalyticsBridgePackage(),
               new SQLitePluginPackage() // register SQLite Plugin here
       );
     }
