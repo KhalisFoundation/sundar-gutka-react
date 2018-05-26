@@ -6,7 +6,7 @@ class LoadingIndicator extends Component {
   render() {
     const { isLoading } = this.props;
     return (
-      <Modal animationType="fade" transparent={true} visible={isLoading}>
+      <Modal animationType="fade" transparent={true} visible={isLoading} onRequestClose={() => null}>
         <View
           style={{
             flex: 1,
