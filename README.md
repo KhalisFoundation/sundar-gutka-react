@@ -1,2 +1,0 @@
-# sundar-gutka-react
-
