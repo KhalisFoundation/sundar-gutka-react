@@ -21,6 +21,8 @@ export const SET_CURRENT_SHABAD = "SET_CURRENT_SHABAD";
 export const SET_SCROLL_INDEX = "SET_SCROLL_INDEX";
 export const TOGGLE_STATUS_BAR = "TOGGLE_STATUS_BAR";
 export const TOGGLE_PARAGRAPH_MODE = "TOGGLE_PARAGRAPH_MODE"
+export const TOGGLE_AUTO_SCROLL = "TOGGLE_AUTO_SCROLL";
+export const SET_AUTO_SCROLL_SPEED = "SET_AUTO_SCROLL_SPEED";
 
 /*
  * other constants
@@ -160,4 +162,14 @@ export function setCurrentShabad(shabadId) {
 
 export function setScrollIndex(index) {
   return { type: SET_SCROLL_INDEX, index };
+}
+
+export function toggleAutoScroll(value) {
+  //AnalyticsManager.getInstance().trackEvent("autoScroll", value);
+  return { type: TOGGLE_AUTO_SCROLL, value };
+}
+
+export function setAutoScrollSpeed(speed) {
+  //AnalyticsManager.getInstance().trackEvent("autoScrollSpeed", speed);
+  return { type: SET_AUTO_SCROLL_SPEED, speed };
 }

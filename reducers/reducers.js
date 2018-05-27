@@ -17,7 +17,9 @@ import {
   SET_CURRENT_SHABAD,
   SET_SCROLL_INDEX,
   TOGGLE_STATUS_BAR,
-  TOGGLE_PARAGRAPH_MODE
+  TOGGLE_PARAGRAPH_MODE,
+  TOGGLE_AUTO_SCROLL,
+  SET_AUTO_SCROLL_SPEED
 } from "../actions/actions";
 
 function fontSize(state = "SMALL", action) {
@@ -173,6 +175,24 @@ function paragraphMode(state = true, action) {
   }
 }
 
+function autoScroll(state = false, action) {
+  switch (action.type) {
+    case TOGGLE_AUTO_SCROLL:
+      return action.value;
+    default:
+      return state;
+  }
+}
+
+function autoScrollSpeed(state = 10, action) {
+  switch (action.type) {
+    case SET_AUTO_SCROLL_SPEED:
+      return action.speed;
+    default:
+      return state;
+  }
+}
+
 // Combine all the reducers
 const rootReducer = combineReducers({
   fontSize,
@@ -191,7 +211,9 @@ const rootReducer = combineReducers({
   currentShabad,
   scrollIndex,
   statusBar,
-  paragraphMode
+  paragraphMode,
+  autoScroll,
+  autoScrollSpeed
 });
 
 export default rootReducer;

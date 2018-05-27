@@ -8,6 +8,7 @@ import {
 } from "react-native-action-sheet-component";
 import { connect } from "react-redux";
 import { bindActionCreators } from "redux";
+import { Slider } from "react-native-elements";
 import AnalyticsManager from "../utils/analytics";
 import * as actions from "../actions/actions";
 
@@ -78,7 +79,6 @@ class Settings extends React.Component {
             titleInfoStyle={styles.titleInfoStyle}
             onPress={() => this.FontFaceActionSheet.show()}
           />
-
           <SettingsList.Item
             backgroundColor={this.props.nightMode ? "#464646" : "#fff"}
             icon={
@@ -146,6 +146,25 @@ class Settings extends React.Component {
               this.props.nightMode && { color: "#fff" }
             ]}
           />
+          <SettingsList.Item
+            backgroundColor={this.props.nightMode ? "#464646" : "#fff"}
+            icon={
+              <Image
+                style={styles.imageStyle}
+                source={require("../images/romanizeicon.png")}
+              />
+            }
+            hasSwitch={true}
+            switchState={this.props.autoScroll}
+            switchOnValueChange={this.props.toggleAutoScroll}
+            hasNavArrow={false}
+            title="Auto Scroll"
+            titleStyle={[
+              styles.titleText,
+              this.props.nightMode && { color: "#fff" }
+            ]}
+          />
+          
           <SettingsList.Header
             headerText="Phone Options"
             headerStyle={[
@@ -171,6 +190,7 @@ class Settings extends React.Component {
               this.props.nightMode && { color: "#fff" }
             ]}
           />
+
           <SettingsList.Header
             headerText="Bani Options"
             headerStyle={[
@@ -492,7 +512,8 @@ function mapStateToProps(state) {
     padchhedSetting: state.padchhedSetting,
     statistics: state.statistics,
     statusBar: state.statusBar,
-    paragraphMode: state.paragraphMode
+    paragraphMode: state.paragraphMode,
+    autoScroll: state.autoScroll
   };
 }
 

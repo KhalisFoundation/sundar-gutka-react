@@ -6,10 +6,11 @@ import {
   Modal,
   View,
   WebView,
-  Platform
+  Platform,
+  Text
 } from "react-native";
 import { connect } from "react-redux";
-import { Header } from "react-native-elements";
+import { Header, Slider } from "react-native-elements";
 import { bindActionCreators } from "redux";
 import Icon from "react-native-vector-icons/FontAwesome";
 import GLOBAL from "../utils/globals";
@@ -303,6 +304,28 @@ class Reader extends React.Component {
             }
           />
         </Animated.View>
+
+        {this.props.autoScroll && (
+          <Animated.View
+            style={[
+              styles.footer,
+              {
+                height: this.state.height,
+                backgroundColor: GLOBAL.COLOR.TOOLBAR_COLOR
+              }
+            ]}
+          >
+            <Slider
+              style={[{ marginLeft: 10, marginRight: 10 }]}
+              minimumValue={1}
+              maximumValue={20}
+              step={0.2}
+              value={this.props.autoScrollSpeed}
+              onValueChange={value => this.props.setAutoScrollSpeed(value)}
+            />
+            <Text>Value: {this.props.autoScrollSpeed}</Text>
+          </Animated.View>
+        )}
       </View>
     );
   }
@@ -316,6 +339,14 @@ const styles = StyleSheet.create({
   header: {
     position: "absolute",
     top: 0,
+    left: 0,
+    right: 0,
+    overflow: "hidden",
+    backgroundColor: "transparent"
+  },
+  footer: {
+    position: "absolute",
+    bottom: 0,
     left: 0,
     right: 0,
     overflow: "hidden",
@@ -336,7 +367,9 @@ function mapStateToProps(state) {
     padchhedSetting: state.padchhedSetting,
     manglacharanPosition: state.manglacharanPosition,
     englishTranslations: state.englishTranslations,
-    paragraphMode: state.paragraphMode
+    paragraphMode: state.paragraphMode,
+    autoScroll: state.autoScroll,
+    autoScrollSpeed: state.autoScrollSpeed
   };
 }
 
