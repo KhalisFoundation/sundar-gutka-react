@@ -87,7 +87,8 @@ class Reader extends React.Component {
         break;
       }
     }
-    this.webView.postMessage(viewPosition);
+    let bookmark = { bookmark: viewPosition };
+    this.webView.postMessage(JSON.stringify(bookmark));
   }
 
   truncate(n) {
@@ -201,6 +202,16 @@ class Reader extends React.Component {
 
   loadScrollJS() {
     return `
+    var autoScrollTimeout;
+    function setAutoScroll(speed) {
+      if(speed > 0) {
+        window.scrollBy(0,1); // horizontal and vertical scroll increments
+        autoScrollTimeout = setTimeout(function() {setAutoScroll(speed)},200/speed); // scrolls every 40 milliseconds
+      }
+      else
+        autoScrollTimeout = null;
+    }
+    
     function scrollFunc(e) {
       if (window.scrollY == 0) { window.postMessage('show'); }
         
@@ -210,32 +221,61 @@ class Reader extends React.Component {
         
         var diffY=scrollFunc.y-window.pageYOffset;
     
-    
-        if( diffY<0 ) {
-            // Scroll down
-            if(diffY<-3) {
-              window.postMessage('hide');
-            }
-        } else if( diffY>5 ) {
-            // Scroll up
-            window.postMessage('show');
-        } else {
-            // First scroll event
-        }
+        if(!autoScrollTimeout) {
+          if( diffY<0 ) {
+              // Scroll down
+              if(diffY<-3) {
+                window.postMessage('hide');
+              }
+          } else if( diffY>5 ) {
+              // Scroll up
+              window.postMessage('show');
+          } else {
+              // First scroll event
+          }
+      }
         scrollFunc.y=window.pageYOffset;
     }
     window.onscroll = scrollFunc;
 
+    var dragging = false;
+    window.addEventListener('touchstart', function() {
+      dragging = false;
+    });
+    window.addEventListener('touchmove', function() {
+      dragging = true;
+    });
+    window.addEventListener('touchend', function() {
+      if(autoScrollTimeout)
+        window.postMessage('toggle');
+      else if(!dragging) 
+        window.postMessage('show');
+
+    });
+
     document.addEventListener("message", function(event) {
-      location.hash = "#" + event.data;
-      setTimeout(function() { window.postMessage('hide'); }, 50);
-      
-        }, false);
+      let message = JSON.parse(event.data);
+      if(message.hasOwnProperty('bookmark')){
+        location.hash = "#" + message.bookmark;
+        setTimeout(function() { window.postMessage('hide'); }, 50);
+      } else if(message.hasOwnProperty('autoScroll')){ 
+        clearTimeout(autoScrollTimeout);
+        setAutoScroll(message.autoScroll);
+      }
+    }, false);
       `;
   }
 
   handleMessage(message) {
-    this.toggleHeader(message.nativeEvent.data);
+    if (message.nativeEvent.data === "toggle") {
+      if (JSON.stringify(this.state.height) == 0) {
+        this.toggleHeader("show");
+      } else {
+        this.toggleHeader("hide");
+      }
+    } else {
+      this.toggleHeader(message.nativeEvent.data);
+    }
   }
 
   render() {
@@ -260,7 +300,11 @@ class Reader extends React.Component {
             html: this.loadHTML(this.state.data),
             baseUrl: ""
           }}
-          //injectedJavaScript={this.loadScrollJS()}
+          injectedJavaScript={
+            this.props.autoScroll
+              ? "setAutoScroll(" + this.props.autoScrollSpeed + ")"
+              : ""
+          }
           onMessage={this.handleMessage.bind(this)}
         />
 
@@ -317,13 +361,25 @@ class Reader extends React.Component {
           >
             <Slider
               style={[{ marginLeft: 10, marginRight: 10 }]}
-              minimumValue={1}
+              minimumTrackTintColor={"#BFBFBF"}
+              maximumTrackTintColor={"#464646"}
+              thumbTintColor={"#fff"}
+              minimumValue={0}
               maximumValue={20}
               step={0.2}
               value={this.props.autoScrollSpeed}
-              onValueChange={value => this.props.setAutoScrollSpeed(value)}
+              onValueChange={value => {
+                let speed = Math.floor(value);
+                this.props.setAutoScrollSpeed(speed);
+                let autoScrollSpeed = { autoScroll: speed };
+                this.webView.postMessage(JSON.stringify(autoScrollSpeed));
+              }}
             />
-            <Text>Value: {this.props.autoScrollSpeed}</Text>
+            <Text
+              style={{ color: GLOBAL.COLOR.TOOLBAR_TINT, textAlign: "center" }}
+            >
+              Speed: {this.props.autoScrollSpeed}
+            </Text>
           </Animated.View>
         )}
       </View>
