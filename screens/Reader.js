@@ -221,17 +221,16 @@ class Reader extends React.Component {
   loadScrollJS() {
     return `
     var autoScrollTimeout;
-    var canAutoScroll = false;
     var autoScrollSpeed = 0;
     function setAutoScroll(speed) {
       if(speed > 0) {
-        canAutoScroll = true;
         window.scrollBy(0,1); // horizontal and vertical scroll increments
         clearTimeout(autoScrollTimeout);
         autoScrollTimeout = setTimeout(function() {setAutoScroll(speed)},220/speed);
       }
-      else
+      else {
         clearTimeout(autoScrollTimeout);
+      }
     }
     
     function scrollFunc(e) {
@@ -243,7 +242,7 @@ class Reader extends React.Component {
         
         var diffY=scrollFunc.y-window.pageYOffset;
     
-        if(!canAutoScroll) {
+        if(autoScrollSpeed == 0) {
           if( diffY<0 ) {
               // Scroll down
               if(diffY<-3) {
@@ -262,7 +261,7 @@ class Reader extends React.Component {
 
     var dragging = false;
     window.addEventListener('touchstart', function() {
-      if(canAutoScroll) {
+      if(autoScrollSpeed != 0) {
         setAutoScroll(0);
       }
       dragging = false;
@@ -271,12 +270,14 @@ class Reader extends React.Component {
       dragging = true;
     });
     window.addEventListener('touchend', function() {
-      if(canAutoScroll) {
+      if(autoScrollSpeed != 0) {
         window.postMessage('toggle');
         setAutoScroll(autoScrollSpeed);
       }
       else if(!dragging) 
+      {
         window.postMessage('show');
+      }
 
     });
 
