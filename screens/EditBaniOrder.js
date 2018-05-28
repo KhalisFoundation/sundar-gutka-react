@@ -58,7 +58,6 @@ class EditBaniOrder extends React.Component {
         active={active}
         nightMode={this.props.nightMode}
         romanized={this.props.romanized}
-        fontSize={this.props.fontSize}
         fontFace={this.props.fontFace}
       />
     );
@@ -122,8 +121,7 @@ class Row extends React.Component {
       active,
       nightMode,
       romanized,
-      fontFace,
-      fontSize
+      fontFace
     } = this.props;
 
     return (
@@ -145,7 +143,7 @@ class Row extends React.Component {
           style={[
             { color: nightMode ? "#fff" : "#222222" },
             !romanized && { fontFamily: fontFace },
-            { fontSize: baseFontSize(fontSize, romanized) }
+            { fontSize: baseFontSize("MEDIUM", romanized) }
           ]}
         >
           {romanized ? data.roman : data.gurmukhi}

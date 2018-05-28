@@ -25,7 +25,7 @@ import {
 import * as actions from "../actions/actions";
 import AnalyticsManager from "../utils/analytics";
 
-const HEADER_POSITION = -70; // From react-native-elements Header source
+const HEADER_POSITION = -120; // From react-native-elements Header source
 class Reader extends React.Component {
   constructor(props) {
     super(props);

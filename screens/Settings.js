@@ -17,6 +17,15 @@ class Settings extends React.Component {
     AnalyticsManager.getInstance().trackScreenView("In App Settings");
   }
 
+  componentDidUpdate(prevProps) {
+    if (
+      prevProps.autoScroll != this.props.autoScroll &&
+      this.props.autoScroll
+    ) {
+      this.props.toggleScreenAwake(true);
+    }
+  }
+
   render() {
     const { navigate } = this.props.navigation;
 
@@ -160,13 +169,6 @@ class Settings extends React.Component {
             ]}
           />
 
-          <SettingsList.Header
-            headerText="Phone Options"
-            headerStyle={[
-              styles.headerStyle,
-              this.props.nightMode && { color: "#fff" }
-            ]}
-          />
           <SettingsList.Item
             backgroundColor={this.props.nightMode ? "#464646" : "#fff"}
             icon={
@@ -178,6 +180,7 @@ class Settings extends React.Component {
             hasSwitch={true}
             switchState={this.props.screenAwake}
             switchOnValueChange={this.props.toggleScreenAwake}
+            switchProps={{ disabled: this.props.autoScroll }}
             hasNavArrow={false}
             title="Keep Screen Awake"
             titleStyle={[
