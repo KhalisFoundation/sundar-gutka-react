@@ -33,6 +33,7 @@ class Reader extends React.Component {
     this.state = {
       data: [],
       paused: true,
+      scrollMultiplier: 1.0,
       isLoading: false,
       animationPosition: new Animated.Value(0), // The header and footer position
       visible: true // Is the header currently visible
@@ -222,11 +223,12 @@ class Reader extends React.Component {
     return `
     var autoScrollTimeout;
     var autoScrollSpeed = 0;
+    var scrollMultiplier = 1.0;
     function setAutoScroll(speed) {
       if(speed > 0) {
         window.scrollBy(0,1); // horizontal and vertical scroll increments
         clearTimeout(autoScrollTimeout);
-        autoScrollTimeout = setTimeout(function() {setAutoScroll(speed)},220/speed);
+        autoScrollTimeout = setTimeout(function() {setAutoScroll(speed)},220/speed/scrollMultiplier);
       }
       else {
         clearTimeout(autoScrollTimeout);
@@ -289,6 +291,8 @@ class Reader extends React.Component {
       } else if(message.hasOwnProperty('autoScroll')){ 
         clearTimeout(autoScrollTimeout);
         autoScrollSpeed = message.autoScroll;
+        scrollMultiplier = message.scrollMultiplier;
+        
         setAutoScroll(autoScrollSpeed);
       }
     }, false);
@@ -307,6 +311,25 @@ class Reader extends React.Component {
     }
   }
 
+  onLayout(e) {
+    var multiplier = 1.0;
+    const { width, height } = Dimensions.get("window");
+    if (width > height) {
+      multiplier = height / width;
+    }
+    this.setState({
+      scrollMultiplier: multiplier
+    });
+
+    if (!this.state.paused) {
+      let autoScrollSpeed = {
+        autoScroll: this.props.autoScrollSpeed,
+        scrollMultiplier: multiplier
+      };
+      this.webView.postMessage(JSON.stringify(autoScrollSpeed));
+    }
+  }
+
   render() {
     const { params } = this.props.navigation.state;
 
@@ -320,6 +343,7 @@ class Reader extends React.Component {
           styles.container,
           this.props.nightMode && { backgroundColor: "#000" }
         ]}
+        onLayout={this.onLayout.bind(this)}
       >
         <LoadingIndicator isLoading={this.state.isLoading} />
 
@@ -333,10 +357,15 @@ class Reader extends React.Component {
           onMessage={this.handleMessage.bind(this)}
         />
 
-        <Animated.View style={[styles.header, { position: "absolute", top: this.state.animationPosition }]}>
+        <Animated.View
+          style={[
+            styles.header,
+            { position: "absolute", top: this.state.animationPosition }
+          ]}
+        >
           <Header
             outerContainerStyles={{ borderBottomWidth: 0 }}
-            backgroundColor={GLOBAL.COLOR.TOOLBAR_COLOR}
+            backgroundColor={GLOBAL.COLOR.READER_HEADER_COLOR}
             leftComponent={
               <Icon
                 name="arrow-back"
@@ -362,7 +391,10 @@ class Reader extends React.Component {
                   color={GLOBAL.COLOR.TOOLBAR_TINT}
                   size={30}
                   onPress={() => {
-                    let autoScrollSpeed = { autoScroll: 0 };
+                    let autoScrollSpeed = {
+                      autoScroll: 0,
+                      scrollMultiplier: this.state.scrollMultiplier
+                    };
                     this.webView.postMessage(JSON.stringify(autoScrollSpeed));
                     this.setState({
                       paused: true
@@ -401,7 +433,7 @@ class Reader extends React.Component {
                 position: "absolute",
                 bottom: this.state.animationPosition,
                 paddingBottom: 10,
-                backgroundColor: GLOBAL.COLOR.FOOTER_COLOR
+                backgroundColor: GLOBAL.COLOR.READER_FOOTER_COLOR
               }
             ]}
           >
@@ -414,7 +446,8 @@ class Reader extends React.Component {
                   size={30}
                   onPress={() => {
                     let autoScrollSpeed = {
-                      autoScroll: this.props.autoScrollSpeed
+                      autoScroll: this.props.autoScrollSpeed,
+                      scrollMultiplier: this.state.scrollMultiplier
                     };
                     this.webView.postMessage(JSON.stringify(autoScrollSpeed));
                     this.setState({
@@ -430,7 +463,10 @@ class Reader extends React.Component {
                   color={GLOBAL.COLOR.TOOLBAR_TINT}
                   size={30}
                   onPress={() => {
-                    let autoScrollSpeed = { autoScroll: 0 };
+                    let autoScrollSpeed = {
+                      autoScroll: 0,
+                      scrollMultiplier: this.state.scrollMultiplier
+                    };
                     this.webView.postMessage(JSON.stringify(autoScrollSpeed));
                     this.setState({
                       paused: true
@@ -455,7 +491,10 @@ class Reader extends React.Component {
                   speed === 0
                     ? this.setState({ paused: true })
                     : this.setState({ paused: false });
-                  let autoScrollSpeed = { autoScroll: speed };
+                  let autoScrollSpeed = {
+                    autoScroll: speed,
+                    scrollMultiplier: this.state.scrollMultiplier
+                  };
                   this.webView.postMessage(JSON.stringify(autoScrollSpeed));
                 }}
               />
