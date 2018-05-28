@@ -25,7 +25,7 @@ import {
 import * as actions from "../actions/actions";
 import AnalyticsManager from "../utils/analytics";
 
-const HEADER_HEIGHT = 70; // From react-native-elements Header source
+const HEADER_POSITION = -70; // From react-native-elements Header source
 class Reader extends React.Component {
   constructor(props) {
     super(props);
@@ -34,7 +34,7 @@ class Reader extends React.Component {
       data: [],
       paused: true,
       isLoading: false,
-      height: new Animated.Value(HEADER_HEIGHT), // The header height
+      animationPosition: new Animated.Value(0), // The header and footer position
       visible: true // Is the header currently visible
     };
 
@@ -44,9 +44,9 @@ class Reader extends React.Component {
   }
 
   toggleHeader(state) {
-    Animated.timing(this.state.height, {
+    Animated.timing(this.state.animationPosition, {
       duration: this.slideDuration,
-      toValue: state == "hide" ? 0 : HEADER_HEIGHT
+      toValue: state == "hide" ? HEADER_POSITION : 0
     }).start();
   }
 
@@ -296,10 +296,10 @@ class Reader extends React.Component {
 
   handleMessage(message) {
     if (message.nativeEvent.data === "toggle") {
-      if (JSON.stringify(this.state.height) == 0) {
-        this.toggleHeader("show");
-      } else {
+      if (JSON.stringify(this.state.animationPosition) == 0) {
         this.toggleHeader("hide");
+      } else {
+        this.toggleHeader("show");
       }
     } else {
       this.toggleHeader(message.nativeEvent.data);
@@ -324,6 +324,7 @@ class Reader extends React.Component {
 
         <WebView
           ref={webView => (this.webView = webView)}
+          bounces={false}
           source={{
             html: this.loadHTML(this.state.data),
             baseUrl: ""
@@ -331,7 +332,7 @@ class Reader extends React.Component {
           onMessage={this.handleMessage.bind(this)}
         />
 
-        <Animated.View style={[styles.header, { height: this.state.height }]}>
+        <Animated.View style={[styles.header, { position: "absolute", top: this.state.animationPosition }]}>
           <Header
             outerContainerStyles={{ borderBottomWidth: 0 }}
             backgroundColor={GLOBAL.COLOR.TOOLBAR_COLOR}
@@ -396,7 +397,9 @@ class Reader extends React.Component {
             style={[
               styles.footer,
               {
-                height: this.state.height,
+                position: "absolute",
+                bottom: this.state.animationPosition,
+                paddingBottom: 10,
                 backgroundColor: GLOBAL.COLOR.FOOTER_COLOR
               }
             ]}
