@@ -17,15 +17,6 @@ class Settings extends React.Component {
     AnalyticsManager.getInstance().trackScreenView("In App Settings");
   }
 
-  componentDidUpdate(prevProps) {
-    if (
-      prevProps.autoScroll != this.props.autoScroll &&
-      this.props.autoScroll
-    ) {
-      this.props.toggleScreenAwake(true);
-    }
-  }
-
   render() {
     const { navigate } = this.props.navigation;
 
@@ -178,7 +169,7 @@ class Settings extends React.Component {
               />
             }
             hasSwitch={true}
-            switchState={this.props.screenAwake}
+            switchState={this.props.screenAwake || this.props.autoScroll}
             switchOnValueChange={this.props.toggleScreenAwake}
             switchProps={{ disabled: this.props.autoScroll }}
             hasNavArrow={false}
@@ -288,7 +279,6 @@ class Settings extends React.Component {
             titleInfoStyle={styles.titleInfoStyle}
             onPress={() => this.ManglacharanPositionActionSheet.show()}
           />
-
           <SettingsList.Item
             backgroundColor={this.props.nightMode ? "#464646" : "#fff"}
             icon={
@@ -309,6 +299,19 @@ class Settings extends React.Component {
             }
             titleInfoStyle={styles.titleInfoStyle}
             onPress={() => this.PadchhedSettingsActionSheet.show()}
+          />
+          <SettingsList.Item
+            backgroundColor={this.props.nightMode ? "#464646" : "#fff"}
+            icon={<Icon style={styles.imageStyle} name="pause" size={30} />}
+            hasSwitch={true}
+            switchState={this.props.visram}
+            switchOnValueChange={this.props.toggleVisram}
+            hasNavArrow={false}
+            title="Vishram"
+            titleStyle={[
+              styles.titleText,
+              this.props.nightMode && { color: "#fff" }
+            ]}
           />
 
           <SettingsList.Header
@@ -511,7 +514,8 @@ function mapStateToProps(state) {
     statistics: state.statistics,
     statusBar: state.statusBar,
     paragraphMode: state.paragraphMode,
-    autoScroll: state.autoScroll
+    autoScroll: state.autoScroll,
+    visram: state.visram
   };
 }
 

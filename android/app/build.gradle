@@ -101,7 +101,7 @@ android {
         applicationId "com.WahegurooNetwork.SundarGutka"
         minSdkVersion 16
         targetSdkVersion 27
-        versionCode 57
+        versionCode 58
         versionName "5.1.0"
         ndk {
             abiFilters "armeabi-v7a", "x86"

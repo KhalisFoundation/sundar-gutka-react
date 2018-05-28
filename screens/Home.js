@@ -57,7 +57,7 @@ class Home extends React.Component {
   }
 
   componentWillMount() {
-    this.changeKeepAwake(this.props.screenAwake);
+    this.changeKeepAwake(this.props.screenAwake || this.props.autoScroll);
     this.changeStatusBar(this.props.statusBar);
     AnalyticsManager.getInstance().allowTracking(this.props.statistics);
     Database.getBaniList().then(baniList => {
@@ -79,6 +79,12 @@ class Home extends React.Component {
       this.sortBani();
     } else if (prevProps.screenAwake != this.props.screenAwake) {
       this.changeKeepAwake(this.props.screenAwake);
+    } else if (prevProps.autoScroll != this.props.autoScroll) {
+      if (this.props.autoScroll) {
+        this.changeKeepAwake(true);
+      } else {
+        this.changeKeepAwake(this.props.screenAwake);
+      }
     } else if (prevProps.statusBar != this.props.statusBar) {
       this.changeStatusBar(this.props.statusBar);
     } else if (prevProps.statistics != this.props.statistics) {
@@ -129,7 +135,8 @@ function mapStateToProps(state) {
     fontFace: state.fontFace,
     screenAwake: state.screenAwake,
     statusBar: state.statusBar,
-    statistics: state.statistics
+    statistics: state.statistics,
+    autoScroll: state.autoScroll
   };
 }
 

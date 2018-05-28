@@ -58,7 +58,8 @@ class Reader extends React.Component {
       this.props.larivaar,
       this.props.padchhedSetting,
       this.props.manglacharanPosition,
-      this.props.paragraphMode
+      this.props.paragraphMode,
+      this.props.visram
     ).then(shabad => {
       this.setState({
         data: shabad,
@@ -77,7 +78,8 @@ class Reader extends React.Component {
       prevProps.larivaar != this.props.larivaar ||
       prevProps.paragraphMode != this.props.paragraphMode ||
       prevProps.manglacharanPosition != this.props.manglacharanPosition ||
-      prevProps.padchhedSetting != this.props.padchhedSetting
+      prevProps.padchhedSetting != this.props.padchhedSetting ||
+      prevProps.visram != this.props.visram
     ) {
       this.loadShabad();
     }
@@ -553,7 +555,8 @@ function mapStateToProps(state) {
     englishTranslations: state.englishTranslations,
     paragraphMode: state.paragraphMode,
     autoScroll: state.autoScroll,
-    autoScrollSpeed: state.autoScrollSpeed
+    autoScrollSpeed: state.autoScrollSpeed,
+    visram: state.visram
   };
 }
 

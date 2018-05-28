@@ -1,7 +1,7 @@
 import React from "react";
 import SQLite from "react-native-sqlite-storage";
 
-var database_name = "gutkav7.db";
+var database_name = "gutkav8.db";
 
 let db = SQLite.openDatabase({ name: database_name, createFromLocation: 1 });
 
@@ -33,7 +33,8 @@ class Database {
     larivaar,
     padcched,
     mangalPosition,
-    paragraphMode
+    paragraphMode,
+    visram
   ) {
     var baniLength;
     switch (length) {
@@ -48,7 +49,7 @@ class Database {
     }
     return new Promise(function(resolve) {
       db.executeSql(
-        "SELECT ID, ParagraphLong, header, Gurmukhi, Transliteration, English FROM mv_Banis_Shabad WHERE Bani = " +
+        "SELECT ID, ParagraphLong, header, Gurmukhi, GurmukhiBisram, Transliteration, English FROM mv_Banis_Shabad WHERE Bani = " +
           baniId +
           " AND " +
           baniLength +
@@ -67,12 +68,34 @@ class Database {
           var englishTranslation;
           var paragraphHeader;
           var prevParagraph;
-
           for (let i = 0; i < len; i++) {
             let row = results.rows.item(i);
+
+            var gurmukhiLine =
+              visram && row.GurmukhiBisram ? row.GurmukhiBisram : row.Gurmukhi;
+
+            var splitted = gurmukhiLine.split(" ");
+
+            var arr = [];
+            splitted.forEach(function(word) {
+              if (word.indexOf(";") >= 0) {
+                arr.push(
+                  "<span style='color:orange'>" + word.slice(0, -1) + "</span>"
+                );
+              } else if (word.indexOf(",") >= 0) {
+                arr.push(
+                  "<span style='color:green'>" + word.slice(0, -1) + "</span>"
+                );
+              } else {
+                arr.push(word);
+              }
+            });
+
+            gurmukhiLine = arr.join(" ");
+
             let curGurmukhi = larivaar
-              ? row.Gurmukhi.replace(/ /g, "<wbr>")
-              : row.Gurmukhi;
+              ? gurmukhiLine.replace(/ /g, "<wbr>")
+              : gurmukhiLine;
 
             row.English = row.English == "" ? " " : row.English;
             row.Transliteration =

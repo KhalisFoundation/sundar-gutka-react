@@ -23,6 +23,7 @@ export const TOGGLE_STATUS_BAR = "TOGGLE_STATUS_BAR";
 export const TOGGLE_PARAGRAPH_MODE = "TOGGLE_PARAGRAPH_MODE"
 export const TOGGLE_AUTO_SCROLL = "TOGGLE_AUTO_SCROLL";
 export const SET_AUTO_SCROLL_SPEED = "SET_AUTO_SCROLL_SPEED";
+export const TOGGLE_VISRAM = "TOGGLE_VISRAM";
 
 /*
  * other constants
@@ -172,4 +173,9 @@ export function toggleAutoScroll(value) {
 export function setAutoScrollSpeed(speed) {
   //AnalyticsManager.getInstance().trackEvent("autoScrollSpeed", speed);
   return { type: SET_AUTO_SCROLL_SPEED, speed };
+}
+
+export function toggleVisram(value) {
+  //AnalyticsManager.getInstance().trackEvent("visram", speed);
+  return { type: TOGGLE_VISRAM, value };
 }

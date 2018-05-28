@@ -19,7 +19,8 @@ import {
   TOGGLE_STATUS_BAR,
   TOGGLE_PARAGRAPH_MODE,
   TOGGLE_AUTO_SCROLL,
-  SET_AUTO_SCROLL_SPEED
+  SET_AUTO_SCROLL_SPEED,
+  TOGGLE_VISRAM
 } from "../actions/actions";
 
 function fontSize(state = "SMALL", action) {
@@ -193,6 +194,15 @@ function autoScrollSpeed(state = 10, action) {
   }
 }
 
+function visram(state = false, action) {
+  switch (action.type) {
+    case TOGGLE_VISRAM:
+      return action.value;
+    default:
+      return state;
+  }
+}
+
 // Combine all the reducers
 const rootReducer = combineReducers({
   fontSize,
@@ -213,7 +223,8 @@ const rootReducer = combineReducers({
   statusBar,
   paragraphMode,
   autoScroll,
-  autoScrollSpeed
+  autoScrollSpeed,
+  visram
 });
 
 export default rootReducer;
