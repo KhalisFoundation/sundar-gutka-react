@@ -5,7 +5,7 @@ import { Header } from "react-native-elements";
 import { Provider } from "react-redux";
 import { PersistGate } from "redux-persist/integration/react";
 import storage from "redux-persist/lib/storage";
-import Icon from "react-native-vector-icons/FontAwesome";
+import Icon from "react-native-vector-icons/MaterialIcons";
 import GLOBAL from "./utils/globals";
 import HomeScreen from "./screens/Home";
 import FolderBaniScreen from "./screens/FolderBani";
@@ -35,7 +35,7 @@ const FolderNavigation = TabNavigator({
           }}
           rightComponent={
             <Icon
-              name="cog"
+              name="settings"
               color={GLOBAL.COLOR.TOOLBAR_TINT}
               size={30}
               onPress={() =>
@@ -58,7 +58,7 @@ const FolderNavigation = TabNavigator({
           backgroundColor={GLOBAL.COLOR.TOOLBAR_COLOR}
           leftComponent={
             <Icon
-              name="arrow-left"
+              name="arrow-back"
               color={GLOBAL.COLOR.TOOLBAR_TINT}
               size={30}
               onPress={() => navigation.goBack()}
@@ -73,7 +73,7 @@ const FolderNavigation = TabNavigator({
           }}
           rightComponent={
             <Icon
-              name="cog"
+              name="settings"
               color={GLOBAL.COLOR.TOOLBAR_TINT}
               size={30}
               onPress={() =>
@@ -102,7 +102,7 @@ const RootStack = StackNavigator({
           backgroundColor={GLOBAL.COLOR.TOOLBAR_COLOR_ALT}
           leftComponent={
             <Icon
-              name="arrow-left"
+              name="arrow-back"
               color={GLOBAL.COLOR.TOOLBAR_TINT}
               size={30}
               onPress={() => navigation.goBack()}
@@ -129,7 +129,7 @@ const RootStack = StackNavigator({
           backgroundColor={GLOBAL.COLOR.TOOLBAR_COLOR_ALT}
           leftComponent={
             <Icon
-              name="arrow-left"
+              name="arrow-back"
               color={GLOBAL.COLOR.TOOLBAR_TINT}
               size={30}
               onPress={() => navigation.goBack()}
@@ -149,7 +149,7 @@ const RootStack = StackNavigator({
           backgroundColor={GLOBAL.COLOR.TOOLBAR_COLOR_ALT2}
           leftComponent={
             <Icon
-              name="arrow-left"
+              name="arrow-back"
               color={GLOBAL.COLOR.TOOLBAR_TINT}
               size={30}
               onPress={() => navigation.goBack()}
@@ -182,7 +182,7 @@ const RootStack = StackNavigator({
           backgroundColor={GLOBAL.COLOR.TOOLBAR_COLOR_ALT2}
           leftComponent={
             <Icon
-              name="arrow-left"
+              name="arrow-back"
               color={GLOBAL.COLOR.TOOLBAR_TINT}
               size={30}
               onPress={() => navigation.goBack()}

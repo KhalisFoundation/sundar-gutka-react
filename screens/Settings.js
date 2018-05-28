@@ -148,12 +148,7 @@ class Settings extends React.Component {
           />
           <SettingsList.Item
             backgroundColor={this.props.nightMode ? "#464646" : "#fff"}
-            icon={
-              <Image
-                style={styles.imageStyle}
-                source={require("../images/romanizeicon.png")}
-              />
-            }
+            icon={<Icon style={styles.imageStyle} name="magic" size={30} />}
             hasSwitch={true}
             switchState={this.props.autoScroll}
             switchOnValueChange={this.props.toggleAutoScroll}
@@ -164,7 +159,7 @@ class Settings extends React.Component {
               this.props.nightMode && { color: "#fff" }
             ]}
           />
-          
+
           <SettingsList.Header
             headerText="Phone Options"
             headerStyle={[

@@ -12,7 +12,7 @@ import {
 import { connect } from "react-redux";
 import { Header, Slider } from "react-native-elements";
 import { bindActionCreators } from "redux";
-import Icon from "react-native-vector-icons/FontAwesome";
+import Icon from "react-native-vector-icons/MaterialIcons";
 import GLOBAL from "../utils/globals";
 import Database from "../utils/database";
 import LoadingIndicator from "../components/LoadingIndicator";
@@ -32,6 +32,7 @@ class Reader extends React.Component {
 
     this.state = {
       data: [],
+      paused: true,
       isLoading: false,
       height: new Animated.Value(HEADER_HEIGHT), // The header height
       visible: true // Is the header currently visible
@@ -49,7 +50,7 @@ class Reader extends React.Component {
     }).start();
   }
 
-  componentWillMount() {
+  loadShabad() {
     Database.getShabadForId(
       this.props.currentShabad,
       this.props.baniLength,
@@ -63,6 +64,22 @@ class Reader extends React.Component {
         isLoading: false
       });
     });
+  }
+
+  componentWillMount() {
+    this.loadShabad();
+  }
+
+  componentDidUpdate(prevProps) {
+    if (
+      prevProps.baniLength != this.props.baniLength ||
+      prevProps.larivaar != this.props.larivaar ||
+      prevProps.paragraphMode != this.props.paragraphMode ||
+      prevProps.manglacharanPosition != this.props.manglacharanPosition ||
+      prevProps.padchhedSetting != this.props.padchhedSetting
+    ) {
+      this.loadShabad();
+    }
   }
 
   trackScreenForShabad(name) {
@@ -124,6 +141,7 @@ class Reader extends React.Component {
         (nightMode ? "#fff" : "#000") +
         ";" +
         "padding-top: 3.5em; }";
+      html += "* { -webkit-user-select: none; }";
       html += "</style><script>" + this.loadScrollJS() + "</script>";
       html += "</head><body>";
 
@@ -203,13 +221,17 @@ class Reader extends React.Component {
   loadScrollJS() {
     return `
     var autoScrollTimeout;
+    var canAutoScroll = false;
+    var autoScrollSpeed = 0;
     function setAutoScroll(speed) {
       if(speed > 0) {
+        canAutoScroll = true;
         window.scrollBy(0,1); // horizontal and vertical scroll increments
-        autoScrollTimeout = setTimeout(function() {setAutoScroll(speed)},200/speed); // scrolls every 40 milliseconds
+        clearTimeout(autoScrollTimeout);
+        autoScrollTimeout = setTimeout(function() {setAutoScroll(speed)},220/speed);
       }
       else
-        autoScrollTimeout = null;
+        clearTimeout(autoScrollTimeout);
     }
     
     function scrollFunc(e) {
@@ -221,7 +243,7 @@ class Reader extends React.Component {
         
         var diffY=scrollFunc.y-window.pageYOffset;
     
-        if(!autoScrollTimeout) {
+        if(!canAutoScroll) {
           if( diffY<0 ) {
               // Scroll down
               if(diffY<-3) {
@@ -240,14 +262,19 @@ class Reader extends React.Component {
 
     var dragging = false;
     window.addEventListener('touchstart', function() {
+      if(canAutoScroll) {
+        setAutoScroll(0);
+      }
       dragging = false;
     });
     window.addEventListener('touchmove', function() {
       dragging = true;
     });
     window.addEventListener('touchend', function() {
-      if(autoScrollTimeout)
+      if(canAutoScroll) {
         window.postMessage('toggle');
+        setAutoScroll(autoScrollSpeed);
+      }
       else if(!dragging) 
         window.postMessage('show');
 
@@ -260,7 +287,8 @@ class Reader extends React.Component {
         setTimeout(function() { window.postMessage('hide'); }, 50);
       } else if(message.hasOwnProperty('autoScroll')){ 
         clearTimeout(autoScrollTimeout);
-        setAutoScroll(message.autoScroll);
+        autoScrollSpeed = message.autoScroll;
+        setAutoScroll(autoScrollSpeed);
       }
     }, false);
       `;
@@ -300,11 +328,6 @@ class Reader extends React.Component {
             html: this.loadHTML(this.state.data),
             baseUrl: ""
           }}
-          injectedJavaScript={
-            this.props.autoScroll
-              ? "setAutoScroll(" + this.props.autoScrollSpeed + ")"
-              : ""
-          }
           onMessage={this.handleMessage.bind(this)}
         />
 
@@ -314,7 +337,7 @@ class Reader extends React.Component {
             backgroundColor={GLOBAL.COLOR.TOOLBAR_COLOR}
             leftComponent={
               <Icon
-                name="arrow-left"
+                name="arrow-back"
                 color={GLOBAL.COLOR.TOOLBAR_TINT}
                 size={30}
                 onPress={() => this.props.navigation.goBack()}
@@ -331,20 +354,39 @@ class Reader extends React.Component {
               }
             }}
             rightComponent={
-              <Icon
-                name="bookmark"
-                color={GLOBAL.COLOR.TOOLBAR_TINT}
-                size={30}
-                onPress={() => {
-                  this.trackScreenForShabad(
-                    "Bookmarks for " + params.item.roman
-                  );
-                  this.props.navigation.navigate({
-                    key: "Bookmarks",
-                    routeName: "Bookmarks"
-                  });
-                }}
-              />
+              <View style={{ flexDirection: "row" }}>
+                <Icon
+                  name="settings"
+                  color={GLOBAL.COLOR.TOOLBAR_TINT}
+                  size={30}
+                  onPress={() => {
+                    let autoScrollSpeed = { autoScroll: 0 };
+                    this.webView.postMessage(JSON.stringify(autoScrollSpeed));
+                    this.setState({
+                      paused: true
+                    });
+                    this.props.navigation.navigate({
+                      key: "Settings",
+                      routeName: "Settings"
+                    });
+                  }}
+                />
+                <Icon
+                  style={{ paddingLeft: 15 }}
+                  name="bookmark"
+                  color={GLOBAL.COLOR.TOOLBAR_TINT}
+                  size={30}
+                  onPress={() => {
+                    this.trackScreenForShabad(
+                      "Bookmarks for " + params.item.roman
+                    );
+                    this.props.navigation.navigate({
+                      key: "Bookmarks",
+                      routeName: "Bookmarks"
+                    });
+                  }}
+                />
+              </View>
             }
           />
         </Animated.View>
@@ -355,31 +397,74 @@ class Reader extends React.Component {
               styles.footer,
               {
                 height: this.state.height,
-                backgroundColor: GLOBAL.COLOR.TOOLBAR_COLOR
+                backgroundColor: GLOBAL.COLOR.FOOTER_COLOR
               }
             ]}
           >
-            <Slider
-              style={[{ marginLeft: 10, marginRight: 10 }]}
-              minimumTrackTintColor={"#BFBFBF"}
-              maximumTrackTintColor={"#464646"}
-              thumbTintColor={"#fff"}
-              minimumValue={0}
-              maximumValue={20}
-              step={0.2}
-              value={this.props.autoScrollSpeed}
-              onValueChange={value => {
-                let speed = Math.floor(value);
-                this.props.setAutoScrollSpeed(speed);
-                let autoScrollSpeed = { autoScroll: speed };
-                this.webView.postMessage(JSON.stringify(autoScrollSpeed));
-              }}
-            />
-            <Text
-              style={{ color: GLOBAL.COLOR.TOOLBAR_TINT, textAlign: "center" }}
-            >
-              Speed: {this.props.autoScrollSpeed}
-            </Text>
+            <View style={{ flexDirection: "row" }}>
+              {this.state.paused && (
+                <Icon
+                  style={{ paddingTop: 15, paddingLeft: 25, width: 55 }}
+                  name="play-arrow"
+                  color={GLOBAL.COLOR.TOOLBAR_TINT}
+                  size={30}
+                  onPress={() => {
+                    let autoScrollSpeed = {
+                      autoScroll: this.props.autoScrollSpeed
+                    };
+                    this.webView.postMessage(JSON.stringify(autoScrollSpeed));
+                    this.setState({
+                      paused: false
+                    });
+                  }}
+                />
+              )}
+              {!this.state.paused && (
+                <Icon
+                  style={{ paddingTop: 15, paddingLeft: 25, width: 55 }}
+                  name="pause"
+                  color={GLOBAL.COLOR.TOOLBAR_TINT}
+                  size={30}
+                  onPress={() => {
+                    let autoScrollSpeed = { autoScroll: 0 };
+                    this.webView.postMessage(JSON.stringify(autoScrollSpeed));
+                    this.setState({
+                      paused: true
+                    });
+                  }}
+                />
+              )}
+              <Slider
+                style={[
+                  { flex: 1, marginLeft: 25, marginRight: 25, marginTop: 10 }
+                ]}
+                minimumTrackTintColor={"#BFBFBF"}
+                maximumTrackTintColor={"#464646"}
+                thumbTintColor={"#fff"}
+                minimumValue={0}
+                maximumValue={20}
+                step={0.2}
+                value={this.props.autoScrollSpeed}
+                onValueChange={value => {
+                  let speed = Math.floor(value);
+                  this.props.setAutoScrollSpeed(speed);
+                  speed === 0
+                    ? this.setState({ paused: true })
+                    : this.setState({ paused: false });
+                  let autoScrollSpeed = { autoScroll: speed };
+                  this.webView.postMessage(JSON.stringify(autoScrollSpeed));
+                }}
+              />
+              <Text
+                style={{
+                  color: GLOBAL.COLOR.TOOLBAR_TINT,
+                  paddingTop: 20,
+                  paddingRight: 20
+                }}
+              >
+                {this.props.autoScrollSpeed}
+              </Text>
+            </View>
           </Animated.View>
         )}
       </View>
