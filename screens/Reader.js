@@ -350,8 +350,8 @@ class Reader extends React.Component {
         <LoadingIndicator isLoading={this.state.isLoading} />
 
         <WebView
+          style={this.props.nightMode && { backgroundColor: "#000" }}
           ref={webView => (this.webView = webView)}
-          bounces={false}
           source={{
             html: this.loadHTML(this.state.data),
             baseUrl: ""
