@@ -278,9 +278,9 @@ class Reader extends React.Component {
         window.postMessage('toggle');
         setAutoScroll(autoScrollSpeed);
       }
-      else if(!dragging) 
+      else if(!dragging)   
       {
-        window.postMessage('show');
+        window.postMessage('toggle');
       }
 
     });

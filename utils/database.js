@@ -91,11 +91,7 @@ class Database {
               }
             });
 
-            gurmukhiLine = arr.join(" ");
-
-            let curGurmukhi = larivaar
-              ? gurmukhiLine.replace(/ /g, "<wbr>")
-              : gurmukhiLine;
+            let curGurmukhi = larivaar ? arr.join("<wbr>") : arr.join(" ");
 
             row.English = row.English == "" ? " " : row.English;
             row.Transliteration =

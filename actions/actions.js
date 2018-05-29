@@ -166,16 +166,16 @@ export function setScrollIndex(index) {
 }
 
 export function toggleAutoScroll(value) {
-  //AnalyticsManager.getInstance().trackEvent("autoScroll", value);
+  AnalyticsManager.getInstance().trackEvent("autoScroll", value);
   return { type: TOGGLE_AUTO_SCROLL, value };
 }
 
 export function setAutoScrollSpeed(speed) {
-  //AnalyticsManager.getInstance().trackEvent("autoScrollSpeed", speed);
+  AnalyticsManager.getInstance().trackEvent("autoScrollSpeed", speed);
   return { type: SET_AUTO_SCROLL_SPEED, speed };
 }
 
 export function toggleVisram(value) {
-  //AnalyticsManager.getInstance().trackEvent("visram", speed);
+  AnalyticsManager.getInstance().trackEvent("visram", value);
   return { type: TOGGLE_VISRAM, value };
 }
