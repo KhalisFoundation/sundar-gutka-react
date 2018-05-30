@@ -226,63 +226,73 @@ class Reader extends React.Component {
     var autoScrollTimeout;
     var autoScrollSpeed = 0;
     var scrollMultiplier = 1.0;
-    function setAutoScroll(speed) {
+    var dragging = false;
+    var holding = false;
+    var holdTimer;
+    function setAutoScroll() {
+      let speed = autoScrollSpeed;
       if(speed > 0) {
-        window.scrollBy(0,1); // horizontal and vertical scroll increments
-        clearTimeout(autoScrollTimeout);
-        autoScrollTimeout = setTimeout(function() {setAutoScroll(speed)},220/speed/scrollMultiplier);
-      }
-      else {
-        clearTimeout(autoScrollTimeout);
+        window.scrollBy({
+          behavior: "auto",
+          left: 0,
+          top: 1
+        }); 
+        autoScrollTimeout = setTimeout(function() {setAutoScroll()},(200-speed*2)/scrollMultiplier);
+      } else {
+        clearScrollTimeout();
       }
     }
     
+    function clearScrollTimeout() {
+      if(autoScrollTimeout != null) {
+        clearTimeout(autoScrollTimeout);
+      }
+      autoScrollTimeout = null;
+    }
     function scrollFunc(e) {
       if (window.scrollY == 0) { window.postMessage('show'); }
         
-      if ( typeof scrollFunc.y == 'undefined' ) {
-            scrollFunc.y=window.pageYOffset;
+      if (typeof scrollFunc.y == 'undefined') {
+            scrollFunc.y = window.pageYOffset;
         }
-        
-        var diffY=scrollFunc.y-window.pageYOffset;
-    
         if(autoScrollSpeed == 0) {
-          if( diffY<0 ) {
-              // Scroll down
-              if(diffY<-3) {
-                window.postMessage('hide');
-              }
-          } else if( diffY>5 ) {
-              // Scroll up
-              window.postMessage('show');
-          } else {
-              // First scroll event
-          }
+        var diffY = scrollFunc.y - window.pageYOffset;
+        if(diffY < 0) {
+            // Scroll down
+            if(diffY < -3) {
+              window.postMessage('hide');
+            } 
+        } else if(diffY > 5) {
+            // Scroll up
+            window.postMessage('show');
+        }
       }
-        scrollFunc.y=window.pageYOffset;
+        scrollFunc.y = window.pageYOffset;
     }
     window.onscroll = scrollFunc;
 
-    var dragging = false;
     window.addEventListener('touchstart', function() {
       if(autoScrollSpeed != 0) {
-        setAutoScroll(0);
+        clearScrollTimeout();
       }
       dragging = false;
+      holding = false;
+      holdTimer = setTimeout(function() {holding = true}, 125); // Longer than 125 milliseconds is not a tap
     });
     window.addEventListener('touchmove', function() {
       dragging = true;
     });
     window.addEventListener('touchend', function() {
-      if(autoScrollSpeed != 0) {
-        window.postMessage('toggle');
-        setAutoScroll(autoScrollSpeed);
+      if(autoScrollSpeed != 0 && autoScrollTimeout == null) {
+        setAutoScroll();
       }
-      else if(!dragging)   
+      if(!dragging && !holding)   
       {
         window.postMessage('toggle');
       }
-
+      clearTimeout(holdTimer);
+      dragging = false;
+      holding = false;
     });
 
     document.addEventListener("message", function(event) {
@@ -291,11 +301,12 @@ class Reader extends React.Component {
         location.hash = "#" + message.bookmark;
         setTimeout(function() { window.postMessage('hide'); }, 50);
       } else if(message.hasOwnProperty('autoScroll')){ 
-        clearTimeout(autoScrollTimeout);
         autoScrollSpeed = message.autoScroll;
         scrollMultiplier = message.scrollMultiplier;
         
-        setAutoScroll(autoScrollSpeed);
+        if(autoScrollTimeout == null) {
+          setAutoScroll();
+        }
       }
     }, false);
       `;
@@ -378,8 +389,8 @@ class Reader extends React.Component {
             }
             centerComponent={{
               text: this.props.romanized
-                ? this.truncate.apply(params.item.roman, [30])
-                : this.truncate.apply(params.item.gurmukhi, [30]),
+                ? this.truncate.apply(params.item.roman, [24])
+                : this.truncate.apply(params.item.gurmukhi, [25]),
               style: {
                 color: GLOBAL.COLOR.TOOLBAR_TINT,
                 fontFamily: this.props.romanized ? null : this.props.fontFace,
@@ -447,14 +458,19 @@ class Reader extends React.Component {
                   color={GLOBAL.COLOR.TOOLBAR_TINT}
                   size={30}
                   onPress={() => {
+                    var scrollSpeed = this.props.autoScrollSpeed;
+                    if (scrollSpeed == 0) {
+                      scrollSpeed = 1;
+                      this.props.setAutoScrollSpeed(scrollSpeed);
+                    }
                     let autoScrollSpeed = {
-                      autoScroll: this.props.autoScrollSpeed,
+                      autoScroll: scrollSpeed,
                       scrollMultiplier: this.state.scrollMultiplier
                     };
-                    this.webView.postMessage(JSON.stringify(autoScrollSpeed));
                     this.setState({
                       paused: false
                     });
+                    this.webView.postMessage(JSON.stringify(autoScrollSpeed));
                   }}
                 />
               )}
@@ -469,10 +485,10 @@ class Reader extends React.Component {
                       autoScroll: 0,
                       scrollMultiplier: this.state.scrollMultiplier
                     };
-                    this.webView.postMessage(JSON.stringify(autoScrollSpeed));
                     this.setState({
                       paused: true
                     });
+                    this.webView.postMessage(JSON.stringify(autoScrollSpeed));
                   }}
                 />
               )}
@@ -484,12 +500,12 @@ class Reader extends React.Component {
                 maximumTrackTintColor={"#464646"}
                 thumbTintColor={"#fff"}
                 minimumValue={0}
-                maximumValue={20}
-                step={0.2}
+                maximumValue={100}
+                step={1}
                 value={this.props.autoScrollSpeed}
                 onValueChange={value => {
-                  let speed = Math.floor(value);
-                  this.props.setAutoScrollSpeed(speed);
+                  this.props.setAutoScrollSpeed(value);
+                  let speed = value;
                   speed === 0
                     ? this.setState({ paused: true })
                     : this.setState({ paused: false });
@@ -498,6 +514,12 @@ class Reader extends React.Component {
                     scrollMultiplier: this.state.scrollMultiplier
                   };
                   this.webView.postMessage(JSON.stringify(autoScrollSpeed));
+                }}
+                onSlidingComplete={value => {
+                  AnalyticsManager.getInstance().trackEvent(
+                    "autoScrollSpeed",
+                    speed
+                  );
                 }}
               />
               <Text

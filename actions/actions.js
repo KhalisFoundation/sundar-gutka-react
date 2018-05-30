@@ -171,7 +171,6 @@ export function toggleAutoScroll(value) {
 }
 
 export function setAutoScrollSpeed(speed) {
-  AnalyticsManager.getInstance().trackEvent("autoScrollSpeed", speed);
   return { type: SET_AUTO_SCROLL_SPEED, speed };
 }
 

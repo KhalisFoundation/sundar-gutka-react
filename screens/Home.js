@@ -104,7 +104,7 @@ class Home extends React.Component {
       navigator.navigate({
         key: "Folder-" + item.roman,
         routeName: "FolderBani",
-        params: { data: item.folder }
+        params: { data: item.folder, title: item.gurmukhi }
       });
     }
   }

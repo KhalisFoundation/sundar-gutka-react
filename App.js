@@ -65,7 +65,7 @@ const FolderNavigation = TabNavigator({
             />
           }
           centerComponent={{
-            text: "suMdr gutkw",
+            text: `${navigation.state.params.title}`,
             style: [
               styles.headerBarStyle,
               { fontFamily: "GurbaniAkharHeavySG", fontSize: 24 }

@@ -185,7 +185,7 @@ function autoScroll(state = false, action) {
   }
 }
 
-function autoScrollSpeed(state = 10, action) {
+function autoScrollSpeed(state = 50, action) {
   switch (action.type) {
     case SET_AUTO_SCROLL_SPEED:
       return action.speed;
