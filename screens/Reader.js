@@ -16,7 +16,6 @@ import Icon from "react-native-vector-icons/MaterialIcons";
 import GLOBAL from "../utils/globals";
 import Database from "../utils/database";
 import LoadingIndicator from "../components/LoadingIndicator";
-import ReaderBaniItem from "../components/ReaderBaniItem";
 import {
   fontSizeForReader,
   fontColorForReader,
@@ -518,7 +517,7 @@ class Reader extends React.Component {
                 onSlidingComplete={value => {
                   AnalyticsManager.getInstance().trackEvent(
                     "autoScrollSpeed",
-                    speed
+                    value
                   );
                 }}
               />
