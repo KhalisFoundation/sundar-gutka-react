@@ -93,9 +93,12 @@ class Database {
 
             let curGurmukhi = larivaar ? arr.join("<wbr>") : arr.join(" ");
 
-            row.English = row.English == "" ? " " : row.English;
+            row.English =
+              row.English == "" || row.English == null ? " " : row.English;
             row.Transliteration =
-              row.Transliteration == "" ? " " : row.Transliteration;
+              row.Transliteration == "" || row.Transliteration == null
+                ? " "
+                : row.Transliteration;
 
             if (
               (baniId === 9 || baniId === 21) &&

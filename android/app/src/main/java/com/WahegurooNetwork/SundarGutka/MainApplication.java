@@ -2,21 +2,11 @@ package com.WahegurooNetwork.SundarGutka;
 
 import android.app.Application;
 
-import com.corbt.keepawake.KCKeepAwakePackage;
 import com.facebook.react.ReactApplication;
 import com.apsl.versionnumber.RNVersionNumberPackage;
 import com.oblador.vectoricons.VectorIconsPackage;
 import org.devio.rn.splashscreen.SplashScreenReactPackage;
-import com.react.rnspinkit.RNSpinkitPackage;
-import com.corbt.keepawake.KCKeepAwakePackage;
-import com.idehub.GoogleAnalyticsBridge.GoogleAnalyticsBridgePackage;
-import com.oblador.vectoricons.VectorIconsPackage;
-import org.devio.rn.splashscreen.SplashScreenReactPackage;
-import com.react.rnspinkit.RNSpinkitPackage;
-import com.corbt.keepawake.KCKeepAwakePackage;
-import com.idehub.GoogleAnalyticsBridge.GoogleAnalyticsBridgePackage;
-import com.oblador.vectoricons.VectorIconsPackage;
-import org.devio.rn.splashscreen.SplashScreenReactPackage;
+import org.pgsqlite.SQLitePluginPackage;
 import com.react.rnspinkit.RNSpinkitPackage;
 import com.corbt.keepawake.KCKeepAwakePackage;
 import com.idehub.GoogleAnalyticsBridge.GoogleAnalyticsBridgePackage;
@@ -24,11 +14,6 @@ import com.facebook.react.ReactNativeHost;
 import com.facebook.react.ReactPackage;
 import com.facebook.react.shell.MainReactPackage;
 import com.facebook.soloader.SoLoader;
-import com.idehub.GoogleAnalyticsBridge.GoogleAnalyticsBridgePackage;
-import com.oblador.vectoricons.VectorIconsPackage;
-
-import org.devio.rn.splashscreen.SplashScreenReactPackage;
-import org.pgsqlite.SQLitePluginPackage;
 
 import java.util.Arrays;
 import java.util.List;

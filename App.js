@@ -18,7 +18,7 @@ import createStore from "./config/store";
 import { setBaniOrder } from "./actions/actions";
 import { defaultBaniOrderArray } from "./utils/helpers";
 
-const FolderNavigation = TabNavigator({
+const RootStack = StackNavigator({
   Home: {
     screen: HomeScreen,
     navigationOptions: ({ navigation }) => ({
@@ -86,12 +86,6 @@ const FolderNavigation = TabNavigator({
       tabBarVisible: false,
       swipeEnabled: false
     })
-  }
-});
-
-const RootStack = StackNavigator({
-  BaniList: {
-    screen: FolderNavigation
   },
   Settings: {
     screen: SettingsScreen,
