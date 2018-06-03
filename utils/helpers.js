@@ -52,7 +52,7 @@ export const fontColorForReader = (header, nightMode, text) => {
   switch (text) {
     case TextType.GURMUKHI: {
       if (header === 1) {
-        return "#0066FF";
+        return nightMode ? "#77baff" : "#0066FF";
       } else if (header === 2 || header === 6) {
         return nightMode ? "#BFBFBF" : "#727272";
       } else {
@@ -60,7 +60,7 @@ export const fontColorForReader = (header, nightMode, text) => {
       }
     }
     case TextType.TRANSLITERATION:
-      return "#0066FF";
+      return nightMode ? "#77baff" : "#0066FF";
     case TextType.ENGLISH_TRANSLATION:
       return nightMode ? "#BFBFBF" : "#727272";
   }
@@ -96,7 +96,6 @@ export const baseFontSize = (SIZE, romanized) => {
 export const fontSizeForReader = (SIZE, header, romanized) => {
   let fontSize = baseFontSize(SIZE, romanized) * 0.75;
   if (header === 6) {
-    
     return fontSize * 0.75;
   } else if (header === 2) {
     return fontSize * 1.1;

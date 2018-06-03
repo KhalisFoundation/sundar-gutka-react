@@ -106,8 +106,8 @@ class Reader extends React.Component {
         break;
       }
     }
-    let bookmark = { bookmark: viewPosition };
-    this.webView.postMessage(JSON.stringify(bookmark));
+
+    this.webView.postMessage(JSON.stringify({ bookmark: viewPosition }));
   }
 
   truncate(n) {
