@@ -85,32 +85,32 @@ export const padchhedSettingNames = [
  */
 
 export function setFontSize(size) {
-  AnalyticsManager.getInstance().trackEvent("fontSize", size);
+  AnalyticsManager.getInstance().trackSettingsEvent("fontSize", size);
   return { type: SET_FONT_SIZE, size };
 }
 
 export function setFontFace(font) {
-  AnalyticsManager.getInstance().trackEvent("fontFace", font);
+  AnalyticsManager.getInstance().trackSettingsEvent("fontFace", font);
   return { type: SET_FONT_FACE, font };
 }
 
 export function toggleRomanized(value) {
-  AnalyticsManager.getInstance().trackEvent("romanized", value);
+  AnalyticsManager.getInstance().trackSettingsEvent("romanized", value);
   return { type: TOGGLE_ROMANIZED, value };
 }
 
 export function toggleEnglishTranslations(value) {
-  AnalyticsManager.getInstance().trackEvent("english", value);
+  AnalyticsManager.getInstance().trackSettingsEvent("english", value);
   return { type: TOGGLE_ENGLISH_TRANSLATIONS, value };
 }
 
 export function toggleNightMode(value) {
-  AnalyticsManager.getInstance().trackEvent("nightMode", value);
+  AnalyticsManager.getInstance().trackSettingsEvent("nightMode", value);
   return { type: TOGGLE_NIGHT_MODE, value };
 }
 
 export function toggleScreenAwake(value) {
-  AnalyticsManager.getInstance().trackEvent("keepAwake", value);
+  AnalyticsManager.getInstance().trackSettingsEvent("keepAwake", value);
   return { type: TOGGLE_SCREEN_AWAKE, value };
 }
 
@@ -119,37 +119,37 @@ export function setBaniOrder(order) {
 }
 
 export function setBaniLength(length) {
-  AnalyticsManager.getInstance().trackEvent("baniLength", length);
+  AnalyticsManager.getInstance().trackSettingsEvent("baniLength", length);
   return { type: SET_BANI_LENGTH, length };
 }
 
 export function toggleLarivaar(value) {
-  AnalyticsManager.getInstance().trackEvent("larivaar", value);
+  AnalyticsManager.getInstance().trackSettingsEvent("larivaar", value);
   return { type: TOGGLE_LARIVAAR, value };
 }
 
 export function setManglacharanPosition(position) {
-  AnalyticsManager.getInstance().trackEvent("manglacharan", position);
+  AnalyticsManager.getInstance().trackSettingsEvent("manglacharan", position);
   return { type: SET_MANGLACHARAN_POSITION, position };
 }
 
 export function setPadchhedSetting(setting) {
-  AnalyticsManager.getInstance().trackEvent("padchhed", setting);
+  AnalyticsManager.getInstance().trackSettingsEvent("padchhed", setting);
   return { type: SET_PADCHHED_SETTINGS, setting };
 }
 
 export function toggleStatistics(value) {
-  AnalyticsManager.getInstance().trackEvent("statistics", value);
+  AnalyticsManager.getInstance().trackSettingsEvent("statistics", value);
   return { type: TOGGLE_STATISTICS, value };
 }
 
 export function toggleStatusBar(hidden) {
-  AnalyticsManager.getInstance().trackEvent("statusBar", hidden);
+  AnalyticsManager.getInstance().trackSettingsEvent("statusBar", hidden);
   return { type: TOGGLE_STATUS_BAR, hidden };
 }
 
 export function toggleParagraphMode(paragraph) {
-  AnalyticsManager.getInstance().trackEvent("paragraph", paragraph);
+  AnalyticsManager.getInstance().trackSettingsEvent("paragraph", paragraph);
   return { type: TOGGLE_PARAGRAPH_MODE, paragraph };
 }
 
@@ -166,7 +166,7 @@ export function setScrollIndex(index) {
 }
 
 export function toggleAutoScroll(value) {
-  AnalyticsManager.getInstance().trackEvent("autoScroll", value);
+  AnalyticsManager.getInstance().trackSettingsEvent("autoScroll", value);
   return { type: TOGGLE_AUTO_SCROLL, value };
 }
 
@@ -175,6 +175,6 @@ export function setAutoScrollSpeed(speed) {
 }
 
 export function toggleVisram(value) {
-  AnalyticsManager.getInstance().trackEvent("visram", value);
+  AnalyticsManager.getInstance().trackSettingsEvent("visram", value);
   return { type: TOGGLE_VISRAM, value };
 }

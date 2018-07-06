@@ -26,7 +26,15 @@ export default class AnalyticsManager {
     }
   }
 
-  trackEvent(action, label) {
+  trackReaderEvent(action, label) {
+    if (this._trackingOn) {
+      this._tracker.trackEvent("reader", action, {
+        label: "" + label
+      });
+    }
+  }
+
+  trackSettingsEvent(action, label) {
     if (this._trackingOn) {
       this._tracker.trackEvent("setting", action, {
         label: "" + label

@@ -1,10 +1,9 @@
 import React from "react";
-import { Platform, StyleSheet, SafeAreaView, StatusBar } from "react-native";
-import { StackNavigator, TabNavigator } from "react-navigation";
+import { StyleSheet, SafeAreaView, StatusBar } from "react-native";
+import { createStackNavigator } from "react-navigation";
 import { Header } from "react-native-elements";
 import { Provider } from "react-redux";
 import { PersistGate } from "redux-persist/integration/react";
-import storage from "redux-persist/lib/storage";
 import Icon from "react-native-vector-icons/MaterialIcons";
 import GLOBAL from "./utils/globals";
 import HomeScreen from "./screens/Home";
@@ -18,7 +17,7 @@ import createStore from "./config/store";
 import { setBaniOrder } from "./actions/actions";
 import { defaultBaniOrderArray } from "./utils/helpers";
 
-const RootStack = StackNavigator({
+const RootStack = createStackNavigator({
   Home: {
     screen: HomeScreen,
     navigationOptions: ({ navigation }) => ({
