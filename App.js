@@ -1,16 +1,13 @@
 import React from "react";
 import {
-  StyleSheet,
   SafeAreaView,
   StatusBar,
   BackHandler,
   Alert
 } from "react-native";
 import { createStackNavigator } from "react-navigation";
-import { Header } from "react-native-elements";
 import { Provider } from "react-redux";
 import { PersistGate } from "redux-persist/integration/react";
-import Icon from "react-native-vector-icons/MaterialIcons";
 import GLOBAL from "./utils/globals";
 import HomeScreen from "./screens/Home";
 import FolderBaniScreen from "./screens/FolderBani";
@@ -20,184 +17,49 @@ import AboutScreen from "./screens/About";
 import ReaderScreen from "./screens/Reader";
 import BookmarksScreen from "./screens/Bookmarks";
 import createStore from "./config/store";
-import { setBaniOrder } from "./actions/actions";
-import { defaultBaniOrderArray } from "./utils/helpers";
 
 const RootStack = createStackNavigator({
   Home: {
     screen: HomeScreen,
-    navigationOptions: ({ navigation }) => ({
-      header: (
-        <Header
-          outerContainerStyles={{ borderBottomWidth: 0 }}
-          backgroundColor={GLOBAL.COLOR.TOOLBAR_COLOR}
-          centerComponent={{
-            text: "suMdr gutkw",
-            style: [
-              styles.headerBarStyle,
-              { fontFamily: "GurbaniAkharHeavySG", fontSize: 24 }
-            ]
-          }}
-          rightComponent={
-            <Icon
-              name="settings"
-              color={GLOBAL.COLOR.TOOLBAR_TINT}
-              size={30}
-              onPress={() =>
-                navigation.navigate({ key: "Settings", routeName: "Settings" })
-              }
-            />
-          }
-        />
-      ),
-      tabBarVisible: false,
-      swipeEnabled: false
-    })
+    navigationOptions: {
+      header: null
+    }
   },
   FolderBani: {
     screen: FolderBaniScreen,
-    navigationOptions: ({ navigation }) => ({
-      header: (
-        <Header
-          outerContainerStyles={{ borderBottomWidth: 0 }}
-          backgroundColor={GLOBAL.COLOR.TOOLBAR_COLOR}
-          leftComponent={
-            <Icon
-              name="arrow-back"
-              color={GLOBAL.COLOR.TOOLBAR_TINT}
-              size={30}
-              onPress={() => navigation.goBack()}
-            />
-          }
-          centerComponent={{
-            text: `${navigation.state.params.title}`,
-            style: [
-              styles.headerBarStyle,
-              { fontFamily: "GurbaniAkharHeavySG", fontSize: 24 }
-            ]
-          }}
-          rightComponent={
-            <Icon
-              name="settings"
-              color={GLOBAL.COLOR.TOOLBAR_TINT}
-              size={30}
-              onPress={() =>
-                navigation.navigate({ key: "Settings", routeName: "Settings" })
-              }
-            />
-          }
-        />
-      ),
-      tabBarVisible: false,
-      swipeEnabled: false
-    })
+    navigationOptions: {
+      header: null
+    }
   },
   Settings: {
     screen: SettingsScreen,
-    navigationOptions: ({ navigation }) => ({
-      header: (
-        <Header
-          outerContainerStyles={{ borderBottomWidth: 0 }}
-          backgroundColor={GLOBAL.COLOR.TOOLBAR_COLOR_ALT}
-          leftComponent={
-            <Icon
-              name="arrow-back"
-              color={GLOBAL.COLOR.TOOLBAR_TINT}
-              size={30}
-              onPress={() => navigation.goBack()}
-            />
-          }
-          centerComponent={{ text: "Settings", style: styles.headerBarStyle }}
-        />
-      )
-    })
+    navigationOptions: {
+      header: null
+    }
   },
   Reader: {
     screen: ReaderScreen,
-
     navigationOptions: {
       header: null
     }
   },
   Bookmarks: {
     screen: BookmarksScreen,
-    navigationOptions: ({ navigation }) => ({
-      header: (
-        <Header
-          outerContainerStyles={{ borderBottomWidth: 0 }}
-          backgroundColor={GLOBAL.COLOR.TOOLBAR_COLOR_ALT}
-          leftComponent={
-            <Icon
-              name="arrow-back"
-              color={GLOBAL.COLOR.TOOLBAR_TINT}
-              size={30}
-              onPress={() => navigation.goBack()}
-            />
-          }
-          centerComponent={{ text: "Bookmarks", style: styles.headerBarStyle }}
-        />
-      )
-    })
+    navigationOptions: {
+      header: null
+    }
   },
   EditBaniOrder: {
     screen: EditBaniOrderScreen,
-    navigationOptions: ({ navigation }) => ({
-      header: (
-        <Header
-          outerContainerStyles={{ borderBottomWidth: 0 }}
-          backgroundColor={GLOBAL.COLOR.TOOLBAR_COLOR_ALT2}
-          leftComponent={
-            <Icon
-              name="arrow-back"
-              color={GLOBAL.COLOR.TOOLBAR_TINT}
-              size={30}
-              onPress={() => navigation.goBack()}
-            />
-          }
-          centerComponent={{
-            text: "Edit Bani Order",
-            style: styles.headerBarStyle
-          }}
-          rightComponent={
-            <Icon
-              name="refresh"
-              color={GLOBAL.COLOR.TOOLBAR_TINT}
-              size={30}
-              onPress={() =>
-                store.dispatch(setBaniOrder(defaultBaniOrderArray))
-              }
-            />
-          }
-        />
-      )
-    })
+    navigationOptions: {
+      header: null
+    }
   },
   About: {
     screen: AboutScreen,
-    navigationOptions: ({ navigation }) => ({
-      header: (
-        <Header
-          outerContainerStyles={{ borderBottomWidth: 0 }}
-          backgroundColor={GLOBAL.COLOR.TOOLBAR_COLOR_ALT2}
-          leftComponent={
-            <Icon
-              name="arrow-back"
-              color={GLOBAL.COLOR.TOOLBAR_TINT}
-              size={30}
-              onPress={() => navigation.goBack()}
-            />
-          }
-          centerComponent={{ text: "About", style: styles.headerBarStyle }}
-        />
-      )
-    })
-  }
-});
-
-const styles = StyleSheet.create({
-  headerBarStyle: {
-    color: GLOBAL.COLOR.TOOLBAR_TINT,
-    fontSize: 18
+    navigationOptions: {
+      header: null
+    }
   }
 });
 

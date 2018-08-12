@@ -1,14 +1,16 @@
 import React from "react";
 import { StyleSheet, View, Image, Text } from "react-native";
+import { Header } from "react-native-elements";
+import MaterialIcons from "react-native-vector-icons/MaterialCommunityIcons";
+import FontAwesomeIcons from "react-native-vector-icons/FontAwesome";
+import GLOBAL from "../utils/globals";
 import SettingsList from "react-native-settings-list";
-import Icon from "react-native-vector-icons/FontAwesome";
 import {
   ActionSheet,
   ActionSheetItem
 } from "react-native-action-sheet-component";
 import { connect } from "react-redux";
 import { bindActionCreators } from "redux";
-import { Slider } from "react-native-elements";
 import AnalyticsManager from "../utils/analytics";
 import * as actions from "../actions/actions";
 
@@ -20,7 +22,7 @@ class Settings extends React.Component {
   render() {
     const { navigate } = this.props.navigation;
 
-    const checkedIcon = <Icon name="check" size={30} />;
+    const checkedIcon = <MaterialIcons name="check" size={30} />;
 
     return (
       <View
@@ -29,6 +31,26 @@ class Settings extends React.Component {
           this.props.nightMode && { backgroundColor: "#000" }
         ]}
       >
+        <Header
+          outerContainerStyles={{ borderBottomWidth: 0 }}
+          backgroundColor={
+            this.props.nightMode
+              ? GLOBAL.COLOR.TOOLBAR_COLOR_ALT_NIGHT_MODE
+              : GLOBAL.COLOR.TOOLBAR_COLOR_ALT
+          }
+          leftComponent={
+            <MaterialIcons
+              name="arrow-left"
+              color={GLOBAL.COLOR.TOOLBAR_TINT}
+              size={30}
+              onPress={() => this.props.navigation.goBack()}
+            />
+          }
+          centerComponent={{
+            text: "Settings",
+            style: { color: GLOBAL.COLOR.TOOLBAR_TINT, fontSize: 18 }
+          }}
+        />
         <SettingsList borderColor="#c8c7cc" defaultItemSize={50}>
           <SettingsList.Header
             headerText="Display Options"
@@ -135,7 +157,13 @@ class Settings extends React.Component {
           />
           <SettingsList.Item
             backgroundColor={this.props.nightMode ? "#464646" : "#fff"}
-            icon={<Icon style={styles.imageStyle} name="eye-slash" size={30} />}
+            icon={
+              <MaterialIcons
+                style={styles.imageStyle}
+                name="eye-off"
+                size={30}
+              />
+            }
             hasSwitch={true}
             switchState={this.props.statusBar}
             switchOnValueChange={this.props.toggleStatusBar}
@@ -148,7 +176,13 @@ class Settings extends React.Component {
           />
           <SettingsList.Item
             backgroundColor={this.props.nightMode ? "#464646" : "#fff"}
-            icon={<Icon style={styles.imageStyle} name="magic" size={30} />}
+            icon={
+              <MaterialIcons
+                style={styles.imageStyle}
+                name="auto-fix"
+                size={30}
+              />
+            }
             hasSwitch={true}
             switchState={this.props.autoScroll}
             switchOnValueChange={this.props.toggleAutoScroll}
@@ -245,7 +279,13 @@ class Settings extends React.Component {
           />
           <SettingsList.Item
             backgroundColor={this.props.nightMode ? "#464646" : "#fff"}
-            icon={<Icon style={styles.imageStyle} name="paragraph" size={30} />}
+            icon={
+              <FontAwesomeIcons
+                style={styles.imageStyle}
+                name="paragraph"
+                size={30}
+              />
+            }
             hasSwitch={true}
             switchState={this.props.paragraphMode}
             switchOnValueChange={this.props.toggleParagraphMode}
@@ -302,7 +342,9 @@ class Settings extends React.Component {
           />
           <SettingsList.Item
             backgroundColor={this.props.nightMode ? "#464646" : "#fff"}
-            icon={<Icon style={styles.imageStyle} name="pause" size={30} />}
+            icon={
+              <MaterialIcons style={styles.imageStyle} name="pause" size={30} />
+            }
             hasSwitch={true}
             switchState={this.props.visram}
             switchOnValueChange={this.props.toggleVisram}
@@ -342,7 +384,7 @@ class Settings extends React.Component {
           <SettingsList.Item
             backgroundColor={this.props.nightMode ? "#464646" : "#fff"}
             icon={
-              <Icon
+              <FontAwesomeIcons
                 style={styles.imageStyle}
                 name="question-circle"
                 size={30}
@@ -523,4 +565,7 @@ function mapDispatchToProps(dispatch) {
   return bindActionCreators(actions, dispatch);
 }
 
-export default connect(mapStateToProps, mapDispatchToProps)(Settings);
+export default connect(
+  mapStateToProps,
+  mapDispatchToProps
+)(Settings);

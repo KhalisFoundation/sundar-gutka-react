@@ -9,13 +9,17 @@ import {
   Dimensions,
   Platform
 } from "react-native";
+import { Header } from "react-native-elements";
+import Icon from "react-native-vector-icons/MaterialIcons";
+import GLOBAL from "../utils/globals";
 import SortableList from "react-native-sortable-list";
-import SQLite from "react-native-sqlite-storage";
 import { connect } from "react-redux";
 import { bindActionCreators } from "redux";
 import * as actions from "../actions/actions";
 import AnalyticsManager from "../utils/analytics";
 import { baseFontSize } from "../utils/helpers";
+import { defaultBaniOrderArray } from "../utils/helpers";
+
 
 const window = Dimensions.get("window");
 
@@ -27,26 +31,57 @@ class EditBaniOrder extends React.Component {
   render() {
     return (
       <View
-        style={[
-          styles.container,
-          this.props.nightMode && { backgroundColor: "#464646" }
-        ]}
+        style={{
+          flex: 1
+        }}
       >
-        <SortableList
-          style={styles.list}
-          contentContainerStyle={styles.contentContainer}
-          data={this.props.mergedBaniData.baniOrder}
-          onChangeOrder={nextOrder => {
-            this.newOrder = nextOrder;
-          }}
-          onReleaseRow={key =>
-            this.newOrder !== undefined
-              ? this.props.setBaniOrder(this.newOrder)
-              : null
+        <Header
+          outerContainerStyles={{ borderBottomWidth: 0 }}
+          backgroundColor={GLOBAL.COLOR.TOOLBAR_COLOR_ALT2}
+          leftComponent={
+            <Icon
+              name="arrow-back"
+              color={GLOBAL.COLOR.TOOLBAR_TINT}
+              size={30}
+              onPress={() => this.props.navigation.goBack()}
+            />
           }
-          renderRow={this._renderRow}
-          order={this.props.baniOrder}
+          centerComponent={{
+            text: "Edit Bani Order",
+            style: { color: GLOBAL.COLOR.TOOLBAR_TINT, fontSize: 18 }
+          }}
+          rightComponent={
+            <Icon
+              name="refresh"
+              color={GLOBAL.COLOR.TOOLBAR_TINT}
+              size={30}
+              onPress={() => this.props.setBaniOrder(defaultBaniOrderArray)
+}
+            />
+          }
         />
+        <View
+          style={[
+            styles.container,
+            this.props.nightMode && { backgroundColor: "#464646" }
+          ]}
+        >
+          <SortableList
+            style={styles.list}
+            contentContainerStyle={styles.contentContainer}
+            data={this.props.mergedBaniData.baniOrder}
+            onChangeOrder={nextOrder => {
+              this.newOrder = nextOrder;
+            }}
+            onReleaseRow={key =>
+              this.newOrder !== undefined
+                ? this.props.setBaniOrder(this.newOrder)
+                : null
+            }
+            renderRow={this._renderRow}
+            order={this.props.baniOrder}
+          />
+        </View>
       </View>
     );
   }
@@ -116,13 +151,7 @@ class Row extends React.Component {
   }
 
   render() {
-    const {
-      data,
-      active,
-      nightMode,
-      romanized,
-      fontFace
-    } = this.props;
+    const { data, active, nightMode, romanized, fontFace } = this.props;
 
     return (
       <Animated.View
@@ -223,4 +252,7 @@ function mapDispatchToProps(dispatch) {
   return bindActionCreators(actions, dispatch);
 }
 
-export default connect(mapStateToProps, mapDispatchToProps)(EditBaniOrder);
+export default connect(
+  mapStateToProps,
+  mapDispatchToProps
+)(EditBaniOrder);

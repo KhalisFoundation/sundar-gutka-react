@@ -343,7 +343,6 @@ class Reader extends React.Component {
 
   render() {
     const { params } = this.props.navigation.state;
-
     {
       this.trackScreenForShabad(params.item.roman);
     }
@@ -359,6 +358,7 @@ class Reader extends React.Component {
         <LoadingIndicator isLoading={this.state.isLoading} />
 
         <WebView
+          originWhitelist={['*']}
           style={this.props.nightMode && { backgroundColor: "#000" }}
           ref={webView => (this.webView = webView)}
           source={{

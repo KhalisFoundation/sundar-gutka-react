@@ -2,7 +2,10 @@ import React from "react";
 import { connect } from "react-redux";
 import { bindActionCreators } from "redux";
 import KeepAwake from "react-native-keep-awake";
-import { StatusBar } from "react-native";
+import { View, StatusBar } from "react-native";
+import { Header } from "react-native-elements";
+import Icon from "react-native-vector-icons/MaterialIcons";
+import GLOBAL from "../utils/globals";
 import SplashScreen from "react-native-splash-screen";
 import AnalyticsManager from "../utils/analytics";
 import Database from "../utils/database";
@@ -111,16 +114,49 @@ class Home extends React.Component {
 
   render() {
     return (
-      <BaniList
-        data={this.state.data}
-        nightMode={this.props.nightMode}
-        fontSize={this.props.fontSize}
-        fontFace={this.props.fontFace}
-        romanized={this.props.romanized}
-        navigation={this.props.navigation}
-        isLoading={this.state.isLoading}
-        onPress={this.handleOnPress.bind(this)}
-      />
+      <View
+        style={{
+          flex: 1
+        }}
+      >
+        <Header
+          outerContainerStyles={{ borderBottomWidth: 0 }}
+          backgroundColor={GLOBAL.COLOR.TOOLBAR_COLOR}
+          centerComponent={{
+            text: "suMdr gutkw",
+            style: [
+              {
+                color: GLOBAL.COLOR.TOOLBAR_TINT,
+                fontFamily: "GurbaniAkharHeavySG",
+                fontSize: 24
+              }
+            ]
+          }}
+          rightComponent={
+            <Icon
+              name="settings"
+              color={GLOBAL.COLOR.TOOLBAR_TINT}
+              size={30}
+              onPress={() =>
+                this.props.navigation.navigate({
+                  key: "Settings",
+                  routeName: "Settings"
+                })
+              }
+            />
+          }
+        />
+        <BaniList
+          data={this.state.data}
+          nightMode={this.props.nightMode}
+          fontSize={this.props.fontSize}
+          fontFace={this.props.fontFace}
+          romanized={this.props.romanized}
+          navigation={this.props.navigation}
+          isLoading={this.state.isLoading}
+          onPress={this.handleOnPress.bind(this)}
+        />
+      </View>
     );
   }
 }
