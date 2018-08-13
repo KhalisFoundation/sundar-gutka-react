@@ -94,7 +94,7 @@ export default class App extends React.Component {
     );
     return true;
   };
-
+  
   _getCurrentRouteName(navState) {
     if (navState.hasOwnProperty("index")) {
       this._getCurrentRouteName(navState.routes[navState.index]);
@@ -103,8 +103,8 @@ export default class App extends React.Component {
         navState.routeName === "Settings" ||
         navState.routeName === "Bookmarks"
       ) {
-        this.setState({ safeAreaNavBarColor: GLOBAL.COLOR.TOOLBAR_COLOR_ALT });
-        this.setState({ statusBarType: "dark-content" });
+        this.setState({ safeAreaNavBarColor: store.getState().nightMode ? GLOBAL.COLOR.TOOLBAR_COLOR_ALT_NIGHT_MODE : GLOBAL.COLOR.TOOLBAR_COLOR_ALT });
+        this.setState({ statusBarType: store.getState().nightMode ? "light-content" : "dark-content" });
       } else if (
         navState.routeName === "EditBaniOrder" ||
         navState.routeName === "About"
@@ -113,7 +113,7 @@ export default class App extends React.Component {
         this.setState({ statusBarType: "light-content" });
       } else if (navState.routeName === "Reader") {
         this.setState({
-          safeAreaNavBarColor: GLOBAL.COLOR.READER_HEADER_COLOR
+          safeAreaNavBarColor: store.getState().nightMode ? GLOBAL.COLOR.READER_STATUS_BAR_COLOR_NIGHT_MODE : GLOBAL.COLOR.READER_STATUS_BAR_COLOR
         });
         this.setState({ statusBarType: "light-content" });
       } else {
