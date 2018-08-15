@@ -20,7 +20,8 @@ import {
   TOGGLE_PARAGRAPH_MODE,
   TOGGLE_AUTO_SCROLL,
   SET_AUTO_SCROLL_SPEED,
-  TOGGLE_VISRAM
+  TOGGLE_VISRAM,
+  SET_APP_VERSION
 } from "../actions/actions";
 
 function fontSize(state = "SMALL", action) {
@@ -86,7 +87,7 @@ function baniOrder(state = defaultBaniOrderArray, action) {
   }
 }
 
-function baniLength(state = "LONG", action) {
+function baniLength(state = "SHORT", action) {
   switch (action.type) {
     case SET_BANI_LENGTH:
       return action.length;
@@ -203,6 +204,15 @@ function visram(state = false, action) {
   }
 }
 
+function appVersion(state = "", action) {
+  switch (action.type) {
+    case SET_APP_VERSION:
+      return action.version;
+    default:
+      return state;
+  }
+}
+
 // Combine all the reducers
 const rootReducer = combineReducers({
   fontSize,
@@ -224,7 +234,8 @@ const rootReducer = combineReducers({
   paragraphMode,
   autoScroll,
   autoScrollSpeed,
-  visram
+  visram,
+  appVersion
 });
 
 export default rootReducer;

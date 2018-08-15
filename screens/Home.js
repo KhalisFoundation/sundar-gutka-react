@@ -12,6 +12,7 @@ import Database from "../utils/database";
 import { mergedBaniList } from "../utils/helpers";
 import * as actions from "../actions/actions";
 import BaniList from "../components/BaniList";
+import VersionNumber from "react-native-version-number";
 
 class Home extends React.Component {
   constructor(props) {
@@ -60,6 +61,10 @@ class Home extends React.Component {
   }
 
   componentWillMount() {
+    if (this.props.appVersion != VersionNumber.appVersion) {
+      this.props.setAppVersion(VersionNumber.appVersion);
+    }
+
     this.changeKeepAwake(this.props.screenAwake || this.props.autoScroll);
     this.changeStatusBar(this.props.statusBar);
     AnalyticsManager.getInstance().allowTracking(this.props.statistics);
@@ -172,7 +177,8 @@ function mapStateToProps(state) {
     screenAwake: state.screenAwake,
     statusBar: state.statusBar,
     statistics: state.statistics,
-    autoScroll: state.autoScroll
+    autoScroll: state.autoScroll,
+    appVersion: state.appVersion
   };
 }
 

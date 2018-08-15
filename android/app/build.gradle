@@ -94,15 +94,15 @@ def enableSeparateBuildPerCPUArchitecture = false
 def enableProguardInReleaseBuilds = false
 
 android {
-    compileSdkVersion 27
-    buildToolsVersion "27.0.3"
+    compileSdkVersion 28
+    buildToolsVersion "28.0.2"
 
     defaultConfig {
         applicationId "com.WahegurooNetwork.SundarGutka"
         minSdkVersion 16
-        targetSdkVersion 27
-        versionCode 61
-        versionName "5.1.3"
+        targetSdkVersion 28
+        versionCode 62
+        versionName "5.1.4"
         ndk {
             abiFilters "armeabi-v7a", "x86"
         }
@@ -145,7 +145,7 @@ dependencies {
     implementation project(':react-native-google-analytics-bridge')
     implementation project(':react-native-sqlite-storage')
     implementation fileTree(dir: "libs", include: ["*.jar"])
-    implementation "com.android.support:appcompat-v7:27.1.1"
+    implementation "com.android.support:appcompat-v7:28.0.0-rc01"
     implementation "com.facebook.react:react-native:+"  // From node_modules
 }
 

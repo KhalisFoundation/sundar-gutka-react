@@ -3,6 +3,7 @@ import { StyleSheet, View, Image, Text } from "react-native";
 import { Header } from "react-native-elements";
 import MaterialIcons from "react-native-vector-icons/MaterialCommunityIcons";
 import FontAwesomeIcons from "react-native-vector-icons/FontAwesome";
+import Icon from "react-native-vector-icons/MaterialIcons";
 import GLOBAL from "../utils/globals";
 import SettingsList from "react-native-settings-list";
 import {
@@ -39,8 +40,8 @@ class Settings extends React.Component {
               : GLOBAL.COLOR.TOOLBAR_COLOR_ALT
           }
           leftComponent={
-            <MaterialIcons
-              name="arrow-left"
+            <Icon
+              name="arrow-back"
               color={GLOBAL.COLOR.TOOLBAR_TINT}
               size={30}
               onPress={() => this.props.navigation.goBack()}

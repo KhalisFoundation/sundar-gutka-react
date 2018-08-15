@@ -24,6 +24,7 @@ export const TOGGLE_PARAGRAPH_MODE = "TOGGLE_PARAGRAPH_MODE"
 export const TOGGLE_AUTO_SCROLL = "TOGGLE_AUTO_SCROLL";
 export const SET_AUTO_SCROLL_SPEED = "SET_AUTO_SCROLL_SPEED";
 export const TOGGLE_VISRAM = "TOGGLE_VISRAM";
+export const SET_APP_VERSION = "SET_APP_VERSION";
 
 /*
  * other constants
@@ -59,9 +60,9 @@ export const fontFaceNames = [
   "Gurbani Akhar Thick"
 ];
 
-export const BANI_LENGTHS = ["LONG", "MEDIUM", "SHORT"];
+export const BANI_LENGTHS = ["SHORT", "MEDIUM", "LONG"];
 
-export const baniLengthNames = ["Long (default)", "Medium", "Short", "Cancel"];
+export const baniLengthNames = ["Sundar Gutka (default)", "Taksaal", "Buddha Dal", "Cancel"];
 
 export const MANGLACHARAN_POSITIONS = [
   "CURRENT_SAROOPS",
@@ -177,4 +178,8 @@ export function setAutoScrollSpeed(speed) {
 export function toggleVisram(value) {
   AnalyticsManager.getInstance().trackSettingsEvent("visram", value);
   return { type: TOGGLE_VISRAM, value };
+}
+
+export function setAppVersion(version) {
+  return { type: SET_APP_VERSION, version}
 }
