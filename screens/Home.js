@@ -2,7 +2,7 @@ import React from "react";
 import { connect } from "react-redux";
 import { bindActionCreators } from "redux";
 import KeepAwake from "react-native-keep-awake";
-import { View, StatusBar } from "react-native";
+import { View, Text, StatusBar } from "react-native";
 import { Header } from "react-native-elements";
 import Icon from "react-native-vector-icons/MaterialIcons";
 import GLOBAL from "../utils/globals";
@@ -124,33 +124,73 @@ class Home extends React.Component {
           flex: 1
         }}
       >
-        <Header
-          outerContainerStyles={{ borderBottomWidth: 0 }}
+        <View
           backgroundColor={GLOBAL.COLOR.TOOLBAR_COLOR}
-          centerComponent={{
-            text: "suMdr gutkw",
-            style: [
+          style={{
+            paddingTop: 10
+          }}
+        >
+          <Text
+            style={[
               {
                 color: GLOBAL.COLOR.TOOLBAR_TINT,
                 fontFamily: "GurbaniAkharHeavySG",
-                fontSize: 24
+                fontSize: 18,
+                textAlign: "center",
               }
-            ]
-          }}
-          rightComponent={
-            <Icon
-              name="settings"
-              color={GLOBAL.COLOR.TOOLBAR_TINT}
-              size={30}
-              onPress={() =>
-                this.props.navigation.navigate({
-                  key: "Settings",
-                  routeName: "Settings"
-                })
-              }
-            />
-          }
-        />
+            ]}
+          >
+            {"<> sRI vwihgurU jI kI Piqh ]"}
+          </Text>
+          <Header
+            outerContainerStyles={{ borderBottomWidth: 0 }}
+            backgroundColor={GLOBAL.COLOR.TOOLBAR_COLOR}
+            centerComponent={
+              <Text
+                style={[
+                  {
+                    color: GLOBAL.COLOR.TOOLBAR_TINT,
+                    fontFamily: "GurbaniAkharHeavySG",
+                    fontSize: 28
+                  }
+                ]}
+              >
+                <Text
+                  style={[
+                    {
+                      fontSize: 32
+                    }
+                  ]}
+                >
+                  Œ
+                </Text>{" "}
+                suMdr gutkw{" "}
+                <Text
+                  style={[
+                    {
+                      fontSize: 32
+                    }
+                  ]}
+                >
+                  ‰
+                </Text>
+              </Text>
+            }
+            rightComponent={
+              <Icon
+                name="settings"
+                color={GLOBAL.COLOR.TOOLBAR_TINT}
+                size={30}
+                onPress={() =>
+                  this.props.navigation.navigate({
+                    key: "Settings",
+                    routeName: "Settings"
+                  })
+                }
+              />
+            }
+          />
+        </View>
         <BaniList
           data={this.state.data}
           nightMode={this.props.nightMode}
