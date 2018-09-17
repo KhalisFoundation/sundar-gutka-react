@@ -25,7 +25,7 @@ class Settings extends React.Component {
 
     const checkedIcon = <MaterialIcons name="check" size={30} />;
 
-    const switchStyle = {onTintColor: GLOBAL.COLOR.SETTING_SWITCH_COLOR};
+    const switchStyle = {trackColor: GLOBAL.COLOR.SETTING_SWITCH_COLOR};
 
     return (
       <View
@@ -213,7 +213,7 @@ class Settings extends React.Component {
             hasSwitch={true}
             switchState={this.props.screenAwake || this.props.autoScroll}
             switchOnValueChange={this.props.toggleScreenAwake}
-            switchProps={{onTintColor: GLOBAL.COLOR.SETTING_SWITCH_COLOR,  disabled: this.props.autoScroll }}
+            switchProps={{trackColor: GLOBAL.COLOR.SETTING_SWITCH_COLOR,  disabled: this.props.autoScroll }}
             hasNavArrow={false}
             title="Keep Screen Awake"
             titleStyle={[
