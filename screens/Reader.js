@@ -334,7 +334,7 @@ class Reader extends React.Component {
 
     if (!this.state.paused) {
       let autoScrollSpeed = {
-        autoScroll: this.props.autoScrollSpeed,
+        autoScroll: this.props.autoScrollShabadSpeed,
         scrollMultiplier: multiplier
       };
       this.webView.postMessage(JSON.stringify(autoScrollSpeed));
@@ -456,7 +456,7 @@ class Reader extends React.Component {
                   color={GLOBAL.COLOR.TOOLBAR_TINT}
                   size={30}
                   onPress={() => {
-                    var scrollSpeed = this.props.autoScrollSpeed[this.props.currentShabad] ? this.props.autoScrollSpeed[this.props.currentShabad] : 50;
+                    var scrollSpeed = this.props.autoScrollShabadSpeed[this.props.currentShabad] ? this.props.autoScrollShabadSpeed[this.props.currentShabad] : 50;
                     if (scrollSpeed == 0) {
                       scrollSpeed = 1;
                       this.props.setAutoScrollSpeed(scrollSpeed, this.props.currentShabad);
@@ -500,7 +500,7 @@ class Reader extends React.Component {
                 minimumValue={0}
                 maximumValue={100}
                 step={1}
-                value={this.props.autoScrollSpeed[this.props.currentShabad] ? this.props.autoScrollSpeed[this.props.currentShabad] : 50}
+                value={this.props.autoScrollShabadSpeed[this.props.currentShabad] ? this.props.autoScrollShabadSpeed[this.props.currentShabad] : 50}
                 onValueChange={value => {
                   this.props.setAutoScrollSpeed(value, this.props.currentShabad);
                   let speed = value;
@@ -527,7 +527,7 @@ class Reader extends React.Component {
                   paddingRight: 20
                 }}
               >
-                {this.props.autoScrollSpeed[this.props.currentShabad] ? this.props.autoScrollSpeed[this.props.currentShabad] : 50}
+                {this.props.autoScrollShabadSpeed[this.props.currentShabad] ? this.props.autoScrollShabadSpeed[this.props.currentShabad] : 50}
               </Text>
             </View>
           </Animated.View>
@@ -575,7 +575,7 @@ function mapStateToProps(state) {
     englishTranslations: state.englishTranslations,
     paragraphMode: state.paragraphMode,
     autoScroll: state.autoScroll,
-    autoScrollSpeed: state.autoScrollSpeed,
+    autoScrollShabadSpeed: state.autoScrollShabadSpeed,
     visram: state.visram
   };
 }

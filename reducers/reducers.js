@@ -186,7 +186,7 @@ function autoScroll(state = false, action) {
   }
 }
 
-function autoScrollSpeed(state = {}, action) {
+function autoScrollShabadSpeed(state = {}, action) {
   switch (action.type) {
     case SET_AUTO_SCROLL_SPEED:
       return Object.assign(state, action.shabadSpeed);
@@ -233,7 +233,7 @@ const rootReducer = combineReducers({
   statusBar,
   paragraphMode,
   autoScroll,
-  autoScrollSpeed,
+  autoScrollShabadSpeed,
   visram,
   appVersion
 });
