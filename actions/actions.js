@@ -171,8 +171,9 @@ export function toggleAutoScroll(value) {
   return { type: TOGGLE_AUTO_SCROLL, value };
 }
 
-export function setAutoScrollSpeed(speed) {
-  return { type: SET_AUTO_SCROLL_SPEED, speed };
+export function setAutoScrollSpeed(speed, shabad) {
+  let shabadSpeed = {[shabad]: speed};
+  return { type: SET_AUTO_SCROLL_SPEED, shabadSpeed };
 }
 
 export function toggleVisram(value) {

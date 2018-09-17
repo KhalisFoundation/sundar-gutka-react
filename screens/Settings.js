@@ -25,6 +25,8 @@ class Settings extends React.Component {
 
     const checkedIcon = <MaterialIcons name="check" size={30} />;
 
+    const switchStyle = {onTintColor: GLOBAL.COLOR.SETTING_SWITCH_COLOR};
+
     return (
       <View
         style={[
@@ -113,6 +115,7 @@ class Settings extends React.Component {
             hasSwitch={true}
             switchState={this.props.romanized}
             switchOnValueChange={this.props.toggleRomanized}
+            switchProps={switchStyle}
             hasNavArrow={false}
             title="Romanized"
             titleStyle={[
@@ -131,6 +134,7 @@ class Settings extends React.Component {
             hasSwitch={true}
             switchState={this.props.englishTranslations}
             switchOnValueChange={this.props.toggleEnglishTranslations}
+            switchProps={switchStyle}
             hasNavArrow={false}
             title="English Translations"
             titleStyle={[
@@ -149,6 +153,7 @@ class Settings extends React.Component {
             hasSwitch={true}
             switchState={this.props.nightMode}
             switchOnValueChange={this.props.toggleNightMode}
+            switchProps={switchStyle}
             hasNavArrow={false}
             title="Night Mode"
             titleStyle={[
@@ -168,6 +173,7 @@ class Settings extends React.Component {
             hasSwitch={true}
             switchState={this.props.statusBar}
             switchOnValueChange={this.props.toggleStatusBar}
+            switchProps={switchStyle}
             hasNavArrow={false}
             title="Hide Status Bar"
             titleStyle={[
@@ -187,6 +193,7 @@ class Settings extends React.Component {
             hasSwitch={true}
             switchState={this.props.autoScroll}
             switchOnValueChange={this.props.toggleAutoScroll}
+            switchProps={switchStyle}
             hasNavArrow={false}
             title="Auto Scroll"
             titleStyle={[
@@ -206,7 +213,7 @@ class Settings extends React.Component {
             hasSwitch={true}
             switchState={this.props.screenAwake || this.props.autoScroll}
             switchOnValueChange={this.props.toggleScreenAwake}
-            switchProps={{ disabled: this.props.autoScroll }}
+            switchProps={{onTintColor: GLOBAL.COLOR.SETTING_SWITCH_COLOR,  disabled: this.props.autoScroll }}
             hasNavArrow={false}
             title="Keep Screen Awake"
             titleStyle={[
@@ -271,6 +278,7 @@ class Settings extends React.Component {
             hasSwitch={true}
             switchState={this.props.larivaar}
             switchOnValueChange={this.props.toggleLarivaar}
+            switchProps={switchStyle}
             hasNavArrow={false}
             title="Larivaar"
             titleStyle={[
@@ -290,6 +298,7 @@ class Settings extends React.Component {
             hasSwitch={true}
             switchState={this.props.paragraphMode}
             switchOnValueChange={this.props.toggleParagraphMode}
+            switchProps={switchStyle}
             hasNavArrow={false}
             title="Paragraph Mode"
             titleStyle={[
@@ -349,6 +358,7 @@ class Settings extends React.Component {
             hasSwitch={true}
             switchState={this.props.visram}
             switchOnValueChange={this.props.toggleVisram}
+            switchProps={switchStyle}
             hasNavArrow={false}
             title="Vishram"
             titleStyle={[
@@ -375,6 +385,7 @@ class Settings extends React.Component {
             hasSwitch={true}
             switchState={this.props.statistics}
             switchOnValueChange={this.props.toggleStatistics}
+            switchProps={switchStyle}
             hasNavArrow={false}
             title="Collect Statistics"
             titleStyle={[

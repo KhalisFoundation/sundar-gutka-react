@@ -456,10 +456,10 @@ class Reader extends React.Component {
                   color={GLOBAL.COLOR.TOOLBAR_TINT}
                   size={30}
                   onPress={() => {
-                    var scrollSpeed = this.props.autoScrollSpeed;
+                    var scrollSpeed = this.props.autoScrollSpeed[this.props.currentShabad] ? this.props.autoScrollSpeed[this.props.currentShabad] : 50;
                     if (scrollSpeed == 0) {
                       scrollSpeed = 1;
-                      this.props.setAutoScrollSpeed(scrollSpeed);
+                      this.props.setAutoScrollSpeed(scrollSpeed, this.props.currentShabad);
                     }
                     let autoScrollSpeed = {
                       autoScroll: scrollSpeed,
@@ -500,9 +500,9 @@ class Reader extends React.Component {
                 minimumValue={0}
                 maximumValue={100}
                 step={1}
-                value={this.props.autoScrollSpeed}
+                value={this.props.autoScrollSpeed[this.props.currentShabad] ? this.props.autoScrollSpeed[this.props.currentShabad] : 50}
                 onValueChange={value => {
-                  this.props.setAutoScrollSpeed(value);
+                  this.props.setAutoScrollSpeed(value, this.props.currentShabad);
                   let speed = value;
                   speed === 0
                     ? this.setState({ paused: true })
@@ -520,14 +520,14 @@ class Reader extends React.Component {
                   );
                 }}
               />
-              <Text
+             <Text
                 style={{
                   color: GLOBAL.COLOR.TOOLBAR_TINT,
                   paddingTop: 20,
                   paddingRight: 20
                 }}
               >
-                {this.props.autoScrollSpeed}
+                {this.props.autoScrollSpeed[this.props.currentShabad] ? this.props.autoScrollSpeed[this.props.currentShabad] : 50}
               </Text>
             </View>
           </Animated.View>
