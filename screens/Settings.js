@@ -156,7 +156,7 @@ class Settings extends React.Component {
             switchOnValueChange={this.props.toggleNightMode}
             switchProps={switchStyle}
             hasNavArrow={false}
-            title="Night Mode"
+            title="Dark Mode"
             titleStyle={[
               styles.titleText,
               this.props.nightMode && { color: "#fff" }
