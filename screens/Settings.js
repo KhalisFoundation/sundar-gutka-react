@@ -1,8 +1,9 @@
 import React from "react";
-import { StyleSheet, View, Image, Text } from "react-native";
+import { StyleSheet, View, Image, Text, Linking } from "react-native";
 import { Header } from "react-native-elements";
 import MaterialIcons from "react-native-vector-icons/MaterialCommunityIcons";
 import FontAwesomeIcons from "react-native-vector-icons/FontAwesome";
+import FontAwesome5Icons from "react-native-vector-icons/FontAwesome5";
 import Icon from "react-native-vector-icons/MaterialIcons";
 import GLOBAL from "../utils/globals";
 import SettingsList from "react-native-settings-list";
@@ -25,7 +26,7 @@ class Settings extends React.Component {
 
     const checkedIcon = <MaterialIcons name="check" size={30} />;
 
-    const switchStyle = {trackColor: GLOBAL.COLOR.SETTING_SWITCH_COLOR};
+    const switchStyle = { trackColor: GLOBAL.COLOR.SETTING_SWITCH_COLOR };
 
     return (
       <View
@@ -213,7 +214,10 @@ class Settings extends React.Component {
             hasSwitch={true}
             switchState={this.props.screenAwake || this.props.autoScroll}
             switchOnValueChange={this.props.toggleScreenAwake}
-            switchProps={{trackColor: GLOBAL.COLOR.SETTING_SWITCH_COLOR,  disabled: this.props.autoScroll }}
+            switchProps={{
+              trackColor: GLOBAL.COLOR.SETTING_SWITCH_COLOR,
+              disabled: this.props.autoScroll
+            }}
             hasNavArrow={false}
             title="Keep Screen Awake"
             titleStyle={[
@@ -392,6 +396,24 @@ class Settings extends React.Component {
               styles.titleText,
               this.props.nightMode && { color: "#fff" }
             ]}
+          />
+          <SettingsList.Item
+            backgroundColor={this.props.nightMode ? "#464646" : "#fff"}
+            icon={
+              <FontAwesome5Icons
+                style={styles.imageStyle}
+                name="donate"
+                size={30}
+              />
+            }
+            title="Donate"
+            titleStyle={[
+              styles.titleText,
+              this.props.nightMode && { color: "#fff" }
+            ]}
+            onPress={() =>
+              Linking.openURL("https://khalisfoundation.org/donate/")
+            }
           />
           <SettingsList.Item
             backgroundColor={this.props.nightMode ? "#464646" : "#fff"}
