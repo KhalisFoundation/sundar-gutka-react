@@ -60,9 +60,9 @@ export const fontFaceNames = [
   "Gurbani Akhar Thick"
 ];
 
-export const BANI_LENGTHS = ["SHORT", "MEDIUM", "LONG"];
+export const BANI_LENGTHS = ["SHORT", "MEDIUM", "LONG", "EXTRA_LONG"];
 
-export const baniLengthNames = ["Sundar Gutka (default)", "Taksaal", "Buddha Dal", "Cancel"];
+export const baniLengthNames = ["Short", "Medium", "Long", "Extra Long"];
 
 export const MANGLACHARAN_POSITIONS = [
   "CURRENT_SAROOPS",

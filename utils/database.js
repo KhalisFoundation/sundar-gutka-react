@@ -1,7 +1,7 @@
 import React from "react";
 import SQLite from "react-native-sqlite-storage";
 
-var database_name = "gutkav12.db";
+var database_name = "gutkav13.db";
 
 let db = SQLite.openDatabase({ name: database_name, createFromLocation: 1 });
 
@@ -38,11 +38,17 @@ class Database {
   ) {
     var baniLength;
     switch (length) {
-      case "LONG":
+      case "EXTRA_LONG":
         baniLength = "existsBuddhaDal";
         break;
-      case "MEDIUM":
+      case "LONG":
         baniLength = "existsTaksal";
+        break;
+      case "MEDIUM":
+        baniLength = "existsStandard";
+        break;
+      case "SHORT":
+        baniLength = "existsSGPC";
         break;
       default:
         baniLength = "existsStandard";
