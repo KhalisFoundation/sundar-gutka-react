@@ -95,13 +95,13 @@ def enableProguardInReleaseBuilds = false
 
 android {
     compileSdkVersion 28
-    buildToolsVersion "28.0.2"
+    buildToolsVersion "28.0.3"
 
     defaultConfig {
         applicationId "com.WahegurooNetwork.SundarGutka"
         minSdkVersion 16
         targetSdkVersion 28
-        versionCode 64
+        versionCode 65
         versionName "5.2"
         ndk {
             abiFilters "armeabi-v7a", "x86"
@@ -145,7 +145,7 @@ dependencies {
     implementation project(':react-native-google-analytics-bridge')
     implementation project(':react-native-sqlite-storage')
     implementation fileTree(dir: "libs", include: ["*.jar"])
-    implementation "com.android.support:appcompat-v7:28.0.0-rc02"
+    implementation "com.android.support:appcompat-v7:28.0.0"
     implementation "com.facebook.react:react-native:+"  // From node_modules
 }
 
