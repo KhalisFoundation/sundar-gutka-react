@@ -63,6 +63,17 @@ class Home extends React.Component {
   componentWillMount() {
     if (this.props.appVersion != VersionNumber.appVersion) {
       this.props.setAppVersion(VersionNumber.appVersion);
+
+      //TODO: Remove in next version - 5.2+
+      if(VersionNumber.appVersion == "5.2") {
+        if(this.props.baniLength == "SHORT") {
+          this.props.setBaniLength("MEDIUM");
+        } else if(this.props.baniLength == "MEDIUM") {
+          this.props.setBaniLength("LONG");
+        } else if(this.props.baniLength == "LONG") {
+          this.props.setBaniLength("EXTRA_LONG");
+        }
+      } 
     }
 
     this.changeKeepAwake(this.props.screenAwake || this.props.autoScroll);
@@ -218,7 +229,8 @@ function mapStateToProps(state) {
     statusBar: state.statusBar,
     statistics: state.statistics,
     autoScroll: state.autoScroll,
-    appVersion: state.appVersion
+    appVersion: state.appVersion,
+    baniLength: state.baniLength // TODO: Remove in next version - 5.2+
   };
 }
 

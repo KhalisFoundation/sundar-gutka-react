@@ -295,6 +295,13 @@
 			remoteGlobalIDString = 3D7682761D8E76B80014119E;
 			remoteInfo = SplashScreen;
 		};
+		9A42F5AF217A8C37000CCDED /* PBXContainerItemProxy */ = {
+			isa = PBXContainerItemProxy;
+			containerPortal = 649F9E47DDC64B3AB7C36A81 /* RNVectorIcons.xcodeproj */;
+			proxyType = 2;
+			remoteGlobalIDString = A39873CE1EA65EE60051E01A;
+			remoteInfo = "RNVectorIcons-tvOS";
+		};
 		9A7C4D6F2092552100321734 /* PBXContainerItemProxy */ = {
 			isa = PBXContainerItemProxy;
 			containerPortal = 498B618C2B6749E48B235475 /* RNSpinkit.xcodeproj */;
@@ -791,6 +798,7 @@
 			isa = PBXGroup;
 			children = (
 				9ABEFE5020730502001364B3 /* libRNVectorIcons.a */,
+				9A42F5B0217A8C37000CCDED /* libRNVectorIcons-tvOS.a */,
 			);
 			name = Products;
 			sourceTree = "<group>";
@@ -1268,6 +1276,13 @@
 			fileType = archive.ar;
 			path = libSplashScreen.a;
 			remoteRef = 9A355DAA2080FCB90076322F /* PBXContainerItemProxy */;
+			sourceTree = BUILT_PRODUCTS_DIR;
+		};
+		9A42F5B0217A8C37000CCDED /* libRNVectorIcons-tvOS.a */ = {
+			isa = PBXReferenceProxy;
+			fileType = archive.ar;
+			path = "libRNVectorIcons-tvOS.a";
+			remoteRef = 9A42F5AF217A8C37000CCDED /* PBXContainerItemProxy */;
 			sourceTree = BUILT_PRODUCTS_DIR;
 		};
 		9A7C4D702092552100321734 /* libRNSpinkit.a */ = {
