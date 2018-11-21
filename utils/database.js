@@ -86,14 +86,14 @@ class Database {
             splitted.forEach(function(word) {
               if (visram && word.indexOf(";") >= 0) {
                 arr.push(
-                  "<span style='color:orange'>" + word.slice(0, -1) + "</span>"
+                  "<span style='color:orange; white-space: nowrap;'>" + word.slice(0, -1) + "</span>"
                 );
               } else if (visram && word.indexOf(",") >= 0) {
                 arr.push(
-                  "<span style='color:green'>" + word.slice(0, -1) + "</span>"
+                  "<span style='color:green white-space: nowrap;'>" + word.slice(0, -1) + "</span>"
                 );
               } else {
-                arr.push(word);
+                arr.push("<span style='white-space: nowrap;'>" + word + "</span>");
               }
             });
 
