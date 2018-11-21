@@ -189,7 +189,7 @@ function autoScroll(state = false, action) {
 function autoScrollShabadSpeed(state = {}, action) {
   switch (action.type) {
     case SET_AUTO_SCROLL_SPEED:
-      return Object.assign(state, action.shabadSpeed);
+      return Object.assign({}, state, action.shabadSpeed);
     default:
       return state;
   }
