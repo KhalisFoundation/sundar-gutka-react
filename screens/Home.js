@@ -2,7 +2,7 @@ import React from "react";
 import { connect } from "react-redux";
 import { bindActionCreators } from "redux";
 import KeepAwake from "react-native-keep-awake";
-import { View, Text, StatusBar } from "react-native";
+import { View, Text, StatusBar, Alert } from "react-native";
 import { Header } from "react-native-elements";
 import Icon from "react-native-vector-icons/MaterialIcons";
 import GLOBAL from "../utils/globals";
@@ -62,18 +62,20 @@ class Home extends React.Component {
 
   componentWillMount() {
     if (this.props.appVersion != VersionNumber.appVersion) {
-      this.props.setAppVersion(VersionNumber.appVersion);
-
-      //TODO: Remove in next version - 5.2+
-      if(VersionNumber.appVersion == "5.2") {
-        if(this.props.baniLength == "SHORT") {
-          this.props.setBaniLength("MEDIUM");
-        } else if(this.props.baniLength == "MEDIUM") {
-          this.props.setBaniLength("LONG");
-        } else if(this.props.baniLength == "LONG") {
-          this.props.setBaniLength("EXTRA_LONG");
-        }
-      } 
+      if(this.props.appVersion == '') { // Is first install
+        Alert.alert(
+          'Bani Length',
+          'Please choose the length of Bani you wish to read before starting. You can always change this in settings.',
+          [
+            {text: 'Short', onPress: () => this.props.setBaniLength(actions.BANI_LENGTHS[0])},
+            {text: 'Medium', onPress: () => this.props.setBaniLength(actions.BANI_LENGTHS[1])},
+            {text: 'Long', onPress: () => this.props.setBaniLength(actions.BANI_LENGTHS[2])},
+            {text: 'Extra Long', onPress: () => this.props.setBaniLength(actions.BANI_LENGTHS[3])},
+          ],
+          { cancelable: false }
+        )
+      }
+      this.props.setAppVersion(VersionNumber.appVersion);     
     }
 
     this.changeKeepAwake(this.props.screenAwake || this.props.autoScroll);

@@ -1,7 +1,7 @@
 import React from "react";
 import SQLite from "react-native-sqlite-storage";
 
-var database_name = "gutkav14.db";
+var database_name = "gutkav15.db";
 
 let db = SQLite.openDatabase({ name: database_name, createFromLocation: 1 });
 
