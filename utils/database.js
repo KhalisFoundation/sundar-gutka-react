@@ -1,7 +1,7 @@
 import React from "react";
 import SQLite from "react-native-sqlite-storage";
 
-var database_name = "gutkav15.db";
+var database_name = "gutkav16.db";
 
 let db = SQLite.openDatabase({ name: database_name, createFromLocation: 1 });
 
@@ -55,7 +55,7 @@ class Database {
     }
     return new Promise(function(resolve) {
       db.executeSql(
-        "SELECT ID, ParagraphLong, header, Gurmukhi, GurmukhiBisram, Transliteration, English FROM mv_Banis_Shabad WHERE Bani = " +
+        "SELECT ID, Paragraph, header, Gurmukhi, GurmukhiBisram, Transliteration, English FROM mv_Banis_Shabad WHERE Bani = " +
           baniId +
           " AND " +
           baniLength +
@@ -117,7 +117,7 @@ class Database {
             }
 
             if (paragraphMode) {
-              if (prevParagraph !== row.ParagraphLong) {
+              if (prevParagraph !== row.Paragraph) {
                 if (i !== 0) {
                   paragraphResults.push({
                     id: "" + paragraphId,
@@ -132,7 +132,7 @@ class Database {
                 gurmukhi = curGurmukhi;
                 transliteration = row.Transliteration;
                 englishTranslation = row.English;
-                prevParagraph = row.ParagraphLong;
+                prevParagraph = row.Paragraph;
               } else {
                 gurmukhi += larivaar ? curGurmukhi : " " + curGurmukhi;
                 transliteration += " " + row.Transliteration;

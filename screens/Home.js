@@ -62,18 +62,32 @@ class Home extends React.Component {
 
   componentWillMount() {
     if (this.props.appVersion != VersionNumber.appVersion) {
+       //TODO: Remove in next version - 5.2.1+
+       if(VersionNumber.appVersion == "5.2" || VersionNumber.appVersion == "5.2.1") {
+        if(this.props.baniLength == "SHORT") {
+          this.props.setBaniLength("MEDIUM");
+        } else if(this.props.baniLength == "MEDIUM") {
+          this.props.setBaniLength("LONG");
+        } else if(this.props.baniLength == "LONG") {
+          this.props.setBaniLength("EXTRA_LONG");
+        }
+      } 
       if(this.props.appVersion == '') { // Is first install
-        Alert.alert(
-          'Bani Length',
-          'Please choose the length of Bani you wish to read before starting. You can always change this in settings.',
-          [
-            {text: 'Short', onPress: () => this.props.setBaniLength(actions.BANI_LENGTHS[0])},
-            {text: 'Medium', onPress: () => this.props.setBaniLength(actions.BANI_LENGTHS[1])},
-            {text: 'Long', onPress: () => this.props.setBaniLength(actions.BANI_LENGTHS[2])},
-            {text: 'Extra Long', onPress: () => this.props.setBaniLength(actions.BANI_LENGTHS[3])},
-          ],
-          { cancelable: false }
-        )
+
+       //TODO: Remove in next version - 5.2.1+
+       this.props.setBaniLength("EXTRA_LONG");
+
+        // Alert.alert(
+        //   'Bani Length',
+        //   'Some Banis, such as Rehras Sahib have multiple lengths available, please choose the length of Bani you wish to read before starting.\nYou can always change this in settings.',
+        //   [
+        //     {text: 'Short', onPress: () => this.props.setBaniLength(actions.BANI_LENGTHS[0])},
+        //     {text: 'Medium', onPress: () => this.props.setBaniLength(actions.BANI_LENGTHS[1])},
+        //     {text: 'Long', onPress: () => this.props.setBaniLength(actions.BANI_LENGTHS[2])},
+        //     {text: 'Extra Long', onPress: () => this.props.setBaniLength(actions.BANI_LENGTHS[3])},
+        //   ],
+        //   { cancelable: false }
+        // )
       }
       this.props.setAppVersion(VersionNumber.appVersion);     
     }
