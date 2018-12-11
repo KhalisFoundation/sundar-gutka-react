@@ -45,13 +45,13 @@ class Database {
         baniLength = "existsTaksal";
         break;
       case "MEDIUM":
-        baniLength = "existsStandard";
+        baniLength = "existsMedium";
         break;
       case "SHORT":
         baniLength = "existsSGPC";
         break;
       default:
-        baniLength = "existsStandard";
+        baniLength = "existsMedium";
     }
     return new Promise(function(resolve) {
       db.executeSql(
@@ -86,14 +86,20 @@ class Database {
             splitted.forEach(function(word) {
               if (visram && word.indexOf(";") >= 0) {
                 arr.push(
-                  "<span style='color:orange; white-space: nowrap;'>" + word.slice(0, -1) + "</span>"
+                  "<span style='color:orange; white-space: nowrap;'>" +
+                    word.slice(0, -1) +
+                    "</span>"
                 );
               } else if (visram && word.indexOf(",") >= 0) {
                 arr.push(
-                  "<span style='color:green white-space: nowrap;'>" + word.slice(0, -1) + "</span>"
+                  "<span style='color:green white-space: nowrap;'>" +
+                    word.slice(0, -1) +
+                    "</span>"
                 );
               } else {
-                arr.push("<span style='white-space: nowrap;'>" + word + "</span>");
+                arr.push(
+                  "<span style='white-space: nowrap;'>" + word + "</span>"
+                );
               }
             });
 
@@ -172,14 +178,20 @@ class Database {
   static getBookmarksForId(baniId, length) {
     var baniLength;
     switch (length) {
-      case "LONG":
+      case "EXTRA_LONG":
         baniLength = "existsBuddhaDal";
         break;
-      case "MEDIUM":
+      case "LONG":
         baniLength = "existsTaksal";
         break;
+      case "MEDIUM":
+        baniLength = "existsMedium";
+        break;
+      case "SHORT":
+        baniLength = "existsSGPC";
+        break;
       default:
-        baniLength = "existsStandard";
+        baniLength = "existsMedium";
     }
 
     return new Promise(function(resolve) {

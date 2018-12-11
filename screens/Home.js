@@ -62,20 +62,25 @@ class Home extends React.Component {
 
   componentWillMount() {
     if (this.props.appVersion != VersionNumber.appVersion) {
-       //TODO: Remove in next version - 5.2.1+
-       if(VersionNumber.appVersion == "5.2" || VersionNumber.appVersion == "5.2.1") {
-        if(this.props.baniLength == "SHORT") {
+      //TODO: Remove in next version - 5.2.2+
+      if (
+        VersionNumber.appVersion == "5.2" ||
+        VersionNumber.appVersion == "5.2.1" ||
+        VersionNumber.appVersion == "5.2.2"
+      ) {
+        if (this.props.baniLength == "SHORT") {
           this.props.setBaniLength("MEDIUM");
-        } else if(this.props.baniLength == "MEDIUM") {
+        } else if (this.props.baniLength == "MEDIUM") {
           this.props.setBaniLength("LONG");
-        } else if(this.props.baniLength == "LONG") {
+        } else if (this.props.baniLength == "LONG") {
           this.props.setBaniLength("EXTRA_LONG");
         }
-      } 
-      if(this.props.appVersion == '') { // Is first install
+      }
+      if (this.props.appVersion == "") {
+        // Is first install
 
-       //TODO: Remove in next version - 5.2.1+
-       this.props.setBaniLength("EXTRA_LONG");
+        //TODO: Remove in next version - 5.2.2+
+        this.props.setBaniLength("EXTRA_LONG");
 
         // Alert.alert(
         //   'Bani Length',
@@ -89,7 +94,7 @@ class Home extends React.Component {
         //   { cancelable: false }
         // )
       }
-      this.props.setAppVersion(VersionNumber.appVersion);     
+      this.props.setAppVersion(VersionNumber.appVersion);
     }
 
     this.changeKeepAwake(this.props.screenAwake || this.props.autoScroll);
@@ -163,7 +168,7 @@ class Home extends React.Component {
                 color: GLOBAL.COLOR.TOOLBAR_TINT,
                 fontFamily: "GurbaniAkharHeavySG",
                 fontSize: 18,
-                textAlign: "center",
+                textAlign: "center"
               }
             ]}
           >
