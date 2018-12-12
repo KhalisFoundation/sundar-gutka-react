@@ -62,25 +62,8 @@ class Home extends React.Component {
 
   componentWillMount() {
     if (this.props.appVersion != VersionNumber.appVersion) {
-      //TODO: Remove in next version - 5.2.2+
-      if (
-        VersionNumber.appVersion == "5.2" ||
-        VersionNumber.appVersion == "5.2.1" ||
-        VersionNumber.appVersion == "5.2.2"
-      ) {
-        if (this.props.baniLength == "SHORT") {
-          this.props.setBaniLength("MEDIUM");
-        } else if (this.props.baniLength == "MEDIUM") {
-          this.props.setBaniLength("LONG");
-        } else if (this.props.baniLength == "LONG") {
-          this.props.setBaniLength("EXTRA_LONG");
-        }
-      }
       if (this.props.appVersion == "") {
         // Is first install
-
-        //TODO: Remove in next version - 5.2.2+
-        this.props.setBaniLength("EXTRA_LONG");
 
         // Alert.alert(
         //   'Bani Length',
@@ -250,8 +233,7 @@ function mapStateToProps(state) {
     statusBar: state.statusBar,
     statistics: state.statistics,
     autoScroll: state.autoScroll,
-    appVersion: state.appVersion,
-    baniLength: state.baniLength // TODO: Remove in next version - 5.2+
+    appVersion: state.appVersion
   };
 }
 
