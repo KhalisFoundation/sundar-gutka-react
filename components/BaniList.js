@@ -1,5 +1,5 @@
 import React, { Component } from "react";
-import { StyleSheet, FlatList, View, ActivityIndicator } from "react-native";
+import { StyleSheet, FlatList } from "react-native";
 import { List, ListItem, Avatar } from "react-native-elements";
 import { baseFontSize } from "../utils/helpers";
 import LoadingIndicator from "../components/LoadingIndicator";
@@ -16,9 +16,9 @@ class BaniList extends Component {
       isLoading,
       onPress
     } = this.props;
-    if (isLoading) {
-      return <LoadingIndicator nightMode={this.props.nightMode} />;
-    }
+
+    <LoadingIndicator isLoading={isLoading} />
+
     return (
       <List
         containerStyle={[

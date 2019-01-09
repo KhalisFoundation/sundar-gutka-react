@@ -37,9 +37,8 @@ class Bookmarks extends React.Component {
   }
 
   render() {
-    if (this.state.isLoading) {
-      return <LoadingIndicator nightMode={this.props.nightMode} />;
-    }
+    <LoadingIndicator isLoading={this.state.isLoading} />
+
     return (
       <View
         style={{

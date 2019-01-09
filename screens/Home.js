@@ -12,6 +12,7 @@ import Database from "../utils/database";
 import { mergedBaniList } from "../utils/helpers";
 import * as actions from "../actions/actions";
 import BaniList from "../components/BaniList";
+import BaniLengthSelector from "../components/BaniLengthSelector";
 import VersionNumber from "react-native-version-number";
 
 class Home extends React.Component {
@@ -20,7 +21,8 @@ class Home extends React.Component {
 
     this.state = {
       data: [],
-      isLoading: true
+      isLoading: true,
+      showLengthSelector: false
     };
   }
 
@@ -61,25 +63,18 @@ class Home extends React.Component {
   }
 
   componentWillMount() {
+    var showBaniLengthSelector = false;
     if (this.props.appVersion != VersionNumber.appVersion) {
       if (this.props.appVersion == "") {
         // Is first install
-
-        // Alert.alert(
-        //   'Bani Length',
-        //   'Some Banis, such as Rehras Sahib have multiple lengths available, please choose the length of Bani you wish to read before starting.\nYou can always change this in settings.',
-        //   [
-        //     {text: 'Short', onPress: () => this.props.setBaniLength(actions.BANI_LENGTHS[0])},
-        //     {text: 'Medium', onPress: () => this.props.setBaniLength(actions.BANI_LENGTHS[1])},
-        //     {text: 'Long', onPress: () => this.props.setBaniLength(actions.BANI_LENGTHS[2])},
-        //     {text: 'Extra Long', onPress: () => this.props.setBaniLength(actions.BANI_LENGTHS[3])},
-        //   ],
-        //   { cancelable: false }
-        // )
+        showBaniLengthSelector = true;
       }
       this.props.setAppVersion(VersionNumber.appVersion);
     }
-
+    if(showBaniLengthSelector || this.props.baniLength == "") {
+      this.setState({showLengthSelector: true});
+    }
+    
     this.changeKeepAwake(this.props.screenAwake || this.props.autoScroll);
     this.changeStatusBar(this.props.statusBar);
     AnalyticsManager.getInstance().allowTracking(this.props.statistics);
@@ -139,6 +134,8 @@ class Home extends React.Component {
           flex: 1
         }}
       >
+        {this.state.showLengthSelector && <BaniLengthSelector />}
+
         <View
           backgroundColor={GLOBAL.COLOR.TOOLBAR_COLOR}
           style={{
@@ -233,7 +230,8 @@ function mapStateToProps(state) {
     statusBar: state.statusBar,
     statistics: state.statistics,
     autoScroll: state.autoScroll,
-    appVersion: state.appVersion
+    appVersion: state.appVersion,
+    baniLength: state.baniLength
   };
 }
 

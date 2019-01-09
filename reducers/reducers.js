@@ -87,7 +87,7 @@ function baniOrder(state = defaultBaniOrderArray, action) {
   }
 }
 
-function baniLength(state = "EXTRA_LONG", action) {
+function baniLength(state = "", action) {
   switch (action.type) {
     case SET_BANI_LENGTH:
       return action.length;
