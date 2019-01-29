@@ -47,6 +47,7 @@
 		3F5B4B4EACBB4465B3E6E81F /* EvilIcons.ttf in Resources */ = {isa = PBXBuildFile; fileRef = 697CAB57DC4147DAA018D286 /* EvilIcons.ttf */; };
 		41772CF89A96479F9C4CD6E3 /* FontAwesome.ttf in Resources */ = {isa = PBXBuildFile; fileRef = EAB536A8247D46F38F6547BE /* FontAwesome.ttf */; };
 		42CC0F3B6CF3490DBFAEDB12 /* Ionicons.ttf in Resources */ = {isa = PBXBuildFile; fileRef = E741EC4D82D4486DA5B7DF38 /* Ionicons.ttf */; };
+		4F9A3EB33E8B4AD1B873B7BE /* libRNFirebase.a in Frameworks */ = {isa = PBXBuildFile; fileRef = D6D83F5DB15340909344074A /* libRNFirebase.a */; };
 		5DFE002DAA8B4063A28C4C69 /* libSplashScreen.a in Frameworks */ = {isa = PBXBuildFile; fileRef = C60B91824DF145D7863CA877 /* libSplashScreen.a */; };
 		6D84F33F73A44FA1B284FF32 /* GurbaniAkharSG.ttf in Resources */ = {isa = PBXBuildFile; fileRef = 8C1C187661EE4AABBDAC038A /* GurbaniAkharSG.ttf */; };
 		6EAF0EC7C45D4DF290E989D5 /* MaterialCommunityIcons.ttf in Resources */ = {isa = PBXBuildFile; fileRef = EEEBDA3E2B9149E09C59FFF6 /* MaterialCommunityIcons.ttf */; };
@@ -56,15 +57,20 @@
 		8327405485D547098834DFF7 /* FontAwesome5_Brands.ttf in Resources */ = {isa = PBXBuildFile; fileRef = 6DAEB9AB494F46CC91346DAB /* FontAwesome5_Brands.ttf */; };
 		8705691D78BD43469A0F9508 /* libRNVectorIcons.a in Frameworks */ = {isa = PBXBuildFile; fileRef = D94BF5F323684F03B949FA97 /* libRNVectorIcons.a */; };
 		8A2E42A23D9B46EBA5E2FE58 /* libSQLite.a in Frameworks */ = {isa = PBXBuildFile; fileRef = B23325281BF74635BBD96AD7 /* libSQLite.a */; };
+		8A5471D6EB160BA3E2EB579C /* libPods-SundarGutkaTests.a in Frameworks */ = {isa = PBXBuildFile; fileRef = F495FBE70391783014948B19 /* libPods-SundarGutkaTests.a */; };
 		8D216CB6D61D4703ACC19204 /* libz.tbd in Frameworks */ = {isa = PBXBuildFile; fileRef = 87504E1580EF4AD3B0586B8F /* libz.tbd */; };
 		8D7E0F63247E413BBAAA1B96 /* SimpleLineIcons.ttf in Resources */ = {isa = PBXBuildFile; fileRef = A529E64E82124ABAAE7822B6 /* SimpleLineIcons.ttf */; };
+		9A1D5B7E21FFE810007A78D9 /* GoogleService-Info.plist in Resources */ = {isa = PBXBuildFile; fileRef = 9A1D5B7D21FFE810007A78D9 /* GoogleService-Info.plist */; };
 		9A42F52421745B83000CCDED /* libRCTAnimation.a in Frameworks */ = {isa = PBXBuildFile; fileRef = 5E9157331DD0AC6500FF2AA8 /* libRCTAnimation.a */; };
 		9ABEFE55207306A9001364B3 /* www in Resources */ = {isa = PBXBuildFile; fileRef = 9ABEFE54207306A9001364B3 /* www */; };
 		9FABCA3CB57D4F0E996DA3F2 /* FontAwesome5_Regular.ttf in Resources */ = {isa = PBXBuildFile; fileRef = A226D8275FDE45EFB66AA58A /* FontAwesome5_Regular.ttf */; };
 		ADBDB9381DFEBF1600ED6528 /* libRCTBlob.a in Frameworks */ = {isa = PBXBuildFile; fileRef = ADBDB9271DFEBF0700ED6528 /* libRCTBlob.a */; };
 		BC180844CCCD4E87ADA71FD1 /* Zocial.ttf in Resources */ = {isa = PBXBuildFile; fileRef = 232C978BC2024F7ABE0D44CE /* Zocial.ttf */; };
 		BC4E0227527A4C12B7EECB62 /* AnmolLipiSG.ttf in Resources */ = {isa = PBXBuildFile; fileRef = E29A4502485042B9AA8E53F5 /* AnmolLipiSG.ttf */; };
+		BE0658821C97B909DDAA54B6 /* libPods-SundarGutka-tvOSTests.a in Frameworks */ = {isa = PBXBuildFile; fileRef = 74310A154039D5F1B2AB9FEA /* libPods-SundarGutka-tvOSTests.a */; };
+		BE8140EB38382411827BD8DF /* libPods-SundarGutka.a in Frameworks */ = {isa = PBXBuildFile; fileRef = 387F29C0C55EE378072EDF42 /* libPods-SundarGutka.a */; };
 		CEDCAAEA81C04DF3821EC5DE /* libKCKeepAwake.a in Frameworks */ = {isa = PBXBuildFile; fileRef = 0BF858ECE41C40E6BE4EADD9 /* libKCKeepAwake.a */; };
+		DC10BC6EE1EE972B2D028617 /* libPods-SundarGutka-tvOS.a in Frameworks */ = {isa = PBXBuildFile; fileRef = 093D3ECD8C96027B68717575 /* libPods-SundarGutka-tvOS.a */; };
 		DFCC7DE125694A908B0489C9 /* SystemConfiguration.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = 3D66D0437E4A48949D9E59A9 /* SystemConfiguration.framework */; };
 		F7679C8302B2435684FC038F /* libRNVersionNumber.a in Frameworks */ = {isa = PBXBuildFile; fileRef = 1A5DAA352A5A4D64927588C4 /* libRNVersionNumber.a */; };
 		F86B7A993C784181B6712009 /* CoreData.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = 02474FDD8074406FBDB65F61 /* CoreData.framework */; };
@@ -281,6 +287,13 @@
 			remoteGlobalIDString = 58B5119B1A9E6C1200147676;
 			remoteInfo = RCTText;
 		};
+		9A1D5B7B21FFE78D007A78D9 /* PBXContainerItemProxy */ = {
+			isa = PBXContainerItemProxy;
+			containerPortal = 961F5C081EAF4C0D8621FD3E /* RNFirebase.xcodeproj */;
+			proxyType = 2;
+			remoteGlobalIDString = 134814201AA4EA6300B7C361;
+			remoteInfo = RNFirebase;
+		};
 		9A355CF5207F06370076322F /* PBXContainerItemProxy */ = {
 			isa = PBXContainerItemProxy;
 			containerPortal = 4DDAEEA05B9145BAB7021EA1 /* KCKeepAwake.xcodeproj */;
@@ -426,6 +439,7 @@
 		00E356F11AD99517003FC87E /* Info.plist */ = {isa = PBXFileReference; lastKnownFileType = text.plist.xml; path = Info.plist; sourceTree = "<group>"; };
 		00E356F21AD99517003FC87E /* SundarGutkaTests.m */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.objc; path = SundarGutkaTests.m; sourceTree = "<group>"; };
 		02474FDD8074406FBDB65F61 /* CoreData.framework */ = {isa = PBXFileReference; explicitFileType = undefined; fileEncoding = 9; includeInIndex = 0; lastKnownFileType = wrapper.framework; name = CoreData.framework; path = System/Library/Frameworks/CoreData.framework; sourceTree = SDKROOT; };
+		093D3ECD8C96027B68717575 /* libPods-SundarGutka-tvOS.a */ = {isa = PBXFileReference; explicitFileType = archive.ar; includeInIndex = 0; path = "libPods-SundarGutka-tvOS.a"; sourceTree = BUILT_PRODUCTS_DIR; };
 		0BF858ECE41C40E6BE4EADD9 /* libKCKeepAwake.a */ = {isa = PBXFileReference; explicitFileType = undefined; fileEncoding = 9; includeInIndex = 0; lastKnownFileType = archive.ar; path = libKCKeepAwake.a; sourceTree = "<group>"; };
 		139105B61AF99BAD00B5F7CC /* RCTSettings.xcodeproj */ = {isa = PBXFileReference; lastKnownFileType = "wrapper.pb-project"; name = RCTSettings.xcodeproj; path = "../node_modules/react-native/Libraries/Settings/RCTSettings.xcodeproj"; sourceTree = "<group>"; };
 		139FDEE61B06529A00C62182 /* RCTWebSocket.xcodeproj */ = {isa = PBXFileReference; lastKnownFileType = "wrapper.pb-project"; name = RCTWebSocket.xcodeproj; path = "../node_modules/react-native/Libraries/WebSocket/RCTWebSocket.xcodeproj"; sourceTree = "<group>"; };
@@ -443,8 +457,10 @@
 		2D16E6891FA4F8E400B85C8A /* libReact.a */ = {isa = PBXFileReference; explicitFileType = archive.ar; path = libReact.a; sourceTree = BUILT_PRODUCTS_DIR; };
 		32783D92DB8A4032A8D13FB0 /* RNVersionNumber.xcodeproj */ = {isa = PBXFileReference; explicitFileType = undefined; fileEncoding = 9; includeInIndex = 0; lastKnownFileType = "wrapper.pb-project"; name = RNVersionNumber.xcodeproj; path = "../node_modules/react-native-version-number/ios/RNVersionNumber.xcodeproj"; sourceTree = "<group>"; };
 		34C92CB5C9D842FBA36608F2 /* GurbaniAkharHeavySG.ttf */ = {isa = PBXFileReference; explicitFileType = undefined; fileEncoding = 9; includeInIndex = 0; lastKnownFileType = unknown; name = GurbaniAkharHeavySG.ttf; path = ../assets/fonts/GurbaniAkharHeavySG.ttf; sourceTree = "<group>"; };
+		387F29C0C55EE378072EDF42 /* libPods-SundarGutka.a */ = {isa = PBXFileReference; explicitFileType = archive.ar; includeInIndex = 0; path = "libPods-SundarGutka.a"; sourceTree = BUILT_PRODUCTS_DIR; };
 		3D66D0437E4A48949D9E59A9 /* SystemConfiguration.framework */ = {isa = PBXFileReference; explicitFileType = undefined; fileEncoding = 9; includeInIndex = 0; lastKnownFileType = wrapper.framework; name = SystemConfiguration.framework; path = System/Library/Frameworks/SystemConfiguration.framework; sourceTree = SDKROOT; };
 		410FEDE6419946199AB79FA9 /* MaterialIcons.ttf */ = {isa = PBXFileReference; explicitFileType = undefined; fileEncoding = 9; includeInIndex = 0; lastKnownFileType = unknown; name = MaterialIcons.ttf; path = "../node_modules/react-native-vector-icons/Fonts/MaterialIcons.ttf"; sourceTree = "<group>"; };
+		442D91FECF9EC08319700AFC /* Pods-SundarGutkaTests.debug.xcconfig */ = {isa = PBXFileReference; includeInIndex = 1; lastKnownFileType = text.xcconfig; name = "Pods-SundarGutkaTests.debug.xcconfig"; path = "Pods/Target Support Files/Pods-SundarGutkaTests/Pods-SundarGutkaTests.debug.xcconfig"; sourceTree = "<group>"; };
 		498B618C2B6749E48B235475 /* RNSpinkit.xcodeproj */ = {isa = PBXFileReference; explicitFileType = undefined; fileEncoding = 9; includeInIndex = 0; lastKnownFileType = "wrapper.pb-project"; name = RNSpinkit.xcodeproj; path = "../node_modules/react-native-spinkit/ios/RNSpinkit.xcodeproj"; sourceTree = "<group>"; };
 		4DDAEEA05B9145BAB7021EA1 /* KCKeepAwake.xcodeproj */ = {isa = PBXFileReference; explicitFileType = undefined; fileEncoding = 9; includeInIndex = 0; lastKnownFileType = "wrapper.pb-project"; name = KCKeepAwake.xcodeproj; path = "../node_modules/react-native-keep-awake/ios/KCKeepAwake.xcodeproj"; sourceTree = "<group>"; };
 		5857C7DA764B40D6883D5B1D /* libRNVersionNumber-tvOS.a */ = {isa = PBXFileReference; explicitFileType = undefined; fileEncoding = 9; includeInIndex = 0; lastKnownFileType = archive.ar; path = "libRNVersionNumber-tvOS.a"; sourceTree = "<group>"; };
@@ -453,17 +469,25 @@
 		649F9E47DDC64B3AB7C36A81 /* RNVectorIcons.xcodeproj */ = {isa = PBXFileReference; explicitFileType = undefined; fileEncoding = 9; includeInIndex = 0; lastKnownFileType = "wrapper.pb-project"; name = RNVectorIcons.xcodeproj; path = "../node_modules/react-native-vector-icons/RNVectorIcons.xcodeproj"; sourceTree = "<group>"; };
 		66AF89E752B54C2285AA1C19 /* Feather.ttf */ = {isa = PBXFileReference; explicitFileType = undefined; fileEncoding = 9; includeInIndex = 0; lastKnownFileType = unknown; name = Feather.ttf; path = "../node_modules/react-native-vector-icons/Fonts/Feather.ttf"; sourceTree = "<group>"; };
 		697CAB57DC4147DAA018D286 /* EvilIcons.ttf */ = {isa = PBXFileReference; explicitFileType = undefined; fileEncoding = 9; includeInIndex = 0; lastKnownFileType = unknown; name = EvilIcons.ttf; path = "../node_modules/react-native-vector-icons/Fonts/EvilIcons.ttf"; sourceTree = "<group>"; };
+		6C00605BA32A694742D0EFC1 /* Pods-SundarGutka-tvOS.release.xcconfig */ = {isa = PBXFileReference; includeInIndex = 1; lastKnownFileType = text.xcconfig; name = "Pods-SundarGutka-tvOS.release.xcconfig"; path = "Pods/Target Support Files/Pods-SundarGutka-tvOS/Pods-SundarGutka-tvOS.release.xcconfig"; sourceTree = "<group>"; };
+		6CFC913D68DA33FB52F32F3E /* Pods-SundarGutka.debug.xcconfig */ = {isa = PBXFileReference; includeInIndex = 1; lastKnownFileType = text.xcconfig; name = "Pods-SundarGutka.debug.xcconfig"; path = "Pods/Target Support Files/Pods-SundarGutka/Pods-SundarGutka.debug.xcconfig"; sourceTree = "<group>"; };
 		6DAEB9AB494F46CC91346DAB /* FontAwesome5_Brands.ttf */ = {isa = PBXFileReference; explicitFileType = undefined; fileEncoding = 9; includeInIndex = 0; lastKnownFileType = unknown; name = FontAwesome5_Brands.ttf; path = "../node_modules/react-native-vector-icons/Fonts/FontAwesome5_Brands.ttf"; sourceTree = "<group>"; };
+		71FAA0238E44BFA4150D3175 /* Pods-SundarGutkaTests.release.xcconfig */ = {isa = PBXFileReference; includeInIndex = 1; lastKnownFileType = text.xcconfig; name = "Pods-SundarGutkaTests.release.xcconfig"; path = "Pods/Target Support Files/Pods-SundarGutkaTests/Pods-SundarGutkaTests.release.xcconfig"; sourceTree = "<group>"; };
 		73E3AB0C27884E2E88F10F8A /* Arial.ttf */ = {isa = PBXFileReference; explicitFileType = undefined; fileEncoding = 9; includeInIndex = 0; lastKnownFileType = unknown; name = Arial.ttf; path = ../assets/fonts/Arial.ttf; sourceTree = "<group>"; };
+		74310A154039D5F1B2AB9FEA /* libPods-SundarGutka-tvOSTests.a */ = {isa = PBXFileReference; explicitFileType = archive.ar; includeInIndex = 0; path = "libPods-SundarGutka-tvOSTests.a"; sourceTree = BUILT_PRODUCTS_DIR; };
 		78C398B01ACF4ADC00677621 /* RCTLinking.xcodeproj */ = {isa = PBXFileReference; lastKnownFileType = "wrapper.pb-project"; name = RCTLinking.xcodeproj; path = "../node_modules/react-native/Libraries/LinkingIOS/RCTLinking.xcodeproj"; sourceTree = "<group>"; };
+		7C00656D04EAC245A8E526F3 /* Pods-SundarGutka-tvOSTests.debug.xcconfig */ = {isa = PBXFileReference; includeInIndex = 1; lastKnownFileType = text.xcconfig; name = "Pods-SundarGutka-tvOSTests.debug.xcconfig"; path = "Pods/Target Support Files/Pods-SundarGutka-tvOSTests/Pods-SundarGutka-tvOSTests.debug.xcconfig"; sourceTree = "<group>"; };
 		7DADDF7A7C924576B74CF56F /* RCTGoogleAnalyticsBridge.xcodeproj */ = {isa = PBXFileReference; explicitFileType = undefined; fileEncoding = 9; includeInIndex = 0; lastKnownFileType = "wrapper.pb-project"; name = RCTGoogleAnalyticsBridge.xcodeproj; path = "../node_modules/react-native-google-analytics-bridge/ios/RCTGoogleAnalyticsBridge/RCTGoogleAnalyticsBridge.xcodeproj"; sourceTree = "<group>"; };
 		832341B01AAA6A8300B99B32 /* RCTText.xcodeproj */ = {isa = PBXFileReference; lastKnownFileType = "wrapper.pb-project"; name = RCTText.xcodeproj; path = "../node_modules/react-native/Libraries/Text/RCTText.xcodeproj"; sourceTree = "<group>"; };
 		87504E1580EF4AD3B0586B8F /* libz.tbd */ = {isa = PBXFileReference; explicitFileType = undefined; fileEncoding = 9; includeInIndex = 0; lastKnownFileType = "sourcecode.text-based-dylib-definition"; name = libz.tbd; path = usr/lib/libz.tbd; sourceTree = SDKROOT; };
 		8C1C187661EE4AABBDAC038A /* GurbaniAkharSG.ttf */ = {isa = PBXFileReference; explicitFileType = undefined; fileEncoding = 9; includeInIndex = 0; lastKnownFileType = unknown; name = GurbaniAkharSG.ttf; path = ../assets/fonts/GurbaniAkharSG.ttf; sourceTree = "<group>"; };
 		8E3BFE06CAC841BCA1474563 /* Foundation.ttf */ = {isa = PBXFileReference; explicitFileType = undefined; fileEncoding = 9; includeInIndex = 0; lastKnownFileType = unknown; name = Foundation.ttf; path = "../node_modules/react-native-vector-icons/Fonts/Foundation.ttf"; sourceTree = "<group>"; };
 		90564026864F4CED908A2900 /* libsqlite3.0.tbd */ = {isa = PBXFileReference; explicitFileType = undefined; fileEncoding = 9; includeInIndex = 0; lastKnownFileType = "sourcecode.text-based-dylib-definition"; name = libsqlite3.0.tbd; path = usr/lib/libsqlite3.0.tbd; sourceTree = SDKROOT; };
+		961F5C081EAF4C0D8621FD3E /* RNFirebase.xcodeproj */ = {isa = PBXFileReference; explicitFileType = undefined; fileEncoding = 9; includeInIndex = 0; lastKnownFileType = "wrapper.pb-project"; name = RNFirebase.xcodeproj; path = "../node_modules/react-native-firebase/ios/RNFirebase.xcodeproj"; sourceTree = "<group>"; };
+		9A1D5B7D21FFE810007A78D9 /* GoogleService-Info.plist */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = text.plist.xml; path = "GoogleService-Info.plist"; sourceTree = "<group>"; };
 		9ABEFE54207306A9001364B3 /* www */ = {isa = PBXFileReference; lastKnownFileType = folder; name = www; path = SundarGutka/www; sourceTree = "<group>"; };
 		A226D8275FDE45EFB66AA58A /* FontAwesome5_Regular.ttf */ = {isa = PBXFileReference; explicitFileType = undefined; fileEncoding = 9; includeInIndex = 0; lastKnownFileType = unknown; name = FontAwesome5_Regular.ttf; path = "../node_modules/react-native-vector-icons/Fonts/FontAwesome5_Regular.ttf"; sourceTree = "<group>"; };
+		A3044852E9D98D2896D9FA69 /* Pods-SundarGutka-tvOSTests.release.xcconfig */ = {isa = PBXFileReference; includeInIndex = 1; lastKnownFileType = text.xcconfig; name = "Pods-SundarGutka-tvOSTests.release.xcconfig"; path = "Pods/Target Support Files/Pods-SundarGutka-tvOSTests/Pods-SundarGutka-tvOSTests.release.xcconfig"; sourceTree = "<group>"; };
 		A445DAC939F24500B74E4741 /* Entypo.ttf */ = {isa = PBXFileReference; explicitFileType = undefined; fileEncoding = 9; includeInIndex = 0; lastKnownFileType = unknown; name = Entypo.ttf; path = "../node_modules/react-native-vector-icons/Fonts/Entypo.ttf"; sourceTree = "<group>"; };
 		A529E64E82124ABAAE7822B6 /* SimpleLineIcons.ttf */ = {isa = PBXFileReference; explicitFileType = undefined; fileEncoding = 9; includeInIndex = 0; lastKnownFileType = unknown; name = SimpleLineIcons.ttf; path = "../node_modules/react-native-vector-icons/Fonts/SimpleLineIcons.ttf"; sourceTree = "<group>"; };
 		ADBDB91F1DFEBF0600ED6528 /* RCTBlob.xcodeproj */ = {isa = PBXFileReference; lastKnownFileType = "wrapper.pb-project"; name = RCTBlob.xcodeproj; path = "../node_modules/react-native/Libraries/Blob/RCTBlob.xcodeproj"; sourceTree = "<group>"; };
@@ -472,7 +496,10 @@
 		BA3FEA6EE638471982B3D0A7 /* Octicons.ttf */ = {isa = PBXFileReference; explicitFileType = undefined; fileEncoding = 9; includeInIndex = 0; lastKnownFileType = unknown; name = Octicons.ttf; path = "../node_modules/react-native-vector-icons/Fonts/Octicons.ttf"; sourceTree = "<group>"; };
 		BC0C920D2AF341C8A6174E50 /* FontAwesome5_Solid.ttf */ = {isa = PBXFileReference; explicitFileType = undefined; fileEncoding = 9; includeInIndex = 0; lastKnownFileType = unknown; name = FontAwesome5_Solid.ttf; path = "../node_modules/react-native-vector-icons/Fonts/FontAwesome5_Solid.ttf"; sourceTree = "<group>"; };
 		C60B91824DF145D7863CA877 /* libSplashScreen.a */ = {isa = PBXFileReference; explicitFileType = undefined; fileEncoding = 9; includeInIndex = 0; lastKnownFileType = archive.ar; path = libSplashScreen.a; sourceTree = "<group>"; };
+		D09783927809CBF11B97EBB3 /* Pods-SundarGutka-tvOS.debug.xcconfig */ = {isa = PBXFileReference; includeInIndex = 1; lastKnownFileType = text.xcconfig; name = "Pods-SundarGutka-tvOS.debug.xcconfig"; path = "Pods/Target Support Files/Pods-SundarGutka-tvOS/Pods-SundarGutka-tvOS.debug.xcconfig"; sourceTree = "<group>"; };
 		D5895E05F4EA4D24AF37694A /* libRCTGoogleAnalyticsBridge.a */ = {isa = PBXFileReference; explicitFileType = undefined; fileEncoding = 9; includeInIndex = 0; lastKnownFileType = archive.ar; path = libRCTGoogleAnalyticsBridge.a; sourceTree = "<group>"; };
+		D5D8CD38DAA9C411E8252781 /* Pods-SundarGutka.release.xcconfig */ = {isa = PBXFileReference; includeInIndex = 1; lastKnownFileType = text.xcconfig; name = "Pods-SundarGutka.release.xcconfig"; path = "Pods/Target Support Files/Pods-SundarGutka/Pods-SundarGutka.release.xcconfig"; sourceTree = "<group>"; };
+		D6D83F5DB15340909344074A /* libRNFirebase.a */ = {isa = PBXFileReference; explicitFileType = undefined; fileEncoding = 9; includeInIndex = 0; lastKnownFileType = archive.ar; path = libRNFirebase.a; sourceTree = "<group>"; };
 		D94BF5F323684F03B949FA97 /* libRNVectorIcons.a */ = {isa = PBXFileReference; explicitFileType = undefined; fileEncoding = 9; includeInIndex = 0; lastKnownFileType = archive.ar; path = libRNVectorIcons.a; sourceTree = "<group>"; };
 		DF66F27936084E6FBB389B0A /* SplashScreen.xcodeproj */ = {isa = PBXFileReference; explicitFileType = undefined; fileEncoding = 9; includeInIndex = 0; lastKnownFileType = "wrapper.pb-project"; name = SplashScreen.xcodeproj; path = "../node_modules/react-native-splash-screen/ios/SplashScreen.xcodeproj"; sourceTree = "<group>"; };
 		E29A4502485042B9AA8E53F5 /* AnmolLipiSG.ttf */ = {isa = PBXFileReference; explicitFileType = undefined; fileEncoding = 9; includeInIndex = 0; lastKnownFileType = unknown; name = AnmolLipiSG.ttf; path = ../assets/fonts/AnmolLipiSG.ttf; sourceTree = "<group>"; };
@@ -480,6 +507,7 @@
 		E922FAB29D99492187CCB7F3 /* GurbaniAkharThickSG.ttf */ = {isa = PBXFileReference; explicitFileType = undefined; fileEncoding = 9; includeInIndex = 0; lastKnownFileType = unknown; name = GurbaniAkharThickSG.ttf; path = ../assets/fonts/GurbaniAkharThickSG.ttf; sourceTree = "<group>"; };
 		EAB536A8247D46F38F6547BE /* FontAwesome.ttf */ = {isa = PBXFileReference; explicitFileType = undefined; fileEncoding = 9; includeInIndex = 0; lastKnownFileType = unknown; name = FontAwesome.ttf; path = "../node_modules/react-native-vector-icons/Fonts/FontAwesome.ttf"; sourceTree = "<group>"; };
 		EEEBDA3E2B9149E09C59FFF6 /* MaterialCommunityIcons.ttf */ = {isa = PBXFileReference; explicitFileType = undefined; fileEncoding = 9; includeInIndex = 0; lastKnownFileType = unknown; name = MaterialCommunityIcons.ttf; path = "../node_modules/react-native-vector-icons/Fonts/MaterialCommunityIcons.ttf"; sourceTree = "<group>"; };
+		F495FBE70391783014948B19 /* libPods-SundarGutkaTests.a */ = {isa = PBXFileReference; explicitFileType = archive.ar; includeInIndex = 0; path = "libPods-SundarGutkaTests.a"; sourceTree = BUILT_PRODUCTS_DIR; };
 /* End PBXFileReference section */
 
 /* Begin PBXFrameworksBuildPhase section */
@@ -488,6 +516,7 @@
 			buildActionMask = 2147483647;
 			files = (
 				140ED2AC1D01E1AD002B40FF /* libReact.a in Frameworks */,
+				8A5471D6EB160BA3E2EB579C /* libPods-SundarGutkaTests.a in Frameworks */,
 			);
 			runOnlyForDeploymentPostprocessing = 0;
 		};
@@ -518,6 +547,8 @@
 				8D216CB6D61D4703ACC19204 /* libz.tbd in Frameworks */,
 				306F592FC6584A768D3C7A1E /* libRNSpinkit.a in Frameworks */,
 				F7679C8302B2435684FC038F /* libRNVersionNumber.a in Frameworks */,
+				4F9A3EB33E8B4AD1B873B7BE /* libRNFirebase.a in Frameworks */,
+				BE8140EB38382411827BD8DF /* libPods-SundarGutka.a in Frameworks */,
 			);
 			runOnlyForDeploymentPostprocessing = 0;
 		};
@@ -534,6 +565,7 @@
 				2D02E4C71E0B4AEC006451C7 /* libRCTText-tvOS.a in Frameworks */,
 				2D02E4C81E0B4AEC006451C7 /* libRCTWebSocket-tvOS.a in Frameworks */,
 				1A91AADD72344C659112BCFE /* libRNVersionNumber-tvOS.a in Frameworks */,
+				DC10BC6EE1EE972B2D028617 /* libPods-SundarGutka-tvOS.a in Frameworks */,
 			);
 			runOnlyForDeploymentPostprocessing = 0;
 		};
@@ -541,6 +573,7 @@
 			isa = PBXFrameworksBuildPhase;
 			buildActionMask = 2147483647;
 			files = (
+				BE0658821C97B909DDAA54B6 /* libPods-SundarGutka-tvOSTests.a in Frameworks */,
 			);
 			runOnlyForDeploymentPostprocessing = 0;
 		};
@@ -634,6 +667,7 @@
 				13B07FB01A68108700A75B9A /* AppDelegate.m */,
 				13B07FB51A68108700A75B9A /* Images.xcassets */,
 				13B07FB61A68108700A75B9A /* Info.plist */,
+				9A1D5B7D21FFE810007A78D9 /* GoogleService-Info.plist */,
 				13B07FB71A68108700A75B9A /* main.m */,
 			);
 			name = SundarGutka;
@@ -670,6 +704,10 @@
 				02474FDD8074406FBDB65F61 /* CoreData.framework */,
 				3D66D0437E4A48949D9E59A9 /* SystemConfiguration.framework */,
 				87504E1580EF4AD3B0586B8F /* libz.tbd */,
+				387F29C0C55EE378072EDF42 /* libPods-SundarGutka.a */,
+				093D3ECD8C96027B68717575 /* libPods-SundarGutka-tvOS.a */,
+				74310A154039D5F1B2AB9FEA /* libPods-SundarGutka-tvOSTests.a */,
+				F495FBE70391783014948B19 /* libPods-SundarGutkaTests.a */,
 			);
 			name = Frameworks;
 			sourceTree = "<group>";
@@ -714,6 +752,7 @@
 				7DADDF7A7C924576B74CF56F /* RCTGoogleAnalyticsBridge.xcodeproj */,
 				498B618C2B6749E48B235475 /* RNSpinkit.xcodeproj */,
 				32783D92DB8A4032A8D13FB0 /* RNVersionNumber.xcodeproj */,
+				961F5C081EAF4C0D8621FD3E /* RNFirebase.xcodeproj */,
 			);
 			name = Libraries;
 			sourceTree = "<group>";
@@ -737,6 +776,7 @@
 				2D16E6871FA4F8E400B85C8A /* Frameworks */,
 				E9082931727A4A3B8042B52A /* Resources */,
 				9ABEFE14207304FF001364B3 /* Recovered References */,
+				F7D67064B637391908216DB9 /* Pods */,
 			);
 			indentWidth = 2;
 			sourceTree = "<group>";
@@ -750,6 +790,14 @@
 				00E356EE1AD99517003FC87E /* SundarGutkaTests.xctest */,
 				2D02E47B1E0B4A5D006451C7 /* SundarGutka-tvOS.app */,
 				2D02E4901E0B4A5D006451C7 /* SundarGutka-tvOSTests.xctest */,
+			);
+			name = Products;
+			sourceTree = "<group>";
+		};
+		9A1D5B7821FFE78D007A78D9 /* Products */ = {
+			isa = PBXGroup;
+			children = (
+				9A1D5B7C21FFE78D007A78D9 /* libRNFirebase.a */,
 			);
 			name = Products;
 			sourceTree = "<group>";
@@ -790,6 +838,7 @@
 				597C594ADB6041C2AA5F5295 /* libRNSpinkit.a */,
 				1A5DAA352A5A4D64927588C4 /* libRNVersionNumber.a */,
 				5857C7DA764B40D6883D5B1D /* libRNVersionNumber-tvOS.a */,
+				D6D83F5DB15340909344074A /* libRNFirebase.a */,
 			);
 			name = "Recovered References";
 			sourceTree = "<group>";
@@ -863,6 +912,21 @@
 			name = Resources;
 			sourceTree = "<group>";
 		};
+		F7D67064B637391908216DB9 /* Pods */ = {
+			isa = PBXGroup;
+			children = (
+				6CFC913D68DA33FB52F32F3E /* Pods-SundarGutka.debug.xcconfig */,
+				D5D8CD38DAA9C411E8252781 /* Pods-SundarGutka.release.xcconfig */,
+				D09783927809CBF11B97EBB3 /* Pods-SundarGutka-tvOS.debug.xcconfig */,
+				6C00605BA32A694742D0EFC1 /* Pods-SundarGutka-tvOS.release.xcconfig */,
+				7C00656D04EAC245A8E526F3 /* Pods-SundarGutka-tvOSTests.debug.xcconfig */,
+				A3044852E9D98D2896D9FA69 /* Pods-SundarGutka-tvOSTests.release.xcconfig */,
+				442D91FECF9EC08319700AFC /* Pods-SundarGutkaTests.debug.xcconfig */,
+				71FAA0238E44BFA4150D3175 /* Pods-SundarGutkaTests.release.xcconfig */,
+			);
+			name = Pods;
+			sourceTree = "<group>";
+		};
 /* End PBXGroup section */
 
 /* Begin PBXNativeTarget section */
@@ -870,6 +934,7 @@
 			isa = PBXNativeTarget;
 			buildConfigurationList = 00E357021AD99517003FC87E /* Build configuration list for PBXNativeTarget "SundarGutkaTests" */;
 			buildPhases = (
+				FA55AC7976377CC23C9A3E9D /* [CP] Check Pods Manifest.lock */,
 				00E356EA1AD99517003FC87E /* Sources */,
 				00E356EB1AD99517003FC87E /* Frameworks */,
 				00E356EC1AD99517003FC87E /* Resources */,
@@ -888,6 +953,7 @@
 			isa = PBXNativeTarget;
 			buildConfigurationList = 13B07F931A680F5B00A75B9A /* Build configuration list for PBXNativeTarget "SundarGutka" */;
 			buildPhases = (
+				E574EB73C1675833CB3DB972 /* [CP] Check Pods Manifest.lock */,
 				13B07F871A680F5B00A75B9A /* Sources */,
 				13B07F8C1A680F5B00A75B9A /* Frameworks */,
 				13B07F8E1A680F5B00A75B9A /* Resources */,
@@ -906,6 +972,7 @@
 			isa = PBXNativeTarget;
 			buildConfigurationList = 2D02E4BA1E0B4A5E006451C7 /* Build configuration list for PBXNativeTarget "SundarGutka-tvOS" */;
 			buildPhases = (
+				02E422A2D5F212536A453E8E /* [CP] Check Pods Manifest.lock */,
 				2D02E4771E0B4A5D006451C7 /* Sources */,
 				2D02E4781E0B4A5D006451C7 /* Frameworks */,
 				2D02E4791E0B4A5D006451C7 /* Resources */,
@@ -924,6 +991,7 @@
 			isa = PBXNativeTarget;
 			buildConfigurationList = 2D02E4BB1E0B4A5E006451C7 /* Build configuration list for PBXNativeTarget "SundarGutka-tvOSTests" */;
 			buildPhases = (
+				5F7422FC0ADEBF535E87B505 /* [CP] Check Pods Manifest.lock */,
 				2D02E48C1E0B4A5D006451C7 /* Sources */,
 				2D02E48D1E0B4A5D006451C7 /* Frameworks */,
 				2D02E48E1E0B4A5D006451C7 /* Resources */,
@@ -1035,6 +1103,10 @@
 				{
 					ProductGroup = 146834001AC3E56700842450 /* Products */;
 					ProjectRef = 146833FF1AC3E56700842450 /* React.xcodeproj */;
+				},
+				{
+					ProductGroup = 9A1D5B7821FFE78D007A78D9 /* Products */;
+					ProjectRef = 961F5C081EAF4C0D8621FD3E /* RNFirebase.xcodeproj */;
 				},
 				{
 					ProductGroup = 9A7C4D6B2092552100321734 /* Products */;
@@ -1264,6 +1336,13 @@
 			remoteRef = 832341B41AAA6A8300B99B32 /* PBXContainerItemProxy */;
 			sourceTree = BUILT_PRODUCTS_DIR;
 		};
+		9A1D5B7C21FFE78D007A78D9 /* libRNFirebase.a */ = {
+			isa = PBXReferenceProxy;
+			fileType = archive.ar;
+			path = libRNFirebase.a;
+			remoteRef = 9A1D5B7B21FFE78D007A78D9 /* PBXContainerItemProxy */;
+			sourceTree = BUILT_PRODUCTS_DIR;
+		};
 		9A355CF6207F06370076322F /* libKCKeepAwake.a */ = {
 			isa = PBXReferenceProxy;
 			fileType = archive.ar;
@@ -1430,6 +1509,7 @@
 				2E4745D0172B42FD971BE9E6 /* GurbaniAkharThickSG.ttf in Resources */,
 				16FFB5EAB3CD4A3D81435539 /* Arial.ttf in Resources */,
 				8327405485D547098834DFF7 /* FontAwesome5_Brands.ttf in Resources */,
+				9A1D5B7E21FFE810007A78D9 /* GoogleService-Info.plist in Resources */,
 				9FABCA3CB57D4F0E996DA3F2 /* FontAwesome5_Regular.ttf in Resources */,
 				3064B2D4CC80447B910DDDE0 /* FontAwesome5_Solid.ttf in Resources */,
 			);
@@ -1467,6 +1547,24 @@
 			shellPath = /bin/sh;
 			shellScript = "export NODE_BINARY=node\n../node_modules/react-native/scripts/react-native-xcode.sh";
 		};
+		02E422A2D5F212536A453E8E /* [CP] Check Pods Manifest.lock */ = {
+			isa = PBXShellScriptBuildPhase;
+			buildActionMask = 2147483647;
+			files = (
+			);
+			inputPaths = (
+				"${PODS_PODFILE_DIR_PATH}/Podfile.lock",
+				"${PODS_ROOT}/Manifest.lock",
+			);
+			name = "[CP] Check Pods Manifest.lock";
+			outputPaths = (
+				"$(DERIVED_FILE_DIR)/Pods-SundarGutka-tvOS-checkManifestLockResult.txt",
+			);
+			runOnlyForDeploymentPostprocessing = 0;
+			shellPath = /bin/sh;
+			shellScript = "diff \"${PODS_PODFILE_DIR_PATH}/Podfile.lock\" \"${PODS_ROOT}/Manifest.lock\" > /dev/null\nif [ $? != 0 ] ; then\n    # print error to STDERR\n    echo \"error: The sandbox is not in sync with the Podfile.lock. Run 'pod install' or update your CocoaPods installation.\" >&2\n    exit 1\nfi\n# This output is used by Xcode 'outputs' to avoid re-running this script phase.\necho \"SUCCESS\" > \"${SCRIPT_OUTPUT_FILE_0}\"\n";
+			showEnvVarsInLog = 0;
+		};
 		2D02E4CB1E0B4B27006451C7 /* Bundle React Native Code And Images */ = {
 			isa = PBXShellScriptBuildPhase;
 			buildActionMask = 2147483647;
@@ -1480,6 +1578,60 @@
 			runOnlyForDeploymentPostprocessing = 0;
 			shellPath = /bin/sh;
 			shellScript = "export NODE_BINARY=node\n../node_modules/react-native/scripts/react-native-xcode.sh";
+		};
+		5F7422FC0ADEBF535E87B505 /* [CP] Check Pods Manifest.lock */ = {
+			isa = PBXShellScriptBuildPhase;
+			buildActionMask = 2147483647;
+			files = (
+			);
+			inputPaths = (
+				"${PODS_PODFILE_DIR_PATH}/Podfile.lock",
+				"${PODS_ROOT}/Manifest.lock",
+			);
+			name = "[CP] Check Pods Manifest.lock";
+			outputPaths = (
+				"$(DERIVED_FILE_DIR)/Pods-SundarGutka-tvOSTests-checkManifestLockResult.txt",
+			);
+			runOnlyForDeploymentPostprocessing = 0;
+			shellPath = /bin/sh;
+			shellScript = "diff \"${PODS_PODFILE_DIR_PATH}/Podfile.lock\" \"${PODS_ROOT}/Manifest.lock\" > /dev/null\nif [ $? != 0 ] ; then\n    # print error to STDERR\n    echo \"error: The sandbox is not in sync with the Podfile.lock. Run 'pod install' or update your CocoaPods installation.\" >&2\n    exit 1\nfi\n# This output is used by Xcode 'outputs' to avoid re-running this script phase.\necho \"SUCCESS\" > \"${SCRIPT_OUTPUT_FILE_0}\"\n";
+			showEnvVarsInLog = 0;
+		};
+		E574EB73C1675833CB3DB972 /* [CP] Check Pods Manifest.lock */ = {
+			isa = PBXShellScriptBuildPhase;
+			buildActionMask = 2147483647;
+			files = (
+			);
+			inputPaths = (
+				"${PODS_PODFILE_DIR_PATH}/Podfile.lock",
+				"${PODS_ROOT}/Manifest.lock",
+			);
+			name = "[CP] Check Pods Manifest.lock";
+			outputPaths = (
+				"$(DERIVED_FILE_DIR)/Pods-SundarGutka-checkManifestLockResult.txt",
+			);
+			runOnlyForDeploymentPostprocessing = 0;
+			shellPath = /bin/sh;
+			shellScript = "diff \"${PODS_PODFILE_DIR_PATH}/Podfile.lock\" \"${PODS_ROOT}/Manifest.lock\" > /dev/null\nif [ $? != 0 ] ; then\n    # print error to STDERR\n    echo \"error: The sandbox is not in sync with the Podfile.lock. Run 'pod install' or update your CocoaPods installation.\" >&2\n    exit 1\nfi\n# This output is used by Xcode 'outputs' to avoid re-running this script phase.\necho \"SUCCESS\" > \"${SCRIPT_OUTPUT_FILE_0}\"\n";
+			showEnvVarsInLog = 0;
+		};
+		FA55AC7976377CC23C9A3E9D /* [CP] Check Pods Manifest.lock */ = {
+			isa = PBXShellScriptBuildPhase;
+			buildActionMask = 2147483647;
+			files = (
+			);
+			inputPaths = (
+				"${PODS_PODFILE_DIR_PATH}/Podfile.lock",
+				"${PODS_ROOT}/Manifest.lock",
+			);
+			name = "[CP] Check Pods Manifest.lock";
+			outputPaths = (
+				"$(DERIVED_FILE_DIR)/Pods-SundarGutkaTests-checkManifestLockResult.txt",
+			);
+			runOnlyForDeploymentPostprocessing = 0;
+			shellPath = /bin/sh;
+			shellScript = "diff \"${PODS_PODFILE_DIR_PATH}/Podfile.lock\" \"${PODS_ROOT}/Manifest.lock\" > /dev/null\nif [ $? != 0 ] ; then\n    # print error to STDERR\n    echo \"error: The sandbox is not in sync with the Podfile.lock. Run 'pod install' or update your CocoaPods installation.\" >&2\n    exit 1\nfi\n# This output is used by Xcode 'outputs' to avoid re-running this script phase.\necho \"SUCCESS\" > \"${SCRIPT_OUTPUT_FILE_0}\"\n";
+			showEnvVarsInLog = 0;
 		};
 /* End PBXShellScriptBuildPhase section */
 
@@ -1536,6 +1688,7 @@
 /* Begin XCBuildConfiguration section */
 		00E356F61AD99517003FC87E /* Debug */ = {
 			isa = XCBuildConfiguration;
+			baseConfigurationReference = 442D91FECF9EC08319700AFC /* Pods-SundarGutkaTests.debug.xcconfig */;
 			buildSettings = {
 				BUNDLE_LOADER = "$(TEST_HOST)";
 				DEVELOPMENT_TEAM = 73Q53XQNYP;
@@ -1553,6 +1706,7 @@
 					"$(SRCROOT)/../node_modules/react-native-largelist/ios/STTVTableView",
 					"$(SRCROOT)/../node_modules/react-native-spinkit/ios/**",
 					"$(SRCROOT)/../node_modules/react-native-version-number/ios",
+					"$(SRCROOT)/../node_modules/react-native-firebase/ios/RNFirebase/**",
 				);
 				INFOPLIST_FILE = SundarGutkaTests/Info.plist;
 				IPHONEOS_DEPLOYMENT_TARGET = 8.0;
@@ -1567,8 +1721,10 @@
 					"\"$(SRCROOT)/$(TARGET_NAME)\"",
 					"\"$(SRCROOT)/$(TARGET_NAME)\"",
 					"\"$(SRCROOT)/$(TARGET_NAME)\"",
+					"\"$(SRCROOT)/$(TARGET_NAME)\"",
 				);
 				OTHER_LDFLAGS = (
+					"$(inherited)",
 					"-ObjC",
 					"-lc++",
 				);
@@ -1580,6 +1736,7 @@
 		};
 		00E356F71AD99517003FC87E /* Release */ = {
 			isa = XCBuildConfiguration;
+			baseConfigurationReference = 71FAA0238E44BFA4150D3175 /* Pods-SundarGutkaTests.release.xcconfig */;
 			buildSettings = {
 				BUNDLE_LOADER = "$(TEST_HOST)";
 				COPY_PHASE_STRIP = NO;
@@ -1594,6 +1751,7 @@
 					"$(SRCROOT)/../node_modules/react-native-largelist/ios/STTVTableView",
 					"$(SRCROOT)/../node_modules/react-native-spinkit/ios/**",
 					"$(SRCROOT)/../node_modules/react-native-version-number/ios",
+					"$(SRCROOT)/../node_modules/react-native-firebase/ios/RNFirebase/**",
 				);
 				INFOPLIST_FILE = SundarGutkaTests/Info.plist;
 				IPHONEOS_DEPLOYMENT_TARGET = 8.0;
@@ -1608,8 +1766,10 @@
 					"\"$(SRCROOT)/$(TARGET_NAME)\"",
 					"\"$(SRCROOT)/$(TARGET_NAME)\"",
 					"\"$(SRCROOT)/$(TARGET_NAME)\"",
+					"\"$(SRCROOT)/$(TARGET_NAME)\"",
 				);
 				OTHER_LDFLAGS = (
+					"$(inherited)",
 					"-ObjC",
 					"-lc++",
 				);
@@ -1621,6 +1781,7 @@
 		};
 		13B07F941A680F5B00A75B9A /* Debug */ = {
 			isa = XCBuildConfiguration;
+			baseConfigurationReference = 6CFC913D68DA33FB52F32F3E /* Pods-SundarGutka.debug.xcconfig */;
 			buildSettings = {
 				ASSETCATALOG_COMPILER_APPICON_NAME = AppIcon;
 				ASSETCATALOG_COMPILER_LAUNCHIMAGE_NAME = LaunchImage;
@@ -1637,6 +1798,7 @@
 					"$(SRCROOT)/../node_modules/react-native-largelist/ios/STTVTableView",
 					"$(SRCROOT)/../node_modules/react-native-spinkit/ios/**",
 					"$(SRCROOT)/../node_modules/react-native-version-number/ios",
+					"$(SRCROOT)/../node_modules/react-native-firebase/ios/RNFirebase/**",
 				);
 				INFOPLIST_FILE = SundarGutka/Info.plist;
 				LD_RUNPATH_SEARCH_PATHS = "$(inherited) @executable_path/Frameworks";
@@ -1654,6 +1816,7 @@
 		};
 		13B07F951A680F5B00A75B9A /* Release */ = {
 			isa = XCBuildConfiguration;
+			baseConfigurationReference = D5D8CD38DAA9C411E8252781 /* Pods-SundarGutka.release.xcconfig */;
 			buildSettings = {
 				ASSETCATALOG_COMPILER_APPICON_NAME = AppIcon;
 				ASSETCATALOG_COMPILER_LAUNCHIMAGE_NAME = LaunchImage;
@@ -1669,6 +1832,7 @@
 					"$(SRCROOT)/../node_modules/react-native-largelist/ios/STTVTableView",
 					"$(SRCROOT)/../node_modules/react-native-spinkit/ios/**",
 					"$(SRCROOT)/../node_modules/react-native-version-number/ios",
+					"$(SRCROOT)/../node_modules/react-native-firebase/ios/RNFirebase/**",
 				);
 				INFOPLIST_FILE = SundarGutka/Info.plist;
 				LD_RUNPATH_SEARCH_PATHS = "$(inherited) @executable_path/Frameworks";
@@ -1686,6 +1850,7 @@
 		};
 		2D02E4971E0B4A5E006451C7 /* Debug */ = {
 			isa = XCBuildConfiguration;
+			baseConfigurationReference = D09783927809CBF11B97EBB3 /* Pods-SundarGutka-tvOS.debug.xcconfig */;
 			buildSettings = {
 				ASSETCATALOG_COMPILER_APPICON_NAME = "App Icon & Top Shelf Image";
 				ASSETCATALOG_COMPILER_LAUNCHIMAGE_NAME = LaunchImage;
@@ -1707,6 +1872,7 @@
 					"$(SRCROOT)/../node_modules/react-native-largelist/ios/STTVTableView",
 					"$(SRCROOT)/../node_modules/react-native-spinkit/ios/**",
 					"$(SRCROOT)/../node_modules/react-native-version-number/ios",
+					"$(SRCROOT)/../node_modules/react-native-firebase/ios/RNFirebase/**",
 				);
 				INFOPLIST_FILE = "SundarGutka-tvOS/Info.plist";
 				LD_RUNPATH_SEARCH_PATHS = "$(inherited) @executable_path/Frameworks";
@@ -1720,8 +1886,10 @@
 					"\"$(SRCROOT)/$(TARGET_NAME)\"",
 					"\"$(SRCROOT)/$(TARGET_NAME)\"",
 					"\"$(SRCROOT)/$(TARGET_NAME)\"",
+					"\"$(SRCROOT)/$(TARGET_NAME)\"",
 				);
 				OTHER_LDFLAGS = (
+					"$(inherited)",
 					"-ObjC",
 					"-lc++",
 				);
@@ -1735,6 +1903,7 @@
 		};
 		2D02E4981E0B4A5E006451C7 /* Release */ = {
 			isa = XCBuildConfiguration;
+			baseConfigurationReference = 6C00605BA32A694742D0EFC1 /* Pods-SundarGutka-tvOS.release.xcconfig */;
 			buildSettings = {
 				ASSETCATALOG_COMPILER_APPICON_NAME = "App Icon & Top Shelf Image";
 				ASSETCATALOG_COMPILER_LAUNCHIMAGE_NAME = LaunchImage;
@@ -1756,6 +1925,7 @@
 					"$(SRCROOT)/../node_modules/react-native-largelist/ios/STTVTableView",
 					"$(SRCROOT)/../node_modules/react-native-spinkit/ios/**",
 					"$(SRCROOT)/../node_modules/react-native-version-number/ios",
+					"$(SRCROOT)/../node_modules/react-native-firebase/ios/RNFirebase/**",
 				);
 				INFOPLIST_FILE = "SundarGutka-tvOS/Info.plist";
 				LD_RUNPATH_SEARCH_PATHS = "$(inherited) @executable_path/Frameworks";
@@ -1769,8 +1939,10 @@
 					"\"$(SRCROOT)/$(TARGET_NAME)\"",
 					"\"$(SRCROOT)/$(TARGET_NAME)\"",
 					"\"$(SRCROOT)/$(TARGET_NAME)\"",
+					"\"$(SRCROOT)/$(TARGET_NAME)\"",
 				);
 				OTHER_LDFLAGS = (
+					"$(inherited)",
 					"-ObjC",
 					"-lc++",
 				);
@@ -1784,6 +1956,7 @@
 		};
 		2D02E4991E0B4A5E006451C7 /* Debug */ = {
 			isa = XCBuildConfiguration;
+			baseConfigurationReference = 7C00656D04EAC245A8E526F3 /* Pods-SundarGutka-tvOSTests.debug.xcconfig */;
 			buildSettings = {
 				BUNDLE_LOADER = "$(TEST_HOST)";
 				CLANG_ANALYZER_NONNULL = YES;
@@ -1798,6 +1971,7 @@
 				LD_RUNPATH_SEARCH_PATHS = "$(inherited) @executable_path/Frameworks @loader_path/Frameworks";
 				LIBRARY_SEARCH_PATHS = (
 					"$(inherited)",
+					"\"$(SRCROOT)/$(TARGET_NAME)\"",
 					"\"$(SRCROOT)/$(TARGET_NAME)\"",
 					"\"$(SRCROOT)/$(TARGET_NAME)\"",
 					"\"$(SRCROOT)/$(TARGET_NAME)\"",
@@ -1817,6 +1991,7 @@
 		};
 		2D02E49A1E0B4A5E006451C7 /* Release */ = {
 			isa = XCBuildConfiguration;
+			baseConfigurationReference = A3044852E9D98D2896D9FA69 /* Pods-SundarGutka-tvOSTests.release.xcconfig */;
 			buildSettings = {
 				BUNDLE_LOADER = "$(TEST_HOST)";
 				CLANG_ANALYZER_NONNULL = YES;
@@ -1831,6 +2006,7 @@
 				LD_RUNPATH_SEARCH_PATHS = "$(inherited) @executable_path/Frameworks @loader_path/Frameworks";
 				LIBRARY_SEARCH_PATHS = (
 					"$(inherited)",
+					"\"$(SRCROOT)/$(TARGET_NAME)\"",
 					"\"$(SRCROOT)/$(TARGET_NAME)\"",
 					"\"$(SRCROOT)/$(TARGET_NAME)\"",
 					"\"$(SRCROOT)/$(TARGET_NAME)\"",
