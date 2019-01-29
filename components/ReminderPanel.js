@@ -93,9 +93,9 @@ class ReminderPanel extends Component {
             style={[styles.body]}
             onLayout={this._setMaxHeight.bind(this)}
           >
-            <Text style={styles.title}>blak blah aslfdj a; f</Text>
-            <Text style={styles.title}>blak blah aslfdj a; f</Text>
-            <Text style={styles.title}>blak blah aslfdj a; f</Text>
+            <Text style={styles.title}>Will add more options here</Text>
+            <Text style={styles.title}>and some more</Text>
+            <Text style={styles.title}>maybe a delete here</Text>
           </View>
         </View>
       </Animated.View>

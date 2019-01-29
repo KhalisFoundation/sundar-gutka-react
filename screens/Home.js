@@ -8,12 +8,14 @@ import Icon from "react-native-vector-icons/MaterialIcons";
 import GLOBAL from "../utils/globals";
 import SplashScreen from "react-native-splash-screen";
 import AnalyticsManager from "../utils/analytics";
+import NotificationsManager from "../utils/notifications";
 import Database from "../utils/database";
 import { mergedBaniList } from "../utils/helpers";
 import * as actions from "../actions/actions";
 import BaniList from "../components/BaniList";
 import BaniLengthSelector from "../components/BaniLengthSelector";
 import VersionNumber from "react-native-version-number";
+import firebase from "react-native-firebase";
 
 class Home extends React.Component {
   constructor(props) {
@@ -71,13 +73,20 @@ class Home extends React.Component {
       }
       this.props.setAppVersion(VersionNumber.appVersion);
     }
-    if(showBaniLengthSelector || this.props.baniLength == "") {
-      this.setState({showLengthSelector: true});
+    if (showBaniLengthSelector || this.props.baniLength == "") {
+      this.setState({ showLengthSelector: true });
     }
-    
+
     this.changeKeepAwake(this.props.screenAwake || this.props.autoScroll);
     this.changeStatusBar(this.props.statusBar);
     AnalyticsManager.getInstance().allowTracking(this.props.statistics);
+
+    NotificationsManager.getInstance().createRemindersChannel();
+    NotificationsManager.getInstance().updateReminders(
+      this.props.reminders,
+      this.props.reminderBanis
+    );
+
     Database.getBaniList().then(baniList => {
       this.props.setMergedBaniData(mergedBaniList(baniList));
       this.sortBani();
@@ -90,6 +99,26 @@ class Home extends React.Component {
   componentDidMount() {
     SplashScreen.hide();
     AnalyticsManager.getInstance().trackScreenView("Home Screen");
+
+    this.notificationOpenedListener = firebase
+      .notifications()
+      .onNotificationOpened(notificationOpen => {
+        let key = notificationOpen.notification.data["key"];
+        let gurmukhi = notificationOpen.notification.data["gurmukhi"];
+        let roman = notificationOpen.notification.data["roman"];
+        let item = { id: key, gurmukhi: gurmukhi, roman: roman };
+        
+        this.props.setCurrentShabad(item.id);
+        this.props.navigation.navigate({
+          key: "Reader-" + item.id,
+          routeName: "Reader",
+          params: { item: item }
+        });
+      });
+  }
+
+  componentWillUnmount() {
+    this.notificationOpenedListener();
   }
 
   componentDidUpdate(prevProps) {
@@ -107,6 +136,12 @@ class Home extends React.Component {
       this.changeStatusBar(this.props.statusBar);
     } else if (prevProps.statistics != this.props.statistics) {
       AnalyticsManager.getInstance().allowTracking(this.props.statistics);
+    } else if (prevProps.reminders != this.props.reminders) {
+      NotificationsManager.getInstance().checkPermissions(this.props.reminders);
+      NotificationsManager.getInstance().updateReminders(
+        this.props.reminders,
+        this.props.reminderBanis
+      );
     }
   }
 
@@ -231,7 +266,9 @@ function mapStateToProps(state) {
     statistics: state.statistics,
     autoScroll: state.autoScroll,
     appVersion: state.appVersion,
-    baniLength: state.baniLength
+    baniLength: state.baniLength,
+    reminders: state.reminders,
+    reminderBanis: state.reminderBanis
   };
 }
 

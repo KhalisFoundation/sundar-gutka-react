@@ -13,6 +13,7 @@
   },
   "dependencies": {
     "@babel/cli": "7.0.0",
+    "moment": "^2.24.0",
     "npm": "^6.4.1",
     "react": "16.6.0-alpha.8af6728",
     "react-devtools": "^3.4.1",

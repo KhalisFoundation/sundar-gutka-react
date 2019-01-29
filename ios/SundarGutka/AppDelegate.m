@@ -54,4 +54,12 @@ fetchCompletionHandler:(nonnull void (^)(UIBackgroundFetchResult))completionHand
   [[RNFirebaseMessaging instance] didRegisterUserNotificationSettings:notificationSettings];
 }
 
+- (void)applicationDidBecomeActive:(UIApplication *)application{
+  [UIApplication sharedApplication].applicationIconBadgeNumber = 0;
+}
+
+-(void)applicationDidEnterBackground:(UIApplication *)application{
+  [UIApplication sharedApplication].applicationIconBadgeNumber = 0;
+}
+
 @end

@@ -1,10 +1,7 @@
 import React from "react";
 import {
-  Animated,
-  Easing,
   StyleSheet,
   Text,
-  Image,
   View,
   Dimensions,
   Platform,
@@ -19,18 +16,18 @@ import { connect } from "react-redux";
 import { bindActionCreators } from "redux";
 import * as actions from "../actions/actions";
 import AnalyticsManager from "../utils/analytics";
-import { baseFontSize } from "../utils/helpers";
-import { defaultBaniOrderArray } from "../utils/helpers";
 import Collapsible from "react-native-collapsible";
+import NotificationsManager from "../utils/notifications";
 import Accordion from "react-native-collapsible/Accordion";
 import DateTimePicker from "react-native-modal-datetime-picker";
+import moment from "moment";
 import ModalSelector from "react-native-modal-selector";
 import Database from "../utils/database";
 import ReminderPanel from "../components/ReminderPanel";
 
 class ReminderOptions extends React.Component {
   componentDidMount() {
-    // AnalyticsManager.getInstance().trackScreenView("Index Reorder");
+    AnalyticsManager.getInstance().trackScreenView("Reminder Options");
   }
 
   componentWillMount() {
@@ -40,8 +37,12 @@ class ReminderOptions extends React.Component {
   }
 
   _resetReminderDefaults() {
-    alert(JSON.stringify(this.props.reminderBanis));
-    //this.props.setReminderBanis(JSON.stringify([]));
+    //alert(JSON.stringify(this.props.reminderBanis));
+    this.props.setReminderBanis(JSON.stringify([]));
+    NotificationsManager.getInstance().updateReminders(
+      this.props.reminders,
+      JSON.stringify([])
+    );
   }
 
   _addBaniReminder() {
@@ -78,17 +79,21 @@ class ReminderOptions extends React.Component {
 
   _addReminder(baniObject) {
     var array = JSON.parse(this.props.reminderBanis);
-    var curTimePickerSection = -1;
 
     array.push({
       key: baniObject.key,
       gurmukhi: baniObject.gurmukhi,
       roman: baniObject.roman,
-      time: "123"
+      time: moment(new Date())
+        .local()
+        .format("h:mm A")
     });
 
     this.props.setReminderBanis(JSON.stringify(array));
-    this._updateSections;
+    NotificationsManager.getInstance().updateReminders(
+      this.props.reminders,
+      JSON.stringify(array)
+    );
   }
 
   state = {
@@ -110,9 +115,15 @@ class ReminderOptions extends React.Component {
         return obj.key == this.state.timePickerSectionKey;
       })
       .map(foundObj => {
-        foundObj.time = time;
+        foundObj.time = moment(time)
+          .local()
+          .format("h:mm A");
       });
     this.props.setReminderBanis(JSON.stringify(array));
+    NotificationsManager.getInstance().updateReminders(
+      this.props.reminders,
+      JSON.stringify(array)
+    );
   };
 
   render() {
@@ -197,7 +208,7 @@ class ReminderOptions extends React.Component {
             this._showTimePicker();
           }}
         >
-          <Text>{section.time}</Text>
+          <Text style={styles.timeStyle}>{section.time}</Text>
         </TouchableOpacity>
         <DateTimePicker
           isVisible={this.state.isTimePickerVisible}
@@ -221,7 +232,7 @@ class ReminderOptions extends React.Component {
   _renderContent = section => {
     return (
       <View style={styles.content}>
-        <Text>beepp</Text>
+        <Text>More options will go here</Text>
       </View>
     );
   };
@@ -230,24 +241,28 @@ class ReminderOptions extends React.Component {
     this.setState({ activeSections });
   };
 
-  _renderRow = ({ data, active }) => {
-    return (
-      <ReminderPanel
-        title="B Panel with short content text"
-        data={data}
-        active={active}
-        nightMode={this.props.nightMode}
-        romanized={this.props.romanized}
-        fontFace={this.props.fontFace}
-        fontSize={this.props.fontSize}
-      />
-    );
-  };
+  // _renderRow = ({ data, active }) => {
+  //   return (
+  //     <ReminderPanel
+  //       title="B Panel with short content text"
+  //       data={data}
+  //       active={active}
+  //       nightMode={this.props.nightMode}
+  //       romanized={this.props.romanized}
+  //       fontFace={this.props.fontFace}
+  //       fontSize={this.props.fontSize}
+  //     />
+  //   );
+  // };
 }
 
 const styles = StyleSheet.create({
   container: {
     flex: 1
+  },
+  timeStyle: {
+    color: GLOBAL.COLOR.SETTING_SWITCH_COLOR,
+    fontSize: 34
   },
   headerText: {
     color: "#404"
@@ -265,6 +280,7 @@ function mapStateToProps(state) {
   return {
     nightMode: state.nightMode,
     baniOrder: state.baniOrder,
+    reminders: state.reminders,
     reminderBanis: state.reminderBanis,
     romanized: state.romanized,
     fontSize: state.fontSize,
