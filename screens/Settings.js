@@ -371,6 +371,46 @@ class Settings extends React.Component {
             ]}
           />
 
+          <SettingsList.Item
+            backgroundColor={this.props.nightMode ? "#464646" : "#fff"}
+            icon={
+              <MaterialIcons
+                style={styles.imageStyle}
+                name="auto-fix"
+                size={30}
+              />
+            }
+            hasSwitch={true}
+            switchState={this.props.reminders}
+            switchOnValueChange={this.props.toggleReminders}
+            switchProps={switchStyle}
+            hasNavArrow={false}
+            title="Reminders"
+            titleStyle={[
+              styles.titleText,
+              this.props.nightMode && { color: "#fff" }
+            ]}
+          />
+
+          {this.props.reminders && (
+            <SettingsList.Item
+              backgroundColor={this.props.nightMode ? "#464646" : "#fff"}
+              icon={
+                <Image
+                  style={styles.imageStyle}
+                  source={require("../images/rearrangeicon.png")}
+                />
+              }
+              title="Set Reminder Options"
+              titleStyle={[
+                styles.titleText,
+                this.props.nightMode && { color: "#fff" }
+              ]}
+              onPress={() =>
+                navigate({ key: "ReminderOptions", routeName: "ReminderOptions" })
+              }
+            />
+          )}
           <SettingsList.Header
             headerText="Other Options"
             headerStyle={[
@@ -591,7 +631,8 @@ function mapStateToProps(state) {
     statusBar: state.statusBar,
     paragraphMode: state.paragraphMode,
     autoScroll: state.autoScroll,
-    visram: state.visram
+    visram: state.visram,
+    reminders: state.reminders
   };
 }
 

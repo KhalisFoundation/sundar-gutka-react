@@ -21,6 +21,8 @@ import {
   TOGGLE_AUTO_SCROLL,
   SET_AUTO_SCROLL_SPEED,
   TOGGLE_VISRAM,
+  TOGGLE_REMINDERS,
+  SET_REMINDER_BANIS,
   SET_APP_VERSION
 } from "../actions/actions";
 
@@ -204,6 +206,24 @@ function visram(state = false, action) {
   }
 }
 
+function reminders(state = false, action) {
+  switch (action.type) {
+    case TOGGLE_REMINDERS:
+      return action.value;
+    default:
+      return state;
+  }
+}
+
+function reminderBanis(state = JSON.stringify([]), action) {
+  switch (action.type) {
+    case SET_REMINDER_BANIS:
+      return action.list;
+    default:
+      return state;
+  }
+}
+
 function appVersion(state = "", action) {
   switch (action.type) {
     case SET_APP_VERSION:
@@ -235,6 +255,8 @@ const rootReducer = combineReducers({
   autoScroll,
   autoScrollShabadSpeed,
   visram,
+  reminders,
+  reminderBanis,
   appVersion
 });
 

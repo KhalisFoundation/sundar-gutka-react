@@ -13,6 +13,7 @@ import HomeScreen from "./screens/Home";
 import FolderBaniScreen from "./screens/FolderBani";
 import SettingsScreen from "./screens/Settings";
 import EditBaniOrderScreen from "./screens/EditBaniOrder";
+import ReminderOptionsScreen from "./screens/ReminderOptions";
 import AboutScreen from "./screens/About";
 import ReaderScreen from "./screens/Reader";
 import BookmarksScreen from "./screens/Bookmarks";
@@ -51,6 +52,12 @@ const RootStack = createStackNavigator({
   },
   EditBaniOrder: {
     screen: EditBaniOrderScreen,
+    navigationOptions: {
+      header: null
+    }
+  },
+  ReminderOptions: {
+    screen: ReminderOptionsScreen,
     navigationOptions: {
       header: null
     }
@@ -107,6 +114,7 @@ export default class App extends React.Component {
         this.setState({ statusBarType: store.getState().nightMode ? "light-content" : "dark-content" });
       } else if (
         navState.routeName === "EditBaniOrder" ||
+        navState.routeName === "ReminderOptions" ||
         navState.routeName === "About"
       ) {
         this.setState({ safeAreaNavBarColor: GLOBAL.COLOR.TOOLBAR_COLOR_ALT2 });

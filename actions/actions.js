@@ -20,10 +20,12 @@ export const SET_MERGED_BANI_DATA = "SET_MERGED_BANI_DATA";
 export const SET_CURRENT_SHABAD = "SET_CURRENT_SHABAD";
 export const SET_SCROLL_INDEX = "SET_SCROLL_INDEX";
 export const TOGGLE_STATUS_BAR = "TOGGLE_STATUS_BAR";
-export const TOGGLE_PARAGRAPH_MODE = "TOGGLE_PARAGRAPH_MODE"
+export const TOGGLE_PARAGRAPH_MODE = "TOGGLE_PARAGRAPH_MODE";
 export const TOGGLE_AUTO_SCROLL = "TOGGLE_AUTO_SCROLL";
 export const SET_AUTO_SCROLL_SPEED = "SET_AUTO_SCROLL_SPEED";
 export const TOGGLE_VISRAM = "TOGGLE_VISRAM";
+export const TOGGLE_REMINDERS = "TOGGLE_REMINDERS";
+export const SET_REMINDER_BANIS = "SET_REMINDER_BANIS";
 export const SET_APP_VERSION = "SET_APP_VERSION";
 
 /*
@@ -172,7 +174,7 @@ export function toggleAutoScroll(value) {
 }
 
 export function setAutoScrollSpeed(speed, shabad) {
-  let shabadSpeed = {[shabad]: speed};
+  let shabadSpeed = { [shabad]: speed };
   return { type: SET_AUTO_SCROLL_SPEED, shabadSpeed };
 }
 
@@ -181,6 +183,15 @@ export function toggleVisram(value) {
   return { type: TOGGLE_VISRAM, value };
 }
 
+export function toggleReminders(value) {
+  AnalyticsManager.getInstance().trackSettingsEvent("reminders", value);
+  return { type: TOGGLE_REMINDERS, value };
+}
+
+export function setReminderBanis(list) {
+  return { type: SET_REMINDER_BANIS, list };
+}
+
 export function setAppVersion(version) {
-  return { type: SET_APP_VERSION, version}
+  return { type: SET_APP_VERSION, version };
 }

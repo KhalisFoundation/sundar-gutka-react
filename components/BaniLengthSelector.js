@@ -80,11 +80,12 @@ class BaniLengthSelector extends Component {
               style={[
                 {
                   color: GLOBAL.COLOR.TOOLBAR_COLOR_ALT,
+                  fontWeight: "bold",
                   fontSize: 18
                 }
               ]}
             >
-              {"\n"}Choose your preference:{"\n"}
+              {"\n"}Choose your preference:
             </Text>
 
             <TouchableHighlight
