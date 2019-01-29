@@ -7,7 +7,8 @@ import {
   Platform,
   FlatList,
   Picker,
-  TouchableOpacity
+  TouchableOpacity,
+  Alert
 } from "react-native";
 import { Header } from "react-native-elements";
 import Icon from "react-native-vector-icons/MaterialIcons";
@@ -31,50 +32,110 @@ class ReminderOptions extends React.Component {
   }
 
   componentWillMount() {
-    if (!JSON.parse(this.props.reminderBanis)) {
-      this._resetReminderDefaults();
-    }
+    Database.getBaniList().then(baniList => {
+      this.setState(
+        {
+          baniList: baniList
+        },
+        function() {
+          if (JSON.parse(this.props.reminderBanis).length == 0) {
+            this.setDefaultReminders();
+          }
+        }
+      );
+    });
+  }
+
+  setDefaultReminders() {
+    //alert(this.props.reminderBanis);
+    var defaultBanis = [];
+
+    // Add Gur Mantar
+    defaultBanis.push({
+      key: 1,
+      gurmukhi: this.state.baniList[1].gurmukhi,
+      roman: this.state.baniList[1].roman,
+      time: "3:00 AM"
+    });
+
+    // Add Japji Sahib
+    defaultBanis.push({
+      key: 2,
+      gurmukhi: this.state.baniList[2].gurmukhi,
+      roman: this.state.baniList[2].roman,
+      time: "3:30 AM"
+    });
+
+    // Add Rehras Sahib
+    defaultBanis.push({
+      key: 21,
+      gurmukhi: this.state.baniList[21].gurmukhi,
+      roman: this.state.baniList[21].roman,
+      time: "6:00 PM"
+    });
+
+    // Add Sohila
+    defaultBanis.push({
+      key: 23,
+      gurmukhi: this.state.baniList[23].gurmukhi,
+      roman: this.state.baniList[23].roman,
+      time: "10:00 PM"
+    });
+
+    this.props.setReminderBanis(JSON.stringify(defaultBanis));
+    NotificationsManager.getInstance().updateReminders(
+      this.props.reminders,
+      JSON.stringify(defaultBanis)
+    );
   }
 
   _resetReminderDefaults() {
-    //alert(JSON.stringify(this.props.reminderBanis));
-    this.props.setReminderBanis(JSON.stringify([]));
-    NotificationsManager.getInstance().updateReminders(
-      this.props.reminders,
-      JSON.stringify([])
+    Alert.alert(
+      "Reset Reminders",
+      "Do you want to restore reminders to the default values?",
+      [
+        {
+          text: "Cancel",
+          style: "cancel"
+        },
+        {
+          text: "Reset",
+          style: "destructive",
+          onPress: () => this.setDefaultReminders()
+        }
+      ]
     );
   }
 
   _addBaniReminder() {
-    Database.getBaniList().then(baniList => {
-      var baniOptions = [];
-      let isRomanized = this.props.romanized;
+    var baniOptions = [];
+    let isRomanized = this.props.romanized;
+    let curBaniList = this.state.baniList;
 
-      let existingKeys = JSON.parse(this.props.reminderBanis).map(function(
-        bani
-      ) {
-        return bani.key;
-      });
-
-      Object.keys(baniList).forEach(function(key) {
-        if (!existingKeys.includes(key)) {
-          baniOptions.push({
-            key: key,
-            label: isRomanized ? baniList[key].roman : baniList[key].gurmukhi,
-            gurmukhi: baniList[key].gurmukhi,
-            roman: baniList[key].roman
-          });
-        }
-      });
-      this.setState(
-        {
-          reminderBaniData: baniOptions
-        },
-        function() {
-          this.selector.open();
-        }
-      );
+    let existingKeys = JSON.parse(this.props.reminderBanis).map(function(bani) {
+      return bani.key;
     });
+
+    Object.keys(curBaniList).forEach(function(key) {
+      if (!existingKeys.includes(key) && key < 10000) {
+        baniOptions.push({
+          key: key,
+          label: isRomanized
+            ? curBaniList[key].roman
+            : curBaniList[key].gurmukhi,
+          gurmukhi: curBaniList[key].gurmukhi,
+          roman: curBaniList[key].roman
+        });
+      }
+    });
+    this.setState(
+      {
+        reminderBaniData: baniOptions
+      },
+      function() {
+        this.selector.open();
+      }
+    );
   }
 
   _addReminder(baniObject) {
@@ -99,6 +160,7 @@ class ReminderOptions extends React.Component {
   state = {
     activeSections: [],
     reminderBaniData: [],
+    baniList: null,
     isTimePickerVisible: false,
     timePickerSectionKey: -1
   };
@@ -194,6 +256,14 @@ class ReminderOptions extends React.Component {
             renderContent={this._renderContent}
             onChange={this._updateSections}
           />
+
+          <DateTimePicker
+            isVisible={this.state.isTimePickerVisible}
+            onConfirm={time => this._handleTimePicked(time)}
+            onCancel={this._hideTimePicker}
+            titleIOS={"Pick a Time:"}
+            mode={"time"}
+          />
         </View>
       </View>
     );
@@ -210,13 +280,7 @@ class ReminderOptions extends React.Component {
         >
           <Text style={styles.timeStyle}>{section.time}</Text>
         </TouchableOpacity>
-        <DateTimePicker
-          isVisible={this.state.isTimePickerVisible}
-          onConfirm={time => this._handleTimePicked(time, section.key)}
-          onCancel={this._hideTimePicker}
-          titleIOS={"Pick a Time:"}
-          mode={"time"}
-        />
+
         <Text
           style={[
             styles.headerText,

@@ -100,21 +100,40 @@ class Home extends React.Component {
     SplashScreen.hide();
     AnalyticsManager.getInstance().trackScreenView("Home Screen");
 
+    NotificationsManager.getInstance().removeAllDeliveredNotifications();
+    // Notification opened from background
     this.notificationOpenedListener = firebase
       .notifications()
       .onNotificationOpened(notificationOpen => {
-        let key = notificationOpen.notification.data["key"];
-        let gurmukhi = notificationOpen.notification.data["gurmukhi"];
-        let roman = notificationOpen.notification.data["roman"];
-        let item = { id: key, gurmukhi: gurmukhi, roman: roman };
-        
-        this.props.setCurrentShabad(item.id);
-        this.props.navigation.navigate({
-          key: "Reader-" + item.id,
-          routeName: "Reader",
-          params: { item: item }
-        });
+        this.handleNotificationEvent(notificationOpen);
       });
+
+    // Notification opened from closed state
+    firebase
+      .notifications()
+      .getInitialNotification()
+      .then(notificationOpen => {
+        if (notificationOpen) {
+          // App was opened by a notification
+          this.handleNotificationEvent(notificationOpen);
+        }
+      });
+  }
+
+  handleNotificationEvent(notificationOpen) {
+    let key = notificationOpen.notification.data["key"];
+    let gurmukhi = notificationOpen.notification.data["gurmukhi"];
+    let roman = notificationOpen.notification.data["roman"];
+    let item = { id: key, gurmukhi: gurmukhi, roman: roman };
+
+    NotificationsManager.getInstance().removeAllDeliveredNotifications();
+
+    this.props.setCurrentShabad(item.id);
+    this.props.navigation.navigate({
+      key: "Reader-" + item.id,
+      routeName: "Reader",
+      params: { item: item }
+    });
   }
 
   componentWillUnmount() {

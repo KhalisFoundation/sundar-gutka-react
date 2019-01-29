@@ -4,7 +4,6 @@ import moment from "moment";
 export default class NotificationsManager {
   REMINDERS_CHANNEL = "reminders-channel";
   static myInstance = null;
-  notificationKey = 0;
 
   static getInstance() {
     if (this.myInstance === null) {
@@ -52,7 +51,6 @@ export default class NotificationsManager {
 
   updateReminders(remindersOn, remindersList) {
     firebase.notifications().cancelAllNotifications();
-    notificationKey = 0;
     if (remindersOn) {
       let array = JSON.parse(remindersList);
       for (var i = 0; i < array.length; i++) {
@@ -61,10 +59,18 @@ export default class NotificationsManager {
     }
   }
 
+  removeAllDeliveredNotifications() {
+    firebase.notifications().removeAllDeliveredNotifications();
+  }
+
+  getScheduledNotifications() {
+    firebase.notifications().getScheduledNotifications();
+  }
+
   createReminder(reminder) {
     // Build notification
     const notification = new firebase.notifications.Notification()
-      .setNotificationId("" + notificationKey)
+      .setNotificationId(reminder.key.toString())
       .setTitle("Time for " + reminder.roman)
       .setBody(reminder.time)
       .setData({
@@ -75,22 +81,17 @@ export default class NotificationsManager {
 
     notification.android
       .setChannelId(this.REMINDERS_CHANNEL)
-      .android.setSmallIcon("ic_launcher");
+      .android.setSmallIcon("ic_notification");
 
     notification.ios.setBadge(1);
 
-    // // Schedule the notification for 15 seconds in the future
-    // const date = new Date();
-    // date.setMinutes(date.getMinutes() + 1);
-
     let aTime = moment(reminder.time, "h:mm A")
       .utc()
-      .valueOf()
+      .valueOf();
 
     firebase.notifications().scheduleNotification(notification, {
       fireDate: aTime,
-      repeat_interval: "minute"
+      repeatInterval: "day"
     });
-    notificationKey++;
   }
 }
