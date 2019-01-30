@@ -2,29 +2,30 @@ import React from "react";
 import {
   StyleSheet,
   Text,
+  TextInput,
   View,
-  Dimensions,
-  Platform,
-  FlatList,
-  Picker,
+  ScrollView,
   TouchableOpacity,
-  Alert
+  Alert,
+  Platform,
+  Switch
 } from "react-native";
 import { Header } from "react-native-elements";
 import Icon from "react-native-vector-icons/MaterialIcons";
+import MaterialIcons from "react-native-vector-icons/MaterialCommunityIcons";
 import GLOBAL from "../utils/globals";
 import { connect } from "react-redux";
 import { bindActionCreators } from "redux";
 import * as actions from "../actions/actions";
 import AnalyticsManager from "../utils/analytics";
-import Collapsible from "react-native-collapsible";
 import NotificationsManager from "../utils/notifications";
 import Accordion from "react-native-collapsible/Accordion";
 import DateTimePicker from "react-native-modal-datetime-picker";
+import * as Animatable from "react-native-animatable";
+import Modal from "react-native-modal";
 import moment from "moment";
 import ModalSelector from "react-native-modal-selector";
 import Database from "../utils/database";
-import ReminderPanel from "../components/ReminderPanel";
 
 class ReminderOptions extends React.Component {
   componentDidMount() {
@@ -47,7 +48,6 @@ class ReminderOptions extends React.Component {
   }
 
   setDefaultReminders() {
-    //alert(this.props.reminderBanis);
     var defaultBanis = [];
 
     // Add Gur Mantar
@@ -55,6 +55,8 @@ class ReminderOptions extends React.Component {
       key: 1,
       gurmukhi: this.state.baniList[1].gurmukhi,
       roman: this.state.baniList[1].roman,
+      enabled: true,
+      title: "Time for " + this.state.baniList[1].roman,
       time: "3:00 AM"
     });
 
@@ -63,6 +65,8 @@ class ReminderOptions extends React.Component {
       key: 2,
       gurmukhi: this.state.baniList[2].gurmukhi,
       roman: this.state.baniList[2].roman,
+      enabled: true,
+      title: "Time for " + this.state.baniList[2].roman,
       time: "3:30 AM"
     });
 
@@ -71,6 +75,8 @@ class ReminderOptions extends React.Component {
       key: 21,
       gurmukhi: this.state.baniList[21].gurmukhi,
       roman: this.state.baniList[21].roman,
+      enabled: true,
+      title: "Time for " + this.state.baniList[21].roman,
       time: "6:00 PM"
     });
 
@@ -79,6 +85,8 @@ class ReminderOptions extends React.Component {
       key: 23,
       gurmukhi: this.state.baniList[23].gurmukhi,
       roman: this.state.baniList[23].roman,
+      enabled: true,
+      title: "Time for " + this.state.baniList[23].roman,
       time: "10:00 PM"
     });
 
@@ -87,6 +95,10 @@ class ReminderOptions extends React.Component {
       this.props.reminders,
       JSON.stringify(defaultBanis)
     );
+  }
+
+  componentWillUnmount() {
+    this._hideTimePicker();
   }
 
   _resetReminderDefaults() {
@@ -145,6 +157,8 @@ class ReminderOptions extends React.Component {
       key: baniObject.key,
       gurmukhi: baniObject.gurmukhi,
       roman: baniObject.roman,
+      enabled: true,
+      title: "Time for " + baniObject.roman,
       time: moment(new Date())
         .local()
         .format("h:mm A")
@@ -162,8 +176,46 @@ class ReminderOptions extends React.Component {
     reminderBaniData: [],
     baniList: null,
     isTimePickerVisible: false,
-    timePickerSectionKey: -1
+    isLabelModalVisible: false,
+    timePickerSectionKey: -1,
+    reminderModalSectionKey: -1,
+    reminderLabelText: ""
   };
+
+  _initLabelModal(key) {
+    var array = JSON.parse(this.props.reminderBanis);
+    let reminder = array.filter(obj => {
+      return obj.key == key;
+    });
+
+    this.setState({
+      reminderLabelText: reminder[0].title,
+      reminderModalSectionKey: key
+    });
+    this._toggleLabelModal();
+  }
+
+  _confirmNewReminderLabel() {
+    var array = JSON.parse(this.props.reminderBanis);
+
+    array
+      .filter(obj => {
+        return obj.key == this.state.reminderModalSectionKey;
+      })
+      .map(foundObj => {
+        foundObj.title = this.state.reminderLabelText;
+      });
+    this.props.setReminderBanis(JSON.stringify(array));
+    NotificationsManager.getInstance().updateReminders(
+      this.props.reminders,
+      JSON.stringify(array)
+    );
+
+    this._toggleLabelModal();
+  }
+
+  _toggleLabelModal = () =>
+    this.setState({ isLabelModalVisible: !this.state.isLabelModalVisible });
 
   _showTimePicker = () => this.setState({ isTimePickerVisible: true });
 
@@ -180,6 +232,7 @@ class ReminderOptions extends React.Component {
         foundObj.time = moment(time)
           .local()
           .format("h:mm A");
+        foundObj.enabled = true;
       });
     this.props.setReminderBanis(JSON.stringify(array));
     NotificationsManager.getInstance().updateReminders(
@@ -187,6 +240,34 @@ class ReminderOptions extends React.Component {
       JSON.stringify(array)
     );
   };
+
+  _handleSwitchToggled(value, key) {
+    var array = JSON.parse(this.props.reminderBanis);
+    array
+      .filter(obj => {
+        return obj.key == key;
+      })
+      .map(foundObj => {
+        foundObj.enabled = value;
+      });
+    this.props.setReminderBanis(JSON.stringify(array));
+    NotificationsManager.getInstance().updateReminders(
+      this.props.reminders,
+      JSON.stringify(array)
+    );
+  }
+
+  _handleDeleteReminder(key) {
+    var array = JSON.parse(this.props.reminderBanis).filter(obj => {
+      return obj.key != key;
+    });
+    this.state.activeSections = [];
+    this.props.setReminderBanis(JSON.stringify(array));
+    NotificationsManager.getInstance().updateReminders(
+      this.props.reminders,
+      JSON.stringify(array)
+    );
+  }
 
   render() {
     return (
@@ -228,6 +309,80 @@ class ReminderOptions extends React.Component {
             </View>
           }
         />
+        <Modal
+          isVisible={this.state.isLabelModalVisible}
+          avoidKeyboard={true}
+          onBackButtonPress={() =>
+            this.setState({ isLabelModalVisible: false })
+          }
+          onBackdropPress={() => this.setState({ isLabelModalVisible: false })}
+        >
+          <View
+            style={{
+              padding: 20,
+              backgroundColor: GLOBAL.COLOR.MODAL_BACKGROUND_NIGHT_MODE
+            }}
+          >
+            <Text
+              style={{
+                paddingBottom: 5,
+                color: GLOBAL.COLOR.MODAL_ACCENT_NIGHT_MODE
+              }}
+            >
+              Notification Text:
+            </Text>
+            <TextInput
+              style={{
+                height: 40,
+                color: GLOBAL.COLOR.MODAL_TEXT_NIGHT_MODE,
+                borderRadius: 5,
+                borderColor: GLOBAL.COLOR.MODAL_ACCENT_NIGHT_MODE_ALT,
+                borderWidth: 1,
+                paddingLeft: 5,
+                paddingRight: 5
+              }}
+              value={this.state.reminderLabelText}
+              onChangeText={reminderLabelText =>
+                this.setState({ reminderLabelText })
+              }
+              selectionColor={GLOBAL.COLOR.MODAL_ACCENT_NIGHT_MODE}
+              underlineColorAndroid={GLOBAL.COLOR.MODAL_TEXT_NIGHT_MODE}
+            />
+            <View
+              style={{
+                flexDirection: "row",
+                justifyContent: "flex-end",
+                alignItems: "center",
+                paddingTop: 20,
+                paddingRight: 10
+              }}
+            >
+              <TouchableOpacity
+                onPress={this._toggleLabelModal}
+                style={{ marginRight: 40 }}
+              >
+                <Text
+                  style={{
+                    color: GLOBAL.COLOR.MODAL_ACCENT_NIGHT_MODE
+                  }}
+                >
+                  Cancel
+                </Text>
+              </TouchableOpacity>
+              <TouchableOpacity
+                onPress={this._confirmNewReminderLabel.bind(this)}
+              >
+                <Text
+                  style={{
+                    color: GLOBAL.COLOR.MODAL_ACCENT_NIGHT_MODE
+                  }}
+                >
+                  OK
+                </Text>
+              </TouchableOpacity>
+            </View>
+          </View>
+        </Modal>
         <ModalSelector
           data={this.state.reminderBaniData}
           ref={selector => {
@@ -243,81 +398,246 @@ class ReminderOptions extends React.Component {
             this._addReminder(option);
           }}
         />
-        <View
+        <ScrollView
           style={[
             styles.container,
-            this.props.nightMode && { backgroundColor: "#464646" }
+            this.props.nightMode && {
+              backgroundColor: GLOBAL.COLOR.INACTIVE_VIEW_COLOR_NIGHT_MODE
+            }
           ]}
         >
-          <Accordion
-            activeSections={this.state.activeSections}
-            sections={JSON.parse(this.props.reminderBanis)}
-            renderHeader={this._renderHeader}
-            renderContent={this._renderContent}
-            onChange={this._updateSections}
-          />
+          <View
+            style={[
+              styles.container,
+              this.props.nightMode && {
+                backgroundColor: GLOBAL.COLOR.INACTIVE_VIEW_COLOR_NIGHT_MODE
+              }
+            ]}
+          >
+            <Accordion
+              activeSections={this.state.activeSections}
+              sections={JSON.parse(this.props.reminderBanis)}
+              renderHeader={this._renderHeader}
+              renderContent={this._renderContent}
+              onChange={this._updateSections}
+            />
 
-          <DateTimePicker
-            isVisible={this.state.isTimePickerVisible}
-            onConfirm={time => this._handleTimePicked(time)}
-            onCancel={this._hideTimePicker}
-            titleIOS={"Pick a Time:"}
-            mode={"time"}
-          />
-        </View>
+            <DateTimePicker
+              isVisible={this.state.isTimePickerVisible}
+              onConfirm={time => this._handleTimePicked(time)}
+              onCancel={this._hideTimePicker}
+              titleIOS={"Pick a Time:"}
+              mode={"time"}
+            />
+          </View>
+        </ScrollView>
       </View>
     );
   }
 
-  _renderHeader = section => {
+  _renderHeader = (section, index, isActive) => {
     return (
-      <View style={styles.header}>
-        <TouchableOpacity
-          onPress={() => {
-            this.setState({ timePickerSectionKey: section.key });
-            this._showTimePicker();
+      <Animatable.View
+        duration={300}
+        transition="backgroundColor"
+        style={[
+          styles.header,
+          {
+            backgroundColor: isActive
+              ? this.props.nightMode
+                ? GLOBAL.COLOR.ACTIVE_VIEW_COLOR_NIGHT_MODE
+                : GLOBAL.COLOR.ACTIVE_VIEW_COLOR
+              : this.props.nightMode
+              ? GLOBAL.COLOR.INACTIVE_VIEW_COLOR_NIGHT_MODE
+              : GLOBAL.COLOR.INACTIVE_VIEW_COLOR
+          }
+        ]}
+      >
+        <View
+          style={{
+            flexDirection: "row",
+            justifyContent: "space-between",
+            alignItems: "center"
           }}
         >
-          <Text style={styles.timeStyle}>{section.time}</Text>
-        </TouchableOpacity>
+          <Text
+            style={[
+              styles.headerText,
+              this.props.nightMode && { color: GLOBAL.COLOR.MODAL_TEXT_NIGHT_MODE },
+              !this.props.romanized && { fontFamily: "GurbaniAkharHeavySG" },
+              !section.enabled && {
+                color: GLOBAL.COLOR.DISABLED_TEXT_COLOR_NIGHT_MODE
+              }
+            ]}
+          >
+            {this.props.romanized ? section.roman : section.gurmukhi}
+          </Text>
 
-        <Text
-          style={[
-            styles.headerText,
-            !this.props.romanized && { fontFamily: "GurbaniAkharHeavySG" }
-          ]}
+          <Switch
+            style={[]}
+            onValueChange={value =>
+              this._handleSwitchToggled(value, section.key)
+            }
+            value={section.enabled}
+            trackColor={
+              Platform.OS === "ios"
+                ? {
+                    false: null,
+                    true: GLOBAL.COLOR.SETTING_SWITCH_COLOR
+                  }
+                : {}
+            }
+          />
+        </View>
+
+        <View
+          style={{
+            flexDirection: "row",
+            justifyContent: "space-between",
+            alignItems: "baseline"
+          }}
         >
-          {this.props.romanized ? section.roman : section.gurmukhi}
-        </Text>
-      </View>
+          <TouchableOpacity
+            onPress={() => {
+              this.setState({ timePickerSectionKey: section.key });
+              this._showTimePicker();
+            }}
+          >
+            <Text
+              style={[
+                styles.timeStyle,
+                this.props.nightMode && { color: GLOBAL.COLOR.MODAL_TEXT_NIGHT_MODE },
+                section.enabled
+                  ? { color: GLOBAL.COLOR.ENABELED_TEXT_COLOR_NIGHT_MODE }
+                  : { color: GLOBAL.COLOR.DISABLED_TEXT_COLOR_NIGHT_MODE }
+              ]}
+            >
+              {section.time}
+            </Text>
+          </TouchableOpacity>
+          <Icon
+            style={{
+              position: "absolute",
+              bottom: 0,
+              right: 0
+            }}
+            name={isActive ? "keyboard-arrow-up" : "keyboard-arrow-down"}
+            color={
+              this.props.nightMode
+                ? GLOBAL.COLOR.COMPONENT_COLOR_NIGHT_MODE
+                : GLOBAL.COLOR.COMPONENT_COLOR
+            }
+            size={30}
+          />
+        </View>
+        <View
+          style={{
+            borderBottomColor: GLOBAL.COLOR.DISABLED_TEXT_COLOR_NIGHT_MODE,
+            borderBottomWidth: 1
+          }}
+        />
+      </Animatable.View>
     );
   };
 
-  _renderContent = section => {
+  _renderContent = (section, index, isActive) => {
     return (
-      <View style={styles.content}>
-        <Text>More options will go here</Text>
-      </View>
+      <Animatable.View
+        duration={300}
+        transition="backgroundColor"
+        style={[
+          {
+            backgroundColor: isActive
+              ? this.props.nightMode
+                ? GLOBAL.COLOR.ACTIVE_VIEW_COLOR_NIGHT_MODE
+                : GLOBAL.COLOR.ACTIVE_VIEW_COLOR
+              : this.props.nightMode
+              ? GLOBAL.COLOR.INACTIVE_VIEW_COLOR_NIGHT_MODE
+              : GLOBAL.COLOR.INACTIVE_VIEW_COLOR
+          }
+        ]}
+      >
+        <View style={styles.content}>
+          <TouchableOpacity
+            onPress={() => {
+              this._initLabelModal(section.key);
+            }}
+          >
+            <View
+              style={{
+                flexDirection: "row",
+                justifyContent: "center",
+                alignItems: "center"
+              }}
+            >
+              <MaterialIcons
+                name="label-outline"
+                color={
+                  this.props.nightMode
+                    ? GLOBAL.COLOR.COMPONENT_COLOR_NIGHT_MODE
+                    : GLOBAL.COLOR.COMPONENT_COLOR
+                }
+                size={30}
+              />
+              <Text
+                style={[
+                  styles.contentText,
+                  this.props.nightMode
+                    ? { color: GLOBAL.COLOR.COMPONENT_COLOR_NIGHT_MODE }
+                    : { color: GLOBAL.COLOR.COMPONENT_COLOR }
+                ]}
+              >
+                {section.title}
+              </Text>
+            </View>
+          </TouchableOpacity>
+          <TouchableOpacity
+            onPress={() => {
+              this._handleDeleteReminder(section.key);
+            }}
+          >
+            <View
+              style={{
+                flexDirection: "row",
+                justifyContent: "center",
+                alignItems: "center"
+              }}
+            >
+              <MaterialIcons
+                name="trash-can-outline"
+                color={
+                  this.props.nightMode
+                    ? GLOBAL.COLOR.COMPONENT_COLOR_NIGHT_MODE
+                    : GLOBAL.COLOR.COMPONENT_COLOR
+                }
+                size={30}
+              />
+              <Text
+                style={[
+                  styles.contentText,
+                  this.props.nightMode
+                    ? { color: GLOBAL.COLOR.COMPONENT_COLOR_NIGHT_MODE }
+                    : { color: GLOBAL.COLOR.COMPONENT_COLOR }
+                ]}
+              >
+                Delete
+              </Text>
+            </View>
+          </TouchableOpacity>
+        </View>
+        <View
+          style={{
+            borderBottomColor: GLOBAL.COLOR.COMPONENT_COLOR_NIGHT_MODE,
+            borderBottomWidth: 1
+          }}
+        />
+      </Animatable.View>
     );
   };
 
   _updateSections = activeSections => {
     this.setState({ activeSections });
   };
-
-  // _renderRow = ({ data, active }) => {
-  //   return (
-  //     <ReminderPanel
-  //       title="B Panel with short content text"
-  //       data={data}
-  //       active={active}
-  //       nightMode={this.props.nightMode}
-  //       romanized={this.props.romanized}
-  //       fontFace={this.props.fontFace}
-  //       fontSize={this.props.fontSize}
-  //     />
-  //   );
-  // };
 }
 
 const styles = StyleSheet.create({
@@ -325,11 +645,24 @@ const styles = StyleSheet.create({
     flex: 1
   },
   timeStyle: {
-    color: GLOBAL.COLOR.SETTING_SWITCH_COLOR,
-    fontSize: 34
+    fontSize: 44
+  },
+  header: {
+    paddingTop: 10,
+    paddingLeft: 10,
+    paddingRight: 10
   },
   headerText: {
-    color: "#404"
+    flex: 1,
+    fontSize: 24
+  },
+  contentText: {
+    flex: 1,
+    fontSize: 14,
+    paddingLeft: 5
+  },
+  content: {
+    padding: 10
   },
   optionText: {},
   separator: {

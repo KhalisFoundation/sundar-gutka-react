@@ -1,5 +1,5 @@
 import React from "react";
-import { StyleSheet, View, Image, Text, Linking } from "react-native";
+import { StyleSheet, View, Image, Text, Linking, Platform } from "react-native";
 import { Header } from "react-native-elements";
 import MaterialIcons from "react-native-vector-icons/MaterialCommunityIcons";
 import FontAwesomeIcons from "react-native-vector-icons/FontAwesome";
@@ -26,7 +26,15 @@ class Settings extends React.Component {
 
     const checkedIcon = <MaterialIcons name="check" size={30} />;
 
-    const switchStyle = { trackColor: GLOBAL.COLOR.SETTING_SWITCH_COLOR };
+    const switchStyle =
+      Platform.OS === "ios"
+        ? {
+            trackColor: {
+              false: null,
+              true: GLOBAL.COLOR.SETTING_SWITCH_COLOR
+            }
+          }
+        : {};
 
     return (
       <View
@@ -167,6 +175,11 @@ class Settings extends React.Component {
             icon={
               <MaterialIcons
                 style={styles.imageStyle}
+                color={
+                  this.props.nightMode
+                    ? GLOBAL.COLOR.COMPONENT_COLOR_NIGHT_MODE
+                    : GLOBAL.COLOR.COMPONENT_COLOR
+                }
                 name="eye-off"
                 size={30}
               />
@@ -187,6 +200,11 @@ class Settings extends React.Component {
             icon={
               <MaterialIcons
                 style={styles.imageStyle}
+                color={
+                  this.props.nightMode
+                    ? GLOBAL.COLOR.COMPONENT_COLOR_NIGHT_MODE
+                    : GLOBAL.COLOR.COMPONENT_COLOR
+                }
                 name="auto-fix"
                 size={30}
               />
@@ -295,6 +313,11 @@ class Settings extends React.Component {
             icon={
               <FontAwesomeIcons
                 style={styles.imageStyle}
+                color={
+                  this.props.nightMode
+                    ? GLOBAL.COLOR.COMPONENT_COLOR_NIGHT_MODE
+                    : GLOBAL.COLOR.COMPONENT_COLOR
+                }
                 name="paragraph"
                 size={30}
               />
@@ -357,7 +380,16 @@ class Settings extends React.Component {
           <SettingsList.Item
             backgroundColor={this.props.nightMode ? "#464646" : "#fff"}
             icon={
-              <MaterialIcons style={styles.imageStyle} name="pause" size={30} />
+              <MaterialIcons
+                style={styles.imageStyle}
+                color={
+                  this.props.nightMode
+                    ? GLOBAL.COLOR.COMPONENT_COLOR_NIGHT_MODE
+                    : GLOBAL.COLOR.COMPONENT_COLOR
+                }
+                name="pause"
+                size={30}
+              />
             }
             hasSwitch={true}
             switchState={this.props.visram}
@@ -376,7 +408,12 @@ class Settings extends React.Component {
             icon={
               <MaterialIcons
                 style={styles.imageStyle}
-                name="auto-fix"
+                color={
+                  this.props.nightMode
+                    ? GLOBAL.COLOR.COMPONENT_COLOR_NIGHT_MODE
+                    : GLOBAL.COLOR.COMPONENT_COLOR
+                }
+                name="timer"
                 size={30}
               />
             }
@@ -396,9 +433,15 @@ class Settings extends React.Component {
             <SettingsList.Item
               backgroundColor={this.props.nightMode ? "#464646" : "#fff"}
               icon={
-                <Image
+                <MaterialIcons
                   style={styles.imageStyle}
-                  source={require("../images/rearrangeicon.png")}
+                  color={
+                    this.props.nightMode
+                      ? GLOBAL.COLOR.COMPONENT_COLOR_NIGHT_MODE
+                      : GLOBAL.COLOR.COMPONENT_COLOR
+                  }
+                  name="timetable"
+                  size={30}
                 />
               }
               title="Set Reminder Options"
@@ -407,7 +450,10 @@ class Settings extends React.Component {
                 this.props.nightMode && { color: "#fff" }
               ]}
               onPress={() =>
-                navigate({ key: "ReminderOptions", routeName: "ReminderOptions" })
+                navigate({
+                  key: "ReminderOptions",
+                  routeName: "ReminderOptions"
+                })
               }
             />
           )}
@@ -442,6 +488,11 @@ class Settings extends React.Component {
             icon={
               <FontAwesome5Icons
                 style={styles.imageStyle}
+                color={
+                  this.props.nightMode
+                    ? GLOBAL.COLOR.COMPONENT_COLOR_NIGHT_MODE
+                    : GLOBAL.COLOR.COMPONENT_COLOR
+                }
                 name="donate"
                 size={30}
               />
@@ -460,6 +511,11 @@ class Settings extends React.Component {
             icon={
               <FontAwesomeIcons
                 style={styles.imageStyle}
+                color={
+                  this.props.nightMode
+                    ? GLOBAL.COLOR.COMPONENT_COLOR_NIGHT_MODE
+                    : GLOBAL.COLOR.COMPONENT_COLOR
+                }
                 name="question-circle"
                 size={30}
               />

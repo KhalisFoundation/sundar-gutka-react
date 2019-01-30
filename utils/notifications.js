@@ -54,7 +54,9 @@ export default class NotificationsManager {
     if (remindersOn) {
       let array = JSON.parse(remindersList);
       for (var i = 0; i < array.length; i++) {
-        this.createReminder(array[i]);
+        if (array[i].enabled) {
+          this.createReminder(array[i]);
+        }
       }
     }
   }
@@ -71,7 +73,7 @@ export default class NotificationsManager {
     // Build notification
     const notification = new firebase.notifications.Notification()
       .setNotificationId(reminder.key.toString())
-      .setTitle("Time for " + reminder.roman)
+      .setTitle(reminder.title)
       .setBody(reminder.time)
       .setData({
         key: reminder.key,
