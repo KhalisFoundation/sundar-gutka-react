@@ -320,7 +320,9 @@ class ReminderOptions extends React.Component {
           <View
             style={{
               padding: 20,
-              backgroundColor: GLOBAL.COLOR.MODAL_BACKGROUND_NIGHT_MODE
+              backgroundColor: this.props.nightMode
+                ? GLOBAL.COLOR.MODAL_BACKGROUND_NIGHT_MODE
+                : GLOBAL.COLOR.MODAL_BACKGROUND
             }}
           >
             <Text
@@ -334,7 +336,9 @@ class ReminderOptions extends React.Component {
             <TextInput
               style={{
                 height: 40,
-                color: GLOBAL.COLOR.MODAL_TEXT_NIGHT_MODE,
+                color: this.props.nightMode
+                  ? GLOBAL.COLOR.MODAL_TEXT_NIGHT_MODE
+                  : GLOBAL.COLOR.MODAL_TEXT,
                 borderRadius: 5,
                 borderColor: GLOBAL.COLOR.MODAL_ACCENT_NIGHT_MODE_ALT,
                 borderWidth: 1,
@@ -346,7 +350,6 @@ class ReminderOptions extends React.Component {
                 this.setState({ reminderLabelText })
               }
               selectionColor={GLOBAL.COLOR.MODAL_ACCENT_NIGHT_MODE}
-              underlineColorAndroid={GLOBAL.COLOR.MODAL_TEXT_NIGHT_MODE}
             />
             <View
               style={{
@@ -426,6 +429,7 @@ class ReminderOptions extends React.Component {
               isVisible={this.state.isTimePickerVisible}
               onConfirm={time => this._handleTimePicked(time)}
               onCancel={this._hideTimePicker}
+              is24Hour={false}
               titleIOS={"Pick a Time:"}
               mode={"time"}
             />
@@ -463,7 +467,9 @@ class ReminderOptions extends React.Component {
           <Text
             style={[
               styles.headerText,
-              this.props.nightMode && { color: GLOBAL.COLOR.MODAL_TEXT_NIGHT_MODE },
+              this.props.nightMode && {
+                color: GLOBAL.COLOR.MODAL_TEXT_NIGHT_MODE
+              },
               !this.props.romanized && { fontFamily: "GurbaniAkharHeavySG" },
               !section.enabled && {
                 color: GLOBAL.COLOR.DISABLED_TEXT_COLOR_NIGHT_MODE
@@ -506,7 +512,9 @@ class ReminderOptions extends React.Component {
             <Text
               style={[
                 styles.timeStyle,
-                this.props.nightMode && { color: GLOBAL.COLOR.MODAL_TEXT_NIGHT_MODE },
+                this.props.nightMode && {
+                  color: GLOBAL.COLOR.MODAL_TEXT_NIGHT_MODE
+                },
                 section.enabled
                   ? { color: GLOBAL.COLOR.ENABELED_TEXT_COLOR_NIGHT_MODE }
                   : { color: GLOBAL.COLOR.DISABLED_TEXT_COLOR_NIGHT_MODE }
@@ -533,7 +541,8 @@ class ReminderOptions extends React.Component {
         <View
           style={{
             borderBottomColor: GLOBAL.COLOR.DISABLED_TEXT_COLOR_NIGHT_MODE,
-            borderBottomWidth: 1
+            borderBottomWidth: 1,
+            paddingBottom: 10
           }}
         />
       </Animatable.View>
@@ -604,7 +613,7 @@ class ReminderOptions extends React.Component {
               }}
             >
               <MaterialIcons
-                name="trash-can-outline"
+                name="delete-outline"
                 color={
                   this.props.nightMode
                     ? GLOBAL.COLOR.COMPONENT_COLOR_NIGHT_MODE
@@ -648,7 +657,7 @@ const styles = StyleSheet.create({
     fontSize: 44
   },
   header: {
-    paddingTop: 10,
+    paddingTop: 15,
     paddingLeft: 10,
     paddingRight: 10
   },
@@ -664,7 +673,9 @@ const styles = StyleSheet.create({
   content: {
     padding: 10
   },
-  optionText: {},
+  optionText: {
+    fontSize: 28
+  },
   separator: {
     height: 2
   },
