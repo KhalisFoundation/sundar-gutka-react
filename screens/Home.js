@@ -202,79 +202,81 @@ class Home extends React.Component {
       >
         {this.state.showLengthSelector && <BaniLengthSelector />}
 
-        <View backgroundColor={GLOBAL.COLOR.TOOLBAR_COLOR}>
-          <Header
-            backgroundColor={GLOBAL.COLOR.TOOLBAR_COLOR}
-            barStyle="light-content"
-            containerStyle={{ height: 130 }}
-            centerComponent={
-              <View
-                style={{
-                  flex: 1
-                }}
-              >
-                <Text
-                  style={[
-                    {
-                      color: GLOBAL.COLOR.TOOLBAR_TINT,
-                      fontFamily: "GurbaniAkharHeavySG",
-                      fontSize: 18,
-                      textAlign: "center",
-                      paddingBottom: 10
-                    }
-                  ]}
-                >
-                  {"<> sRI vwihgurU jI kI Piqh ]"}
-                </Text>
-                <View
-                  style={{
-                    flex: 1
-                  }}
-                >
-                  <Text
-                    style={[
-                      {
-                        color: GLOBAL.COLOR.TOOLBAR_TINT,
-                        fontFamily: "GurbaniAkharHeavySG",
-                        fontSize: 28
-                      }
-                    ]}
-                  >
-                    <Text
-                      style={[
-                        {
-                          fontSize: 32
-                        }
-                      ]}
-                    >
-                      Œ
-                    </Text>{" "}
-                    suMdr gutkw{" "}
-                    <Text
-                      style={[
-                        {
-                          fontSize: 32
-                        }
-                      ]}
-                    >
-                      ‰
-                    </Text>
-                  </Text>
-                </View>
-              </View>
-            }
-            rightComponent={
-              <Icon
-                name="settings"
-                color={GLOBAL.COLOR.TOOLBAR_TINT}
-                size={30}
-                onPress={() =>
-                  this.props.navigation.navigate({
-                    key: "Settings",
-                    routeName: "Settings"
-                  })
+        <Header
+          backgroundColor={GLOBAL.COLOR.TOOLBAR_COLOR}
+          barStyle="light-content"
+          containerStyle={{ height: 0, borderBottomWidth: 0 }}
+        />
+        <View
+          style={{
+            backgroundColor: GLOBAL.COLOR.TOOLBAR_COLOR,
+            paddingBottom: 10
+          }}
+        >
+          <Text
+            style={[
+              {
+                color: GLOBAL.COLOR.TOOLBAR_TINT,
+                fontFamily: "GurbaniAkharHeavySG",
+                fontSize: 18,
+                textAlign: "center",
+                paddingBottom: 10
+              }
+            ]}
+          >
+            {"<> sRI vwihgurU jI kI Piqh ]"}
+          </Text>
+
+          <View
+            style={{
+              flexDirection: "row",
+              justifyContent: "center"
+            }}
+          >
+            <Text
+              style={[
+                {
+                  color: GLOBAL.COLOR.TOOLBAR_TINT,
+                  fontFamily: "GurbaniAkharHeavySG",
+                  fontSize: 28
                 }
-              />
+              ]}
+            >
+              <Text
+                style={[
+                  {
+                    fontSize: 32
+                  }
+                ]}
+              >
+                Œ
+              </Text>{" "}
+              suMdr gutkw{" "}
+              <Text
+                style={[
+                  {
+                    fontSize: 32
+                  }
+                ]}
+              >
+                ‰
+              </Text>
+            </Text>
+          </View>
+          <Icon
+            name="settings"
+            style={{
+              position: "absolute",
+              right: 10,
+              bottom: 15
+            }}
+            color={GLOBAL.COLOR.TOOLBAR_TINT}
+            size={30}
+            onPress={() =>
+              this.props.navigation.navigate({
+                key: "Settings",
+                routeName: "Settings"
+              })
             }
           />
         </View>

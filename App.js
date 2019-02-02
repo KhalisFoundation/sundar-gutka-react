@@ -3,7 +3,6 @@ import { BackHandler, Alert } from "react-native";
 import { createStackNavigator, createAppContainer } from "react-navigation";
 import { Provider } from "react-redux";
 import { PersistGate } from "redux-persist/integration/react";
-import GLOBAL from "./utils/globals";
 import HomeScreen from "./screens/Home";
 import FolderBaniScreen from "./screens/FolderBani";
 import SettingsScreen from "./screens/Settings";
