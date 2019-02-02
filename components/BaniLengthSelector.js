@@ -7,8 +7,12 @@ import {
   Text,
   View,
   ScrollView,
-  TouchableHighlight
+  TouchableOpacity
 } from "react-native";
+import {
+  baniLengthInfo
+} from "../utils/helpers";
+import Icon from "react-native-vector-icons/Entypo";
 import * as actions from "../actions/actions";
 import GLOBAL from "../utils/globals";
 
@@ -88,26 +92,68 @@ class BaniLengthSelector extends Component {
               {"\n"}Choose your preference:
             </Text>
 
-            <TouchableHighlight
+            <TouchableOpacity
               onPress={() => this.updateBaniLength(actions.BANI_LENGTHS[0])}
             >
               <Text style={styles.button}>SHORT</Text>
-            </TouchableHighlight>
-            <TouchableHighlight
+            </TouchableOpacity>
+            <TouchableOpacity
               onPress={() => this.updateBaniLength(actions.BANI_LENGTHS[1])}
             >
               <Text style={styles.button}>MEDIUM</Text>
-            </TouchableHighlight>
-            <TouchableHighlight
+            </TouchableOpacity>
+            <TouchableOpacity
               onPress={() => this.updateBaniLength(actions.BANI_LENGTHS[2])}
             >
               <Text style={styles.button}>LONG</Text>
-            </TouchableHighlight>
-            <TouchableHighlight
+            </TouchableOpacity>
+            <TouchableOpacity
               onPress={() => this.updateBaniLength(actions.BANI_LENGTHS[3])}
             >
               <Text style={styles.button}>EXTRA LONG</Text>
-            </TouchableHighlight>
+            </TouchableOpacity>
+
+            <TouchableOpacity
+              style={{
+                flex: 1,
+                flexDirection: "row",
+                alignItems: "center",
+                marginTop: 15
+              }}
+              onPress={() =>
+                baniLengthInfo()
+              }
+            >
+              <Icon
+                color={GLOBAL.COLOR.TOOLBAR_COLOR_ALT}
+                name="info-with-circle"
+                size={30}
+              />
+              <Text
+                style={[
+                  {
+                    color: GLOBAL.COLOR.TOOLBAR_COLOR_ALT,
+                    fontWeight: "bold",
+                    fontStyle: "italic",
+                    fontSize: 12
+                  }
+                ]}
+              >
+                {"  "}Need help deciding?
+                <Text
+                  style={[
+                    {
+                      color: GLOBAL.COLOR.TOOLBAR_TINT,
+                      fontWeight: "normal",
+                      fontSize: 12
+                    }
+                  ]}
+                >
+                  {" "}
+                  Click here for more information
+                </Text>
+              </Text>
+            </TouchableOpacity>
           </View>
         </ScrollView>
       </Modal>

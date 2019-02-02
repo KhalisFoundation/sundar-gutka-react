@@ -1,11 +1,21 @@
 import React from "react";
-import { StyleSheet, View, Image, Text, Linking, Platform } from "react-native";
+import {
+  StyleSheet,
+  View,
+  Image,
+  Text,
+  Linking,
+  Platform,
+  TouchableOpacity
+} from "react-native";
 import { Header } from "react-native-elements";
 import MaterialIcons from "react-native-vector-icons/MaterialCommunityIcons";
 import FontAwesomeIcons from "react-native-vector-icons/FontAwesome";
 import FontAwesome5Icons from "react-native-vector-icons/FontAwesome5";
+import Entypo from "react-native-vector-icons/Entypo";
 import Icon from "react-native-vector-icons/MaterialIcons";
 import GLOBAL from "../utils/globals";
+import { baniLengthInfo } from "../utils/helpers";
 import SettingsList from "react-native-settings-list";
 import {
   ActionSheet,
@@ -572,9 +582,24 @@ class Settings extends React.Component {
           position="bottom"
           defaultValue={this.props.baniLength}
         >
-          <View>
+          <TouchableOpacity
+            style={{
+              flex: 1,
+              flexDirection: "row",
+              alignItems: "center",
+              justifyContent: "center",
+              marginTop: 15
+            }}
+            onPress={() => baniLengthInfo()}
+          >
             <Text style={styles.actionSheetTitle}>Bani Length</Text>
-          </View>
+
+            <Entypo
+              color={GLOBAL.COLOR.TOOLBAR_COLOR_ALT}
+              name="info-with-circle"
+              size={30}
+            />
+          </TouchableOpacity>
           {this.actionSheetOptions(
             actions.baniLengthNames,
             actions.BANI_LENGTHS,
