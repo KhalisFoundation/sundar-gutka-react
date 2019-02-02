@@ -141,7 +141,7 @@ class Reader extends React.Component {
         "color: " +
         (nightMode ? "#fff" : "#000") +
         ";" +
-        "padding-top: 3.5em; }";
+        "padding-top: 4.5em; }";
       html += "* { -webkit-user-select: none; }";
       html += "</style><script>" + this.loadScrollJS() + "</script>";
       html += "</head><body>";
@@ -161,8 +161,8 @@ class Reader extends React.Component {
           (item.header === 0
             ? "left"
             : item.header === 1 || item.header === 2
-              ? "center"
-              : "right") +
+            ? "center"
+            : "right") +
           ';">' +
           item.gurmukhi +
           "</div>";
@@ -181,8 +181,8 @@ class Reader extends React.Component {
             (item.header === 0
               ? "left"
               : item.header === 1 || item.header === 2
-                ? "center"
-                : "right") +
+              ? "center"
+              : "right") +
             "; font-weight: " +
             (item.header === 0 ? "normal" : "bold") +
             ';">' +
@@ -204,8 +204,8 @@ class Reader extends React.Component {
             (item.header === 0
               ? "left"
               : item.header === 1 || item.header === 2
-                ? "center"
-                : "right") +
+              ? "center"
+              : "right") +
             "; font-weight: " +
             (item.header === 0 ? "normal" : "bold") +
             ';">' +
@@ -358,7 +358,7 @@ class Reader extends React.Component {
         <LoadingIndicator isLoading={this.state.isLoading} />
 
         <WebView
-          originWhitelist={['*']}
+          originWhitelist={["*"]}
           style={this.props.nightMode && { backgroundColor: "#000" }}
           ref={webView => (this.webView = webView)}
           source={{
@@ -375,7 +375,7 @@ class Reader extends React.Component {
           ]}
         >
           <Header
-            outerContainerStyles={{ borderBottomWidth: 0 }}
+            barStyle="light-content"
             backgroundColor={GLOBAL.COLOR.READER_HEADER_COLOR}
             leftComponent={
               <Icon
@@ -456,10 +456,19 @@ class Reader extends React.Component {
                   color={GLOBAL.COLOR.TOOLBAR_TINT}
                   size={30}
                   onPress={() => {
-                    var scrollSpeed = this.props.autoScrollShabadSpeed[this.props.currentShabad] ? this.props.autoScrollShabadSpeed[this.props.currentShabad] : 50;
+                    var scrollSpeed = this.props.autoScrollShabadSpeed[
+                      this.props.currentShabad
+                    ]
+                      ? this.props.autoScrollShabadSpeed[
+                          this.props.currentShabad
+                        ]
+                      : 50;
                     if (scrollSpeed == 0) {
                       scrollSpeed = 1;
-                      this.props.setAutoScrollSpeed(scrollSpeed, this.props.currentShabad);
+                      this.props.setAutoScrollSpeed(
+                        scrollSpeed,
+                        this.props.currentShabad
+                      );
                     }
                     let autoScrollSpeed = {
                       autoScroll: scrollSpeed,
@@ -500,9 +509,16 @@ class Reader extends React.Component {
                 minimumValue={0}
                 maximumValue={100}
                 step={1}
-                value={this.props.autoScrollShabadSpeed[this.props.currentShabad] ? this.props.autoScrollShabadSpeed[this.props.currentShabad] : 50}
+                value={
+                  this.props.autoScrollShabadSpeed[this.props.currentShabad]
+                    ? this.props.autoScrollShabadSpeed[this.props.currentShabad]
+                    : 50
+                }
                 onValueChange={value => {
-                  this.props.setAutoScrollSpeed(value, this.props.currentShabad);
+                  this.props.setAutoScrollSpeed(
+                    value,
+                    this.props.currentShabad
+                  );
                   let speed = value;
                   speed === 0
                     ? this.setState({ paused: true })
@@ -520,14 +536,16 @@ class Reader extends React.Component {
                   );
                 }}
               />
-             <Text
+              <Text
                 style={{
                   color: GLOBAL.COLOR.TOOLBAR_TINT,
                   paddingTop: 20,
                   paddingRight: 20
                 }}
               >
-                {this.props.autoScrollShabadSpeed[this.props.currentShabad] ? this.props.autoScrollShabadSpeed[this.props.currentShabad] : 50}
+                {this.props.autoScrollShabadSpeed[this.props.currentShabad]
+                  ? this.props.autoScrollShabadSpeed[this.props.currentShabad]
+                  : 50}
               </Text>
             </View>
           </Animated.View>
@@ -584,4 +602,7 @@ function mapDispatchToProps(dispatch) {
   return bindActionCreators(actions, dispatch);
 }
 
-export default connect(mapStateToProps, mapDispatchToProps)(Reader);
+export default connect(
+  mapStateToProps,
+  mapDispatchToProps
+)(Reader);

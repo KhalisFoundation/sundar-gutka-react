@@ -18,6 +18,8 @@ import VersionNumber from "react-native-version-number";
 import firebase from "react-native-firebase";
 
 class Home extends React.Component {
+  static navigationOptions = { header: null };
+
   constructor(props) {
     super(props);
 
@@ -200,57 +202,66 @@ class Home extends React.Component {
       >
         {this.state.showLengthSelector && <BaniLengthSelector />}
 
-        <View
-          backgroundColor={GLOBAL.COLOR.TOOLBAR_COLOR}
-          style={{
-            paddingTop: 10
-          }}
-        >
-          <Text
-            style={[
-              {
-                color: GLOBAL.COLOR.TOOLBAR_TINT,
-                fontFamily: "GurbaniAkharHeavySG",
-                fontSize: 18,
-                textAlign: "center"
-              }
-            ]}
-          >
-            {"<> sRI vwihgurU jI kI Piqh ]"}
-          </Text>
+        <View backgroundColor={GLOBAL.COLOR.TOOLBAR_COLOR}>
           <Header
-            outerContainerStyles={{ borderBottomWidth: 0 }}
             backgroundColor={GLOBAL.COLOR.TOOLBAR_COLOR}
+            barStyle="light-content"
+            containerStyle={{ height: 130 }}
             centerComponent={
-              <Text
-                style={[
-                  {
-                    color: GLOBAL.COLOR.TOOLBAR_TINT,
-                    fontFamily: "GurbaniAkharHeavySG",
-                    fontSize: 28
-                  }
-                ]}
+              <View
+                style={{
+                  flex: 1
+                }}
               >
                 <Text
                   style={[
                     {
-                      fontSize: 32
+                      color: GLOBAL.COLOR.TOOLBAR_TINT,
+                      fontFamily: "GurbaniAkharHeavySG",
+                      fontSize: 18,
+                      textAlign: "center",
+                      paddingBottom: 10
                     }
                   ]}
                 >
-                  Œ
-                </Text>{" "}
-                suMdr gutkw{" "}
-                <Text
-                  style={[
-                    {
-                      fontSize: 32
-                    }
-                  ]}
-                >
-                  ‰
+                  {"<> sRI vwihgurU jI kI Piqh ]"}
                 </Text>
-              </Text>
+                <View
+                  style={{
+                    flex: 1
+                  }}
+                >
+                  <Text
+                    style={[
+                      {
+                        color: GLOBAL.COLOR.TOOLBAR_TINT,
+                        fontFamily: "GurbaniAkharHeavySG",
+                        fontSize: 28
+                      }
+                    ]}
+                  >
+                    <Text
+                      style={[
+                        {
+                          fontSize: 32
+                        }
+                      ]}
+                    >
+                      Œ
+                    </Text>{" "}
+                    suMdr gutkw{" "}
+                    <Text
+                      style={[
+                        {
+                          fontSize: 32
+                        }
+                      ]}
+                    >
+                      ‰
+                    </Text>
+                  </Text>
+                </View>
+              </View>
             }
             rightComponent={
               <Icon

@@ -293,7 +293,7 @@ class ReminderOptions extends React.Component {
         }}
       >
         <Header
-          outerContainerStyles={{ borderBottomWidth: 0 }}
+barStyle="light-content"
           backgroundColor={GLOBAL.COLOR.TOOLBAR_COLOR_ALT2}
           leftComponent={
             <Icon

@@ -9,6 +9,8 @@ target 'SundarGutka' do
   pod 'Firebase/Core'
   pod 'Firebase/Messaging', '~> 5.15.0'
 
+  pod 'RNGestureHandler', :path => '../node_modules/react-native-gesture-handler'
+
   target 'SundarGutkaTests' do
     inherit! :search_paths
     # Pods for testing

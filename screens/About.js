@@ -17,7 +17,10 @@ import AnalyticsManager from "../utils/analytics";
 
 class Home extends React.Component {
   componentDidMount() {
-    AnalyticsManager.getInstance().trackScreenView("About", this.constructor.name);
+    AnalyticsManager.getInstance().trackScreenView(
+      "About",
+      this.constructor.name
+    );
   }
 
   render() {
@@ -28,7 +31,7 @@ class Home extends React.Component {
         }}
       >
         <Header
-          outerContainerStyles={{ borderBottomWidth: 0 }}
+          barStyle="light-content"
           backgroundColor={GLOBAL.COLOR.TOOLBAR_COLOR_ALT2}
           leftComponent={
             <Icon
@@ -73,9 +76,8 @@ class Home extends React.Component {
           </TouchableHighlight>
           <Text style={this.props.nightMode && styles.nightMode}>
             <Text>
-              {"\n"}We welcome your comments, suggestions, and corrections!{
-                "\n"
-              }
+              {"\n"}We welcome your comments, suggestions, and corrections!
+              {"\n"}
               {"\n"}
               For information, suggestions, or help, visit us at{"\n"}
             </Text>
@@ -128,10 +130,8 @@ class Home extends React.Component {
             <Text
               style={[styles.small, this.props.nightMode && styles.nightMode]}
             >
-              App Version: {VersionNumber.appVersion} ({
-                VersionNumber.buildVersion
-              })
-              {"\n"}
+              App Version: {VersionNumber.appVersion} (
+              {VersionNumber.buildVersion}){"\n"}
             </Text>
           </View>
         </ScrollView>

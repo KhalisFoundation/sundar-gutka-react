@@ -37,7 +37,7 @@ class Bookmarks extends React.Component {
   }
 
   render() {
-    <LoadingIndicator isLoading={this.state.isLoading} />
+    <LoadingIndicator isLoading={this.state.isLoading} />;
 
     return (
       <View
@@ -46,7 +46,7 @@ class Bookmarks extends React.Component {
         }}
       >
         <Header
-          outerContainerStyles={{ borderBottomWidth: 0 }}
+          barStyle={this.props.nightMode ? "light-content" : "dark-content"}
           backgroundColor={
             this.props.nightMode
               ? GLOBAL.COLOR.TOOLBAR_COLOR_ALT_NIGHT_MODE
@@ -55,7 +55,11 @@ class Bookmarks extends React.Component {
           leftComponent={
             <Icon
               name="arrow-back"
-              color={GLOBAL.COLOR.TOOLBAR_TINT}
+              color={
+                this.props.nightMode
+                  ? GLOBAL.COLOR.TOOLBAR_TINT
+                  : GLOBAL.COLOR.TOOLBAR_TINT_DARK
+              }
               size={30}
               onPress={() => this.props.navigation.goBack()}
             />
@@ -63,7 +67,9 @@ class Bookmarks extends React.Component {
           centerComponent={{
             text: "Bookmarks",
             style: {
-              color: GLOBAL.COLOR.TOOLBAR_TINT,
+              color: this.props.nightMode
+                ? GLOBAL.COLOR.TOOLBAR_TINT
+                : GLOBAL.COLOR.TOOLBAR_TINT_DARK,
               fontSize: 18
             }
           }}

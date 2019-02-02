@@ -57,7 +57,7 @@ class Settings extends React.Component {
         ]}
       >
         <Header
-          outerContainerStyles={{ borderBottomWidth: 0 }}
+          barStyle={this.props.nightMode ? "light-content" : "dark-content"}
           backgroundColor={
             this.props.nightMode
               ? GLOBAL.COLOR.TOOLBAR_COLOR_ALT_NIGHT_MODE
@@ -66,14 +66,23 @@ class Settings extends React.Component {
           leftComponent={
             <Icon
               name="arrow-back"
-              color={GLOBAL.COLOR.TOOLBAR_TINT}
+              color={
+                this.props.nightMode
+                  ? GLOBAL.COLOR.TOOLBAR_TINT
+                  : GLOBAL.COLOR.TOOLBAR_TINT_DARK
+              }
               size={30}
               onPress={() => this.props.navigation.goBack()}
             />
           }
           centerComponent={{
             text: "Settings",
-            style: { color: GLOBAL.COLOR.TOOLBAR_TINT, fontSize: 18 }
+            style: {
+              color: this.props.nightMode
+                ? GLOBAL.COLOR.TOOLBAR_TINT
+                : GLOBAL.COLOR.TOOLBAR_TINT_DARK,
+              fontSize: 18
+            }
           }}
         />
         <SettingsList borderColor="#c8c7cc" defaultItemSize={50}>

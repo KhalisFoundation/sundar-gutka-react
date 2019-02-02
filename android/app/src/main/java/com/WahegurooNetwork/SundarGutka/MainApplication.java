@@ -5,6 +5,14 @@ import android.app.Application;
 import com.apsl.versionnumber.RNVersionNumberPackage;
 import com.corbt.keepawake.KCKeepAwakePackage;
 import com.facebook.react.ReactApplication;
+import com.apsl.versionnumber.RNVersionNumberPackage;
+import com.oblador.vectoricons.VectorIconsPackage;
+import org.devio.rn.splashscreen.SplashScreenReactPackage;
+import com.react.rnspinkit.RNSpinkitPackage;
+import com.corbt.keepawake.KCKeepAwakePackage;
+import com.idehub.GoogleAnalyticsBridge.GoogleAnalyticsBridgePackage;
+import io.invertase.firebase.RNFirebasePackage;
+import com.swmansion.gesturehandler.react.RNGestureHandlerPackage;
 import com.facebook.react.ReactNativeHost;
 import com.facebook.react.ReactPackage;
 import com.facebook.react.shell.MainReactPackage;
@@ -36,16 +44,17 @@ public class MainApplication extends Application implements ReactApplication {
     protected List<ReactPackage> getPackages() {
       return Arrays.<ReactPackage>asList(
               new MainReactPackage(),
-              new RNFirebasePackage(),
+            new RNVersionNumberPackage(),
+            new VectorIconsPackage(),
+            new SplashScreenReactPackage(),
+            new RNSpinkitPackage(),
+            new KCKeepAwakePackage(),
+            new GoogleAnalyticsBridgePackage(),
+            new RNFirebasePackage(),
+            new RNGestureHandlerPackage(),
               new RNFirebaseAnalyticsPackage(),
               new RNFirebaseMessagingPackage(),
               new RNFirebaseNotificationsPackage(),
-              new RNVersionNumberPackage(),
-              new VectorIconsPackage(),
-              new SplashScreenReactPackage(),
-              new RNSpinkitPackage(),
-              new KCKeepAwakePackage(),
-              new GoogleAnalyticsBridgePackage(),
               new SQLitePluginPackage() // register SQLite Plugin here
       );
     }

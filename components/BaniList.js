@@ -1,6 +1,6 @@
 import React, { Component } from "react";
 import { StyleSheet, FlatList } from "react-native";
-import { List, ListItem, Avatar } from "react-native-elements";
+import { ListItem, Avatar } from "react-native-elements";
 import { baseFontSize } from "../utils/helpers";
 import LoadingIndicator from "../components/LoadingIndicator";
 
@@ -17,47 +17,43 @@ class BaniList extends Component {
       onPress
     } = this.props;
 
-    <LoadingIndicator isLoading={isLoading} />
+    <LoadingIndicator isLoading={isLoading} />;
 
     return (
-      <List
-        containerStyle={[
-          styles.container,
-          nightMode && { backgroundColor: "#000" }
-        ]}
-      >
-        <FlatList
-          data={data}
-          extraData={[this.state]}
-          renderItem={({ item }) => (
-            <ListItem
-              avatar={
-                item.folder && (
-                  <Avatar
-                    source={require("../images/foldericon.png")}
-                    avatarStyle={{
-                      backgroundColor: nightMode ? "#000" : "#fff"
-                    }}
-                  />
-                )
+      <FlatList
+        style={[styles.container, nightMode && { backgroundColor: "#000" }]}
+        data={data}
+        extraData={[this.state]}
+        renderItem={({ item }) => (
+          <ListItem
+            leftAvatar={
+              item.folder && (
+                <Avatar
+                  source={require("../images/foldericon.png")}
+                  avatarStyle={{
+                    backgroundColor: nightMode ? "#000" : "#fff"
+                  }}
+                />
+              )
+            }
+            containerStyle={[
+              styles.container,
+              nightMode && { backgroundColor: "#000" }
+            ]}
+            titleStyle={[
+              nightMode && { color: "#fff" },
+              {
+                fontSize: baseFontSize(fontSize, romanized),
+                fontFamily: !romanized ? fontFace : null
               }
-              containerStyle={[
-                styles.container,
-                nightMode && { backgroundColor: "#000" }
-              ]}
-              titleStyle={[
-                nightMode && { color: "#fff" },
-                { fontSize: baseFontSize(fontSize, romanized) }
-              ]}
-              title={romanized ? item.roman : item.gurmukhi}
-              fontFamily={!romanized ? fontFace : null}
-              underlayColor={(color = nightMode ? "#464646" : "#c8c7cc")}
-              onPress={() => onPress(item, navigation)}
-            />
-          )}
-          keyExtractor={item => "" + item.gurmukhi}
-        />
-      </List>
+            ]}
+            title={romanized ? item.roman : item.gurmukhi}
+            bottomDivider={true}
+            onPress={() => onPress(item, navigation)}
+          />
+        )}
+        keyExtractor={item => "" + item.gurmukhi}
+      />
     );
   }
 }

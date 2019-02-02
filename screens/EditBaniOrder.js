@@ -20,12 +20,14 @@ import AnalyticsManager from "../utils/analytics";
 import { baseFontSize } from "../utils/helpers";
 import { defaultBaniOrderArray } from "../utils/helpers";
 
-
 const window = Dimensions.get("window");
 
 class EditBaniOrder extends React.Component {
   componentDidMount() {
-    AnalyticsManager.getInstance().trackScreenView("Index Reorder", this.constructor.name);
+    AnalyticsManager.getInstance().trackScreenView(
+      "Index Reorder",
+      this.constructor.name
+    );
   }
 
   render() {
@@ -36,7 +38,7 @@ class EditBaniOrder extends React.Component {
         }}
       >
         <Header
-          outerContainerStyles={{ borderBottomWidth: 0 }}
+          barStyle="light-content"
           backgroundColor={GLOBAL.COLOR.TOOLBAR_COLOR_ALT2}
           leftComponent={
             <Icon
@@ -55,8 +57,7 @@ class EditBaniOrder extends React.Component {
               name="refresh"
               color={GLOBAL.COLOR.TOOLBAR_TINT}
               size={30}
-              onPress={() => this.props.setBaniOrder(defaultBaniOrderArray)
-}
+              onPress={() => this.props.setBaniOrder(defaultBaniOrderArray)}
             />
           }
         />

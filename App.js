@@ -1,11 +1,6 @@
 import React from "react";
-import {
-  SafeAreaView,
-  StatusBar,
-  BackHandler,
-  Alert
-} from "react-native";
-import { createStackNavigator } from "react-navigation";
+import { BackHandler, Alert } from "react-native";
+import { createStackNavigator, createAppContainer } from "react-navigation";
 import { Provider } from "react-redux";
 import { PersistGate } from "redux-persist/integration/react";
 import GLOBAL from "./utils/globals";
@@ -19,68 +14,42 @@ import ReaderScreen from "./screens/Reader";
 import BookmarksScreen from "./screens/Bookmarks";
 import createStore from "./config/store";
 
-const RootStack = createStackNavigator({
-  Home: {
-    screen: HomeScreen,
-    navigationOptions: {
-      header: null
+const RootStack = createStackNavigator(
+  {
+    Home: {
+      screen: HomeScreen
+    },
+    FolderBani: {
+      screen: FolderBaniScreen
+    },
+    Settings: {
+      screen: SettingsScreen
+    },
+    Reader: {
+      screen: ReaderScreen
+    },
+    Bookmarks: {
+      screen: BookmarksScreen
+    },
+    EditBaniOrder: {
+      screen: EditBaniOrderScreen
+    },
+    ReminderOptions: {
+      screen: ReminderOptionsScreen
+    },
+    About: {
+      screen: AboutScreen
     }
   },
-  FolderBani: {
-    screen: FolderBaniScreen,
-    navigationOptions: {
-      header: null
-    }
-  },
-  Settings: {
-    screen: SettingsScreen,
-    navigationOptions: {
-      header: null
-    }
-  },
-  Reader: {
-    screen: ReaderScreen,
-    navigationOptions: {
-      header: null
-    }
-  },
-  Bookmarks: {
-    screen: BookmarksScreen,
-    navigationOptions: {
-      header: null
-    }
-  },
-  EditBaniOrder: {
-    screen: EditBaniOrderScreen,
-    navigationOptions: {
-      header: null
-    }
-  },
-  ReminderOptions: {
-    screen: ReminderOptionsScreen,
-    navigationOptions: {
-      header: null
-    }
-  },
-  About: {
-    screen: AboutScreen,
-    navigationOptions: {
-      header: null
-    }
+  {
+    headerMode: "none"
   }
-});
+);
+const AppContainer = createAppContainer(RootStack);
 
 const { store, persistor } = createStore();
 
 export default class App extends React.Component {
-  constructor(props) {
-    super(props);
-    this.state = {
-      safeAreaNavBarColor: GLOBAL.COLOR.TOOLBAR_COLOR,
-      statusBarType: "light-content"
-    };
-  }
-
   componentDidMount() {
     BackHandler.addEventListener("hardwareBackPress", this.handleBackPress);
   }
@@ -101,56 +70,12 @@ export default class App extends React.Component {
     );
     return true;
   };
-  
-  _getCurrentRouteName(navState) {
-    if (navState.hasOwnProperty("index")) {
-      this._getCurrentRouteName(navState.routes[navState.index]);
-    } else {
-      if (
-        navState.routeName === "Settings" ||
-        navState.routeName === "Bookmarks"
-      ) {
-        this.setState({ safeAreaNavBarColor: store.getState().nightMode ? GLOBAL.COLOR.TOOLBAR_COLOR_ALT_NIGHT_MODE : GLOBAL.COLOR.TOOLBAR_COLOR_ALT });
-        this.setState({ statusBarType: store.getState().nightMode ? "light-content" : "dark-content" });
-      } else if (
-        navState.routeName === "EditBaniOrder" ||
-        navState.routeName === "ReminderOptions" ||
-        navState.routeName === "About"
-      ) {
-        this.setState({ safeAreaNavBarColor: GLOBAL.COLOR.TOOLBAR_COLOR_ALT2 });
-        this.setState({ statusBarType: "light-content" });
-      } else if (navState.routeName === "Reader") {
-        this.setState({
-          safeAreaNavBarColor: store.getState().nightMode ? GLOBAL.COLOR.READER_STATUS_BAR_COLOR_NIGHT_MODE : GLOBAL.COLOR.READER_STATUS_BAR_COLOR
-        });
-        this.setState({ statusBarType: "light-content" });
-      } else {
-        this.setState({ safeAreaNavBarColor: GLOBAL.COLOR.TOOLBAR_COLOR });
-        this.setState({ statusBarType: "light-content" });
-      }
-    }
-  }
 
   render() {
     return (
       <Provider store={store}>
         <PersistGate loading={null} persistor={persistor}>
-          <StatusBar
-            backgroundColor={this.state.safeAreaNavBarColor}
-            barStyle={this.state.statusBarType}
-          />
-          <SafeAreaView
-            style={[
-              { flex: 1 },
-              { backgroundColor: this.state.safeAreaNavBarColor }
-            ]}
-          >
-            <RootStack
-              onNavigationStateChange={newState => {
-                this._getCurrentRouteName(newState);
-              }}
-            />
-          </SafeAreaView>
+          <AppContainer />
         </PersistGate>
       </Provider>
     );
