@@ -1,4 +1,4 @@
-import React from "react";
+import GLOBAL from "./globals";
 import SQLite from "react-native-sqlite-storage";
 
 var database_name = "gutkav16.db";
@@ -86,13 +86,13 @@ class Database {
             splitted.forEach(function(word) {
               if (visram && word.indexOf(";") >= 0) {
                 arr.push(
-                  "<span style='color:orange; white-space: nowrap;'>" +
+                  "<span style='color:" + GLOBAL.COLOR.VISHRAM_LONG +  "; white-space: nowrap;'>" +
                     word.slice(0, -1) +
                     "</span>"
                 );
               } else if (visram && word.indexOf(",") >= 0) {
                 arr.push(
-                  "<span style='color:green white-space: nowrap;'>" +
+                  "<span style='color:" + GLOBAL.COLOR.VISHRAM_SHORT +  "; white-space: nowrap;'>" +
                     word.slice(0, -1) +
                     "</span>"
                 );

@@ -26,6 +26,8 @@ export default {
     ENABELED_TEXT_COLOR: "#2581df",
     DISABLED_TEXT_COLOR: "#a3a3a3",
     COMPONENT_COLOR_NIGHT_MODE: "#fefefe",
-    COMPONENT_COLOR: "#232323"
+    COMPONENT_COLOR: "#232323",
+    VISHRAM_SHORT: "#ffc500",
+    VISHRAM_LONG: "#ff4500"
   }
 };
