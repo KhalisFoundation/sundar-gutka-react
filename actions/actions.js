@@ -26,6 +26,7 @@ export const SET_AUTO_SCROLL_SPEED = "SET_AUTO_SCROLL_SPEED";
 export const TOGGLE_VISRAM = "TOGGLE_VISRAM";
 export const TOGGLE_REMINDERS = "TOGGLE_REMINDERS";
 export const SET_REMINDER_BANIS = "SET_REMINDER_BANIS";
+export const SET_REMINDER_SOUND = "SET_REMINDER_SOUND";
 export const SET_APP_VERSION = "SET_APP_VERSION";
 
 /*
@@ -82,6 +83,10 @@ export const padchhedSettingNames = [
   "Sat Subham Sat (default)",
   "Mast Sabh Mast"
 ];
+
+export const REMINDER_SOUNDS = ["default", "wake_up_jap.mp3", "waheguru_soul.mp3"];
+
+export const reminderSoundNames = ["Default", "Wake Up Jap", "Waheguru Soul"]
 
 /*
  * action creators
@@ -190,6 +195,10 @@ export function toggleReminders(value) {
 
 export function setReminderBanis(list) {
   return { type: SET_REMINDER_BANIS, list };
+}
+
+export function setReminderSound(sound) {
+  return { type: SET_REMINDER_SOUND, sound };
 }
 
 export function setAppVersion(version) {

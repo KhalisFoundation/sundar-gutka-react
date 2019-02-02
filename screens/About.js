@@ -17,7 +17,7 @@ import AnalyticsManager from "../utils/analytics";
 
 class Home extends React.Component {
   componentDidMount() {
-    AnalyticsManager.getInstance().trackScreenView("About");
+    AnalyticsManager.getInstance().trackScreenView("About", this.constructor.name);
   }
 
   render() {

@@ -62,6 +62,8 @@
 		8D7E0F63247E413BBAAA1B96 /* SimpleLineIcons.ttf in Resources */ = {isa = PBXBuildFile; fileRef = A529E64E82124ABAAE7822B6 /* SimpleLineIcons.ttf */; };
 		9A1D5B7E21FFE810007A78D9 /* GoogleService-Info.plist in Resources */ = {isa = PBXBuildFile; fileRef = 9A1D5B7D21FFE810007A78D9 /* GoogleService-Info.plist */; };
 		9A42F52421745B83000CCDED /* libRCTAnimation.a in Frameworks */ = {isa = PBXBuildFile; fileRef = 5E9157331DD0AC6500FF2AA8 /* libRCTAnimation.a */; };
+		9A59E2B52205584400715EB9 /* waheguru_soul.mp3 in Resources */ = {isa = PBXBuildFile; fileRef = 9A59E2B32205584400715EB9 /* waheguru_soul.mp3 */; };
+		9A59E2B62205584400715EB9 /* wake_up_jap.mp3 in Resources */ = {isa = PBXBuildFile; fileRef = 9A59E2B42205584400715EB9 /* wake_up_jap.mp3 */; };
 		9ABEFE55207306A9001364B3 /* www in Resources */ = {isa = PBXBuildFile; fileRef = 9ABEFE54207306A9001364B3 /* www */; };
 		9FABCA3CB57D4F0E996DA3F2 /* FontAwesome5_Regular.ttf in Resources */ = {isa = PBXBuildFile; fileRef = A226D8275FDE45EFB66AA58A /* FontAwesome5_Regular.ttf */; };
 		ADBDB9381DFEBF1600ED6528 /* libRCTBlob.a in Frameworks */ = {isa = PBXBuildFile; fileRef = ADBDB9271DFEBF0700ED6528 /* libRCTBlob.a */; };
@@ -485,6 +487,8 @@
 		90564026864F4CED908A2900 /* libsqlite3.0.tbd */ = {isa = PBXFileReference; explicitFileType = undefined; fileEncoding = 9; includeInIndex = 0; lastKnownFileType = "sourcecode.text-based-dylib-definition"; name = libsqlite3.0.tbd; path = usr/lib/libsqlite3.0.tbd; sourceTree = SDKROOT; };
 		961F5C081EAF4C0D8621FD3E /* RNFirebase.xcodeproj */ = {isa = PBXFileReference; explicitFileType = undefined; fileEncoding = 9; includeInIndex = 0; lastKnownFileType = "wrapper.pb-project"; name = RNFirebase.xcodeproj; path = "../node_modules/react-native-firebase/ios/RNFirebase.xcodeproj"; sourceTree = "<group>"; };
 		9A1D5B7D21FFE810007A78D9 /* GoogleService-Info.plist */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = text.plist.xml; path = "GoogleService-Info.plist"; sourceTree = "<group>"; };
+		9A59E2B32205584400715EB9 /* waheguru_soul.mp3 */ = {isa = PBXFileReference; lastKnownFileType = audio.mp3; path = waheguru_soul.mp3; sourceTree = "<group>"; };
+		9A59E2B42205584400715EB9 /* wake_up_jap.mp3 */ = {isa = PBXFileReference; lastKnownFileType = audio.mp3; path = wake_up_jap.mp3; sourceTree = "<group>"; };
 		9ABEFE54207306A9001364B3 /* www */ = {isa = PBXFileReference; lastKnownFileType = folder; name = www; path = SundarGutka/www; sourceTree = "<group>"; };
 		A226D8275FDE45EFB66AA58A /* FontAwesome5_Regular.ttf */ = {isa = PBXFileReference; explicitFileType = undefined; fileEncoding = 9; includeInIndex = 0; lastKnownFileType = unknown; name = FontAwesome5_Regular.ttf; path = "../node_modules/react-native-vector-icons/Fonts/FontAwesome5_Regular.ttf"; sourceTree = "<group>"; };
 		A3044852E9D98D2896D9FA69 /* Pods-SundarGutka-tvOSTests.release.xcconfig */ = {isa = PBXFileReference; includeInIndex = 1; lastKnownFileType = text.xcconfig; name = "Pods-SundarGutka-tvOSTests.release.xcconfig"; path = "Pods/Target Support Files/Pods-SundarGutka-tvOSTests/Pods-SundarGutka-tvOSTests.release.xcconfig"; sourceTree = "<group>"; };
@@ -662,6 +666,8 @@
 		13B07FAE1A68108700A75B9A /* SundarGutka */ = {
 			isa = PBXGroup;
 			children = (
+				9A59E2B32205584400715EB9 /* waheguru_soul.mp3 */,
+				9A59E2B42205584400715EB9 /* wake_up_jap.mp3 */,
 				9ABEFE54207306A9001364B3 /* www */,
 				13B07FAF1A68108700A75B9A /* AppDelegate.h */,
 				13B07FB01A68108700A75B9A /* AppDelegate.m */,
@@ -1508,6 +1514,8 @@
 				6D84F33F73A44FA1B284FF32 /* GurbaniAkharSG.ttf in Resources */,
 				2E4745D0172B42FD971BE9E6 /* GurbaniAkharThickSG.ttf in Resources */,
 				16FFB5EAB3CD4A3D81435539 /* Arial.ttf in Resources */,
+				9A59E2B52205584400715EB9 /* waheguru_soul.mp3 in Resources */,
+				9A59E2B62205584400715EB9 /* wake_up_jap.mp3 in Resources */,
 				8327405485D547098834DFF7 /* FontAwesome5_Brands.ttf in Resources */,
 				9A1D5B7E21FFE810007A78D9 /* GoogleService-Info.plist in Resources */,
 				9FABCA3CB57D4F0E996DA3F2 /* FontAwesome5_Regular.ttf in Resources */,

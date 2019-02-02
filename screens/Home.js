@@ -81,9 +81,9 @@ class Home extends React.Component {
     this.changeStatusBar(this.props.statusBar);
     AnalyticsManager.getInstance().allowTracking(this.props.statistics);
 
-    NotificationsManager.getInstance().createRemindersChannel();
     NotificationsManager.getInstance().updateReminders(
       this.props.reminders,
+      this.props.reminderSound,
       this.props.reminderBanis
     );
 
@@ -98,7 +98,10 @@ class Home extends React.Component {
 
   componentDidMount() {
     SplashScreen.hide();
-    AnalyticsManager.getInstance().trackScreenView("Home Screen");
+    AnalyticsManager.getInstance().trackScreenView(
+      "Home Screen",
+      this.constructor.name
+    );
 
     NotificationsManager.getInstance().removeAllDeliveredNotifications();
     // Notification opened from background
@@ -159,6 +162,13 @@ class Home extends React.Component {
       NotificationsManager.getInstance().checkPermissions(this.props.reminders);
       NotificationsManager.getInstance().updateReminders(
         this.props.reminders,
+        this.props.reminderSound,
+        this.props.reminderBanis
+      );
+    } else if (prevProps.reminderSound != this.props.reminderSound) {
+      NotificationsManager.getInstance().updateReminders(
+        this.props.reminders,
+        this.props.reminderSound,
         this.props.reminderBanis
       );
     }
@@ -287,7 +297,8 @@ function mapStateToProps(state) {
     appVersion: state.appVersion,
     baniLength: state.baniLength,
     reminders: state.reminders,
-    reminderBanis: state.reminderBanis
+    reminderBanis: state.reminderBanis,
+    reminderSound: state.reminderSound
   };
 }
 

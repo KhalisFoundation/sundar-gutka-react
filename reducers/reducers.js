@@ -23,6 +23,7 @@ import {
   TOGGLE_VISRAM,
   TOGGLE_REMINDERS,
   SET_REMINDER_BANIS,
+  SET_REMINDER_SOUND,
   SET_APP_VERSION
 } from "../actions/actions";
 
@@ -224,6 +225,15 @@ function reminderBanis(state = JSON.stringify([]), action) {
   }
 }
 
+function reminderSound(state = 'default', action) {
+  switch (action.type) {
+    case SET_REMINDER_SOUND:
+      return action.sound;
+    default:
+      return state;
+  }
+}
+
 function appVersion(state = "", action) {
   switch (action.type) {
     case SET_APP_VERSION:
@@ -257,6 +267,7 @@ const rootReducer = combineReducers({
   visram,
   reminders,
   reminderBanis,
+  reminderSound,
   appVersion
 });
 

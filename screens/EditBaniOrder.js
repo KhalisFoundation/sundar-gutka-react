@@ -25,7 +25,7 @@ const window = Dimensions.get("window");
 
 class EditBaniOrder extends React.Component {
   componentDidMount() {
-    AnalyticsManager.getInstance().trackScreenView("Index Reorder");
+    AnalyticsManager.getInstance().trackScreenView("Index Reorder", this.constructor.name);
   }
 
   render() {

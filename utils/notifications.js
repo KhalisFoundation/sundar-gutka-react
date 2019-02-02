@@ -37,25 +37,13 @@ export default class NotificationsManager {
     }
   }
 
-  createRemindersChannel() {
-    // Build a channel
-    const channel = new firebase.notifications.Android.Channel(
-      this.REMINDERS_CHANNEL,
-      "Reminders Channel",
-      firebase.notifications.Android.Importance.Max
-    ).setDescription("Local notification reminders channel");
-
-    // Create the channel
-    firebase.notifications().android.createChannel(channel);
-  }
-
-  updateReminders(remindersOn, remindersList) {
+  updateReminders(remindersOn, sound, remindersList) {
     firebase.notifications().cancelAllNotifications();
     if (remindersOn) {
       let array = JSON.parse(remindersList);
       for (var i = 0; i < array.length; i++) {
         if (array[i].enabled) {
-          this.createReminder(array[i]);
+          this.createReminder(array[i], sound);
         }
       }
     }
@@ -69,12 +57,25 @@ export default class NotificationsManager {
     firebase.notifications().getScheduledNotifications();
   }
 
-  createReminder(reminder) {
+  createReminder(reminder, sound) {
+    // Build a channel
+    const channel = new firebase.notifications.Android.Channel(
+      this.REMINDERS_CHANNEL,
+      "Reminders Channel",
+      firebase.notifications.Android.Importance.Max
+    )
+      .setSound(sound)
+      .setDescription("Alert notification reminders for chosen Bani");
+
+    // Create the channel
+    firebase.notifications().android.createChannel(channel);
+
     // Build notification
     const notification = new firebase.notifications.Notification()
       .setNotificationId(reminder.key.toString())
       .setTitle(reminder.title)
       .setBody(reminder.time)
+      .setSound(channel.sound)
       .setData({
         key: reminder.key,
         gurmukhi: reminder.gurmukhi,

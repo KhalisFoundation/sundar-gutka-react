@@ -84,7 +84,7 @@ class Reader extends React.Component {
   }
 
   trackScreenForShabad(name) {
-    AnalyticsManager.getInstance().trackScreenView(name);
+    AnalyticsManager.getInstance().trackScreenView(name, this.constructor.name);
   }
 
   componentWillReceiveProps(nextProps) {

@@ -29,7 +29,7 @@ import Database from "../utils/database";
 
 class ReminderOptions extends React.Component {
   componentDidMount() {
-    AnalyticsManager.getInstance().trackScreenView("Reminder Options");
+    AnalyticsManager.getInstance().trackScreenView("Reminder Options", this.constructor.name);
   }
 
   componentWillMount() {
@@ -93,6 +93,7 @@ class ReminderOptions extends React.Component {
     this.props.setReminderBanis(JSON.stringify(defaultBanis));
     NotificationsManager.getInstance().updateReminders(
       this.props.reminders,
+      this.props.reminderSound,
       JSON.stringify(defaultBanis)
     );
   }
@@ -113,7 +114,13 @@ class ReminderOptions extends React.Component {
         {
           text: "Reset",
           style: "destructive",
-          onPress: () => this.setDefaultReminders()
+          onPress: () => {
+            AnalyticsManager.getInstance().trackRemindersEvent(
+              "resetReminderDefaults",
+              true
+            );
+            this.setDefaultReminders();
+          }
         }
       ]
     );
@@ -163,10 +170,11 @@ class ReminderOptions extends React.Component {
         .local()
         .format("h:mm A")
     });
-
+    AnalyticsManager.getInstance().trackRemindersEvent("addReminder", array);
     this.props.setReminderBanis(JSON.stringify(array));
     NotificationsManager.getInstance().updateReminders(
       this.props.reminders,
+      this.props.reminderSound,
       JSON.stringify(array)
     );
   }
@@ -208,6 +216,7 @@ class ReminderOptions extends React.Component {
     this.props.setReminderBanis(JSON.stringify(array));
     NotificationsManager.getInstance().updateReminders(
       this.props.reminders,
+      this.props.reminderSound,
       JSON.stringify(array)
     );
 
@@ -234,9 +243,14 @@ class ReminderOptions extends React.Component {
           .format("h:mm A");
         foundObj.enabled = true;
       });
+    AnalyticsManager.getInstance().trackRemindersEvent(
+      "updateReminder",
+      array[this.state.timePickerSectionKey]
+    );
     this.props.setReminderBanis(JSON.stringify(array));
     NotificationsManager.getInstance().updateReminders(
       this.props.reminders,
+      this.props.reminderSound,
       JSON.stringify(array)
     );
   };
@@ -253,6 +267,7 @@ class ReminderOptions extends React.Component {
     this.props.setReminderBanis(JSON.stringify(array));
     NotificationsManager.getInstance().updateReminders(
       this.props.reminders,
+      this.props.reminderSound,
       JSON.stringify(array)
     );
   }
@@ -265,6 +280,7 @@ class ReminderOptions extends React.Component {
     this.props.setReminderBanis(JSON.stringify(array));
     NotificationsManager.getInstance().updateReminders(
       this.props.reminders,
+      this.props.reminderSound,
       JSON.stringify(array)
     );
   }
@@ -689,6 +705,7 @@ function mapStateToProps(state) {
     nightMode: state.nightMode,
     baniOrder: state.baniOrder,
     reminders: state.reminders,
+    reminderSound: state.reminderSound,
     reminderBanis: state.reminderBanis,
     romanized: state.romanized,
     fontSize: state.fontSize,

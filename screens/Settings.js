@@ -28,7 +28,10 @@ import * as actions from "../actions/actions";
 
 class Settings extends React.Component {
   componentDidMount() {
-    AnalyticsManager.getInstance().trackScreenView("In App Settings");
+    AnalyticsManager.getInstance().trackScreenView(
+      "In App Settings",
+      this.constructor.name
+    );
   }
 
   render() {
@@ -242,10 +245,17 @@ class Settings extends React.Component {
             hasSwitch={true}
             switchState={this.props.screenAwake || this.props.autoScroll}
             switchOnValueChange={this.props.toggleScreenAwake}
-            switchProps={{
-              trackColor: GLOBAL.COLOR.SETTING_SWITCH_COLOR,
-              disabled: this.props.autoScroll
-            }}
+            switchProps={
+              Platform.OS === "ios"
+                ? {
+                    trackColor: {
+                      false: null,
+                      true: GLOBAL.COLOR.SETTING_SWITCH_COLOR
+                    },
+                    disabled: this.props.autoScroll
+                  }
+                : { disabled: this.props.autoScroll }
+            }
             hasNavArrow={false}
             title="Keep Screen Awake"
             titleStyle={[
@@ -467,6 +477,35 @@ class Settings extends React.Component {
               }
             />
           )}
+          {this.props.reminders && (
+            <SettingsList.Item
+              backgroundColor={this.props.nightMode ? "#464646" : "#fff"}
+              icon={
+                <MaterialIcons
+                  style={styles.imageStyle}
+                  color={
+                    this.props.nightMode
+                      ? GLOBAL.COLOR.COMPONENT_COLOR_NIGHT_MODE
+                      : GLOBAL.COLOR.COMPONENT_COLOR
+                  }
+                  name="cellphone-sound"
+                  size={30}
+                />
+              }
+              title="Reminder Sound"
+              titleStyle={[
+                styles.titleText,
+                this.props.nightMode && { color: "#fff" }
+              ]}
+              titleInfo={
+                actions.reminderSoundNames[
+                  actions.REMINDER_SOUNDS.indexOf(this.props.reminderSound)
+                ]
+              }
+              titleInfoStyle={styles.titleInfoStyle}
+              onPress={() => this.ReminderSoundsActionSheet.show()}
+            />
+          )}
           <SettingsList.Header
             headerText="Other Options"
             headerStyle={[
@@ -643,6 +682,24 @@ class Settings extends React.Component {
             this.props.setPadchhedSetting
           )}
         </ActionSheet>
+
+        <ActionSheet
+          ref={actionSheet => {
+            this.ReminderSoundsActionSheet = actionSheet;
+          }}
+          position="bottom"
+          defaultValue={this.props.reminderSound}
+        >
+          <View>
+            <Text style={styles.actionSheetTitle}>Reminder Sounds</Text>
+          </View>
+          {this.actionSheetOptions(
+            actions.reminderSoundNames,
+            actions.REMINDER_SOUNDS,
+            checkedIcon,
+            this.props.setReminderSound
+          )}
+        </ActionSheet>
       </View>
     );
   }
@@ -713,7 +770,8 @@ function mapStateToProps(state) {
     paragraphMode: state.paragraphMode,
     autoScroll: state.autoScroll,
     visram: state.visram,
-    reminders: state.reminders
+    reminders: state.reminders,
+    reminderSound: state.reminderSound
   };
 }
 
