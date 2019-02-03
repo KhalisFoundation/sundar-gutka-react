@@ -1,7 +1,7 @@
 import React from "react";
 import { connect } from "react-redux";
 import { bindActionCreators } from "redux";
-import { View } from "react-native";
+import { View, StatusBar } from "react-native";
 import { Header } from "react-native-elements";
 import Icon from "react-native-vector-icons/MaterialIcons";
 import GLOBAL from "../utils/globals";
@@ -45,8 +45,15 @@ class Bookmarks extends React.Component {
           flex: 1
         }}
       >
-        <Header
+        <StatusBar
+          backgroundColor={
+            this.props.nightMode
+              ? GLOBAL.COLOR.TOOLBAR_COLOR_ALT_NIGHT_MODE
+              : GLOBAL.COLOR.TOOLBAR_COLOR_ALT
+          }
           barStyle={this.props.nightMode ? "light-content" : "dark-content"}
+        />
+        <Header
           backgroundColor={
             this.props.nightMode
               ? GLOBAL.COLOR.TOOLBAR_COLOR_ALT_NIGHT_MODE

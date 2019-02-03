@@ -6,7 +6,8 @@ import {
   Text,
   Linking,
   ScrollView,
-  TouchableHighlight
+  TouchableHighlight,
+  StatusBar
 } from "react-native";
 import { Header } from "react-native-elements";
 import Icon from "react-native-vector-icons/MaterialIcons";
@@ -30,8 +31,11 @@ class Home extends React.Component {
           flex: 1
         }}
       >
+        <StatusBar
+          backgroundColor={GLOBAL.COLOR.TOOLBAR_COLOR_ALT2}
+          barStyle={"light-content"}
+        />
         <Header
-          barStyle="light-content"
           backgroundColor={GLOBAL.COLOR.TOOLBAR_COLOR_ALT2}
           leftComponent={
             <Icon

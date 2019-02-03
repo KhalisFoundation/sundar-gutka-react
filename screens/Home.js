@@ -2,7 +2,7 @@ import React from "react";
 import { connect } from "react-redux";
 import { bindActionCreators } from "redux";
 import KeepAwake from "react-native-keep-awake";
-import { View, Text, StatusBar, Alert } from "react-native";
+import { View, Text, StatusBar } from "react-native";
 import { Header } from "react-native-elements";
 import Icon from "react-native-vector-icons/MaterialIcons";
 import GLOBAL from "../utils/globals";
@@ -222,9 +222,12 @@ class Home extends React.Component {
       >
         {this.state.showLengthSelector && <BaniLengthSelector />}
 
+        <StatusBar
+          backgroundColor={GLOBAL.COLOR.TOOLBAR_COLOR}
+          barStyle={"light-content"}
+        />
         <Header
           backgroundColor={GLOBAL.COLOR.TOOLBAR_COLOR}
-          barStyle="light-content"
           containerStyle={{ height: 0, borderBottomWidth: 0 }}
         />
         <View

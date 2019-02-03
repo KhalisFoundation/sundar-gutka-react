@@ -6,7 +6,8 @@ import {
   Text,
   Linking,
   Platform,
-  TouchableOpacity
+  TouchableOpacity,
+  StatusBar
 } from "react-native";
 import { Header } from "react-native-elements";
 import MaterialIcons from "react-native-vector-icons/MaterialCommunityIcons";
@@ -65,8 +66,15 @@ class Settings extends React.Component {
           this.props.nightMode && { backgroundColor: "#000" }
         ]}
       >
-        <Header
+        <StatusBar
+          backgroundColor={
+            this.props.nightMode
+              ? GLOBAL.COLOR.TOOLBAR_COLOR_ALT_NIGHT_MODE
+              : GLOBAL.COLOR.TOOLBAR_COLOR_ALT
+          }
           barStyle={this.props.nightMode ? "light-content" : "dark-content"}
+        />
+        <Header
           backgroundColor={
             this.props.nightMode
               ? GLOBAL.COLOR.TOOLBAR_COLOR_ALT_NIGHT_MODE

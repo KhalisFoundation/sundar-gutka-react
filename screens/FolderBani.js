@@ -1,7 +1,7 @@
 import React from "react";
 import { connect } from "react-redux";
 import { bindActionCreators } from "redux";
-import { View } from "react-native";
+import { View, StatusBar } from "react-native";
 import { Header } from "react-native-elements";
 import Icon from "react-native-vector-icons/MaterialIcons";
 import GLOBAL from "../utils/globals";
@@ -27,8 +27,11 @@ class FolderBani extends React.Component {
           flex: 1
         }}
       >
+        <StatusBar
+          backgroundColor={GLOBAL.COLOR.TOOLBAR_COLOR}
+          barStyle={"light-content"}
+        />
         <Header
-          barStyle="light-content"
           backgroundColor={GLOBAL.COLOR.TOOLBAR_COLOR}
           leftComponent={
             <Icon

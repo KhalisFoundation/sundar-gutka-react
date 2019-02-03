@@ -6,7 +6,8 @@ import {
   View,
   WebView,
   Platform,
-  Text
+  Text,
+  StatusBar
 } from "react-native";
 import { connect } from "react-redux";
 import { Header, Slider } from "react-native-elements";
@@ -34,7 +35,8 @@ class Reader extends React.Component {
       scrollMultiplier: 1.0,
       isLoading: false,
       animationPosition: new Animated.Value(0), // The header and footer position
-      visible: true // Is the header currently visible
+      headerVisible: true, // Is the header currently visible
+      headerHeight: 0
     };
 
     // How long does the slide animation take
@@ -47,6 +49,10 @@ class Reader extends React.Component {
       duration: this.slideDuration,
       toValue: state == "hide" ? HEADER_POSITION : 0
     }).start();
+
+    this.setState({
+      headerVisible: state == "show"
+    });
   }
 
   loadShabad() {
@@ -113,7 +119,7 @@ class Reader extends React.Component {
     return this.length > n ? this.substr(0, n - 1) + "..." : this + "";
   }
 
-  loadHTML(data) {
+  loadHTML(data, headerHeight) {
     if (data.length > 0) {
       let fontSize = this.props.fontSize;
       let fontFace = this.props.fontFace;
@@ -143,7 +149,9 @@ class Reader extends React.Component {
         "color: " +
         (nightMode ? "#fff" : "#000") +
         ";" +
-        "padding-top: 4.5em; }";
+        "padding-top: " +
+        headerHeight +
+        "px; }";
       html += "* { -webkit-user-select: none; }";
       html += "</style><script>" + this.loadScrollJS() + "</script>";
       html += "</head><body>";
@@ -397,6 +405,8 @@ class Reader extends React.Component {
       this.trackScreenForShabad(params.item.roman);
     }
 
+    const headerHeight = -1;
+
     return (
       <View
         style={[
@@ -412,7 +422,7 @@ class Reader extends React.Component {
           style={this.props.nightMode && { backgroundColor: "#000" }}
           ref={webView => (this.webView = webView)}
           source={{
-            html: this.loadHTML(this.state.data),
+            html: this.loadHTML(this.state.data, this.headerHeight),
             baseUrl: ""
           }}
           onMessage={this.handleMessage.bind(this)}
@@ -424,9 +434,19 @@ class Reader extends React.Component {
             { position: "absolute", top: this.state.animationPosition }
           ]}
         >
-          <Header
-            barStyle="light-content"
+          <StatusBar
             backgroundColor={GLOBAL.COLOR.READER_HEADER_COLOR}
+            barStyle={
+              this.props.nightMode || this.state.headerVisible
+                ? "light-content"
+                : "dark-content"
+            }
+          />
+          <Header
+            backgroundColor={GLOBAL.COLOR.READER_HEADER_COLOR}
+            onLayout={event => {
+              this.headerHeight = event.nativeEvent.layout.height;
+            }}
             leftComponent={
               <Icon
                 name="arrow-back"
