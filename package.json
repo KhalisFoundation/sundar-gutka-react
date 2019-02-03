@@ -31,6 +31,7 @@
     "react-native-modal-selector": "^1.0.1",
     "react-native-settings-list": "^1.8.0",
     "react-native-sortable-list": "0.0.22",
+    "react-native-sound": "^0.10.9",
     "react-native-spinkit": "^1.1.1",
     "react-native-splash-screen": "^3.1.1",
     "react-native-sqlite-storage": "^3.3.9",

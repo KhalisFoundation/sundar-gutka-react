@@ -16,6 +16,7 @@ import BaniList from "../components/BaniList";
 import BaniLengthSelector from "../components/BaniLengthSelector";
 import VersionNumber from "react-native-version-number";
 import firebase from "react-native-firebase";
+import Sound from "react-native-sound";
 
 class Home extends React.Component {
   static navigationOptions = { header: null };
@@ -28,6 +29,9 @@ class Home extends React.Component {
       isLoading: true,
       showLengthSelector: false
     };
+
+    // Enable playback in silence mode
+    Sound.setCategory("Ambient", true); // true = mixWithOthers
   }
 
   reorder(arr, index) {
@@ -173,6 +177,22 @@ class Home extends React.Component {
         this.props.reminderSound,
         this.props.reminderBanis
       );
+
+      if (actions.REMINDER_SOUNDS.indexOf(this.props.reminderSound) != 0) {
+        var sound = new Sound(
+          this.props.reminderSound,
+          Sound.MAIN_BUNDLE,
+          error => {
+            if (error) {
+              return;
+            }
+            // loaded successfully
+            sound.play(() => {
+              sound.reset();
+            });
+          }
+        );
+      }
     }
   }
 
