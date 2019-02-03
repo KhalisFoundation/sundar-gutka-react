@@ -25,8 +25,17 @@ import { connect } from "react-redux";
 import { bindActionCreators } from "redux";
 import AnalyticsManager from "../utils/analytics";
 import * as actions from "../actions/actions";
+import Collapsible from "react-native-collapsible";
 
 class Settings extends React.Component {
+  constructor(props) {
+    super(props);
+
+    this.state = {
+      showTranslationOptions: true
+    };
+  }
+
   componentDidMount() {
     AnalyticsManager.getInstance().trackScreenView(
       "In App Settings",
@@ -162,17 +171,81 @@ class Settings extends React.Component {
                 source={require("../images/englishicon.png")}
               />
             }
-            hasSwitch={true}
-            switchState={this.props.englishTranslations}
-            switchOnValueChange={this.props.toggleEnglishTranslations}
-            switchProps={switchStyle}
             hasNavArrow={false}
-            title="English Translations"
+            arrowIcon={
+              <View style={{ justifyContent: "center", paddingRight: 10 }}>
+                <Icon
+                  name={
+                    this.state.showTranslationOptions
+                      ? "keyboard-arrow-down"
+                      : "keyboard-arrow-up"
+                  }
+                  color={
+                    this.props.nightMode
+                      ? GLOBAL.COLOR.TOOLBAR_TINT
+                      : GLOBAL.COLOR.TOOLBAR_TINT_DARK
+                  }
+                  size={30}
+                />
+              </View>
+            }
+            title="Translations"
+            onPress={() =>
+              this.setState({
+                showTranslationOptions: !this.state.showTranslationOptions
+              })
+            }
             titleStyle={[
               styles.titleText,
               this.props.nightMode && { color: "#fff" }
             ]}
           />
+          <Collapsible collapsed={this.state.showTranslationOptions}>
+            <SettingsList borderColor="#c8c7cc" defaultItemSize={50}>
+              <SettingsList.Item
+                backgroundColor={this.props.nightMode ? "#464646" : "#fff"}
+                hasSwitch={true}
+                switchState={this.props.englishTranslations}
+                switchOnValueChange={this.props.toggleEnglishTranslations}
+                switchProps={switchStyle}
+                hasNavArrow={false}
+                title="English Translations"
+                titleStyle={[
+                  styles.titleText,
+                  { paddingLeft: 80 },
+                  this.props.nightMode && { color: "#fff" }
+                ]}
+              />
+              <SettingsList.Item
+                backgroundColor={this.props.nightMode ? "#464646" : "#fff"}
+                hasSwitch={true}
+                switchState={this.props.punjabiTranslations}
+                switchOnValueChange={this.props.togglePunjabiTranslations}
+                switchProps={switchStyle}
+                hasNavArrow={false}
+                title="Punjabi Translations"
+                titleStyle={[
+                  styles.titleText,
+                  { paddingLeft: 80 },
+                  this.props.nightMode && { color: "#fff" }
+                ]}
+              />
+              <SettingsList.Item
+                backgroundColor={this.props.nightMode ? "#464646" : "#fff"}
+                hasSwitch={true}
+                switchState={this.props.spanishTranslations}
+                switchOnValueChange={this.props.toggleSpanishTranslations}
+                switchProps={switchStyle}
+                hasNavArrow={false}
+                title="Spanish Translations"
+                titleStyle={[
+                  styles.titleText,
+                  { paddingLeft: 80 },
+                  this.props.nightMode && { color: "#fff" }
+                ]}
+              />
+            </SettingsList>
+          </Collapsible>
           <SettingsList.Item
             backgroundColor={this.props.nightMode ? "#464646" : "#fff"}
             icon={
@@ -768,6 +841,8 @@ function mapStateToProps(state) {
     fontFace: state.fontFace,
     romanized: state.romanized,
     englishTranslations: state.englishTranslations,
+    punjabiTranslations: state.punjabiTranslations,
+    spanishTranslations: state.spanishTranslations,
     nightMode: state.nightMode,
     screenAwake: state.screenAwake,
     baniLength: state.baniLength,

@@ -120,6 +120,8 @@ class Reader extends React.Component {
       let nightMode = this.props.nightMode;
       let romanized = this.props.romanized;
       let englishTranslations = this.props.englishTranslations;
+      let punjabiTranslations = this.props.punjabiTranslations;
+      let spanishTranslations = this.props.spanishTranslations;
       var html =
         "<!DOCTYPE html><html><head>" +
         "<meta name='viewport' content='width=device-width, maximum-scale=1.0, user-scalable=yes'>" +
@@ -210,6 +212,54 @@ class Reader extends React.Component {
             (item.header === 0 ? "normal" : "bold") +
             ';">' +
             item.englishTranslations +
+            "</div>";
+        }
+
+        if (punjabiTranslations) {
+          html +=
+            "<div style=\"padding: .2em; font-family:'" +
+            fontFace +
+            "'; font-size: " +
+            fontSizeForReader(fontSize, item.header, true) +
+            "pt; color: " +
+            fontColorForReader(
+              item.header,
+              nightMode,
+              TextType.ENGLISH_TRANSLATION
+            ) +
+            "; text-align: " +
+            (item.header === 0
+              ? "left"
+              : item.header === 1 || item.header === 2
+              ? "center"
+              : "right") +
+            "; font-weight: " +
+            (item.header === 0 ? "normal" : "bold") +
+            ';">' +
+            item.punjabiTranslations +
+            "</div>";
+        }
+
+        if (spanishTranslations) {
+          html +=
+            "<div style=\"padding: .2em; font-family:'Arial'; font-size: " +
+            fontSizeForReader(fontSize, item.header, true) +
+            "pt; color: " +
+            fontColorForReader(
+              item.header,
+              nightMode,
+              TextType.ENGLISH_TRANSLATION
+            ) +
+            "; text-align: " +
+            (item.header === 0
+              ? "left"
+              : item.header === 1 || item.header === 2
+              ? "center"
+              : "right") +
+            "; font-weight: " +
+            (item.header === 0 ? "normal" : "bold") +
+            ';">' +
+            item.spanishTranslations +
             "</div>";
         }
         html += "</div>";
@@ -591,6 +641,8 @@ function mapStateToProps(state) {
     padchhedSetting: state.padchhedSetting,
     manglacharanPosition: state.manglacharanPosition,
     englishTranslations: state.englishTranslations,
+    punjabiTranslations: state.punjabiTranslations,
+    spanishTranslations: state.spanishTranslations,
     paragraphMode: state.paragraphMode,
     autoScroll: state.autoScroll,
     autoScrollShabadSpeed: state.autoScrollShabadSpeed,

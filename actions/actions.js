@@ -8,6 +8,8 @@ export const SET_FONT_SIZE = "SET_FONT_SIZE";
 export const SET_FONT_FACE = "SET_FONT_FACE";
 export const TOGGLE_ROMANIZED = "TOGGLE_ROMANIZED";
 export const TOGGLE_ENGLISH_TRANSLATIONS = "TOGGLE_ENGLISH_TRANSLATIONS";
+export const TOGGLE_PUNJABI_TRANSLATIONS = "TOGGLE_PUNJABI_TRANSLATIONS";
+export const TOGGLE_SPANISH_TRANSLATIONS = "TOGGLE_SPANISH_TRANSLATIONS";
 export const TOGGLE_NIGHT_MODE = "TOGGLE_NIGHT_MODE";
 export const TOGGLE_SCREEN_AWAKE = "TOGGLE_SCREEN_AWAKE";
 export const SET_BANI_ORDER = "SET_BANI_ORDER";
@@ -112,6 +114,16 @@ export function toggleEnglishTranslations(value) {
   return { type: TOGGLE_ENGLISH_TRANSLATIONS, value };
 }
 
+export function togglePunjabiTranslations(value) {
+  AnalyticsManager.getInstance().trackSettingsEvent("punjabi", value);
+  return { type: TOGGLE_PUNJABI_TRANSLATIONS, value };
+}
+
+export function toggleSpanishTranslations(value) {
+  AnalyticsManager.getInstance().trackSettingsEvent("spanish", value);
+  return { type: TOGGLE_SPANISH_TRANSLATIONS, value };
+}
+
 export function toggleNightMode(value) {
   AnalyticsManager.getInstance().trackSettingsEvent("nightMode", value);
   return { type: TOGGLE_NIGHT_MODE, value };
@@ -198,6 +210,7 @@ export function setReminderBanis(list) {
 }
 
 export function setReminderSound(sound) {
+  AnalyticsManager.getInstance().trackSettingsEvent("reminderSound", sound);
   return { type: SET_REMINDER_SOUND, sound };
 }
 

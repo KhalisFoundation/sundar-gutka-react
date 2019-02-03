@@ -5,6 +5,8 @@ import {
   SET_FONT_FACE,
   TOGGLE_ROMANIZED,
   TOGGLE_ENGLISH_TRANSLATIONS,
+  TOGGLE_PUNJABI_TRANSLATIONS,
+  TOGGLE_SPANISH_TRANSLATIONS,
   TOGGLE_NIGHT_MODE,
   TOGGLE_SCREEN_AWAKE,
   SET_BANI_ORDER,
@@ -57,6 +59,24 @@ function romanized(state = false, action) {
 function englishTranslations(state = false, action) {
   switch (action.type) {
     case TOGGLE_ENGLISH_TRANSLATIONS:
+      return action.value;
+    default:
+      return state;
+  }
+}
+
+function punjabiTranslations(state = false, action) {
+  switch (action.type) {
+    case TOGGLE_PUNJABI_TRANSLATIONS:
+      return action.value;
+    default:
+      return state;
+  }
+}
+
+function spanishTranslations(state = false, action) {
+  switch (action.type) {
+    case TOGGLE_SPANISH_TRANSLATIONS:
       return action.value;
     default:
       return state;
@@ -249,6 +269,8 @@ const rootReducer = combineReducers({
   fontFace,
   romanized,
   englishTranslations,
+  punjabiTranslations,
+  spanishTranslations,
   nightMode,
   screenAwake,
   baniOrder,

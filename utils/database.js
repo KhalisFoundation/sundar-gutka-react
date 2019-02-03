@@ -1,7 +1,7 @@
 import GLOBAL from "./globals";
 import SQLite from "react-native-sqlite-storage";
 
-var database_name = "gutkav16.db";
+var database_name = "gutkav17.db";
 
 let db = SQLite.openDatabase({ name: database_name, createFromLocation: 1 });
 
@@ -55,7 +55,7 @@ class Database {
     }
     return new Promise(function(resolve) {
       db.executeSql(
-        "SELECT ID, Paragraph, header, Gurmukhi, GurmukhiBisram, Transliteration, English FROM mv_Banis_Shabad WHERE Bani = " +
+        "SELECT ID, Paragraph, header, Gurmukhi, GurmukhiBisram, Transliteration, English, Punjabi, Spanish FROM mv_Banis_Shabad WHERE Bani = " +
           baniId +
           " AND " +
           baniLength +
@@ -72,6 +72,8 @@ class Database {
           var paragraphId;
           var transliteration;
           var englishTranslation;
+          var punjabiTranslation;
+          var spanishTranslation;
           var paragraphHeader;
           var prevParagraph;
           for (let i = 0; i < len; i++) {
@@ -86,13 +88,17 @@ class Database {
             splitted.forEach(function(word) {
               if (visram && word.indexOf(";") >= 0) {
                 arr.push(
-                  "<span style='color:" + GLOBAL.COLOR.VISHRAM_LONG +  "; white-space: nowrap;'>" +
+                  "<span style='color:" +
+                    GLOBAL.COLOR.VISHRAM_LONG +
+                    "; white-space: nowrap;'>" +
                     word.slice(0, -1) +
                     "</span>"
                 );
               } else if (visram && word.indexOf(",") >= 0) {
                 arr.push(
-                  "<span style='color:" + GLOBAL.COLOR.VISHRAM_SHORT +  "; white-space: nowrap;'>" +
+                  "<span style='color:" +
+                    GLOBAL.COLOR.VISHRAM_SHORT +
+                    "; white-space: nowrap;'>" +
                     word.slice(0, -1) +
                     "</span>"
                 );
@@ -105,8 +111,13 @@ class Database {
 
             let curGurmukhi = larivaar ? arr.join("<wbr>") : arr.join(" ");
 
+            // Remove nulls
             row.English =
               row.English == "" || row.English == null ? " " : row.English;
+            row.Punjabi =
+              row.Punjabi == "" || row.Punjabi == null ? " " : row.Punjabi;
+            row.Spanish =
+              row.Spanish == "" || row.Spanish == null ? " " : row.Spanish;
             row.Transliteration =
               row.Transliteration == "" || row.Transliteration == null
                 ? " "
@@ -130,6 +141,8 @@ class Database {
                     gurmukhi: gurmukhi,
                     roman: transliteration,
                     englishTranslations: englishTranslation,
+                    punjabiTranslations: punjabiTranslation,
+                    spanishTranslations: spanishTranslation,
                     header: paragraphHeader
                   });
                 }
@@ -138,11 +151,15 @@ class Database {
                 gurmukhi = curGurmukhi;
                 transliteration = row.Transliteration;
                 englishTranslation = row.English;
+                punjabiTranslation = row.Punjabi;
+                spanishTranslation = row.Spanish;
                 prevParagraph = row.Paragraph;
               } else {
                 gurmukhi += larivaar ? curGurmukhi : " " + curGurmukhi;
                 transliteration += " " + row.Transliteration;
                 englishTranslation += " " + row.English;
+                punjabiTranslation += " " + row.Punjabi;
+                spanishTranslation += " " + row.Spanish;
               }
 
               if (i === len - 1) {
@@ -151,6 +168,8 @@ class Database {
                   gurmukhi: gurmukhi,
                   roman: transliteration,
                   englishTranslations: englishTranslation,
+                  punjabiTranslations: punjabiTranslation,
+                  spanishTranslations: spanishTranslation,
                   header: paragraphHeader
                 });
               }
@@ -160,6 +179,8 @@ class Database {
                 gurmukhi: curGurmukhi,
                 roman: row.Transliteration,
                 englishTranslations: row.English,
+                punjabiTranslations: row.Punjabi,
+                spanishTranslations: row.Spanish,
                 header: row.header
               };
             }
