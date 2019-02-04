@@ -436,7 +436,7 @@ class Reader extends React.Component {
         >
           <StatusBar
             backgroundColor={
-              this.props.nightModenightMode
+              this.props.nightMode
                 ? GLOBAL.COLOR.READER_STATUS_BAR_COLOR_NIGHT_MODE
                 : GLOBAL.COLOR.READER_STATUS_BAR_COLOR
             }
