@@ -7,9 +7,11 @@ import {
   Linking,
   Platform,
   TouchableOpacity,
-  StatusBar
+  StatusBar,
+  ScrollView
 } from "react-native";
 import { Header } from "react-native-elements";
+import { ListItem, Avatar } from "react-native-elements";
 import MaterialIcons from "react-native-vector-icons/MaterialCommunityIcons";
 import FontAwesomeIcons from "react-native-vector-icons/FontAwesome";
 import FontAwesome5Icons from "react-native-vector-icons/FontAwesome5";
@@ -17,7 +19,6 @@ import Entypo from "react-native-vector-icons/Entypo";
 import Icon from "react-native-vector-icons/MaterialIcons";
 import GLOBAL from "../utils/globals";
 import { baniLengthInfo } from "../utils/helpers";
-import SettingsList from "react-native-settings-list";
 import {
   ActionSheet,
   ActionSheetItem
@@ -80,6 +81,9 @@ class Settings extends React.Component {
               ? GLOBAL.COLOR.TOOLBAR_COLOR_ALT_NIGHT_MODE
               : GLOBAL.COLOR.TOOLBAR_COLOR_ALT
           }
+          containerStyle={[
+            Platform.OS === "android" && { height: 56, paddingTop: 0 }
+          ]}
           leftComponent={
             <Icon
               name="arrow-back"
@@ -102,85 +106,119 @@ class Settings extends React.Component {
             }
           }}
         />
-        <SettingsList borderColor="#c8c7cc" defaultItemSize={50}>
-          <SettingsList.Header
-            headerText="Display Options"
-            headerStyle={[
+        <ScrollView
+          style={{
+            backgroundColor: this.props.nightMode
+              ? "#000"
+              : GLOBAL.COLOR.SETTING_BACKGROUND_COLOR
+          }}
+        >
+          <Text
+            style={[
               styles.headerStyle,
               this.props.nightMode && { color: "#fff" }
             ]}
-          />
-          <SettingsList.Item
+          >
+            Display Options
+          </Text>
+          <ListItem
             backgroundColor={this.props.nightMode ? "#464646" : "#fff"}
-            icon={
-              <Image
-                style={styles.imageStyle}
+            leftAvatar={
+              <Avatar
                 source={require("../images/fontsizeicon.png")}
+                avatarStyle={{
+                  backgroundColor: this.props.nightMode ? "#464646" : "#fff"
+                }}
               />
             }
             title="Font Size"
-            titleStyle={[
+            containerStyle={[
               styles.titleText,
-              this.props.nightMode && { color: "#fff" }
+              this.props.nightMode && { backgroundColor: "#464646" }
             ]}
-            titleInfo={
+            titleStyle={[this.props.nightMode && { color: "#fff" }]}
+            rightTitle={
               actions.fontSizeNames[
                 actions.FONT_SIZES.indexOf(this.props.fontSize)
               ]
             }
-            titleInfoStyle={styles.titleInfoStyle}
+            rightTitleStyle={[
+              styles.titleInfoStyle,
+              { color: this.props.nightMode ? "#fff" : "#a3a3a3" }
+            ]}
+            chevron={true}
+            bottomDivider={true}
             onPress={() => this.FontSizeActionSheet.show()}
           />
-          <SettingsList.Item
+          <ListItem
             backgroundColor={this.props.nightMode ? "#464646" : "#fff"}
-            icon={
-              <Image
-                style={styles.imageStyle}
+            leftAvatar={
+              <Avatar
                 source={require("../images/fontfaceicon.png")}
+                avatarStyle={{
+                  backgroundColor: this.props.nightMode ? "#464646" : "#fff"
+                }}
               />
             }
             title="Font Face"
-            titleStyle={[
+            containerStyle={[
               styles.titleText,
-              this.props.nightMode && { color: "#fff" }
+              this.props.nightMode && { backgroundColor: "#464646" }
             ]}
-            titleInfo={
+            titleStyle={[this.props.nightMode && { color: "#fff" }]}
+            rightTitle={
               actions.fontFaceNames[
                 actions.FONT_FACES.indexOf(this.props.fontFace)
               ]
             }
-            titleInfoStyle={styles.titleInfoStyle}
+            rightTitleStyle={[
+              styles.titleInfoStyle,
+              { color: this.props.nightMode ? "#fff" : "#a3a3a3" }
+            ]}
+            chevron={true}
+            bottomDivider={true}
             onPress={() => this.FontFaceActionSheet.show()}
           />
-          <SettingsList.Item
+          <ListItem
             backgroundColor={this.props.nightMode ? "#464646" : "#fff"}
-            icon={
-              <Image
-                style={styles.imageStyle}
+            leftAvatar={
+              <Avatar
                 source={require("../images/romanizeicon.png")}
+                avatarStyle={{
+                  backgroundColor: this.props.nightMode ? "#464646" : "#fff"
+                }}
               />
             }
-            hasSwitch={true}
-            switchState={this.props.romanized}
-            switchOnValueChange={this.props.toggleRomanized}
-            switchProps={switchStyle}
-            hasNavArrow={false}
+            switch={{
+              switchStyle,
+              value: this.props.romanized,
+              onValueChange: this.props.toggleRomanized
+            }}
             title="Romanized"
-            titleStyle={[
+            containerStyle={[
               styles.titleText,
-              this.props.nightMode && { color: "#fff" }
+              this.props.nightMode && { backgroundColor: "#464646" }
             ]}
+            titleStyle={[this.props.nightMode && { color: "#fff" }]}
+            bottomDivider={true}
           />
-          <SettingsList.Item
+          <ListItem
             backgroundColor={this.props.nightMode ? "#464646" : "#fff"}
-            icon={
-              <Image
-                style={styles.imageStyle}
+            leftAvatar={
+              <Avatar
                 source={require("../images/englishicon.png")}
+                avatarStyle={{
+                  backgroundColor: this.props.nightMode ? "#464646" : "#fff"
+                }}
               />
             }
-            hasNavArrow={false}
-            arrowIcon={
+            title="Translations"
+            containerStyle={[
+              styles.titleText,
+              this.props.nightMode && { backgroundColor: "#464646" }
+            ]}
+            titleStyle={[this.props.nightMode && { color: "#fff" }]}
+            rightAvatar={
               <View style={{ justifyContent: "center", paddingRight: 10 }}>
                 <Icon
                   name={
@@ -197,85 +235,84 @@ class Settings extends React.Component {
                 />
               </View>
             }
-            title="Translations"
+            bottomDivider={true}
             onPress={() =>
               this.setState({
                 showTranslationOptions: !this.state.showTranslationOptions
               })
             }
-            titleStyle={[
-              styles.titleText,
-              this.props.nightMode && { color: "#fff" }
-            ]}
           />
           <Collapsible collapsed={this.state.showTranslationOptions}>
-            <SettingsList borderColor="#c8c7cc" defaultItemSize={50}>
-              <SettingsList.Item
-                backgroundColor={this.props.nightMode ? "#464646" : "#fff"}
-                hasSwitch={true}
-                switchState={this.props.englishTranslations}
-                switchOnValueChange={this.props.toggleEnglishTranslations}
-                switchProps={switchStyle}
-                hasNavArrow={false}
-                title="English Translations"
-                titleStyle={[
-                  styles.titleText,
-                  { paddingLeft: 80 },
-                  this.props.nightMode && { color: "#fff" }
-                ]}
-              />
-              <SettingsList.Item
-                backgroundColor={this.props.nightMode ? "#464646" : "#fff"}
-                hasSwitch={true}
-                switchState={this.props.punjabiTranslations}
-                switchOnValueChange={this.props.togglePunjabiTranslations}
-                switchProps={switchStyle}
-                hasNavArrow={false}
-                title="Punjabi Translations"
-                titleStyle={[
-                  styles.titleText,
-                  { paddingLeft: 80 },
-                  this.props.nightMode && { color: "#fff" }
-                ]}
-              />
-              <SettingsList.Item
-                backgroundColor={this.props.nightMode ? "#464646" : "#fff"}
-                hasSwitch={true}
-                switchState={this.props.spanishTranslations}
-                switchOnValueChange={this.props.toggleSpanishTranslations}
-                switchProps={switchStyle}
-                hasNavArrow={false}
-                title="Spanish Translations"
-                titleStyle={[
-                  styles.titleText,
-                  { paddingLeft: 80 },
-                  this.props.nightMode && { color: "#fff" }
-                ]}
-              />
-            </SettingsList>
+            <ListItem
+              backgroundColor={this.props.nightMode ? "#464646" : "#fff"}
+              switch={{
+                switchStyle,
+                value: this.props.englishTranslations,
+                onValueChange: this.props.toggleEnglishTranslations
+              }}
+              title="English Translations"
+              containerStyle={[
+                { paddingLeft: 80 },
+                this.props.nightMode && { backgroundColor: "#464646" }
+              ]}
+              titleStyle={[this.props.nightMode && { color: "#fff" }]}
+            />
+            <ListItem
+              backgroundColor={this.props.nightMode ? "#464646" : "#fff"}
+              switch={{
+                switchStyle,
+                value: this.props.punjabiTranslations,
+                onValueChange: this.props.togglePunjabiTranslations
+              }}
+              title="Punjabi Translations"
+              containerStyle={[
+                { paddingLeft: 80 },
+                this.props.nightMode && { backgroundColor: "#464646" }
+              ]}
+              titleStyle={[this.props.nightMode && { color: "#fff" }]}
+            />
+            <ListItem
+              backgroundColor={this.props.nightMode ? "#464646" : "#fff"}
+              switch={{
+                switchStyle,
+                value: this.props.spanishTranslations,
+                onValueChange: this.props.toggleSpanishTranslations
+              }}
+              title="Spanish Translations"
+              containerStyle={[
+                { paddingLeft: 80 },
+                this.props.nightMode && { backgroundColor: "#464646" }
+              ]}
+              titleStyle={[this.props.nightMode && { color: "#fff" }]}
+              bottomDivider={true}
+            />
           </Collapsible>
-          <SettingsList.Item
+          <ListItem
             backgroundColor={this.props.nightMode ? "#464646" : "#fff"}
-            icon={
-              <Image
-                style={styles.imageStyle}
+            leftAvatar={
+              <Avatar
                 source={require("../images/bgcoloricon.png")}
+                avatarStyle={{
+                  backgroundColor: this.props.nightMode ? "#464646" : "#fff"
+                }}
               />
             }
-            hasSwitch={true}
-            switchState={this.props.nightMode}
-            switchOnValueChange={this.props.toggleNightMode}
-            switchProps={switchStyle}
-            hasNavArrow={false}
+            switch={{
+              switchStyle,
+              value: this.props.nightMode,
+              onValueChange: this.props.toggleNightMode
+            }}
             title="Dark Mode"
-            titleStyle={[
+            containerStyle={[
               styles.titleText,
-              this.props.nightMode && { color: "#fff" }
+              this.props.nightMode && { backgroundColor: "#464646" }
             ]}
+            titleStyle={[this.props.nightMode && { color: "#fff" }]}
+            bottomDivider={true}
           />
-          <SettingsList.Item
+          <ListItem
             backgroundColor={this.props.nightMode ? "#464646" : "#fff"}
-            icon={
+            leftAvatar={
               <MaterialIcons
                 style={styles.imageStyle}
                 color={
@@ -287,20 +324,22 @@ class Settings extends React.Component {
                 size={30}
               />
             }
-            hasSwitch={true}
-            switchState={this.props.statusBar}
-            switchOnValueChange={this.props.toggleStatusBar}
-            switchProps={switchStyle}
-            hasNavArrow={false}
+            switch={{
+              switchStyle,
+              value: this.props.statusBar,
+              onValueChange: this.props.toggleStatusBar
+            }}
             title="Hide Status Bar"
-            titleStyle={[
+            containerStyle={[
               styles.titleText,
-              this.props.nightMode && { color: "#fff" }
+              this.props.nightMode && { backgroundColor: "#464646" }
             ]}
+            titleStyle={[this.props.nightMode && { color: "#fff" }]}
+            bottomDivider={true}
           />
-          <SettingsList.Item
+          <ListItem
             backgroundColor={this.props.nightMode ? "#464646" : "#fff"}
-            icon={
+            leftAvatar={
               <MaterialIcons
                 style={styles.imageStyle}
                 color={
@@ -312,115 +351,127 @@ class Settings extends React.Component {
                 size={30}
               />
             }
-            hasSwitch={true}
-            switchState={this.props.autoScroll}
-            switchOnValueChange={this.props.toggleAutoScroll}
-            switchProps={switchStyle}
-            hasNavArrow={false}
+            switch={{
+              switchStyle,
+              value: this.props.autoScroll,
+              onValueChange: this.props.toggleAutoScroll
+            }}
             title="Auto Scroll"
-            titleStyle={[
+            containerStyle={[
               styles.titleText,
-              this.props.nightMode && { color: "#fff" }
+              this.props.nightMode && { backgroundColor: "#464646" }
             ]}
+            titleStyle={[this.props.nightMode && { color: "#fff" }]}
+            bottomDivider={true}
           />
-
-          <SettingsList.Item
+          <ListItem
             backgroundColor={this.props.nightMode ? "#464646" : "#fff"}
-            icon={
-              <Image
-                style={styles.imageStyle}
+            leftAvatar={
+              <Avatar
                 source={require("../images/screenonicon.png")}
+                avatarStyle={{
+                  backgroundColor: this.props.nightMode ? "#464646" : "#fff"
+                }}
               />
             }
-            hasSwitch={true}
-            switchState={this.props.screenAwake || this.props.autoScroll}
-            switchOnValueChange={this.props.toggleScreenAwake}
-            switchProps={
-              Platform.OS === "ios"
-                ? {
-                    trackColor: {
-                      false: null,
-                      true: GLOBAL.COLOR.SETTING_SWITCH_COLOR
-                    },
-                    disabled: this.props.autoScroll
-                  }
-                : { disabled: this.props.autoScroll }
-            }
-            hasNavArrow={false}
+            switch={{
+              switchStyle,
+              value: this.props.screenAwake || this.props.autoScroll,
+              onValueChange: this.props.toggleScreenAwake
+            }}
             title="Keep Screen Awake"
-            titleStyle={[
+            containerStyle={[
               styles.titleText,
-              this.props.nightMode && { color: "#fff" }
+              this.props.nightMode && { backgroundColor: "#464646" }
             ]}
+            titleStyle={[this.props.nightMode && { color: "#fff" }]}
+            bottomDivider={true}
           />
-
-          <SettingsList.Header
-            headerText="Bani Options"
-            headerStyle={[
+          <Text
+            style={[
               styles.headerStyle,
               this.props.nightMode && { color: "#fff" }
             ]}
-          />
-          <SettingsList.Item
+          >
+            Bani Options
+          </Text>
+          <ListItem
             backgroundColor={this.props.nightMode ? "#464646" : "#fff"}
-            icon={
-              <Image
-                style={styles.imageStyle}
+            leftAvatar={
+              <Avatar
                 source={require("../images/rearrangeicon.png")}
+                avatarStyle={{
+                  backgroundColor: this.props.nightMode ? "#464646" : "#fff"
+                }}
               />
             }
             title="Edit Bani Order"
-            titleStyle={[
+            containerStyle={[
               styles.titleText,
-              this.props.nightMode && { color: "#fff" }
+              this.props.nightMode && { backgroundColor: "#464646" }
             ]}
+            titleStyle={[this.props.nightMode && { color: "#fff" }]}
+            chevron={true}
+            bottomDivider={true}
             onPress={() =>
               navigate({ key: "EditBaniOrder", routeName: "EditBaniOrder" })
             }
           />
-          <SettingsList.Item
+          <ListItem
             backgroundColor={this.props.nightMode ? "#464646" : "#fff"}
-            icon={
-              <Image
-                style={styles.imageStyle}
+            leftAvatar={
+              <Avatar
                 source={require("../images/banilengthicon.png")}
+                avatarStyle={{
+                  backgroundColor: this.props.nightMode ? "#464646" : "#fff"
+                }}
               />
             }
             title="Bani Length"
-            titleStyle={[
+            containerStyle={[
               styles.titleText,
-              this.props.nightMode && { color: "#fff" }
+              this.props.nightMode && { backgroundColor: "#464646" }
             ]}
-            titleInfo={
+            titleStyle={[this.props.nightMode && { color: "#fff" }]}
+            rightTitle={
               actions.baniLengthNames[
                 actions.BANI_LENGTHS.indexOf(this.props.baniLength)
               ]
             }
-            titleInfoStyle={styles.titleInfoStyle}
+            rightTitleStyle={[
+              styles.titleInfoStyle,
+              { color: this.props.nightMode ? "#fff" : "#a3a3a3" }
+            ]}
+            chevron={true}
+            bottomDivider={true}
             onPress={() => this.BaniLengthActionSheet.show()}
           />
-          <SettingsList.Item
+          <ListItem
             backgroundColor={this.props.nightMode ? "#464646" : "#fff"}
-            icon={
-              <Image
-                style={styles.imageStyle}
+            leftAvatar={
+              <Avatar
                 source={require("../images/larivaaricon.png")}
+                avatarStyle={{
+                  backgroundColor: this.props.nightMode ? "#464646" : "#fff"
+                }}
               />
             }
-            hasSwitch={true}
-            switchState={this.props.larivaar}
-            switchOnValueChange={this.props.toggleLarivaar}
-            switchProps={switchStyle}
-            hasNavArrow={false}
+            switch={{
+              switchStyle,
+              value: this.props.larivaar,
+              onValueChange: this.props.toggleLarivaar
+            }}
             title="Larivaar"
-            titleStyle={[
+            containerStyle={[
               styles.titleText,
-              this.props.nightMode && { color: "#fff" }
+              this.props.nightMode && { backgroundColor: "#464646" }
             ]}
+            titleStyle={[this.props.nightMode && { color: "#fff" }]}
+            bottomDivider={true}
           />
-          <SettingsList.Item
+          <ListItem
             backgroundColor={this.props.nightMode ? "#464646" : "#fff"}
-            icon={
+            leftAvatar={
               <FontAwesomeIcons
                 style={styles.imageStyle}
                 color={
@@ -432,64 +483,82 @@ class Settings extends React.Component {
                 size={30}
               />
             }
-            hasSwitch={true}
-            switchState={this.props.paragraphMode}
-            switchOnValueChange={this.props.toggleParagraphMode}
-            switchProps={switchStyle}
-            hasNavArrow={false}
+            switch={{
+              switchStyle,
+              value: this.props.paragraphMode,
+              onValueChange: this.props.toggleParagraphMode
+            }}
             title="Paragraph Mode"
-            titleStyle={[
+            containerStyle={[
               styles.titleText,
-              this.props.nightMode && { color: "#fff" }
+              this.props.nightMode && { backgroundColor: "#464646" }
             ]}
+            titleStyle={[this.props.nightMode && { color: "#fff" }]}
+            bottomDivider={true}
           />
-          <SettingsList.Item
+          <ListItem
             backgroundColor={this.props.nightMode ? "#464646" : "#fff"}
-            icon={
-              <Image
-                style={styles.imageStyle}
+            leftAvatar={
+              <Avatar
                 source={require("../images/manglacharanicon.png")}
+                avatarStyle={{
+                  backgroundColor: this.props.nightMode ? "#464646" : "#fff"
+                }}
               />
             }
             title="Manglacharan Position"
-            titleStyle={[
+            containerStyle={[
               styles.titleText,
-              this.props.nightMode && { color: "#fff" }
+              this.props.nightMode && { backgroundColor: "#464646" }
             ]}
-            titleInfo={
+            titleStyle={[this.props.nightMode && { color: "#fff" }]}
+            rightTitle={
               actions.manglacharanPositionNames[
                 actions.MANGLACHARAN_POSITIONS.indexOf(
                   this.props.manglacharanPosition
                 )
               ]
             }
-            titleInfoStyle={styles.titleInfoStyle}
+            rightTitleStyle={[
+              styles.titleInfoStyle,
+              { color: this.props.nightMode ? "#fff" : "#a3a3a3" }
+            ]}
+            chevron={true}
+            bottomDivider={true}
             onPress={() => this.ManglacharanPositionActionSheet.show()}
           />
-          <SettingsList.Item
+          <ListItem
             backgroundColor={this.props.nightMode ? "#464646" : "#fff"}
-            icon={
-              <Image
-                style={styles.imageStyle}
+            leftAvatar={
+              <Avatar
                 source={require("../images/larivaaricon.png")}
+                avatarStyle={{
+                  backgroundColor: this.props.nightMode ? "#464646" : "#fff"
+                }}
               />
             }
             title="Padchhed Settings"
-            titleStyle={[
+            containerStyle={[
               styles.titleText,
-              this.props.nightMode && { color: "#fff" }
+              this.props.nightMode && { backgroundColor: "#464646" }
             ]}
-            titleInfo={
+            titleStyle={[this.props.nightMode && { color: "#fff" }]}
+            rightTitle={
               actions.padchhedSettingNames[
                 actions.PADCHHED_SETTINGS.indexOf(this.props.padchhedSetting)
               ]
             }
-            titleInfoStyle={styles.titleInfoStyle}
+            rightTitleStyle={[
+              styles.titleInfoStyle,
+              { color: this.props.nightMode ? "#fff" : "#a3a3a3" }
+            ]}
+            chevron={true}
+            bottomDivider={true}
             onPress={() => this.PadchhedSettingsActionSheet.show()}
           />
-          <SettingsList.Item
+          <ListItem
             backgroundColor={this.props.nightMode ? "#464646" : "#fff"}
-            icon={
+            leftAvatar={
               <MaterialIcons
                 style={styles.imageStyle}
                 color={
@@ -501,21 +570,22 @@ class Settings extends React.Component {
                 size={30}
               />
             }
-            hasSwitch={true}
-            switchState={this.props.visram}
-            switchOnValueChange={this.props.toggleVisram}
-            switchProps={switchStyle}
-            hasNavArrow={false}
+            switch={{
+              switchStyle,
+              value: this.props.visram,
+              onValueChange: this.props.toggleVisram
+            }}
             title="Vishram"
-            titleStyle={[
+            containerStyle={[
               styles.titleText,
-              this.props.nightMode && { color: "#fff" }
+              this.props.nightMode && { backgroundColor: "#464646" }
             ]}
+            titleStyle={[this.props.nightMode && { color: "#fff" }]}
+            bottomDivider={true}
           />
-
-          <SettingsList.Item
+          <ListItem
             backgroundColor={this.props.nightMode ? "#464646" : "#fff"}
-            icon={
+            leftAvatar={
               <MaterialIcons
                 style={styles.imageStyle}
                 color={
@@ -527,22 +597,23 @@ class Settings extends React.Component {
                 size={30}
               />
             }
-            hasSwitch={true}
-            switchState={this.props.reminders}
-            switchOnValueChange={this.props.toggleReminders}
-            switchProps={switchStyle}
-            hasNavArrow={false}
+            switch={{
+              switchStyle,
+              value: this.props.reminders,
+              onValueChange: this.props.toggleReminders
+            }}
             title="Reminders"
-            titleStyle={[
+            containerStyle={[
               styles.titleText,
-              this.props.nightMode && { color: "#fff" }
+              this.props.nightMode && { backgroundColor: "#464646" }
             ]}
+            titleStyle={[this.props.nightMode && { color: "#fff" }]}
+            bottomDivider={true}
           />
-
           {this.props.reminders && (
-            <SettingsList.Item
+            <ListItem
               backgroundColor={this.props.nightMode ? "#464646" : "#fff"}
-              icon={
+              leftAvatar={
                 <MaterialIcons
                   style={styles.imageStyle}
                   color={
@@ -555,10 +626,13 @@ class Settings extends React.Component {
                 />
               }
               title="Set Reminder Options"
-              titleStyle={[
+              containerStyle={[
                 styles.titleText,
-                this.props.nightMode && { color: "#fff" }
+                this.props.nightMode && { backgroundColor: "#464646" }
               ]}
+              titleStyle={[this.props.nightMode && { color: "#fff" }]}
+              chevron={true}
+              bottomDivider={true}
               onPress={() =>
                 navigate({
                   key: "ReminderOptions",
@@ -568,9 +642,9 @@ class Settings extends React.Component {
             />
           )}
           {this.props.reminders && (
-            <SettingsList.Item
+            <ListItem
               backgroundColor={this.props.nightMode ? "#464646" : "#fff"}
-              icon={
+              leftAvatar={
                 <MaterialIcons
                   style={styles.imageStyle}
                   color={
@@ -583,48 +657,59 @@ class Settings extends React.Component {
                 />
               }
               title="Reminder Sound"
-              titleStyle={[
+              containerStyle={[
                 styles.titleText,
-                this.props.nightMode && { color: "#fff" }
+                this.props.nightMode && { backgroundColor: "#464646" }
               ]}
-              titleInfo={
+              titleStyle={[this.props.nightMode && { color: "#fff" }]}
+              rightTitle={
                 actions.reminderSoundNames[
                   actions.REMINDER_SOUNDS.indexOf(this.props.reminderSound)
                 ]
               }
-              titleInfoStyle={styles.titleInfoStyle}
+              rightTitleStyle={[
+                styles.titleInfoStyle,
+                { color: this.props.nightMode ? "#fff" : "#a3a3a3" }
+              ]}
+              chevron={true}
+              bottomDivider={true}
               onPress={() => this.ReminderSoundsActionSheet.show()}
             />
           )}
-          <SettingsList.Header
-            headerText="Other Options"
-            headerStyle={[
+          <Text
+            style={[
               styles.headerStyle,
               this.props.nightMode && { color: "#fff" }
             ]}
-          />
-          <SettingsList.Item
+          >
+            Other Options
+          </Text>
+          <ListItem
             backgroundColor={this.props.nightMode ? "#464646" : "#fff"}
-            icon={
-              <Image
-                style={styles.imageStyle}
+            leftAvatar={
+              <Avatar
                 source={require("../images/analyticsicon.png")}
+                avatarStyle={{
+                  backgroundColor: this.props.nightMode ? "#464646" : "#fff"
+                }}
               />
             }
-            hasSwitch={true}
-            switchState={this.props.statistics}
-            switchOnValueChange={this.props.toggleStatistics}
-            switchProps={switchStyle}
-            hasNavArrow={false}
+            switch={{
+              switchStyle,
+              value: this.props.statistics,
+              onValueChange: this.props.toggleStatistics
+            }}
             title="Collect Statistics"
-            titleStyle={[
+            containerStyle={[
               styles.titleText,
-              this.props.nightMode && { color: "#fff" }
+              this.props.nightMode && { backgroundColor: "#464646" }
             ]}
+            titleStyle={[this.props.nightMode && { color: "#fff" }]}
+            bottomDivider={true}
           />
-          <SettingsList.Item
+          <ListItem
             backgroundColor={this.props.nightMode ? "#464646" : "#fff"}
-            icon={
+            leftAvatar={
               <FontAwesome5Icons
                 style={styles.imageStyle}
                 color={
@@ -637,17 +722,20 @@ class Settings extends React.Component {
               />
             }
             title="Donate"
-            titleStyle={[
+            containerStyle={[
               styles.titleText,
-              this.props.nightMode && { color: "#fff" }
+              this.props.nightMode && { backgroundColor: "#464646" }
             ]}
+            titleStyle={[this.props.nightMode && { color: "#fff" }]}
+            chevron={true}
+            bottomDivider={true}
             onPress={() =>
               Linking.openURL("https://khalisfoundation.org/donate/")
             }
           />
-          <SettingsList.Item
+          <ListItem
             backgroundColor={this.props.nightMode ? "#464646" : "#fff"}
-            icon={
+            leftAvatar={
               <FontAwesomeIcons
                 style={styles.imageStyle}
                 color={
@@ -660,13 +748,16 @@ class Settings extends React.Component {
               />
             }
             title="About"
-            titleStyle={[
+            containerStyle={[
               styles.titleText,
-              this.props.nightMode && { color: "#fff" }
+              this.props.nightMode && { backgroundColor: "#464646" }
             ]}
+            titleStyle={[this.props.nightMode && { color: "#fff" }]}
+            chevron={true}
+            bottomDivider={true}
             onPress={() => navigate({ key: "About", routeName: "About" })}
           />
-        </SettingsList>
+        </ScrollView>
 
         <ActionSheet
           ref={actionSheet => {
@@ -821,26 +912,25 @@ const styles = StyleSheet.create({
     padding: 10
   },
   imageStyle: {
-    marginLeft: 15,
-    marginRight: 10,
+    marginRight: 6,
     alignSelf: "center",
     width: 28,
     height: 28,
     justifyContent: "center"
   },
   titleInfoStyle: {
-    marginLeft: 15
+    fontSize: 12
   },
   viewStyle: {
     backgroundColor: "#EFEFF4",
     flex: 1
   },
   headerStyle: {
-    marginTop: 15
+    marginTop: 10,
+    padding: 5,
+    paddingLeft: 10
   },
-  titleText: {
-    fontSize: 16
-  }
+  titleText: {}
 });
 
 function mapStateToProps(state) {

@@ -1,7 +1,7 @@
 import React from "react";
 import { connect } from "react-redux";
 import { bindActionCreators } from "redux";
-import { View, StatusBar } from "react-native";
+import { View, StatusBar, Platform } from "react-native";
 import { Header } from "react-native-elements";
 import Icon from "react-native-vector-icons/MaterialIcons";
 import GLOBAL from "../utils/globals";
@@ -59,6 +59,7 @@ class Bookmarks extends React.Component {
               ? GLOBAL.COLOR.TOOLBAR_COLOR_ALT_NIGHT_MODE
               : GLOBAL.COLOR.TOOLBAR_COLOR_ALT
           }
+          containerStyle={[Platform.OS === "android" && { height: 56, paddingTop: 0 }]}
           leftComponent={
             <Icon
               name="arrow-back"

@@ -44,6 +44,7 @@ class EditBaniOrder extends React.Component {
         />
         <Header
           backgroundColor={GLOBAL.COLOR.TOOLBAR_COLOR_ALT2}
+          containerStyle={[Platform.OS === "android" && { height: 56, paddingTop: 0 }]}
           leftComponent={
             <Icon
               name="arrow-back"

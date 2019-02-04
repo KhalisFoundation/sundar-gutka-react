@@ -2,7 +2,7 @@ import React from "react";
 import { connect } from "react-redux";
 import { bindActionCreators } from "redux";
 import KeepAwake from "react-native-keep-awake";
-import { View, Text, StatusBar } from "react-native";
+import { View, Text, StatusBar, Platform } from "react-native";
 import { Header } from "react-native-elements";
 import Icon from "react-native-vector-icons/MaterialIcons";
 import GLOBAL from "../utils/globals";
@@ -228,7 +228,10 @@ class Home extends React.Component {
         />
         <Header
           backgroundColor={GLOBAL.COLOR.TOOLBAR_COLOR}
-          containerStyle={{ height: 0, borderBottomWidth: 0 }}
+          containerStyle={[
+            { height: 0, borderBottomWidth: 0 },
+            Platform.OS === "android" && { paddingTop: 10 }
+          ]}
         />
         <View
           style={{

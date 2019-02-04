@@ -435,15 +435,24 @@ class Reader extends React.Component {
           ]}
         >
           <StatusBar
-            backgroundColor={GLOBAL.COLOR.READER_HEADER_COLOR}
+            backgroundColor={
+              this.props.nightModenightMode
+                ? GLOBAL.COLOR.READER_STATUS_BAR_COLOR_NIGHT_MODE
+                : GLOBAL.COLOR.READER_STATUS_BAR_COLOR
+            }
             barStyle={
-              this.props.nightMode || this.state.headerVisible
+              this.props.nightMode ||
+              this.state.headerVisible ||
+              Platform.OS === "android"
                 ? "light-content"
                 : "dark-content"
             }
           />
           <Header
             backgroundColor={GLOBAL.COLOR.READER_HEADER_COLOR}
+            containerStyle={[
+              Platform.OS === "android" && { height: 56, paddingTop: 0 }
+            ]}
             onLayout={event => {
               this.headerHeight = event.nativeEvent.layout.height;
             }}
