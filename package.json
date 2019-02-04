@@ -1,7 +1,8 @@
 {
   "name": "SundarGutka",
   "version": "0.0.1",
-  "private": true,
+  "author": "Khalis Foundation <techsupport@khalisfoundation.org>",
+  "license": "NPOSL-3.0",
   "scripts": {
     "start": "node node_modules/react-native/local-cli/cli.js start",
     "test": "jest"
