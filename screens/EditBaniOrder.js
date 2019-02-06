@@ -7,46 +7,87 @@ import {
   Image,
   View,
   Dimensions,
-  Platform
+  Platform,
+  StatusBar
 } from "react-native";
+import { Header } from "react-native-elements";
+import Icon from "react-native-vector-icons/MaterialIcons";
+import GLOBAL from "../utils/globals";
 import SortableList from "react-native-sortable-list";
-import SQLite from "react-native-sqlite-storage";
 import { connect } from "react-redux";
 import { bindActionCreators } from "redux";
 import * as actions from "../actions/actions";
 import AnalyticsManager from "../utils/analytics";
 import { baseFontSize } from "../utils/helpers";
+import { defaultBaniOrderArray } from "../utils/helpers";
 
 const window = Dimensions.get("window");
 
 class EditBaniOrder extends React.Component {
   componentDidMount() {
-    AnalyticsManager.getInstance().trackScreenView("Index Reorder");
+    AnalyticsManager.getInstance().trackScreenView(
+      "Index Reorder",
+      this.constructor.name
+    );
   }
 
   render() {
     return (
       <View
-        style={[
-          styles.container,
-          this.props.nightMode && { backgroundColor: "#464646" }
-        ]}
+        style={{
+          flex: 1
+        }}
       >
-        <SortableList
-          style={styles.list}
-          contentContainerStyle={styles.contentContainer}
-          data={this.props.mergedBaniData.baniOrder}
-          onChangeOrder={nextOrder => {
-            this.newOrder = nextOrder;
-          }}
-          onReleaseRow={key =>
-            this.newOrder !== undefined
-              ? this.props.setBaniOrder(this.newOrder)
-              : null
-          }
-          renderRow={this._renderRow}
-          order={this.props.baniOrder}
+        <StatusBar
+          backgroundColor={GLOBAL.COLOR.TOOLBAR_COLOR_ALT2}
+          barStyle={"light-content"}
         />
+        <Header
+          backgroundColor={GLOBAL.COLOR.TOOLBAR_COLOR_ALT2}
+          containerStyle={[Platform.OS === "android" && { height: 56, paddingTop: 0 }]}
+          leftComponent={
+            <Icon
+              name="arrow-back"
+              color={GLOBAL.COLOR.TOOLBAR_TINT}
+              size={30}
+              onPress={() => this.props.navigation.goBack()}
+            />
+          }
+          centerComponent={{
+            text: "Edit Bani Order",
+            style: { color: GLOBAL.COLOR.TOOLBAR_TINT, fontSize: 18 }
+          }}
+          rightComponent={
+            <Icon
+              name="refresh"
+              color={GLOBAL.COLOR.TOOLBAR_TINT}
+              size={30}
+              onPress={() => this.props.setBaniOrder(defaultBaniOrderArray)}
+            />
+          }
+        />
+        <View
+          style={[
+            styles.container,
+            this.props.nightMode && { backgroundColor: "#464646" }
+          ]}
+        >
+          <SortableList
+            style={styles.list}
+            contentContainerStyle={styles.contentContainer}
+            data={this.props.mergedBaniData.baniOrder}
+            onChangeOrder={nextOrder => {
+              this.newOrder = nextOrder;
+            }}
+            onReleaseRow={key =>
+              this.newOrder !== undefined
+                ? this.props.setBaniOrder(this.newOrder)
+                : null
+            }
+            renderRow={this._renderRow}
+            order={this.props.baniOrder}
+          />
+        </View>
       </View>
     );
   }
@@ -58,7 +99,6 @@ class EditBaniOrder extends React.Component {
         active={active}
         nightMode={this.props.nightMode}
         romanized={this.props.romanized}
-        fontSize={this.props.fontSize}
         fontFace={this.props.fontFace}
       />
     );
@@ -117,14 +157,7 @@ class Row extends React.Component {
   }
 
   render() {
-    const {
-      data,
-      active,
-      nightMode,
-      romanized,
-      fontFace,
-      fontSize
-    } = this.props;
+    const { data, active, nightMode, romanized, fontFace } = this.props;
 
     return (
       <Animated.View
@@ -145,7 +178,7 @@ class Row extends React.Component {
           style={[
             { color: nightMode ? "#fff" : "#222222" },
             !romanized && { fontFamily: fontFace },
-            { fontSize: baseFontSize(fontSize, romanized) }
+            { fontSize: baseFontSize("MEDIUM", romanized) }
           ]}
         >
           {romanized ? data.roman : data.gurmukhi}
@@ -225,4 +258,7 @@ function mapDispatchToProps(dispatch) {
   return bindActionCreators(actions, dispatch);
 }
 
-export default connect(mapStateToProps, mapDispatchToProps)(EditBaniOrder);
+export default connect(
+  mapStateToProps,
+  mapDispatchToProps
+)(EditBaniOrder);

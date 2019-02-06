@@ -5,6 +5,8 @@ import {
   SET_FONT_FACE,
   TOGGLE_ROMANIZED,
   TOGGLE_ENGLISH_TRANSLATIONS,
+  TOGGLE_PUNJABI_TRANSLATIONS,
+  TOGGLE_SPANISH_TRANSLATIONS,
   TOGGLE_NIGHT_MODE,
   TOGGLE_SCREEN_AWAKE,
   SET_BANI_ORDER,
@@ -17,7 +19,14 @@ import {
   SET_CURRENT_SHABAD,
   SET_SCROLL_INDEX,
   TOGGLE_STATUS_BAR,
-  TOGGLE_PARAGRAPH_MODE
+  TOGGLE_PARAGRAPH_MODE,
+  TOGGLE_AUTO_SCROLL,
+  SET_AUTO_SCROLL_SPEED,
+  TOGGLE_VISRAM,
+  TOGGLE_REMINDERS,
+  SET_REMINDER_BANIS,
+  SET_REMINDER_SOUND,
+  SET_APP_VERSION
 } from "../actions/actions";
 
 function fontSize(state = "SMALL", action) {
@@ -56,6 +65,24 @@ function englishTranslations(state = false, action) {
   }
 }
 
+function punjabiTranslations(state = false, action) {
+  switch (action.type) {
+    case TOGGLE_PUNJABI_TRANSLATIONS:
+      return action.value;
+    default:
+      return state;
+  }
+}
+
+function spanishTranslations(state = false, action) {
+  switch (action.type) {
+    case TOGGLE_SPANISH_TRANSLATIONS:
+      return action.value;
+    default:
+      return state;
+  }
+}
+
 function nightMode(state = false, action) {
   switch (action.type) {
     case TOGGLE_NIGHT_MODE:
@@ -83,7 +110,7 @@ function baniOrder(state = defaultBaniOrderArray, action) {
   }
 }
 
-function baniLength(state = "LONG", action) {
+function baniLength(state = "", action) {
   switch (action.type) {
     case SET_BANI_LENGTH:
       return action.length;
@@ -173,12 +200,77 @@ function paragraphMode(state = true, action) {
   }
 }
 
+function autoScroll(state = false, action) {
+  switch (action.type) {
+    case TOGGLE_AUTO_SCROLL:
+      return action.value;
+    default:
+      return state;
+  }
+}
+
+function autoScrollShabadSpeed(state = {}, action) {
+  switch (action.type) {
+    case SET_AUTO_SCROLL_SPEED:
+      return Object.assign({}, state, action.shabadSpeed);
+    default:
+      return state;
+  }
+}
+
+function visram(state = false, action) {
+  switch (action.type) {
+    case TOGGLE_VISRAM:
+      return action.value;
+    default:
+      return state;
+  }
+}
+
+function reminders(state = false, action) {
+  switch (action.type) {
+    case TOGGLE_REMINDERS:
+      return action.value;
+    default:
+      return state;
+  }
+}
+
+function reminderBanis(state = JSON.stringify([]), action) {
+  switch (action.type) {
+    case SET_REMINDER_BANIS:
+      return action.list;
+    default:
+      return state;
+  }
+}
+
+function reminderSound(state = 'default', action) {
+  switch (action.type) {
+    case SET_REMINDER_SOUND:
+      return action.sound;
+    default:
+      return state;
+  }
+}
+
+function appVersion(state = "", action) {
+  switch (action.type) {
+    case SET_APP_VERSION:
+      return action.version;
+    default:
+      return state;
+  }
+}
+
 // Combine all the reducers
 const rootReducer = combineReducers({
   fontSize,
   fontFace,
   romanized,
   englishTranslations,
+  punjabiTranslations,
+  spanishTranslations,
   nightMode,
   screenAwake,
   baniOrder,
@@ -191,7 +283,14 @@ const rootReducer = combineReducers({
   currentShabad,
   scrollIndex,
   statusBar,
-  paragraphMode
+  paragraphMode,
+  autoScroll,
+  autoScrollShabadSpeed,
+  visram,
+  reminders,
+  reminderBanis,
+  reminderSound,
+  appVersion
 });
 
 export default rootReducer;

@@ -1,7 +1,7 @@
-import React from "react";
+import GLOBAL from "./globals";
 import SQLite from "react-native-sqlite-storage";
 
-var database_name = "gutkav5.db";
+var database_name = "gutkav17.db";
 
 let db = SQLite.openDatabase({ name: database_name, createFromLocation: 1 });
 
@@ -33,22 +33,29 @@ class Database {
     larivaar,
     padcched,
     mangalPosition,
-    paragraphMode
+    paragraphMode,
+    visram
   ) {
     var baniLength;
     switch (length) {
-      case "LONG":
+      case "EXTRA_LONG":
         baniLength = "existsBuddhaDal";
         break;
-      case "MEDIUM":
+      case "LONG":
         baniLength = "existsTaksal";
         break;
+      case "MEDIUM":
+        baniLength = "existsMedium";
+        break;
+      case "SHORT":
+        baniLength = "existsSGPC";
+        break;
       default:
-        baniLength = "existsStandard";
+        baniLength = "existsMedium";
     }
     return new Promise(function(resolve) {
       db.executeSql(
-        "SELECT ID, ParagraphLong, header, Gurmukhi, Transliteration, English FROM mv_Banis_Shabad WHERE Bani = " +
+        "SELECT ID, Paragraph, header, Gurmukhi, GurmukhiBisram, Transliteration, English, Punjabi, Spanish FROM mv_Banis_Shabad WHERE Bani = " +
           baniId +
           " AND " +
           baniLength +
@@ -65,18 +72,56 @@ class Database {
           var paragraphId;
           var transliteration;
           var englishTranslation;
+          var punjabiTranslation;
+          var spanishTranslation;
           var paragraphHeader;
           var prevParagraph;
-
           for (let i = 0; i < len; i++) {
             let row = results.rows.item(i);
-            let curGurmukhi = larivaar
-              ? row.Gurmukhi.replace(/ /g, "<wbr>")
-              : row.Gurmukhi;
 
-            row.English = row.English == "" ? " " : row.English;
+            var gurmukhiLine =
+              visram && row.GurmukhiBisram ? row.GurmukhiBisram : row.Gurmukhi;
+
+            var splitted = gurmukhiLine.split(" ");
+
+            var arr = [];
+            splitted.forEach(function(word) {
+              if (visram && word.indexOf(";") >= 0) {
+                arr.push(
+                  "<span style='color:" +
+                    GLOBAL.COLOR.VISHRAM_LONG +
+                    "; white-space: nowrap;'>" +
+                    word.slice(0, -1) +
+                    "</span>"
+                );
+              } else if (visram && word.indexOf(",") >= 0) {
+                arr.push(
+                  "<span style='color:" +
+                    GLOBAL.COLOR.VISHRAM_SHORT +
+                    "; white-space: nowrap;'>" +
+                    word.slice(0, -1) +
+                    "</span>"
+                );
+              } else {
+                arr.push(
+                  "<span style='white-space: nowrap;'>" + word + "</span>"
+                );
+              }
+            });
+
+            let curGurmukhi = larivaar ? arr.join("<wbr>") : arr.join(" ");
+
+            // Remove nulls
+            row.English =
+              row.English == "" || row.English == null ? " " : row.English;
+            row.Punjabi =
+              row.Punjabi == "" || row.Punjabi == null ? " " : row.Punjabi;
+            row.Spanish =
+              row.Spanish == "" || row.Spanish == null ? " " : row.Spanish;
             row.Transliteration =
-              row.Transliteration == "" ? " " : row.Transliteration;
+              row.Transliteration == "" || row.Transliteration == null
+                ? " "
+                : row.Transliteration;
 
             if (
               (baniId === 9 || baniId === 21) &&
@@ -89,13 +134,15 @@ class Database {
             }
 
             if (paragraphMode) {
-              if (prevParagraph !== row.ParagraphLong) {
+              if (prevParagraph !== row.Paragraph) {
                 if (i !== 0) {
                   paragraphResults.push({
                     id: "" + paragraphId,
                     gurmukhi: gurmukhi,
                     roman: transliteration,
                     englishTranslations: englishTranslation,
+                    punjabiTranslations: punjabiTranslation,
+                    spanishTranslations: spanishTranslation,
                     header: paragraphHeader
                   });
                 }
@@ -104,11 +151,15 @@ class Database {
                 gurmukhi = curGurmukhi;
                 transliteration = row.Transliteration;
                 englishTranslation = row.English;
-                prevParagraph = row.ParagraphLong;
+                punjabiTranslation = row.Punjabi;
+                spanishTranslation = row.Spanish;
+                prevParagraph = row.Paragraph;
               } else {
                 gurmukhi += larivaar ? curGurmukhi : " " + curGurmukhi;
                 transliteration += " " + row.Transliteration;
                 englishTranslation += " " + row.English;
+                punjabiTranslation += " " + row.Punjabi;
+                spanishTranslation += " " + row.Spanish;
               }
 
               if (i === len - 1) {
@@ -117,6 +168,8 @@ class Database {
                   gurmukhi: gurmukhi,
                   roman: transliteration,
                   englishTranslations: englishTranslation,
+                  punjabiTranslations: punjabiTranslation,
+                  spanishTranslations: spanishTranslation,
                   header: paragraphHeader
                 });
               }
@@ -126,6 +179,8 @@ class Database {
                 gurmukhi: curGurmukhi,
                 roman: row.Transliteration,
                 englishTranslations: row.English,
+                punjabiTranslations: row.Punjabi,
+                spanishTranslations: row.Spanish,
                 header: row.header
               };
             }
@@ -144,14 +199,20 @@ class Database {
   static getBookmarksForId(baniId, length) {
     var baniLength;
     switch (length) {
-      case "LONG":
+      case "EXTRA_LONG":
         baniLength = "existsBuddhaDal";
         break;
-      case "MEDIUM":
+      case "LONG":
         baniLength = "existsTaksal";
         break;
+      case "MEDIUM":
+        baniLength = "existsMedium";
+        break;
+      case "SHORT":
+        baniLength = "existsSGPC";
+        break;
       default:
-        baniLength = "existsStandard";
+        baniLength = "existsMedium";
     }
 
     return new Promise(function(resolve) {
