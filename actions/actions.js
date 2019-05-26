@@ -96,9 +96,9 @@ export const VISHRAAM_OPTIONS = ["VISHRAAM_COLORED", "VISHRAAM_GRADIENT"];
 
 export const vishraamOptionNames = ["Colored Words", "Gradient Background"]
 
-export const VISHRAAM_SOURCES = ["VISHRAAM_SOURCE_STTM2", "VISHRAAM_SOURCE_IGURBANI", "VISHRAAM_SOURCE_STTM_LIVING"];
+export const VISHRAAM_SOURCES = ["sttm", "igurbani", "sttm2"];
 
-export const vishraamSourceNames = ["STTM 2", "iGurbani", "STTM Living"]
+export const vishraamSourceNames = ["STTM Living", "iGurbani", "STTM 2"]
 
 /*
  * action creators

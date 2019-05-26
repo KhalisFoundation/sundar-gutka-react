@@ -85,7 +85,9 @@ class Reader extends React.Component {
       prevProps.paragraphMode != this.props.paragraphMode ||
       prevProps.manglacharanPosition != this.props.manglacharanPosition ||
       prevProps.padchhedSetting != this.props.padchhedSetting ||
-      prevProps.visram != this.props.visram
+      prevProps.visram != this.props.visram ||
+      prevProps.vishraamOption != this.props.vishraamOption ||
+      prevProps.vishraamSource != this.props.vishraamSource
     ) {
       this.loadShabad();
     }
@@ -421,8 +423,6 @@ class Reader extends React.Component {
     {
       this.trackScreenForShabad(params.item.roman);
     }
-
-    const headerHeight = -1;
 
     return (
       <View

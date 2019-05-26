@@ -1,5 +1,7 @@
 import React from "react";
-import { SafeAreaView, BackHandler, Alert } from "react-native";
+import { BackHandler, Alert } from "react-native";
+import SafeAreaView from 'react-native-safe-area-view';
+
 import { createStackNavigator, createAppContainer } from "react-navigation";
 import { Provider } from "react-redux";
 import { PersistGate } from "redux-persist/integration/react";
@@ -74,7 +76,7 @@ export default class App extends React.Component {
     return (
       <Provider store={store}>
         <PersistGate loading={null} persistor={persistor}>
-        <SafeAreaView style={{ flex: 1, backgroundColor: "#e6e6e6" }}>
+        <SafeAreaView style={{ flex: 1 }} forceInset={{ vertical: 'never' }}>
           <AppContainer />
           </SafeAreaView>
         </PersistGate>

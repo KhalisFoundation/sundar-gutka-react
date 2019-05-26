@@ -238,7 +238,7 @@ function vishraamOption(state = 'VISHRAAM_COLORED', action) {
   }
 }
 
-function vishraamSource(state = 'VISHRAAM_SOURCE_STTM_LIVING', action) {
+function vishraamSource(state = 'sttm', action) {
   switch (action.type) {
     case SET_VISHRAAM_SOURCE:
       return action.source;

@@ -3,14 +3,20 @@ import SQLite from "react-native-sqlite-storage";
 
 var database_name = "gutka.db";
 var db;
-SQLite.deleteDatabase({
-  name: database_name,        
-  location: 1 
-}, function (res, err) { // success
+SQLite.deleteDatabase(
+  {
+    name: database_name,
+    location: 1
+  },
+  function(res, err) {
+    // success
     db = SQLite.openDatabase({ name: database_name, createFromLocation: 1 });
-}, function () { // error
+  },
+  function() {
+    // error
     db = SQLite.openDatabase({ name: database_name, createFromLocation: 1 });
-});
+  }
+);
 
 class Database {
   static getBaniList() {
@@ -64,7 +70,7 @@ class Database {
     }
     return new Promise(function(resolve) {
       db.executeSql(
-        "SELECT ID, Paragraph, header, Gurmukhi, GurmukhiBisram, Transliteration, English, Punjabi, Spanish FROM mv_Banis_Shabad WHERE Bani = " +
+        "SELECT ID, Paragraph, header, Gurmukhi, Visraam, Transliteration, Translations FROM mv_Banis_Shabad WHERE Bani = " +
           baniId +
           " AND " +
           baniLength +
@@ -93,48 +99,85 @@ class Database {
 
             var splitted = gurmukhiLine.split(" ");
 
-            let vishraamMain = 'VISHRAAM_GRADIENT';
+            let vishraamJson = JSON.parse(row.Visraam);
 
-            var arr = [];
-            splitted.forEach(function(word) {
-              if (visram && word.indexOf(";") >= 0) {
-                arr.push(
-                  "<span style='color:" +
-                    GLOBAL.COLOR.VISHRAM_LONG +
-                    "; white-space: nowrap;'>" +
-                    word.slice(0, -1) +
-                    "</span>"
+            var vishraamPositions = {};
+            if (visram && vishraamJson[vishraamSource].length > 0) {
+              vishraamJson[vishraamSource].forEach(function(pos) {
+                vishraamPositions[pos.p] = pos.t;
+              });
+            }
+
+            var arr = splitted.map((word, index) => {
+              var style = "style='";
+              if (visram && index in vishraamPositions) {
+                switch(vishraamOption) {
+                  case "VISHRAAM_GRADIENT":
+                    style += " border-radius: 5px; background: linear-gradient(to right,rgba(229, 229, 229, 0) 20%, ";
+                    style += vishraamPositions[index] == "v" ? "rgba(167, 0, 0, 0.5)" : "rgba(255, 242, 41, 0.5)";
+                    style += " 100%);"
+                    break;
+                  case "VISHRAAM_COLORED":
+                  default:
+                      style += " color:";
+                      style += vishraamPositions[index] == "v" ? "#c0392b" : "#ffc500";
+                }
+                return (
+                  "<span " +
+                  style +
+                  "; white-space: nowrap;'>" +
+                  word +
+                  "</span>"
                 );
-              } else if (visram && word.indexOf(",") >= 0) {
-                arr.push(
-                  "<span style='color:" +
-                    GLOBAL.COLOR.VISHRAM_SHORT +
-                    "; white-space: nowrap;'>" +
-                    word.slice(0, -1) +
-                    "</span>"
-                );
-              } else {
-                arr.push(
-                  "<span style='white-space: nowrap;'>" + word + "</span>"
-                );
-              }
+              } else
+                return "<span style='white-space: nowrap;'>" + word + "</span>";
             });
+
+            // splitted.forEach(function(word) {
+            //   if (visram && word.indexOf(";") >= 0) {
+            //     arr.push(
+            //       "<span style='color:" +
+            //         GLOBAL.COLOR.VISHRAM_LONG +
+            //         "; white-space: nowrap;'>" +
+            //         word.slice(0, -1) +
+            //         "</span>"
+            //     );
+            //   } else if (visram && word.indexOf(",") >= 0) {
+            //     arr.push(
+            //       "<span style='color:" +
+            //         GLOBAL.COLOR.VISHRAM_SHORT +
+            //         "; white-space: nowrap;'>" +
+            //         word.slice(0, -1) +
+            //         "</span>"
+            //     );
+            //   } else {
+            //     arr.push(
+            //       "<span style='white-space: nowrap;'>" + word + "</span>"
+            //     );
+            //   }
+            // });
 
             // Yamki #ffc500
             // Main: #c0392b
             //"<span style='white-space: nowrap; padding-right:5px; border-radius: 5px; background: linear-gradient(to right,rgba(229, 229, 229, 0) 20%, rgba(255, 242, 41, 0.5) 100%);'>" + word + "</span>"
             //"<span style='white-space: nowrap; padding-right:5px; border-radius: 5px; background: linear-gradient(to right,rgba(229, 229, 229, 0) 20%, rgba(167, 0, 0, 0.5) 100%);'>" + word + "</span>"
 
-
             let curGurmukhi = larivaar ? arr.join("<wbr>") : arr.join(" ");
 
+            let translationJson = JSON.parse(row.Translations);
             // Remove nulls
             row.English =
-              row.English == "" || row.English == null ? " " : row.English;
+              translationJson == null || translationJson.en.bdb == null
+                ? " "
+                : translationJson.en.bdb;
             row.Punjabi =
-              row.Punjabi == "" || row.Punjabi == null ? " " : row.Punjabi;
+              translationJson == null || translationJson.pu.ss == null
+                ? " "
+                : translationJson.pu.ss;
             row.Spanish =
-              row.Spanish == "" || row.Spanish == null ? " " : row.Spanish;
+              translationJson == null || translationJson.es.sn == null
+                ? " "
+                : translationJson.es.sn;
             row.Transliteration =
               row.Transliteration == "" || row.Transliteration == null
                 ? " "
