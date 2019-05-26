@@ -63,7 +63,9 @@ class Reader extends React.Component {
       this.props.padchhedSetting,
       this.props.manglacharanPosition,
       this.props.paragraphMode,
-      this.props.visram
+      this.props.visram,
+      this.props.vishraamOption,
+      this.props.vishraamSource
     ).then(shabad => {
       this.setState({
         data: shabad,
@@ -130,7 +132,7 @@ class Reader extends React.Component {
       let spanishTranslations = this.props.spanishTranslations;
       var html =
         "<!DOCTYPE html><html><head>" +
-        "<meta name='viewport' content='width=device-width, maximum-scale=1.0, user-scalable=yes'>" +
+        "<meta name='viewport' content='width=device-width, user-scalable=yes'>" +
         "<style type='text/css'>";
       if (Platform.OS === "android") {
         html +=
@@ -285,6 +287,19 @@ class Reader extends React.Component {
     var dragging = false;
     var holding = false;
     var holdTimer;
+    var curPosition = 0;
+    window.addEventListener("orientationchange", function() {
+      setTimeout(function(){        
+        let scrollY = (document.body.scrollHeight - window.innerHeight) * curPosition;
+        window.scrollTo(0, scrollY);
+        curPosition = scrollY;
+      }, 50);
+    }, false);
+
+    function getScrollPercent() {
+      return (document.body.scrollTop / (document.body.scrollHeight - window.innerHeight));
+    }
+
     function setAutoScroll() {
       let speed = autoScrollSpeed;
       if(speed > 0) {
@@ -305,7 +320,9 @@ class Reader extends React.Component {
       }
       autoScrollTimeout = null;
     }
+    
     function scrollFunc(e) {
+      curPosition = getScrollPercent();
       if (window.scrollY == 0) { window.postMessage('show'); }
         
       if (typeof scrollFunc.y == 'undefined') {
@@ -675,7 +692,9 @@ function mapStateToProps(state) {
     paragraphMode: state.paragraphMode,
     autoScroll: state.autoScroll,
     autoScrollShabadSpeed: state.autoScrollShabadSpeed,
-    visram: state.visram
+    visram: state.visram,
+    vishraamOption: state.vishraamOption,
+    vishraamSource: state.vishraamSource
   };
 }
 

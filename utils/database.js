@@ -1,9 +1,16 @@
 import GLOBAL from "./globals";
 import SQLite from "react-native-sqlite-storage";
 
-var database_name = "gutkav17.db";
-
-let db = SQLite.openDatabase({ name: database_name, createFromLocation: 1 });
+var database_name = "gutka.db";
+var db;
+SQLite.deleteDatabase({
+  name: database_name,        
+  location: 1 
+}, function (res, err) { // success
+    db = SQLite.openDatabase({ name: database_name, createFromLocation: 1 });
+}, function () { // error
+    db = SQLite.openDatabase({ name: database_name, createFromLocation: 1 });
+});
 
 class Database {
   static getBaniList() {
@@ -34,7 +41,9 @@ class Database {
     padcched,
     mangalPosition,
     paragraphMode,
-    visram
+    visram,
+    vishraamOption,
+    vishraamSource
   ) {
     var baniLength;
     switch (length) {
@@ -84,6 +93,8 @@ class Database {
 
             var splitted = gurmukhiLine.split(" ");
 
+            let vishraamMain = 'VISHRAAM_GRADIENT';
+
             var arr = [];
             splitted.forEach(function(word) {
               if (visram && word.indexOf(";") >= 0) {
@@ -108,6 +119,12 @@ class Database {
                 );
               }
             });
+
+            // Yamki #ffc500
+            // Main: #c0392b
+            //"<span style='white-space: nowrap; padding-right:5px; border-radius: 5px; background: linear-gradient(to right,rgba(229, 229, 229, 0) 20%, rgba(255, 242, 41, 0.5) 100%);'>" + word + "</span>"
+            //"<span style='white-space: nowrap; padding-right:5px; border-radius: 5px; background: linear-gradient(to right,rgba(229, 229, 229, 0) 20%, rgba(167, 0, 0, 0.5) 100%);'>" + word + "</span>"
+
 
             let curGurmukhi = larivaar ? arr.join("<wbr>") : arr.join(" ");
 

@@ -26,6 +26,8 @@ export const TOGGLE_PARAGRAPH_MODE = "TOGGLE_PARAGRAPH_MODE";
 export const TOGGLE_AUTO_SCROLL = "TOGGLE_AUTO_SCROLL";
 export const SET_AUTO_SCROLL_SPEED = "SET_AUTO_SCROLL_SPEED";
 export const TOGGLE_VISRAM = "TOGGLE_VISRAM";
+export const SET_VISHRAAM_OPTION = "SET_VISHRAAM_OPTION";
+export const SET_VISHRAAM_SOURCE = "SET_VISHRAAM_SOURCE";
 export const TOGGLE_REMINDERS = "TOGGLE_REMINDERS";
 export const SET_REMINDER_BANIS = "SET_REMINDER_BANIS";
 export const SET_REMINDER_SOUND = "SET_REMINDER_SOUND";
@@ -89,6 +91,14 @@ export const padchhedSettingNames = [
 export const REMINDER_SOUNDS = ["default", "wake_up_jap.mp3", "waheguru_soul.mp3"];
 
 export const reminderSoundNames = ["Default", "Wake Up Jap", "Waheguru Soul"]
+
+export const VISHRAAM_OPTIONS = ["VISHRAAM_COLORED", "VISHRAAM_GRADIENT"];
+
+export const vishraamOptionNames = ["Colored Words", "Gradient Background"]
+
+export const VISHRAAM_SOURCES = ["VISHRAAM_SOURCE_STTM2", "VISHRAAM_SOURCE_IGURBANI", "VISHRAAM_SOURCE_STTM_LIVING"];
+
+export const vishraamSourceNames = ["STTM 2", "iGurbani", "STTM Living"]
 
 /*
  * action creators
@@ -196,8 +206,18 @@ export function setAutoScrollSpeed(speed, shabad) {
 }
 
 export function toggleVisram(value) {
-  AnalyticsManager.getInstance().trackSettingsEvent("visram", value);
+  AnalyticsManager.getInstance().trackSettingsEvent("vishraam", value);
   return { type: TOGGLE_VISRAM, value };
+}
+
+export function setVishraamOption(option) {
+  AnalyticsManager.getInstance().trackSettingsEvent("vishraamOption", option);
+  return { type: SET_VISHRAAM_OPTION, option };
+}
+
+export function setVishraamSource(source) {
+  AnalyticsManager.getInstance().trackSettingsEvent("vishraamSource", source);
+  return { type: SET_VISHRAAM_SOURCE, source };
 }
 
 export function toggleReminders(value) {

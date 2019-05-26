@@ -31,9 +31,9 @@ export default class AnalyticsManager {
 
   trackReaderEvent(action, label) {
     if (this._trackingOn) {
-      this._tracker.trackEvent("reader", action, {
-        label: "" + label
-      });
+      // this._tracker.trackEvent("reader", action, {
+      //   label: "" + label
+      // });
 
       firebase.analytics().logEvent("reader", {
         [action]: "" + label
@@ -43,9 +43,9 @@ export default class AnalyticsManager {
 
   trackSettingsEvent(action, label) {
     if (this._trackingOn) {
-      this._tracker.trackEvent("setting", action, {
-        label: "" + label
-      });
+      // this._tracker.trackEvent("setting", action, {
+      //   label: "" + label
+      // });
 
       firebase.analytics().logEvent("setting", {
         [action]: "" + label
@@ -55,9 +55,9 @@ export default class AnalyticsManager {
 
   trackRemindersEvent(action, label) {
     if (this._trackingOn) {
-      this._tracker.trackEvent("reminder", action, {
-        label: "" + label
-      });
+      // this._tracker.trackEvent("reminder", action, {
+      //   label: "" + label
+      // });
 
       firebase.analytics().logEvent("reminder", {
         [action]: "" + label

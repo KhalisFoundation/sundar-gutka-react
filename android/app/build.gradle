@@ -101,8 +101,8 @@ android {
         applicationId "com.WahegurooNetwork.SundarGutka"
         minSdkVersion rootProject.ext.minSdkVersion
         targetSdkVersion rootProject.ext.targetSdkVersion
-        versionCode 83
-        versionName "5.3"
+        versionCode 85
+        versionName "5.3.1"
 
         defaultConfig {
             ndk {

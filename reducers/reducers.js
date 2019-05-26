@@ -23,6 +23,8 @@ import {
   TOGGLE_AUTO_SCROLL,
   SET_AUTO_SCROLL_SPEED,
   TOGGLE_VISRAM,
+  SET_VISHRAAM_OPTION,
+  SET_VISHRAAM_SOURCE,
   TOGGLE_REMINDERS,
   SET_REMINDER_BANIS,
   SET_REMINDER_SOUND,
@@ -227,6 +229,24 @@ function visram(state = false, action) {
   }
 }
 
+function vishraamOption(state = 'VISHRAAM_COLORED', action) {
+  switch (action.type) {
+    case SET_VISHRAAM_OPTION:
+      return action.option;
+    default:
+      return state;
+  }
+}
+
+function vishraamSource(state = 'VISHRAAM_SOURCE_STTM_LIVING', action) {
+  switch (action.type) {
+    case SET_VISHRAAM_SOURCE:
+      return action.source;
+    default:
+      return state;
+  }
+}
+
 function reminders(state = false, action) {
   switch (action.type) {
     case TOGGLE_REMINDERS:
@@ -287,6 +307,8 @@ const rootReducer = combineReducers({
   autoScroll,
   autoScrollShabadSpeed,
   visram,
+  vishraamOption,
+  vishraamSource,
   reminders,
   reminderBanis,
   reminderSound,

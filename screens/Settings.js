@@ -575,7 +575,7 @@ class Settings extends React.Component {
               value: this.props.visram,
               onValueChange: this.props.toggleVisram
             }}
-            title="Vishram"
+            title="Show Vishraams"
             containerStyle={[
               styles.titleText,
               this.props.nightMode && { backgroundColor: "#464646" }
@@ -583,6 +583,76 @@ class Settings extends React.Component {
             titleStyle={[this.props.nightMode && { color: "#fff" }]}
             bottomDivider={true}
           />
+          {this.props.visram && (
+            <ListItem
+              backgroundColor={this.props.nightMode ? "#464646" : "#fff"}
+              leftAvatar={
+                <MaterialIcons
+                  style={styles.imageStyle}
+                  color={
+                    this.props.nightMode
+                      ? GLOBAL.COLOR.COMPONENT_COLOR_NIGHT_MODE
+                      : GLOBAL.COLOR.COMPONENT_COLOR
+                  }
+                  name="format-color-fill"
+                  size={30}
+                />
+              }
+              title="Vishraam Options"
+              containerStyle={[
+                styles.titleText,
+                this.props.nightMode && { backgroundColor: "#464646" }
+              ]}
+              titleStyle={[this.props.nightMode && { color: "#fff" }]}
+              rightTitle={
+                actions.vishraamOptionNames[
+                  actions.VISHRAAM_OPTIONS.indexOf(this.props.vishraamOption)
+                ]
+              }
+              rightTitleStyle={[
+                styles.titleInfoStyle,
+                { color: this.props.nightMode ? "#fff" : "#a3a3a3" }
+              ]}
+              chevron={true}
+              bottomDivider={true}
+              onPress={() => this.VishraamOptionsActionSheet.show()}
+            />
+          )}
+          {this.props.visram && (
+            <ListItem
+              backgroundColor={this.props.nightMode ? "#464646" : "#fff"}
+              leftAvatar={
+                <MaterialIcons
+                  style={styles.imageStyle}
+                  color={
+                    this.props.nightMode
+                      ? GLOBAL.COLOR.COMPONENT_COLOR_NIGHT_MODE
+                      : GLOBAL.COLOR.COMPONENT_COLOR
+                  }
+                  name="book-open"
+                  size={30}
+                />
+              }
+              title="Vishraam Source"
+              containerStyle={[
+                styles.titleText,
+                this.props.nightMode && { backgroundColor: "#464646" }
+              ]}
+              titleStyle={[this.props.nightMode && { color: "#fff" }]}
+              rightTitle={
+                actions.vishraamSourceNames[
+                  actions.VISHRAAM_SOURCES.indexOf(this.props.vishraamSource)
+                ]
+              }
+              rightTitleStyle={[
+                styles.titleInfoStyle,
+                { color: this.props.nightMode ? "#fff" : "#a3a3a3" }
+              ]}
+              chevron={true}
+              bottomDivider={true}
+              onPress={() => this.VishraamSourcesActionSheet.show()}
+            />
+          )}
           <ListItem
             backgroundColor={this.props.nightMode ? "#464646" : "#fff"}
             leftAvatar={
@@ -866,6 +936,42 @@ class Settings extends React.Component {
 
         <ActionSheet
           ref={actionSheet => {
+            this.VishraamOptionsActionSheet = actionSheet;
+          }}
+          position="bottom"
+          defaultValue={this.props.vishraamOption}
+        >
+          <View>
+            <Text style={styles.actionSheetTitle}>Vishraam Options</Text>
+          </View>
+          {this.actionSheetOptions(
+            actions.vishraamOptionNames,
+            actions.VISHRAAM_OPTIONS,
+            checkedIcon,
+            this.props.setVishraamOption
+          )}
+        </ActionSheet>
+
+        <ActionSheet
+          ref={actionSheet => {
+            this.VishraamSourcesActionSheet = actionSheet;
+          }}
+          position="bottom"
+          defaultValue={this.props.vishraamSource}
+        >
+          <View>
+            <Text style={styles.actionSheetTitle}>Vishraam Source</Text>
+          </View>
+          {this.actionSheetOptions(
+            actions.vishraamSourceNames,
+            actions.VISHRAAM_SOURCES,
+            checkedIcon,
+            this.props.setVishraamSource
+          )}
+        </ActionSheet>
+
+        <ActionSheet
+          ref={actionSheet => {
             this.ReminderSoundsActionSheet = actionSheet;
           }}
           position="bottom"
@@ -951,6 +1057,9 @@ function mapStateToProps(state) {
     statusBar: state.statusBar,
     paragraphMode: state.paragraphMode,
     autoScroll: state.autoScroll,
+    visram: state.visram,
+    vishraamOption: state.vishraamOption,
+    vishraamSource: state.vishraamSource,
     visram: state.visram,
     reminders: state.reminders,
     reminderSound: state.reminderSound
