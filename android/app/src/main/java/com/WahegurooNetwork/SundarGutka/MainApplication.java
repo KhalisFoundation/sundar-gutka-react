@@ -5,22 +5,14 @@ import android.app.Application;
 import com.apsl.versionnumber.RNVersionNumberPackage;
 import com.corbt.keepawake.KCKeepAwakePackage;
 import com.facebook.react.ReactApplication;
-import com.zmxv.RNSound.RNSoundPackage;
-import com.apsl.versionnumber.RNVersionNumberPackage;
-import com.oblador.vectoricons.VectorIconsPackage;
-import org.devio.rn.splashscreen.SplashScreenReactPackage;
-import com.react.rnspinkit.RNSpinkitPackage;
-import com.corbt.keepawake.KCKeepAwakePackage;
-import com.idehub.GoogleAnalyticsBridge.GoogleAnalyticsBridgePackage;
-import io.invertase.firebase.RNFirebasePackage;
-import com.swmansion.gesturehandler.react.RNGestureHandlerPackage;
 import com.facebook.react.ReactNativeHost;
 import com.facebook.react.ReactPackage;
 import com.facebook.react.shell.MainReactPackage;
 import com.facebook.soloader.SoLoader;
-import com.idehub.GoogleAnalyticsBridge.GoogleAnalyticsBridgePackage;
 import com.oblador.vectoricons.VectorIconsPackage;
 import com.react.rnspinkit.RNSpinkitPackage;
+import com.swmansion.gesturehandler.react.RNGestureHandlerPackage;
+import com.zmxv.RNSound.RNSoundPackage;
 
 import org.devio.rn.splashscreen.SplashScreenReactPackage;
 import org.pgsqlite.SQLitePluginPackage;
@@ -51,7 +43,6 @@ public class MainApplication extends Application implements ReactApplication {
             new SplashScreenReactPackage(),
             new RNSpinkitPackage(),
             new KCKeepAwakePackage(),
-            new GoogleAnalyticsBridgePackage(),
             new RNFirebasePackage(),
             new RNGestureHandlerPackage(),
               new RNFirebaseAnalyticsPackage(),

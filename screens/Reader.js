@@ -299,7 +299,7 @@ class Reader extends React.Component {
     }, false);
 
     function getScrollPercent() {
-      return (document.body.scrollTop / (document.body.scrollHeight - window.innerHeight));
+      return (window.pageYOffset / (document.body.scrollHeight - window.innerHeight));
     }
 
     function setAutoScroll() {

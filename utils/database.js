@@ -102,7 +102,7 @@ class Database {
             let vishraamJson = JSON.parse(row.Visraam);
 
             var vishraamPositions = {};
-            if (visram && vishraamJson[vishraamSource].length > 0) {
+            if (visram && vishraamJson != null && vishraamJson[vishraamSource].length > 0) {
               vishraamJson[vishraamSource].forEach(function(pos) {
                 vishraamPositions[pos.p] = pos.t;
               });
@@ -133,34 +133,6 @@ class Database {
                 return "<span style='white-space: nowrap;'>" + word + "</span>";
             });
 
-            // splitted.forEach(function(word) {
-            //   if (visram && word.indexOf(";") >= 0) {
-            //     arr.push(
-            //       "<span style='color:" +
-            //         GLOBAL.COLOR.VISHRAM_LONG +
-            //         "; white-space: nowrap;'>" +
-            //         word.slice(0, -1) +
-            //         "</span>"
-            //     );
-            //   } else if (visram && word.indexOf(",") >= 0) {
-            //     arr.push(
-            //       "<span style='color:" +
-            //         GLOBAL.COLOR.VISHRAM_SHORT +
-            //         "; white-space: nowrap;'>" +
-            //         word.slice(0, -1) +
-            //         "</span>"
-            //     );
-            //   } else {
-            //     arr.push(
-            //       "<span style='white-space: nowrap;'>" + word + "</span>"
-            //     );
-            //   }
-            // });
-
-            // Yamki #ffc500
-            // Main: #c0392b
-            //"<span style='white-space: nowrap; padding-right:5px; border-radius: 5px; background: linear-gradient(to right,rgba(229, 229, 229, 0) 20%, rgba(255, 242, 41, 0.5) 100%);'>" + word + "</span>"
-            //"<span style='white-space: nowrap; padding-right:5px; border-radius: 5px; background: linear-gradient(to right,rgba(229, 229, 229, 0) 20%, rgba(167, 0, 0, 0.5) 100%);'>" + word + "</span>"
 
             let curGurmukhi = larivaar ? arr.join("<wbr>") : arr.join(" ");
 
