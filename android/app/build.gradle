@@ -1,4 +1,5 @@
 apply plugin: "com.android.application"
+apply plugin: "io.fabric"
 
 import com.android.build.OutputFile
 
@@ -101,8 +102,8 @@ android {
         applicationId "com.WahegurooNetwork.SundarGutka"
         minSdkVersion rootProject.ext.minSdkVersion
         targetSdkVersion rootProject.ext.targetSdkVersion
-        versionCode 86
-        versionName "5.4.0"
+        versionCode 87
+        versionName "5.4.1"
 
         defaultConfig {
             ndk {
@@ -152,8 +153,13 @@ dependencies {
     implementation project(':react-native-gesture-handler')
     implementation project(':react-native-sqlite-storage')
     implementation project(':react-native-firebase')
+
+    implementation "com.google.android.gms:play-services-base:16.1.0"
     implementation "com.google.firebase:firebase-core:16.0.9"
     implementation "com.google.firebase:firebase-messaging:18.0.0"
+    implementation('com.crashlytics.sdk.android:crashlytics:2.9.5@aar') {
+        transitive = true
+    }
     implementation fileTree(dir: "libs", include: ["*.jar"])
     implementation "com.android.support:appcompat-v7:${rootProject.ext.supportLibVersion}"
     implementation "com.facebook.react:react-native:+"  // From node_modules

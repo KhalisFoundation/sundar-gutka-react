@@ -22,6 +22,7 @@ import java.util.List;
 
 import io.invertase.firebase.RNFirebasePackage;
 import io.invertase.firebase.analytics.RNFirebaseAnalyticsPackage;
+import io.invertase.firebase.fabric.crashlytics.RNFirebaseCrashlyticsPackage;
 import io.invertase.firebase.messaging.RNFirebaseMessagingPackage;
 import io.invertase.firebase.notifications.RNFirebaseNotificationsPackage;
 
@@ -44,6 +45,7 @@ public class MainApplication extends Application implements ReactApplication {
             new RNSpinkitPackage(),
             new KCKeepAwakePackage(),
             new RNFirebasePackage(),
+              new RNFirebaseCrashlyticsPackage(),
             new RNGestureHandlerPackage(),
               new RNFirebaseAnalyticsPackage(),
               new RNFirebaseMessagingPackage(),

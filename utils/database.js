@@ -97,8 +97,6 @@ class Database {
             var gurmukhiLine =
               visram && row.GurmukhiBisram ? row.GurmukhiBisram : row.Gurmukhi;
 
-            var splitted = gurmukhiLine.split(" ");
-
             let vishraamJson = JSON.parse(row.Visraam);
 
             var vishraamPositions = {};
@@ -107,6 +105,7 @@ class Database {
                 vishraamPositions[pos.p] = pos.t;
               });
             }
+            var splitted = gurmukhiLine.split(" ");
 
             var arr = splitted.map((word, index) => {
               var style = "style='";
