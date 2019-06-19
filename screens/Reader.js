@@ -134,7 +134,7 @@ class Reader extends React.Component {
       let spanishTranslations = this.props.spanishTranslations;
       var html =
         "<!DOCTYPE html><html><head>" +
-        "<meta name='viewport' content='width=device-width, user-scalable=yes'>" +
+        "<meta name='viewport' content='width=device-width, user-scalable=no'>" +
         "<style type='text/css'>";
       if (Platform.OS === "android") {
         html +=
