@@ -100,7 +100,7 @@ class Database {
             let vishraamJson = JSON.parse(row.Visraam);
 
             var vishraamPositions = {};
-            if (visram && vishraamJson != null && vishraamJson[vishraamSource].length > 0) {
+            if (visram && vishraamJson != null && vishraamJson[vishraamSource] != null && vishraamJson[vishraamSource].length > 0) {
               vishraamJson[vishraamSource].forEach(function(pos) {
                 vishraamPositions[pos.p] = pos.t;
               });
