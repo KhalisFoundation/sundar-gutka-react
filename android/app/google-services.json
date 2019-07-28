@@ -1,42 +1,48 @@
 {
-  "project_info": {
-    "project_number": "283245223101",
-    "firebase_url": "https://khalis-sundar-gutka.firebaseio.com",
-    "project_id": "khalis-sundar-gutka",
-    "storage_bucket": "khalis-sundar-gutka.appspot.com"
-  },
-  "client": [
-    {
-      "client_info": {
-        "mobilesdk_app_id": "1:283245223101:android:d642e17fdae02f2f",
-        "android_client_info": {
-          "package_name": "com.WahegurooNetwork.SundarGutka"
-        }
-      },
-      "oauth_client": [
+    "project_info": {
+        "project_number": "283245223101",
+        "firebase_url": "https://khalis-sundar-gutka.firebaseio.com",
+        "project_id": "khalis-sundar-gutka",
+        "storage_bucket": "khalis-sundar-gutka.appspot.com"
+    },
+    "client": [
         {
-          "client_id": "283245223101-r151ub1cdfak794m2ja44b6m0pah550h.apps.googleusercontent.com",
-          "client_type": 3
+            "client_info": {
+                "mobilesdk_app_id": "1:283245223101:android:d642e17fdae02f2f",
+                "android_client_info": {
+                    "package_name": "com.WahegurooNetwork.SundarGutka"
+                }
+            },
+            "oauth_client": [
+                {
+                    "client_id": "283245223101-r151ub1cdfak794m2ja44b6m0pah550h.apps.googleusercontent.com",
+                    "client_type": 3
+                }
+            ],
+            "api_key": [
+                {
+                    "current_key": "AIzaSyDMcfj7ROlrAyFk1yHDFcHQruqZlampsmk"
+                }
+            ],
+            "services": {
+                "appinvite_service": {
+                    "other_platform_oauth_client": [
+                        {
+                            "client_id": "283245223101-r151ub1cdfak794m2ja44b6m0pah550h.apps.googleusercontent.com",
+                            "client_type": 3
+                        },
+                        {
+                            "client_id": "283245223101-91bmpuut4hnbbo8e5qho5epqcu1goudl.apps.googleusercontent.com",
+                            "client_type": 2,
+                            "ios_info": {
+                                "bundle_id": "com.WahegurooNetwork.SundarGutka",
+                                "app_store_id": "431446112"
+                            }
+                        }
+                    ]
+                }
+            }
         }
-      ],
-      "api_key": [
-        {
-          "current_key": "AIzaSyDMcfj7ROlrAyFk1yHDFcHQruqZlampsmk"
-        }
-      ],
-      "services": {
-        "analytics_service": {
-          "status": 1
-        },
-        "appinvite_service": {
-          "status": 1,
-          "other_platform_oauth_client": []
-        },
-        "ads_service": {
-          "status": 2
-        }
-      }
-    }
-  ],
-  "configuration_version": "1"
+    ],
+    "configuration_version": "1"
 }
