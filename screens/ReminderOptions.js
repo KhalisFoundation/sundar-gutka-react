@@ -30,13 +30,6 @@ import Database from "../utils/database";
 
 class ReminderOptions extends React.Component {
   componentDidMount() {
-    AnalyticsManager.getInstance().trackScreenView(
-      "Reminder Options",
-      this.constructor.name
-    );
-  }
-
-  componentWillMount() {
     Database.getBaniList().then(baniList => {
       this.setState(
         {
@@ -49,6 +42,10 @@ class ReminderOptions extends React.Component {
         }
       );
     });
+    AnalyticsManager.getInstance().trackScreenView(
+      "Reminder Options",
+      this.constructor.name
+    );
   }
 
   setDefaultReminders() {
@@ -102,7 +99,7 @@ class ReminderOptions extends React.Component {
     );
   }
 
-  componentWillUnmount() {
+  componentDidUnmount() {
     this._hideTimePicker();
   }
 

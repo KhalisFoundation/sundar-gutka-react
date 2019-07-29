@@ -19,7 +19,7 @@ class Bookmarks extends React.Component {
     };
   }
 
-  componentWillMount() {
+  componentDidMount() {
     Database.getBookmarksForId(
       this.props.currentShabad,
       this.props.baniLength

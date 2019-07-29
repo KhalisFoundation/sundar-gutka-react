@@ -4,11 +4,11 @@ import {
   Dimensions,
   StyleSheet,
   View,
-  WebView,
   Platform,
   Text,
   StatusBar
 } from "react-native";
+import { WebView } from 'react-native-webview';
 import { connect } from "react-redux";
 import { Header, Slider } from "react-native-elements";
 import { bindActionCreators } from "redux";
@@ -74,7 +74,7 @@ class Reader extends React.Component {
     });
   }
 
-  componentWillMount() {
+  componentDidMount() {
     this.loadShabad();
   }
 
@@ -136,15 +136,14 @@ class Reader extends React.Component {
         "<!DOCTYPE html><html><head>" +
         "<meta name='viewport' content='width=device-width, user-scalable=no'>" +
         "<style type='text/css'>";
-      if (Platform.OS === "android") {
         html +=
           "@font-face{font-family: '" +
           fontFace +
           "'; " +
-          "src: url('file:///android_asset/fonts/" +
+          "src: local('" + fontFace + "'), url('" + ((Platform.OS === "android") ? "file:///android_asset/fonts/" : "") +
           fontFace +
-          ".ttf');}";
-      }
+          ".ttf') format('truetype');}";
+      
       html +=
         "body { " +
         "background-color: " +

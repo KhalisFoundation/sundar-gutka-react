@@ -70,7 +70,7 @@ class Home extends React.Component {
     StatusBar.setHidden(shouldBeHidden);
   }
 
-  componentWillMount() {
+  componentDidMount() {
     var showBaniLengthSelector = false;
     if (this.props.appVersion != VersionNumber.appVersion) {
       if (this.props.appVersion == "") {
@@ -100,9 +100,7 @@ class Home extends React.Component {
         isLoading: false
       });
     });
-  }
 
-  componentDidMount() {
     SplashScreen.hide();
     AnalyticsManager.getInstance().trackScreenView(
       "Home Screen",
