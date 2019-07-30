@@ -1,4 +1,3 @@
-import GLOBAL from "./globals";
 import SQLite from "react-native-sqlite-storage";
 
 var database_name = "gutka.db";
