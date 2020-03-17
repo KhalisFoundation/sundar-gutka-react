@@ -83,6 +83,7 @@
 		9A5EFBB622ED514D003130DB /* waheguru_soul.mp3 */ = {isa = PBXFileReference; lastKnownFileType = audio.mp3; path = waheguru_soul.mp3; sourceTree = "<group>"; };
 		9A5EFBB722ED5150003130DB /* wake_up_jap.mp3 */ = {isa = PBXFileReference; lastKnownFileType = audio.mp3; path = wake_up_jap.mp3; sourceTree = "<group>"; };
 		9A5EFBD222ED52AA003130DB /* www */ = {isa = PBXFileReference; lastKnownFileType = folder; name = www; path = SundarGutka/www; sourceTree = "<group>"; };
+		9A8D4A0D24206D2F00DA444E /* SundarGutka.entitlements */ = {isa = PBXFileReference; lastKnownFileType = text.plist.entitlements; name = SundarGutka.entitlements; path = SundarGutka/SundarGutka.entitlements; sourceTree = "<group>"; };
 		9CD409A848E54A7485F0244F /* Foundation.ttf */ = {isa = PBXFileReference; explicitFileType = undefined; fileEncoding = 9; includeInIndex = 0; lastKnownFileType = unknown; name = Foundation.ttf; path = "../node_modules/react-native-vector-icons/Fonts/Foundation.ttf"; sourceTree = "<group>"; };
 		A1EEC765640F4818AA2120EE /* FontAwesome5_Brands.ttf */ = {isa = PBXFileReference; explicitFileType = undefined; fileEncoding = 9; includeInIndex = 0; lastKnownFileType = unknown; name = FontAwesome5_Brands.ttf; path = "../node_modules/react-native-vector-icons/Fonts/FontAwesome5_Brands.ttf"; sourceTree = "<group>"; };
 		A948F221557C017C1CE99663 /* Pods-SundarGutka-tvOS.debug.xcconfig */ = {isa = PBXFileReference; includeInIndex = 1; lastKnownFileType = text.xcconfig; name = "Pods-SundarGutka-tvOS.debug.xcconfig"; path = "Pods/Target Support Files/Pods-SundarGutka-tvOS/Pods-SundarGutka-tvOS.debug.xcconfig"; sourceTree = "<group>"; };
@@ -157,6 +158,7 @@
 		13B07FAE1A68108700A75B9A /* SundarGutka */ = {
 			isa = PBXGroup;
 			children = (
+				9A8D4A0D24206D2F00DA444E /* SundarGutka.entitlements */,
 				9A5EFBB622ED514D003130DB /* waheguru_soul.mp3 */,
 				9A5EFBB722ED5150003130DB /* wake_up_jap.mp3 */,
 				9A5EFBD222ED52AA003130DB /* www */,
@@ -356,6 +358,9 @@
 					00E356ED1AD99517003FC87E = {
 						CreatedOnToolsVersion = 6.2;
 						TestTargetID = 13B07F861A680F5B00A75B9A;
+					};
+					13B07F861A680F5B00A75B9A = {
+						DevelopmentTeam = B3W82WVBU9;
 					};
 					2D02E47A1E0B4A5D006451C7 = {
 						CreatedOnToolsVersion = 8.2.1;
@@ -730,10 +735,13 @@
 			buildSettings = {
 				ASSETCATALOG_COMPILER_APPICON_NAME = AppIcon;
 				ASSETCATALOG_COMPILER_LAUNCHIMAGE_NAME = LaunchImage;
+				CODE_SIGN_ENTITLEMENTS = SundarGutka/SundarGutka.entitlements;
 				CURRENT_PROJECT_VERSION = 1;
 				DEAD_CODE_STRIPPING = NO;
+				DEVELOPMENT_TEAM = B3W82WVBU9;
 				INFOPLIST_FILE = SundarGutka/Info.plist;
 				LD_RUNPATH_SEARCH_PATHS = "$(inherited) @executable_path/Frameworks";
+				MARKETING_VERSION = 5.6.0;
 				OTHER_LDFLAGS = (
 					"$(inherited)",
 					"-ObjC",
@@ -752,9 +760,12 @@
 			buildSettings = {
 				ASSETCATALOG_COMPILER_APPICON_NAME = AppIcon;
 				ASSETCATALOG_COMPILER_LAUNCHIMAGE_NAME = LaunchImage;
+				CODE_SIGN_ENTITLEMENTS = SundarGutka/SundarGutka.entitlements;
 				CURRENT_PROJECT_VERSION = 1;
+				DEVELOPMENT_TEAM = B3W82WVBU9;
 				INFOPLIST_FILE = SundarGutka/Info.plist;
 				LD_RUNPATH_SEARCH_PATHS = "$(inherited) @executable_path/Frameworks";
+				MARKETING_VERSION = 5.6.0;
 				OTHER_LDFLAGS = (
 					"$(inherited)",
 					"-ObjC",

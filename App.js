@@ -14,6 +14,7 @@ import AboutScreen from "./screens/About";
 import ReaderScreen from "./screens/Reader";
 import BookmarksScreen from "./screens/Bookmarks";
 import createStore from "./config/store";
+import firebase from 'react-native-firebase';
 
 const RootStack = createStackNavigator(
   {
@@ -53,6 +54,40 @@ const { store, persistor } = createStore();
 export default class App extends React.Component {
   componentDidMount() {
     BackHandler.addEventListener("hardwareBackPress", this.handleBackPress);
+    this.checkPermission();
+  }
+
+  async checkPermission() {
+    const enabled = await firebase.messaging().hasPermission();
+    if (enabled) {
+      this.getToken();
+    } else {
+      this.requestPermission();
+    }
+  }
+
+  async getToken() {
+    firebase
+      .messaging()
+      .getToken()
+      .then(fcmToken => {
+        if (fcmToken) {
+          console.log("FCM Token:", fcmToken);
+        } else {
+          console.log("user doesn't have a device token yet");
+        }
+      });
+  }
+
+  async requestPermission() {
+    try {
+      await firebase.messaging().requestPermission();
+      // User has authorized
+      this.getToken();
+    } catch (error) {
+      // User has rejected permissions
+      console.log('permission rejected');
+    }
   }
 
   componentWillUnmount() {
@@ -76,8 +111,8 @@ export default class App extends React.Component {
     return (
       <Provider store={store}>
         <PersistGate loading={null} persistor={persistor}>
-        <SafeAreaView style={{ flex: 1 }} forceInset={{ vertical: 'never' }}>
-          <AppContainer />
+          <SafeAreaView style={{ flex: 1 }} forceInset={{ vertical: 'never' }}>
+            <AppContainer />
           </SafeAreaView>
         </PersistGate>
       </Provider>

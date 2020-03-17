@@ -20,6 +20,7 @@ import firebase from "react-native-firebase";
 import Sound from "react-native-sound";
 
 class Home extends React.Component {
+  GENERAL_NOTIFICATIONS_CHANNEL = "general-channel-4";
   static navigationOptions = { header: null };
 
   constructor(props) {
@@ -88,6 +89,8 @@ class Home extends React.Component {
     this.changeStatusBar(this.props.statusBar);
     AnalyticsManager.getInstance().allowTracking(this.props.statistics);
 
+    this.setupNotificationChannel();
+
     NotificationsManager.getInstance().updateReminders(
       this.props.reminders,
       this.props.reminderSound,
@@ -136,16 +139,50 @@ class Home extends React.Component {
 
     NotificationsManager.getInstance().removeAllDeliveredNotifications();
 
-    this.props.setCurrentShabad(item.id);
-    this.props.navigation.navigate({
-      key: "Reader-" + item.id,
-      routeName: "Reader",
-      params: { item: item }
-    });
+    if(item.id) {
+      this.props.setCurrentShabad(item.id);
+      this.props.navigation.navigate({
+        key: "Reader-" + item.id,
+        routeName: "Reader",
+        params: { item: item }
+      });
+    }
+   
   }
 
   componentWillUnmount() {
     this.notificationOpenedListener();
+    this.unsubscribeFromNotificationListener();
+  }
+
+  setupNotificationChannel() {
+    const channel = new firebase.notifications.Android.Channel(
+      this.GENERAL_NOTIFICATIONS_CHANNEL,
+      'General Notifications',
+      firebase.notifications.Android.Importance.Max
+    )
+      .setDescription('Channel for general notifications and important announcements.');
+    firebase.notifications().android.createChannel(channel);
+    
+    // the listener returns a function you can use to unsubscribe
+    this.unsubscribeFromNotificationListener = firebase.notifications().onNotification((notification) => {
+      // Build notification
+      const localNotification = new firebase.notifications.Notification()
+        .setNotificationId(notification.notificationId)
+        .setTitle(notification.title)
+        .setSubtitle(notification.subtitle)
+        .setBody(notification.body)
+        .setData(notification.data)
+        console.log("notification", notification);
+
+        localNotification.android
+        .setChannelId(this.GENERAL_NOTIFICATIONS_CHANNEL)
+        .android.setSmallIcon("ic_notification");
+
+      firebase.notifications()
+        .displayNotification(localNotification)
+        .catch(err => console.error(err));
+    });
   }
 
   componentDidUpdate(prevProps) {
