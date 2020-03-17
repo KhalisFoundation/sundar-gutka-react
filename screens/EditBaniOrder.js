@@ -13,6 +13,7 @@ import {
 import { Header } from "react-native-elements";
 import Icon from "react-native-vector-icons/MaterialIcons";
 import GLOBAL from "../utils/globals";
+import Strings from "../utils/localization";
 import SortableList from "react-native-sortable-list";
 import { connect } from "react-redux";
 import { bindActionCreators } from "redux";
@@ -54,7 +55,7 @@ class EditBaniOrder extends React.Component {
             />
           }
           centerComponent={{
-            text: "Edit Bani Order",
+            text: Strings.edit_bani_order_title,
             style: { color: GLOBAL.COLOR.TOOLBAR_TINT, fontSize: 18 }
           }}
           rightComponent={

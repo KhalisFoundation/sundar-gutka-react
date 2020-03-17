@@ -17,6 +17,7 @@ import FontAwesome5Icons from "react-native-vector-icons/FontAwesome5";
 import Entypo from "react-native-vector-icons/Entypo";
 import Icon from "react-native-vector-icons/MaterialIcons";
 import GLOBAL from "../utils/globals";
+import Strings from "../utils/localization";
 import { baniLengthInfo } from "../utils/helpers";
 import {
   ActionSheet,
@@ -96,7 +97,7 @@ class Settings extends React.Component {
             />
           }
           centerComponent={{
-            text: "Settings",
+            text: Strings.settings_title,
             style: {
               color: this.props.nightMode
                 ? GLOBAL.COLOR.TOOLBAR_TINT
@@ -118,7 +119,7 @@ class Settings extends React.Component {
               this.props.nightMode && { color: "#fff" }
             ]}
           >
-            Display Options
+            {Strings.settings_display_options}
           </Text>
           <ListItem
             backgroundColor={this.props.nightMode ? "#464646" : "#fff"}
@@ -130,7 +131,7 @@ class Settings extends React.Component {
                 }}
               />
             }
-            title="Font Size"
+            title={Strings.settings_font_size}
             containerStyle={[
               styles.titleText,
               this.props.nightMode && { backgroundColor: "#464646" }
@@ -159,7 +160,7 @@ class Settings extends React.Component {
                 }}
               />
             }
-            title="Font Face"
+            title={Strings.settings_font_face}
             containerStyle={[
               styles.titleText,
               this.props.nightMode && { backgroundColor: "#464646" }
@@ -193,7 +194,7 @@ class Settings extends React.Component {
               value: this.props.romanized,
               onValueChange: this.props.toggleRomanized
             }}
-            title="Romanized"
+            title={Strings.settings_romanized}
             containerStyle={[
               styles.titleText,
               this.props.nightMode && { backgroundColor: "#464646" }
@@ -211,7 +212,7 @@ class Settings extends React.Component {
                 }}
               />
             }
-            title="Translations"
+            title={Strings.settings_translations}
             containerStyle={[
               styles.titleText,
               this.props.nightMode && { backgroundColor: "#464646" }
@@ -249,7 +250,7 @@ class Settings extends React.Component {
                 value: this.props.englishTranslations,
                 onValueChange: this.props.toggleEnglishTranslations
               }}
-              title="English Translations"
+              title={Strings.settings_en_translations}
               containerStyle={[
                 { paddingLeft: 80 },
                 this.props.nightMode && { backgroundColor: "#464646" }
@@ -263,7 +264,7 @@ class Settings extends React.Component {
                 value: this.props.punjabiTranslations,
                 onValueChange: this.props.togglePunjabiTranslations
               }}
-              title="Punjabi Translations"
+              title={Strings.settings_pu_translations}
               containerStyle={[
                 { paddingLeft: 80 },
                 this.props.nightMode && { backgroundColor: "#464646" }
@@ -277,7 +278,7 @@ class Settings extends React.Component {
                 value: this.props.spanishTranslations,
                 onValueChange: this.props.toggleSpanishTranslations
               }}
-              title="Spanish Translations"
+              title={Strings.settings_es_translations}
               containerStyle={[
                 { paddingLeft: 80 },
                 this.props.nightMode && { backgroundColor: "#464646" }
@@ -301,7 +302,7 @@ class Settings extends React.Component {
               value: this.props.nightMode,
               onValueChange: this.props.toggleNightMode
             }}
-            title="Dark Mode"
+            title={Strings.settings_dark_mode}
             containerStyle={[
               styles.titleText,
               this.props.nightMode && { backgroundColor: "#464646" }
@@ -328,7 +329,7 @@ class Settings extends React.Component {
               value: this.props.statusBar,
               onValueChange: this.props.toggleStatusBar
             }}
-            title="Hide Status Bar"
+            title={Strings.settings_hide_status_bar}
             containerStyle={[
               styles.titleText,
               this.props.nightMode && { backgroundColor: "#464646" }
@@ -355,7 +356,7 @@ class Settings extends React.Component {
               value: this.props.autoScroll,
               onValueChange: this.props.toggleAutoScroll
             }}
-            title="Auto Scroll"
+            title={Strings.settings_auto_scroll}
             containerStyle={[
               styles.titleText,
               this.props.nightMode && { backgroundColor: "#464646" }
@@ -378,7 +379,7 @@ class Settings extends React.Component {
               value: this.props.screenAwake || this.props.autoScroll,
               onValueChange: this.props.toggleScreenAwake
             }}
-            title="Keep Screen Awake"
+            title={Strings.settings_keep_awake}
             containerStyle={[
               styles.titleText,
               this.props.nightMode && { backgroundColor: "#464646" }
@@ -392,7 +393,7 @@ class Settings extends React.Component {
               this.props.nightMode && { color: "#fff" }
             ]}
           >
-            Bani Options
+          {Strings.settings_bani_options}
           </Text>
           <ListItem
             backgroundColor={this.props.nightMode ? "#464646" : "#fff"}
@@ -404,7 +405,7 @@ class Settings extends React.Component {
                 }}
               />
             }
-            title="Edit Bani Order"
+            title={Strings.settings_edit_bani_order}
             containerStyle={[
               styles.titleText,
               this.props.nightMode && { backgroundColor: "#464646" }
@@ -426,7 +427,7 @@ class Settings extends React.Component {
                 }}
               />
             }
-            title="Bani Length"
+            title={Strings.settings_bani_length}
             containerStyle={[
               styles.titleText,
               this.props.nightMode && { backgroundColor: "#464646" }
@@ -460,7 +461,7 @@ class Settings extends React.Component {
               value: this.props.larivaar,
               onValueChange: this.props.toggleLarivaar
             }}
-            title="Larivaar"
+            title={Strings.settings_larivaar}
             containerStyle={[
               styles.titleText,
               this.props.nightMode && { backgroundColor: "#464646" }
@@ -487,7 +488,7 @@ class Settings extends React.Component {
               value: this.props.paragraphMode,
               onValueChange: this.props.toggleParagraphMode
             }}
-            title="Paragraph Mode"
+            title={Strings.settings_paragraph_mode}
             containerStyle={[
               styles.titleText,
               this.props.nightMode && { backgroundColor: "#464646" }
@@ -505,7 +506,7 @@ class Settings extends React.Component {
                 }}
               />
             }
-            title="Manglacharan Position"
+            title={Strings.settings_manglacharan_position}
             containerStyle={[
               styles.titleText,
               this.props.nightMode && { backgroundColor: "#464646" }
@@ -536,7 +537,7 @@ class Settings extends React.Component {
                 }}
               />
             }
-            title="Padchhed Settings"
+            title={Strings.settings_padchhed_settings}
             containerStyle={[
               styles.titleText,
               this.props.nightMode && { backgroundColor: "#464646" }
@@ -574,7 +575,7 @@ class Settings extends React.Component {
               value: this.props.visram,
               onValueChange: this.props.toggleVisram
             }}
-            title="Show Vishraams"
+            title={Strings.settings_show_vishraams}
             containerStyle={[
               styles.titleText,
               this.props.nightMode && { backgroundColor: "#464646" }
@@ -597,7 +598,7 @@ class Settings extends React.Component {
                   size={30}
                 />
               }
-              title="Vishraam Options"
+            title={Strings.settings_vishraam_options}
               containerStyle={[
                 styles.titleText,
                 this.props.nightMode && { backgroundColor: "#464646" }
@@ -632,7 +633,7 @@ class Settings extends React.Component {
                   size={30}
                 />
               }
-              title="Vishraam Source"
+              title={Strings.settings_vishraam_source}
               containerStyle={[
                 styles.titleText,
                 this.props.nightMode && { backgroundColor: "#464646" }
@@ -671,7 +672,7 @@ class Settings extends React.Component {
               value: this.props.reminders,
               onValueChange: this.props.toggleReminders
             }}
-            title="Reminders"
+            title={Strings.settings_reminders}
             containerStyle={[
               styles.titleText,
               this.props.nightMode && { backgroundColor: "#464646" }
@@ -694,7 +695,7 @@ class Settings extends React.Component {
                   size={30}
                 />
               }
-              title="Set Reminder Options"
+              title={Strings.settings_set_reminder_options}
               containerStyle={[
                 styles.titleText,
                 this.props.nightMode && { backgroundColor: "#464646" }
@@ -725,7 +726,7 @@ class Settings extends React.Component {
                   size={30}
                 />
               }
-              title="Reminder Sound"
+              title={Strings.settings_reminder_sound}
               containerStyle={[
                 styles.titleText,
                 this.props.nightMode && { backgroundColor: "#464646" }
@@ -751,7 +752,7 @@ class Settings extends React.Component {
               this.props.nightMode && { color: "#fff" }
             ]}
           >
-            Other Options
+            {Strings.settings_other_options}
           </Text>
           <ListItem
             backgroundColor={this.props.nightMode ? "#464646" : "#fff"}
@@ -768,7 +769,7 @@ class Settings extends React.Component {
               value: this.props.statistics,
               onValueChange: this.props.toggleStatistics
             }}
-            title="Collect Statistics"
+            title={Strings.settings_statistics}
             containerStyle={[
               styles.titleText,
               this.props.nightMode && { backgroundColor: "#464646" }
@@ -790,7 +791,7 @@ class Settings extends React.Component {
                 size={30}
               />
             }
-            title="Donate"
+            title={Strings.settings_donate}
             containerStyle={[
               styles.titleText,
               this.props.nightMode && { backgroundColor: "#464646" }
@@ -816,7 +817,7 @@ class Settings extends React.Component {
                 size={30}
               />
             }
-            title="About"
+            title={Strings.settings_about}
             containerStyle={[
               styles.titleText,
               this.props.nightMode && { backgroundColor: "#464646" }

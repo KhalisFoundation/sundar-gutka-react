@@ -145,6 +145,7 @@ class Reader extends React.Component {
           ".ttf') format('truetype');}";
       
       html +=
+        "html { scroll-behavior: smooth; }" +
         "body { " +
         "background-color: " +
         (nightMode ? "#000" : "#fff") +

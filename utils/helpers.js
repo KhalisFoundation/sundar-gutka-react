@@ -115,9 +115,9 @@ Throughout the past few centuries, there have been many different “sampardhas�
 
 These differences have also brought about different recommendations about compiled Baanis and the Paath (prayers) that we read on a daily basis which makes it difficult to create a single Sundar Gutka app with a single version of Paath that would satisfy everyone. 
 
-We therefore have created the option to select lengths of what Paath you do that apply to four of the main Banis read most often. These have been structured in relation to length but all have a minimum of the SGPC standard or fall under the Akaal Takht. We do not include any versions that are by sampardhas excommunicated by the Akaal Takht as a standard.
+We, therefore, have created the option to select lengths of what Paath you do that apply to four of the main Banis read most often. These have been structured in relation to length but all have a minimum of the SGPC standard or fall under the Akaal Takht. We do not include any versions that are by sampardhas excommunicated by the Akaal Takht as a standard.
 
-For those who may be confused about which version to begin reading these Banis, we recommend reading the longest Bani because the more we read and recite, the better it is for our souls. However, for beginners, we would suggest to start with the “short” setting and change to increase the length setting in future once you are comfortable, confident and have more time.
+For those who may be confused about which version to begin reading these Banis, we recommend reading the longest Bani because the more we read and recite, the better it is for our souls. For beginners, we would suggest starting with the “short” setting and increase the length setting in the future once you are comfortable, confident, and have more time.
 
 Here is a breakdown of the lengths and which sampardhas typically use them:-
 

@@ -5,6 +5,7 @@ import { View, StatusBar, Platform } from "react-native";
 import { Header } from "react-native-elements";
 import Icon from "react-native-vector-icons/MaterialIcons";
 import GLOBAL from "../utils/globals";
+import Strings from "../utils/localization";
 import Database from "../utils/database";
 import BaniList from "../components/BaniList";
 import LoadingIndicator from "../components/LoadingIndicator";
@@ -73,7 +74,7 @@ class Bookmarks extends React.Component {
             />
           }
           centerComponent={{
-            text: "Bookmarks",
+            text: Strings.bookmarks_title,
             style: {
               color: this.props.nightMode
                 ? GLOBAL.COLOR.TOOLBAR_TINT

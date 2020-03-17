@@ -13,6 +13,7 @@ import {
 import { Header } from "react-native-elements";
 import Icon from "react-native-vector-icons/MaterialIcons";
 import GLOBAL from "../utils/globals";
+import Strings from "../utils/localization";
 import { connect } from "react-redux";
 import VersionNumber from "react-native-version-number";
 import AnalyticsManager from "../utils/analytics";

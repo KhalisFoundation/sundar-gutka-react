@@ -15,6 +15,7 @@ import { Header } from "react-native-elements";
 import Icon from "react-native-vector-icons/MaterialIcons";
 import MaterialIcons from "react-native-vector-icons/MaterialCommunityIcons";
 import GLOBAL from "../utils/globals";
+import Strings from "../utils/localization";
 import { connect } from "react-redux";
 import { bindActionCreators } from "redux";
 import * as actions from "../actions/actions";
@@ -105,15 +106,15 @@ class ReminderOptions extends React.Component {
 
   _resetReminderDefaults() {
     Alert.alert(
-      "Reset Reminders",
-      "Do you want to restore reminders to the default values?",
+      Strings.reminder_options_reset_dialog_title,
+      Strings.reminder_options_reset_dialog_text,
       [
         {
-          text: "Cancel",
+          text: Strings.cancel,
           style: "cancel"
         },
         {
-          text: "Reset",
+          text: Strings.reminder_options_reset_dialog_confirm,
           style: "destructive",
           onPress: () => {
             AnalyticsManager.getInstance().trackRemindersEvent(
@@ -309,7 +310,7 @@ class ReminderOptions extends React.Component {
             />
           }
           centerComponent={{
-            text: "Reminder Options",
+            text: Strings.reminder_options_title,
             style: { color: GLOBAL.COLOR.TOOLBAR_TINT, fontSize: 18 }
           }}
           rightComponent={
@@ -390,7 +391,7 @@ class ReminderOptions extends React.Component {
                     color: GLOBAL.COLOR.MODAL_ACCENT_NIGHT_MODE
                   }}
                 >
-                  Cancel
+                  {Strings.cancel}
                 </Text>
               </TouchableOpacity>
               <TouchableOpacity
@@ -417,7 +418,7 @@ class ReminderOptions extends React.Component {
             !this.props.romanized && { fontFamily: "GurbaniAkharHeavySG" }
           ]}
           customSelector={<View />}
-          cancelText={"Cancel"}
+          cancelText={Strings.cancel}
           onChange={option => {
             this._addReminder(option);
           }}

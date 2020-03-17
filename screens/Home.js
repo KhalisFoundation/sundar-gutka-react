@@ -8,6 +8,7 @@ import Icon from "react-native-vector-icons/MaterialIcons";
 import GLOBAL from "../utils/globals";
 import SplashScreen from "react-native-splash-screen";
 import AnalyticsManager from "../utils/analytics";
+import Strings from "../utils/localization";
 import NotificationsManager from "../utils/notifications";
 import Database from "../utils/database";
 import { mergedBaniList } from "../utils/helpers";
@@ -248,7 +249,7 @@ class Home extends React.Component {
               }
             ]}
           >
-            {"<> sRI vwihgurU jI kI Piqh ]"}
+            {Strings.home_title}
           </Text>
 
           <View
@@ -275,7 +276,7 @@ class Home extends React.Component {
               >
                 Œ
               </Text>{" "}
-              suMdr gutkw{" "}
+              {Strings.home_sundar_gutka}{" "}
               <Text
                 style={[
                   {

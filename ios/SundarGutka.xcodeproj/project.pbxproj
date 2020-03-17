@@ -8,40 +8,24 @@
 
 /* Begin PBXBuildFile section */
 		00E356F31AD99517003FC87E /* SundarGutkaTests.m in Sources */ = {isa = PBXBuildFile; fileRef = 00E356F21AD99517003FC87E /* SundarGutkaTests.m */; };
-		03C35B090E6E4C71B2FB427B /* MaterialIcons.ttf in Resources */ = {isa = PBXBuildFile; fileRef = 84DA6F3052854C52898FF47A /* MaterialIcons.ttf */; };
 		13B07FBC1A68108700A75B9A /* AppDelegate.m in Sources */ = {isa = PBXBuildFile; fileRef = 13B07FB01A68108700A75B9A /* AppDelegate.m */; };
 		13B07FBF1A68108700A75B9A /* Images.xcassets in Resources */ = {isa = PBXBuildFile; fileRef = 13B07FB51A68108700A75B9A /* Images.xcassets */; };
 		13B07FC11A68108700A75B9A /* main.m in Sources */ = {isa = PBXBuildFile; fileRef = 13B07FB71A68108700A75B9A /* main.m */; };
 		1C06D44E180343D5B0B87EBF /* GurbaniAkharHeavySG.ttf in Resources */ = {isa = PBXBuildFile; fileRef = 5209C62DE3734EADB0FB8588 /* GurbaniAkharHeavySG.ttf */; };
-		213532CC55E240A883C30116 /* FontAwesome5_Brands.ttf in Resources */ = {isa = PBXBuildFile; fileRef = A1EEC765640F4818AA2120EE /* FontAwesome5_Brands.ttf */; };
 		2D02E4BC1E0B4A80006451C7 /* AppDelegate.m in Sources */ = {isa = PBXBuildFile; fileRef = 13B07FB01A68108700A75B9A /* AppDelegate.m */; };
 		2D02E4BD1E0B4A84006451C7 /* Images.xcassets in Resources */ = {isa = PBXBuildFile; fileRef = 13B07FB51A68108700A75B9A /* Images.xcassets */; };
 		2D02E4BF1E0B4AB3006451C7 /* main.m in Sources */ = {isa = PBXBuildFile; fileRef = 13B07FB71A68108700A75B9A /* main.m */; };
 		2DCD954D1E0B4F2C00145EB5 /* SundarGutkaTests.m in Sources */ = {isa = PBXBuildFile; fileRef = 00E356F21AD99517003FC87E /* SundarGutkaTests.m */; };
 		3117D90554CFED840D560B74 /* libPods-SundarGutka.a in Frameworks */ = {isa = PBXBuildFile; fileRef = CB08BCC07C7081225C1C0BC1 /* libPods-SundarGutka.a */; };
-		3A14C6C1B33A43848557F24C /* FontAwesome.ttf in Resources */ = {isa = PBXBuildFile; fileRef = 7770A5837C7C4084A3EB8EDF /* FontAwesome.ttf */; };
 		3D3CC60770D49EF626960E31 /* libPods-SundarGutka-tvOS.a in Frameworks */ = {isa = PBXBuildFile; fileRef = C836E5DF8C5D25C5599229CB /* libPods-SundarGutka-tvOS.a */; };
-		48E3E65E85B842CD9C272E9C /* Feather.ttf in Resources */ = {isa = PBXBuildFile; fileRef = 771162CEFCF445BD9C1F5E59 /* Feather.ttf */; };
-		5D29E188F2FE42D7933D95C0 /* MaterialCommunityIcons.ttf in Resources */ = {isa = PBXBuildFile; fileRef = 50980F002B894594BDF7AC7B /* MaterialCommunityIcons.ttf */; };
 		64D4AF25EDD54AE59169CFD3 /* Arial.ttf in Resources */ = {isa = PBXBuildFile; fileRef = E8C533A8D3944936B5BA6364 /* Arial.ttf */; };
-		77269245E8134E0090EA1FB9 /* Foundation.ttf in Resources */ = {isa = PBXBuildFile; fileRef = 9CD409A848E54A7485F0244F /* Foundation.ttf */; };
-		78A5CEE99484423798C83596 /* Zocial.ttf in Resources */ = {isa = PBXBuildFile; fileRef = FAE54F63D3E7401EA2C07C2C /* Zocial.ttf */; };
-		7DE721C08D6D4FBE9A34F335 /* FontAwesome5_Solid.ttf in Resources */ = {isa = PBXBuildFile; fileRef = 343C5D4262B64FD9B0B53AD2 /* FontAwesome5_Solid.ttf */; };
-		7E2B53116B6A484C9D7D097F /* EvilIcons.ttf in Resources */ = {isa = PBXBuildFile; fileRef = 2F5B9FF2BE14409DA4C04FC4 /* EvilIcons.ttf */; };
 		7F38728A3A364BB7A49C318F /* GurbaniAkharSG.ttf in Resources */ = {isa = PBXBuildFile; fileRef = FE36E2E7AAC94D81BACA5011 /* GurbaniAkharSG.ttf */; };
-		903B9467086D47E291FCA926 /* Ionicons.ttf in Resources */ = {isa = PBXBuildFile; fileRef = 6BB4FD15A80A40078113C0F4 /* Ionicons.ttf */; };
-		92FF28D3078947FE8EBD4A0D /* Octicons.ttf in Resources */ = {isa = PBXBuildFile; fileRef = 91427930DB1C484AA32F8EAF /* Octicons.ttf */; };
 		9A5EFBB522ED4A82003130DB /* GoogleService-Info.plist in Resources */ = {isa = PBXBuildFile; fileRef = 9A5EFBB422ED4A82003130DB /* GoogleService-Info.plist */; };
 		9A5EFBB822ED5150003130DB /* waheguru_soul.mp3 in Resources */ = {isa = PBXBuildFile; fileRef = 9A5EFBB622ED514D003130DB /* waheguru_soul.mp3 */; };
 		9A5EFBB922ED5150003130DB /* wake_up_jap.mp3 in Resources */ = {isa = PBXBuildFile; fileRef = 9A5EFBB722ED5150003130DB /* wake_up_jap.mp3 */; };
 		9A5EFBD322ED52AA003130DB /* www in Resources */ = {isa = PBXBuildFile; fileRef = 9A5EFBD222ED52AA003130DB /* www */; };
 		A16DF9E465B646F77783EED9 /* libPods-SundarGutka-tvOSTests.a in Frameworks */ = {isa = PBXBuildFile; fileRef = CD0AA87F58F4B733A8E13705 /* libPods-SundarGutka-tvOSTests.a */; };
 		A32518B7CDF4436E93278BE6 /* AnmolLipiSG.ttf in Resources */ = {isa = PBXBuildFile; fileRef = 11F630054FE14B4E86258671 /* AnmolLipiSG.ttf */; };
-		A7524E1294264F779C9CC810 /* SimpleLineIcons.ttf in Resources */ = {isa = PBXBuildFile; fileRef = 5A795CE935124EC4B57748EB /* SimpleLineIcons.ttf */; };
-		A9397751A253497DAD7FED76 /* Fontisto.ttf in Resources */ = {isa = PBXBuildFile; fileRef = B58BCC9834634E51BCE0CCAA /* Fontisto.ttf */; };
-		B1E3A58FCF9D47EFB5C934CF /* FontAwesome5_Regular.ttf in Resources */ = {isa = PBXBuildFile; fileRef = B5E88670B3254CD590F4F1E2 /* FontAwesome5_Regular.ttf */; };
-		BB94F5DAA1454790AD022F2E /* Entypo.ttf in Resources */ = {isa = PBXBuildFile; fileRef = 17943496CE3F4E7A84AB4C2B /* Entypo.ttf */; };
-		C1D9F28555FC49ACA8E84C65 /* AntDesign.ttf in Resources */ = {isa = PBXBuildFile; fileRef = C11E27AF2F344344AE8B3E94 /* AntDesign.ttf */; };
 		CF1A2A16C1004C3190B30AD3 /* GurbaniAkharThickSG.ttf in Resources */ = {isa = PBXBuildFile; fileRef = 7BCB0E3B79A54EA4B2A60693 /* GurbaniAkharThickSG.ttf */; };
 		D73F6699CA13BA336F6CC4E2 /* libPods-SundarGutkaTests.a in Frameworks */ = {isa = PBXBuildFile; fileRef = 3331AF7CD1CA5A6274F04D9C /* libPods-SundarGutkaTests.a */; };
 /* End PBXBuildFile section */
@@ -310,6 +294,7 @@
 				13B07F8E1A680F5B00A75B9A /* Resources */,
 				00DD1BFF1BD5951E006B06BC /* Bundle React Native code and images */,
 				FD6EF152563B53E1FC96CCEC /* [CP] Copy Pods Resources */,
+				9AE590CC23D5252C004DE4A0 /* ShellScript */,
 			);
 			buildRules = (
 			);
@@ -423,22 +408,6 @@
 				9A5EFBB822ED5150003130DB /* waheguru_soul.mp3 in Resources */,
 				9A5EFBB522ED4A82003130DB /* GoogleService-Info.plist in Resources */,
 				64D4AF25EDD54AE59169CFD3 /* Arial.ttf in Resources */,
-				C1D9F28555FC49ACA8E84C65 /* AntDesign.ttf in Resources */,
-				BB94F5DAA1454790AD022F2E /* Entypo.ttf in Resources */,
-				7E2B53116B6A484C9D7D097F /* EvilIcons.ttf in Resources */,
-				48E3E65E85B842CD9C272E9C /* Feather.ttf in Resources */,
-				3A14C6C1B33A43848557F24C /* FontAwesome.ttf in Resources */,
-				213532CC55E240A883C30116 /* FontAwesome5_Brands.ttf in Resources */,
-				B1E3A58FCF9D47EFB5C934CF /* FontAwesome5_Regular.ttf in Resources */,
-				7DE721C08D6D4FBE9A34F335 /* FontAwesome5_Solid.ttf in Resources */,
-				A9397751A253497DAD7FED76 /* Fontisto.ttf in Resources */,
-				77269245E8134E0090EA1FB9 /* Foundation.ttf in Resources */,
-				903B9467086D47E291FCA926 /* Ionicons.ttf in Resources */,
-				5D29E188F2FE42D7933D95C0 /* MaterialCommunityIcons.ttf in Resources */,
-				03C35B090E6E4C71B2FB427B /* MaterialIcons.ttf in Resources */,
-				92FF28D3078947FE8EBD4A0D /* Octicons.ttf in Resources */,
-				A7524E1294264F779C9CC810 /* SimpleLineIcons.ttf in Resources */,
-				78A5CEE99484423798C83596 /* Zocial.ttf in Resources */,
 				A32518B7CDF4436E93278BE6 /* AnmolLipiSG.ttf in Resources */,
 				1C06D44E180343D5B0B87EBF /* GurbaniAkharHeavySG.ttf in Resources */,
 				7F38728A3A364BB7A49C318F /* GurbaniAkharSG.ttf in Resources */,
@@ -563,6 +532,23 @@
 			shellPath = /bin/sh;
 			shellScript = "diff \"${PODS_PODFILE_DIR_PATH}/Podfile.lock\" \"${PODS_ROOT}/Manifest.lock\" > /dev/null\nif [ $? != 0 ] ; then\n    # print error to STDERR\n    echo \"error: The sandbox is not in sync with the Podfile.lock. Run 'pod install' or update your CocoaPods installation.\" >&2\n    exit 1\nfi\n# This output is used by Xcode 'outputs' to avoid re-running this script phase.\necho \"SUCCESS\" > \"${SCRIPT_OUTPUT_FILE_0}\"\n";
 			showEnvVarsInLog = 0;
+		};
+		9AE590CC23D5252C004DE4A0 /* ShellScript */ = {
+			isa = PBXShellScriptBuildPhase;
+			buildActionMask = 8;
+			files = (
+			);
+			inputFileListPaths = (
+			);
+			inputPaths = (
+			);
+			outputFileListPaths = (
+			);
+			outputPaths = (
+			);
+			runOnlyForDeploymentPostprocessing = 1;
+			shellPath = /bin/sh;
+			shellScript = "# Type a script or drag a script file from your workspace to insert its path.\n\"${PODS_ROOT}/Fabric/run\"\n";
 		};
 		FD10A7F022414F080027D42C /* Start Packager */ = {
 			isa = PBXShellScriptBuildPhase;
