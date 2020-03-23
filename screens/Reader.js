@@ -325,7 +325,7 @@ class Reader extends React.Component {
     
     function scrollFunc(e) {
       curPosition = getScrollPercent();
-      if (window.scrollY == 0) { window.postMessage('show'); }
+      if (window.scrollY == 0) { window.ReactNativeWebView.postMessage('show'); }
         
       if (typeof scrollFunc.y == 'undefined') {
             scrollFunc.y = window.pageYOffset;
@@ -335,11 +335,11 @@ class Reader extends React.Component {
         if(diffY < 0) {
             // Scroll down
             if(diffY < -3) {
-              window.postMessage('hide');
+              window.ReactNativeWebView.postMessage('hide');
             } 
         } else if(diffY > 5) {
             // Scroll up
-            window.postMessage('show');
+            window.ReactNativeWebView.postMessage('show');
         }
       }
         scrollFunc.y = window.pageYOffset;
@@ -363,18 +363,18 @@ class Reader extends React.Component {
       }
       if(!dragging && !holding)   
       {
-        window.postMessage('toggle');
+        window.ReactNativeWebView.postMessage('toggle');
       }
       clearTimeout(holdTimer);
       dragging = false;
       holding = false;
     });
 
-    document.addEventListener("message", function(event) {
+    window.addEventListener("message", function(event) {
       let message = JSON.parse(event.data);
       if(message.hasOwnProperty('bookmark')){
         location.hash = "#" + message.bookmark;
-        setTimeout(function() { window.postMessage('hide'); }, 50);
+        setTimeout(function() { window.ReactNativeWebView.postMessage('hide'); }, 50);
       } else if(message.hasOwnProperty('autoScroll')){ 
         autoScrollSpeed = message.autoScroll;
         scrollMultiplier = message.scrollMultiplier;
