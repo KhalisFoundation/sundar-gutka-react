@@ -414,7 +414,7 @@ class Settings extends React.Component {
             chevron={true}
             bottomDivider={true}
             onPress={() =>
-              navigate({ key: "EditBaniOrder", routeName: "EditBaniOrder" })
+              navigate('EditBaniOrder')
             }
           />
           <ListItem
@@ -704,10 +704,7 @@ class Settings extends React.Component {
               chevron={true}
               bottomDivider={true}
               onPress={() =>
-                navigate({
-                  key: "ReminderOptions",
-                  routeName: "ReminderOptions"
-                })
+                navigate('ReminderOptions')
               }
             />
           )}
@@ -825,7 +822,7 @@ class Settings extends React.Component {
             titleStyle={[this.props.nightMode && { color: "#fff" }]}
             chevron={true}
             bottomDivider={true}
-            onPress={() => navigate({ key: "About", routeName: "About" })}
+            onPress={() => navigate('About')}
           />
         </ScrollView>
 

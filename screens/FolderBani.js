@@ -11,15 +11,11 @@ import BaniList from "../components/BaniList";
 class FolderBani extends React.Component {
   handleOnPress(item, navigator) {
     this.props.setCurrentShabad(item.id);
-    navigator.navigate({
-      key: "Reader-" + item.id,
-      routeName: "Reader",
-      params: { item: item }
-    });
+    navigator.navigate('Reader', { item: item });
   }
 
   render() {
-    const { params } = this.props.navigation.state;
+    const { params } = this.props.route;
 
     return (
       <View
@@ -58,10 +54,7 @@ class FolderBani extends React.Component {
               color={GLOBAL.COLOR.TOOLBAR_TINT}
               size={30}
               onPress={() =>
-                this.props.navigation.navigate({
-                  key: "Settings",
-                  routeName: "Settings"
-                })
+                this.props.navigation.navigate('Settings')
               }
             />
           }

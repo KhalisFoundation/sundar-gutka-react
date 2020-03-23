@@ -21,7 +21,6 @@ import Sound from "react-native-sound";
 
 class Home extends React.Component {
   GENERAL_NOTIFICATIONS_CHANNEL = "general-channel-4";
-  static navigationOptions = { header: null };
 
   constructor(props) {
     super(props);
@@ -141,11 +140,7 @@ class Home extends React.Component {
 
     if(item.id) {
       this.props.setCurrentShabad(item.id);
-      this.props.navigation.navigate({
-        key: "Reader-" + item.id,
-        routeName: "Reader",
-        params: { item: item }
-      });
+      this.props.navigation.navigate('Reader', { item: item });
     }
    
   }
@@ -235,17 +230,9 @@ class Home extends React.Component {
   handleOnPress(item, navigator) {
     if (!item.folder) {
       this.props.setCurrentShabad(item.id);
-      navigator.navigate({
-        key: "Reader-" + item.id,
-        routeName: "Reader",
-        params: { item: item }
-      });
+      navigator.navigate('Reader', { item: item });
     } else {
-      navigator.navigate({
-        key: "Folder-" + item.roman,
-        routeName: "FolderBani",
-        params: { data: item.folder, title: item.gurmukhi }
-      });
+      navigator.navigate('Reader', { data: item.folder, title: item.gurmukhi });
     }
   }
 
@@ -335,10 +322,7 @@ class Home extends React.Component {
             color={GLOBAL.COLOR.TOOLBAR_TINT}
             size={30}
             onPress={() =>
-              this.props.navigation.navigate({
-                key: "Settings",
-                routeName: "Settings"
-              })
+              this.props.navigation.navigate('Settings')
             }
           />
         </View>

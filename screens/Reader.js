@@ -419,7 +419,7 @@ class Reader extends React.Component {
   }
 
   render() {
-    const { params } = this.props.navigation.state;
+    const { params } = this.props.route;
     {
       this.trackScreenForShabad(params.item.roman);
     }
@@ -506,10 +506,7 @@ class Reader extends React.Component {
                     this.setState({
                       paused: true
                     });
-                    this.props.navigation.navigate({
-                      key: "Settings",
-                      routeName: "Settings"
-                    });
+                    this.props.navigation.navigate('Settings');
                   }}
                 />
                 <Icon
@@ -521,10 +518,7 @@ class Reader extends React.Component {
                     this.trackScreenForShabad(
                       "Bookmarks for " + params.item.roman
                     );
-                    this.props.navigation.navigate({
-                      key: "Bookmarks",
-                      routeName: "Bookmarks"
-                    });
+                    this.props.navigation.navigate('Bookmarks')
                   }}
                 />
               </View>
