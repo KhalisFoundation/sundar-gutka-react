@@ -99,7 +99,7 @@ class EditBaniOrder extends React.Component {
         data={data}
         active={active}
         nightMode={this.props.nightMode}
-        romanized={this.props.romanized}
+        transliteration={this.props.transliteration}
         fontFace={this.props.fontFace}
       />
     );
@@ -158,7 +158,7 @@ class Row extends React.Component {
   }
 
   render() {
-    const { data, active, nightMode, romanized, fontFace } = this.props;
+    const { data, active, nightMode, transliteration, fontFace } = this.props;
 
     return (
       <Animated.View
@@ -178,11 +178,11 @@ class Row extends React.Component {
         <Text
           style={[
             { color: nightMode ? "#fff" : "#222222" },
-            !romanized && { fontFamily: fontFace },
-            { fontSize: baseFontSize("MEDIUM", romanized) }
+            !transliteration && { fontFamily: fontFace },
+            { fontSize: baseFontSize("MEDIUM", transliteration) }
           ]}
         >
-          {romanized ? data.roman : data.gurmukhi}
+          {transliteration ? data.translit : data.gurmukhi}
         </Text>
       </Animated.View>
     );
@@ -249,7 +249,7 @@ function mapStateToProps(state) {
     nightMode: state.nightMode,
     baniOrder: state.baniOrder,
     mergedBaniData: state.mergedBaniData,
-    romanized: state.romanized,
+    transliteration: state.transliteration,
     fontSize: state.fontSize,
     fontFace: state.fontFace
   };

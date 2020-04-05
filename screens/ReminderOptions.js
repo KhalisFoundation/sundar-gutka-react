@@ -31,7 +31,7 @@ import Database from "../utils/database";
 
 class ReminderOptions extends React.Component {
   componentDidMount() {
-    Database.getBaniList().then(baniList => {
+    Database.getBaniList(this.props.transliterationLanguage).then(baniList => {
       this.setState(
         {
           baniList: baniList
@@ -56,9 +56,9 @@ class ReminderOptions extends React.Component {
     defaultBanis.push({
       key: 1,
       gurmukhi: this.state.baniList[1].gurmukhi,
-      roman: this.state.baniList[1].roman,
+      translit: this.state.baniList[1].translit,
       enabled: true,
-      title: "Time for " + this.state.baniList[1].roman,
+      title: "Time for " + this.state.baniList[1].translit,
       time: "3:00 AM"
     });
 
@@ -66,9 +66,9 @@ class ReminderOptions extends React.Component {
     defaultBanis.push({
       key: 2,
       gurmukhi: this.state.baniList[2].gurmukhi,
-      roman: this.state.baniList[2].roman,
+      translit: this.state.baniList[2].translit,
       enabled: true,
-      title: "Time for " + this.state.baniList[2].roman,
+      title: "Time for " + this.state.baniList[2].translit,
       time: "3:30 AM"
     });
 
@@ -76,9 +76,9 @@ class ReminderOptions extends React.Component {
     defaultBanis.push({
       key: 21,
       gurmukhi: this.state.baniList[21].gurmukhi,
-      roman: this.state.baniList[21].roman,
+      translit: this.state.baniList[21].translit,
       enabled: true,
-      title: "Time for " + this.state.baniList[21].roman,
+      title: "Time for " + this.state.baniList[21].translit,
       time: "6:00 PM"
     });
 
@@ -86,9 +86,9 @@ class ReminderOptions extends React.Component {
     defaultBanis.push({
       key: 23,
       gurmukhi: this.state.baniList[23].gurmukhi,
-      roman: this.state.baniList[23].roman,
+      translit: this.state.baniList[23].translit,
       enabled: true,
-      title: "Time for " + this.state.baniList[23].roman,
+      title: "Time for " + this.state.baniList[23].translit,
       time: "10:00 PM"
     });
 
@@ -130,7 +130,7 @@ class ReminderOptions extends React.Component {
 
   _addBaniReminder() {
     var baniOptions = [];
-    let isRomanized = this.props.romanized;
+    let isTransliteration = this.props.transliteration;
     let curBaniList = this.state.baniList;
 
     let existingKeys = JSON.parse(this.props.reminderBanis).map(function(bani) {
@@ -141,11 +141,11 @@ class ReminderOptions extends React.Component {
       if (!existingKeys.includes(key) && key < 10000) {
         baniOptions.push({
           key: key,
-          label: isRomanized
-            ? curBaniList[key].roman
+          label: isTransliteration
+            ? curBaniList[key].translit
             : curBaniList[key].gurmukhi,
           gurmukhi: curBaniList[key].gurmukhi,
-          roman: curBaniList[key].roman
+          translit: curBaniList[key].translit
         });
       }
     });
@@ -165,9 +165,9 @@ class ReminderOptions extends React.Component {
     array.push({
       key: baniObject.key,
       gurmukhi: baniObject.gurmukhi,
-      roman: baniObject.roman,
+      translit: baniObject.translit,
       enabled: true,
-      title: "Time for " + baniObject.roman,
+      title: "Time for " + baniObject.translit,
       time: moment(new Date())
         .local()
         .format("h:mm A")
@@ -415,7 +415,7 @@ class ReminderOptions extends React.Component {
           }}
           optionTextStyle={[
             styles.optionText,
-            !this.props.romanized && { fontFamily: "GurbaniAkharHeavySG" }
+            !this.props.transliteration && { fontFamily: "GurbaniAkharHeavySG" }
           ]}
           customSelector={<View />}
           cancelText={Strings.cancel}
@@ -492,13 +492,13 @@ class ReminderOptions extends React.Component {
               this.props.nightMode && {
                 color: GLOBAL.COLOR.MODAL_TEXT_NIGHT_MODE
               },
-              !this.props.romanized && { fontFamily: "GurbaniAkharHeavySG" },
+              !this.props.transliteration && { fontFamily: "GurbaniAkharHeavySG" },
               !section.enabled && {
                 color: GLOBAL.COLOR.DISABLED_TEXT_COLOR_NIGHT_MODE
               }
             ]}
           >
-            {this.props.romanized ? section.roman : section.gurmukhi}
+            {this.props.transliteration ? section.translit : section.gurmukhi}
           </Text>
 
           <Switch
@@ -713,7 +713,8 @@ function mapStateToProps(state) {
     reminders: state.reminders,
     reminderSound: state.reminderSound,
     reminderBanis: state.reminderBanis,
-    romanized: state.romanized,
+    transliteration: state.transliteration,
+    transliterationLanguage: state.transliterationLanguage,
     fontSize: state.fontSize,
     fontFace: state.fontFace
   };

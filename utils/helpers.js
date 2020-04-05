@@ -19,7 +19,7 @@ export const mergedBaniList = baniList => {
         mergedData.baniOrder.push({
           id: obj.id,
           gurmukhi: baniItem.gurmukhi,
-          roman: baniItem.roman
+          translit: baniItem.translit
         });
       }
     } else {
@@ -29,13 +29,13 @@ export const mergedBaniList = baniList => {
         folder.push({
           id: item.id,
           gurmukhi: baniItem.gurmukhi,
-          roman: baniItem.roman
+          translit: baniItem.translit
         });
       });
 
       mergedData.baniOrder.push({
         gurmukhi: obj.gurmukhi,
-        roman: obj.roman,
+        translit: obj.translit,
         folder
       });
     }
@@ -67,7 +67,7 @@ export const fontColorForReader = (header, nightMode, text) => {
   }
 };
 
-export const baseFontSize = (SIZE, romanized) => {
+export const baseFontSize = (SIZE, transliteration) => {
   var fontSize;
   switch (SIZE) {
     case "EXTRA_SMALL":
@@ -87,15 +87,15 @@ export const baseFontSize = (SIZE, romanized) => {
       break;
   }
 
-  if (romanized) {
+  if (transliteration) {
     fontSize = fontSize / 1.25;
   }
 
   return fontSize;
 };
 
-export const fontSizeForReader = (SIZE, header, romanized) => {
-  let fontSize = baseFontSize(SIZE, romanized) * 0.75;
+export const fontSizeForReader = (SIZE, header, transliteration) => {
+  let fontSize = baseFontSize(SIZE, transliteration) * 0.75;
   if (header === 6) {
     return fontSize * 0.75;
   } else if (header === 2) {
@@ -131,3 +131,19 @@ EXTRA LONG: Most popular amongst followers of Buddha Dal.
 `
   );
 };
+
+export const getTranslitText = (translit, language) => {
+  let json = JSON.parse(translit);
+  switch (language) {
+    case "ENGLISH":
+      return json.en;
+    case "HINDI":
+      return json.hi;
+    case "SHAHMUKHI":
+      return json.ur;
+    case "IPA":
+      return json.ipa;
+    default:
+      return json.en;
+  }
+}

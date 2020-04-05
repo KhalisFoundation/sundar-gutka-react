@@ -65,7 +65,8 @@ class Reader extends React.Component {
       this.props.paragraphMode,
       this.props.visram,
       this.props.vishraamOption,
-      this.props.vishraamSource
+      this.props.vishraamSource,
+      this.props.transliterationLanguage
     ).then(shabad => {
       this.setState({
         data: shabad,
@@ -87,7 +88,8 @@ class Reader extends React.Component {
       prevProps.padchhedSetting != this.props.padchhedSetting ||
       prevProps.visram != this.props.visram ||
       prevProps.vishraamOption != this.props.vishraamOption ||
-      prevProps.vishraamSource != this.props.vishraamSource
+      prevProps.vishraamSource != this.props.vishraamSource ||
+      prevProps.transliterationLanguage != this.props.transliterationLanguage 
     ) {
       this.loadShabad();
     }
@@ -128,7 +130,7 @@ class Reader extends React.Component {
       let fontSize = this.props.fontSize;
       let fontFace = this.props.fontFace;
       let nightMode = this.props.nightMode;
-      let romanized = this.props.romanized;
+      let transliteration = this.props.transliteration;
       let englishTranslations = this.props.englishTranslations;
       let punjabiTranslations = this.props.punjabiTranslations;
       let spanishTranslations = this.props.spanishTranslations;
@@ -181,7 +183,7 @@ class Reader extends React.Component {
           item.gurmukhi +
           "</div>";
 
-        if (romanized) {
+        if (transliteration) {
           html +=
             "<div style=\"padding: .2em; font-family:'Arial'; font-size: " +
             fontSizeForReader(fontSize, item.header, true) +
@@ -200,7 +202,7 @@ class Reader extends React.Component {
             "; font-weight: " +
             (item.header === 0 ? "normal" : "bold") +
             ';">' +
-            item.roman +
+            item.translit +
             "</div>";
         }
 
@@ -421,7 +423,7 @@ class Reader extends React.Component {
   render() {
     const { params } = this.props.route;
     {
-      this.trackScreenForShabad(params.item.roman);
+      this.trackScreenForShabad(params.item.translit);
     }
 
     return (
@@ -482,12 +484,12 @@ class Reader extends React.Component {
               />
             }
             centerComponent={{
-              text: this.props.romanized
-                ? this.truncate.apply(params.item.roman, [24])
+              text: this.props.transliteration
+                ? this.truncate.apply(params.item.translit, [24])
                 : this.truncate.apply(params.item.gurmukhi, [25]),
               style: {
                 color: GLOBAL.COLOR.TOOLBAR_TINT,
-                fontFamily: this.props.romanized ? null : this.props.fontFace,
+                fontFamily: this.props.transliteration ? null : this.props.fontFace,
                 fontSize: 20
               }
             }}
@@ -516,7 +518,7 @@ class Reader extends React.Component {
                   size={30}
                   onPress={() => {
                     this.trackScreenForShabad(
-                      "Bookmarks for " + params.item.roman
+                      "Bookmarks for " + params.item.translit
                     );
                     this.props.navigation.navigate('Bookmarks')
                   }}
@@ -673,7 +675,8 @@ function mapStateToProps(state) {
     nightMode: state.nightMode,
     currentShabad: state.currentShabad,
     scrollIndex: state.scrollIndex,
-    romanized: state.romanized,
+    transliteration: state.transliteration,
+    transliterationLanguage: state.transliterationLanguage,
     fontSize: state.fontSize,
     fontFace: state.fontFace,
     baniLength: state.baniLength,

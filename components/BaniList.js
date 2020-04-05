@@ -11,7 +11,7 @@ class BaniList extends Component {
       nightMode,
       fontSize,
       fontFace,
-      romanized,
+      transliteration,
       navigation,
       isLoading,
       onPress
@@ -30,7 +30,7 @@ class BaniList extends Component {
               item.folder && (
                 <Avatar
                   source={require("../images/foldericon.png")}
-                  avatarStyle={{
+                  overlayContainerStyle={{
                     backgroundColor: nightMode ? "#000" : "#fff"
                   }}
                 />
@@ -43,11 +43,11 @@ class BaniList extends Component {
             titleStyle={[
               nightMode && { color: "#fff" },
               {
-                fontSize: baseFontSize(fontSize, romanized),
-                fontFamily: !romanized ? fontFace : null
+                fontSize: baseFontSize(fontSize, transliteration),
+                fontFamily: !transliteration ? fontFace : null
               }
             ]}
-            title={romanized ? item.roman : item.gurmukhi}
+            title={transliteration ? item.translit : item.gurmukhi}
             bottomDivider={true}
             onPress={() => onPress(item, navigation)}
           />

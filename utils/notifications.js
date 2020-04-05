@@ -79,7 +79,7 @@ export default class NotificationsManager {
       .setData({
         key: reminder.key,
         gurmukhi: reminder.gurmukhi,
-        roman: reminder.roman
+        translit: reminder.translit
       });
 
     notification.android

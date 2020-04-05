@@ -13,7 +13,6 @@ class FolderBani extends React.Component {
     this.props.setCurrentShabad(item.id);
     navigator.navigate('Reader', { item: item });
   }
-
   render() {
     const { params } = this.props.route;
 
@@ -39,7 +38,7 @@ class FolderBani extends React.Component {
             />
           }
           centerComponent={{
-            text: `${this.props.navigation.state.params.title}`,
+            text: params.title,
             style: [
               {
                 color: GLOBAL.COLOR.TOOLBAR_TINT,
@@ -48,23 +47,23 @@ class FolderBani extends React.Component {
               }
             ]
           }}
-          rightComponent={
-            <Icon
-              name="settings"
-              color={GLOBAL.COLOR.TOOLBAR_TINT}
-              size={30}
-              onPress={() =>
-                this.props.navigation.navigate('Settings')
-              }
-            />
-          }
+          // rightComponent={
+          //   <Icon
+          //     name="settings"
+          //     color={GLOBAL.COLOR.TOOLBAR_TINT}
+          //     size={30}
+          //     onPress={() =>
+          //       this.props.navigation.navigate('Settings')
+          //     }
+          //   />
+          // }
         />
         <BaniList
           data={params.data}
           nightMode={this.props.nightMode}
           fontSize={this.props.fontSize}
           fontFace={this.props.fontFace}
-          romanized={this.props.romanized}
+          transliteration={this.props.transliteration}
           navigation={this.props.navigation}
           onPress={this.handleOnPress.bind(this)}
         />
@@ -76,7 +75,7 @@ class FolderBani extends React.Component {
 function mapStateToProps(state) {
   return {
     nightMode: state.nightMode,
-    romanized: state.romanized,
+    transliteration: state.transliteration,
     fontSize: state.fontSize,
     fontFace: state.fontFace
   };

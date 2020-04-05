@@ -6,7 +6,8 @@ import AnalyticsManager from "../utils/analytics";
 
 export const SET_FONT_SIZE = "SET_FONT_SIZE";
 export const SET_FONT_FACE = "SET_FONT_FACE";
-export const TOGGLE_ROMANIZED = "TOGGLE_ROMANIZED";
+export const TOGGLE_TRANSLITERATION = "TOGGLE_TRANSLITERATION";
+export const SET_TRANSLITERATION_LANGUAGE = "SET_TRANSLITERATION_LANGUAGE";
 export const TOGGLE_ENGLISH_TRANSLATIONS = "TOGGLE_ENGLISH_TRANSLATIONS";
 export const TOGGLE_PUNJABI_TRANSLATIONS = "TOGGLE_PUNJABI_TRANSLATIONS";
 export const TOGGLE_SPANISH_TRANSLATIONS = "TOGGLE_SPANISH_TRANSLATIONS";
@@ -67,6 +68,20 @@ export const fontFaceNames = [
   "Gurbani Akhar Thick"
 ];
 
+export const TRANSLITERATION_LANGUAGES= [
+  "ENGLISH",
+  "HINDI",
+  "SHAHMUKHI",
+  "IPA"
+];
+
+export const transliterationLanguageNames= [
+  "English",
+  "Hindi",
+  "Shahmukhi",
+  "International Phonetic Alphabet"
+];
+
 export const BANI_LENGTHS = ["SHORT", "MEDIUM", "LONG", "EXTRA_LONG"];
 
 export const baniLengthNames = ["Short", "Medium", "Long", "Extra Long"];
@@ -114,9 +129,14 @@ export function setFontFace(font) {
   return { type: SET_FONT_FACE, font };
 }
 
-export function toggleRomanized(value) {
-  AnalyticsManager.getInstance().trackSettingsEvent("romanized", value);
-  return { type: TOGGLE_ROMANIZED, value };
+export function toggleTransliteration(value) {
+  AnalyticsManager.getInstance().trackSettingsEvent("transliteration", value);
+  return { type: TOGGLE_TRANSLITERATION, value };
+}
+
+export function setTransliterationLanguage(language) {
+  AnalyticsManager.getInstance().trackSettingsEvent("transliterationLanguage", language);
+  return { type: SET_TRANSLITERATION_LANGUAGE, language };
 }
 
 export function toggleEnglishTranslations(value) {

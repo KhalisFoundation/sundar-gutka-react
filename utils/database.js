@@ -1,4 +1,5 @@
 import SQLite from "react-native-sqlite-storage";
+import { getTranslitText } from "./helpers";
 
 var database_name = "gutka.db";
 var db;
@@ -18,10 +19,11 @@ SQLite.deleteDatabase(
 );
 
 class Database {
-  static getBaniList() {
+
+  static getBaniList(language) {
     return new Promise(function(resolve) {
       db.executeSql(
-        "SELECT ID, Gurmukhi, Transliteration FROM Banis",
+        "SELECT ID, Gurmukhi, Transliterations FROM Banis",
         [],
         results => {
           var totalResults = {};
@@ -30,7 +32,7 @@ class Database {
             let row = results.rows.item(i);
             totalResults[row.ID] = {
               gurmukhi: row.Gurmukhi,
-              roman: row.Transliteration
+              translit: getTranslitText(row.Transliterations, language)
             };
           }
           resolve(totalResults);
@@ -48,7 +50,8 @@ class Database {
     paragraphMode,
     visram,
     vishraamOption,
-    vishraamSource
+    vishraamSource,
+    language
   ) {
     var baniLength;
     switch (length) {
@@ -69,7 +72,7 @@ class Database {
     }
     return new Promise(function(resolve) {
       db.executeSql(
-        "SELECT ID, Paragraph, header, Gurmukhi, Visraam, Transliteration, Translations FROM mv_Banis_Shabad WHERE Bani = " +
+        "SELECT ID, Paragraph, header, Gurmukhi, Visraam, Transliterations, Translations FROM mv_Banis_Shabad WHERE Bani = " +
           baniId +
           " AND " +
           baniLength +
@@ -148,10 +151,12 @@ class Database {
               translationJson == null || translationJson.es.sn == null
                 ? " "
                 : translationJson.es.sn;
-            row.Transliteration =
-              row.Transliteration == "" || row.Transliteration == null
+
+            let translit = getTranslitText(row.Transliterations, language);
+            translit =
+            translit == "" || translit == null
                 ? " "
-                : row.Transliteration;
+                : translit;
 
             if (
               (baniId === 9 || baniId === 21) &&
@@ -169,7 +174,7 @@ class Database {
                   paragraphResults.push({
                     id: "" + paragraphId,
                     gurmukhi: gurmukhi,
-                    roman: transliteration,
+                    translit: transliteration,
                     englishTranslations: englishTranslation,
                     punjabiTranslations: punjabiTranslation,
                     spanishTranslations: spanishTranslation,
@@ -179,14 +184,14 @@ class Database {
                 paragraphId = row.ID;
                 paragraphHeader = row.header;
                 gurmukhi = curGurmukhi;
-                transliteration = row.Transliteration;
+                transliteration = translit;
                 englishTranslation = row.English;
                 punjabiTranslation = row.Punjabi;
                 spanishTranslation = row.Spanish;
                 prevParagraph = row.Paragraph;
               } else {
                 gurmukhi += larivaar ? curGurmukhi : " " + curGurmukhi;
-                transliteration += " " + row.Transliteration;
+                transliteration += " " + translit;
                 englishTranslation += " " + row.English;
                 punjabiTranslation += " " + row.Punjabi;
                 spanishTranslation += " " + row.Spanish;
@@ -196,7 +201,7 @@ class Database {
                 paragraphResults.push({
                   id: "" + paragraphId,
                   gurmukhi: gurmukhi,
-                  roman: transliteration,
+                  translit: transliteration,
                   englishTranslations: englishTranslation,
                   punjabiTranslations: punjabiTranslation,
                   spanishTranslations: spanishTranslation,
@@ -207,7 +212,7 @@ class Database {
               totalResults[i] = {
                 id: "" + row.ID,
                 gurmukhi: curGurmukhi,
-                roman: row.Transliteration,
+                translit: translit,
                 englishTranslations: row.English,
                 punjabiTranslations: row.Punjabi,
                 spanishTranslations: row.Spanish,
@@ -226,7 +231,7 @@ class Database {
     });
   }
 
-  static getBookmarksForId(baniId, length) {
+  static getBookmarksForId(baniId, length, language) {
     var baniLength;
     switch (length) {
       case "EXTRA_LONG":
@@ -247,7 +252,7 @@ class Database {
 
     return new Promise(function(resolve) {
       db.executeSql(
-        "SELECT BaniShabadID, Gurmukhi, Transliteration FROM Banis_Bookmarks WHERE Bani = " +
+        "SELECT BaniShabadID, Gurmukhi, Transliterations FROM Banis_Bookmarks WHERE Bani = " +
           baniId +
           " AND BaniShabadID in (SELECT ID from mv_Banis_Shabad where Bani = " +
           baniId +
@@ -264,7 +269,7 @@ class Database {
             totalResults[i] = {
               shabadId: row.BaniShabadID,
               gurmukhi: row.Gurmukhi,
-              roman: row.Transliteration
+              translit: getTranslitText(row.Transliterations, language)
             };
           }
           resolve(totalResults);

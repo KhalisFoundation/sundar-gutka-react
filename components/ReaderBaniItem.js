@@ -14,7 +14,7 @@ class ReaderBaniItem extends Component {
       fontSize,
       fontFace,
       englishTranslations,
-      romanized,
+      transliteration,
       onItemLayout
     } = this.props;
     return (
@@ -46,7 +46,7 @@ class ReaderBaniItem extends Component {
         >
           {item.gurmukhi}
         </Text>
-        {romanized && (
+        {transliteration && (
           <Text
             style={[
               {
@@ -71,7 +71,7 @@ class ReaderBaniItem extends Component {
               }
             ]}
           >
-            {item.roman}
+            {item.translit}
           </Text>
         )}
         {englishTranslations &&

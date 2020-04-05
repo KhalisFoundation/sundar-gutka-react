@@ -11,7 +11,7 @@ import {
 } from "react-native";
 import { Header } from "react-native-elements";
 import { ListItem, Avatar } from "react-native-elements";
-import MaterialIcons from "react-native-vector-icons/MaterialCommunityIcons";
+import MaterialCommunityIcons from "react-native-vector-icons/MaterialCommunityIcons";
 import FontAwesomeIcons from "react-native-vector-icons/FontAwesome";
 import FontAwesome5Icons from "react-native-vector-icons/FontAwesome5";
 import Entypo from "react-native-vector-icons/Entypo";
@@ -48,7 +48,7 @@ class Settings extends React.Component {
   render() {
     const { navigate } = this.props.navigation;
 
-    const checkedIcon = <MaterialIcons name="check" size={30} />;
+    const checkedIcon = <MaterialCommunityIcons name="check" size={30} />;
 
     const switchStyle =
       Platform.OS === "ios"
@@ -97,7 +97,7 @@ class Settings extends React.Component {
             />
           }
           centerComponent={{
-            text: Strings.settings_title,
+            text: Strings.title,
             style: {
               color: this.props.nightMode
                 ? GLOBAL.COLOR.TOOLBAR_TINT
@@ -119,19 +119,19 @@ class Settings extends React.Component {
               this.props.nightMode && { color: "#fff" }
             ]}
           >
-            {Strings.settings_display_options}
+            {Strings.display_options}
           </Text>
           <ListItem
             backgroundColor={this.props.nightMode ? "#464646" : "#fff"}
             leftAvatar={
               <Avatar
                 source={require("../images/fontsizeicon.png")}
-                avatarStyle={{
+                overlayContainerStyle={{
                   backgroundColor: this.props.nightMode ? "#464646" : "#fff"
                 }}
               />
             }
-            title={Strings.settings_font_size}
+            title={Strings.font_size}
             containerStyle={[
               styles.titleText,
               this.props.nightMode && { backgroundColor: "#464646" }
@@ -155,12 +155,12 @@ class Settings extends React.Component {
             leftAvatar={
               <Avatar
                 source={require("../images/fontfaceicon.png")}
-                avatarStyle={{
+                overlayContainerStyle={{
                   backgroundColor: this.props.nightMode ? "#464646" : "#fff"
                 }}
               />
             }
-            title={Strings.settings_font_face}
+            title={Strings.font_face}
             containerStyle={[
               styles.titleText,
               this.props.nightMode && { backgroundColor: "#464646" }
@@ -184,17 +184,17 @@ class Settings extends React.Component {
             leftAvatar={
               <Avatar
                 source={require("../images/romanizeicon.png")}
-                avatarStyle={{
+                overlayContainerStyle={{
                   backgroundColor: this.props.nightMode ? "#464646" : "#fff"
                 }}
               />
             }
             switch={{
               switchStyle,
-              value: this.props.romanized,
-              onValueChange: this.props.toggleRomanized
+              value: this.props.transliteration,
+              onValueChange: this.props.toggleTransliteration
             }}
-            title={Strings.settings_romanized}
+            title={Strings.transliteration}
             containerStyle={[
               styles.titleText,
               this.props.nightMode && { backgroundColor: "#464646" }
@@ -202,17 +202,50 @@ class Settings extends React.Component {
             titleStyle={[this.props.nightMode && { color: "#fff" }]}
             bottomDivider={true}
           />
+          {this.props.transliteration && (<ListItem
+            backgroundColor={this.props.nightMode ? "#464646" : "#fff"}
+            leftAvatar={
+              <Icon
+                style={styles.imageStyle}
+                color={
+                  this.props.nightMode
+                    ? GLOBAL.COLOR.COMPONENT_COLOR_NIGHT_MODE
+                    : GLOBAL.COLOR.COMPONENT_COLOR
+                }
+                name="language"
+                size={30}
+              />
+            }
+            title={Strings.language}
+            containerStyle={[
+              styles.titleText,
+              this.props.nightMode && { backgroundColor: "#464646" }
+            ]}
+            titleStyle={[this.props.nightMode && { color: "#fff" }]}
+            rightTitle={
+              actions.transliterationLanguageNames[
+                actions.TRANSLITERATION_LANGUAGES.indexOf(this.props.transliterationLanguage)
+              ]
+            }
+            rightTitleStyle={[
+              styles.titleInfoStyle,
+              { color: this.props.nightMode ? "#fff" : "#a3a3a3" }
+            ]}
+            chevron={true}
+            bottomDivider={true}
+            onPress={() => this.TransliterationActionSheet.show()}
+          />)}
           <ListItem
             backgroundColor={this.props.nightMode ? "#464646" : "#fff"}
             leftAvatar={
               <Avatar
                 source={require("../images/englishicon.png")}
-                avatarStyle={{
+                overlayContainerStyle={{
                   backgroundColor: this.props.nightMode ? "#464646" : "#fff"
                 }}
               />
             }
-            title={Strings.settings_translations}
+            title={Strings.translations}
             containerStyle={[
               styles.titleText,
               this.props.nightMode && { backgroundColor: "#464646" }
@@ -250,7 +283,7 @@ class Settings extends React.Component {
                 value: this.props.englishTranslations,
                 onValueChange: this.props.toggleEnglishTranslations
               }}
-              title={Strings.settings_en_translations}
+              title={Strings.en_translations}
               containerStyle={[
                 { paddingLeft: 80 },
                 this.props.nightMode && { backgroundColor: "#464646" }
@@ -264,7 +297,7 @@ class Settings extends React.Component {
                 value: this.props.punjabiTranslations,
                 onValueChange: this.props.togglePunjabiTranslations
               }}
-              title={Strings.settings_pu_translations}
+              title={Strings.pu_translations}
               containerStyle={[
                 { paddingLeft: 80 },
                 this.props.nightMode && { backgroundColor: "#464646" }
@@ -278,7 +311,7 @@ class Settings extends React.Component {
                 value: this.props.spanishTranslations,
                 onValueChange: this.props.toggleSpanishTranslations
               }}
-              title={Strings.settings_es_translations}
+              title={Strings.es_translations}
               containerStyle={[
                 { paddingLeft: 80 },
                 this.props.nightMode && { backgroundColor: "#464646" }
@@ -292,7 +325,7 @@ class Settings extends React.Component {
             leftAvatar={
               <Avatar
                 source={require("../images/bgcoloricon.png")}
-                avatarStyle={{
+                overlayContainerStyle={{
                   backgroundColor: this.props.nightMode ? "#464646" : "#fff"
                 }}
               />
@@ -302,7 +335,7 @@ class Settings extends React.Component {
               value: this.props.nightMode,
               onValueChange: this.props.toggleNightMode
             }}
-            title={Strings.settings_dark_mode}
+            title={Strings.dark_mode}
             containerStyle={[
               styles.titleText,
               this.props.nightMode && { backgroundColor: "#464646" }
@@ -313,7 +346,7 @@ class Settings extends React.Component {
           <ListItem
             backgroundColor={this.props.nightMode ? "#464646" : "#fff"}
             leftAvatar={
-              <MaterialIcons
+              <MaterialCommunityIcons
                 style={styles.imageStyle}
                 color={
                   this.props.nightMode
@@ -329,7 +362,7 @@ class Settings extends React.Component {
               value: this.props.statusBar,
               onValueChange: this.props.toggleStatusBar
             }}
-            title={Strings.settings_hide_status_bar}
+            title={Strings.hide_status_bar}
             containerStyle={[
               styles.titleText,
               this.props.nightMode && { backgroundColor: "#464646" }
@@ -340,7 +373,7 @@ class Settings extends React.Component {
           <ListItem
             backgroundColor={this.props.nightMode ? "#464646" : "#fff"}
             leftAvatar={
-              <MaterialIcons
+              <MaterialCommunityIcons
                 style={styles.imageStyle}
                 color={
                   this.props.nightMode
@@ -356,7 +389,7 @@ class Settings extends React.Component {
               value: this.props.autoScroll,
               onValueChange: this.props.toggleAutoScroll
             }}
-            title={Strings.settings_auto_scroll}
+            title={Strings.auto_scroll}
             containerStyle={[
               styles.titleText,
               this.props.nightMode && { backgroundColor: "#464646" }
@@ -369,7 +402,7 @@ class Settings extends React.Component {
             leftAvatar={
               <Avatar
                 source={require("../images/screenonicon.png")}
-                avatarStyle={{
+                overlayContainerStyle={{
                   backgroundColor: this.props.nightMode ? "#464646" : "#fff"
                 }}
               />
@@ -379,7 +412,7 @@ class Settings extends React.Component {
               value: this.props.screenAwake || this.props.autoScroll,
               onValueChange: this.props.toggleScreenAwake
             }}
-            title={Strings.settings_keep_awake}
+            title={Strings.keep_awake}
             containerStyle={[
               styles.titleText,
               this.props.nightMode && { backgroundColor: "#464646" }
@@ -393,19 +426,19 @@ class Settings extends React.Component {
               this.props.nightMode && { color: "#fff" }
             ]}
           >
-          {Strings.settings_bani_options}
+          {Strings.bani_options}
           </Text>
           <ListItem
             backgroundColor={this.props.nightMode ? "#464646" : "#fff"}
             leftAvatar={
               <Avatar
                 source={require("../images/rearrangeicon.png")}
-                avatarStyle={{
+                overlayContainerStyle={{
                   backgroundColor: this.props.nightMode ? "#464646" : "#fff"
                 }}
               />
             }
-            title={Strings.settings_edit_bani_order}
+            title={Strings.edit_bani_order}
             containerStyle={[
               styles.titleText,
               this.props.nightMode && { backgroundColor: "#464646" }
@@ -422,12 +455,12 @@ class Settings extends React.Component {
             leftAvatar={
               <Avatar
                 source={require("../images/banilengthicon.png")}
-                avatarStyle={{
+                overlayContainerStyle={{
                   backgroundColor: this.props.nightMode ? "#464646" : "#fff"
                 }}
               />
             }
-            title={Strings.settings_bani_length}
+            title={Strings.bani_length}
             containerStyle={[
               styles.titleText,
               this.props.nightMode && { backgroundColor: "#464646" }
@@ -451,7 +484,7 @@ class Settings extends React.Component {
             leftAvatar={
               <Avatar
                 source={require("../images/larivaaricon.png")}
-                avatarStyle={{
+                overlayContainerStyle={{
                   backgroundColor: this.props.nightMode ? "#464646" : "#fff"
                 }}
               />
@@ -461,7 +494,7 @@ class Settings extends React.Component {
               value: this.props.larivaar,
               onValueChange: this.props.toggleLarivaar
             }}
-            title={Strings.settings_larivaar}
+            title={Strings.larivaar}
             containerStyle={[
               styles.titleText,
               this.props.nightMode && { backgroundColor: "#464646" }
@@ -488,7 +521,7 @@ class Settings extends React.Component {
               value: this.props.paragraphMode,
               onValueChange: this.props.toggleParagraphMode
             }}
-            title={Strings.settings_paragraph_mode}
+            title={Strings.paragraph_mode}
             containerStyle={[
               styles.titleText,
               this.props.nightMode && { backgroundColor: "#464646" }
@@ -501,12 +534,12 @@ class Settings extends React.Component {
             leftAvatar={
               <Avatar
                 source={require("../images/manglacharanicon.png")}
-                avatarStyle={{
+                overlayContainerStyle={{
                   backgroundColor: this.props.nightMode ? "#464646" : "#fff"
                 }}
               />
             }
-            title={Strings.settings_manglacharan_position}
+            title={Strings.manglacharan_position}
             containerStyle={[
               styles.titleText,
               this.props.nightMode && { backgroundColor: "#464646" }
@@ -532,12 +565,12 @@ class Settings extends React.Component {
             leftAvatar={
               <Avatar
                 source={require("../images/larivaaricon.png")}
-                avatarStyle={{
+                overlayContainerStyle={{
                   backgroundColor: this.props.nightMode ? "#464646" : "#fff"
                 }}
               />
             }
-            title={Strings.settings_padchhed_settings}
+            title={Strings.padchhed_settings}
             containerStyle={[
               styles.titleText,
               this.props.nightMode && { backgroundColor: "#464646" }
@@ -559,7 +592,7 @@ class Settings extends React.Component {
           <ListItem
             backgroundColor={this.props.nightMode ? "#464646" : "#fff"}
             leftAvatar={
-              <MaterialIcons
+              <MaterialCommunityIcons
                 style={styles.imageStyle}
                 color={
                   this.props.nightMode
@@ -575,7 +608,7 @@ class Settings extends React.Component {
               value: this.props.visram,
               onValueChange: this.props.toggleVisram
             }}
-            title={Strings.settings_show_vishraams}
+            title={Strings.show_vishraams}
             containerStyle={[
               styles.titleText,
               this.props.nightMode && { backgroundColor: "#464646" }
@@ -587,7 +620,7 @@ class Settings extends React.Component {
             <ListItem
               backgroundColor={this.props.nightMode ? "#464646" : "#fff"}
               leftAvatar={
-                <MaterialIcons
+                <MaterialCommunityIcons
                   style={styles.imageStyle}
                   color={
                     this.props.nightMode
@@ -598,7 +631,7 @@ class Settings extends React.Component {
                   size={30}
                 />
               }
-            title={Strings.settings_vishraam_options}
+            title={Strings.vishraam_options}
               containerStyle={[
                 styles.titleText,
                 this.props.nightMode && { backgroundColor: "#464646" }
@@ -622,7 +655,7 @@ class Settings extends React.Component {
             <ListItem
               backgroundColor={this.props.nightMode ? "#464646" : "#fff"}
               leftAvatar={
-                <MaterialIcons
+                <MaterialCommunityIcons
                   style={styles.imageStyle}
                   color={
                     this.props.nightMode
@@ -633,7 +666,7 @@ class Settings extends React.Component {
                   size={30}
                 />
               }
-              title={Strings.settings_vishraam_source}
+              title={Strings.vishraam_source}
               containerStyle={[
                 styles.titleText,
                 this.props.nightMode && { backgroundColor: "#464646" }
@@ -656,7 +689,7 @@ class Settings extends React.Component {
           <ListItem
             backgroundColor={this.props.nightMode ? "#464646" : "#fff"}
             leftAvatar={
-              <MaterialIcons
+              <MaterialCommunityIcons
                 style={styles.imageStyle}
                 color={
                   this.props.nightMode
@@ -672,7 +705,7 @@ class Settings extends React.Component {
               value: this.props.reminders,
               onValueChange: this.props.toggleReminders
             }}
-            title={Strings.settings_reminders}
+            title={Strings.reminders}
             containerStyle={[
               styles.titleText,
               this.props.nightMode && { backgroundColor: "#464646" }
@@ -684,7 +717,7 @@ class Settings extends React.Component {
             <ListItem
               backgroundColor={this.props.nightMode ? "#464646" : "#fff"}
               leftAvatar={
-                <MaterialIcons
+                <MaterialCommunityIcons
                   style={styles.imageStyle}
                   color={
                     this.props.nightMode
@@ -695,7 +728,7 @@ class Settings extends React.Component {
                   size={30}
                 />
               }
-              title={Strings.settings_set_reminder_options}
+              title={Strings.set_reminder_options}
               containerStyle={[
                 styles.titleText,
                 this.props.nightMode && { backgroundColor: "#464646" }
@@ -712,7 +745,7 @@ class Settings extends React.Component {
             <ListItem
               backgroundColor={this.props.nightMode ? "#464646" : "#fff"}
               leftAvatar={
-                <MaterialIcons
+                <MaterialCommunityIcons
                   style={styles.imageStyle}
                   color={
                     this.props.nightMode
@@ -723,7 +756,7 @@ class Settings extends React.Component {
                   size={30}
                 />
               }
-              title={Strings.settings_reminder_sound}
+              title={Strings.reminder_sound}
               containerStyle={[
                 styles.titleText,
                 this.props.nightMode && { backgroundColor: "#464646" }
@@ -749,14 +782,14 @@ class Settings extends React.Component {
               this.props.nightMode && { color: "#fff" }
             ]}
           >
-            {Strings.settings_other_options}
+            {Strings.other_options}
           </Text>
           <ListItem
             backgroundColor={this.props.nightMode ? "#464646" : "#fff"}
             leftAvatar={
               <Avatar
                 source={require("../images/analyticsicon.png")}
-                avatarStyle={{
+                overlayContainerStyle={{
                   backgroundColor: this.props.nightMode ? "#464646" : "#fff"
                 }}
               />
@@ -766,7 +799,7 @@ class Settings extends React.Component {
               value: this.props.statistics,
               onValueChange: this.props.toggleStatistics
             }}
-            title={Strings.settings_statistics}
+            title={Strings.statistics}
             containerStyle={[
               styles.titleText,
               this.props.nightMode && { backgroundColor: "#464646" }
@@ -788,7 +821,7 @@ class Settings extends React.Component {
                 size={30}
               />
             }
-            title={Strings.settings_donate}
+            title={Strings.donate}
             containerStyle={[
               styles.titleText,
               this.props.nightMode && { backgroundColor: "#464646" }
@@ -814,7 +847,7 @@ class Settings extends React.Component {
                 size={30}
               />
             }
-            title={Strings.settings_about}
+            title={Strings.about}
             containerStyle={[
               styles.titleText,
               this.props.nightMode && { backgroundColor: "#464646" }
@@ -859,6 +892,24 @@ class Settings extends React.Component {
             actions.FONT_FACES,
             checkedIcon,
             this.props.setFontFace
+          )}
+        </ActionSheet>
+
+        <ActionSheet
+          ref={actionSheet => {
+            this.TransliterationActionSheet = actionSheet;
+          }}
+          position="bottom"
+          defaultValue={this.props.transliteration}
+        >
+          <View>
+            <Text style={styles.actionSheetTitle}>Language</Text>
+          </View>
+          {this.actionSheetOptions(
+            actions.transliterationLanguageNames,
+            actions.TRANSLITERATION_LANGUAGES,
+            checkedIcon,
+            this.props.setTransliterationLanguage
           )}
         </ActionSheet>
 
@@ -1040,7 +1091,8 @@ function mapStateToProps(state) {
   return {
     fontSize: state.fontSize,
     fontFace: state.fontFace,
-    romanized: state.romanized,
+    transliteration: state.transliteration,
+    transliterationLanguage: state.transliterationLanguage,
     englishTranslations: state.englishTranslations,
     punjabiTranslations: state.punjabiTranslations,
     spanishTranslations: state.spanishTranslations,

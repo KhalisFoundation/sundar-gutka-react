@@ -50,6 +50,16 @@ class Home extends React.Component {
     return ordered;
   }
 
+  loadBaniList() {
+    Database.getBaniList(this.props.transliterationLanguage).then(baniList => {
+      this.props.setMergedBaniData(mergedBaniList(baniList));
+      this.sortBani();
+      this.setState({
+        isLoading: false
+      });
+    });
+  }
+
   sortBani() {
     this.setState({
       data: this.reorder(
@@ -96,13 +106,7 @@ class Home extends React.Component {
       this.props.reminderBanis
     );
 
-    Database.getBaniList().then(baniList => {
-      this.props.setMergedBaniData(mergedBaniList(baniList));
-      this.sortBani();
-      this.setState({
-        isLoading: false
-      });
-    });
+    this.loadBaniList();
 
     SplashScreen.hide();
     AnalyticsManager.getInstance().trackScreenView(
@@ -133,8 +137,8 @@ class Home extends React.Component {
   handleNotificationEvent(notificationOpen) {
     let key = notificationOpen.notification.data["key"];
     let gurmukhi = notificationOpen.notification.data["gurmukhi"];
-    let roman = notificationOpen.notification.data["roman"];
-    let item = { id: key, gurmukhi: gurmukhi, roman: roman };
+    let translit = notificationOpen.notification.data["translit"];
+    let item = { id: key, gurmukhi: gurmukhi, translit: translit };
 
     NotificationsManager.getInstance().removeAllDeliveredNotifications();
 
@@ -183,6 +187,8 @@ class Home extends React.Component {
   componentDidUpdate(prevProps) {
     if (prevProps.baniOrder != this.props.baniOrder) {
       this.sortBani();
+    } else if (prevProps.transliterationLanguage != this.props.transliterationLanguage) {
+      this.loadBaniList();
     } else if (prevProps.screenAwake != this.props.screenAwake) {
       this.changeKeepAwake(this.props.screenAwake);
     } else if (prevProps.autoScroll != this.props.autoScroll) {
@@ -232,7 +238,7 @@ class Home extends React.Component {
       this.props.setCurrentShabad(item.id);
       navigator.navigate('Reader', { item: item });
     } else {
-      navigator.navigate('Reader', { data: item.folder, title: item.gurmukhi });
+      navigator.navigate('FolderBani', { data: item.folder, title: item.gurmukhi });
     }
   }
 
@@ -331,7 +337,7 @@ class Home extends React.Component {
           nightMode={this.props.nightMode}
           fontSize={this.props.fontSize}
           fontFace={this.props.fontFace}
-          romanized={this.props.romanized}
+          transliteration={this.props.transliteration}
           navigation={this.props.navigation}
           isLoading={this.state.isLoading}
           onPress={this.handleOnPress.bind(this)}
@@ -346,7 +352,8 @@ function mapStateToProps(state) {
     nightMode: state.nightMode,
     baniOrder: state.baniOrder,
     mergedBaniData: state.mergedBaniData,
-    romanized: state.romanized,
+    transliteration: state.transliteration,
+    transliterationLanguage: state.transliterationLanguage,
     fontSize: state.fontSize,
     fontFace: state.fontFace,
     screenAwake: state.screenAwake,

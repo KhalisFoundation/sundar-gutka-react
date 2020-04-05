@@ -23,7 +23,8 @@ class Bookmarks extends React.Component {
   componentDidMount() {
     Database.getBookmarksForId(
       this.props.currentShabad,
-      this.props.baniLength
+      this.props.baniLength,
+      this.props.transliterationLanguage
     ).then(bookmarks => {
       this.setState({
         data: bookmarks,
@@ -89,7 +90,7 @@ class Bookmarks extends React.Component {
           nightMode={this.props.nightMode}
           fontSize={this.props.fontSize}
           fontFace={this.props.fontFace}
-          romanized={this.props.romanized}
+          transliteration={this.props.transliteration}
           navigation={this.props.navigation}
           isLoading={this.state.isLoading}
           onPress={this.handleOnPress.bind(this)}
@@ -102,7 +103,8 @@ class Bookmarks extends React.Component {
 function mapStateToProps(state) {
   return {
     nightMode: state.nightMode,
-    romanized: state.romanized,
+    transliteration: state.transliteration,
+    transliterationLanguage: state.transliterationLanguage,
     fontSize: state.fontSize,
     fontFace: state.fontFace,
     baniLength: state.baniLength,

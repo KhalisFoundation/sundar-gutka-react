@@ -3,7 +3,8 @@ import { defaultBaniOrderArray } from "../utils/helpers";
 import {
   SET_FONT_SIZE,
   SET_FONT_FACE,
-  TOGGLE_ROMANIZED,
+  TOGGLE_TRANSLITERATION,
+  SET_TRANSLITERATION_LANGUAGE,
   TOGGLE_ENGLISH_TRANSLATIONS,
   TOGGLE_PUNJABI_TRANSLATIONS,
   TOGGLE_SPANISH_TRANSLATIONS,
@@ -49,10 +50,19 @@ function fontFace(state = "GurbaniAkharSG", action) {
   }
 }
 
-function romanized(state = false, action) {
+function transliteration(state = false, action) {
   switch (action.type) {
-    case TOGGLE_ROMANIZED:
+    case TOGGLE_TRANSLITERATION:
       return action.value;
+    default:
+      return state;
+  }
+}
+
+function transliterationLanguage(state = "ENGLISH", action) {
+  switch (action.type) {
+    case SET_TRANSLITERATION_LANGUAGE:
+      return action.language;
     default:
       return state;
   }
@@ -287,7 +297,8 @@ function appVersion(state = "", action) {
 const rootReducer = combineReducers({
   fontSize,
   fontFace,
-  romanized,
+  transliteration,
+  transliterationLanguage,
   englishTranslations,
   punjabiTranslations,
   spanishTranslations,
