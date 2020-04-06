@@ -47,7 +47,8 @@ class Reader extends React.Component {
   toggleHeader(state) {
     Animated.timing(this.state.animationPosition, {
       duration: this.slideDuration,
-      toValue: state == "hide" ? HEADER_POSITION : 0
+      toValue: state == "hide" ? HEADER_POSITION : 0,
+      useNativeDriver: false
     }).start();
 
     this.setState({
@@ -99,7 +100,7 @@ class Reader extends React.Component {
     AnalyticsManager.getInstance().trackScreenView(name, this.constructor.name);
   }
 
-  componentWillReceiveProps(nextProps) {
+    UNSAFE_componentWillReceiveProps(nextProps) {
     if (nextProps.scrollIndex != -1) {
       this.scrollToItem(nextProps.scrollIndex);
       this.props.setScrollIndex(-1);
@@ -292,6 +293,8 @@ class Reader extends React.Component {
     var holding = false;
     var holdTimer;
     var curPosition = 0;
+    var isScrolling;
+    var isManuallyScrolling = false;
     window.addEventListener("orientationchange", function() {
       setTimeout(function(){        
         let scrollY = (document.body.scrollHeight - window.innerHeight) * curPosition;
@@ -304,15 +307,29 @@ class Reader extends React.Component {
       return (window.pageYOffset / (document.body.scrollHeight - window.innerHeight));
     }
 
+    // Listen for scroll events
+    window.addEventListener('scroll', function ( event ) {
+      // Clear our timeout throughout the scroll
+      window.clearTimeout( isScrolling );
+      // Set a timeout to run after scrolling ends
+      isScrolling = setTimeout(function() {
+        isManuallyScrolling = false;
+      }, 66);
+
+    }, false);
+
     function setAutoScroll() {
       let speed = autoScrollSpeed;
       if(speed > 0) {
-        window.scrollBy({
-          behavior: "auto",
-          left: 0,
-          top: 1
-        }); 
+        if(!isManuallyScrolling) {
+          window.scrollBy({
+            behavior: "auto",
+            left: 0,
+            top: 1
+          }); 
+        }
         autoScrollTimeout = setTimeout(function() {setAutoScroll()},(200-speed*2)/scrollMultiplier);
+      
       } else {
         clearScrollTimeout();
       }
@@ -357,6 +374,7 @@ class Reader extends React.Component {
       holdTimer = setTimeout(function() {holding = true}, 125); // Longer than 125 milliseconds is not a tap
     });
     window.addEventListener('touchmove', function() {
+      isManuallyScrolling = true;
       dragging = true;
     });
     window.addEventListener('touchend', function() {
@@ -440,6 +458,7 @@ class Reader extends React.Component {
           originWhitelist={["*"]}
           style={this.props.nightMode && { backgroundColor: "#000" }}
           ref={webView => (this.webView = webView)}
+          decelerationRate='normal'
           source={{
             html: this.loadHTML(this.state.data, this.headerHeight),
             baseUrl: ""
