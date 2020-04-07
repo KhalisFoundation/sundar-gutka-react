@@ -285,6 +285,7 @@ class Reader extends React.Component {
   }
 
   loadScrollJS() {
+    let listener = Platform.OS === "android" ? "document" : "window";
     return `
     var autoScrollTimeout;
     var autoScrollSpeed = 0;
@@ -390,7 +391,7 @@ class Reader extends React.Component {
       holding = false;
     });
 
-    window.addEventListener("message", function(event) {
+    ${listener}.addEventListener("message", function(event) {
       let message = JSON.parse(event.data);
       if(message.hasOwnProperty('bookmark')){
         location.hash = "#" + message.bookmark;
