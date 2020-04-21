@@ -11,24 +11,30 @@ import BaniList from "../components/BaniList";
 class FolderBani extends React.Component {
   handleOnPress(item, navigator) {
     this.props.setCurrentShabad(item.id);
-    navigator.navigate('Reader', { item: item });
+    navigator.navigate({
+      key: "Reader-" + item.id,
+      routeName: "Reader",
+      params: { item: item },
+    });
   }
+
   render() {
-    const { params } = this.props.route;
+    const { params } = this.props.navigation.state;
 
     return (
       <View
         style={{
-          flex: 1
-        }}
-      >
+          flex: 1,
+        }}>
         <StatusBar
           backgroundColor={GLOBAL.COLOR.TOOLBAR_COLOR}
           barStyle={"light-content"}
         />
         <Header
           backgroundColor={GLOBAL.COLOR.TOOLBAR_COLOR}
-          containerStyle={[Platform.OS === "android" && { height: 56, paddingTop: 0 }]}
+          containerStyle={[
+            Platform.OS === "android" && { height: 56, paddingTop: 0 },
+          ]}
           leftComponent={
             <Icon
               name="arrow-back"
@@ -38,25 +44,28 @@ class FolderBani extends React.Component {
             />
           }
           centerComponent={{
-            text: params.title,
+            text: `${this.props.navigation.state.params.title}`,
             style: [
               {
                 color: GLOBAL.COLOR.TOOLBAR_TINT,
                 fontFamily: "GurbaniAkharHeavySG",
-                fontSize: 24
-              }
-            ]
+                fontSize: 24,
+              },
+            ],
           }}
-          // rightComponent={
-          //   <Icon
-          //     name="settings"
-          //     color={GLOBAL.COLOR.TOOLBAR_TINT}
-          //     size={30}
-          //     onPress={() =>
-          //       this.props.navigation.navigate('Settings')
-          //     }
-          //   />
-          // }
+          rightComponent={
+            <Icon
+              name="settings"
+              color={GLOBAL.COLOR.TOOLBAR_TINT}
+              size={30}
+              onPress={() =>
+                this.props.navigation.navigate({
+                  key: "Settings",
+                  routeName: "Settings",
+                })
+              }
+            />
+          }
         />
         <BaniList
           data={params.data}
@@ -77,7 +86,7 @@ function mapStateToProps(state) {
     nightMode: state.nightMode,
     transliteration: state.transliteration,
     fontSize: state.fontSize,
-    fontFace: state.fontFace
+    fontFace: state.fontFace,
   };
 }
 

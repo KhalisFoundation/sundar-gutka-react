@@ -29,7 +29,7 @@ import {
   TOGGLE_REMINDERS,
   SET_REMINDER_BANIS,
   SET_REMINDER_SOUND,
-  SET_APP_VERSION
+  SET_APP_VERSION,
 } from "../actions/actions";
 
 function fontSize(state = "SMALL", action) {
@@ -239,7 +239,7 @@ function visram(state = false, action) {
   }
 }
 
-function vishraamOption(state = 'VISHRAAM_COLORED', action) {
+function vishraamOption(state = "VISHRAAM_COLORED", action) {
   switch (action.type) {
     case SET_VISHRAAM_OPTION:
       return action.option;
@@ -248,7 +248,7 @@ function vishraamOption(state = 'VISHRAAM_COLORED', action) {
   }
 }
 
-function vishraamSource(state = 'sttm', action) {
+function vishraamSource(state = "sttm", action) {
   switch (action.type) {
     case SET_VISHRAAM_SOURCE:
       return action.source;
@@ -275,7 +275,7 @@ function reminderBanis(state = JSON.stringify([]), action) {
   }
 }
 
-function reminderSound(state = 'default', action) {
+function reminderSound(state = "default", action) {
   switch (action.type) {
     case SET_REMINDER_SOUND:
       return action.sound;
@@ -323,7 +323,7 @@ const rootReducer = combineReducers({
   reminders,
   reminderBanis,
   reminderSound,
-  appVersion
+  appVersion,
 });
 
 export default rootReducer;

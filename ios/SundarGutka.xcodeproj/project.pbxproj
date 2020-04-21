@@ -17,7 +17,6 @@
 		2D02E4BF1E0B4AB3006451C7 /* main.m in Sources */ = {isa = PBXBuildFile; fileRef = 13B07FB71A68108700A75B9A /* main.m */; };
 		2DCD954D1E0B4F2C00145EB5 /* SundarGutkaTests.m in Sources */ = {isa = PBXBuildFile; fileRef = 00E356F21AD99517003FC87E /* SundarGutkaTests.m */; };
 		3117D90554CFED840D560B74 /* libPods-SundarGutka.a in Frameworks */ = {isa = PBXBuildFile; fileRef = CB08BCC07C7081225C1C0BC1 /* libPods-SundarGutka.a */; };
-		33D798AE324B4AC6C2E43F02 /* libPods-SundarGutka-SundarGutkaTests.a in Frameworks */ = {isa = PBXBuildFile; fileRef = A113E2C47280BFF49E433EB0 /* libPods-SundarGutka-SundarGutkaTests.a */; };
 		3D3CC60770D49EF626960E31 /* libPods-SundarGutka-tvOS.a in Frameworks */ = {isa = PBXBuildFile; fileRef = C836E5DF8C5D25C5599229CB /* libPods-SundarGutka-tvOS.a */; };
 		64D4AF25EDD54AE59169CFD3 /* Arial.ttf in Resources */ = {isa = PBXBuildFile; fileRef = E8C533A8D3944936B5BA6364 /* Arial.ttf */; };
 		7F38728A3A364BB7A49C318F /* GurbaniAkharSG.ttf in Resources */ = {isa = PBXBuildFile; fileRef = FE36E2E7AAC94D81BACA5011 /* GurbaniAkharSG.ttf */; };
@@ -28,6 +27,7 @@
 		9A5EFBD322ED52AA003130DB /* www in Resources */ = {isa = PBXBuildFile; fileRef = 9A5EFBD222ED52AA003130DB /* www */; };
 		A16DF9E465B646F77783EED9 /* libPods-SundarGutka-tvOSTests.a in Frameworks */ = {isa = PBXBuildFile; fileRef = CD0AA87F58F4B733A8E13705 /* libPods-SundarGutka-tvOSTests.a */; };
 		A32518B7CDF4436E93278BE6 /* AnmolLipiSG.ttf in Resources */ = {isa = PBXBuildFile; fileRef = 11F630054FE14B4E86258671 /* AnmolLipiSG.ttf */; };
+		AEDC3B7AFE61D35AA8F2B012 /* libPods-SundarGutkaTests.a in Frameworks */ = {isa = PBXBuildFile; fileRef = EBB7F0A5DDFF26807BB221D9 /* libPods-SundarGutkaTests.a */; };
 		CF1A2A16C1004C3190B30AD3 /* GurbaniAkharThickSG.ttf in Resources */ = {isa = PBXBuildFile; fileRef = 7BCB0E3B79A54EA4B2A60693 /* GurbaniAkharThickSG.ttf */; };
 /* End PBXBuildFile section */
 
@@ -89,7 +89,6 @@
 		9A5EFBD222ED52AA003130DB /* www */ = {isa = PBXFileReference; lastKnownFileType = folder; name = www; path = SundarGutka/www; sourceTree = "<group>"; };
 		9A8D4A0D24206D2F00DA444E /* SundarGutka.entitlements */ = {isa = PBXFileReference; lastKnownFileType = text.plist.entitlements; name = SundarGutka.entitlements; path = SundarGutka/SundarGutka.entitlements; sourceTree = "<group>"; };
 		9CD409A848E54A7485F0244F /* Foundation.ttf */ = {isa = PBXFileReference; explicitFileType = undefined; fileEncoding = 9; includeInIndex = 0; lastKnownFileType = unknown; name = Foundation.ttf; path = "../node_modules/react-native-vector-icons/Fonts/Foundation.ttf"; sourceTree = "<group>"; };
-		A113E2C47280BFF49E433EB0 /* libPods-SundarGutka-SundarGutkaTests.a */ = {isa = PBXFileReference; explicitFileType = archive.ar; includeInIndex = 0; path = "libPods-SundarGutka-SundarGutkaTests.a"; sourceTree = BUILT_PRODUCTS_DIR; };
 		A1EEC765640F4818AA2120EE /* FontAwesome5_Brands.ttf */ = {isa = PBXFileReference; explicitFileType = undefined; fileEncoding = 9; includeInIndex = 0; lastKnownFileType = unknown; name = FontAwesome5_Brands.ttf; path = "../node_modules/react-native-vector-icons/Fonts/FontAwesome5_Brands.ttf"; sourceTree = "<group>"; };
 		A948F221557C017C1CE99663 /* Pods-SundarGutka-tvOS.debug.xcconfig */ = {isa = PBXFileReference; includeInIndex = 1; lastKnownFileType = text.xcconfig; name = "Pods-SundarGutka-tvOS.debug.xcconfig"; path = "Pods/Target Support Files/Pods-SundarGutka-tvOS/Pods-SundarGutka-tvOS.debug.xcconfig"; sourceTree = "<group>"; };
 		B58BCC9834634E51BCE0CCAA /* Fontisto.ttf */ = {isa = PBXFileReference; explicitFileType = undefined; fileEncoding = 9; includeInIndex = 0; lastKnownFileType = unknown; name = Fontisto.ttf; path = "../node_modules/react-native-vector-icons/Fonts/Fontisto.ttf"; sourceTree = "<group>"; };
@@ -100,6 +99,7 @@
 		CD0AA87F58F4B733A8E13705 /* libPods-SundarGutka-tvOSTests.a */ = {isa = PBXFileReference; explicitFileType = archive.ar; includeInIndex = 0; path = "libPods-SundarGutka-tvOSTests.a"; sourceTree = BUILT_PRODUCTS_DIR; };
 		E72369E360C79E4EE06E9ADE /* Pods-SundarGutkaTests.release.xcconfig */ = {isa = PBXFileReference; includeInIndex = 1; lastKnownFileType = text.xcconfig; name = "Pods-SundarGutkaTests.release.xcconfig"; path = "Pods/Target Support Files/Pods-SundarGutkaTests/Pods-SundarGutkaTests.release.xcconfig"; sourceTree = "<group>"; };
 		E8C533A8D3944936B5BA6364 /* Arial.ttf */ = {isa = PBXFileReference; explicitFileType = undefined; fileEncoding = 9; includeInIndex = 0; lastKnownFileType = unknown; name = Arial.ttf; path = ../assets/fonts/Arial.ttf; sourceTree = "<group>"; };
+		EBB7F0A5DDFF26807BB221D9 /* libPods-SundarGutkaTests.a */ = {isa = PBXFileReference; explicitFileType = archive.ar; includeInIndex = 0; path = "libPods-SundarGutkaTests.a"; sourceTree = BUILT_PRODUCTS_DIR; };
 		ED297162215061F000B7C4FE /* JavaScriptCore.framework */ = {isa = PBXFileReference; lastKnownFileType = wrapper.framework; name = JavaScriptCore.framework; path = System/Library/Frameworks/JavaScriptCore.framework; sourceTree = SDKROOT; };
 		ED2971642150620600B7C4FE /* JavaScriptCore.framework */ = {isa = PBXFileReference; lastKnownFileType = wrapper.framework; name = JavaScriptCore.framework; path = Platforms/AppleTVOS.platform/Developer/SDKs/AppleTVOS12.0.sdk/System/Library/Frameworks/JavaScriptCore.framework; sourceTree = DEVELOPER_DIR; };
 		F8E8458B111CE290DF79F23C /* Pods-SundarGutka-tvOSTests.release.xcconfig */ = {isa = PBXFileReference; includeInIndex = 1; lastKnownFileType = text.xcconfig; name = "Pods-SundarGutka-tvOSTests.release.xcconfig"; path = "Pods/Target Support Files/Pods-SundarGutka-tvOSTests/Pods-SundarGutka-tvOSTests.release.xcconfig"; sourceTree = "<group>"; };
@@ -112,7 +112,7 @@
 			isa = PBXFrameworksBuildPhase;
 			buildActionMask = 2147483647;
 			files = (
-				33D798AE324B4AC6C2E43F02 /* libPods-SundarGutka-SundarGutkaTests.a in Frameworks */,
+				AEDC3B7AFE61D35AA8F2B012 /* libPods-SundarGutkaTests.a in Frameworks */,
 			);
 			runOnlyForDeploymentPostprocessing = 0;
 		};
@@ -233,7 +233,7 @@
 				CB08BCC07C7081225C1C0BC1 /* libPods-SundarGutka.a */,
 				C836E5DF8C5D25C5599229CB /* libPods-SundarGutka-tvOS.a */,
 				CD0AA87F58F4B733A8E13705 /* libPods-SundarGutka-tvOSTests.a */,
-				A113E2C47280BFF49E433EB0 /* libPods-SundarGutka-SundarGutkaTests.a */,
+				EBB7F0A5DDFF26807BB221D9 /* libPods-SundarGutkaTests.a */,
 			);
 			name = Frameworks;
 			sourceTree = "<group>";
@@ -283,7 +283,6 @@
 				00E356EA1AD99517003FC87E /* Sources */,
 				00E356EB1AD99517003FC87E /* Frameworks */,
 				00E356EC1AD99517003FC87E /* Resources */,
-				86F525BA7BCB1E3A6C91763E /* [CP] Copy Pods Resources */,
 			);
 			buildRules = (
 			);
@@ -474,7 +473,7 @@
 			);
 			name = "[CP] Check Pods Manifest.lock";
 			outputPaths = (
-				"$(DERIVED_FILE_DIR)/Pods-SundarGutka-SundarGutkaTests-checkManifestLockResult.txt",
+				"$(DERIVED_FILE_DIR)/Pods-SundarGutkaTests-checkManifestLockResult.txt",
 			);
 			runOnlyForDeploymentPostprocessing = 0;
 			shellPath = /bin/sh;
@@ -547,54 +546,6 @@
 			runOnlyForDeploymentPostprocessing = 0;
 			shellPath = /bin/sh;
 			shellScript = "diff \"${PODS_PODFILE_DIR_PATH}/Podfile.lock\" \"${PODS_ROOT}/Manifest.lock\" > /dev/null\nif [ $? != 0 ] ; then\n    # print error to STDERR\n    echo \"error: The sandbox is not in sync with the Podfile.lock. Run 'pod install' or update your CocoaPods installation.\" >&2\n    exit 1\nfi\n# This output is used by Xcode 'outputs' to avoid re-running this script phase.\necho \"SUCCESS\" > \"${SCRIPT_OUTPUT_FILE_0}\"\n";
-			showEnvVarsInLog = 0;
-		};
-		86F525BA7BCB1E3A6C91763E /* [CP] Copy Pods Resources */ = {
-			isa = PBXShellScriptBuildPhase;
-			buildActionMask = 2147483647;
-			files = (
-			);
-			inputPaths = (
-				"${PODS_ROOT}/Target Support Files/Pods-SundarGutka-SundarGutkaTests/Pods-SundarGutka-SundarGutkaTests-resources.sh",
-				"${PODS_ROOT}/../../node_modules/react-native-vector-icons/Fonts/AntDesign.ttf",
-				"${PODS_ROOT}/../../node_modules/react-native-vector-icons/Fonts/Entypo.ttf",
-				"${PODS_ROOT}/../../node_modules/react-native-vector-icons/Fonts/EvilIcons.ttf",
-				"${PODS_ROOT}/../../node_modules/react-native-vector-icons/Fonts/Feather.ttf",
-				"${PODS_ROOT}/../../node_modules/react-native-vector-icons/Fonts/FontAwesome.ttf",
-				"${PODS_ROOT}/../../node_modules/react-native-vector-icons/Fonts/FontAwesome5_Brands.ttf",
-				"${PODS_ROOT}/../../node_modules/react-native-vector-icons/Fonts/FontAwesome5_Regular.ttf",
-				"${PODS_ROOT}/../../node_modules/react-native-vector-icons/Fonts/FontAwesome5_Solid.ttf",
-				"${PODS_ROOT}/../../node_modules/react-native-vector-icons/Fonts/Fontisto.ttf",
-				"${PODS_ROOT}/../../node_modules/react-native-vector-icons/Fonts/Foundation.ttf",
-				"${PODS_ROOT}/../../node_modules/react-native-vector-icons/Fonts/Ionicons.ttf",
-				"${PODS_ROOT}/../../node_modules/react-native-vector-icons/Fonts/MaterialCommunityIcons.ttf",
-				"${PODS_ROOT}/../../node_modules/react-native-vector-icons/Fonts/MaterialIcons.ttf",
-				"${PODS_ROOT}/../../node_modules/react-native-vector-icons/Fonts/Octicons.ttf",
-				"${PODS_ROOT}/../../node_modules/react-native-vector-icons/Fonts/SimpleLineIcons.ttf",
-				"${PODS_ROOT}/../../node_modules/react-native-vector-icons/Fonts/Zocial.ttf",
-			);
-			name = "[CP] Copy Pods Resources";
-			outputPaths = (
-				"${TARGET_BUILD_DIR}/${UNLOCALIZED_RESOURCES_FOLDER_PATH}/AntDesign.ttf",
-				"${TARGET_BUILD_DIR}/${UNLOCALIZED_RESOURCES_FOLDER_PATH}/Entypo.ttf",
-				"${TARGET_BUILD_DIR}/${UNLOCALIZED_RESOURCES_FOLDER_PATH}/EvilIcons.ttf",
-				"${TARGET_BUILD_DIR}/${UNLOCALIZED_RESOURCES_FOLDER_PATH}/Feather.ttf",
-				"${TARGET_BUILD_DIR}/${UNLOCALIZED_RESOURCES_FOLDER_PATH}/FontAwesome.ttf",
-				"${TARGET_BUILD_DIR}/${UNLOCALIZED_RESOURCES_FOLDER_PATH}/FontAwesome5_Brands.ttf",
-				"${TARGET_BUILD_DIR}/${UNLOCALIZED_RESOURCES_FOLDER_PATH}/FontAwesome5_Regular.ttf",
-				"${TARGET_BUILD_DIR}/${UNLOCALIZED_RESOURCES_FOLDER_PATH}/FontAwesome5_Solid.ttf",
-				"${TARGET_BUILD_DIR}/${UNLOCALIZED_RESOURCES_FOLDER_PATH}/Fontisto.ttf",
-				"${TARGET_BUILD_DIR}/${UNLOCALIZED_RESOURCES_FOLDER_PATH}/Foundation.ttf",
-				"${TARGET_BUILD_DIR}/${UNLOCALIZED_RESOURCES_FOLDER_PATH}/Ionicons.ttf",
-				"${TARGET_BUILD_DIR}/${UNLOCALIZED_RESOURCES_FOLDER_PATH}/MaterialCommunityIcons.ttf",
-				"${TARGET_BUILD_DIR}/${UNLOCALIZED_RESOURCES_FOLDER_PATH}/MaterialIcons.ttf",
-				"${TARGET_BUILD_DIR}/${UNLOCALIZED_RESOURCES_FOLDER_PATH}/Octicons.ttf",
-				"${TARGET_BUILD_DIR}/${UNLOCALIZED_RESOURCES_FOLDER_PATH}/SimpleLineIcons.ttf",
-				"${TARGET_BUILD_DIR}/${UNLOCALIZED_RESOURCES_FOLDER_PATH}/Zocial.ttf",
-			);
-			runOnlyForDeploymentPostprocessing = 0;
-			shellPath = /bin/sh;
-			shellScript = "\"${PODS_ROOT}/Target Support Files/Pods-SundarGutka-SundarGutkaTests/Pods-SundarGutka-SundarGutkaTests-resources.sh\"\n";
 			showEnvVarsInLog = 0;
 		};
 		9AE590CC23D5252C004DE4A0 /* ShellScript */ = {
@@ -748,7 +699,7 @@
 /* Begin XCBuildConfiguration section */
 		00E356F61AD99517003FC87E /* Debug */ = {
 			isa = XCBuildConfiguration;
-			baseConfigurationReference = 86633F15E6F8C2626E527777 /* Pods-SundarGutka-SundarGutkaTests.debug.xcconfig */;
+			baseConfigurationReference = 3C778687B9CA5DD64C8FEC84 /* Pods-SundarGutkaTests.debug.xcconfig */;
 			buildSettings = {
 				ALWAYS_EMBED_SWIFT_STANDARD_LIBRARIES = YES;
 				BUNDLE_LOADER = "$(TEST_HOST)";
@@ -776,7 +727,7 @@
 		};
 		00E356F71AD99517003FC87E /* Release */ = {
 			isa = XCBuildConfiguration;
-			baseConfigurationReference = 0BEBB2D6A1A6CC77E141267B /* Pods-SundarGutka-SundarGutkaTests.release.xcconfig */;
+			baseConfigurationReference = E72369E360C79E4EE06E9ADE /* Pods-SundarGutkaTests.release.xcconfig */;
 			buildSettings = {
 				ALWAYS_EMBED_SWIFT_STANDARD_LIBRARIES = YES;
 				BUNDLE_LOADER = "$(TEST_HOST)";
@@ -808,12 +759,12 @@
 				ASSETCATALOG_COMPILER_LAUNCHIMAGE_NAME = LaunchImage;
 				CLANG_ENABLE_MODULES = YES;
 				CODE_SIGN_ENTITLEMENTS = SundarGutka/SundarGutka.entitlements;
-				CURRENT_PROJECT_VERSION = 10;
+				CURRENT_PROJECT_VERSION = 1;
 				DEAD_CODE_STRIPPING = NO;
 				DEVELOPMENT_TEAM = B3W82WVBU9;
 				INFOPLIST_FILE = SundarGutka/Info.plist;
 				LD_RUNPATH_SEARCH_PATHS = "$(inherited) @executable_path/Frameworks";
-				MARKETING_VERSION = 5.6.0;
+				MARKETING_VERSION = 5.6.2;
 				OTHER_CFLAGS = (
 					"$(inherited)",
 					"-DFB_SONARKIT_ENABLED=1",
@@ -842,11 +793,11 @@
 				ASSETCATALOG_COMPILER_LAUNCHIMAGE_NAME = LaunchImage;
 				CLANG_ENABLE_MODULES = YES;
 				CODE_SIGN_ENTITLEMENTS = SundarGutka/SundarGutka.entitlements;
-				CURRENT_PROJECT_VERSION = 10;
+				CURRENT_PROJECT_VERSION = 1;
 				DEVELOPMENT_TEAM = B3W82WVBU9;
 				INFOPLIST_FILE = SundarGutka/Info.plist;
 				LD_RUNPATH_SEARCH_PATHS = "$(inherited) @executable_path/Frameworks";
-				MARKETING_VERSION = 5.6.0;
+				MARKETING_VERSION = 5.6.2;
 				OTHER_CFLAGS = (
 					"$(inherited)",
 					"-DFB_SONARKIT_ENABLED=1",

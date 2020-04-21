@@ -6,7 +6,7 @@ var db;
 SQLite.deleteDatabase(
   {
     name: database_name,
-    location: 1
+    location: 1,
   },
   function(res, err) {
     // success
@@ -19,20 +19,20 @@ SQLite.deleteDatabase(
 );
 
 class Database {
-
   static getBaniList(language) {
     return new Promise(function(resolve) {
       db.executeSql(
         "SELECT ID, Gurmukhi, Transliterations FROM Banis",
         [],
-        results => {
+        (results) => {
           var totalResults = {};
           var len = results.rows.length;
+
           for (let i = 0; i < len; i++) {
             let row = results.rows.item(i);
             totalResults[row.ID] = {
               gurmukhi: row.Gurmukhi,
-              translit: getTranslitText(row.Transliterations, language)
+              translit: getTranslitText(row.Transliterations, language),
             };
           }
           resolve(totalResults);
@@ -80,7 +80,7 @@ class Database {
           (mangalPosition == "CURRENT_SAROOPS" ? "'current'" : "'above'") +
           ")ORDER BY Seq ASC;",
         [],
-        results => {
+        (results) => {
           var totalResults = new Array(results.rows.length);
           var paragraphResults = new Array();
           var len = results.rows.length;
@@ -102,7 +102,12 @@ class Database {
             let vishraamJson = JSON.parse(row.Visraam);
 
             var vishraamPositions = {};
-            if (visram && vishraamJson != null && vishraamJson[vishraamSource] != null && vishraamJson[vishraamSource].length > 0) {
+            if (
+              visram &&
+              vishraamJson != null &&
+              vishraamJson[vishraamSource] != null &&
+              vishraamJson[vishraamSource].length > 0
+            ) {
               vishraamJson[vishraamSource].forEach(function(pos) {
                 vishraamPositions[pos.p] = pos.t;
               });
@@ -112,16 +117,21 @@ class Database {
             var arr = splitted.map((word, index) => {
               var style = "style='";
               if (visram && index in vishraamPositions) {
-                switch(vishraamOption) {
+                switch (vishraamOption) {
                   case "VISHRAAM_GRADIENT":
-                    style += " border-radius: 5px; background: linear-gradient(to right,rgba(229, 229, 229, 0) 20%, ";
-                    style += vishraamPositions[index] == "v" ? "rgba(167, 0, 0, 0.5)" : "rgba(255, 242, 41, 0.5)";
-                    style += " 100%);"
+                    style +=
+                      " border-radius: 5px; background: linear-gradient(to right,rgba(229, 229, 229, 0) 20%, ";
+                    style +=
+                      vishraamPositions[index] == "v"
+                        ? "rgba(167, 0, 0, 0.5)"
+                        : "rgba(255, 242, 41, 0.5)";
+                    style += " 100%);";
                     break;
                   case "VISHRAAM_COLORED":
                   default:
-                      style += " color:";
-                      style += vishraamPositions[index] == "v" ? "#c0392b" : "#ffc500";
+                    style += " color:";
+                    style +=
+                      vishraamPositions[index] == "v" ? "#c0392b" : "#ffc500";
                 }
                 return (
                   "<span " +
@@ -133,7 +143,6 @@ class Database {
               } else
                 return "<span style='white-space: nowrap;'>" + word + "</span>";
             });
-
 
             let curGurmukhi = larivaar ? arr.join("<wbr>") : arr.join(" ");
 
@@ -151,12 +160,8 @@ class Database {
               translationJson == null || translationJson.es.sn == null
                 ? " "
                 : translationJson.es.sn;
-
             let translit = getTranslitText(row.Transliterations, language);
-            translit =
-            translit == "" || translit == null
-                ? " "
-                : translit;
+            translit = translit == "" || translit == null ? " " : translit;
 
             if (
               (baniId === 9 || baniId === 21) &&
@@ -178,7 +183,7 @@ class Database {
                     englishTranslations: englishTranslation,
                     punjabiTranslations: punjabiTranslation,
                     spanishTranslations: spanishTranslation,
-                    header: paragraphHeader
+                    header: paragraphHeader,
                   });
                 }
                 paragraphId = row.ID;
@@ -205,7 +210,7 @@ class Database {
                   englishTranslations: englishTranslation,
                   punjabiTranslations: punjabiTranslation,
                   spanishTranslations: spanishTranslation,
-                  header: paragraphHeader
+                  header: paragraphHeader,
                 });
               }
             } else {
@@ -216,7 +221,7 @@ class Database {
                 englishTranslations: row.English,
                 punjabiTranslations: row.Punjabi,
                 spanishTranslations: row.Spanish,
-                header: row.header
+                header: row.header,
               };
             }
           }
@@ -261,7 +266,7 @@ class Database {
           " = 1)" +
           " ORDER BY Seq ASC;",
         [],
-        results => {
+        (results) => {
           var totalResults = new Array(results.rows.length);
           var len = results.rows.length;
           for (let i = 0; i < len; i++) {
@@ -269,7 +274,7 @@ class Database {
             totalResults[i] = {
               shabadId: row.BaniShabadID,
               gurmukhi: row.Gurmukhi,
-              translit: getTranslitText(row.Transliterations, language)
+              translit: getTranslitText(row.Transliterations, language),
             };
           }
           resolve(totalResults);

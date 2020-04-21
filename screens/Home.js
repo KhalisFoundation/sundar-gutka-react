@@ -8,7 +8,6 @@ import Icon from "react-native-vector-icons/MaterialIcons";
 import GLOBAL from "../utils/globals";
 import SplashScreen from "react-native-splash-screen";
 import AnalyticsManager from "../utils/analytics";
-import Strings from "../utils/localization";
 import NotificationsManager from "../utils/notifications";
 import Database from "../utils/database";
 import { mergedBaniList } from "../utils/helpers";
@@ -20,7 +19,7 @@ import firebase from "react-native-firebase";
 import Sound from "react-native-sound";
 
 class Home extends React.Component {
-  GENERAL_NOTIFICATIONS_CHANNEL = "general-channel-4";
+  static navigationOptions = { header: null };
 
   constructor(props) {
     super(props);
@@ -28,7 +27,7 @@ class Home extends React.Component {
     this.state = {
       data: [],
       isLoading: true,
-      showLengthSelector: false
+      showLengthSelector: false,
     };
 
     // Enable playback in silence mode
@@ -51,13 +50,15 @@ class Home extends React.Component {
   }
 
   loadBaniList() {
-    Database.getBaniList(this.props.transliterationLanguage).then(baniList => {
-      this.props.setMergedBaniData(mergedBaniList(baniList));
-      this.sortBani();
-      this.setState({
-        isLoading: false
-      });
-    });
+    Database.getBaniList(this.props.transliterationLanguage).then(
+      (baniList) => {
+        this.props.setMergedBaniData(mergedBaniList(baniList));
+        this.sortBani();
+        this.setState({
+          isLoading: false,
+        });
+      }
+    );
   }
 
   sortBani() {
@@ -65,7 +66,7 @@ class Home extends React.Component {
       data: this.reorder(
         this.props.mergedBaniData.baniOrder,
         this.props.baniOrder
-      )
+      ),
     });
   }
 
@@ -98,8 +99,6 @@ class Home extends React.Component {
     this.changeStatusBar(this.props.statusBar);
     AnalyticsManager.getInstance().allowTracking(this.props.statistics);
 
-    this.setupNotificationChannel();
-
     NotificationsManager.getInstance().updateReminders(
       this.props.reminders,
       this.props.reminderSound,
@@ -118,7 +117,7 @@ class Home extends React.Component {
     // Notification opened from background
     this.notificationOpenedListener = firebase
       .notifications()
-      .onNotificationOpened(notificationOpen => {
+      .onNotificationOpened((notificationOpen) => {
         this.handleNotificationEvent(notificationOpen);
       });
 
@@ -126,7 +125,7 @@ class Home extends React.Component {
     firebase
       .notifications()
       .getInitialNotification()
-      .then(notificationOpen => {
+      .then((notificationOpen) => {
         if (notificationOpen) {
           // App was opened by a notification
           this.handleNotificationEvent(notificationOpen);
@@ -142,52 +141,24 @@ class Home extends React.Component {
 
     NotificationsManager.getInstance().removeAllDeliveredNotifications();
 
-    if(item.id) {
-      this.props.setCurrentShabad(item.id);
-      this.props.navigation.navigate('Reader', { item: item });
-    }
-   
+    this.props.setCurrentShabad(item.id);
+    this.props.navigation.navigate({
+      key: "Reader-" + item.id,
+      routeName: "Reader",
+      params: { item: item },
+    });
   }
 
   componentWillUnmount() {
     this.notificationOpenedListener();
-    this.unsubscribeFromNotificationListener();
-  }
-
-  setupNotificationChannel() {
-    const channel = new firebase.notifications.Android.Channel(
-      this.GENERAL_NOTIFICATIONS_CHANNEL,
-      'General Notifications',
-      firebase.notifications.Android.Importance.Max
-    )
-      .setDescription('Channel for general notifications and important announcements.');
-    firebase.notifications().android.createChannel(channel);
-    
-    // the listener returns a function you can use to unsubscribe
-    this.unsubscribeFromNotificationListener = firebase.notifications().onNotification((notification) => {
-      // Build notification
-      const localNotification = new firebase.notifications.Notification()
-        .setNotificationId(notification.notificationId)
-        .setTitle(notification.title)
-        .setSubtitle(notification.subtitle)
-        .setBody(notification.body)
-        .setData(notification.data)
-        console.log("notification", notification);
-
-        localNotification.android
-        .setChannelId(this.GENERAL_NOTIFICATIONS_CHANNEL)
-        .android.setSmallIcon("ic_notification");
-
-      firebase.notifications()
-        .displayNotification(localNotification)
-        .catch(err => console.error(err));
-    });
   }
 
   componentDidUpdate(prevProps) {
     if (prevProps.baniOrder != this.props.baniOrder) {
       this.sortBani();
-    } else if (prevProps.transliterationLanguage != this.props.transliterationLanguage) {
+    } else if (
+      prevProps.transliterationLanguage != this.props.transliterationLanguage
+    ) {
       this.loadBaniList();
     } else if (prevProps.screenAwake != this.props.screenAwake) {
       this.changeKeepAwake(this.props.screenAwake);
@@ -219,7 +190,7 @@ class Home extends React.Component {
         var sound = new Sound(
           this.props.reminderSound,
           Sound.MAIN_BUNDLE,
-          error => {
+          (error) => {
             if (error) {
               return;
             }
@@ -236,9 +207,17 @@ class Home extends React.Component {
   handleOnPress(item, navigator) {
     if (!item.folder) {
       this.props.setCurrentShabad(item.id);
-      navigator.navigate('Reader', { item: item });
+      navigator.navigate({
+        key: "Reader-" + item.id,
+        routeName: "Reader",
+        params: { item: item },
+      });
     } else {
-      navigator.navigate('FolderBani', { data: item.folder, title: item.gurmukhi });
+      navigator.navigate({
+        key: "Folder-" + item.roman,
+        routeName: "FolderBani",
+        params: { data: item.folder, title: item.gurmukhi },
+      });
     }
   }
 
@@ -246,9 +225,8 @@ class Home extends React.Component {
     return (
       <View
         style={{
-          flex: 1
-        }}
-      >
+          flex: 1,
+        }}>
         {this.state.showLengthSelector && <BaniLengthSelector />}
 
         <StatusBar
@@ -259,15 +237,14 @@ class Home extends React.Component {
           backgroundColor={GLOBAL.COLOR.TOOLBAR_COLOR}
           containerStyle={[
             { height: 0, borderBottomWidth: 0 },
-            Platform.OS === "android" && { paddingTop: 10 }
+            Platform.OS === "android" && { paddingTop: 10 },
           ]}
         />
         <View
           style={{
             backgroundColor: GLOBAL.COLOR.TOOLBAR_COLOR,
-            paddingBottom: 10
-          }}
-        >
+            paddingBottom: 10,
+          }}>
           <Text
             style={[
               {
@@ -275,45 +252,40 @@ class Home extends React.Component {
                 fontFamily: "GurbaniAkharHeavySG",
                 fontSize: 18,
                 textAlign: "center",
-                paddingBottom: 10
-              }
-            ]}
-          >
-            {Strings.home_title}
+                paddingBottom: 10,
+              },
+            ]}>
+            {"<> sRI vwihgurU jI kI Piqh ]"}
           </Text>
 
           <View
             style={{
               flexDirection: "row",
-              justifyContent: "center"
-            }}
-          >
+              justifyContent: "center",
+            }}>
             <Text
               style={[
                 {
                   color: GLOBAL.COLOR.TOOLBAR_TINT,
                   fontFamily: "GurbaniAkharHeavySG",
-                  fontSize: 28
-                }
-              ]}
-            >
+                  fontSize: 28,
+                },
+              ]}>
               <Text
                 style={[
                   {
-                    fontSize: 32
-                  }
-                ]}
-              >
+                    fontSize: 32,
+                  },
+                ]}>
                 Œ
               </Text>{" "}
-              {Strings.home_sundar_gutka}{" "}
+              suMdr gutkw{" "}
               <Text
                 style={[
                   {
-                    fontSize: 32
-                  }
-                ]}
-              >
+                    fontSize: 32,
+                  },
+                ]}>
                 ‰
               </Text>
             </Text>
@@ -323,12 +295,15 @@ class Home extends React.Component {
             style={{
               position: "absolute",
               right: 10,
-              bottom: 15
+              bottom: 15,
             }}
             color={GLOBAL.COLOR.TOOLBAR_TINT}
             size={30}
             onPress={() =>
-              this.props.navigation.navigate('Settings')
+              this.props.navigation.navigate({
+                key: "Settings",
+                routeName: "Settings",
+              })
             }
           />
         </View>
@@ -364,7 +339,7 @@ function mapStateToProps(state) {
     baniLength: state.baniLength,
     reminders: state.reminders,
     reminderBanis: state.reminderBanis,
-    reminderSound: state.reminderSound
+    reminderSound: state.reminderSound,
   };
 }
 

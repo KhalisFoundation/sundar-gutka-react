@@ -17,7 +17,7 @@ export default class NotificationsManager {
       firebase
         .messaging()
         .hasPermission()
-        .then(enabled => {
+        .then((enabled) => {
           if (!enabled) {
             // user doesn't have permission
             firebase
@@ -26,7 +26,7 @@ export default class NotificationsManager {
               .then(() => {
                 // User has authorized
               })
-              .catch(error => {
+              .catch((error) => {
                 // User has rejected permissions
                 alert(
                   "Please enable Notifications for Sundar Gutka in OS Settings to use the Reminders feature."
@@ -79,7 +79,7 @@ export default class NotificationsManager {
       .setData({
         key: reminder.key,
         gurmukhi: reminder.gurmukhi,
-        translit: reminder.translit
+        translit: reminder.translit,
       });
 
     notification.android
@@ -94,7 +94,7 @@ export default class NotificationsManager {
 
     firebase.notifications().scheduleNotification(notification, {
       fireDate: aTime,
-      repeatInterval: "day"
+      repeatInterval: "day",
     });
   }
 }

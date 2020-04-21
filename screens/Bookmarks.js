@@ -5,7 +5,6 @@ import { View, StatusBar, Platform } from "react-native";
 import { Header } from "react-native-elements";
 import Icon from "react-native-vector-icons/MaterialIcons";
 import GLOBAL from "../utils/globals";
-import Strings from "../utils/localization";
 import Database from "../utils/database";
 import BaniList from "../components/BaniList";
 import LoadingIndicator from "../components/LoadingIndicator";
@@ -16,7 +15,7 @@ class Bookmarks extends React.Component {
     super(props);
     this.state = {
       data: [],
-      isLoading: false
+      isLoading: false,
     };
   }
 
@@ -25,10 +24,10 @@ class Bookmarks extends React.Component {
       this.props.currentShabad,
       this.props.baniLength,
       this.props.transliterationLanguage
-    ).then(bookmarks => {
+    ).then((bookmarks) => {
       this.setState({
         data: bookmarks,
-        isLoading: false
+        isLoading: false,
       });
     });
   }
@@ -44,9 +43,8 @@ class Bookmarks extends React.Component {
     return (
       <View
         style={{
-          flex: 1
-        }}
-      >
+          flex: 1,
+        }}>
         <StatusBar
           backgroundColor={
             this.props.nightMode
@@ -61,7 +59,9 @@ class Bookmarks extends React.Component {
               ? GLOBAL.COLOR.TOOLBAR_COLOR_ALT_NIGHT_MODE
               : GLOBAL.COLOR.TOOLBAR_COLOR_ALT
           }
-          containerStyle={[Platform.OS === "android" && { height: 56, paddingTop: 0 }]}
+          containerStyle={[
+            Platform.OS === "android" && { height: 56, paddingTop: 0 },
+          ]}
           leftComponent={
             <Icon
               name="arrow-back"
@@ -75,13 +75,13 @@ class Bookmarks extends React.Component {
             />
           }
           centerComponent={{
-            text: Strings.bookmarks_title,
+            text: "Bookmarks",
             style: {
               color: this.props.nightMode
                 ? GLOBAL.COLOR.TOOLBAR_TINT
                 : GLOBAL.COLOR.TOOLBAR_TINT_DARK,
-              fontSize: 18
-            }
+              fontSize: 18,
+            },
           }}
         />
 
@@ -108,7 +108,7 @@ function mapStateToProps(state) {
     fontSize: state.fontSize,
     fontFace: state.fontFace,
     baniLength: state.baniLength,
-    currentShabad: state.currentShabad
+    currentShabad: state.currentShabad,
   };
 }
 

@@ -43,7 +43,7 @@ export const FONT_SIZES = [
   "SMALL",
   "MEDIUM",
   "LARGE",
-  "EXTRA_LARGE"
+  "EXTRA_LARGE",
 ];
 
 export const fontSizeNames = [
@@ -51,35 +51,35 @@ export const fontSizeNames = [
   "Small (default)",
   "Medium",
   "Large",
-  "Extra Large"
+  "Extra Large",
 ];
 
 export const FONT_FACES = [
   "AnmolLipiSG",
   "GurbaniAkharSG",
   "GurbaniAkharHeavySG",
-  "GurbaniAkharThickSG"
+  "GurbaniAkharThickSG",
 ];
 
 export const fontFaceNames = [
   "Anmol Lipi",
   "Gurbani Akhar (default)",
   "Gurbani Akhar Heavy",
-  "Gurbani Akhar Thick"
+  "Gurbani Akhar Thick",
 ];
 
-export const TRANSLITERATION_LANGUAGES= [
+export const TRANSLITERATION_LANGUAGES = [
   "ENGLISH",
   "HINDI",
   "SHAHMUKHI",
-  "IPA"
+  "IPA",
 ];
 
-export const transliterationLanguageNames= [
+export const transliterationLanguageNames = [
   "English",
   "Hindi",
   "Shahmukhi",
-  "International Phonetic Alphabet"
+  "International Phonetic Alphabet",
 ];
 
 export const BANI_LENGTHS = ["SHORT", "MEDIUM", "LONG", "EXTRA_LONG"];
@@ -88,32 +88,36 @@ export const baniLengthNames = ["Short", "Medium", "Long", "Extra Long"];
 
 export const MANGLACHARAN_POSITIONS = [
   "CURRENT_SAROOPS",
-  "ABOVE_RAAG_HEADINGS"
+  "ABOVE_RAAG_HEADINGS",
 ];
 
 export const manglacharanPositionNames = [
   "Current Saroops (default)",
-  "Above Raag Headings"
+  "Above Raag Headings",
 ];
 
 export const PADCHHED_SETTINGS = ["SAT_SUBHAM_SAT", "MAST_SABH_MAST"];
 
 export const padchhedSettingNames = [
   "Sat Subham Sat (default)",
-  "Mast Sabh Mast"
+  "Mast Sabh Mast",
 ];
 
-export const REMINDER_SOUNDS = ["default", "wake_up_jap.mp3", "waheguru_soul.mp3"];
+export const REMINDER_SOUNDS = [
+  "default",
+  "wake_up_jap.mp3",
+  "waheguru_soul.mp3",
+];
 
-export const reminderSoundNames = ["Default", "Wake Up Jap", "Waheguru Soul"]
+export const reminderSoundNames = ["Default", "Wake Up Jap", "Waheguru Soul"];
 
 export const VISHRAAM_OPTIONS = ["VISHRAAM_COLORED", "VISHRAAM_GRADIENT"];
 
-export const vishraamOptionNames = ["Colored Words", "Gradient Background"]
+export const vishraamOptionNames = ["Colored Words", "Gradient Background"];
 
 export const VISHRAAM_SOURCES = ["sttm", "igurbani", "sttm2"];
 
-export const vishraamSourceNames = ["BaniDB Living", "iGurbani", "STTM 2"]
+export const vishraamSourceNames = ["BaniDB Living", "iGurbani", "STTM 2"];
 
 /*
  * action creators
@@ -135,7 +139,10 @@ export function toggleTransliteration(value) {
 }
 
 export function setTransliterationLanguage(language) {
-  AnalyticsManager.getInstance().trackSettingsEvent("transliterationLanguage", language);
+  AnalyticsManager.getInstance().trackSettingsEvent(
+    "transliterationLanguage",
+    language
+  );
   return { type: SET_TRANSLITERATION_LANGUAGE, language };
 }
 

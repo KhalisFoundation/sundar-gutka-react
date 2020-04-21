@@ -3,7 +3,7 @@ import { Text, StyleSheet, View } from "react-native";
 import {
   fontSizeForReader,
   fontColorForReader,
-  TextType
+  TextType,
 } from "../utils/helpers";
 
 class ReaderBaniItem extends Component {
@@ -15,7 +15,7 @@ class ReaderBaniItem extends Component {
       fontFace,
       englishTranslations,
       transliteration,
-      onItemLayout
+      onItemLayout,
     } = this.props;
     return (
       <View style={styles.itemBlock} onLayout={onItemLayout}>
@@ -27,7 +27,7 @@ class ReaderBaniItem extends Component {
                 item.header,
                 nightMode,
                 TextType.GURMUKHI
-              )
+              ),
             },
             { fontFamily: fontFace },
             { padding: 5 },
@@ -36,14 +36,13 @@ class ReaderBaniItem extends Component {
                 item.header === 0
                   ? "left"
                   : item.header === 1 || item.header === 2
-                    ? "center"
-                    : "right"
+                  ? "center"
+                  : "right",
             },
             {
-              fontSize: fontSizeForReader(fontSize, item.header, false)
-            }
-          ]}
-        >
+              fontSize: fontSizeForReader(fontSize, item.header, false),
+            },
+          ]}>
           {item.gurmukhi}
         </Text>
         {transliteration && (
@@ -54,7 +53,7 @@ class ReaderBaniItem extends Component {
                   item.header,
                   nightMode,
                   TextType.TRANSLITERATION
-                )
+                ),
               },
               { padding: 5 },
               { fontWeight: item.header === 0 ? "normal" : "bold" },
@@ -63,46 +62,43 @@ class ReaderBaniItem extends Component {
                   item.header === 0
                     ? "left"
                     : item.header === 1 || item.header === 2
-                      ? "center"
-                      : "right"
+                    ? "center"
+                    : "right",
               },
               {
-                fontSize: fontSizeForReader(fontSize, item.header, true)
-              }
-            ]}
-          >
+                fontSize: fontSizeForReader(fontSize, item.header, true),
+              },
+            ]}>
             {item.translit}
           </Text>
         )}
-        {englishTranslations &&
-          item.englishTranslations && (
-            <Text
-              style={[
-                {
-                  color: fontColorForReader(
-                    item.header,
-                    nightMode,
-                    TextType.ENGLISH_TRANSLATION
-                  )
-                },
-                { padding: 5 },
-                { fontWeight: item.header === 0 ? "normal" : "bold" },
-                {
-                  textAlign:
-                    item.header === 0
-                      ? "left"
-                      : item.header === 1 || item.header === 2
-                        ? "center"
-                        : "right"
-                },
-                {
-                  fontSize: fontSizeForReader(fontSize, item.header, true)
-                }
-              ]}
-            >
-              {item.englishTranslations}
-            </Text>
-          )}
+        {englishTranslations && item.englishTranslations && (
+          <Text
+            style={[
+              {
+                color: fontColorForReader(
+                  item.header,
+                  nightMode,
+                  TextType.ENGLISH_TRANSLATION
+                ),
+              },
+              { padding: 5 },
+              { fontWeight: item.header === 0 ? "normal" : "bold" },
+              {
+                textAlign:
+                  item.header === 0
+                    ? "left"
+                    : item.header === 1 || item.header === 2
+                    ? "center"
+                    : "right",
+              },
+              {
+                fontSize: fontSizeForReader(fontSize, item.header, true),
+              },
+            ]}>
+            {item.englishTranslations}
+          </Text>
+        )}
       </View>
     );
   }
@@ -110,8 +106,8 @@ class ReaderBaniItem extends Component {
 
 const styles = StyleSheet.create({
   itemBlock: {
-    padding: 5
-  }
+    padding: 5,
+  },
 });
 
 export default ReaderBaniItem;

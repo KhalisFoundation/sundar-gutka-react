@@ -14,7 +14,7 @@ class BaniList extends Component {
       transliteration,
       navigation,
       isLoading,
-      onPress
+      onPress,
     } = this.props;
 
     <LoadingIndicator isLoading={isLoading} />;
@@ -30,29 +30,29 @@ class BaniList extends Component {
               item.folder && (
                 <Avatar
                   source={require("../images/foldericon.png")}
-                  overlayContainerStyle={{
-                    backgroundColor: nightMode ? "#000" : "#fff"
+                  avatarStyle={{
+                    backgroundColor: nightMode ? "#000" : "#fff",
                   }}
                 />
               )
             }
             containerStyle={[
               styles.container,
-              nightMode && { backgroundColor: "#000" }
+              nightMode && { backgroundColor: "#000" },
             ]}
             titleStyle={[
               nightMode && { color: "#fff" },
               {
                 fontSize: baseFontSize(fontSize, transliteration),
-                fontFamily: !transliteration ? fontFace : null
-              }
+                fontFamily: !transliteration ? fontFace : null,
+              },
             ]}
             title={transliteration ? item.translit : item.gurmukhi}
             bottomDivider={true}
             onPress={() => onPress(item, navigation)}
           />
         )}
-        keyExtractor={item => "" + item.gurmukhi}
+        keyExtractor={(item) => "" + item.gurmukhi}
       />
     );
   }
@@ -60,12 +60,12 @@ class BaniList extends Component {
 
 const styles = StyleSheet.create({
   loading: {
-    justifyContent: "center"
+    justifyContent: "center",
   },
   container: {
     flex: 1,
-    marginTop: 0
-  }
+    marginTop: 0,
+  },
 });
 
 export default BaniList;

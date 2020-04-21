@@ -9,13 +9,12 @@ import {
   Alert,
   Platform,
   Switch,
-  StatusBar
+  StatusBar,
 } from "react-native";
 import { Header } from "react-native-elements";
 import Icon from "react-native-vector-icons/MaterialIcons";
 import MaterialIcons from "react-native-vector-icons/MaterialCommunityIcons";
 import GLOBAL from "../utils/globals";
-import Strings from "../utils/localization";
 import { connect } from "react-redux";
 import { bindActionCreators } from "redux";
 import * as actions from "../actions/actions";
@@ -31,18 +30,20 @@ import Database from "../utils/database";
 
 class ReminderOptions extends React.Component {
   componentDidMount() {
-    Database.getBaniList(this.props.transliterationLanguage).then(baniList => {
-      this.setState(
-        {
-          baniList: baniList
-        },
-        function() {
-          if (JSON.parse(this.props.reminderBanis).length == 0) {
-            this.setDefaultReminders();
+    Database.getBaniList(this.props.transliterationLanguage).then(
+      (baniList) => {
+        this.setState(
+          {
+            baniList: baniList,
+          },
+          function() {
+            if (JSON.parse(this.props.reminderBanis).length == 0) {
+              this.setDefaultReminders();
+            }
           }
-        }
-      );
-    });
+        );
+      }
+    );
     AnalyticsManager.getInstance().trackScreenView(
       "Reminder Options",
       this.constructor.name
@@ -59,7 +60,7 @@ class ReminderOptions extends React.Component {
       translit: this.state.baniList[1].translit,
       enabled: true,
       title: "Time for " + this.state.baniList[1].translit,
-      time: "3:00 AM"
+      time: "3:00 AM",
     });
 
     // Add Japji Sahib
@@ -69,7 +70,7 @@ class ReminderOptions extends React.Component {
       translit: this.state.baniList[2].translit,
       enabled: true,
       title: "Time for " + this.state.baniList[2].translit,
-      time: "3:30 AM"
+      time: "3:30 AM",
     });
 
     // Add Rehras Sahib
@@ -79,7 +80,7 @@ class ReminderOptions extends React.Component {
       translit: this.state.baniList[21].translit,
       enabled: true,
       title: "Time for " + this.state.baniList[21].translit,
-      time: "6:00 PM"
+      time: "6:00 PM",
     });
 
     // Add Sohila
@@ -89,7 +90,7 @@ class ReminderOptions extends React.Component {
       translit: this.state.baniList[23].translit,
       enabled: true,
       title: "Time for " + this.state.baniList[23].translit,
-      time: "10:00 PM"
+      time: "10:00 PM",
     });
 
     this.props.setReminderBanis(JSON.stringify(defaultBanis));
@@ -106,15 +107,15 @@ class ReminderOptions extends React.Component {
 
   _resetReminderDefaults() {
     Alert.alert(
-      Strings.reminder_options_reset_dialog_title,
-      Strings.reminder_options_reset_dialog_text,
+      "Reset Reminders",
+      "Do you want to restore reminders to the default values?",
       [
         {
-          text: Strings.cancel,
-          style: "cancel"
+          text: "Cancel",
+          style: "cancel",
         },
         {
-          text: Strings.reminder_options_reset_dialog_confirm,
+          text: "Reset",
           style: "destructive",
           onPress: () => {
             AnalyticsManager.getInstance().trackRemindersEvent(
@@ -122,8 +123,8 @@ class ReminderOptions extends React.Component {
               true
             );
             this.setDefaultReminders();
-          }
-        }
+          },
+        },
       ]
     );
   }
@@ -145,13 +146,13 @@ class ReminderOptions extends React.Component {
             ? curBaniList[key].translit
             : curBaniList[key].gurmukhi,
           gurmukhi: curBaniList[key].gurmukhi,
-          translit: curBaniList[key].translit
+          translit: curBaniList[key].translit,
         });
       }
     });
     this.setState(
       {
-        reminderBaniData: baniOptions
+        reminderBaniData: baniOptions,
       },
       function() {
         this.selector.open();
@@ -170,7 +171,7 @@ class ReminderOptions extends React.Component {
       title: "Time for " + baniObject.translit,
       time: moment(new Date())
         .local()
-        .format("h:mm A")
+        .format("h:mm A"),
     });
     AnalyticsManager.getInstance().trackRemindersEvent("addReminder", array);
     this.props.setReminderBanis(JSON.stringify(array));
@@ -189,18 +190,18 @@ class ReminderOptions extends React.Component {
     isLabelModalVisible: false,
     timePickerSectionKey: -1,
     reminderModalSectionKey: -1,
-    reminderLabelText: ""
+    reminderLabelText: "",
   };
 
   _initLabelModal(key) {
     var array = JSON.parse(this.props.reminderBanis);
-    let reminder = array.filter(obj => {
+    let reminder = array.filter((obj) => {
       return obj.key == key;
     });
 
     this.setState({
       reminderLabelText: reminder[0].title,
-      reminderModalSectionKey: key
+      reminderModalSectionKey: key,
     });
     this._toggleLabelModal();
   }
@@ -209,10 +210,10 @@ class ReminderOptions extends React.Component {
     var array = JSON.parse(this.props.reminderBanis);
 
     array
-      .filter(obj => {
+      .filter((obj) => {
         return obj.key == this.state.reminderModalSectionKey;
       })
-      .map(foundObj => {
+      .map((foundObj) => {
         foundObj.title = this.state.reminderLabelText;
       });
     this.props.setReminderBanis(JSON.stringify(array));
@@ -232,14 +233,14 @@ class ReminderOptions extends React.Component {
 
   _hideTimePicker = () => this.setState({ isTimePickerVisible: false });
 
-  _handleTimePicked = time => {
+  _handleTimePicked = (time) => {
     this._hideTimePicker();
     var array = JSON.parse(this.props.reminderBanis);
     array
-      .filter(obj => {
+      .filter((obj) => {
         return obj.key == this.state.timePickerSectionKey;
       })
-      .map(foundObj => {
+      .map((foundObj) => {
         foundObj.time = moment(time)
           .local()
           .format("h:mm A");
@@ -260,10 +261,10 @@ class ReminderOptions extends React.Component {
   _handleSwitchToggled(value, key) {
     var array = JSON.parse(this.props.reminderBanis);
     array
-      .filter(obj => {
+      .filter((obj) => {
         return obj.key == key;
       })
-      .map(foundObj => {
+      .map((foundObj) => {
         foundObj.enabled = value;
       });
     this.props.setReminderBanis(JSON.stringify(array));
@@ -275,7 +276,7 @@ class ReminderOptions extends React.Component {
   }
 
   _handleDeleteReminder(key) {
-    var array = JSON.parse(this.props.reminderBanis).filter(obj => {
+    var array = JSON.parse(this.props.reminderBanis).filter((obj) => {
       return obj.key != key;
     });
     this.state.activeSections = [];
@@ -291,16 +292,17 @@ class ReminderOptions extends React.Component {
     return (
       <View
         style={{
-          flex: 1
-        }}
-      >
+          flex: 1,
+        }}>
         <StatusBar
           backgroundColor={GLOBAL.COLOR.TOOLBAR_COLOR_ALT2}
           barStyle={"light-content"}
         />
         <Header
           backgroundColor={GLOBAL.COLOR.TOOLBAR_COLOR_ALT2}
-          containerStyle={[Platform.OS === "android" && { height: 56, paddingTop: 0 }]}
+          containerStyle={[
+            Platform.OS === "android" && { height: 56, paddingTop: 0 },
+          ]}
           leftComponent={
             <Icon
               name="arrow-back"
@@ -310,8 +312,8 @@ class ReminderOptions extends React.Component {
             />
           }
           centerComponent={{
-            text: Strings.reminder_options_title,
-            style: { color: GLOBAL.COLOR.TOOLBAR_TINT, fontSize: 18 }
+            text: "Reminder Options",
+            style: { color: GLOBAL.COLOR.TOOLBAR_TINT, fontSize: 18 },
           }}
           rightComponent={
             <View style={{ flexDirection: "row" }}>
@@ -337,22 +339,19 @@ class ReminderOptions extends React.Component {
           onBackButtonPress={() =>
             this.setState({ isLabelModalVisible: false })
           }
-          onBackdropPress={() => this.setState({ isLabelModalVisible: false })}
-        >
+          onBackdropPress={() => this.setState({ isLabelModalVisible: false })}>
           <View
             style={{
               padding: 20,
               backgroundColor: this.props.nightMode
                 ? GLOBAL.COLOR.MODAL_BACKGROUND_NIGHT_MODE
-                : GLOBAL.COLOR.MODAL_BACKGROUND
-            }}
-          >
+                : GLOBAL.COLOR.MODAL_BACKGROUND,
+            }}>
             <Text
               style={{
                 paddingBottom: 5,
-                color: GLOBAL.COLOR.MODAL_ACCENT_NIGHT_MODE
-              }}
-            >
+                color: GLOBAL.COLOR.MODAL_ACCENT_NIGHT_MODE,
+              }}>
               Notification Text:
             </Text>
             <TextInput
@@ -365,10 +364,10 @@ class ReminderOptions extends React.Component {
                 borderColor: GLOBAL.COLOR.MODAL_ACCENT_NIGHT_MODE_ALT,
                 borderWidth: 1,
                 paddingLeft: 5,
-                paddingRight: 5
+                paddingRight: 5,
               }}
               value={this.state.reminderLabelText}
-              onChangeText={reminderLabelText =>
+              onChangeText={(reminderLabelText) =>
                 this.setState({ reminderLabelText })
               }
               selectionColor={GLOBAL.COLOR.MODAL_ACCENT_NIGHT_MODE}
@@ -379,29 +378,24 @@ class ReminderOptions extends React.Component {
                 justifyContent: "flex-end",
                 alignItems: "center",
                 paddingTop: 20,
-                paddingRight: 10
-              }}
-            >
+                paddingRight: 10,
+              }}>
               <TouchableOpacity
                 onPress={this._toggleLabelModal}
-                style={{ marginRight: 40 }}
-              >
+                style={{ marginRight: 40 }}>
                 <Text
                   style={{
-                    color: GLOBAL.COLOR.MODAL_ACCENT_NIGHT_MODE
-                  }}
-                >
-                  {Strings.cancel}
+                    color: GLOBAL.COLOR.MODAL_ACCENT_NIGHT_MODE,
+                  }}>
+                  Cancel
                 </Text>
               </TouchableOpacity>
               <TouchableOpacity
-                onPress={this._confirmNewReminderLabel.bind(this)}
-              >
+                onPress={this._confirmNewReminderLabel.bind(this)}>
                 <Text
                   style={{
-                    color: GLOBAL.COLOR.MODAL_ACCENT_NIGHT_MODE
-                  }}
-                >
+                    color: GLOBAL.COLOR.MODAL_ACCENT_NIGHT_MODE,
+                  }}>
                   OK
                 </Text>
               </TouchableOpacity>
@@ -410,16 +404,18 @@ class ReminderOptions extends React.Component {
         </Modal>
         <ModalSelector
           data={this.state.reminderBaniData}
-          ref={selector => {
+          ref={(selector) => {
             this.selector = selector;
           }}
           optionTextStyle={[
             styles.optionText,
-            !this.props.transliteration && { fontFamily: "GurbaniAkharHeavySG" }
+            !this.props.transliteration && {
+              fontFamily: "GurbaniAkharHeavySG",
+            },
           ]}
           customSelector={<View />}
-          cancelText={Strings.cancel}
-          onChange={option => {
+          cancelText={"Cancel"}
+          onChange={(option) => {
             this._addReminder(option);
           }}
         />
@@ -427,18 +423,16 @@ class ReminderOptions extends React.Component {
           style={[
             styles.container,
             this.props.nightMode && {
-              backgroundColor: GLOBAL.COLOR.INACTIVE_VIEW_COLOR_NIGHT_MODE
-            }
-          ]}
-        >
+              backgroundColor: GLOBAL.COLOR.INACTIVE_VIEW_COLOR_NIGHT_MODE,
+            },
+          ]}>
           <View
             style={[
               styles.container,
               this.props.nightMode && {
-                backgroundColor: GLOBAL.COLOR.INACTIVE_VIEW_COLOR_NIGHT_MODE
-              }
-            ]}
-          >
+                backgroundColor: GLOBAL.COLOR.INACTIVE_VIEW_COLOR_NIGHT_MODE,
+              },
+            ]}>
             <Accordion
               activeSections={this.state.activeSections}
               sections={JSON.parse(this.props.reminderBanis)}
@@ -449,7 +443,7 @@ class ReminderOptions extends React.Component {
 
             <DateTimePicker
               isVisible={this.state.isTimePickerVisible}
-              onConfirm={time => this._handleTimePicked(time)}
+              onConfirm={(time) => this._handleTimePicked(time)}
               onCancel={this._hideTimePicker}
               is24Hour={false}
               titleIOS={"Pick a Time:"}
@@ -475,35 +469,34 @@ class ReminderOptions extends React.Component {
                 : GLOBAL.COLOR.ACTIVE_VIEW_COLOR
               : this.props.nightMode
               ? GLOBAL.COLOR.INACTIVE_VIEW_COLOR_NIGHT_MODE
-              : GLOBAL.COLOR.INACTIVE_VIEW_COLOR
-          }
-        ]}
-      >
+              : GLOBAL.COLOR.INACTIVE_VIEW_COLOR,
+          },
+        ]}>
         <View
           style={{
             flexDirection: "row",
             justifyContent: "space-between",
-            alignItems: "center"
-          }}
-        >
+            alignItems: "center",
+          }}>
           <Text
             style={[
               styles.headerText,
               this.props.nightMode && {
-                color: GLOBAL.COLOR.MODAL_TEXT_NIGHT_MODE
+                color: GLOBAL.COLOR.MODAL_TEXT_NIGHT_MODE,
               },
-              !this.props.transliteration && { fontFamily: "GurbaniAkharHeavySG" },
+              !this.props.transliteration && {
+                fontFamily: "GurbaniAkharHeavySG",
+              },
               !section.enabled && {
-                color: GLOBAL.COLOR.DISABLED_TEXT_COLOR_NIGHT_MODE
-              }
-            ]}
-          >
+                color: GLOBAL.COLOR.DISABLED_TEXT_COLOR_NIGHT_MODE,
+              },
+            ]}>
             {this.props.transliteration ? section.translit : section.gurmukhi}
           </Text>
 
           <Switch
             style={[]}
-            onValueChange={value =>
+            onValueChange={(value) =>
               this._handleSwitchToggled(value, section.key)
             }
             value={section.enabled}
@@ -511,7 +504,7 @@ class ReminderOptions extends React.Component {
               Platform.OS === "ios"
                 ? {
                     false: null,
-                    true: GLOBAL.COLOR.SETTING_SWITCH_COLOR
+                    true: GLOBAL.COLOR.SETTING_SWITCH_COLOR,
                   }
                 : {}
             }
@@ -522,26 +515,23 @@ class ReminderOptions extends React.Component {
           style={{
             flexDirection: "row",
             justifyContent: "space-between",
-            alignItems: "baseline"
-          }}
-        >
+            alignItems: "baseline",
+          }}>
           <TouchableOpacity
             onPress={() => {
               this.setState({ timePickerSectionKey: section.key });
               this._showTimePicker();
-            }}
-          >
+            }}>
             <Text
               style={[
                 styles.timeStyle,
                 this.props.nightMode && {
-                  color: GLOBAL.COLOR.MODAL_TEXT_NIGHT_MODE
+                  color: GLOBAL.COLOR.MODAL_TEXT_NIGHT_MODE,
                 },
                 section.enabled
                   ? { color: GLOBAL.COLOR.ENABELED_TEXT_COLOR_NIGHT_MODE }
-                  : { color: GLOBAL.COLOR.DISABLED_TEXT_COLOR_NIGHT_MODE }
-              ]}
-            >
+                  : { color: GLOBAL.COLOR.DISABLED_TEXT_COLOR_NIGHT_MODE },
+              ]}>
               {section.time}
             </Text>
           </TouchableOpacity>
@@ -549,7 +539,7 @@ class ReminderOptions extends React.Component {
             style={{
               position: "absolute",
               bottom: 0,
-              right: 0
+              right: 0,
             }}
             name={isActive ? "keyboard-arrow-up" : "keyboard-arrow-down"}
             color={
@@ -564,7 +554,7 @@ class ReminderOptions extends React.Component {
           style={{
             borderBottomColor: GLOBAL.COLOR.DISABLED_TEXT_COLOR_NIGHT_MODE,
             borderBottomWidth: 1,
-            paddingBottom: 10
+            paddingBottom: 10,
           }}
         />
       </Animatable.View>
@@ -584,23 +574,20 @@ class ReminderOptions extends React.Component {
                 : GLOBAL.COLOR.ACTIVE_VIEW_COLOR
               : this.props.nightMode
               ? GLOBAL.COLOR.INACTIVE_VIEW_COLOR_NIGHT_MODE
-              : GLOBAL.COLOR.INACTIVE_VIEW_COLOR
-          }
-        ]}
-      >
+              : GLOBAL.COLOR.INACTIVE_VIEW_COLOR,
+          },
+        ]}>
         <View style={styles.content}>
           <TouchableOpacity
             onPress={() => {
               this._initLabelModal(section.key);
-            }}
-          >
+            }}>
             <View
               style={{
                 flexDirection: "row",
                 justifyContent: "center",
-                alignItems: "center"
-              }}
-            >
+                alignItems: "center",
+              }}>
               <MaterialIcons
                 name="label-outline"
                 color={
@@ -615,9 +602,8 @@ class ReminderOptions extends React.Component {
                   styles.contentText,
                   this.props.nightMode
                     ? { color: GLOBAL.COLOR.COMPONENT_COLOR_NIGHT_MODE }
-                    : { color: GLOBAL.COLOR.COMPONENT_COLOR }
-                ]}
-              >
+                    : { color: GLOBAL.COLOR.COMPONENT_COLOR },
+                ]}>
                 {section.title}
               </Text>
             </View>
@@ -625,15 +611,13 @@ class ReminderOptions extends React.Component {
           <TouchableOpacity
             onPress={() => {
               this._handleDeleteReminder(section.key);
-            }}
-          >
+            }}>
             <View
               style={{
                 flexDirection: "row",
                 justifyContent: "center",
-                alignItems: "center"
-              }}
-            >
+                alignItems: "center",
+              }}>
               <MaterialIcons
                 name="delete-outline"
                 color={
@@ -648,9 +632,8 @@ class ReminderOptions extends React.Component {
                   styles.contentText,
                   this.props.nightMode
                     ? { color: GLOBAL.COLOR.COMPONENT_COLOR_NIGHT_MODE }
-                    : { color: GLOBAL.COLOR.COMPONENT_COLOR }
-                ]}
-              >
+                    : { color: GLOBAL.COLOR.COMPONENT_COLOR },
+                ]}>
                 Delete
               </Text>
             </View>
@@ -659,51 +642,51 @@ class ReminderOptions extends React.Component {
         <View
           style={{
             borderBottomColor: GLOBAL.COLOR.COMPONENT_COLOR_NIGHT_MODE,
-            borderBottomWidth: 1
+            borderBottomWidth: 1,
           }}
         />
       </Animatable.View>
     );
   };
 
-  _updateSections = activeSections => {
+  _updateSections = (activeSections) => {
     this.setState({ activeSections });
   };
 }
 
 const styles = StyleSheet.create({
   container: {
-    flex: 1
+    flex: 1,
   },
   timeStyle: {
-    fontSize: 44
+    fontSize: 44,
   },
   header: {
     paddingTop: 15,
     paddingLeft: 10,
-    paddingRight: 10
+    paddingRight: 10,
   },
   headerText: {
     flex: 1,
-    fontSize: 24
+    fontSize: 24,
   },
   contentText: {
     flex: 1,
     fontSize: 14,
-    paddingLeft: 5
+    paddingLeft: 5,
   },
   content: {
-    padding: 10
+    padding: 10,
   },
   optionText: {
-    fontSize: 28
+    fontSize: 28,
   },
   separator: {
-    height: 2
+    height: 2,
   },
   list: {
-    flex: 1
-  }
+    flex: 1,
+  },
 });
 
 function mapStateToProps(state) {
@@ -716,7 +699,7 @@ function mapStateToProps(state) {
     transliteration: state.transliteration,
     transliterationLanguage: state.transliterationLanguage,
     fontSize: state.fontSize,
-    fontFace: state.fontFace
+    fontFace: state.fontFace,
   };
 }
 

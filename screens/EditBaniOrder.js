@@ -8,12 +8,11 @@ import {
   View,
   Dimensions,
   Platform,
-  StatusBar
+  StatusBar,
 } from "react-native";
 import { Header } from "react-native-elements";
 import Icon from "react-native-vector-icons/MaterialIcons";
 import GLOBAL from "../utils/globals";
-import Strings from "../utils/localization";
 import SortableList from "react-native-sortable-list";
 import { connect } from "react-redux";
 import { bindActionCreators } from "redux";
@@ -36,16 +35,17 @@ class EditBaniOrder extends React.Component {
     return (
       <View
         style={{
-          flex: 1
-        }}
-      >
+          flex: 1,
+        }}>
         <StatusBar
           backgroundColor={GLOBAL.COLOR.TOOLBAR_COLOR_ALT2}
           barStyle={"light-content"}
         />
         <Header
           backgroundColor={GLOBAL.COLOR.TOOLBAR_COLOR_ALT2}
-          containerStyle={[Platform.OS === "android" && { height: 56, paddingTop: 0 }]}
+          containerStyle={[
+            Platform.OS === "android" && { height: 56, paddingTop: 0 },
+          ]}
           leftComponent={
             <Icon
               name="arrow-back"
@@ -55,8 +55,8 @@ class EditBaniOrder extends React.Component {
             />
           }
           centerComponent={{
-            text: Strings.edit_bani_order_title,
-            style: { color: GLOBAL.COLOR.TOOLBAR_TINT, fontSize: 18 }
+            text: "Edit Bani Order",
+            style: { color: GLOBAL.COLOR.TOOLBAR_TINT, fontSize: 18 },
           }}
           rightComponent={
             <Icon
@@ -70,17 +70,16 @@ class EditBaniOrder extends React.Component {
         <View
           style={[
             styles.container,
-            this.props.nightMode && { backgroundColor: "#464646" }
-          ]}
-        >
+            this.props.nightMode && { backgroundColor: "#464646" },
+          ]}>
           <SortableList
             style={styles.list}
             contentContainerStyle={styles.contentContainer}
             data={this.props.mergedBaniData.baniOrder}
-            onChangeOrder={nextOrder => {
+            onChangeOrder={(nextOrder) => {
               this.newOrder = nextOrder;
             }}
-            onReleaseRow={key =>
+            onReleaseRow={(key) =>
               this.newOrder !== undefined
                 ? this.props.setBaniOrder(this.newOrder)
                 : null
@@ -119,14 +118,14 @@ class Row extends React.Component {
             {
               scale: this._active.interpolate({
                 inputRange: [0, 1],
-                outputRange: [1, 1.1]
-              })
-            }
+                outputRange: [1, 1.1],
+              }),
+            },
           ],
           shadowRadius: this._active.interpolate({
             inputRange: [0, 1],
-            outputRange: [2, 10]
-          })
+            outputRange: [2, 10],
+          }),
         },
 
         android: {
@@ -134,25 +133,25 @@ class Row extends React.Component {
             {
               scale: this._active.interpolate({
                 inputRange: [0, 1],
-                outputRange: [1, 1.07]
-              })
-            }
+                outputRange: [1, 1.07],
+              }),
+            },
           ],
           elevation: this._active.interpolate({
             inputRange: [0, 1],
-            outputRange: [2, 6]
-          })
-        }
-      })
+            outputRange: [2, 6],
+          }),
+        },
+      }),
     };
   }
 
-  UNSAFE_componentWillReceiveProps(nextProps) {
+  componentWillReceiveProps(nextProps) {
     if (this.props.active !== nextProps.active) {
       Animated.timing(this._active, {
         duration: 300,
         easing: Easing.bounce,
-        toValue: Number(nextProps.active)
+        toValue: Number(nextProps.active),
       }).start();
     }
   }
@@ -165,9 +164,8 @@ class Row extends React.Component {
         style={[
           styles.row,
           nightMode && { backgroundColor: "#000" },
-          this._style
-        ]}
-      >
+          this._style,
+        ]}>
         {data.folder && (
           <Image
             source={require("../images/foldericon.png")}
@@ -179,9 +177,8 @@ class Row extends React.Component {
           style={[
             { color: nightMode ? "#fff" : "#222222" },
             !transliteration && { fontFamily: fontFace },
-            { fontSize: baseFontSize("MEDIUM", transliteration) }
-          ]}
-        >
+            { fontSize: baseFontSize("MEDIUM", transliteration) },
+          ]}>
           {transliteration ? data.translit : data.gurmukhi}
         </Text>
       </Animated.View>
@@ -198,17 +195,17 @@ const styles = StyleSheet.create({
 
     ...Platform.select({
       ios: {
-        paddingTop: 0
-      }
-    })
+        paddingTop: 0,
+      },
+    }),
   },
 
   list: {
-    flex: 1
+    flex: 1,
   },
 
   contentContainer: {
-    width: window.width
+    width: window.width,
   },
 
   row: {
@@ -227,21 +224,21 @@ const styles = StyleSheet.create({
         shadowColor: "rgba(0,0,0,0.2)",
         shadowOpacity: 1,
         shadowOffset: { height: 2, width: 2 },
-        shadowRadius: 2
+        shadowRadius: 2,
       },
 
       android: {
         elevation: 0,
-        marginHorizontal: 30
-      }
-    })
+        marginHorizontal: 30,
+      },
+    }),
   },
 
   image: {
     width: 50,
     height: 50,
-    marginRight: 20
-  }
+    marginRight: 20,
+  },
 });
 
 function mapStateToProps(state) {
@@ -251,7 +248,7 @@ function mapStateToProps(state) {
     mergedBaniData: state.mergedBaniData,
     transliteration: state.transliteration,
     fontSize: state.fontSize,
-    fontFace: state.fontFace
+    fontFace: state.fontFace,
   };
 }
 
