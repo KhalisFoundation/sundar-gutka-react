@@ -107,7 +107,7 @@ class Home extends React.Component {
               style={{ color: "#009bff" }}
               onPress={() => Linking.openURL("https://www.banidb.com/")}
             >
-              BaniDB
+            {Strings.baniDB}
             </Text>{" "}
             {Strings.about_5}
              {"\n"}
@@ -130,7 +130,7 @@ class Home extends React.Component {
               <Text
                 style={[styles.small, this.props.nightMode && styles.nightMode]}
               >
-                &copy; {new Date().getFullYear()} Khalis Foundation
+                &copy; {new Date().getFullYear()} {Strings.khalis_foundation}
               </Text>
             </View>
             <Text
