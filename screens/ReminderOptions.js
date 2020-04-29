@@ -27,6 +27,7 @@ import Modal from "react-native-modal";
 import moment from "moment";
 import ModalSelector from "react-native-modal-selector";
 import Database from "../utils/database";
+import Strings from "../utils/localization";
 
 class ReminderOptions extends React.Component {
   componentDidMount() {
@@ -59,7 +60,7 @@ class ReminderOptions extends React.Component {
       gurmukhi: this.state.baniList[1].gurmukhi,
       translit: this.state.baniList[1].translit,
       enabled: true,
-      title: "Time for " + this.state.baniList[1].translit,
+      title: `${Strings.time_for} ${this.state.baniList[1].translit}`,
       time: "3:00 AM",
     });
 
@@ -69,7 +70,7 @@ class ReminderOptions extends React.Component {
       gurmukhi: this.state.baniList[2].gurmukhi,
       translit: this.state.baniList[2].translit,
       enabled: true,
-      title: "Time for " + this.state.baniList[2].translit,
+      title: `${Strings.time_for} ${this.state.baniList[2].translit}`,
       time: "3:30 AM",
     });
 
@@ -79,7 +80,7 @@ class ReminderOptions extends React.Component {
       gurmukhi: this.state.baniList[21].gurmukhi,
       translit: this.state.baniList[21].translit,
       enabled: true,
-      title: "Time for " + this.state.baniList[21].translit,
+      title: `${Strings.time_for} ${this.state.baniList[21].translit}`,
       time: "6:00 PM",
     });
 
@@ -89,7 +90,7 @@ class ReminderOptions extends React.Component {
       gurmukhi: this.state.baniList[23].gurmukhi,
       translit: this.state.baniList[23].translit,
       enabled: true,
-      title: "Time for " + this.state.baniList[23].translit,
+      title: `${Strings.time_for} ${this.state.baniList[23].translit}`,
       time: "10:00 PM",
     });
 
@@ -107,15 +108,15 @@ class ReminderOptions extends React.Component {
 
   _resetReminderDefaults() {
     Alert.alert(
-      "Reset Reminders",
-      "Do you want to restore reminders to the default values?",
-      [
+      Strings.reset_reminders,
+      Strings.reset_reminder_text,
+            [
         {
-          text: "Cancel",
+          text: Strings.cancel,
           style: "cancel",
         },
         {
-          text: "Reset",
+          text: Strings.reset,
           style: "destructive",
           onPress: () => {
             AnalyticsManager.getInstance().trackRemindersEvent(
@@ -168,7 +169,7 @@ class ReminderOptions extends React.Component {
       gurmukhi: baniObject.gurmukhi,
       translit: baniObject.translit,
       enabled: true,
-      title: "Time for " + baniObject.translit,
+      title: `${Strings.time_for} ${baniObject.translit}`,
       time: moment(new Date())
         .local()
         .format("h:mm A"),
@@ -312,7 +313,7 @@ class ReminderOptions extends React.Component {
             />
           }
           centerComponent={{
-            text: "Reminder Options",
+            text: Strings.reminder_options,
             style: { color: GLOBAL.COLOR.TOOLBAR_TINT, fontSize: 18 },
           }}
           rightComponent={
@@ -352,7 +353,7 @@ class ReminderOptions extends React.Component {
                 paddingBottom: 5,
                 color: GLOBAL.COLOR.MODAL_ACCENT_NIGHT_MODE,
               }}>
-              Notification Text:
+              {Strings.notification_text}:
             </Text>
             <TextInput
               style={{
@@ -396,7 +397,7 @@ class ReminderOptions extends React.Component {
                   style={{
                     color: GLOBAL.COLOR.MODAL_ACCENT_NIGHT_MODE,
                   }}>
-                  OK
+                  {Strings.ok}
                 </Text>
               </TouchableOpacity>
             </View>
@@ -414,7 +415,7 @@ class ReminderOptions extends React.Component {
             },
           ]}
           customSelector={<View />}
-          cancelText={"Cancel"}
+          cancelText={Strings.cancel}
           onChange={(option) => {
             this._addReminder(option);
           }}
@@ -446,7 +447,7 @@ class ReminderOptions extends React.Component {
               onConfirm={(time) => this._handleTimePicked(time)}
               onCancel={this._hideTimePicker}
               is24Hour={false}
-              titleIOS={"Pick a Time:"}
+              titleIOS={`${Strings.pick_a_time}:`}
               mode={"time"}
             />
           </View>
@@ -634,7 +635,7 @@ class ReminderOptions extends React.Component {
                     ? { color: GLOBAL.COLOR.COMPONENT_COLOR_NIGHT_MODE }
                     : { color: GLOBAL.COLOR.COMPONENT_COLOR },
                 ]}>
-                Delete
+                {Strings.delete}
               </Text>
             </View>
           </TouchableOpacity>

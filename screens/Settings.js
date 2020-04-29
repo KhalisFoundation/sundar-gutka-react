@@ -27,6 +27,7 @@ import { bindActionCreators } from "redux";
 import AnalyticsManager from "../utils/analytics";
 import * as actions from "../actions/actions";
 import Collapsible from "react-native-collapsible";
+import Strings from "../utils/localization";
 
 class Settings extends React.Component {
   constructor(props) {
@@ -95,7 +96,7 @@ class Settings extends React.Component {
             />
           }
           centerComponent={{
-            text: "Settings",
+            text: Strings.settings,
             style: {
               color: this.props.nightMode
                 ? GLOBAL.COLOR.TOOLBAR_TINT
@@ -115,7 +116,7 @@ class Settings extends React.Component {
               styles.headerStyle,
               this.props.nightMode && { color: "#fff" },
             ]}>
-            Display Options
+            {Strings.display_options}
           </Text>
           <ListItem
             backgroundColor={this.props.nightMode ? "#464646" : "#fff"}
@@ -127,7 +128,7 @@ class Settings extends React.Component {
                 }}
               />
             }
-            title="Font Size"
+            title={Strings.font_size}
             containerStyle={[
               styles.titleText,
               this.props.nightMode && { backgroundColor: "#464646" },
@@ -156,7 +157,7 @@ class Settings extends React.Component {
                 }}
               />
             }
-            title="Font Face"
+            title={Strings.font_face}
             containerStyle={[
               styles.titleText,
               this.props.nightMode && { backgroundColor: "#464646" },
@@ -190,7 +191,7 @@ class Settings extends React.Component {
               value: this.props.transliteration,
               onValueChange: this.props.toggleTransliteration,
             }}
-            title="Transliteration"
+            title={Strings.transliteration}
             containerStyle={[
               styles.titleText,
               this.props.nightMode && { backgroundColor: "#464646" },
@@ -213,7 +214,7 @@ class Settings extends React.Component {
                   size={30}
                 />
               }
-              title="Language"
+              title={Strings.language}
               containerStyle={[
                 styles.titleText,
                 this.props.nightMode && { backgroundColor: "#464646" },
@@ -245,7 +246,7 @@ class Settings extends React.Component {
                 }}
               />
             }
-            title="Translations"
+            title={Strings.translations}
             containerStyle={[
               styles.titleText,
               this.props.nightMode && { backgroundColor: "#464646" },
@@ -283,7 +284,7 @@ class Settings extends React.Component {
                 value: this.props.englishTranslations,
                 onValueChange: this.props.toggleEnglishTranslations,
               }}
-              title="English Translations"
+              title={Strings.en_translations}
               containerStyle={[
                 { paddingLeft: 80 },
                 this.props.nightMode && { backgroundColor: "#464646" },
@@ -297,7 +298,7 @@ class Settings extends React.Component {
                 value: this.props.punjabiTranslations,
                 onValueChange: this.props.togglePunjabiTranslations,
               }}
-              title="Punjabi Translations"
+              title={Strings.pu_translations}
               containerStyle={[
                 { paddingLeft: 80 },
                 this.props.nightMode && { backgroundColor: "#464646" },
@@ -311,7 +312,7 @@ class Settings extends React.Component {
                 value: this.props.spanishTranslations,
                 onValueChange: this.props.toggleSpanishTranslations,
               }}
-              title="Spanish Translations"
+              title={Strings.es_translations}
               containerStyle={[
                 { paddingLeft: 80 },
                 this.props.nightMode && { backgroundColor: "#464646" },
@@ -335,7 +336,7 @@ class Settings extends React.Component {
               value: this.props.nightMode,
               onValueChange: this.props.toggleNightMode,
             }}
-            title="Dark Mode"
+            title={Strings.dark_mode}
             containerStyle={[
               styles.titleText,
               this.props.nightMode && { backgroundColor: "#464646" },
@@ -362,7 +363,7 @@ class Settings extends React.Component {
               value: this.props.statusBar,
               onValueChange: this.props.toggleStatusBar,
             }}
-            title="Hide Status Bar"
+            title={Strings.hide_status_bar}
             containerStyle={[
               styles.titleText,
               this.props.nightMode && { backgroundColor: "#464646" },
@@ -389,7 +390,7 @@ class Settings extends React.Component {
               value: this.props.autoScroll,
               onValueChange: this.props.toggleAutoScroll,
             }}
-            title="Auto Scroll"
+            title={Strings.auto_scroll}
             containerStyle={[
               styles.titleText,
               this.props.nightMode && { backgroundColor: "#464646" },
@@ -412,7 +413,7 @@ class Settings extends React.Component {
               value: this.props.screenAwake || this.props.autoScroll,
               onValueChange: this.props.toggleScreenAwake,
             }}
-            title="Keep Screen Awake"
+            title={Strings.keep_awake}
             containerStyle={[
               styles.titleText,
               this.props.nightMode && { backgroundColor: "#464646" },
@@ -425,7 +426,7 @@ class Settings extends React.Component {
               styles.headerStyle,
               this.props.nightMode && { color: "#fff" },
             ]}>
-            Bani Options
+            {Strings.bani_options}
           </Text>
           <ListItem
             backgroundColor={this.props.nightMode ? "#464646" : "#fff"}
@@ -437,7 +438,7 @@ class Settings extends React.Component {
                 }}
               />
             }
-            title="Edit Bani Order"
+            title={Strings.edit_bani_order}
             containerStyle={[
               styles.titleText,
               this.props.nightMode && { backgroundColor: "#464646" },
@@ -459,7 +460,7 @@ class Settings extends React.Component {
                 }}
               />
             }
-            title="Bani Length"
+            title={Strings.bani_length}
             containerStyle={[
               styles.titleText,
               this.props.nightMode && { backgroundColor: "#464646" },
@@ -493,7 +494,7 @@ class Settings extends React.Component {
               value: this.props.larivaar,
               onValueChange: this.props.toggleLarivaar,
             }}
-            title="Larivaar"
+            title={Strings.larivaar}
             containerStyle={[
               styles.titleText,
               this.props.nightMode && { backgroundColor: "#464646" },
@@ -520,7 +521,7 @@ class Settings extends React.Component {
               value: this.props.paragraphMode,
               onValueChange: this.props.toggleParagraphMode,
             }}
-            title="Paragraph Mode"
+            title={Strings.paragraph_mode}
             containerStyle={[
               styles.titleText,
               this.props.nightMode && { backgroundColor: "#464646" },
@@ -538,7 +539,7 @@ class Settings extends React.Component {
                 }}
               />
             }
-            title="Manglacharan Position"
+            title={Strings.manglacharan_position}
             containerStyle={[
               styles.titleText,
               this.props.nightMode && { backgroundColor: "#464646" },
@@ -569,7 +570,7 @@ class Settings extends React.Component {
                 }}
               />
             }
-            title="Padchhed Settings"
+            title={Strings.padchhed_settings}
             containerStyle={[
               styles.titleText,
               this.props.nightMode && { backgroundColor: "#464646" },
@@ -607,7 +608,7 @@ class Settings extends React.Component {
               value: this.props.visram,
               onValueChange: this.props.toggleVisram,
             }}
-            title="Show Vishraams"
+            title={Strings.show_vishraams}
             containerStyle={[
               styles.titleText,
               this.props.nightMode && { backgroundColor: "#464646" },
@@ -630,7 +631,7 @@ class Settings extends React.Component {
                   size={30}
                 />
               }
-              title="Vishraam Options"
+              title={Strings.vishraam_options}
               containerStyle={[
                 styles.titleText,
                 this.props.nightMode && { backgroundColor: "#464646" },
@@ -665,7 +666,7 @@ class Settings extends React.Component {
                   size={30}
                 />
               }
-              title="Vishraam Source"
+              title={Strings.vishraam_source}
               containerStyle={[
                 styles.titleText,
                 this.props.nightMode && { backgroundColor: "#464646" },
@@ -704,7 +705,7 @@ class Settings extends React.Component {
               value: this.props.reminders,
               onValueChange: this.props.toggleReminders,
             }}
-            title="Reminders"
+            title={Strings.reminders}
             containerStyle={[
               styles.titleText,
               this.props.nightMode && { backgroundColor: "#464646" },
@@ -727,7 +728,7 @@ class Settings extends React.Component {
                   size={30}
                 />
               }
-              title="Set Reminder Options"
+              title={Strings.set_reminder_options}
               containerStyle={[
                 styles.titleText,
                 this.props.nightMode && { backgroundColor: "#464646" },
@@ -758,7 +759,7 @@ class Settings extends React.Component {
                   size={30}
                 />
               }
-              title="Reminder Sound"
+              title={Strings.reminder_sound}
               containerStyle={[
                 styles.titleText,
                 this.props.nightMode && { backgroundColor: "#464646" },
@@ -783,7 +784,7 @@ class Settings extends React.Component {
               styles.headerStyle,
               this.props.nightMode && { color: "#fff" },
             ]}>
-            Other Options
+            {Strings.other_options}
           </Text>
           <ListItem
             backgroundColor={this.props.nightMode ? "#464646" : "#fff"}
@@ -800,7 +801,7 @@ class Settings extends React.Component {
               value: this.props.statistics,
               onValueChange: this.props.toggleStatistics,
             }}
-            title="Collect Statistics"
+            title={Strings.collect_statistics}
             containerStyle={[
               styles.titleText,
               this.props.nightMode && { backgroundColor: "#464646" },
@@ -822,7 +823,7 @@ class Settings extends React.Component {
                 size={30}
               />
             }
-            title="Donate"
+            title={Strings.donate}
             containerStyle={[
               styles.titleText,
               this.props.nightMode && { backgroundColor: "#464646" },
@@ -848,7 +849,7 @@ class Settings extends React.Component {
                 size={30}
               />
             }
-            title="About"
+            title={Strings.about}
             containerStyle={[
               styles.titleText,
               this.props.nightMode && { backgroundColor: "#464646" },
@@ -867,7 +868,7 @@ class Settings extends React.Component {
           position="bottom"
           defaultValue={this.props.fontSize}>
           <View>
-            <Text style={styles.actionSheetTitle}>Font Size</Text>
+            <Text style={styles.actionSheetTitle}>{Strings.font_size}</Text>
           </View>
           {this.actionSheetOptions(
             actions.fontSizeNames,
@@ -884,7 +885,7 @@ class Settings extends React.Component {
           position="bottom"
           defaultValue={this.props.fontFace}>
           <View>
-            <Text style={styles.actionSheetTitle}>Font Face</Text>
+            <Text style={styles.actionSheetTitle}>{Strings.font_face}</Text>
           </View>
           {this.actionSheetOptions(
             actions.fontFaceNames,
@@ -901,7 +902,7 @@ class Settings extends React.Component {
           position="bottom"
           defaultValue={this.props.transliteration}>
           <View>
-            <Text style={styles.actionSheetTitle}>Language</Text>
+            <Text style={styles.actionSheetTitle}>{Strings.language}</Text>
           </View>
           {this.actionSheetOptions(
             actions.transliterationLanguageNames,
@@ -925,7 +926,7 @@ class Settings extends React.Component {
               marginTop: 15,
             }}
             onPress={() => baniLengthInfo()}>
-            <Text style={styles.actionSheetTitle}>Bani Length</Text>
+            <Text style={styles.actionSheetTitle}>{Strings.bani_length}</Text>
 
             <Entypo
               color={GLOBAL.COLOR.TOOLBAR_COLOR_ALT}
@@ -948,7 +949,7 @@ class Settings extends React.Component {
           position="bottom"
           defaultValue={this.props.manglacharanPosition}>
           <View>
-            <Text style={styles.actionSheetTitle}>Manglacharan Position</Text>
+            <Text style={styles.actionSheetTitle}>{Strings.manglacharan_position}</Text>
           </View>
           {this.actionSheetOptions(
             actions.manglacharanPositionNames,
@@ -965,7 +966,7 @@ class Settings extends React.Component {
           position="bottom"
           defaultValue={this.props.padchhedSetting}>
           <View>
-            <Text style={styles.actionSheetTitle}>Padchhed Settings</Text>
+            <Text style={styles.actionSheetTitle}>{Strings.padchhed_settings}</Text>
           </View>
           {this.actionSheetOptions(
             actions.padchhedSettingNames,
@@ -982,7 +983,7 @@ class Settings extends React.Component {
           position="bottom"
           defaultValue={this.props.vishraamOption}>
           <View>
-            <Text style={styles.actionSheetTitle}>Vishraam Options</Text>
+            <Text style={styles.actionSheetTitle}>{Strings.vishraam_options}</Text>
           </View>
           {this.actionSheetOptions(
             actions.vishraamOptionNames,
@@ -999,7 +1000,7 @@ class Settings extends React.Component {
           position="bottom"
           defaultValue={this.props.vishraamSource}>
           <View>
-            <Text style={styles.actionSheetTitle}>Vishraam Source</Text>
+            <Text style={styles.actionSheetTitle}>{Strings.vishraam_source}</Text>
           </View>
           {this.actionSheetOptions(
             actions.vishraamSourceNames,
@@ -1016,7 +1017,7 @@ class Settings extends React.Component {
           position="bottom"
           defaultValue={this.props.reminderSound}>
           <View>
-            <Text style={styles.actionSheetTitle}>Reminder Sounds</Text>
+            <Text style={styles.actionSheetTitle}>{Strings.reminder_sound}</Text>
           </View>
           {this.actionSheetOptions(
             actions.reminderSoundNames,

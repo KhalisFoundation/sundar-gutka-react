@@ -1,4 +1,5 @@
 import AnalyticsManager from "../utils/analytics";
+import Strings from "../utils/localization";
 
 /*
  * action types
@@ -47,11 +48,11 @@ export const FONT_SIZES = [
 ];
 
 export const fontSizeNames = [
-  "Extra Small",
-  "Small (default)",
-  "Medium",
-  "Large",
-  "Extra Large",
+  `${Strings.extra_small}`,
+  `${Strings.small_default}`,
+  `${Strings.medium}`,
+  `${Strings.large}`,
+  `${Strings.extra_large}`,
 ];
 
 export const FONT_FACES = [
@@ -62,10 +63,10 @@ export const FONT_FACES = [
 ];
 
 export const fontFaceNames = [
-  "Anmol Lipi",
-  "Gurbani Akhar (default)",
-  "Gurbani Akhar Heavy",
-  "Gurbani Akhar Thick",
+  `${Strings.anmol_lipi}`,
+  `${Strings.gurbani_akhar_default}`,
+  `${Strings.gurbani_akhar_heavy}`,
+  `${Strings.gurbani_akhar_think}`,
 ];
 
 export const TRANSLITERATION_LANGUAGES = [
@@ -76,15 +77,20 @@ export const TRANSLITERATION_LANGUAGES = [
 ];
 
 export const transliterationLanguageNames = [
-  "English",
-  "Hindi",
-  "Shahmukhi",
-  "International Phonetic Alphabet",
+  `${Strings.english}`,
+  `${Strings.hindi}`,
+  `${Strings.shahmukhi}`,
+  `${Strings.ipa}`,
 ];
 
 export const BANI_LENGTHS = ["SHORT", "MEDIUM", "LONG", "EXTRA_LONG"];
 
-export const baniLengthNames = ["Short", "Medium", "Long", "Extra Long"];
+export const baniLengthNames = [
+  `${Strings.short}`,
+  `${Strings.medium}`,
+  `${Strings.long}`,
+  `${Strings.extra_long}`,
+];
 
 export const MANGLACHARAN_POSITIONS = [
   "CURRENT_SAROOPS",
@@ -92,15 +98,15 @@ export const MANGLACHARAN_POSITIONS = [
 ];
 
 export const manglacharanPositionNames = [
-  "Current Saroops (default)",
-  "Above Raag Headings",
+  `${Strings.current_saroops_default}`,
+  `${Strings.above_raag_headings}`,
 ];
 
 export const PADCHHED_SETTINGS = ["SAT_SUBHAM_SAT", "MAST_SABH_MAST"];
 
 export const padchhedSettingNames = [
-  "Sat Subham Sat (default)",
-  "Mast Sabh Mast",
+  `${Strings.sat_subham_sat_default}`,
+  `${Strings.mast_sabh_mast}`,
 ];
 
 export const REMINDER_SOUNDS = [
@@ -109,15 +115,25 @@ export const REMINDER_SOUNDS = [
   "waheguru_soul.mp3",
 ];
 
-export const reminderSoundNames = ["Default", "Wake Up Jap", "Waheguru Soul"];
+export const reminderSoundNames = [
+  `${Strings.default}`,
+  `${Strings.wake_up_jap}`,
+  `${Strings.waheguru_soul}`,
+];
 
 export const VISHRAAM_OPTIONS = ["VISHRAAM_COLORED", "VISHRAAM_GRADIENT"];
 
-export const vishraamOptionNames = ["Colored Words", "Gradient Background"];
+export const vishraamOptionNames = [
+  `${Strings.colored_words}`,
+  `${Strings.gradient_background}`,
+];
 
 export const VISHRAAM_SOURCES = ["sttm", "igurbani", "sttm2"];
 
-export const vishraamSourceNames = ["BaniDB Living", "iGurbani", "STTM 2"];
+export const vishraamSourceNames = [
+  `${Strings.banidb_living_default}`,
+  `${Strings.iGurbani}`,
+  `${Strings.sttm2}`,];
 
 /*
  * action creators

@@ -20,6 +20,7 @@ import * as actions from "../actions/actions";
 import AnalyticsManager from "../utils/analytics";
 import { baseFontSize } from "../utils/helpers";
 import { defaultBaniOrderArray } from "../utils/helpers";
+import Strings from "../utils/localization";
 
 const window = Dimensions.get("window");
 
@@ -55,7 +56,7 @@ class EditBaniOrder extends React.Component {
             />
           }
           centerComponent={{
-            text: "Edit Bani Order",
+            text: Strings.edit_bani_order,
             style: { color: GLOBAL.COLOR.TOOLBAR_TINT, fontSize: 18 },
           }}
           rightComponent={

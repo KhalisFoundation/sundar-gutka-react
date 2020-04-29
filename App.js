@@ -14,6 +14,7 @@ import AboutScreen from "./screens/About";
 import ReaderScreen from "./screens/Reader";
 import BookmarksScreen from "./screens/Bookmarks";
 import createStore from "./config/store";
+import Strings from "./utils/localization";
 
 const RootStack = createStackNavigator(
   {
@@ -61,11 +62,11 @@ export default class App extends React.Component {
 
   handleBackPress = () => {
     Alert.alert(
-      "Exit Sundar Gutka",
-      "Are you sure you want to exit?",
+      Strings.exit_sundar_gutka,
+      Strings.confirm_exit,
       [
-        { text: "Cancel" },
-        { text: "Exit", onPress: () => BackHandler.exitApp() }
+        { text: Strings.cancel },
+        { text: Strings.exit, onPress: () => BackHandler.exitApp() }
       ],
       { cancelable: true }
     );

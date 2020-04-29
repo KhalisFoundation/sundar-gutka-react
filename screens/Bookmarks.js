@@ -9,6 +9,7 @@ import Database from "../utils/database";
 import BaniList from "../components/BaniList";
 import LoadingIndicator from "../components/LoadingIndicator";
 import * as actions from "../actions/actions";
+import Strings from "../utils/localization";
 
 class Bookmarks extends React.Component {
   constructor(props) {
@@ -75,7 +76,7 @@ class Bookmarks extends React.Component {
             />
           }
           centerComponent={{
-            text: "Bookmarks",
+            text: Strings.bookmarks,
             style: {
               color: this.props.nightMode
                 ? GLOBAL.COLOR.TOOLBAR_TINT

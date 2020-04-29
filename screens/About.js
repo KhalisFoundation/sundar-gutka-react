@@ -13,10 +13,10 @@ import {
 import { Header } from "react-native-elements";
 import Icon from "react-native-vector-icons/MaterialIcons";
 import GLOBAL from "../utils/globals";
-import Strings from "../utils/localization";
 import { connect } from "react-redux";
 import VersionNumber from "react-native-version-number";
 import AnalyticsManager from "../utils/analytics";
+import Strings from "../utils/localization";
 
 class Home extends React.Component {
   componentDidMount() {
@@ -49,7 +49,7 @@ class Home extends React.Component {
             />
           }
           centerComponent={{
-            text: "About",
+            text: Strings.about,
             style: { color: GLOBAL.COLOR.TOOLBAR_TINT, fontSize: 18 }
           }}
         />
@@ -62,12 +62,12 @@ class Home extends React.Component {
           <Text
             style={[styles.title, this.props.nightMode && styles.nightMode]}
           >
-            Sundar Gutka
+            {Strings.sundar_gutka}
           </Text>
           <Text
             style={[styles.small, this.props.nightMode && styles.nightMode]}
           >
-            {"\n"}Created By:
+            {"\n"}{Strings.created_by}:
           </Text>
           <TouchableHighlight
             underlayColor={"#009bff"}
@@ -83,10 +83,10 @@ class Home extends React.Component {
           </TouchableHighlight>
           <Text style={this.props.nightMode && styles.nightMode}>
             <Text>
-              {"\n"}We welcome your comments, suggestions, and corrections!
+              {"\n"}{Strings.about_1}
               {"\n"}
               {"\n"}
-              For information, suggestions, or help, visit us at{"\n"}
+              {Strings.about_2}{"\n"}
             </Text>
             <Text>
               <Text
@@ -99,19 +99,18 @@ class Home extends React.Component {
             </Text>
           </Text>
           <Text style={this.props.nightMode && styles.nightMode}>
-            {"\n"}Please respectfully cover your head and remove your shoes when
-            using this app.
+            {"\n"}{Strings.about_3}
             {"\n"}
             {"\n"}
-            Sundar Gutka utilizes{" "}
+            {Strings.about_4}{" "}
             <Text
               style={{ color: "#009bff" }}
               onPress={() => Linking.openURL("https://www.banidb.com/")}
             >
               BaniDB
             </Text>{" "}
-            - the open source gurbani database and api used in many gurbani
-            applications, such as SikhiToTheMax. {"\n"}
+            {Strings.about_5}
+             {"\n"}
           </Text>
           <TouchableHighlight
             underlayColor={"#009bff"}
@@ -120,7 +119,7 @@ class Home extends React.Component {
             <Image source={require("../images/banidblogo.png")} />
           </TouchableHighlight>
           <Text style={this.props.nightMode && styles.nightMode}>
-            {"\n"}Bhul Chuk Maaf!{"\n"}
+            {"\n"}{Strings.about_6}{"\n"}
           </Text>
           <Text
             style={[styles.small, this.props.nightMode && styles.nightMode]}
@@ -137,7 +136,7 @@ class Home extends React.Component {
             <Text
               style={[styles.small, this.props.nightMode && styles.nightMode]}
             >
-              App Version: {VersionNumber.appVersion} (
+              {Strings.app_version}: {VersionNumber.appVersion} (
               {VersionNumber.buildVersion}){"\n"}
             </Text>
           </View>

@@ -30,7 +30,7 @@ class BaniList extends Component {
               item.folder && (
                 <Avatar
                   source={require("../images/foldericon.png")}
-                  avatarStyle={{
+                  overlayContainerStyle={{
                     backgroundColor: nightMode ? "#000" : "#fff",
                   }}
                 />

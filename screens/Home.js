@@ -17,6 +17,7 @@ import BaniLengthSelector from "../components/BaniLengthSelector";
 import VersionNumber from "react-native-version-number";
 import firebase from "react-native-firebase";
 import Sound from "react-native-sound";
+import Strings from "../utils/localization";
 
 class Home extends React.Component {
   static navigationOptions = { header: null };
@@ -255,7 +256,8 @@ class Home extends React.Component {
                 paddingBottom: 10,
               },
             ]}>
-            {"<> sRI vwihgurU jI kI Piqh ]"}
+            {Strings.fateh}
+           
           </Text>
 
           <View
@@ -279,7 +281,7 @@ class Home extends React.Component {
                 ]}>
                 Œ
               </Text>{" "}
-              suMdr gutkw{" "}
+              {Strings.sg_title}{" "}
               <Text
                 style={[
                   {
