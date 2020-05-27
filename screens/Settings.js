@@ -502,6 +502,35 @@ class Settings extends React.Component {
             titleStyle={[this.props.nightMode && { color: "#fff" }]}
             bottomDivider={true}
           />
+          {this.props.larivaar && (
+            <ListItem
+            backgroundColor={this.props.nightMode ? "#464646" : "#fff"}
+            leftAvatar={
+               <Icon
+                  style={styles.imageStyle}
+                  color={
+                    this.props.nightMode
+                      ? GLOBAL.COLOR.COMPONENT_COLOR_NIGHT_MODE
+                      : GLOBAL.COLOR.COMPONENT_COLOR
+                  }
+                  name="opacity"
+                  size={30}
+                />
+            }
+            switch={{
+              switchStyle,
+              value: this.props.larivaarAssist,
+              onValueChange: this.props.toggleLarivaarAssist,
+            }}
+            title={Strings.larivaar_assist}
+            containerStyle={[
+              styles.titleText,
+              this.props.nightMode && { backgroundColor: "#464646" },
+            ]}
+            titleStyle={[this.props.nightMode && { color: "#fff" }]}
+            bottomDivider={true}
+          />
+          )}
           <ListItem
             backgroundColor={this.props.nightMode ? "#464646" : "#fff"}
             leftAvatar={
@@ -1091,6 +1120,7 @@ function mapStateToProps(state) {
     screenAwake: state.screenAwake,
     baniLength: state.baniLength,
     larivaar: state.larivaar,
+    larivaarAssist: state.larivaarAssist,
     manglacharanPosition: state.manglacharanPosition,
     padchhedSetting: state.padchhedSetting,
     statistics: state.statistics,

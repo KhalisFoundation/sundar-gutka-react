@@ -15,6 +15,7 @@ import {
 import Icon from "react-native-vector-icons/Entypo";
 import * as actions from "../actions/actions";
 import GLOBAL from "../utils/globals";
+import Strings from "../utils/localization";
 
 class BaniLengthSelector extends Component {
   state = {
@@ -61,7 +62,7 @@ class BaniLengthSelector extends Component {
                 }
               ]}
             >
-              {"Kwlsw suMdr gutkw"}
+              {Strings.khalsa_sundar_gutka}
             </Text>
 
             <Text
@@ -72,13 +73,8 @@ class BaniLengthSelector extends Component {
                 }
               ]}
             >
-              {"\n"}Based on user feedback, we know there are many different
-              variations of certain Banis out there that people read. To make
-              sure you get the best experience from our app, please choose a
-              preference below which best describes your preferences.{"\n"}
-              {"\n"}This will be a one-time setup, but you can change these
-              settings at any time by going to Settings > Bani Length in the
-              app.
+              {"\n"}{Strings.bani_length_message_1}{"\n"}
+              {"\n"}{Strings.bani_length_message_2}
             </Text>
             <Text
               style={[
@@ -89,28 +85,28 @@ class BaniLengthSelector extends Component {
                 }
               ]}
             >
-              {"\n"}Choose your preference:
+              {"\n"}{Strings.choose_your_preference}:
             </Text>
 
             <TouchableOpacity
               onPress={() => this.updateBaniLength(actions.BANI_LENGTHS[0])}
             >
-              <Text style={styles.button}>SHORT</Text>
+              <Text style={styles.button}>{Strings.short}</Text>
             </TouchableOpacity>
             <TouchableOpacity
               onPress={() => this.updateBaniLength(actions.BANI_LENGTHS[1])}
             >
-              <Text style={styles.button}>MEDIUM</Text>
+              <Text style={styles.button}>{Strings.medium}</Text>
             </TouchableOpacity>
             <TouchableOpacity
               onPress={() => this.updateBaniLength(actions.BANI_LENGTHS[2])}
             >
-              <Text style={styles.button}>LONG</Text>
+              <Text style={styles.button}>{Strings.long}</Text>
             </TouchableOpacity>
             <TouchableOpacity
               onPress={() => this.updateBaniLength(actions.BANI_LENGTHS[3])}
             >
-              <Text style={styles.button}>EXTRA LONG</Text>
+              <Text style={styles.button}>{Strings.extra_long}</Text>
             </TouchableOpacity>
 
             <TouchableOpacity
@@ -139,7 +135,7 @@ class BaniLengthSelector extends Component {
                   }
                 ]}
               >
-                {"  "}Need help deciding?
+                {"  "}{Strings.need_help_deciding}
                 <Text
                   style={[
                     {
@@ -150,7 +146,7 @@ class BaniLengthSelector extends Component {
                   ]}
                 >
                   {" "}
-                  Click here for more information
+                  {Strings.click_more_info}
                 </Text>
               </Text>
             </TouchableOpacity>
@@ -169,7 +165,8 @@ const styles = StyleSheet.create({
     marginTop: 15,
     fontSize: 24,
     fontWeight: "bold",
-    textAlign: "center"
+    textAlign: "center",
+    textTransform: "uppercase"
   }
 });
 

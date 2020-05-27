@@ -17,6 +17,7 @@ export const TOGGLE_SCREEN_AWAKE = "TOGGLE_SCREEN_AWAKE";
 export const SET_BANI_ORDER = "SET_BANI_ORDER";
 export const SET_BANI_LENGTH = "SET_BANI_LENGTH";
 export const TOGGLE_LARIVAAR = "TOGGLE_LARIVAAR";
+export const TOGGLE_LARIVAAR_ASSIST = "TOGGLE_LARIVAAR_ASSIST";
 export const SET_MANGLACHARAN_POSITION = "SET_MANGLACHARAN_POSITION";
 export const SET_PADCHHED_SETTINGS = "SET_PADCHHED_SETTINGS";
 export const TOGGLE_STATISTICS = "TOGGLE_STATISTICS";
@@ -199,6 +200,11 @@ export function setBaniLength(length) {
 export function toggleLarivaar(value) {
   AnalyticsManager.getInstance().trackSettingsEvent("larivaar", value);
   return { type: TOGGLE_LARIVAAR, value };
+}
+
+export function toggleLarivaarAssist(value) {
+  AnalyticsManager.getInstance().trackSettingsEvent("larivaarAssist", value);
+  return { type: TOGGLE_LARIVAAR_ASSIST, value };
 }
 
 export function setManglacharanPosition(position) {

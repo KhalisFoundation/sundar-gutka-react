@@ -51,7 +51,7 @@ class Home extends React.Component {
   }
 
   loadBaniList() {
-    Database.getBaniList(this.props.transliterationLanguage).then(
+    Database.initDB().then(() => Database.getBaniList(this.props.transliterationLanguage).then(
       (baniList) => {
         this.props.setMergedBaniData(mergedBaniList(baniList));
         this.sortBani();
@@ -59,7 +59,7 @@ class Home extends React.Component {
           isLoading: false,
         });
       }
-    );
+    ));
   }
 
   sortBani() {

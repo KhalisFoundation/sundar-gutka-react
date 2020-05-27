@@ -132,8 +132,8 @@ android {
         applicationId "com.WahegurooNetwork.SundarGutka"
         minSdkVersion rootProject.ext.minSdkVersion
         targetSdkVersion rootProject.ext.targetSdkVersion
-        versionCode 98
-        versionName "5.6.2"
+        versionCode 99
+        versionName "5.6.3"
         multiDexEnabled true
     }
     splits {

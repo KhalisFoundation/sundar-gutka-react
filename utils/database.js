@@ -3,24 +3,24 @@ import { getTranslitText } from "./helpers";
 
 var database_name = "gutka.db";
 var db;
-SQLite.deleteDatabase(
-  {
-    name: database_name,
-    location: 1,
-  },
-  function(res, err) {
-    // success
-    db = SQLite.openDatabase({ name: database_name, createFromLocation: 1 });
-  },
-  function() {
-    // error
-    db = SQLite.openDatabase({ name: database_name, createFromLocation: 1 });
-  }
-);
 
 class Database {
+  static initDB() {
+    return new Promise(function (resolve) {
+      new Promise.resolve(SQLite.deleteDatabase(
+        {
+          name: database_name,
+          location: 1,
+        })).finally(() =>
+          setTimeout(function () {
+            db = SQLite.openDatabase({ name: database_name, createFromLocation: 1 });
+            resolve(true);
+          }, 50));
+    });
+  }
+
   static getBaniList(language) {
-    return new Promise(function(resolve) {
+    return new Promise(function (resolve) {
       db.executeSql(
         "SELECT ID, Gurmukhi, Transliterations FROM Banis",
         [],
@@ -45,6 +45,7 @@ class Database {
     baniId,
     length,
     larivaar,
+    larivaarAssist,
     padcched,
     mangalPosition,
     paragraphMode,
@@ -70,15 +71,15 @@ class Database {
       default:
         baniLength = "existsMedium";
     }
-    return new Promise(function(resolve) {
+    return new Promise(function (resolve) {
       db.executeSql(
         "SELECT ID, Paragraph, header, Gurmukhi, Visraam, Transliterations, Translations FROM mv_Banis_Shabad WHERE Bani = " +
-          baniId +
-          " AND " +
-          baniLength +
-          " = 1 AND (MangalPosition IS NULL OR MangalPosition = " +
-          (mangalPosition == "CURRENT_SAROOPS" ? "'current'" : "'above'") +
-          ")ORDER BY Seq ASC;",
+        baniId +
+        " AND " +
+        baniLength +
+        " = 1 AND (MangalPosition IS NULL OR MangalPosition = " +
+        (mangalPosition == "CURRENT_SAROOPS" ? "'current'" : "'above'") +
+        ")ORDER BY Seq ASC;",
         [],
         (results) => {
           var totalResults = new Array(results.rows.length);
@@ -108,14 +109,15 @@ class Database {
               vishraamJson[vishraamSource] != null &&
               vishraamJson[vishraamSource].length > 0
             ) {
-              vishraamJson[vishraamSource].forEach(function(pos) {
+              vishraamJson[vishraamSource].forEach(function (pos) {
                 vishraamPositions[pos.p] = pos.t;
               });
             }
             var splitted = gurmukhiLine.split(" ");
 
             var arr = splitted.map((word, index) => {
-              var style = "style='";
+              var style = "";
+
               if (visram && index in vishraamPositions) {
                 switch (vishraamOption) {
                   case "VISHRAAM_GRADIENT":
@@ -131,17 +133,21 @@ class Database {
                   default:
                     style += " color:";
                     style +=
-                      vishraamPositions[index] == "v" ? "#c0392b" : "#ffc500";
+                      vishraamPositions[index] == "v" ? "#c0392b;" : "#ffc500;";
                 }
                 return (
-                  "<span " +
+                  "<span style='" +
                   style +
-                  "; white-space: nowrap;'>" +
+                  " white-space: nowrap;'>" +
                   word +
                   "</span>"
                 );
-              } else
-                return "<span style='white-space: nowrap;'>" + word + "</span>";
+              } else {
+                if(larivaar && larivaarAssist && index%2 !== 0) {
+                  style += " opacity: .65;";
+                }
+                return "<span style='" + style + " white-space: nowrap;'>" + word + "</span>";
+              }
             });
 
             let curGurmukhi = larivaar ? arr.join("<wbr>") : arr.join(" ");
@@ -255,16 +261,16 @@ class Database {
         baniLength = "existsMedium";
     }
 
-    return new Promise(function(resolve) {
+    return new Promise(function (resolve) {
       db.executeSql(
         "SELECT BaniShabadID, Gurmukhi, Transliterations FROM Banis_Bookmarks WHERE Bani = " +
-          baniId +
-          " AND BaniShabadID in (SELECT ID from mv_Banis_Shabad where Bani = " +
-          baniId +
-          " AND " +
-          baniLength +
-          " = 1)" +
-          " ORDER BY Seq ASC;",
+        baniId +
+        " AND BaniShabadID in (SELECT ID from mv_Banis_Shabad where Bani = " +
+        baniId +
+        " AND " +
+        baniLength +
+        " = 1)" +
+        " ORDER BY Seq ASC;",
         [],
         (results) => {
           var totalResults = new Array(results.rows.length);

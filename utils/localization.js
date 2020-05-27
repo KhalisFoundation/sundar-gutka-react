@@ -14,11 +14,25 @@ let Strings = new LocalizedStrings({
         app_version: "App Version",
         auto_scroll: "Auto Scroll",
         bani_length: "Bani Length",
+        bani_length_alert:
+            `\nThroughout the past few centuries, there have been many different “sampardhas” or “jathas” that have been conceived from the core concepts of Sikhi and Gurmat. These sampardhas often have different opinions and thoughts about some aspects of Sikh history, Gurbani and Rehat, but still fall collectively under the united Khalsa Panth and, most importantly, the Akaal Takht. The Akaal Takht is the highest order and institution that all Sikhs adhere to.
+            \nThese differences have also brought about different recommendations about compiled Baanis and the Paath (prayers) that we read on a daily basis which makes it difficult to create a single Sundar Gutka app with a single version of Paath that would satisfy everyone. 
+            \nWe therefore have created the option to select lengths of what Paath you do that apply to four of the main Banis read most often. These have been structured in relation to length but all have a minimum of the SGPC standard or fall under the Akaal Takht. We do not include any versions that are by sampardhas excommunicated by the Akaal Takht as a standard.
+            \nFor those who may be confused about which version to begin reading these Banis, we recommend reading the longest Bani because the more we read and recite, the better it is for our souls. However, for beginners, we would suggest to start with the “short” setting and change to increase the length setting in future once you are comfortable, confident and have more time.
+            \nHere is a breakdown of the lengths and which sampardhas typically use them:-
+            \nSHORT: This is the minimum SGPC/Akaal Takht standard.
+            \n MEDIUM: Typically read by followers of the Akhand Keertani Jatha and others.
+            \nLONG: Typically read by followers of Damdami Taksaal and others.
+            \n EXTRA LONG: Most popular amongst followers of Buddha Dal.`,
+        bani_length_message_1: "Based on user feedback, we know there are many different variations of certain Banis out there that people read. To make sure you get the best experience from our app, please choose a preference below which best describes your preferences.",
+        bani_length_message_2: "This will be a one-time setup, but you can change these settings at any time by going to Settings > Bani Length in the app.",
         baniDB: "BaniDB",
         bani_options: "Bani Options",
         banidb_living_default: "BaniDB Living (default)",
         bookmarks: "Bookmarks",
         cancel: "Cancel",
+        choose_your_preference: "Choose your preference",
+        click_more_info: "Click here for more information",
         collect_statistics: "Collect Statistics",
         colored_words: "Colored Words",
         confirm_exit: "Are you sure you want to exit?",
@@ -53,10 +67,12 @@ let Strings = new LocalizedStrings({
         language: "Language",
         large: "Large",
         larivaar: "Larivaar",
+        larivaar_assist: "Larivaar Assist",
         long: "Long",
         manglacharan_position: "Manglacharan Position",
         mast_sabh_mast: "Mast Sabh Mast",
         medium: "Medium",
+        need_help_deciding: "Need help deciding?",
         notification_text: "Notification Text",
         ok: "OK",
         other_options: "Other Options",
@@ -87,6 +103,7 @@ let Strings = new LocalizedStrings({
         waheguru_soul: "Waheguru Soul",
         wake_up_jap: "Wake Up Jap",
         fateh: "<> sRI vwihgurU jI kI Piqh ]",
+        khalsa_sundar_gutka: "Kwlsw suMdr gutkw",
         sg_title: "suMdr gutkw",
     }
 });

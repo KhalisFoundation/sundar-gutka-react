@@ -60,6 +60,7 @@ class Reader extends React.Component {
       this.props.currentShabad,
       this.props.baniLength,
       this.props.larivaar,
+      this.props.larivaarAssist,
       this.props.padchhedSetting,
       this.props.manglacharanPosition,
       this.props.paragraphMode,
@@ -83,6 +84,7 @@ class Reader extends React.Component {
     if (
       prevProps.baniLength != this.props.baniLength ||
       prevProps.larivaar != this.props.larivaar ||
+      prevProps.larivaarAssist != this.props.larivaarAssist ||
       prevProps.paragraphMode != this.props.paragraphMode ||
       prevProps.manglacharanPosition != this.props.manglacharanPosition ||
       prevProps.padchhedSetting != this.props.padchhedSetting ||
@@ -706,6 +708,7 @@ function mapStateToProps(state) {
     fontFace: state.fontFace,
     baniLength: state.baniLength,
     larivaar: state.larivaar,
+    larivaarAssist: state.larivaarAssist,
     padchhedSetting: state.padchhedSetting,
     manglacharanPosition: state.manglacharanPosition,
     englishTranslations: state.englishTranslations,

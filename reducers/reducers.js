@@ -13,6 +13,7 @@ import {
   SET_BANI_ORDER,
   SET_BANI_LENGTH,
   TOGGLE_LARIVAAR,
+  TOGGLE_LARIVAAR_ASSIST,
   SET_MANGLACHARAN_POSITION,
   SET_PADCHHED_SETTINGS,
   TOGGLE_STATISTICS,
@@ -134,6 +135,15 @@ function baniLength(state = "", action) {
 function larivaar(state = false, action) {
   switch (action.type) {
     case TOGGLE_LARIVAAR:
+      return action.value;
+    default:
+      return state;
+  }
+}
+
+function larivaarAssist(state = false, action) {
+  switch (action.type) {
+    case TOGGLE_LARIVAAR_ASSIST:
       return action.value;
     default:
       return state;
@@ -307,6 +317,7 @@ const rootReducer = combineReducers({
   baniOrder,
   baniLength,
   larivaar,
+  larivaarAssist,
   manglacharanPosition,
   padchhedSetting,
   statistics,
