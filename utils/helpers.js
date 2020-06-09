@@ -112,7 +112,15 @@ export const fontSizeForReader = (SIZE, header, transliteration) => {
 export const baniLengthInfo = () => {
   Alert.alert(
     Strings.bani_length,
-    Strings.bani_length_alert
+    `\n${Strings.bani_length_alert_1}
+    \n${Strings.bani_length_alert_2}
+    \n${Strings.bani_length_alert_3}
+    \n${Strings.bani_length_alert_4}
+    \n${Strings.bani_length_alert_5}
+    \n${Strings.bani_length_alert_6}
+    \n${Strings.bani_length_alert_7}
+    \n${Strings.bani_length_alert_8}
+    \n${Strings.bani_length_alert_9}`
   );
 };
 
