@@ -53,11 +53,11 @@ class Settings extends React.Component {
     const switchStyle =
       Platform.OS === "ios"
         ? {
-            trackColor: {
-              false: null,
-              true: GLOBAL.COLOR.SETTING_SWITCH_COLOR,
-            },
-          }
+          trackColor: {
+            false: null,
+            true: GLOBAL.COLOR.SETTING_SWITCH_COLOR,
+          },
+        }
         : {};
 
     return (
@@ -136,7 +136,7 @@ class Settings extends React.Component {
             titleStyle={[this.props.nightMode && { color: "#fff" }]}
             rightTitle={
               actions.fontSizeNames[
-                actions.FONT_SIZES.indexOf(this.props.fontSize)
+              actions.FONT_SIZES.indexOf(this.props.fontSize)
               ]
             }
             rightTitleStyle={[
@@ -165,7 +165,7 @@ class Settings extends React.Component {
             titleStyle={[this.props.nightMode && { color: "#fff" }]}
             rightTitle={
               actions.fontFaceNames[
-                actions.FONT_FACES.indexOf(this.props.fontFace)
+              actions.FONT_FACES.indexOf(this.props.fontFace)
               ]
             }
             rightTitleStyle={[
@@ -175,6 +175,39 @@ class Settings extends React.Component {
             chevron={true}
             bottomDivider={true}
             onPress={() => this.FontFaceActionSheet.show()}
+          />
+          <ListItem
+            backgroundColor={this.props.nightMode ? "#464646" : "#fff"}
+            leftAvatar={
+              <Icon
+                style={styles.imageStyle}
+                color={
+                  this.props.nightMode
+                    ? GLOBAL.COLOR.COMPONENT_COLOR_NIGHT_MODE
+                    : GLOBAL.COLOR.COMPONENT_COLOR
+                }
+                name="language"
+                size={30}
+              />
+            }
+            title={Strings.language}
+            containerStyle={[
+              styles.titleText,
+              this.props.nightMode && { backgroundColor: "#464646" },
+            ]}
+            titleStyle={[this.props.nightMode && { color: "#fff" }]}
+            rightTitle={
+              actions.languageNames[
+              actions.LANGUAGES.indexOf(this.props.language)
+              ]
+            }
+            rightTitleStyle={[
+              styles.titleInfoStyle,
+              { color: this.props.nightMode ? "#fff" : "#a3a3a3" },
+            ]}
+            chevron={true}
+            bottomDivider={true}
+            onPress={() => this.LanguageActionSheet.show()}
           />
           <ListItem
             backgroundColor={this.props.nightMode ? "#464646" : "#fff"}
@@ -222,9 +255,9 @@ class Settings extends React.Component {
               titleStyle={[this.props.nightMode && { color: "#fff" }]}
               rightTitle={
                 actions.transliterationLanguageNames[
-                  actions.TRANSLITERATION_LANGUAGES.indexOf(
-                    this.props.transliterationLanguage
-                  )
+                actions.TRANSLITERATION_LANGUAGES.indexOf(
+                  this.props.transliterationLanguage
+                )
                 ]
               }
               rightTitleStyle={[
@@ -468,7 +501,7 @@ class Settings extends React.Component {
             titleStyle={[this.props.nightMode && { color: "#fff" }]}
             rightTitle={
               actions.baniLengthNames[
-                actions.BANI_LENGTHS.indexOf(this.props.baniLength)
+              actions.BANI_LENGTHS.indexOf(this.props.baniLength)
               ]
             }
             rightTitleStyle={[
@@ -504,9 +537,9 @@ class Settings extends React.Component {
           />
           {this.props.larivaar && (
             <ListItem
-            backgroundColor={this.props.nightMode ? "#464646" : "#fff"}
-            leftAvatar={
-               <Icon
+              backgroundColor={this.props.nightMode ? "#464646" : "#fff"}
+              leftAvatar={
+                <Icon
                   style={styles.imageStyle}
                   color={
                     this.props.nightMode
@@ -516,20 +549,20 @@ class Settings extends React.Component {
                   name="opacity"
                   size={30}
                 />
-            }
-            switch={{
-              switchStyle,
-              value: this.props.larivaarAssist,
-              onValueChange: this.props.toggleLarivaarAssist,
-            }}
-            title={Strings.larivaar_assist}
-            containerStyle={[
-              styles.titleText,
-              this.props.nightMode && { backgroundColor: "#464646" },
-            ]}
-            titleStyle={[this.props.nightMode && { color: "#fff" }]}
-            bottomDivider={true}
-          />
+              }
+              switch={{
+                switchStyle,
+                value: this.props.larivaarAssist,
+                onValueChange: this.props.toggleLarivaarAssist,
+              }}
+              title={Strings.larivaar_assist}
+              containerStyle={[
+                styles.titleText,
+                this.props.nightMode && { backgroundColor: "#464646" },
+              ]}
+              titleStyle={[this.props.nightMode && { color: "#fff" }]}
+              bottomDivider={true}
+            />
           )}
           <ListItem
             backgroundColor={this.props.nightMode ? "#464646" : "#fff"}
@@ -576,9 +609,9 @@ class Settings extends React.Component {
             titleStyle={[this.props.nightMode && { color: "#fff" }]}
             rightTitle={
               actions.manglacharanPositionNames[
-                actions.MANGLACHARAN_POSITIONS.indexOf(
-                  this.props.manglacharanPosition
-                )
+              actions.MANGLACHARAN_POSITIONS.indexOf(
+                this.props.manglacharanPosition
+              )
               ]
             }
             rightTitleStyle={[
@@ -607,7 +640,7 @@ class Settings extends React.Component {
             titleStyle={[this.props.nightMode && { color: "#fff" }]}
             rightTitle={
               actions.padchhedSettingNames[
-                actions.PADCHHED_SETTINGS.indexOf(this.props.padchhedSetting)
+              actions.PADCHHED_SETTINGS.indexOf(this.props.padchhedSetting)
               ]
             }
             rightTitleStyle={[
@@ -668,7 +701,7 @@ class Settings extends React.Component {
               titleStyle={[this.props.nightMode && { color: "#fff" }]}
               rightTitle={
                 actions.vishraamOptionNames[
-                  actions.VISHRAAM_OPTIONS.indexOf(this.props.vishraamOption)
+                actions.VISHRAAM_OPTIONS.indexOf(this.props.vishraamOption)
                 ]
               }
               rightTitleStyle={[
@@ -703,7 +736,7 @@ class Settings extends React.Component {
               titleStyle={[this.props.nightMode && { color: "#fff" }]}
               rightTitle={
                 actions.vishraamSourceNames[
-                  actions.VISHRAAM_SOURCES.indexOf(this.props.vishraamSource)
+                actions.VISHRAAM_SOURCES.indexOf(this.props.vishraamSource)
                 ]
               }
               rightTitleStyle={[
@@ -796,7 +829,7 @@ class Settings extends React.Component {
               titleStyle={[this.props.nightMode && { color: "#fff" }]}
               rightTitle={
                 actions.reminderSoundNames[
-                  actions.REMINDER_SOUNDS.indexOf(this.props.reminderSound)
+                actions.REMINDER_SOUNDS.indexOf(this.props.reminderSound)
                 ]
               }
               rightTitleStyle={[
@@ -921,6 +954,22 @@ class Settings extends React.Component {
             actions.FONT_FACES,
             checkedIcon,
             this.props.setFontFace
+          )}
+        </ActionSheet>
+        <ActionSheet
+          ref={(actionSheet) => {
+            this.LanguageActionSheet = actionSheet;
+          }}
+          position="bottom"
+          defaultValue={this.props.language}>
+          <View>
+            <Text style={styles.actionSheetTitle}>{Strings.language}</Text>
+          </View>
+          {this.actionSheetOptions(
+            actions.languageNames,
+            actions.LANGUAGES,
+            checkedIcon,
+            this.props.setLanguage
           )}
         </ActionSheet>
 
@@ -1111,6 +1160,7 @@ function mapStateToProps(state) {
   return {
     fontSize: state.fontSize,
     fontFace: state.fontFace,
+    language: state.language,
     transliteration: state.transliteration,
     transliterationLanguage: state.transliterationLanguage,
     englishTranslations: state.englishTranslations,

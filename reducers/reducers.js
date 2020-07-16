@@ -3,6 +3,7 @@ import { defaultBaniOrderArray } from "../utils/helpers";
 import {
   SET_FONT_SIZE,
   SET_FONT_FACE,
+  SET_LANGUAGE,
   TOGGLE_TRANSLITERATION,
   SET_TRANSLITERATION_LANGUAGE,
   TOGGLE_ENGLISH_TRANSLATIONS,
@@ -46,6 +47,15 @@ function fontFace(state = "GurbaniAkharSG", action) {
   switch (action.type) {
     case SET_FONT_FACE:
       return action.font;
+    default:
+      return state;
+  }
+}
+
+function language(state = "DEFAULT", action) {
+  switch (action.type) {
+    case SET_LANGUAGE:
+      return action.language;
     default:
       return state;
   }
@@ -307,6 +317,7 @@ function appVersion(state = "", action) {
 const rootReducer = combineReducers({
   fontSize,
   fontFace,
+  language,
   transliteration,
   transliterationLanguage,
   englishTranslations,

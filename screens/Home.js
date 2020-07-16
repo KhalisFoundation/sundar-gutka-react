@@ -96,6 +96,10 @@ class Home extends React.Component {
       this.setState({ showLengthSelector: true });
     }
 
+    if (this.props.language !== "DEFAULT") {
+      Strings.setLanguage(this.props.language);
+    }
+
     this.changeKeepAwake(this.props.screenAwake || this.props.autoScroll);
     this.changeStatusBar(this.props.statusBar);
     AnalyticsManager.getInstance().allowTracking(this.props.statistics);
@@ -257,7 +261,7 @@ class Home extends React.Component {
               },
             ]}>
             {Strings.fateh}
-           
+
           </Text>
 
           <View
@@ -333,6 +337,7 @@ function mapStateToProps(state) {
     transliterationLanguage: state.transliterationLanguage,
     fontSize: state.fontSize,
     fontFace: state.fontFace,
+    language: state.language,
     screenAwake: state.screenAwake,
     statusBar: state.statusBar,
     statistics: state.statistics,

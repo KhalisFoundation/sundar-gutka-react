@@ -143,7 +143,7 @@ class Database {
                   "</span>"
                 );
               } else {
-                if(larivaar && larivaarAssist && index%2 !== 0) {
+                if (larivaar && larivaarAssist && index % 2 !== 0) {
                   style += " opacity: .65;";
                 }
                 return "<span style='" + style + " white-space: nowrap;'>" + word + "</span>";
@@ -159,9 +159,9 @@ class Database {
                 ? " "
                 : translationJson.en.bdb;
             row.Punjabi =
-              translationJson == null || translationJson.pu.ss == null
+              translationJson == null || translationJson.pu.bdb == null
                 ? " "
-                : translationJson.pu.ss;
+                : translationJson.pu.bdb;
             row.Spanish =
               translationJson == null || translationJson.es.sn == null
                 ? " "

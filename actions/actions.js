@@ -7,6 +7,7 @@ import Strings from "../utils/localization";
 
 export const SET_FONT_SIZE = "SET_FONT_SIZE";
 export const SET_FONT_FACE = "SET_FONT_FACE";
+export const SET_LANGUAGE = "SET_LANGUAGE";
 export const TOGGLE_TRANSLITERATION = "TOGGLE_TRANSLITERATION";
 export const SET_TRANSLITERATION_LANGUAGE = "SET_TRANSLITERATION_LANGUAGE";
 export const TOGGLE_ENGLISH_TRANSLATIONS = "TOGGLE_ENGLISH_TRANSLATIONS";
@@ -46,6 +47,20 @@ export const FONT_SIZES = [
   "MEDIUM",
   "LARGE",
   "EXTRA_LARGE",
+];
+
+export const LANGUAGES = [
+  "DEFAULT",
+  "en-US",
+  "hi",
+  "pa",
+];
+
+export const languageNames = [
+  `${Strings.default}`,
+  `English`,
+  `हिंदी`,
+  `ਪੰਜਾਬੀ`,
 ];
 
 export const fontSizeNames = [
@@ -148,6 +163,16 @@ export function setFontSize(size) {
 export function setFontFace(font) {
   AnalyticsManager.getInstance().trackSettingsEvent("fontFace", font);
   return { type: SET_FONT_FACE, font };
+}
+
+export function setLanguage(language) {
+  AnalyticsManager.getInstance().trackSettingsEvent("appLanguage", language);
+  if (language !== "DEFAULT") {
+    Strings.setLanguage(language);
+  } else {
+    Strings.setLanguage(Strings.getInterfaceLanguage());
+  }
+  return { type: SET_LANGUAGE, language };
 }
 
 export function toggleTransliteration(value) {
