@@ -52,6 +52,9 @@ export const FONT_SIZES = [
 export const LANGUAGES = [
   "DEFAULT",
   "en-US",
+  "es",
+  "fr",
+  "it",
   "hi",
   "pa",
 ];
@@ -59,6 +62,9 @@ export const LANGUAGES = [
 export const languageNames = [
   `${Strings.default}`,
   `English`,
+  `Español`,
+  `Français`,
+  `Italiano`,
   `हिंदी`,
   `ਪੰਜਾਬੀ`,
 ];

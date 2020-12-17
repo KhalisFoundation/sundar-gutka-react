@@ -235,20 +235,9 @@ class Settings extends React.Component {
           {this.props.transliteration && (
             <ListItem
               backgroundColor={this.props.nightMode ? "#464646" : "#fff"}
-              leftAvatar={
-                <Icon
-                  style={styles.imageStyle}
-                  color={
-                    this.props.nightMode
-                      ? GLOBAL.COLOR.COMPONENT_COLOR_NIGHT_MODE
-                      : GLOBAL.COLOR.COMPONENT_COLOR
-                  }
-                  name="language"
-                  size={30}
-                />
-              }
               title={Strings.language}
               containerStyle={[
+                { paddingLeft: 80 },
                 styles.titleText,
                 this.props.nightMode && { backgroundColor: "#464646" },
               ]}

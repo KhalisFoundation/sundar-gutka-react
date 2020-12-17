@@ -132,7 +132,7 @@ android {
         applicationId "com.WahegurooNetwork.SundarGutka"
         minSdkVersion rootProject.ext.minSdkVersion
         targetSdkVersion rootProject.ext.targetSdkVersion
-        versionCode 100
+        versionCode 102
         versionName "5.7.0"
         multiDexEnabled true
     }
