@@ -18,7 +18,7 @@
     "npm": "^6.13.4",
     "react": "16.8.3",
     "react-devtools": "^3.6.0",
-    "react-native": "^0.59.8",
+    "react-native": "^0.62.3",
     "react-native-action-sheet-component": "0.0.36",
     "react-native-animatable": "^1.3.1",
     "react-native-collapsible": "^1.4.0",
