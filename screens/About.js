@@ -107,10 +107,10 @@ class Home extends React.Component {
               style={{ color: "#009bff" }}
               onPress={() => Linking.openURL("https://www.banidb.com/")}
             >
-            {Strings.baniDB}
+              {Strings.baniDB}
             </Text>{" "}
             {Strings.about_5}
-             {"\n"}
+            {"\n"}
           </Text>
           <TouchableHighlight
             underlayColor={"#009bff"}

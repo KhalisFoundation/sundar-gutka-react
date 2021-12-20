@@ -6,7 +6,6 @@ import { View, Text, StatusBar, Platform } from "react-native";
 import { Header } from "react-native-elements";
 import Icon from "react-native-vector-icons/MaterialIcons";
 import GLOBAL from "../utils/globals";
-import SplashScreen from "react-native-splash-screen";
 import AnalyticsManager from "../utils/analytics";
 import NotificationsManager from "../utils/notifications";
 import Database from "../utils/database";
@@ -15,7 +14,7 @@ import * as actions from "../actions/actions";
 import BaniList from "../components/BaniList";
 import BaniLengthSelector from "../components/BaniLengthSelector";
 import VersionNumber from "react-native-version-number";
-import firebase from "react-native-firebase";
+import messaging from '@react-native-firebase/messaging';
 import Sound from "react-native-sound";
 import Strings from "../utils/localization";
 
@@ -51,7 +50,7 @@ class Home extends React.Component {
   }
 
   loadBaniList() {
-    Database.initDB().then(() => Database.getBaniList(this.props.transliterationLanguage).then(
+    Database.getBaniList(this.props.transliterationLanguage).then(
       (baniList) => {
         this.props.setMergedBaniData(mergedBaniList(baniList));
         this.sortBani();
@@ -59,7 +58,7 @@ class Home extends React.Component {
           isLoading: false,
         });
       }
-    ));
+    );
   }
 
   sortBani() {
@@ -112,7 +111,6 @@ class Home extends React.Component {
 
     this.loadBaniList();
 
-    SplashScreen.hide();
     AnalyticsManager.getInstance().trackScreenView(
       "Home Screen",
       this.constructor.name
@@ -120,17 +118,15 @@ class Home extends React.Component {
 
     NotificationsManager.getInstance().removeAllDeliveredNotifications();
     // Notification opened from background
-    this.notificationOpenedListener = firebase
-      .notifications()
-      .onNotificationOpened((notificationOpen) => {
+    this.notificationOpenedListener = messaging()
+      .onNotificationOpenedApp((notificationOpen) => {
         this.handleNotificationEvent(notificationOpen);
       });
 
     // Notification opened from closed state
-    firebase
-      .notifications()
+    messaging()
       .getInitialNotification()
-      .then((notificationOpen) => {
+      .then(notificationOpen => {
         if (notificationOpen) {
           // App was opened by a notification
           this.handleNotificationEvent(notificationOpen);
@@ -147,15 +143,14 @@ class Home extends React.Component {
     NotificationsManager.getInstance().removeAllDeliveredNotifications();
 
     this.props.setCurrentShabad(item.id);
-    this.props.navigation.navigate({
+    this.props.navigation.navigate('Reader', {
       key: "Reader-" + item.id,
-      routeName: "Reader",
       params: { item: item },
     });
   }
 
   componentWillUnmount() {
-    this.notificationOpenedListener();
+    // this.notificationOpenedListener();
   }
 
   componentDidUpdate(prevProps) {
@@ -212,15 +207,13 @@ class Home extends React.Component {
   handleOnPress(item, navigator) {
     if (!item.folder) {
       this.props.setCurrentShabad(item.id);
-      navigator.navigate({
+      navigator.navigate('Reader', {
         key: "Reader-" + item.id,
-        routeName: "Reader",
         params: { item: item },
       });
     } else {
-      navigator.navigate({
+      navigator.navigate('FolderBani', {
         key: "Folder-" + item.roman,
-        routeName: "FolderBani",
         params: { data: item.folder, title: item.gurmukhi },
       });
     }
@@ -306,10 +299,7 @@ class Home extends React.Component {
             color={GLOBAL.COLOR.TOOLBAR_TINT}
             size={30}
             onPress={() =>
-              this.props.navigation.navigate({
-                key: "Settings",
-                routeName: "Settings",
-              })
+              this.props.navigation.navigate('Settings')
             }
           />
         </View>

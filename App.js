@@ -1,8 +1,7 @@
 import React from "react";
-import { BackHandler, Alert } from "react-native";
-import SafeAreaView from 'react-native-safe-area-view';
-
-import { createStackNavigator, createAppContainer } from "react-navigation";
+import { BackHandler, Alert, SafeAreaView } from "react-native";
+import { NavigationContainer } from '@react-navigation/native';
+import { createNativeStackNavigator } from '@react-navigation/native-stack';
 import { Provider } from "react-redux";
 import { PersistGate } from "redux-persist/integration/react";
 import HomeScreen from "./screens/Home";
@@ -14,40 +13,8 @@ import AboutScreen from "./screens/About";
 import ReaderScreen from "./screens/Reader";
 import BookmarksScreen from "./screens/Bookmarks";
 import createStore from "./config/store";
-import Strings from "./utils/localization";
 
-const RootStack = createStackNavigator(
-  {
-    Home: {
-      screen: HomeScreen
-    },
-    FolderBani: {
-      screen: FolderBaniScreen
-    },
-    Settings: {
-      screen: SettingsScreen
-    },
-    Reader: {
-      screen: ReaderScreen
-    },
-    Bookmarks: {
-      screen: BookmarksScreen
-    },
-    EditBaniOrder: {
-      screen: EditBaniOrderScreen
-    },
-    ReminderOptions: {
-      screen: ReminderOptionsScreen
-    },
-    About: {
-      screen: AboutScreen
-    }
-  },
-  {
-    headerMode: "none"
-  }
-);
-const AppContainer = createAppContainer(RootStack);
+const Stack = createNativeStackNavigator();
 
 const { store, persistor } = createStore();
 
@@ -62,11 +29,11 @@ export default class App extends React.Component {
 
   handleBackPress = () => {
     Alert.alert(
-      Strings.exit_sundar_gutka,
-      Strings.confirm_exit,
+      "Exit Sundar Gutka",
+      "Are you sure you want to exit?",
       [
-        { text: Strings.cancel },
-        { text: Strings.exit, onPress: () => BackHandler.exitApp() }
+        { text: "Cancel" },
+        { text: "Exit", onPress: () => BackHandler.exitApp() }
       ],
       { cancelable: true }
     );
@@ -77,9 +44,23 @@ export default class App extends React.Component {
     return (
       <Provider store={store}>
         <PersistGate loading={null} persistor={persistor}>
-        <SafeAreaView style={{ flex: 1 }} forceInset={{ vertical: 'never' }}>
-          <AppContainer />
-          </SafeAreaView>
+          <NavigationContainer>
+            <SafeAreaView style={{ flex: 1 }} >
+              <Stack.Navigator
+                screenOptions={{
+                  headerShown: false
+                }}>
+                <Stack.Screen name="Home" component={HomeScreen} />
+                <Stack.Screen name="FolderBani" component={FolderBaniScreen} />
+                <Stack.Screen name="Settings" component={SettingsScreen} />
+                <Stack.Screen name="Reader" component={ReaderScreen} />
+                <Stack.Screen name="Bookmarks" component={BookmarksScreen} />
+                <Stack.Screen name="EditBaniOrder" component={EditBaniOrderScreen} />
+                <Stack.Screen name="ReminderOptions" component={ReminderOptionsScreen} />
+                <Stack.Screen name="About" component={AboutScreen} />
+              </Stack.Navigator>
+            </SafeAreaView>
+          </NavigationContainer>
         </PersistGate>
       </Provider>
     );

@@ -1,4 +1,4 @@
-import firebase from "react-native-firebase";
+import { firebase } from '@react-native-firebase/analytics';
 
 export default class AnalyticsManager {
   static myInstance = null;
@@ -18,7 +18,11 @@ export default class AnalyticsManager {
 
   trackScreenView(screen, className) {
     if (this._trackingOn) {
-      firebase.analytics().setCurrentScreen(screen, className);
+      firebase.analytics().logScreenView(
+        {
+          screen_name: screen,
+          screen_class: className,
+        });
     }
   }
 

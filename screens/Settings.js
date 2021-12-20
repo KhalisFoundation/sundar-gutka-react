@@ -7,10 +7,9 @@ import {
   Platform,
   TouchableOpacity,
   StatusBar,
-  ScrollView,
+  ScrollView
 } from "react-native";
-import { Header } from "react-native-elements";
-import { ListItem, Avatar } from "react-native-elements";
+import { Header, ListItem, Avatar, Switch } from "react-native-elements";
 import MaterialIcons from "react-native-vector-icons/MaterialCommunityIcons";
 import FontAwesomeIcons from "react-native-vector-icons/FontAwesome";
 import FontAwesome5Icons from "react-native-vector-icons/FontAwesome5";
@@ -20,13 +19,12 @@ import GLOBAL from "../utils/globals";
 import { baniLengthInfo } from "../utils/helpers";
 import {
   ActionSheet,
-  ActionSheetItem,
+  ActionSheetItem
 } from "react-native-action-sheet-component";
 import { connect } from "react-redux";
 import { bindActionCreators } from "redux";
 import AnalyticsManager from "../utils/analytics";
 import * as actions from "../actions/actions";
-import Collapsible from "react-native-collapsible";
 import Strings from "../utils/localization";
 
 class Settings extends React.Component {
@@ -34,7 +32,7 @@ class Settings extends React.Component {
     super(props);
 
     this.state = {
-      showTranslationOptions: true,
+      showTranslationOptions: this.props.englishTranslations || this.props.punjabiTranslations || this.props.spanishTranslations,
     };
   }
 
@@ -118,331 +116,327 @@ class Settings extends React.Component {
             ]}>
             {Strings.display_options}
           </Text>
-          <ListItem
-            backgroundColor={this.props.nightMode ? "#464646" : "#fff"}
-            leftAvatar={
-              <Avatar
-                source={require("../images/fontsizeicon.png")}
-                overlayContainerStyle={{
-                  backgroundColor: this.props.nightMode ? "#464646" : "#fff",
-                }}
-              />
-            }
-            title={Strings.font_size}
+
+          <ListItem bottomDivider
             containerStyle={[
               styles.titleText,
-              this.props.nightMode && { backgroundColor: "#464646" },
-            ]}
-            titleStyle={[this.props.nightMode && { color: "#fff" }]}
-            rightTitle={
-              actions.fontSizeNames[
-              actions.FONT_SIZES.indexOf(this.props.fontSize)
-              ]
-            }
-            rightTitleStyle={[
-              styles.titleInfoStyle,
-              { color: this.props.nightMode ? "#fff" : "#a3a3a3" },
-            ]}
-            chevron={true}
-            bottomDivider={true}
-            onPress={() => this.FontSizeActionSheet.show()}
-          />
-          <ListItem
-            backgroundColor={this.props.nightMode ? "#464646" : "#fff"}
-            leftAvatar={
-              <Avatar
-                source={require("../images/fontfaceicon.png")}
-                overlayContainerStyle={{
-                  backgroundColor: this.props.nightMode ? "#464646" : "#fff",
-                }}
-              />
-            }
-            title={Strings.font_face}
-            containerStyle={[
-              styles.titleText,
-              this.props.nightMode && { backgroundColor: "#464646" },
-            ]}
-            titleStyle={[this.props.nightMode && { color: "#fff" }]}
-            rightTitle={
-              actions.fontFaceNames[
-              actions.FONT_FACES.indexOf(this.props.fontFace)
-              ]
-            }
-            rightTitleStyle={[
-              styles.titleInfoStyle,
-              { color: this.props.nightMode ? "#fff" : "#a3a3a3" },
-            ]}
-            chevron={true}
-            bottomDivider={true}
-            onPress={() => this.FontFaceActionSheet.show()}
-          />
-          <ListItem
-            backgroundColor={this.props.nightMode ? "#464646" : "#fff"}
-            leftAvatar={
-              <Icon
-                style={styles.imageStyle}
-                color={
-                  this.props.nightMode
-                    ? GLOBAL.COLOR.COMPONENT_COLOR_NIGHT_MODE
-                    : GLOBAL.COLOR.COMPONENT_COLOR
-                }
-                name="language"
-                size={30}
-              />
-            }
-            title={Strings.language}
-            containerStyle={[
-              styles.titleText,
-              this.props.nightMode && { backgroundColor: "#464646" },
-            ]}
-            titleStyle={[this.props.nightMode && { color: "#fff" }]}
-            rightTitle={
-              actions.languageNames[
-              actions.LANGUAGES.indexOf(this.props.language)
-              ]
-            }
-            rightTitleStyle={[
-              styles.titleInfoStyle,
-              { color: this.props.nightMode ? "#fff" : "#a3a3a3" },
-            ]}
-            chevron={true}
-            bottomDivider={true}
-            onPress={() => this.LanguageActionSheet.show()}
-          />
-          <ListItem
-            backgroundColor={this.props.nightMode ? "#464646" : "#fff"}
-            leftAvatar={
-              <Avatar
-                source={require("../images/romanizeicon.png")}
-                overlayContainerStyle={{
-                  backgroundColor: this.props.nightMode ? "#464646" : "#fff",
-                }}
-              />
-            }
-            switch={{
-              switchStyle,
-              value: this.props.transliteration,
-              onValueChange: this.props.toggleTransliteration,
-            }}
-            title={Strings.transliteration}
-            containerStyle={[
-              styles.titleText,
-              this.props.nightMode && { backgroundColor: "#464646" },
-            ]}
-            titleStyle={[this.props.nightMode && { color: "#fff" }]}
-            bottomDivider={true}
-          />
-          {this.props.transliteration && (
-            <ListItem
-              backgroundColor={this.props.nightMode ? "#464646" : "#fff"}
-              title={Strings.language}
-              containerStyle={[
-                { paddingLeft: 80 },
-                styles.titleText,
-                this.props.nightMode && { backgroundColor: "#464646" },
-              ]}
-              titleStyle={[this.props.nightMode && { color: "#fff" }]}
-              rightTitle={
-                actions.transliterationLanguageNames[
-                actions.TRANSLITERATION_LANGUAGES.indexOf(
-                  this.props.transliterationLanguage
-                )
+              this.props.nightMode && { backgroundColor: "#464646" }
+            ]} onPress={() => this.FontSizeActionSheet.show()}
+          >
+            <Avatar source={require("../images/fontsizeicon.png")} />
+            <ListItem.Content>
+              <ListItem.Title
+                style={[this.props.nightMode && { color: "#fff" }]}>
+                {Strings.font_size}
+              </ListItem.Title>
+            </ListItem.Content>
+            <ListItem.Title right
+              style={[
+                styles.titleInfoStyle,
+                { color: this.props.nightMode ? "#fff" : "#a3a3a3" }
+              ]}>
+              {
+                actions.fontSizeNames[
+                actions.FONT_SIZES.indexOf(this.props.fontSize)
                 ]
               }
-              rightTitleStyle={[
-                styles.titleInfoStyle,
-                { color: this.props.nightMode ? "#fff" : "#a3a3a3" },
-              ]}
-              chevron={true}
-              bottomDivider={true}
-              onPress={() => this.TransliterationActionSheet.show()}
-            />
-          )}
-          <ListItem
-            backgroundColor={this.props.nightMode ? "#464646" : "#fff"}
-            leftAvatar={
-              <Avatar
-                source={require("../images/englishicon.png")}
-                overlayContainerStyle={{
-                  backgroundColor: this.props.nightMode ? "#464646" : "#fff",
-                }}
-              />
-            }
-            title={Strings.translations}
+            </ListItem.Title>
+            <ListItem.Chevron />
+          </ListItem>
+
+          <ListItem bottomDivider
             containerStyle={[
               styles.titleText,
-              this.props.nightMode && { backgroundColor: "#464646" },
+              this.props.nightMode && { backgroundColor: "#464646" }
+            ]} onPress={() => this.FontFaceActionSheet.show()}
+          >
+            <Avatar source={require("../images/fontfaceicon.png")} />
+            <ListItem.Content>
+              <ListItem.Title
+                style={[this.props.nightMode && { color: "#fff" }]}>
+                {Strings.font_face}
+              </ListItem.Title>
+            </ListItem.Content>
+            <ListItem.Title right
+              style={[
+                styles.titleInfoStyle,
+                { color: this.props.nightMode ? "#fff" : "#a3a3a3" }
+              ]}>
+              {
+                actions.fontFaceNames[
+                actions.FONT_FACES.indexOf(this.props.fontFace)
+                ]
+              }
+            </ListItem.Title>
+            <ListItem.Chevron />
+          </ListItem>
+
+          <ListItem bottomDivider
+            containerStyle={[
+              styles.titleText,
+              this.props.nightMode && { backgroundColor: "#464646" }
+            ]} onPress={() => this.LanguageActionSheet.show()}
+          >
+            <Icon
+              style={styles.imageStyle}
+              color={
+                this.props.nightMode
+                  ? GLOBAL.COLOR.COMPONENT_COLOR_NIGHT_MODE
+                  : GLOBAL.COLOR.COMPONENT_COLOR
+              }
+              name="language"
+              size={30}
+            />
+            <ListItem.Content>
+              <ListItem.Title
+                style={[this.props.nightMode && { color: "#fff" }]}>
+                {Strings.language}
+              </ListItem.Title>
+            </ListItem.Content>
+            <ListItem.Title right
+              style={[
+                styles.titleInfoStyle,
+                { color: this.props.nightMode ? "#fff" : "#a3a3a3" }
+              ]}>
+              {
+                actions.languageNames[
+                actions.LANGUAGES.indexOf(this.props.language)
+                ]
+              }
+            </ListItem.Title>
+            <ListItem.Chevron />
+          </ListItem>
+
+          <ListItem bottomDivider
+            containerStyle={[
+              styles.titleText,
+              this.props.nightMode && { backgroundColor: "#464646" }
             ]}
-            titleStyle={[this.props.nightMode && { color: "#fff" }]}
-            rightAvatar={
-              <View style={{ justifyContent: "center", paddingRight: 10 }}>
-                <Icon
-                  name={
-                    this.state.showTranslationOptions
-                      ? "keyboard-arrow-down"
-                      : "keyboard-arrow-up"
-                  }
-                  color={
-                    this.props.nightMode
-                      ? GLOBAL.COLOR.TOOLBAR_TINT
-                      : GLOBAL.COLOR.TOOLBAR_TINT_DARK
-                  }
-                  size={30}
-                />
-              </View>
-            }
-            bottomDivider={true}
+          >
+            <Avatar source={require("../images/romanizeicon.png")} />
+            <ListItem.Content>
+              <ListItem.Title
+                style={[this.props.nightMode && { color: "#fff" }]}>
+                {Strings.transliteration}
+              </ListItem.Title>
+            </ListItem.Content>
+            <Switch
+              style={switchStyle}
+              value={this.props.transliteration}
+              onValueChange={this.props.toggleTransliteration}
+            />
+          </ListItem>
+          {this.props.transliteration && (
+            <ListItem bottomDivider
+              containerStyle={[
+                styles.titleText,
+                this.props.nightMode && { backgroundColor: "#464646" }
+              ]} onPress={() => this.TransliterationActionSheet.show()}
+            >
+              <Avatar />
+              <ListItem.Content>
+                <ListItem.Title
+                  style={[this.props.nightMode && { color: "#fff" }]}>
+                  {Strings.language}
+                </ListItem.Title>
+              </ListItem.Content>
+              <ListItem.Title right
+                style={[
+                  styles.titleInfoStyle,
+                  { color: this.props.nightMode ? "#fff" : "#a3a3a3" }
+                ]}>
+                {
+                  actions.transliterationLanguageNames[
+                  actions.TRANSLITERATION_LANGUAGES.indexOf(
+                    this.props.transliterationLanguage
+                  )
+                  ]
+                }
+              </ListItem.Title>
+              <ListItem.Chevron />
+            </ListItem>
+          )}
+
+          <ListItem.Accordion bottomDivider
+            containerStyle={[
+              this.props.nightMode && { backgroundColor: "#464646" }
+            ]}
+            isExpanded={this.state.showTranslationOptions}
             onPress={() =>
               this.setState({
                 showTranslationOptions: !this.state.showTranslationOptions,
-              })
+              })}
+            content={
+              <>
+                <Avatar source={require("../images/englishicon.png")} />
+                <ListItem.Content>
+                  <ListItem.Title
+                    style={[{ paddingLeft: 16 },
+                    this.props.nightMode && { color: "#fff" }]}>
+                    {Strings.translations}
+                  </ListItem.Title>
+                </ListItem.Content>
+              </>
             }
-          />
-          <Collapsible collapsed={this.state.showTranslationOptions}>
+          >
+
             <ListItem
-              backgroundColor={this.props.nightMode ? "#464646" : "#fff"}
-              switch={{
-                switchStyle,
-                value: this.props.englishTranslations,
-                onValueChange: this.props.toggleEnglishTranslations,
-              }}
-              title={Strings.en_translations}
               containerStyle={[
-                { paddingLeft: 80 },
-                this.props.nightMode && { backgroundColor: "#464646" },
-              ]}
-              titleStyle={[this.props.nightMode && { color: "#fff" }]}
-            />
+                styles.titleText,
+                this.props.nightMode && { backgroundColor: "#464646" }
+              ]}>
+              <Avatar />
+              <ListItem.Content>
+                <ListItem.Title
+                  style={[this.props.nightMode && { color: "#fff" }]}>
+                  {Strings.en_translations}
+                </ListItem.Title>
+              </ListItem.Content>
+              <Switch
+                style={switchStyle}
+                value={this.props.englishTranslations}
+                onValueChange={this.props.toggleEnglishTranslations}
+              />
+            </ListItem>
+
             <ListItem
-              backgroundColor={this.props.nightMode ? "#464646" : "#fff"}
-              switch={{
-                switchStyle,
-                value: this.props.punjabiTranslations,
-                onValueChange: this.props.togglePunjabiTranslations,
-              }}
-              title={Strings.pu_translations}
               containerStyle={[
-                { paddingLeft: 80 },
-                this.props.nightMode && { backgroundColor: "#464646" },
-              ]}
-              titleStyle={[this.props.nightMode && { color: "#fff" }]}
-            />
-            <ListItem
-              backgroundColor={this.props.nightMode ? "#464646" : "#fff"}
-              switch={{
-                switchStyle,
-                value: this.props.spanishTranslations,
-                onValueChange: this.props.toggleSpanishTranslations,
-              }}
-              title={Strings.es_translations}
+                styles.titleText,
+                this.props.nightMode && { backgroundColor: "#464646" }
+              ]}>
+              <Avatar />
+              <ListItem.Content>
+                <ListItem.Title
+                  style={[this.props.nightMode && { color: "#fff" }]}>
+                  {Strings.pu_translations}
+                </ListItem.Title>
+              </ListItem.Content>
+              <Switch
+                style={switchStyle}
+                value={this.props.punjabiTranslations}
+                onValueChange={this.props.togglePunjabiTranslations}
+              />
+            </ListItem>
+
+            <ListItem bottomDivider
               containerStyle={[
-                { paddingLeft: 80 },
-                this.props.nightMode && { backgroundColor: "#464646" },
-              ]}
-              titleStyle={[this.props.nightMode && { color: "#fff" }]}
-              bottomDivider={true}
+                styles.titleText,
+                this.props.nightMode && { backgroundColor: "#464646" }
+              ]}>
+              <Avatar />
+              <ListItem.Content>
+                <ListItem.Title
+                  style={[this.props.nightMode && { color: "#fff" }]}>
+                  {Strings.es_translations}
+                </ListItem.Title>
+              </ListItem.Content>
+              <Switch
+                style={switchStyle}
+                value={this.props.spanishTranslations}
+                onValueChange={this.props.toggleSpanishTranslations}
+              />
+            </ListItem>
+          </ListItem.Accordion>
+
+          <ListItem bottomDivider
+            containerStyle={[
+              styles.titleText,
+              this.props.nightMode && { backgroundColor: "#464646" }
+            ]}
+          >
+            <Avatar source={require("../images/bgcoloricon.png")} />
+            <ListItem.Content>
+              <ListItem.Title
+                style={[this.props.nightMode && { color: "#fff" }]}>
+                {Strings.dark_mode}
+              </ListItem.Title>
+            </ListItem.Content>
+            <Switch
+              style={switchStyle}
+              value={this.props.nightMode}
+              onValueChange={this.props.toggleNightMode}
             />
-          </Collapsible>
-          <ListItem
-            backgroundColor={this.props.nightMode ? "#464646" : "#fff"}
-            leftAvatar={
-              <Avatar
-                source={require("../images/bgcoloricon.png")}
-                overlayContainerStyle={{
-                  backgroundColor: this.props.nightMode ? "#464646" : "#fff",
-                }}
-              />
-            }
-            switch={{
-              switchStyle,
-              value: this.props.nightMode,
-              onValueChange: this.props.toggleNightMode,
-            }}
-            title={Strings.dark_mode}
+          </ListItem>
+
+          <ListItem bottomDivider
             containerStyle={[
               styles.titleText,
-              this.props.nightMode && { backgroundColor: "#464646" },
+              this.props.nightMode && { backgroundColor: "#464646" }
             ]}
-            titleStyle={[this.props.nightMode && { color: "#fff" }]}
-            bottomDivider={true}
-          />
-          <ListItem
-            backgroundColor={this.props.nightMode ? "#464646" : "#fff"}
-            leftAvatar={
-              <MaterialIcons
-                style={styles.imageStyle}
-                color={
-                  this.props.nightMode
-                    ? GLOBAL.COLOR.COMPONENT_COLOR_NIGHT_MODE
-                    : GLOBAL.COLOR.COMPONENT_COLOR
-                }
-                name="eye-off"
-                size={30}
-              />
-            }
-            switch={{
-              switchStyle,
-              value: this.props.statusBar,
-              onValueChange: this.props.toggleStatusBar,
-            }}
-            title={Strings.hide_status_bar}
+          >
+            <MaterialIcons
+              style={styles.imageStyle}
+              color={
+                this.props.nightMode
+                  ? GLOBAL.COLOR.COMPONENT_COLOR_NIGHT_MODE
+                  : GLOBAL.COLOR.COMPONENT_COLOR
+              }
+              name="eye-off"
+              size={30}
+            />
+            <ListItem.Content>
+              <ListItem.Title
+                style={[this.props.nightMode && { color: "#fff" }]}>
+                {Strings.hide_status_bar}
+              </ListItem.Title>
+            </ListItem.Content>
+            <Switch
+              style={switchStyle}
+              value={this.props.statusBar}
+              onValueChange={this.props.toggleStatusBar}
+            />
+          </ListItem>
+
+          <ListItem bottomDivider
             containerStyle={[
               styles.titleText,
-              this.props.nightMode && { backgroundColor: "#464646" },
+              this.props.nightMode && { backgroundColor: "#464646" }
             ]}
-            titleStyle={[this.props.nightMode && { color: "#fff" }]}
-            bottomDivider={true}
-          />
-          <ListItem
-            backgroundColor={this.props.nightMode ? "#464646" : "#fff"}
-            leftAvatar={
-              <MaterialIcons
-                style={styles.imageStyle}
-                color={
-                  this.props.nightMode
-                    ? GLOBAL.COLOR.COMPONENT_COLOR_NIGHT_MODE
-                    : GLOBAL.COLOR.COMPONENT_COLOR
-                }
-                name="auto-fix"
-                size={30}
-              />
-            }
-            switch={{
-              switchStyle,
-              value: this.props.autoScroll,
-              onValueChange: this.props.toggleAutoScroll,
-            }}
-            title={Strings.auto_scroll}
+          >
+            <MaterialIcons
+              style={styles.imageStyle}
+              color={
+                this.props.nightMode
+                  ? GLOBAL.COLOR.COMPONENT_COLOR_NIGHT_MODE
+                  : GLOBAL.COLOR.COMPONENT_COLOR
+              }
+              name="auto-fix"
+              size={30}
+            />
+            <ListItem.Content>
+              <ListItem.Title
+                style={[this.props.nightMode && { color: "#fff" }]}>
+                {Strings.auto_scroll}
+              </ListItem.Title>
+            </ListItem.Content>
+            <Switch
+              style={switchStyle}
+              value={this.props.autoScroll}
+              onValueChange={this.props.toggleAutoScroll}
+            />
+          </ListItem>
+
+          <ListItem bottomDivider
             containerStyle={[
               styles.titleText,
-              this.props.nightMode && { backgroundColor: "#464646" },
+              this.props.nightMode && { backgroundColor: "#464646" }
             ]}
-            titleStyle={[this.props.nightMode && { color: "#fff" }]}
-            bottomDivider={true}
-          />
-          <ListItem
-            backgroundColor={this.props.nightMode ? "#464646" : "#fff"}
-            leftAvatar={
-              <Avatar
-                source={require("../images/screenonicon.png")}
-                overlayContainerStyle={{
-                  backgroundColor: this.props.nightMode ? "#464646" : "#fff",
-                }}
-              />
-            }
-            switch={{
-              switchStyle,
-              value: this.props.screenAwake || this.props.autoScroll,
-              onValueChange: this.props.toggleScreenAwake,
-            }}
-            title={Strings.keep_awake}
-            containerStyle={[
-              styles.titleText,
-              this.props.nightMode && { backgroundColor: "#464646" },
-            ]}
-            titleStyle={[this.props.nightMode && { color: "#fff" }]}
-            bottomDivider={true}
-          />
+          >
+            <Avatar source={require("../images/screenonicon.png")} />
+            <ListItem.Content>
+              <ListItem.Title
+                style={[this.props.nightMode && { color: "#fff" }]}>
+                {Strings.keep_awake}
+              </ListItem.Title>
+            </ListItem.Content>
+            <Switch
+              style={switchStyle}
+              value={this.props.screenAwake || this.props.autoScroll}
+              onValueChange={this.props.toggleScreenAwake}
+              disabled={this.props.autoScroll}
+            />
+          </ListItem>
+
           <Text
             style={[
               styles.headerStyle,
@@ -450,199 +444,220 @@ class Settings extends React.Component {
             ]}>
             {Strings.bani_options}
           </Text>
-          <ListItem
-            backgroundColor={this.props.nightMode ? "#464646" : "#fff"}
-            leftAvatar={
-              <Avatar
-                source={require("../images/rearrangeicon.png")}
-                overlayContainerStyle={{
-                  backgroundColor: this.props.nightMode ? "#464646" : "#fff",
-                }}
-              />
-            }
-            title={Strings.edit_bani_order}
+
+          <ListItem bottomDivider
             containerStyle={[
               styles.titleText,
-              this.props.nightMode && { backgroundColor: "#464646" },
-            ]}
-            titleStyle={[this.props.nightMode && { color: "#fff" }]}
-            chevron={true}
-            bottomDivider={true}
-            onPress={() =>
-              navigate({ key: "EditBaniOrder", routeName: "EditBaniOrder" })
-            }
-          />
-          <ListItem
-            backgroundColor={this.props.nightMode ? "#464646" : "#fff"}
-            leftAvatar={
-              <Avatar
-                source={require("../images/banilengthicon.png")}
-                overlayContainerStyle={{
-                  backgroundColor: this.props.nightMode ? "#464646" : "#fff",
-                }}
-              />
-            }
-            title={Strings.bani_length}
+              this.props.nightMode && { backgroundColor: "#464646" }
+            ]} onPress={() => navigate('EditBaniOrder')}
+          >
+            <Avatar source={require("../images/rearrangeicon.png")} />
+            <ListItem.Content>
+              <ListItem.Title
+                style={[this.props.nightMode && { color: "#fff" }]}>
+                {Strings.edit_bani_order}
+              </ListItem.Title>
+            </ListItem.Content>
+            <ListItem.Chevron />
+          </ListItem>
+
+          <ListItem bottomDivider
             containerStyle={[
               styles.titleText,
-              this.props.nightMode && { backgroundColor: "#464646" },
-            ]}
-            titleStyle={[this.props.nightMode && { color: "#fff" }]}
-            rightTitle={
-              actions.baniLengthNames[
-              actions.BANI_LENGTHS.indexOf(this.props.baniLength)
-              ]
-            }
-            rightTitleStyle={[
-              styles.titleInfoStyle,
-              { color: this.props.nightMode ? "#fff" : "#a3a3a3" },
-            ]}
-            chevron={true}
-            bottomDivider={true}
-            onPress={() => this.BaniLengthActionSheet.show()}
-          />
-          <ListItem
-            backgroundColor={this.props.nightMode ? "#464646" : "#fff"}
-            leftAvatar={
-              <Avatar
-                source={require("../images/larivaaricon.png")}
-                overlayContainerStyle={{
-                  backgroundColor: this.props.nightMode ? "#464646" : "#fff",
-                }}
-              />
-            }
-            switch={{
-              switchStyle,
-              value: this.props.larivaar,
-              onValueChange: this.props.toggleLarivaar,
-            }}
-            title={Strings.larivaar}
+              this.props.nightMode && { backgroundColor: "#464646" }
+            ]} onPress={() => this.BaniLengthActionSheet.show()}
+          >
+            <Avatar source={require("../images/banilengthicon.png")} />
+            <ListItem.Content>
+              <ListItem.Title
+                style={[this.props.nightMode && { color: "#fff" }]}>
+                {Strings.bani_length}
+              </ListItem.Title>
+            </ListItem.Content>
+            <ListItem.Title right
+              style={[
+                styles.titleInfoStyle,
+                { color: this.props.nightMode ? "#fff" : "#a3a3a3" }
+              ]}>
+              {
+                actions.baniLengthNames[
+                actions.BANI_LENGTHS.indexOf(this.props.baniLength)
+                ]
+              }
+            </ListItem.Title>
+            <ListItem.Chevron />
+          </ListItem>
+
+          <ListItem bottomDivider
             containerStyle={[
               styles.titleText,
-              this.props.nightMode && { backgroundColor: "#464646" },
+              this.props.nightMode && { backgroundColor: "#464646" }
             ]}
-            titleStyle={[this.props.nightMode && { color: "#fff" }]}
-            bottomDivider={true}
-          />
+          >
+            <Avatar source={require("../images/larivaaricon.png")} />
+            <ListItem.Content>
+              <ListItem.Title
+                style={[this.props.nightMode && { color: "#fff" }]}>
+                {Strings.larivaar}
+              </ListItem.Title>
+            </ListItem.Content>
+            <Switch
+              style={switchStyle}
+              value={this.props.larivaar}
+              onValueChange={this.props.toggleLarivaar}
+            />
+          </ListItem>
           {this.props.larivaar && (
-            <ListItem
-              backgroundColor={this.props.nightMode ? "#464646" : "#fff"}
-              leftAvatar={
-                <Icon
-                  style={styles.imageStyle}
-                  color={
-                    this.props.nightMode
-                      ? GLOBAL.COLOR.COMPONENT_COLOR_NIGHT_MODE
-                      : GLOBAL.COLOR.COMPONENT_COLOR
-                  }
-                  name="opacity"
-                  size={30}
-                />
-              }
-              switch={{
-                switchStyle,
-                value: this.props.larivaarAssist,
-                onValueChange: this.props.toggleLarivaarAssist,
-              }}
-              title={Strings.larivaar_assist}
+            <ListItem bottomDivider
               containerStyle={[
                 styles.titleText,
-                this.props.nightMode && { backgroundColor: "#464646" },
+                this.props.nightMode && { backgroundColor: "#464646" }
               ]}
-              titleStyle={[this.props.nightMode && { color: "#fff" }]}
-              bottomDivider={true}
-            />
-          )}
-          <ListItem
-            backgroundColor={this.props.nightMode ? "#464646" : "#fff"}
-            leftAvatar={
-              <FontAwesomeIcons
+            >
+              <Icon
                 style={styles.imageStyle}
                 color={
                   this.props.nightMode
                     ? GLOBAL.COLOR.COMPONENT_COLOR_NIGHT_MODE
                     : GLOBAL.COLOR.COMPONENT_COLOR
                 }
-                name="paragraph"
+                name="opacity"
                 size={30}
               />
-            }
-            switch={{
-              switchStyle,
-              value: this.props.paragraphMode,
-              onValueChange: this.props.toggleParagraphMode,
-            }}
-            title={Strings.paragraph_mode}
-            containerStyle={[
-              styles.titleText,
-              this.props.nightMode && { backgroundColor: "#464646" },
-            ]}
-            titleStyle={[this.props.nightMode && { color: "#fff" }]}
-            bottomDivider={true}
-          />
-          <ListItem
-            backgroundColor={this.props.nightMode ? "#464646" : "#fff"}
-            leftAvatar={
-              <Avatar
-                source={require("../images/manglacharanicon.png")}
-                overlayContainerStyle={{
-                  backgroundColor: this.props.nightMode ? "#464646" : "#fff",
-                }}
+              <ListItem.Content>
+                <ListItem.Title
+                  style={[this.props.nightMode && { color: "#fff" }]}>
+                  {Strings.larivaar_assist}
+                </ListItem.Title>
+              </ListItem.Content>
+              <Switch
+                style={switchStyle}
+                value={this.props.larivaarAssist}
+                onValueChange={this.props.toggleLarivaarAssist}
               />
-            }
-            title={Strings.manglacharan_position}
+            </ListItem>
+          )}
+
+          <ListItem bottomDivider
             containerStyle={[
               styles.titleText,
-              this.props.nightMode && { backgroundColor: "#464646" },
+              this.props.nightMode && { backgroundColor: "#464646" }
             ]}
-            titleStyle={[this.props.nightMode && { color: "#fff" }]}
-            rightTitle={
-              actions.manglacharanPositionNames[
-              actions.MANGLACHARAN_POSITIONS.indexOf(
-                this.props.manglacharanPosition
-              )
-              ]
-            }
-            rightTitleStyle={[
-              styles.titleInfoStyle,
-              { color: this.props.nightMode ? "#fff" : "#a3a3a3" },
-            ]}
-            chevron={true}
-            bottomDivider={true}
-            onPress={() => this.ManglacharanPositionActionSheet.show()}
-          />
-          <ListItem
-            backgroundColor={this.props.nightMode ? "#464646" : "#fff"}
-            leftAvatar={
-              <Avatar
-                source={require("../images/larivaaricon.png")}
-                overlayContainerStyle={{
-                  backgroundColor: this.props.nightMode ? "#464646" : "#fff",
-                }}
-              />
-            }
-            title={Strings.padchhed_settings}
+          >
+            <FontAwesomeIcons
+              style={styles.imageStyle}
+              color={
+                this.props.nightMode
+                  ? GLOBAL.COLOR.COMPONENT_COLOR_NIGHT_MODE
+                  : GLOBAL.COLOR.COMPONENT_COLOR
+              }
+              name="paragraph"
+              size={30}
+            />
+            <ListItem.Content>
+              <ListItem.Title
+                style={[this.props.nightMode && { color: "#fff" }]}>
+                {Strings.paragraph_mode}
+              </ListItem.Title>
+            </ListItem.Content>
+            <Switch
+              style={switchStyle}
+              value={this.props.paragraphMode}
+              onValueChange={this.props.toggleParagraphMode}
+            />
+          </ListItem>
+
+          <ListItem bottomDivider
             containerStyle={[
               styles.titleText,
-              this.props.nightMode && { backgroundColor: "#464646" },
+              this.props.nightMode && { backgroundColor: "#464646" }
+            ]} onPress={() => this.ManglacharanPositionActionSheet.show()}
+          >
+            <Avatar source={require("../images/manglacharanicon.png")} />
+            <ListItem.Content>
+              <ListItem.Title
+                style={[this.props.nightMode && { color: "#fff" }]}>
+                {Strings.manglacharan_position}
+              </ListItem.Title>
+            </ListItem.Content>
+            <ListItem.Title right
+              style={[
+                styles.titleInfoStyle,
+                { color: this.props.nightMode ? "#fff" : "#a3a3a3" }
+              ]}>
+              {
+                actions.manglacharanPositionNames[
+                actions.MANGLACHARAN_POSITIONS.indexOf(
+                  this.props.manglacharanPosition
+                )
+                ]
+              }
+            </ListItem.Title>
+            <ListItem.Chevron />
+          </ListItem>
+
+          <ListItem bottomDivider
+            containerStyle={[
+              styles.titleText,
+              this.props.nightMode && { backgroundColor: "#464646" }
+            ]} onPress={() => this.PadchhedSettingsActionSheet.show()}
+          >
+            <Avatar source={require("../images/larivaaricon.png")} />
+            <ListItem.Content>
+              <ListItem.Title
+                style={[this.props.nightMode && { color: "#fff" }]}>
+                {Strings.padchhed_settings}
+              </ListItem.Title>
+            </ListItem.Content>
+            <ListItem.Title right
+              style={[
+                styles.titleInfoStyle,
+                { color: this.props.nightMode ? "#fff" : "#a3a3a3" }
+              ]}>
+              {
+                actions.padchhedSettingNames[
+                actions.PADCHHED_SETTINGS.indexOf(this.props.padchhedSetting)
+                ]
+              }
+            </ListItem.Title>
+            <ListItem.Chevron />
+          </ListItem>
+
+          <ListItem bottomDivider
+            containerStyle={[
+              styles.titleText,
+              this.props.nightMode && { backgroundColor: "#464646" }
             ]}
-            titleStyle={[this.props.nightMode && { color: "#fff" }]}
-            rightTitle={
-              actions.padchhedSettingNames[
-              actions.PADCHHED_SETTINGS.indexOf(this.props.padchhedSetting)
-              ]
-            }
-            rightTitleStyle={[
-              styles.titleInfoStyle,
-              { color: this.props.nightMode ? "#fff" : "#a3a3a3" },
-            ]}
-            chevron={true}
-            bottomDivider={true}
-            onPress={() => this.PadchhedSettingsActionSheet.show()}
-          />
-          <ListItem
-            backgroundColor={this.props.nightMode ? "#464646" : "#fff"}
-            leftAvatar={
+          >
+            <MaterialIcons
+              style={styles.imageStyle}
+              color={
+                this.props.nightMode
+                  ? GLOBAL.COLOR.COMPONENT_COLOR_NIGHT_MODE
+                  : GLOBAL.COLOR.COMPONENT_COLOR
+              }
+              name="pause"
+              size={30}
+            />
+            <ListItem.Content>
+              <ListItem.Title
+                style={[this.props.nightMode && { color: "#fff" }]}>
+                {Strings.show_vishraams}
+              </ListItem.Title>
+            </ListItem.Content>
+            <Switch
+              style={switchStyle}
+              value={this.props.visram}
+              onValueChange={this.props.toggleVisram}
+            />
+          </ListItem>
+          {this.props.visram && (
+            <ListItem bottomDivider
+              containerStyle={[
+                styles.titleText,
+                this.props.nightMode && { backgroundColor: "#464646" }
+              ]} onPress={() => this.VishraamOptionsActionSheet.show()}
+            >
               <MaterialIcons
                 style={styles.imageStyle}
                 color={
@@ -650,96 +665,36 @@ class Settings extends React.Component {
                     ? GLOBAL.COLOR.COMPONENT_COLOR_NIGHT_MODE
                     : GLOBAL.COLOR.COMPONENT_COLOR
                 }
-                name="pause"
+                name="format-color-fill"
                 size={30}
               />
-            }
-            switch={{
-              switchStyle,
-              value: this.props.visram,
-              onValueChange: this.props.toggleVisram,
-            }}
-            title={Strings.show_vishraams}
-            containerStyle={[
-              styles.titleText,
-              this.props.nightMode && { backgroundColor: "#464646" },
-            ]}
-            titleStyle={[this.props.nightMode && { color: "#fff" }]}
-            bottomDivider={true}
-          />
-          {this.props.visram && (
-            <ListItem
-              backgroundColor={this.props.nightMode ? "#464646" : "#fff"}
-              leftAvatar={
-                <MaterialIcons
-                  style={styles.imageStyle}
-                  color={
-                    this.props.nightMode
-                      ? GLOBAL.COLOR.COMPONENT_COLOR_NIGHT_MODE
-                      : GLOBAL.COLOR.COMPONENT_COLOR
-                  }
-                  name="format-color-fill"
-                  size={30}
-                />
-              }
-              title={Strings.vishraam_options}
-              containerStyle={[
-                styles.titleText,
-                this.props.nightMode && { backgroundColor: "#464646" },
-              ]}
-              titleStyle={[this.props.nightMode && { color: "#fff" }]}
-              rightTitle={
-                actions.vishraamOptionNames[
-                actions.VISHRAAM_OPTIONS.indexOf(this.props.vishraamOption)
-                ]
-              }
-              rightTitleStyle={[
-                styles.titleInfoStyle,
-                { color: this.props.nightMode ? "#fff" : "#a3a3a3" },
-              ]}
-              chevron={true}
-              bottomDivider={true}
-              onPress={() => this.VishraamOptionsActionSheet.show()}
-            />
+              <ListItem.Content>
+                <ListItem.Title
+                  style={[this.props.nightMode && { color: "#fff" }]}>
+                  {Strings.vishraam_options}
+                </ListItem.Title>
+              </ListItem.Content>
+              <ListItem.Title right
+                style={[
+                  styles.titleInfoStyle,
+                  { color: this.props.nightMode ? "#fff" : "#a3a3a3" }
+                ]}>
+                {
+                  actions.vishraamOptionNames[
+                  actions.VISHRAAM_OPTIONS.indexOf(this.props.vishraamOption)
+                  ]
+                }
+              </ListItem.Title>
+              <ListItem.Chevron />
+            </ListItem>
           )}
           {this.props.visram && (
-            <ListItem
-              backgroundColor={this.props.nightMode ? "#464646" : "#fff"}
-              leftAvatar={
-                <MaterialIcons
-                  style={styles.imageStyle}
-                  color={
-                    this.props.nightMode
-                      ? GLOBAL.COLOR.COMPONENT_COLOR_NIGHT_MODE
-                      : GLOBAL.COLOR.COMPONENT_COLOR
-                  }
-                  name="book-open"
-                  size={30}
-                />
-              }
-              title={Strings.vishraam_source}
+            <ListItem bottomDivider
               containerStyle={[
                 styles.titleText,
-                this.props.nightMode && { backgroundColor: "#464646" },
-              ]}
-              titleStyle={[this.props.nightMode && { color: "#fff" }]}
-              rightTitle={
-                actions.vishraamSourceNames[
-                actions.VISHRAAM_SOURCES.indexOf(this.props.vishraamSource)
-                ]
-              }
-              rightTitleStyle={[
-                styles.titleInfoStyle,
-                { color: this.props.nightMode ? "#fff" : "#a3a3a3" },
-              ]}
-              chevron={true}
-              bottomDivider={true}
-              onPress={() => this.VishraamSourcesActionSheet.show()}
-            />
-          )}
-          <ListItem
-            backgroundColor={this.props.nightMode ? "#464646" : "#fff"}
-            leftAvatar={
+                this.props.nightMode && { backgroundColor: "#464646" }
+              ]} onPress={() => this.VishraamSourcesActionSheet.show()}
+            >
               <MaterialIcons
                 style={styles.imageStyle}
                 color={
@@ -747,88 +702,120 @@ class Settings extends React.Component {
                     ? GLOBAL.COLOR.COMPONENT_COLOR_NIGHT_MODE
                     : GLOBAL.COLOR.COMPONENT_COLOR
                 }
-                name="timer"
+                name="book-open"
                 size={30}
               />
-            }
-            switch={{
-              switchStyle,
-              value: this.props.reminders,
-              onValueChange: this.props.toggleReminders,
-            }}
-            title={Strings.reminders}
+              <ListItem.Content>
+                <ListItem.Title
+                  style={[this.props.nightMode && { color: "#fff" }]}>
+                  {Strings.vishraam_source}
+                </ListItem.Title>
+              </ListItem.Content>
+              <ListItem.Title right
+                style={[
+                  styles.titleInfoStyle,
+                  { color: this.props.nightMode ? "#fff" : "#a3a3a3" }
+                ]}>
+                {
+                  actions.vishraamSourceNames[
+                  actions.VISHRAAM_SOURCES.indexOf(this.props.vishraamSource)
+                  ]
+                }
+              </ListItem.Title>
+              <ListItem.Chevron />
+            </ListItem>
+          )}
+
+          <ListItem bottomDivider
             containerStyle={[
               styles.titleText,
-              this.props.nightMode && { backgroundColor: "#464646" },
+              this.props.nightMode && { backgroundColor: "#464646" }
             ]}
-            titleStyle={[this.props.nightMode && { color: "#fff" }]}
-            bottomDivider={true}
-          />
-          {this.props.reminders && (
-            <ListItem
-              backgroundColor={this.props.nightMode ? "#464646" : "#fff"}
-              leftAvatar={
-                <MaterialIcons
-                  style={styles.imageStyle}
-                  color={
-                    this.props.nightMode
-                      ? GLOBAL.COLOR.COMPONENT_COLOR_NIGHT_MODE
-                      : GLOBAL.COLOR.COMPONENT_COLOR
-                  }
-                  name="timetable"
-                  size={30}
-                />
+          >
+            <MaterialIcons
+              style={styles.imageStyle}
+              color={
+                this.props.nightMode
+                  ? GLOBAL.COLOR.COMPONENT_COLOR_NIGHT_MODE
+                  : GLOBAL.COLOR.COMPONENT_COLOR
               }
-              title={Strings.set_reminder_options}
+              name="timer"
+              size={30}
+            />
+            <ListItem.Content>
+              <ListItem.Title
+                style={[this.props.nightMode && { color: "#fff" }]}>
+                {Strings.reminders}
+              </ListItem.Title>
+            </ListItem.Content>
+            <Switch
+              style={switchStyle}
+              value={this.props.reminders}
+              onValueChange={this.props.toggleReminders}
+            />
+          </ListItem>
+          {this.props.reminders && (
+            <ListItem bottomDivider
               containerStyle={[
                 styles.titleText,
-                this.props.nightMode && { backgroundColor: "#464646" },
-              ]}
-              titleStyle={[this.props.nightMode && { color: "#fff" }]}
-              chevron={true}
-              bottomDivider={true}
-              onPress={() =>
-                navigate({
-                  key: "ReminderOptions",
-                  routeName: "ReminderOptions",
-                })
-              }
-            />
+                this.props.nightMode && { backgroundColor: "#464646" }
+              ]} onPress={() => navigate('ReminderOptions')}
+            >
+              <MaterialIcons
+                style={styles.imageStyle}
+                color={
+                  this.props.nightMode
+                    ? GLOBAL.COLOR.COMPONENT_COLOR_NIGHT_MODE
+                    : GLOBAL.COLOR.COMPONENT_COLOR
+                }
+                name="timetable"
+                size={30}
+              />
+              <ListItem.Content>
+                <ListItem.Title
+                  style={[this.props.nightMode && { color: "#fff" }]}>
+                  {Strings.set_reminder_options}
+                </ListItem.Title>
+              </ListItem.Content>
+              <ListItem.Chevron />
+            </ListItem>
           )}
           {this.props.reminders && (
-            <ListItem
-              backgroundColor={this.props.nightMode ? "#464646" : "#fff"}
-              leftAvatar={
-                <MaterialIcons
-                  style={styles.imageStyle}
-                  color={
-                    this.props.nightMode
-                      ? GLOBAL.COLOR.COMPONENT_COLOR_NIGHT_MODE
-                      : GLOBAL.COLOR.COMPONENT_COLOR
-                  }
-                  name="cellphone-sound"
-                  size={30}
-                />
-              }
-              title={Strings.reminder_sound}
+            <ListItem bottomDivider
               containerStyle={[
                 styles.titleText,
-                this.props.nightMode && { backgroundColor: "#464646" },
-              ]}
-              titleStyle={[this.props.nightMode && { color: "#fff" }]}
-              rightTitle={
-                actions.reminderSoundNames[
-                actions.REMINDER_SOUNDS.indexOf(this.props.reminderSound)
-                ]
-              }
-              rightTitleStyle={[
-                styles.titleInfoStyle,
-                { color: this.props.nightMode ? "#fff" : "#a3a3a3" },
-              ]}
-              chevron={true}
-              bottomDivider={true}
-              onPress={() => this.ReminderSoundsActionSheet.show()}
-            />
+                this.props.nightMode && { backgroundColor: "#464646" }
+              ]} onPress={() => this.ReminderSoundsActionSheet.show()}
+            >
+              <MaterialIcons
+                style={styles.imageStyle}
+                color={
+                  this.props.nightMode
+                    ? GLOBAL.COLOR.COMPONENT_COLOR_NIGHT_MODE
+                    : GLOBAL.COLOR.COMPONENT_COLOR
+                }
+                name="cellphone-sound"
+                size={30}
+              />
+              <ListItem.Content>
+                <ListItem.Title
+                  style={[this.props.nightMode && { color: "#fff" }]}>
+                  {Strings.reminder_sound}
+                </ListItem.Title>
+              </ListItem.Content>
+              <ListItem.Title right
+                style={[
+                  styles.titleInfoStyle,
+                  { color: this.props.nightMode ? "#fff" : "#a3a3a3" }
+                ]}>
+                {
+                  actions.reminderSoundNames[
+                  actions.REMINDER_SOUNDS.indexOf(this.props.reminderSound)
+                  ]
+                }
+              </ListItem.Title>
+              <ListItem.Chevron />
+            </ListItem>
           )}
           <Text
             style={[
@@ -837,79 +824,76 @@ class Settings extends React.Component {
             ]}>
             {Strings.other_options}
           </Text>
-          <ListItem
-            backgroundColor={this.props.nightMode ? "#464646" : "#fff"}
-            leftAvatar={
-              <Avatar
-                source={require("../images/analyticsicon.png")}
-                overlayContainerStyle={{
-                  backgroundColor: this.props.nightMode ? "#464646" : "#fff",
-                }}
-              />
-            }
-            switch={{
-              switchStyle,
-              value: this.props.statistics,
-              onValueChange: this.props.toggleStatistics,
-            }}
-            title={Strings.collect_statistics}
+
+          <ListItem bottomDivider
             containerStyle={[
               styles.titleText,
-              this.props.nightMode && { backgroundColor: "#464646" },
+              this.props.nightMode && { backgroundColor: "#464646" }
             ]}
-            titleStyle={[this.props.nightMode && { color: "#fff" }]}
-            bottomDivider={true}
-          />
-          <ListItem
-            backgroundColor={this.props.nightMode ? "#464646" : "#fff"}
-            leftAvatar={
-              <FontAwesome5Icons
-                style={styles.imageStyle}
-                color={
-                  this.props.nightMode
-                    ? GLOBAL.COLOR.COMPONENT_COLOR_NIGHT_MODE
-                    : GLOBAL.COLOR.COMPONENT_COLOR
-                }
-                name="donate"
-                size={30}
-              />
-            }
-            title={Strings.donate}
+          >
+            <Avatar source={require("../images/analyticsicon.png")} />
+            <ListItem.Content>
+              <ListItem.Title
+                style={[this.props.nightMode && { color: "#fff" }]}>
+                {Strings.collect_statistics}
+              </ListItem.Title>
+            </ListItem.Content>
+            <Switch
+              style={switchStyle}
+              value={this.props.statistics}
+              onValueChange={this.props.toggleStatistics}
+            />
+          </ListItem>
+
+          <ListItem bottomDivider
             containerStyle={[
               styles.titleText,
-              this.props.nightMode && { backgroundColor: "#464646" },
-            ]}
-            titleStyle={[this.props.nightMode && { color: "#fff" }]}
-            chevron={true}
-            bottomDivider={true}
-            onPress={() =>
-              Linking.openURL("https://khalisfoundation.org/donate/")
-            }
-          />
-          <ListItem
-            backgroundColor={this.props.nightMode ? "#464646" : "#fff"}
-            leftAvatar={
-              <FontAwesomeIcons
-                style={styles.imageStyle}
-                color={
-                  this.props.nightMode
-                    ? GLOBAL.COLOR.COMPONENT_COLOR_NIGHT_MODE
-                    : GLOBAL.COLOR.COMPONENT_COLOR
-                }
-                name="question-circle"
-                size={30}
-              />
-            }
-            title={Strings.about}
+              this.props.nightMode && { backgroundColor: "#464646" }
+            ]} onPress={() => Linking.openURL("https://khalisfoundation.org/donate/")}
+          >
+            <FontAwesome5Icons
+              style={styles.imageStyle}
+              color={
+                this.props.nightMode
+                  ? GLOBAL.COLOR.COMPONENT_COLOR_NIGHT_MODE
+                  : GLOBAL.COLOR.COMPONENT_COLOR
+              }
+              name="donate"
+              size={30}
+            />
+            <ListItem.Content>
+              <ListItem.Title
+                style={[this.props.nightMode && { color: "#fff" }]}>
+                {Strings.donate}
+              </ListItem.Title>
+            </ListItem.Content>
+            <ListItem.Chevron />
+          </ListItem>
+
+          <ListItem bottomDivider
             containerStyle={[
               styles.titleText,
-              this.props.nightMode && { backgroundColor: "#464646" },
-            ]}
-            titleStyle={[this.props.nightMode && { color: "#fff" }]}
-            chevron={true}
-            bottomDivider={true}
-            onPress={() => navigate({ key: "About", routeName: "About" })}
-          />
+              this.props.nightMode && { backgroundColor: "#464646" }
+            ]} onPress={() => navigate('About')}
+          >
+            <FontAwesomeIcons
+              style={styles.imageStyle}
+              color={
+                this.props.nightMode
+                  ? GLOBAL.COLOR.COMPONENT_COLOR_NIGHT_MODE
+                  : GLOBAL.COLOR.COMPONENT_COLOR
+              }
+              name="question-circle"
+              size={30}
+            />
+            <ListItem.Content>
+              <ListItem.Title
+                style={[this.props.nightMode && { color: "#fff" }]}>
+                {Strings.about}
+              </ListItem.Title>
+            </ListItem.Content>
+            <ListItem.Chevron />
+          </ListItem>
         </ScrollView>
 
         <ActionSheet
@@ -967,7 +951,7 @@ class Settings extends React.Component {
             this.TransliterationActionSheet = actionSheet;
           }}
           position="bottom"
-          defaultValue={this.props.transliteration}>
+          defaultValue={this.props.transliterationLanguage}>
           <View>
             <Text style={styles.actionSheetTitle}>{Strings.language}</Text>
           </View>

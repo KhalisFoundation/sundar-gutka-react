@@ -37,7 +37,7 @@ class ReminderOptions extends React.Component {
           {
             baniList: baniList,
           },
-          function() {
+          function () {
             if (JSON.parse(this.props.reminderBanis).length == 0) {
               this.setDefaultReminders();
             }
@@ -110,7 +110,7 @@ class ReminderOptions extends React.Component {
     Alert.alert(
       Strings.reset_reminders,
       Strings.reset_reminder_text,
-            [
+      [
         {
           text: Strings.cancel,
           style: "cancel",
@@ -135,11 +135,11 @@ class ReminderOptions extends React.Component {
     let isTransliteration = this.props.transliteration;
     let curBaniList = this.state.baniList;
 
-    let existingKeys = JSON.parse(this.props.reminderBanis).map(function(bani) {
+    let existingKeys = JSON.parse(this.props.reminderBanis).map(function (bani) {
       return bani.key;
     });
 
-    Object.keys(curBaniList).forEach(function(key) {
+    Object.keys(curBaniList).forEach(function (key) {
       if (!existingKeys.includes(key) && key < 10000) {
         baniOptions.push({
           key: key,
@@ -155,7 +155,7 @@ class ReminderOptions extends React.Component {
       {
         reminderBaniData: baniOptions,
       },
-      function() {
+      function () {
         this.selector.open();
       }
     );
@@ -469,8 +469,8 @@ class ReminderOptions extends React.Component {
                 ? GLOBAL.COLOR.ACTIVE_VIEW_COLOR_NIGHT_MODE
                 : GLOBAL.COLOR.ACTIVE_VIEW_COLOR
               : this.props.nightMode
-              ? GLOBAL.COLOR.INACTIVE_VIEW_COLOR_NIGHT_MODE
-              : GLOBAL.COLOR.INACTIVE_VIEW_COLOR,
+                ? GLOBAL.COLOR.INACTIVE_VIEW_COLOR_NIGHT_MODE
+                : GLOBAL.COLOR.INACTIVE_VIEW_COLOR,
           },
         ]}>
         <View
@@ -504,9 +504,9 @@ class ReminderOptions extends React.Component {
             trackColor={
               Platform.OS === "ios"
                 ? {
-                    false: null,
-                    true: GLOBAL.COLOR.SETTING_SWITCH_COLOR,
-                  }
+                  false: null,
+                  true: GLOBAL.COLOR.SETTING_SWITCH_COLOR,
+                }
                 : {}
             }
           />
@@ -574,8 +574,8 @@ class ReminderOptions extends React.Component {
                 ? GLOBAL.COLOR.ACTIVE_VIEW_COLOR_NIGHT_MODE
                 : GLOBAL.COLOR.ACTIVE_VIEW_COLOR
               : this.props.nightMode
-              ? GLOBAL.COLOR.INACTIVE_VIEW_COLOR_NIGHT_MODE
-              : GLOBAL.COLOR.INACTIVE_VIEW_COLOR,
+                ? GLOBAL.COLOR.INACTIVE_VIEW_COLOR_NIGHT_MODE
+                : GLOBAL.COLOR.INACTIVE_VIEW_COLOR,
           },
         ]}>
         <View style={styles.content}>

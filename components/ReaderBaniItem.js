@@ -36,8 +36,8 @@ class ReaderBaniItem extends Component {
                 item.header === 0
                   ? "left"
                   : item.header === 1 || item.header === 2
-                  ? "center"
-                  : "right",
+                    ? "center"
+                    : "right",
             },
             {
               fontSize: fontSizeForReader(fontSize, item.header, false),
@@ -62,8 +62,8 @@ class ReaderBaniItem extends Component {
                   item.header === 0
                     ? "left"
                     : item.header === 1 || item.header === 2
-                    ? "center"
-                    : "right",
+                      ? "center"
+                      : "right",
               },
               {
                 fontSize: fontSizeForReader(fontSize, item.header, true),
@@ -89,8 +89,8 @@ class ReaderBaniItem extends Component {
                   item.header === 0
                     ? "left"
                     : item.header === 1 || item.header === 2
-                    ? "center"
-                    : "right",
+                      ? "center"
+                      : "right",
               },
               {
                 fontSize: fontSizeForReader(fontSize, item.header, true),

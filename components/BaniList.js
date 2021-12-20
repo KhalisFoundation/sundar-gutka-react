@@ -25,32 +25,29 @@ class BaniList extends Component {
         data={data}
         extraData={[this.state]}
         renderItem={({ item }) => (
-          <ListItem
-            leftAvatar={
-              item.folder && (
-                <Avatar
-                  source={require("../images/foldericon.png")}
-                  overlayContainerStyle={{
-                    backgroundColor: nightMode ? "#000" : "#fff",
-                  }}
-                />
-              )
-            }
+          <ListItem bottomDivider
             containerStyle={[
               styles.container,
-              nightMode && { backgroundColor: "#000" },
+              nightMode && { backgroundColor: "#000" }
             ]}
-            titleStyle={[
-              nightMode && { color: "#fff" },
-              {
-                fontSize: baseFontSize(fontSize, transliteration),
-                fontFamily: !transliteration ? fontFace : null,
-              },
-            ]}
-            title={transliteration ? item.translit : item.gurmukhi}
-            bottomDivider={true}
-            onPress={() => onPress(item, navigation)}
-          />
+            onPress={() => onPress(item, navigation)}>
+            {item.folder && (<Avatar source={require("../images/foldericon.png")} />)}
+
+            <ListItem.Content>
+              <ListItem.Title
+                style={[
+                  nightMode && { color: "#fff" },
+                  {
+                    fontSize: baseFontSize(fontSize, transliteration),
+                    fontFamily: !transliteration ? fontFace : null,
+                  },
+                ]}
+              >
+                {transliteration ? item.translit : item.gurmukhi}
+              </ListItem.Title>
+            </ListItem.Content>
+            <ListItem.Chevron />
+          </ListItem>
         )}
         keyExtractor={(item) => "" + item.gurmukhi}
       />

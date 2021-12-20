@@ -47,6 +47,7 @@ class Reader extends React.Component {
   toggleHeader(state) {
     Animated.timing(this.state.animationPosition, {
       duration: this.slideDuration,
+      useNativeDriver: false,
       toValue: state == "hide" ? HEADER_POSITION : 0,
     }).start();
 
@@ -73,6 +74,8 @@ class Reader extends React.Component {
         data: shabad,
         isLoading: false,
       });
+    }).catch(error => {
+      console.log(error)
     });
   }
 
@@ -140,22 +143,22 @@ class Reader extends React.Component {
         "<!DOCTYPE html><html><head>" +
         "<meta name='viewport' content='width=device-width, user-scalable=no'>" +
         "<style type='text/css'>";
+      let fileUri = Platform.select({
+        ios: `${fontFace}.ttf`,
+        android: `file:///android_asset/fonts/${fontFace}.ttf`,
+      });
       html +=
-        "@font-face{font-family: '" +
-        fontFace +
-        "'; " +
-        "src: local('" +
-        fontFace +
-        "'), url('" +
-        (Platform.OS === "android" ? "file:///android_asset/fonts/" : "") +
-        fontFace +
-        ".ttf') format('truetype');}";
+        `@font-face {
+        font-family: '${fontFace}';
+        src: local('${fontFace}'), url('${fileUri}') ;
+        }` ;
 
       html +=
         "body { " +
         "background-color: " +
         (nightMode ? "#000" : "#fff") +
         ";" +
+        "word-break: break-word;" +
         "color: " +
         (nightMode ? "#fff" : "#000") +
         ";" +
@@ -166,7 +169,7 @@ class Reader extends React.Component {
       html += "</style><script>" + this.loadScrollJS() + "</script>";
       html += "</head><body>";
 
-      data.forEach(function(item) {
+      data.forEach(function (item) {
         html += "<div style='padding-top: .5em'>";
         html +=
           "<div id='" +
@@ -181,8 +184,8 @@ class Reader extends React.Component {
           (item.header === 0
             ? "left"
             : item.header === 1 || item.header === 2
-            ? "center"
-            : "right") +
+              ? "center"
+              : "right") +
           ';">' +
           item.gurmukhi +
           "</div>";
@@ -201,8 +204,8 @@ class Reader extends React.Component {
             (item.header === 0
               ? "left"
               : item.header === 1 || item.header === 2
-              ? "center"
-              : "right") +
+                ? "center"
+                : "right") +
             "; font-weight: " +
             (item.header === 0 ? "normal" : "bold") +
             ';">' +
@@ -224,8 +227,8 @@ class Reader extends React.Component {
             (item.header === 0
               ? "left"
               : item.header === 1 || item.header === 2
-              ? "center"
-              : "right") +
+                ? "center"
+                : "right") +
             "; font-weight: " +
             (item.header === 0 ? "normal" : "bold") +
             ';">' +
@@ -249,8 +252,8 @@ class Reader extends React.Component {
             (item.header === 0
               ? "left"
               : item.header === 1 || item.header === 2
-              ? "center"
-              : "right") +
+                ? "center"
+                : "right") +
             "; font-weight: " +
             (item.header === 0 ? "normal" : "bold") +
             ';">' +
@@ -272,8 +275,8 @@ class Reader extends React.Component {
             (item.header === 0
               ? "left"
               : item.header === 1 || item.header === 2
-              ? "center"
-              : "right") +
+                ? "center"
+                : "right") +
             "; font-weight: " +
             (item.header === 0 ? "normal" : "bold") +
             ';">' +
@@ -442,7 +445,7 @@ class Reader extends React.Component {
   }
 
   render() {
-    const { params } = this.props.navigation.state;
+    const { params } = this.props.route.params;
     {
       this.trackScreenForShabad(params.item.translit);
     }
@@ -481,8 +484,8 @@ class Reader extends React.Component {
             }
             barStyle={
               this.props.nightMode ||
-              this.state.headerVisible ||
-              Platform.OS === "android"
+                this.state.headerVisible ||
+                Platform.OS === "android"
                 ? "light-content"
                 : "dark-content"
             }
@@ -530,10 +533,7 @@ class Reader extends React.Component {
                     this.setState({
                       paused: true,
                     });
-                    this.props.navigation.navigate({
-                      key: "Settings",
-                      routeName: "Settings",
-                    });
+                    this.props.navigation.navigate('Settings');
                   }}
                 />
                 <Icon
@@ -545,10 +545,7 @@ class Reader extends React.Component {
                     this.trackScreenForShabad(
                       "Bookmarks for " + params.item.translit
                     );
-                    this.props.navigation.navigate({
-                      key: "Bookmarks",
-                      routeName: "Bookmarks",
-                    });
+                    this.props.navigation.navigate('Bookmarks');
                   }}
                 />
               </View>
@@ -579,8 +576,8 @@ class Reader extends React.Component {
                       this.props.currentShabad
                     ]
                       ? this.props.autoScrollShabadSpeed[
-                          this.props.currentShabad
-                        ]
+                      this.props.currentShabad
+                      ]
                       : 50;
                     if (scrollSpeed == 0) {
                       scrollSpeed = 1;
