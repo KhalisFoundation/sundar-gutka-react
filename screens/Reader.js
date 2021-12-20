@@ -35,7 +35,6 @@ class Reader extends React.Component {
       scrollMultiplier: 1.0,
       isLoading: false,
       animationPosition: new Animated.Value(0), // The header and footer position
-      headerVisible: true, // Is the header currently visible
       headerHeight: 0,
     };
 
@@ -51,9 +50,7 @@ class Reader extends React.Component {
       toValue: state == "hide" ? HEADER_POSITION : 0,
     }).start();
 
-    this.setState({
-      headerVisible: state == "show",
-    });
+    StatusBar.setHidden(state == "hide", 'fade');
   }
 
   loadShabad() {
@@ -484,7 +481,6 @@ class Reader extends React.Component {
             }
             barStyle={
               this.props.nightMode ||
-                this.state.headerVisible ||
                 Platform.OS === "android"
                 ? "light-content"
                 : "dark-content"
@@ -560,7 +556,7 @@ class Reader extends React.Component {
               {
                 position: "absolute",
                 bottom: this.state.animationPosition,
-                paddingBottom: 10,
+                paddingBottom: 25,
                 backgroundColor: GLOBAL.COLOR.READER_FOOTER_COLOR,
               },
             ]}>
