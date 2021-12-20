@@ -1,5 +1,5 @@
 import React from "react";
-import { BackHandler, Alert, SafeAreaView } from "react-native";
+import { BackHandler, Alert } from "react-native";
 import { NavigationContainer } from '@react-navigation/native';
 import { createNativeStackNavigator } from '@react-navigation/native-stack';
 import { Provider } from "react-redux";
@@ -45,7 +45,6 @@ export default class App extends React.Component {
       <Provider store={store}>
         <PersistGate loading={null} persistor={persistor}>
           <NavigationContainer>
-            <SafeAreaView style={{ flex: 1 }} >
               <Stack.Navigator
                 screenOptions={{
                   headerShown: false
@@ -59,7 +58,6 @@ export default class App extends React.Component {
                 <Stack.Screen name="ReminderOptions" component={ReminderOptionsScreen} />
                 <Stack.Screen name="About" component={AboutScreen} />
               </Stack.Navigator>
-            </SafeAreaView>
           </NavigationContainer>
         </PersistGate>
       </Provider>

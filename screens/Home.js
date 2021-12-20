@@ -2,7 +2,7 @@ import React from "react";
 import { connect } from "react-redux";
 import { bindActionCreators } from "redux";
 import KeepAwake from "react-native-keep-awake";
-import { View, Text, StatusBar, Platform } from "react-native";
+import { SafeAreaView, View, Text, StatusBar, Platform } from "react-native";
 import { Header } from "react-native-elements";
 import Icon from "react-native-vector-icons/MaterialIcons";
 import GLOBAL from "../utils/globals";
@@ -150,7 +150,7 @@ class Home extends React.Component {
   }
 
   componentWillUnmount() {
-    // this.notificationOpenedListener();
+     this.notificationOpenedListener();
   }
 
   componentDidUpdate(prevProps) {
@@ -221,14 +221,14 @@ class Home extends React.Component {
 
   render() {
     return (
-      <View
+      <SafeAreaView
         style={{
-          flex: 1,
+          flex: 1, 
+          backgroundColor: GLOBAL.COLOR.TOOLBAR_COLOR
         }}>
         {this.state.showLengthSelector && <BaniLengthSelector />}
 
         <StatusBar
-          backgroundColor={GLOBAL.COLOR.TOOLBAR_COLOR}
           barStyle={"light-content"}
         />
         <Header
@@ -313,7 +313,7 @@ class Home extends React.Component {
           isLoading={this.state.isLoading}
           onPress={this.handleOnPress.bind(this)}
         />
-      </View>
+      </SafeAreaView>
     );
   }
 }
