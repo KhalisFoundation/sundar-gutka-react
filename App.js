@@ -1,5 +1,5 @@
 import React from "react";
-import { BackHandler, Alert } from "react-native";
+import { BackHandler, Alert, AppRegistry } from "react-native";
 import { NavigationContainer } from '@react-navigation/native';
 import { createNativeStackNavigator } from '@react-navigation/native-stack';
 import { Provider } from "react-redux";
@@ -13,6 +13,7 @@ import AboutScreen from "./screens/About";
 import ReaderScreen from "./screens/Reader";
 import BookmarksScreen from "./screens/Bookmarks";
 import createStore from "./config/store";
+import FirebaseNotification from "./utils/firebaseNotification";
 
 const Stack = createNativeStackNavigator();
 
@@ -20,7 +21,16 @@ const { store, persistor } = createStore();
 
 export default class App extends React.Component {
   componentDidMount() {
+     this.notificationHandler();
     BackHandler.addEventListener("hardwareBackPress", this.handleBackPress);
+  }
+
+  notificationHandler(){
+    const firebaseNotifaction= new FirebaseNotification()
+     firebaseNotifaction.checkPermission();
+     firebaseNotifaction.backgroundMessageHandler();
+     firebaseNotifaction.foregroundMessage();
+     firebaseNotifaction.handleNotification();
   }
 
   componentWillUnmount() {
@@ -64,3 +74,5 @@ export default class App extends React.Component {
     );
   }
 }
+
+AppRegistry.registerHeadlessTask('RNFirebaseMessagingService', () =>notificationHandler);

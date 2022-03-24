@@ -81,8 +81,26 @@ class Home extends React.Component {
   changeStatusBar(shouldBeHidden) {
     StatusBar.setHidden(shouldBeHidden);
   }
+  async requestUserPermission() {
+    const authStatus = await messaging().requestPermission();
+    const enabled =
+      authStatus === messaging.AuthorizationStatus.AUTHORIZED ||
+      authStatus === messaging.AuthorizationStatus.PROVISIONAL;
+  
+    if (enabled) {
+      console.log('Authorization status:', authStatus);
+    }
+  }
 
   componentDidMount() {
+    //  messaging().requestPermission();
+    //  messaging().registerDeviceForRemoteMessages();
+    //  const tok=async()=>{
+    // const token= await messaging().getToken();
+    // console.log(messaging())
+    // console.log(token)
+    //  }
+    //  tok();
     var showBaniLengthSelector = false;
     if (this.props.appVersion != VersionNumber.appVersion) {
       if (this.props.appVersion == "") {
@@ -118,20 +136,20 @@ class Home extends React.Component {
 
     NotificationsManager.getInstance().removeAllDeliveredNotifications();
     // Notification opened from background
-    this.notificationOpenedListener = messaging()
-      .onNotificationOpenedApp((notificationOpen) => {
-        this.handleNotificationEvent(notificationOpen);
-      });
+    // this.notificationOpenedListener = messaging()
+    //   .onNotificationOpenedApp((notificationOpen) => {
+    //     this.handleNotificationEvent(notificationOpen);
+    //   });
 
     // Notification opened from closed state
-    messaging()
-      .getInitialNotification()
-      .then(notificationOpen => {
-        if (notificationOpen) {
-          // App was opened by a notification
-          this.handleNotificationEvent(notificationOpen);
-        }
-      });
+    // messaging()
+    //   .getInitialNotification()
+    //   .then(notificationOpen => {
+    //     if (notificationOpen) {
+    //       // App was opened by a notification
+    //       this.handleNotificationEvent(notificationOpen);
+    //     }
+    //   });
   }
 
   handleNotificationEvent(notificationOpen) {
@@ -150,7 +168,7 @@ class Home extends React.Component {
   }
 
   componentWillUnmount() {
-     this.notificationOpenedListener();
+    // this.notificationOpenedListener();
   }
 
   componentDidUpdate(prevProps) {
