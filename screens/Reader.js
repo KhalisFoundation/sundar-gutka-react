@@ -322,7 +322,6 @@ class Reader extends React.Component {
   loadScrollJS() {
     let listener = Platform.OS === "android" ? "document" : "window";
     const position=this.currentBani.progress
-    console.log(position)
     return `
     var autoScrollTimeout;
     var autoScrollSpeed = 0;
@@ -464,7 +463,7 @@ class Reader extends React.Component {
   savePositionToProps(message){
     let data=message.nativeEvent.data
       let position=data.split('-')[1]
-      console.log("position",position)
+
       const startBaniList=JSON.parse(this.props.startBani)
       if(position>0){
       if(startBaniList.length==0){
