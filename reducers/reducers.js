@@ -32,6 +32,7 @@ import {
   SET_REMINDER_BANIS,
   SET_REMINDER_SOUND,
   SET_APP_VERSION,
+  SET_START_BANI
 } from "../actions/actions";
 
 function fontSize(state = "SMALL", action) {
@@ -312,7 +313,14 @@ function appVersion(state = "", action) {
       return state;
   }
 }
-
+function startBani(state=JSON.stringify([]),action){
+  switch(action.type){
+    case SET_START_BANI:
+      return action.progressList
+    default:
+      return state
+  }
+}
 // Combine all the reducers
 const rootReducer = combineReducers({
   fontSize,
@@ -346,6 +354,7 @@ const rootReducer = combineReducers({
   reminderBanis,
   reminderSound,
   appVersion,
+  startBani
 });
 
 export default rootReducer;
