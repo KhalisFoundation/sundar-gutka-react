@@ -313,8 +313,8 @@ function appVersion(state = "", action) {
       return state;
   }
 }
-function startBani(state=JSON.stringify([]),action){
-  switch(action.type){
+function startBani(state = JSON.stringify([]), action) {
+  switch (action.type) {
     case SET_START_BANI:
       return action.progressList
     default:

@@ -1,11 +1,13 @@
 import React from "react";
-import {  Animated,
+import {
+  Animated,
   Dimensions,
   StyleSheet,
   View,
   Platform,
   Text,
-  StatusBar, } from "react-native"; 
+  StatusBar,
+} from "react-native";
 import { WebView } from "react-native-webview";
 import { connect } from "react-redux";
 import { Header, Slider } from "react-native-elements";
@@ -25,10 +27,10 @@ import AnalyticsManager from "../utils/analytics";
 const HEADER_POSITION = -120; // From react-native-elements Header source
 class Reader extends React.Component {
 
-  currentBani={
-    id:0,
-    translit:'',
-    progress:0
+  currentBani = {
+    id: 0,
+    translit: '',
+    progress: 0
   }
   constructor(props) {
     super(props);
@@ -76,35 +78,34 @@ class Reader extends React.Component {
         isLoading: false,
       });
     }).catch(error => {
-      console.log(error)
+      console.log(error);
     });
   }
 
   componentDidMount() {
-      this.loadShabad();
-      this.setPosition();
+    this.loadShabad();
+    this.setPosition();
 
   }
 
-  setPosition(){
-    const startBaniList=JSON.parse(this.props.startBani);
-      let progress=0;
-      if(startBaniList.length>0){
-        for(const bani of startBaniList){
-          if(bani.id==this.currentBani.id){
-            if(bani.progress>0 && bani.progress<1){
-            progress=bani.progress
-            }
+  setPosition() {
+    const startBaniList = JSON.parse(this.props.startBani);
+    let progress = 0;
+    if (startBaniList.length > 0) {
+      for (const bani of startBaniList) {
+        if (bani.id == this.currentBani.id) {
+          if (bani.progress > 0 && bani.progress < 1) {
+            progress = bani.progress;
           }
         }
       }
-      this.currentBani.progress=progress
+    }
+    this.currentBani.progress = progress;
   }
 
-  handleBackPress(data){
-    this.webView.postMessage(JSON.stringify({ Back: true }))
+  handleBackPress(data) {
+    this.webView.postMessage(JSON.stringify({ Back: true }));
     this.props.navigation.goBack();
-    
   }
 
 
@@ -126,15 +127,15 @@ class Reader extends React.Component {
   }
 
   trackScreenForShabad(params) {
-    const name=params.item.translit
+    const name = params.item.translit
     AnalyticsManager.getInstance().trackScreenView(name, this.constructor.name);
-    this.currentBani.id=params.item.id
-    this.currentBani.translit=params.item.translit
+    this.currentBani.id = params.item.id
+    this.currentBani.translit = params.item.translit
   }
 
   componentWillReceiveProps(nextProps) {
     if (nextProps.scrollIndex != -1) {
-      
+
       this.scrollToItem(nextProps.scrollIndex);
       this.props.setScrollIndex(-1);
     }
@@ -321,7 +322,7 @@ class Reader extends React.Component {
 
   loadScrollJS() {
     let listener = Platform.OS === "android" ? "document" : "window";
-    const position=this.currentBani.progress
+    const position = this.currentBani.progress
     return `
     var autoScrollTimeout;
     var autoScrollSpeed = 0;
@@ -364,7 +365,6 @@ class Reader extends React.Component {
       }, 66);
 
     }, false);
-
 
     function setAutoScroll() {
       let speed = autoScrollSpeed;
@@ -460,42 +460,42 @@ class Reader extends React.Component {
     }, false);
       `;
   }
-  savePositionToProps(message){
-    let data=message.nativeEvent.data
-      let position=data.split('-')[1]
+  savePositionToProps(message) {
+    let data = message.nativeEvent.data
+    let position = data.split('-')[1]
 
-      const startBaniList=JSON.parse(this.props.startBani)
-      if(position>0){
-      if(startBaniList.length==0){
-        this.currentBani.progress=position
+    const startBaniList = JSON.parse(this.props.startBani)
+    if (position > 0) {
+      if (startBaniList.length == 0) {
+        this.currentBani.progress = position
         startBaniList.push(this.currentBani)
       }
-      else{
-        let isFound=false
-         startBaniList.forEach(element => {
+      else {
+        let isFound = false
+        startBaniList.forEach(element => {
           if (element.id == this.currentBani.id) {
-             isFound=true
+            isFound = true
           }
         });
-        if(isFound){
-          startBaniList.forEach(element=>{
-            if(element.id==this.currentBani.id){
+        if (isFound) {
+          startBaniList.forEach(element => {
+            if (element.id == this.currentBani.id) {
 
-              element.progress=position
+              element.progress = position
             }
           })
         }
-        else{
-          this.currentBani.progress=position
+        else {
+          this.currentBani.progress = position
           startBaniList.push(this.currentBani)
         }
       }
     }
-      this.props.setStartBani(JSON.stringify(startBaniList))
+    this.props.setStartBani(JSON.stringify(startBaniList))
   }
 
   handleMessage(message) {
-    if(message.nativeEvent.data.includes('save')){
+    if (message.nativeEvent.data.includes('save')) {
       this.savePositionToProps(message)
     }
 
@@ -530,10 +530,10 @@ class Reader extends React.Component {
     }
   }
   componentWillUnmount() {
-    this.setState = (state,callback)=>{
+    this.setState = (state, callback) => {
       return;
-  };
-    
+    };
+
   }
 
   render() {
@@ -808,7 +808,7 @@ function mapStateToProps(state) {
     visram: state.visram,
     vishraamOption: state.vishraamOption,
     vishraamSource: state.vishraamSource,
-    startBani: state.startBani
+    startBani: state.startBani,
   };
 }
 
