@@ -21,16 +21,16 @@ const { store, persistor } = createStore();
 
 export default class App extends React.Component {
   componentDidMount() {
-     this.notificationHandler();
+    this.notificationHandler();
     BackHandler.addEventListener("hardwareBackPress", this.handleBackPress);
   }
 
-  notificationHandler(){
-    const firebaseNotifaction= new FirebaseNotification()
-     firebaseNotifaction.checkPermission();
-     firebaseNotifaction.backgroundMessageHandler();
-     firebaseNotifaction.foregroundMessage();
-     firebaseNotifaction.handleNotification();
+  notificationHandler() {
+    const firebaseNotifaction = new FirebaseNotification()
+    firebaseNotifaction.checkPermission();
+    firebaseNotifaction.backgroundMessageHandler();
+    firebaseNotifaction.foregroundMessage();
+    firebaseNotifaction.handleNotification();
   }
 
   componentWillUnmount() {
@@ -55,24 +55,23 @@ export default class App extends React.Component {
       <Provider store={store}>
         <PersistGate loading={null} persistor={persistor}>
           <NavigationContainer>
-              <Stack.Navigator
-                screenOptions={{
-                  headerShown: false
-                }}>
-                <Stack.Screen name="Home" component={HomeScreen} />
-                <Stack.Screen name="FolderBani" component={FolderBaniScreen} />
-                <Stack.Screen name="Settings" component={SettingsScreen} />
-                <Stack.Screen name="Reader" component={ReaderScreen} />
-                <Stack.Screen name="Bookmarks" component={BookmarksScreen} />
-                <Stack.Screen name="EditBaniOrder" component={EditBaniOrderScreen} />
-                <Stack.Screen name="ReminderOptions" component={ReminderOptionsScreen} />
-                <Stack.Screen name="About" component={AboutScreen} />
-              </Stack.Navigator>
+            <Stack.Navigator
+              screenOptions={{
+                headerShown: false
+              }}>
+              <Stack.Screen name="Home" component={HomeScreen} />
+              <Stack.Screen name="FolderBani" component={FolderBaniScreen} />
+              <Stack.Screen name="Settings" component={SettingsScreen} />
+              <Stack.Screen name="Reader" component={ReaderScreen} />
+              <Stack.Screen name="Bookmarks" component={BookmarksScreen} />
+              <Stack.Screen name="EditBaniOrder" component={EditBaniOrderScreen} />
+              <Stack.Screen name="ReminderOptions" component={ReminderOptionsScreen} />
+              <Stack.Screen name="About" component={AboutScreen} />
+            </Stack.Navigator>
           </NavigationContainer>
         </PersistGate>
       </Provider>
     );
   }
 }
-
-AppRegistry.registerHeadlessTask('RNFirebaseMessagingService', () =>notificationHandler);
+AppRegistry.registerHeadlessTask('RNFirebaseMessagingService', () => notificationHandler);

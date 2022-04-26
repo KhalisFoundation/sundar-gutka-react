@@ -1,49 +1,58 @@
 import messaging from '@react-native-firebase/messaging'
-import { Alert } from 'react-native';
+import {
+  Alert
+} from 'react-native';
+export default class FirebaseNotification {
 
-
-export default class FirebaseNotification{
-
-async checkPermission(){
+  async checkPermission() {
     const authStatus = await messaging().requestPermission();
-    const enabled =
-      authStatus === messaging.AuthorizationStatus.AUTHORIZED ||
-      authStatus === messaging.AuthorizationStatus.PROVISIONAL;
+
+    const { AUTHORIZED, PROVISIONAL } = messaging.AuthorizationStatus;
+    const isAuthorized = authStatus === AUTHORIZED;
+    const isProvisional = authStatus === PROVISIONAL;
+
+    const enabled = isAuthorized || isProvisional;
+    // const enabled =
+    //   authStatus === messaging.AuthorizationStatus.AUTHORIZED ||
+    //   authStatus === messaging.AuthorizationStatus.PROVISIONAL;
     if (enabled) {
-      this.getFcmToken() 
+      this.getFcmToken()
       console.log('Authorization status:', authStatus);
     }
-}
+  }
 
-async getFcmToken(){
+  async getFcmToken() {
     const fcmToken = await messaging().getToken();
     if (fcmToken) {
-     console.log("Your Firebase Token is:", fcmToken);
+      console.log("Your Firebase Token is:", fcmToken);
     } else {
-     console.log("Failed", "No token received");
+      console.log("Failed", "No token received");
     }
   }
 
-  foregroundMessage(){
+  foregroundMessage() {
     const unsubscribe = messaging().onMessage(async remoteMessage => {
       console.log("Foreground is running")
-        this.handleNotificationEvent(remoteMessage.notification.title,remoteMessage.notification.body)
-      });
-      return unsubscribe;
+      const { title, body } = remoteMessage.notification;
+      this.handleNotificationEvent(title, body)
+    });
+    return unsubscribe;
   }
 
-  backgroundMessageHandler(){
+  backgroundMessageHandler() {
     messaging().setBackgroundMessageHandler(async remoteMessage => {
       console.log("Background is running")
-      this.handleNotificationEvent(remoteMessage.notification.title,remoteMessage.notification.body)
-      });
+      const { title, body } = remoteMessage.notification;
+      this.handleNotificationEvent(title, body)
+    });
   }
 
-  handleNotification(){
-      // Notification opened from background
+  handleNotification() {
+    // Notification opened from background
     this.notificationOpenedListener = messaging()
       .onNotificationOpenedApp(async notificationOpen => {
-        this.handleNotificationEvent(notificationOpen.notification.title,notificationOpen.notification.body);
+        const { title, body } = notificationOpen.notification;
+        this.handleNotificationEvent(title, body);
       });
 
     //Notification opened from closed state
@@ -53,22 +62,20 @@ async getFcmToken(){
         if (notificationOpen) {
           // App was opened by a notification
           console.log("Opend from closed state")
-          this.handleNotificationEvent(notificationOpen.notification.title,notificationOpen.notification.body);
+          const { title, body } = notificationOpen.notification;
+          this.handleNotificationEvent(title, body);
         }
       });
   }
-  handleNotificationEvent(title,body){
-console.log("Notification Get Open")
-Alert.alert(
-  title,
-  body,
-  [
-    { text: "OK", onPress: () => console.log("OK Pressed") }
-  ]
-);
-//this.removeAllDeliveredNotifications();
+  handleNotificationEvent(title, body) {
+    console.log("Notification Get Open")
+    Alert.alert(
+      title,
+      body,
+      [{
+        text: "OK",
+        onPress: () => console.log("OK Pressed")
+      }]
+    );
   }
-  // removeAllDeliveredNotifications() {
-  //   firebase.notifications().removeAllDeliveredNotifications();
-  // }
 }
