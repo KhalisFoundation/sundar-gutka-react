@@ -1,0 +1,13 @@
+<?xml version="1.0" encoding="utf-8"?>
+<layer-list xmlns:android="http://schemas.android.com/apk/res/android">
+
+    <item
+        android:drawable="@color/primary_dark"/>
+
+    <item
+        android:width="600dp"
+        android:height="600dp"
+        android:drawable="@mipmap/ic_launcher_foreground"
+        android:gravity="center" />
+
+</layer-list>
