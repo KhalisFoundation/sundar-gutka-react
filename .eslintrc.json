@@ -8,24 +8,7 @@
     ],
     "parser": "babel-eslint",
     "rules": {
-        "import/no-unresolved": "off",
-        "react/jsx-filename-extension": [
-            1,
-            {
-                "extensions": [
-                    ".js",
-                    ".jsx"
-                ]
-            }
-        ],
-        "prettier/prettier": [
-            "error",
-            {
-                "trailingComma": "es5",
-                "singleQuote": true,
-                "printWidth": 100
-            }
-        ]
+        "import/no-unresolved": "off"
     },
     "plugins": [
         "prettier"
