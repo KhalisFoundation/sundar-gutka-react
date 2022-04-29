@@ -101,7 +101,7 @@ class Reader extends React.Component {
     AnalyticsManager.getInstance().trackScreenView(name, this.constructor.name);
   }
 
-  componentWillReceiveProps(nextProps) {
+  UNSAFE_componentWillReceiveProps(nextProps) {
     if (nextProps.scrollIndex != -1) {
       this.scrollToItem(nextProps.scrollIndex);
       this.props.setScrollIndex(-1);

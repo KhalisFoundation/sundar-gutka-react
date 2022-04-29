@@ -7,6 +7,7 @@
         <activity android:name=".MainActivity" android:label="@string/app_name"
             android:configChanges="keyboard|keyboardHidden|orientation|screenSize|uiMode"
             android:launchMode="singleTask" android:windowSoftInputMode="adjustResize">
+        <activity android:name=".SplashActivity" android:theme="@style/SplashTheme" android:label="@string/app_name">
             <intent-filter>
                 <action android:name="android.intent.action.MAIN" />
                 <category android:name="android.intent.category.LAUNCHER" />
@@ -17,5 +18,9 @@
                 <action android:name="com.google.firebase.MESSAGING_EVENT" />
             </intent-filter>
         </service>
+        <activity android:name=".MainActivity" android:label="@string/app_name"
+            android:configChanges="keyboard|keyboardHidden|orientation|screenSize|uiMode"
+            android:launchMode="singleTask" android:windowSoftInputMode="adjustResize">
+        </activity>
     </application>
 </manifest>
