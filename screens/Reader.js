@@ -135,7 +135,6 @@ class Reader extends React.Component {
 
   componentWillReceiveProps(nextProps) {
     if (nextProps.scrollIndex != -1) {
-
       this.scrollToItem(nextProps.scrollIndex);
       this.props.setScrollIndex(-1);
     }
@@ -533,7 +532,6 @@ class Reader extends React.Component {
     this.setState = (state, callback) => {
       return;
     };
-
   }
 
   render() {
