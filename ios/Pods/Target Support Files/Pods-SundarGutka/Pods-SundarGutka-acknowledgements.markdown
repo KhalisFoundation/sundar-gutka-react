@@ -3145,7 +3145,7 @@ You may obtain a copy of the Creative Commons Attribution 3.0 License at
 
 The MIT License (MIT)
 
-Copyright (c) 2018 Krzysztof Magiera
+Copyright (c) 2018 Software Mansion <swmansion.com>
 
 Permission is hereby granted, free of charge, to any person obtaining a copy
 of this software and associated documentation files (the "Software"), to deal
