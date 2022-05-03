@@ -26,6 +26,12 @@ import AnalyticsManager from "../utils/analytics";
 
 const HEADER_POSITION = -120; // From react-native-elements Header source
 class Reader extends React.Component {
+
+  currentBani = {
+    id: 0,
+    translit: '',
+    progress: 0
+  }
   constructor(props) {
     super(props);
 
@@ -72,13 +78,36 @@ class Reader extends React.Component {
         isLoading: false,
       });
     }).catch(error => {
-      console.log(error)
+      console.log(error);
     });
   }
 
   componentDidMount() {
     this.loadShabad();
+    this.setPosition();
+
   }
+
+  setPosition() {
+    const startBaniList = JSON.parse(this.props.startBani);
+    let progress = 0;
+    if (startBaniList.length > 0) {
+      for (const bani of startBaniList) {
+        if (bani.id == this.currentBani.id) {
+          if (bani.progress > 0 && bani.progress < 1) {
+            progress = bani.progress;
+          }
+        }
+      }
+    }
+    this.currentBani.progress = progress;
+  }
+
+  handleBackPress(data) {
+    this.webView.postMessage(JSON.stringify({ Back: true }));
+    this.props.navigation.goBack();
+  }
+
 
   componentDidUpdate(prevProps) {
     if (
@@ -97,8 +126,11 @@ class Reader extends React.Component {
     }
   }
 
-  trackScreenForShabad(name) {
+  trackScreenForShabad(params) {
+    const name = params.item.translit
     AnalyticsManager.getInstance().trackScreenView(name, this.constructor.name);
+    this.currentBani.id = params.item.id
+    this.currentBani.translit = params.item.translit
   }
 
   UNSAFE_componentWillReceiveProps(nextProps) {
@@ -289,6 +321,7 @@ class Reader extends React.Component {
 
   loadScrollJS() {
     let listener = Platform.OS === "android" ? "document" : "window";
+    const position = this.currentBani.progress
     return `
     var autoScrollTimeout;
     var autoScrollSpeed = 0;
@@ -304,9 +337,19 @@ class Reader extends React.Component {
         let scrollY = (document.body.scrollHeight - window.innerHeight) * curPosition;
         window.scrollTo(0, scrollY);
         curPosition = scrollY;
+        
       }, 50);
     }, false);
 
+    (function scrollToPosition(){
+      setTimeout(function(){        
+        let scrollY = (document.body.scrollHeight - window.innerHeight) * ${position};
+        window.scrollTo(0, scrollY);
+        curPosition = scrollY;
+        
+      }, 50);
+
+    })();
     function getScrollPercent() {
       return (window.pageYOffset / (document.body.scrollHeight - window.innerHeight));
     }
@@ -395,10 +438,17 @@ class Reader extends React.Component {
 
     ${listener}.addEventListener("message", function(event) {
       let message = JSON.parse(event.data);
+
+      if(message.hasOwnProperty('Back')){
+        currentPosition=getScrollPercent();
+        window.ReactNativeWebView.postMessage("save-"+currentPosition);
+      }
+   
       if(message.hasOwnProperty('bookmark')){
         location.hash = "#" + message.bookmark;
         setTimeout(function() { window.ReactNativeWebView.postMessage('hide'); }, 50);
-      } else if(message.hasOwnProperty('autoScroll')){ 
+      } 
+      if(message.hasOwnProperty('autoScroll')){ 
         autoScrollSpeed = message.autoScroll;
         scrollMultiplier = message.scrollMultiplier;
         
@@ -409,8 +459,46 @@ class Reader extends React.Component {
     }, false);
       `;
   }
+  savePositionToProps(message) {
+    let data = message.nativeEvent.data
+    let position = data.split('-')[1]
+
+    const startBaniList = JSON.parse(this.props.startBani)
+    if (position > 0) {
+      if (startBaniList.length == 0) {
+        this.currentBani.progress = position
+        startBaniList.push(this.currentBani)
+      }
+      else {
+        let isFound = false
+        startBaniList.forEach(element => {
+          if (element.id == this.currentBani.id) {
+            isFound = true
+          }
+        });
+        if (isFound) {
+          startBaniList.forEach(element => {
+            if (element.id == this.currentBani.id) {
+
+              element.progress = position
+            }
+          })
+        }
+        else {
+          this.currentBani.progress = position
+          startBaniList.push(this.currentBani)
+        }
+      }
+    }
+    this.props.setStartBani(JSON.stringify(startBaniList))
+  }
 
   handleMessage(message) {
+    if (message.nativeEvent.data.includes('save')) {
+      this.savePositionToProps(message)
+    }
+
+
     if (message.nativeEvent.data === "toggle") {
       if (JSON.stringify(this.state.animationPosition) == 0) {
         this.toggleHeader("hide");
@@ -440,11 +528,16 @@ class Reader extends React.Component {
       this.webView.postMessage(JSON.stringify(autoScrollSpeed));
     }
   }
+  componentWillUnmount() {
+    this.setState = (state, callback) => {
+      return;
+    };
+  }
 
   render() {
     const { params } = this.props.route.params;
     {
-      this.trackScreenForShabad(params.item.translit);
+      this.trackScreenForShabad(params);
     }
 
     return (
@@ -499,7 +592,7 @@ class Reader extends React.Component {
                 name="arrow-back"
                 color={GLOBAL.COLOR.TOOLBAR_TINT}
                 size={30}
-                onPress={() => this.props.navigation.goBack()}
+                onPress={this.handleBackPress.bind(this)}
               />
             }
             centerComponent={{
@@ -713,6 +806,7 @@ function mapStateToProps(state) {
     visram: state.visram,
     vishraamOption: state.vishraamOption,
     vishraamSource: state.vishraamSource,
+    startBani: state.startBani,
   };
 }
 
