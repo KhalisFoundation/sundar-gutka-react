@@ -86,21 +86,9 @@ class Home extends React.Component {
     const enabled =
       authStatus === messaging.AuthorizationStatus.AUTHORIZED ||
       authStatus === messaging.AuthorizationStatus.PROVISIONAL;
-  
-    if (enabled) {
-      console.log('Authorization status:', authStatus);
-    }
   }
 
   componentDidMount() {
-    //  messaging().requestPermission();
-    //  messaging().registerDeviceForRemoteMessages();
-    //  const tok=async()=>{
-    // const token= await messaging().getToken();
-    // console.log(messaging())
-    // console.log(token)
-    //  }
-    //  tok();
     var showBaniLengthSelector = false;
     if (this.props.appVersion != VersionNumber.appVersion) {
       if (this.props.appVersion == "") {
@@ -135,21 +123,6 @@ class Home extends React.Component {
     );
 
     NotificationsManager.getInstance().removeAllDeliveredNotifications();
-    // Notification opened from background
-    // this.notificationOpenedListener = messaging()
-    //   .onNotificationOpenedApp((notificationOpen) => {
-    //     this.handleNotificationEvent(notificationOpen);
-    //   });
-
-    // Notification opened from closed state
-    // messaging()
-    //   .getInitialNotification()
-    //   .then(notificationOpen => {
-    //     if (notificationOpen) {
-    //       // App was opened by a notification
-    //       this.handleNotificationEvent(notificationOpen);
-    //     }
-    //   });
   }
 
   handleNotificationEvent(notificationOpen) {
@@ -165,10 +138,6 @@ class Home extends React.Component {
       key: "Reader-" + item.id,
       params: { item: item },
     });
-  }
-
-  componentWillUnmount() {
-    // this.notificationOpenedListener();
   }
 
   componentDidUpdate(prevProps) {

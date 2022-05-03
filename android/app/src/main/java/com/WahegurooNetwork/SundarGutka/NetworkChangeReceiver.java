@@ -64,6 +64,4 @@ public class NetworkChangeReceiver extends BroadcastReceiver {
         NetworkInfo netInfo = cm.getActiveNetworkInfo();
         return (netInfo != null && netInfo.isConnected());
     }
-
-
 }

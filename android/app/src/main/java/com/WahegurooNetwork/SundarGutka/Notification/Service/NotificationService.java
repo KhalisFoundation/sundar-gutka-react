@@ -12,7 +12,6 @@ import javax.annotation.Nullable;
 public class NotificationService extends HeadlessJsTaskService {
     @Nullable
     protected HeadlessJsTaskConfig getTaskConfig(Intent intent) {
-        Log.d("HeadLess","Headless is running");
         Bundle extras = intent.getExtras();
         return new HeadlessJsTaskConfig(
           "NotificationHandler", //JS function to call
