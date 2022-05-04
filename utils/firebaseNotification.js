@@ -12,9 +12,6 @@ export default class FirebaseNotification {
     const isProvisional = authStatus === PROVISIONAL;
 
     const enabled = isAuthorized || isProvisional;
-    // const enabled =
-    //   authStatus === messaging.AuthorizationStatus.AUTHORIZED ||
-    //   authStatus === messaging.AuthorizationStatus.PROVISIONAL;
     if (enabled) {
       this.getFcmToken()
       console.log('Authorization status:', authStatus);
