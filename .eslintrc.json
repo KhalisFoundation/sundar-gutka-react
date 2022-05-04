@@ -1,0 +1,16 @@
+{
+    "extends": [
+        "airbnb",
+        "prettier",
+        "prettier/react",
+        "plugin:prettier/recommended",
+        "eslint-config-prettier"
+    ],
+    "parser": "babel-eslint",
+    "rules": {
+        "import/no-unresolved": "off"
+    },
+    "plugins": [
+        "prettier"
+    ]
+}

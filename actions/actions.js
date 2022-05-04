@@ -36,6 +36,7 @@ export const TOGGLE_REMINDERS = "TOGGLE_REMINDERS";
 export const SET_REMINDER_BANIS = "SET_REMINDER_BANIS";
 export const SET_REMINDER_SOUND = "SET_REMINDER_SOUND";
 export const SET_APP_VERSION = "SET_APP_VERSION";
+export const SET_START_BANI = "SET_START_BANI";
 
 /*
  * other constants
@@ -316,4 +317,8 @@ export function setReminderSound(sound) {
 
 export function setAppVersion(version) {
   return { type: SET_APP_VERSION, version };
+}
+
+export function setStartBani(progressList) {
+  return { type: SET_START_BANI, progressList };
 }
