@@ -81,6 +81,12 @@ class Home extends React.Component {
   changeStatusBar(shouldBeHidden) {
     StatusBar.setHidden(shouldBeHidden);
   }
+  async requestUserPermission() {
+    const authStatus = await messaging().requestPermission();
+    const enabled =
+      authStatus === messaging.AuthorizationStatus.AUTHORIZED ||
+      authStatus === messaging.AuthorizationStatus.PROVISIONAL;
+  }
 
   componentDidMount() {
     var showBaniLengthSelector = false;
@@ -117,21 +123,6 @@ class Home extends React.Component {
     );
 
     NotificationsManager.getInstance().removeAllDeliveredNotifications();
-    // Notification opened from background
-    this.notificationOpenedListener = messaging()
-      .onNotificationOpenedApp((notificationOpen) => {
-        this.handleNotificationEvent(notificationOpen);
-      });
-
-    // Notification opened from closed state
-    messaging()
-      .getInitialNotification()
-      .then(notificationOpen => {
-        if (notificationOpen) {
-          // App was opened by a notification
-          this.handleNotificationEvent(notificationOpen);
-        }
-      });
   }
 
   handleNotificationEvent(notificationOpen) {
@@ -147,10 +138,6 @@ class Home extends React.Component {
       key: "Reader-" + item.id,
       params: { item: item },
     });
-  }
-
-  componentWillUnmount() {
-     this.notificationOpenedListener();
   }
 
   componentDidUpdate(prevProps) {
