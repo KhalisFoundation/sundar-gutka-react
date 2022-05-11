@@ -567,7 +567,7 @@ class Settings extends React.Component {
             />
           </ListItem>
 
-          <ListItem bottomDivider
+          {/* <ListItem bottomDivider
             containerStyle={[
               styles.titleText,
               this.props.nightMode && { backgroundColor: "#464646" }
@@ -594,7 +594,7 @@ class Settings extends React.Component {
               }
             </ListItem.Title>
             <ListItem.Chevron />
-          </ListItem>
+          </ListItem> */}
 
           <ListItem bottomDivider
             containerStyle={[
