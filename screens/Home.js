@@ -234,7 +234,7 @@ class Home extends React.Component {
             style={[
               {
                 color: GLOBAL.COLOR.TOOLBAR_TINT,
-                fontFamily: "GurbaniAkharHeavySG",
+                fontFamily: "GurbaniAkharHeavyTrue",
                 fontSize: 18,
                 textAlign: "center",
                 paddingBottom: 10,
@@ -253,7 +253,7 @@ class Home extends React.Component {
               style={[
                 {
                   color: GLOBAL.COLOR.TOOLBAR_TINT,
-                  fontFamily: "GurbaniAkharHeavySG",
+                  fontFamily: "GurbaniAkharHeavyTrue",
                   fontSize: 28,
                 },
               ]}>

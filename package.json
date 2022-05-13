@@ -6,6 +6,7 @@
     "android": "react-native run-android",
     "ios": "react-native run-ios",
     "start": "react-native start",
+    "link-react": "react-native link",
     "test": "jest",
     "lint": "eslint ."
   },
@@ -63,5 +64,10 @@
   },
   "jest": {
     "preset": "react-native"
+  },
+  "rnpm": {
+    "assets": [
+      "./assests/fonts/"
+    ]
   }
 }

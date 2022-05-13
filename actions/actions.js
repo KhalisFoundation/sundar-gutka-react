@@ -80,9 +80,9 @@ export const fontSizeNames = [
 
 export const FONT_FACES = [
   "AnmolLipiSG",
-  "GurbaniAkharSG",
-  "GurbaniAkharHeavySG",
-  "GurbaniAkharThickSG",
+  "GurbaniAkharTrue",
+  "GurbaniAkharHeavyTrue",
+  "GurbaniAkharThickTrue",
 ];
 
 export const fontFaceNames = [
