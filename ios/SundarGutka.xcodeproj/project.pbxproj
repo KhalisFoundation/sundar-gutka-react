@@ -22,9 +22,9 @@
 		9AD5FF1C27323D15003A6DAF /* waheguru_soul.mp3 in Resources */ = {isa = PBXBuildFile; fileRef = 9AD5FF1A27323D15003A6DAF /* waheguru_soul.mp3 */; };
 		9E86D5E92E2F2FC35AD48546 /* libPods-SundarGutka.a in Frameworks */ = {isa = PBXBuildFile; fileRef = 85DEEE05CB7163895FD4905E /* libPods-SundarGutka.a */; };
 		D415A16167364C1AB236B752 /* GurbaniAkharHeavyTrue.ttf in Resources */ = {isa = PBXBuildFile; fileRef = 3660122BE88F427CBF61B924 /* GurbaniAkharHeavyTrue.ttf */; };
-		E35DCFCCF39549C1A7DEAD35 /* AnmolLipiSG.ttf in Resources */ = {isa = PBXBuildFile; fileRef = 6316A216AAD146CCABB0E877 /* AnmolLipiSG.ttf */; };
-		DDC8CA8990934D99A9DF4DC0 /* GurbaniAkharHeavyTrue.ttf in Resources */ = {isa = PBXBuildFile; fileRef = 1C71F11403534A0CBFBEB67A /* GurbaniAkharHeavyTrue.ttf */; };
 		D82F3A9CD1CD4F4AB8F8D5D2 /* GurbaniAkharThickTrue.ttf in Resources */ = {isa = PBXBuildFile; fileRef = FB9810CCD77A4B7EBA031CB3 /* GurbaniAkharThickTrue.ttf */; };
+		DDC8CA8990934D99A9DF4DC0 /* GurbaniAkharHeavyTrue.ttf in Resources */ = {isa = PBXBuildFile; fileRef = 1C71F11403534A0CBFBEB67A /* GurbaniAkharHeavyTrue.ttf */; };
+		E35DCFCCF39549C1A7DEAD35 /* AnmolLipiSG.ttf in Resources */ = {isa = PBXBuildFile; fileRef = 6316A216AAD146CCABB0E877 /* AnmolLipiSG.ttf */; };
 		EA68FE2B89464EC0AA6373DA /* GurbaniAkharTrue.ttf in Resources */ = {isa = PBXBuildFile; fileRef = A108522FFA6B43008AC3292B /* GurbaniAkharTrue.ttf */; };
 /* End PBXBuildFile section */
 
@@ -51,6 +51,7 @@
 		13B07FB61A68108700A75B9A /* Info.plist */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = text.plist.xml; name = Info.plist; path = SundarGutka/Info.plist; sourceTree = "<group>"; };
 		13B07FB71A68108700A75B9A /* main.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; name = main.m; path = SundarGutka/main.m; sourceTree = "<group>"; };
 		1B2A33945E7742EBACF3B952 /* EvilIcons.ttf */ = {isa = PBXFileReference; explicitFileType = undefined; fileEncoding = 9; includeInIndex = 0; lastKnownFileType = unknown; name = EvilIcons.ttf; path = "../node_modules/react-native-vector-icons/Fonts/EvilIcons.ttf"; sourceTree = "<group>"; };
+		1C71F11403534A0CBFBEB67A /* GurbaniAkharHeavyTrue.ttf */ = {isa = PBXFileReference; explicitFileType = undefined; fileEncoding = 9; includeInIndex = 0; lastKnownFileType = unknown; name = GurbaniAkharHeavyTrue.ttf; path = ../assets/fonts/GurbaniAkharHeavyTrue.ttf; sourceTree = "<group>"; };
 		1E83ED07F6304611A4F5FC27 /* FontAwesome.ttf */ = {isa = PBXFileReference; explicitFileType = undefined; fileEncoding = 9; includeInIndex = 0; lastKnownFileType = unknown; name = FontAwesome.ttf; path = "../node_modules/react-native-vector-icons/Fonts/FontAwesome.ttf"; sourceTree = "<group>"; };
 		33CE04C348F1432EAC59D599 /* Octicons.ttf */ = {isa = PBXFileReference; explicitFileType = undefined; fileEncoding = 9; includeInIndex = 0; lastKnownFileType = unknown; name = Octicons.ttf; path = "../node_modules/react-native-vector-icons/Fonts/Octicons.ttf"; sourceTree = "<group>"; };
 		3660122BE88F427CBF61B924 /* GurbaniAkharHeavyTrue.ttf */ = {isa = PBXFileReference; explicitFileType = undefined; fileEncoding = 9; includeInIndex = 0; lastKnownFileType = unknown; name = GurbaniAkharHeavyTrue.ttf; path = ../assets/fonts/GurbaniAkharHeavyTrue.ttf; sourceTree = "<group>"; };
@@ -75,6 +76,7 @@
 		9AD5FF1927323D14003A6DAF /* wake_up_jap.mp3 */ = {isa = PBXFileReference; lastKnownFileType = audio.mp3; path = wake_up_jap.mp3; sourceTree = "<group>"; };
 		9AD5FF1A27323D15003A6DAF /* waheguru_soul.mp3 */ = {isa = PBXFileReference; lastKnownFileType = audio.mp3; path = waheguru_soul.mp3; sourceTree = "<group>"; };
 		9C399CB0D00F4696A713D5C5 /* AntDesign.ttf */ = {isa = PBXFileReference; explicitFileType = undefined; fileEncoding = 9; includeInIndex = 0; lastKnownFileType = unknown; name = AntDesign.ttf; path = "../node_modules/react-native-vector-icons/Fonts/AntDesign.ttf"; sourceTree = "<group>"; };
+		A108522FFA6B43008AC3292B /* GurbaniAkharTrue.ttf */ = {isa = PBXFileReference; explicitFileType = undefined; fileEncoding = 9; includeInIndex = 0; lastKnownFileType = unknown; name = GurbaniAkharTrue.ttf; path = ../assets/fonts/GurbaniAkharTrue.ttf; sourceTree = "<group>"; };
 		A506618343D44FE49B347FCA /* FontAwesome5_Solid.ttf */ = {isa = PBXFileReference; explicitFileType = undefined; fileEncoding = 9; includeInIndex = 0; lastKnownFileType = unknown; name = FontAwesome5_Solid.ttf; path = "../node_modules/react-native-vector-icons/Fonts/FontAwesome5_Solid.ttf"; sourceTree = "<group>"; };
 		BCA51CCB7A11BFE749BF8572 /* Pods-SundarGutka-SundarGutkaTests.debug.xcconfig */ = {isa = PBXFileReference; includeInIndex = 1; lastKnownFileType = text.xcconfig; name = "Pods-SundarGutka-SundarGutkaTests.debug.xcconfig"; path = "Target Support Files/Pods-SundarGutka-SundarGutkaTests/Pods-SundarGutka-SundarGutkaTests.debug.xcconfig"; sourceTree = "<group>"; };
 		BCD3BE0E45F84924BDFD828A /* GurbaniAkharThickTrue.ttf */ = {isa = PBXFileReference; explicitFileType = undefined; fileEncoding = 9; includeInIndex = 0; lastKnownFileType = unknown; name = GurbaniAkharThickTrue.ttf; path = ../assets/fonts/GurbaniAkharThickTrue.ttf; sourceTree = "<group>"; };
@@ -83,9 +85,7 @@
 		E56D406FD38A4401A315B005 /* Arial.ttf */ = {isa = PBXFileReference; explicitFileType = undefined; fileEncoding = 9; includeInIndex = 0; lastKnownFileType = unknown; name = Arial.ttf; path = ../assets/fonts/Arial.ttf; sourceTree = "<group>"; };
 		ED297162215061F000B7C4FE /* JavaScriptCore.framework */ = {isa = PBXFileReference; lastKnownFileType = wrapper.framework; name = JavaScriptCore.framework; path = System/Library/Frameworks/JavaScriptCore.framework; sourceTree = SDKROOT; };
 		EE26BB27C3984FB09D745CDE /* MaterialCommunityIcons.ttf */ = {isa = PBXFileReference; explicitFileType = undefined; fileEncoding = 9; includeInIndex = 0; lastKnownFileType = unknown; name = MaterialCommunityIcons.ttf; path = "../node_modules/react-native-vector-icons/Fonts/MaterialCommunityIcons.ttf"; sourceTree = "<group>"; };
-		1C71F11403534A0CBFBEB67A /* GurbaniAkharHeavyTrue.ttf */ = {isa = PBXFileReference; name = "GurbaniAkharHeavyTrue.ttf"; path = "../assets/fonts/GurbaniAkharHeavyTrue.ttf"; sourceTree = "<group>"; fileEncoding = undefined; lastKnownFileType = unknown; explicitFileType = undefined; includeInIndex = 0; };
-		FB9810CCD77A4B7EBA031CB3 /* GurbaniAkharThickTrue.ttf */ = {isa = PBXFileReference; name = "GurbaniAkharThickTrue.ttf"; path = "../assets/fonts/GurbaniAkharThickTrue.ttf"; sourceTree = "<group>"; fileEncoding = undefined; lastKnownFileType = unknown; explicitFileType = undefined; includeInIndex = 0; };
-		A108522FFA6B43008AC3292B /* GurbaniAkharTrue.ttf */ = {isa = PBXFileReference; name = "GurbaniAkharTrue.ttf"; path = "../assets/fonts/GurbaniAkharTrue.ttf"; sourceTree = "<group>"; fileEncoding = undefined; lastKnownFileType = unknown; explicitFileType = undefined; includeInIndex = 0; };
+		FB9810CCD77A4B7EBA031CB3 /* GurbaniAkharThickTrue.ttf */ = {isa = PBXFileReference; explicitFileType = undefined; fileEncoding = 9; includeInIndex = 0; lastKnownFileType = unknown; name = GurbaniAkharThickTrue.ttf; path = ../assets/fonts/GurbaniAkharThickTrue.ttf; sourceTree = "<group>"; };
 /* End PBXFileReference section */
 
 /* Begin PBXFrameworksBuildPhase section */
@@ -606,7 +606,7 @@
 				ASSETCATALOG_COMPILER_INCLUDE_ALL_APPICON_ASSETS = NO;
 				CLANG_ENABLE_MODULES = YES;
 				CODE_SIGN_ENTITLEMENTS = SundarGutka/SundarGutka.entitlements;
-				CURRENT_PROJECT_VERSION = 1;
+				CURRENT_PROJECT_VERSION = 2;
 				DEVELOPMENT_TEAM = B3W82WVBU9;
 				ENABLE_BITCODE = NO;
 				INFOPLIST_FILE = SundarGutka/Info.plist;
@@ -637,7 +637,7 @@
 				ASSETCATALOG_COMPILER_INCLUDE_ALL_APPICON_ASSETS = NO;
 				CLANG_ENABLE_MODULES = YES;
 				CODE_SIGN_ENTITLEMENTS = SundarGutka/SundarGutka.entitlements;
-				CURRENT_PROJECT_VERSION = 1;
+				CURRENT_PROJECT_VERSION = 2;
 				DEVELOPMENT_TEAM = B3W82WVBU9;
 				INFOPLIST_FILE = SundarGutka/Info.plist;
 				LD_RUNPATH_SEARCH_PATHS = (
