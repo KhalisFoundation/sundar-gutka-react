@@ -56,7 +56,7 @@ class BaniLengthSelector extends Component {
               style={[
                 {
                   color: GLOBAL.COLOR.TOOLBAR_TINT,
-                  fontFamily: "GurbaniAkharThickSG",
+                  fontFamily: "GurbaniAkharThickTrue",
                   textAlign: "center",
                   fontSize: 52
                 }

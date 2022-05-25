@@ -411,7 +411,7 @@ class ReminderOptions extends React.Component {
           optionTextStyle={[
             styles.optionText,
             !this.props.transliteration && {
-              fontFamily: "GurbaniAkharHeavySG",
+              fontFamily: "GurbaniAkharHeavyTrue",
             },
           ]}
           customSelector={<View />}
@@ -486,7 +486,7 @@ class ReminderOptions extends React.Component {
                 color: GLOBAL.COLOR.MODAL_TEXT_NIGHT_MODE,
               },
               !this.props.transliteration && {
-                fontFamily: "GurbaniAkharHeavySG",
+                fontFamily: "GurbaniAkharHeavyTrue",
               },
               !section.enabled && {
                 color: GLOBAL.COLOR.DISABLED_TEXT_COLOR_NIGHT_MODE,

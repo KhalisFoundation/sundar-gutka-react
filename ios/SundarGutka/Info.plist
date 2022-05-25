@@ -2,6 +2,8 @@
 <!DOCTYPE plist PUBLIC "-//Apple//DTD PLIST 1.0//EN" "http://www.apple.com/DTDs/PropertyList-1.0.dtd">
 <plist version="1.0">
 <dict>
+	<key>ITSAppUsesNonExemptEncryption</key>
+	<false/>
 	<key>CFBundleDevelopmentRegion</key>
 	<string>en</string>
 	<key>CFBundleDisplayName</key>
@@ -21,7 +23,7 @@
 	<key>CFBundleSignature</key>
 	<string>????</string>
 	<key>CFBundleVersion</key>
-	<string>1</string>
+	<string>$(CURRENT_PROJECT_VERSION)</string>
 	<key>LSRequiresIPhoneOS</key>
 	<true/>
 	<key>NSAppTransportSecurity</key>
@@ -57,9 +59,9 @@
 		<string>Zocial.ttf</string>
 		<string>AnmolLipiSG.ttf</string>
 		<string>Arial.ttf</string>
-		<string>GurbaniAkharHeavySG.ttf</string>
-		<string>GurbaniAkharSG.ttf</string>
-		<string>GurbaniAkharThickSG.ttf</string>
+		<string>GurbaniAkharHeavyTrue.ttf</string>
+		<string>GurbaniAkharTrue.ttf</string>
+		<string>GurbaniAkharThickTrue.ttf</string>
 	</array>
 	<key>UIBackgroundModes</key>
 	<array>
