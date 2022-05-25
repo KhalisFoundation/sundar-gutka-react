@@ -10,17 +10,11 @@ class Database {
       if (db !== undefined) {
         return resolve(true)
       }
-      new Promise.resolve(SQLite.deleteDatabase(
-        {
-          name: database_name,
-          location: 1,
-        })).finally(() =>
-          setTimeout(function () {
-            db = SQLite.openDatabase({ name: database_name, createFromLocation: 1 });
+      db = SQLite.openDatabase({ name: database_name, createFromLocation: 1 },()=>{console.log("Database open Successfully")},
+      (error)=>{console.log("Error",error)});
             resolve(true);
-          }, 50));
-    });
-  }
+  })
+}
 
   static getBaniList(language) {
     return new Promise(function (resolve) {

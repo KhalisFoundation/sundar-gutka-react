@@ -49,16 +49,14 @@ class Home extends React.Component {
     return ordered;
   }
 
-  loadBaniList() {
-    Database.getBaniList(this.props.transliterationLanguage).then(
-      (baniList) => {
+  async loadBaniList() {
+
+    const baniList=await Database.getBaniList(this.props.transliterationLanguage)
         this.props.setMergedBaniData(mergedBaniList(baniList));
         this.sortBani();
         this.setState({
           isLoading: false,
         });
-      }
-    );
   }
 
   sortBani() {
@@ -88,7 +86,8 @@ class Home extends React.Component {
       authStatus === messaging.AuthorizationStatus.PROVISIONAL;
   }
 
-  componentDidMount() {
+  async componentDidMount() {
+    await this.loadBaniList();
     var showBaniLengthSelector = false;
     if (this.props.appVersion != VersionNumber.appVersion) {
       if (this.props.appVersion == "") {
@@ -115,7 +114,7 @@ class Home extends React.Component {
       this.props.reminderBanis
     );
 
-    this.loadBaniList();
+    
 
     AnalyticsManager.getInstance().trackScreenView(
       "Home Screen",
@@ -307,6 +306,7 @@ class Home extends React.Component {
 
 function mapStateToProps(state) {
   return {
+    data:state.data,
     nightMode: state.nightMode,
     baniOrder: state.baniOrder,
     mergedBaniData: state.mergedBaniData,
