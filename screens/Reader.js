@@ -632,7 +632,7 @@ class Reader extends React.Component {
                   size={30}
                   onPress={() => {
                     this.trackScreenForShabad(
-                      "Bookmarks for " + params.item.translit
+                      params
                     );
                     this.props.navigation.navigate('Bookmarks');
                   }}

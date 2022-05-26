@@ -103,6 +103,10 @@ class Home extends React.Component {
     if (this.props.language !== "DEFAULT") {
       Strings.setLanguage(this.props.language);
     }
+    console.log("Props Font",this.props.fontFace)
+    if(this.props.fontFace ==undefined || this.props.fontFace==''|| this.props.fontFace==null || this.props.fontFace=="GurbaniAkharSG"){
+      this.props.setFontFace("GurbaniAkharTrue");
+    }
 
     this.changeKeepAwake(this.props.screenAwake || this.props.autoScroll);
     this.changeStatusBar(this.props.statusBar);
