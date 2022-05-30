@@ -104,8 +104,8 @@ class Reader extends React.Component {
   }
 
   handleBackPress(data) {
-    this.webView.postMessage(JSON.stringify({ Back: true }));
-    this.props.navigation.goBack();
+   this.webView.postMessage(JSON.stringify({ Back: true }));
+    setTimeout(()=>{this.props.navigation.goBack();},100);
   }
 
 
