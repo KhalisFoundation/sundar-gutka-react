@@ -23,6 +23,7 @@ import {
 } from "../utils/helpers";
 import * as actions from "../actions/actions";
 import AnalyticsManager from "../utils/analytics";
+import {Navigator} from 'react'
 
 const HEADER_POSITION = -120; // From react-native-elements Header source
 class Reader extends React.Component {
@@ -94,16 +95,17 @@ class Reader extends React.Component {
     if (startBaniList.length > 0) {
       for (const bani of startBaniList) {
         if (bani.id == this.currentBani.id) {
-          if (bani.progress > 0 && bani.progress < 1) {
             progress = bani.progress;
-          }
         }
       }
+    }
+    if(Number(progress)==1 || Number(progress)>"1"){
+      progress=0
     }
     this.currentBani.progress = progress;
   }
 
-  handleBackPress(data) {
+  handleBackPress=()=> {
    this.webView.postMessage(JSON.stringify({ Back: true }));
     setTimeout(()=>{this.props.navigation.goBack();},100);
   }
@@ -464,7 +466,6 @@ class Reader extends React.Component {
     let position = data.split('-')[1]
 
     const startBaniList = JSON.parse(this.props.startBani)
-    if (position > 0) {
       if (startBaniList.length == 0) {
         this.currentBani.progress = position
         startBaniList.push(this.currentBani)
@@ -489,7 +490,6 @@ class Reader extends React.Component {
           startBaniList.push(this.currentBani)
         }
       }
-    }
     this.props.setStartBani(JSON.stringify(startBaniList))
   }
 
