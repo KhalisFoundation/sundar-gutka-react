@@ -167,9 +167,12 @@ class Reader extends React.Component {
       let fontFace = this.props.fontFace;
       let nightMode = this.props.nightMode;
       let transliteration = this.props.transliteration;
+      let larivaar=this.props.larivaar;
+      let larivaarAssist=this.props.larivaarAssist
       let englishTranslations = this.props.englishTranslations;
       let punjabiTranslations = this.props.punjabiTranslations;
       let spanishTranslations = this.props.spanishTranslations;
+      
       var html =
         "<!DOCTYPE html><html><head>" +
         "<meta name='viewport' content='width=device-width, user-scalable=no'>" +
@@ -208,7 +211,7 @@ class Reader extends React.Component {
           "' style=\"padding: .2em; font-family:'" +
           fontFace +
           "'; font-size: " +
-          fontSizeForReader(fontSize, item.header, false) +
+          fontSizeForReader(fontSize, item.header, false,larivaar) +
           "pt; color: " +
           fontColorForReader(item.header, nightMode, TextType.GURMUKHI) +
           "; text-align: " +
@@ -217,7 +220,7 @@ class Reader extends React.Component {
             : item.header === 1 || item.header === 2
               ? "center"
               : "right") +
-          ';">' +
+          ';margin:0.1em;margin-left:0.2em">' +
           item.gurmukhi +
           "</div>";
 
