@@ -79,7 +79,7 @@ class Settings extends React.Component {
               : GLOBAL.COLOR.TOOLBAR_COLOR_ALT
           }
           containerStyle={[
-            Platform.OS === "android" && { height: 56, paddingTop: 0 },
+            Platform.OS === "android" && { height: 86, paddingTop: 0 },
           ]}
           leftComponent={
             <Icon

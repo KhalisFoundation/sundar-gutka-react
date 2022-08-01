@@ -585,7 +585,7 @@ class Reader extends React.Component {
           <Header
             backgroundColor={GLOBAL.COLOR.READER_HEADER_COLOR}
             containerStyle={[
-              Platform.OS === "android" && { height: 56, paddingTop: 0 },
+              Platform.OS === "android" && { height: 86, paddingTop: 0 },
             ]}
             onLayout={(event) => {
               this.headerHeight = event.nativeEvent.layout.height;
