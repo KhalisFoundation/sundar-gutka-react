@@ -127,7 +127,6 @@ class Home extends React.Component {
   }
 
   handleOnPress(item, navigator) {
-    console.log(item)
     if (!item.folder) {
       const { setCurrentShabad} = this.props;
       setCurrentShabad(item.id);
@@ -190,14 +189,12 @@ class Home extends React.Component {
 
   async loadBaniList() {
     const {transliterationLanguage,setMergedBaniData}=this.props
-    console.log("Load bani list opened")
     const baniList=await Database.getBaniList(transliterationLanguage)
        setMergedBaniData(mergedBaniList(baniList));
         this.sortBani();
         this.setState({
           isLoading: false,
         });
-        console.log("baniList")
   }
 
   reorder(arr, index) {

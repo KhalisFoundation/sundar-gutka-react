@@ -531,7 +531,6 @@ class Reader extends React.Component {
    render() {
     const {route,nightMode,transliteration,fontFace,navigation,autoScroll,autoScrollShabadSpeed,currentShabad,setAutoScrollSpeed}=this.props;
     const {data,isLoading,animationPosition,scrollMultiplier,paused}=this.state;
-    console.log(paused)
     const { params } = route.params;
     this.trackScreenForShabad(params);
     const styles = StyleSheet.create({
