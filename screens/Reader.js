@@ -23,7 +23,6 @@ import {
 } from "../utils/helpers";
 import * as actions from "../actions/actions";
 import AnalyticsManager from "../utils/analytics";
-import {Navigator} from 'react'
 
 const HEADER_POSITION = -120; // From react-native-elements Header source
 class Reader extends React.Component {
@@ -33,6 +32,7 @@ class Reader extends React.Component {
     translit: '',
     progress: 0
   }
+
   constructor(props) {
     super(props);
 
@@ -42,7 +42,6 @@ class Reader extends React.Component {
       scrollMultiplier: 1.0,
       isLoading: false,
       animationPosition: new Animated.Value(0), // The header and footer position
-      headerHeight: 0,
     };
 
     // How long does the slide animation take
@@ -50,29 +49,126 @@ class Reader extends React.Component {
     this.webView = null;
   }
 
+  componentDidMount() {
+    this.loadShabad();
+    this.setPosition();
+  }
+
+  // eslint-disable-next-line camelcase
+  UNSAFE_componentWillReceiveProps(nextProps) {
+    const {setScrollIndex}=this.props;
+    if (nextProps.scrollIndex !== -1) {
+      this.scrollToItem(nextProps.scrollIndex);
+      setScrollIndex(-1);
+    }
+  }
+
+  componentDidUpdate(prevProps) {
+    const {baniLength,larivaar,larivaarAssist,paragraphMode,manglacharanPosition,padchhedSetting,visram,vishraamOption,vishraamSource,transliterationLanguage} = this.props;
+    if (
+      prevProps.baniLength !== baniLength ||
+      prevProps.larivaar !== larivaar ||
+      prevProps.larivaarAssist !== larivaarAssist ||
+      prevProps.paragraphMode !== paragraphMode ||
+      prevProps.manglacharanPosition !== manglacharanPosition ||
+      prevProps.padchhedSetting !== padchhedSetting ||
+      prevProps.visram !== visram ||
+      prevProps.vishraamOption !== vishraamOption ||
+      prevProps.vishraamSource !== vishraamSource ||
+      prevProps.transliterationLanguage !== transliterationLanguage
+    ) {
+      this.loadShabad();
+    }
+  }
+
+  componentWillUnmount() {
+    // this.setState = (state, callback) => {
+    //   return;
+    // };
+  }
+
+  handleBackPress=()=> {
+    const {navigation}=this.props;
+    this.webView.postMessage(JSON.stringify({ Back: true }));
+     setTimeout(()=>{navigation.goBack();},100);
+   }
+
+   handleMessage(message) {
+     const {animationPosition}=this.state
+    if (message.nativeEvent.data.includes('save')) {
+      this.savePositionToProps(message)
+    }
+    if (message.nativeEvent.data === "toggle") {
+      if (JSON.stringify(animationPosition) === 0) {
+        this.toggleHeader("hide");
+      } else {
+        this.toggleHeader("show");
+      }
+    } else {
+      this.toggleHeader(message.nativeEvent.data);
+    }
+  }
+
+   onLayout() {
+     const {paused}=this.state
+     const {autoScrollShabadSpeed}=this.props
+    let multiplier = 1.0;
+    const { width, height } = Dimensions.get("window");
+    if (width > height) {
+      multiplier = height / width;
+    }
+    this.setState({
+      scrollMultiplier: multiplier,
+    });
+
+    if (!paused) {
+      const autoScrollSpeed = {
+        autoScroll: autoScrollShabadSpeed,
+        scrollMultiplier: multiplier,
+      };
+      this.webView.postMessage(JSON.stringify(autoScrollSpeed));
+    }
+  }
+
+  setPosition() {
+    const {startBani}=this.props;
+    const startBaniList = JSON.parse(startBani);
+    let progress = 0;
+    if (startBaniList.length > 0) {
+     const data = startBaniList.find(bani=>bani.id===this.currentBani.id);
+     if(data) progress=data.progress
+    }
+    if(Number(progress)===1 || Number(progress)>"1"){
+      progress=0
+    }
+    this.currentBani.progress = progress;
+  }
+
   toggleHeader(state) {
-    Animated.timing(this.state.animationPosition, {
+    const {animationPosition}=this.state;
+    Animated.timing(animationPosition, {
       duration: this.slideDuration,
       useNativeDriver: false,
-      toValue: state == "hide" ? HEADER_POSITION : 0,
+      toValue: state === "hide" ? HEADER_POSITION : 0,
     }).start();
 
-    StatusBar.setHidden(state == "hide", 'fade');
+    StatusBar.setHidden(state === "hide", 'fade');
   }
 
   loadShabad() {
+    const {currentShabad,baniLength,larivaar,larivaarAssist,padchhedSetting,manglacharanPosition,paragraphMode,visram,vishraamOption,vishraamSource,transliterationLanguage}=this.props
     Database.getShabadForId(
-      this.props.currentShabad,
-      this.props.baniLength,
-      this.props.larivaar,
-      this.props.larivaarAssist,
-      this.props.padchhedSetting,
-      this.props.manglacharanPosition,
-      this.props.paragraphMode,
-      this.props.visram,
-      this.props.vishraamOption,
-      this.props.vishraamSource,
-      this.props.transliterationLanguage
+      currentShabad,
+      baniLength,
+      larivaar,
+      larivaarAssist,
+      padchhedSetting,
+      manglacharanPosition,
+      paragraphMode,
+      visram,
+      vishraamOption,
+      vishraamSource,
+      transliterationLanguage
     ).then((shabad) => {
       this.setState({
         data: shabad,
@@ -83,51 +179,6 @@ class Reader extends React.Component {
     });
   }
 
-  componentDidMount() {
-    this.loadShabad();
-    this.setPosition();
-
-  }
-
-  setPosition() {
-    const startBaniList = JSON.parse(this.props.startBani);
-    let progress = 0;
-    if (startBaniList.length > 0) {
-      for (const bani of startBaniList) {
-        if (bani.id == this.currentBani.id) {
-            progress = bani.progress;
-        }
-      }
-    }
-    if(Number(progress)==1 || Number(progress)>"1"){
-      progress=0
-    }
-    this.currentBani.progress = progress;
-  }
-
-  handleBackPress=()=> {
-   this.webView.postMessage(JSON.stringify({ Back: true }));
-    setTimeout(()=>{this.props.navigation.goBack();},100);
-  }
-
-
-  componentDidUpdate(prevProps) {
-    if (
-      prevProps.baniLength != this.props.baniLength ||
-      prevProps.larivaar != this.props.larivaar ||
-      prevProps.larivaarAssist != this.props.larivaarAssist ||
-      prevProps.paragraphMode != this.props.paragraphMode ||
-      prevProps.manglacharanPosition != this.props.manglacharanPosition ||
-      prevProps.padchhedSetting != this.props.padchhedSetting ||
-      prevProps.visram != this.props.visram ||
-      prevProps.vishraamOption != this.props.vishraamOption ||
-      prevProps.vishraamSource != this.props.vishraamSource ||
-      prevProps.transliterationLanguage != this.props.transliterationLanguage
-    ) {
-      this.loadShabad();
-    }
-  }
-
   trackScreenForShabad(params) {
     const name = params.item.translit
     AnalyticsManager.getInstance().trackScreenView(name, this.constructor.name);
@@ -135,49 +186,35 @@ class Reader extends React.Component {
     this.currentBani.translit = params.item.translit
   }
 
-  UNSAFE_componentWillReceiveProps(nextProps) {
-    if (nextProps.scrollIndex != -1) {
-      this.scrollToItem(nextProps.scrollIndex);
-      this.props.setScrollIndex(-1);
-    }
-  }
-
   scrollToItem(index) {
-    var viewPosition;
-    for (let i = 0; i < this.state.data.length; i++) {
-      if (this.state.data[i].id <= index) {
+    let viewPosition;
+    const {data}=this.state
+    // eslint-disable-next-line no-plusplus
+    for (let i = 0; i < data.length; i++) {
+      if (data[i].id <= index) {
         viewPosition = index;
       }
 
-      if (this.state.data[i].id == index) {
+      if (data[i].id === index) {
         break;
       }
     }
-
     this.webView.postMessage(JSON.stringify({ bookmark: viewPosition }));
   }
 
   truncate(n) {
-    return this.length > n ? this.substr(0, n - 1) + "..." : this + "";
+    return this.length > n ? `${this.substr(0, n - 1)}...` : `${this} `;
   }
 
   loadHTML(data, headerHeight) {
+    const {fontSize,fontFace,nightMode,transliteration,larivaar,englishTranslations,punjabiTranslations,spanishTranslations}=this.props
     if (data.length > 0) {
-      let fontSize = this.props.fontSize;
-      let fontFace = this.props.fontFace;
-      let nightMode = this.props.nightMode;
-      let transliteration = this.props.transliteration;
-      let larivaar=this.props.larivaar;
-      let larivaarAssist=this.props.larivaarAssist
-      let englishTranslations = this.props.englishTranslations;
-      let punjabiTranslations = this.props.punjabiTranslations;
-      let spanishTranslations = this.props.spanishTranslations;
       
-      var html =
+      let html =
         "<!DOCTYPE html><html><head>" +
         "<meta name='viewport' content='width=device-width, user-scalable=no'>" +
         "<style type='text/css'>";
-      let fileUri = Platform.select({
+      const fileUri = Platform.select({
         ios: `${fontFace}.ttf`,
         android: `file:///android_asset/fonts/${fontFace}.ttf`,
       });
@@ -188,144 +225,137 @@ class Reader extends React.Component {
         }` ;
 
       html +=
-        "body { " +
-        "background-color: " +
-        (nightMode ? "#000" : "#fff") +
-        ";" +
-        "word-break: break-word;" +
-        "color: " +
-        (nightMode ? "#fff" : "#000") +
-        ";" +
-        "padding-top: " +
-        headerHeight +
-        "px; }";
-      html += "* { -webkit-user-select: none; }";
-      html += "</style><script>" + this.loadScrollJS() + "</script>";
-      html += "</head><body>";
+      `${"body { " +
+      "background-color: "}${ 
+      nightMode ? "#000" : "#fff" 
+      };` +
+      `word-break: break-word;` +
+      `color: ${ 
+      nightMode ? "#fff" : "#000" 
+      };` +
+      `padding-top: ${ 
+      headerHeight 
+      }px; }`;
 
+      html += "* { -webkit-user-select: none; }";
+      html += `</style><script>${this.loadScrollJS()} </script>`;
+      html += "</head><body>";
       data.forEach(function (item) {
+        let textAlign='left'
+        switch(item.header){
+          case 0: textAlign="left";
+          break;
+          case 1: textAlign="center";
+          break;
+          case 2: textAlign="center";
+          break;
+          default:
+            textAlign="right";
+            break;
+        }
         html += "<div style='padding-top: .5em'>";
         html +=
-          "<div id='" +
-          item.id +
-          "' style=\"padding: .2em; font-family:'" +
-          fontFace +
-          "'; font-size: " +
-          fontSizeForReader(fontSize, item.header, false,larivaar) +
-          "pt; color: " +
-          fontColorForReader(item.header, nightMode, TextType.GURMUKHI) +
-          "; text-align: " +
-          (item.header === 0
-            ? "left"
-            : item.header === 1 || item.header === 2
-              ? "center"
-              : "right") +
-          ';margin:0.1em;margin-left:0.2em">' +
-          item.gurmukhi +
-          "</div>";
+        `<div id='${ 
+        item.id 
+        }' style="padding: .2em; font-family:'${ 
+        fontFace 
+        }'; font-size: ${ 
+        fontSizeForReader(fontSize, item.header, false,larivaar) 
+        }pt; color: ${ 
+        fontColorForReader(item.header, nightMode, TextType.GURMUKHI) 
+        }; text-align: ${ 
+        textAlign 
+        };margin:0.1em;margin-left:0.2em">${ 
+        item.gurmukhi 
+        }</div>`;
 
         if (transliteration) {
           html +=
-            "<div style=\"padding: .2em; font-family:'Arial'; font-size: " +
-            fontSizeForReader(fontSize, item.header, true) +
-            "pt; color: " +
-            fontColorForReader(
-              item.header,
-              nightMode,
-              TextType.TRANSLITERATION
-            ) +
-            "; text-align: " +
-            (item.header === 0
-              ? "left"
-              : item.header === 1 || item.header === 2
-                ? "center"
-                : "right") +
-            "; font-weight: " +
-            (item.header === 0 ? "normal" : "bold") +
-            ';">' +
-            item.translit +
-            "</div>";
+          `<div style="padding: .2em; font-family:'Arial'; font-size: ${ 
+          fontSizeForReader(fontSize, item.header, true) 
+          }pt; color: ${ 
+          fontColorForReader(
+            item.header,
+            nightMode,
+            TextType.TRANSLITERATION
+          ) 
+          }; text-align: ${ 
+          textAlign
+          }; font-weight: ${ 
+          item.header === 0 ? "normal" : "bold" 
+          };">${ 
+          item.translit 
+          }</div>`;
         }
 
         if (englishTranslations) {
           html +=
-            "<div style=\"padding: .2em; font-family:'Arial'; font-size: " +
-            fontSizeForReader(fontSize, item.header, true) +
-            "pt; color: " +
-            fontColorForReader(
-              item.header,
-              nightMode,
-              TextType.ENGLISH_TRANSLATION
-            ) +
-            "; text-align: " +
-            (item.header === 0
-              ? "left"
-              : item.header === 1 || item.header === 2
-                ? "center"
-                : "right") +
-            "; font-weight: " +
-            (item.header === 0 ? "normal" : "bold") +
-            ';">' +
-            item.englishTranslations +
-            "</div>";
+          `<div style="padding: .2em; font-family:'Arial'; font-size: ${ 
+          fontSizeForReader(fontSize, item.header, true) 
+          }pt; color: ${ 
+          fontColorForReader(
+            item.header,
+            nightMode,
+            TextType.ENGLISH_TRANSLATION
+          ) 
+          }; text-align: ${ 
+          textAlign
+          }; font-weight: ${ 
+          item.header === 0 ? "normal" : "bold" 
+          };">${ 
+          item.englishTranslations 
+          }</div>`;
         }
 
         if (punjabiTranslations) {
           html +=
-            "<div style=\"padding: .2em; font-family:'" +
-            fontFace +
-            "'; font-size: " +
-            fontSizeForReader(fontSize, item.header, true) +
-            "pt; color: " +
-            fontColorForReader(
-              item.header,
-              nightMode,
-              TextType.ENGLISH_TRANSLATION
-            ) +
-            "; text-align: " +
-            (item.header === 0
-              ? "left"
-              : item.header === 1 || item.header === 2
-                ? "center"
-                : "right") +
-            "; font-weight: " +
-            (item.header === 0 ? "normal" : "bold") +
-            ';">' +
-            item.punjabiTranslations +
-            "</div>";
+          `<div style="padding: .2em; font-family:'${ 
+          fontFace 
+          }'; font-size: ${ 
+          fontSizeForReader(fontSize, item.header, true) 
+          }pt; color: ${ 
+          fontColorForReader(
+            item.header,
+            nightMode,
+            TextType.ENGLISH_TRANSLATION
+          ) 
+          }; text-align: ${ 
+          textAlign
+          }; font-weight: ${ 
+          item.header === 0 ? "normal" : "bold" 
+          };">${ 
+          item.punjabiTranslations 
+          }</div>`;
         }
 
         if (spanishTranslations) {
           html +=
-            "<div style=\"padding: .2em; font-family:'Arial'; font-size: " +
-            fontSizeForReader(fontSize, item.header, true) +
-            "pt; color: " +
-            fontColorForReader(
-              item.header,
-              nightMode,
-              TextType.ENGLISH_TRANSLATION
-            ) +
-            "; text-align: " +
-            (item.header === 0
-              ? "left"
-              : item.header === 1 || item.header === 2
-                ? "center"
-                : "right") +
-            "; font-weight: " +
-            (item.header === 0 ? "normal" : "bold") +
-            ';">' +
-            item.spanishTranslations +
-            "</div>";
+          `<div style="padding: .2em; font-family:'Arial'; font-size: ${ 
+          fontSizeForReader(fontSize, item.header, true) 
+          }pt; color: ${ 
+          fontColorForReader(
+            item.header,
+            nightMode,
+            TextType.ENGLISH_TRANSLATION
+          ) 
+          }; text-align: ${ 
+            textAlign
+          }; font-weight: ${ 
+          item.header === 0 ? "normal" : "bold" 
+          };">${ 
+          item.spanishTranslations 
+          }</div>`;
         }
         html += "</div>";
       });
       html += "</body></html>";
       return html;
     }
+    return ""
   }
 
   loadScrollJS() {
-    let listener = Platform.OS === "android" ? "document" : "window";
+    const listener = Platform.OS === "android" ? "document" : "window";
     const position = this.currentBani.progress
     return `
     var autoScrollTimeout;
@@ -464,26 +494,28 @@ class Reader extends React.Component {
     }, false);
       `;
   }
+  
   savePositionToProps(message) {
-    let data = message.nativeEvent.data
-    let position = data.split('-')[1]
+    const {startBani,setStartBani}=this.props
+    const {data} = message.nativeEvent
+    const position = data.split('-')[1]
 
-    const startBaniList = JSON.parse(this.props.startBani)
-      if (startBaniList.length == 0) {
+    const startBaniList = JSON.parse(startBani)
+      if (startBaniList.length === 0) {
         this.currentBani.progress = position
         startBaniList.push(this.currentBani)
       }
       else {
         let isFound = false
         startBaniList.forEach(element => {
-          if (element.id == this.currentBani.id) {
+          if (element.id === this.currentBani.id) {
             isFound = true
           }
         });
         if (isFound) {
           startBaniList.forEach(element => {
-            if (element.id == this.currentBani.id) {
-
+            if (element.id === this.currentBani.id) {
+              // eslint-disable-next-line no-param-reassign
               element.progress = position
             }
           })
@@ -493,90 +525,73 @@ class Reader extends React.Component {
           startBaniList.push(this.currentBani)
         }
       }
-    this.props.setStartBani(JSON.stringify(startBaniList))
+    setStartBani(JSON.stringify(startBaniList))
   }
 
-  handleMessage(message) {
-    if (message.nativeEvent.data.includes('save')) {
-      this.savePositionToProps(message)
-    }
-
-
-    if (message.nativeEvent.data === "toggle") {
-      if (JSON.stringify(this.state.animationPosition) == 0) {
-        this.toggleHeader("hide");
-      } else {
-        this.toggleHeader("show");
-      }
-    } else {
-      this.toggleHeader(message.nativeEvent.data);
-    }
-  }
-
-  onLayout(e) {
-    var multiplier = 1.0;
-    const { width, height } = Dimensions.get("window");
-    if (width > height) {
-      multiplier = height / width;
-    }
-    this.setState({
-      scrollMultiplier: multiplier,
+   render() {
+    const {route,nightMode,transliteration,fontFace,navigation,autoScroll,autoScrollShabadSpeed,currentShabad,setAutoScrollSpeed}=this.props;
+    const {data,isLoading,animationPosition,scrollMultiplier,paused}=this.state;
+    console.log(paused)
+    const { params } = route.params;
+    this.trackScreenForShabad(params);
+    const styles = StyleSheet.create({
+      container: {
+        flex: 1,
+        backgroundColor: "#fff",
+      },
+      header: {
+        position: "absolute",
+        top: 0,
+        left: 0,
+        right: 0,
+        overflow: "hidden",
+        backgroundColor: "transparent",
+      },
+      footer: {
+        position: "absolute",
+        bottom: 0,
+        left: 0,
+        right: 0,
+        overflow: "hidden",
+        backgroundColor: "transparent",
+      },
     });
-
-    if (!this.state.paused) {
-      let autoScrollSpeed = {
-        autoScroll: this.props.autoScrollShabadSpeed,
-        scrollMultiplier: multiplier,
-      };
-      this.webView.postMessage(JSON.stringify(autoScrollSpeed));
-    }
-  }
-  componentWillUnmount() {
-    this.setState = (state, callback) => {
-      return;
-    };
-  }
-
-  render() {
-    const { params } = this.props.route.params;
-    {
-      this.trackScreenForShabad(params);
-    }
-
     return (
       <View
         style={[
           styles.container,
-          this.props.nightMode && { backgroundColor: "#000" },
+          nightMode && { backgroundColor: "#000" },
         ]}
+        // eslint-disable-next-line react/jsx-no-bind
         onLayout={this.onLayout.bind(this)}>
-        <LoadingIndicator isLoading={this.state.isLoading} />
+        <LoadingIndicator isLoading={isLoading} />
 
         <WebView
           originWhitelist={["*"]}
-          style={this.props.nightMode && { backgroundColor: "#000" }}
-          ref={(webView) => (this.webView = webView)}
+          style={nightMode && { backgroundColor: "#000" }}
+          ref={(webView) => {this.webView = webView}}
           decelerationRate='normal'
           source={{
-            html: this.loadHTML(this.state.data, this.headerHeight),
+            html: this.loadHTML(data, this.headerHeight),
             baseUrl: "",
           }}
+          // eslint-disable-next-line react/jsx-no-bind
           onMessage={this.handleMessage.bind(this)}
         />
 
         <Animated.View
           style={[
             styles.header,
-            { position: "absolute", top: this.state.animationPosition },
+            { position: "absolute", top: animationPosition },
           ]}>
           <StatusBar
             backgroundColor={
-              this.props.nightMode
+              nightMode
                 ? GLOBAL.COLOR.READER_STATUS_BAR_COLOR_NIGHT_MODE
                 : GLOBAL.COLOR.READER_STATUS_BAR_COLOR
             }
             barStyle={
-              this.props.nightMode ||
+              nightMode ||
                 Platform.OS === "android"
                 ? "light-content"
                 : "dark-content"
@@ -595,18 +610,19 @@ class Reader extends React.Component {
                 name="arrow-back"
                 color={GLOBAL.COLOR.TOOLBAR_TINT}
                 size={30}
+                // eslint-disable-next-line react/jsx-no-bind
                 onPress={this.handleBackPress.bind(this)}
               />
             }
             centerComponent={{
-              text: this.props.transliteration
+              text: transliteration
                 ? this.truncate.apply(params.item.translit, [24])
                 : this.truncate.apply(params.item.gurmukhi, [25]),
               style: {
                 color: GLOBAL.COLOR.TOOLBAR_TINT,
-                fontFamily: this.props.transliteration
+                fontFamily: transliteration
                   ? null
-                  : this.props.fontFace,
+                  : fontFace,
                 fontSize: 20,
               },
             }}
@@ -617,15 +633,15 @@ class Reader extends React.Component {
                   color={GLOBAL.COLOR.TOOLBAR_TINT}
                   size={30}
                   onPress={() => {
-                    let autoScrollSpeed = {
+                    const autoScrollSpeed = {
                       autoScroll: 0,
-                      scrollMultiplier: this.state.scrollMultiplier,
+                    scrollMultiplier,
                     };
                     this.webView.postMessage(JSON.stringify(autoScrollSpeed));
                     this.setState({
                       paused: true,
                     });
-                    this.props.navigation.navigate('Settings');
+                    navigation.navigate('Settings');
                   }}
                 />
                 <Icon
@@ -637,7 +653,7 @@ class Reader extends React.Component {
                     this.trackScreenForShabad(
                       params
                     );
-                    this.props.navigation.navigate('Bookmarks');
+                    navigation.navigate('Bookmarks');
                   }}
                 />
               </View>
@@ -645,42 +661,42 @@ class Reader extends React.Component {
           />
         </Animated.View>
 
-        {this.props.autoScroll && (
+        {autoScroll && (
           <Animated.View
             style={[
               styles.footer,
               {
                 position: "absolute",
-                bottom: this.state.animationPosition,
+                bottom: animationPosition,
                 paddingBottom: 25,
                 backgroundColor: GLOBAL.COLOR.READER_FOOTER_COLOR,
               },
             ]}>
             <View style={{ flexDirection: "row" }}>
-              {this.state.paused && (
+              {paused && (
                 <Icon
                   style={{ paddingTop: 15, paddingLeft: 25, width: 55 }}
                   name="play-arrow"
                   color={GLOBAL.COLOR.TOOLBAR_TINT}
                   size={30}
                   onPress={() => {
-                    var scrollSpeed = this.props.autoScrollShabadSpeed[
-                      this.props.currentShabad
+                    let scrollSpeed = autoScrollShabadSpeed[
+                      currentShabad
                     ]
-                      ? this.props.autoScrollShabadSpeed[
-                      this.props.currentShabad
+                      ? autoScrollShabadSpeed[
+                      currentShabad
                       ]
                       : 50;
-                    if (scrollSpeed == 0) {
+                    if (scrollSpeed === 0) {
                       scrollSpeed = 1;
-                      this.props.setAutoScrollSpeed(
+                      setAutoScrollSpeed(
                         scrollSpeed,
-                        this.props.currentShabad
+                        currentShabad
                       );
                     }
-                    let autoScrollSpeed = {
+                    const autoScrollSpeed = {
                       autoScroll: scrollSpeed,
-                      scrollMultiplier: this.state.scrollMultiplier,
+                      scrollMultiplier,
                     };
                     this.setState({
                       paused: false,
@@ -689,16 +705,16 @@ class Reader extends React.Component {
                   }}
                 />
               )}
-              {!this.state.paused && (
+              {!paused && (
                 <Icon
                   style={{ paddingTop: 15, paddingLeft: 25, width: 55 }}
                   name="pause"
                   color={GLOBAL.COLOR.TOOLBAR_TINT}
                   size={30}
                   onPress={() => {
-                    let autoScrollSpeed = {
+                    const autoScrollSpeed = {
                       autoScroll: 0,
-                      scrollMultiplier: this.state.scrollMultiplier,
+                      scrollMultiplier,
                     };
                     this.setState({
                       paused: true,
@@ -711,29 +727,30 @@ class Reader extends React.Component {
                 style={[
                   { flex: 1, marginLeft: 25, marginRight: 25, marginTop: 10 },
                 ]}
-                minimumTrackTintColor={"#BFBFBF"}
-                maximumTrackTintColor={"#464646"}
-                thumbTintColor={"#fff"}
+                minimumTrackTintColor="#BFBFBF"
+                maximumTrackTintColor="#464646"
+                thumbTintColor="#fff"
                 minimumValue={0}
                 maximumValue={100}
                 step={1}
                 value={
-                  this.props.autoScrollShabadSpeed[this.props.currentShabad]
-                    ? this.props.autoScrollShabadSpeed[this.props.currentShabad]
+                  autoScrollShabadSpeed[currentShabad]
+                    ? autoScrollShabadSpeed[currentShabad]
                     : 50
                 }
                 onValueChange={(value) => {
-                  this.props.setAutoScrollSpeed(
+                  setAutoScrollSpeed(
                     value,
-                    this.props.currentShabad
+                    currentShabad
                   );
-                  let speed = value;
-                  speed === 0
-                    ? this.setState({ paused: true })
-                    : this.setState({ paused: false });
-                  let autoScrollSpeed = {
+                  const speed = value;
+
+                  if(speed === 0) {this.setState({ paused: true })}
+                  else{ this.setState({ paused: false })}
+
+                  const autoScrollSpeed = {
                     autoScroll: speed,
-                    scrollMultiplier: this.state.scrollMultiplier,
+                    scrollMultiplier,
                   };
                   this.webView.postMessage(JSON.stringify(autoScrollSpeed));
                 }}
@@ -750,8 +767,8 @@ class Reader extends React.Component {
                   paddingTop: 20,
                   paddingRight: 20,
                 }}>
-                {this.props.autoScrollShabadSpeed[this.props.currentShabad]
-                  ? this.props.autoScrollShabadSpeed[this.props.currentShabad]
+                {autoScrollShabadSpeed[currentShabad]
+                  ? autoScrollShabadSpeed[currentShabad]
                   : 50}
               </Text>
             </View>
@@ -762,28 +779,7 @@ class Reader extends React.Component {
   }
 }
 
-const styles = StyleSheet.create({
-  container: {
-    flex: 1,
-    backgroundColor: "#fff",
-  },
-  header: {
-    position: "absolute",
-    top: 0,
-    left: 0,
-    right: 0,
-    overflow: "hidden",
-    backgroundColor: "transparent",
-  },
-  footer: {
-    position: "absolute",
-    bottom: 0,
-    left: 0,
-    right: 0,
-    overflow: "hidden",
-    backgroundColor: "transparent",
-  },
-});
+
 
 function mapStateToProps(state) {
   return {
@@ -792,7 +788,6 @@ function mapStateToProps(state) {
     scrollIndex: state.scrollIndex,
     transliteration: state.transliteration,
     transliterationLanguage: state.transliterationLanguage,
-    fontSize: state.fontSize,
     fontSize: state.fontSize,
     fontFace: state.fontFace,
     baniLength: state.baniLength,

@@ -8,7 +8,8 @@
     "start": "react-native start",
     "link-react": "react-native link",
     "test": "jest",
-    "lint": "eslint ."
+    "lint": "eslint .",
+    "precommit": "lint-staged"
   },
   "dependencies": {
     "@react-native-async-storage/async-storage": "^1.15.9",
@@ -21,6 +22,7 @@
     "@react-navigation/native-stack": "^6.2.5",
     "@reduxjs/toolkit": "^1.6.2",
     "moment": "^2.29.1",
+    "prop-types": "^15.8.1",
     "react": "^18.0.0",
     "react-native": "^0.68.1",
     "react-native-action-sheet-component": "^0.0.36",
@@ -43,6 +45,7 @@
     "react-native-version-number": "^0.3.6",
     "react-native-webview": "^11.14.2",
     "react-redux": "^7.2.6",
+    "redux": "^4.2.0",
     "redux-persist": "^6.0.0"
   },
   "devDependencies": {
@@ -58,10 +61,18 @@
     "eslint-plugin-prettier": "^4.0.0",
     "eslint-plugin-react": "^7.30.1",
     "eslint-plugin-react-hooks": "^4.6.0",
+    "husky": "^0.14.3",
     "jest": "^26.6.3",
+    "lint-staged": "^13.0.3",
     "metro-react-native-babel-preset": "^0.66.2",
     "prettier": "^2.6.2",
     "react-test-renderer": "17.0.2"
+  },
+  "lint-staged": {
+    "*.{js,jsx}": [
+      "eslint --fix",
+      "git add"
+    ]
   },
   "jest": {
     "preset": "react-native"
