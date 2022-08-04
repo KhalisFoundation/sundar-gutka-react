@@ -90,7 +90,7 @@ class Reader extends React.Component {
   handleBackPress=()=> {
     const {navigation}=this.props;
     this.webView.postMessage(JSON.stringify({ Back: true }));
-     setTimeout(()=>{navigation.goBack();},100);
+    setTimeout(()=>{navigation.goBack();},100);
    }
 
    handleMessage(message) {
@@ -138,7 +138,7 @@ class Reader extends React.Component {
      const data = startBaniList.find(bani=>bani.id===this.currentBani.id);
      if(data) progress=data.progress
     }
-    if(Number(progress)===1 || Number(progress)>"1"){
+    if(Number(progress)===1 || Number(progress)>1){
       progress=0
     }
     this.currentBani.progress = progress;
