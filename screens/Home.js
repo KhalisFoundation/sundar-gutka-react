@@ -5,6 +5,7 @@ import KeepAwake from "react-native-keep-awake";
 import { SafeAreaView, View, Text, StatusBar, Platform } from "react-native";
 import { Header } from "react-native-elements";
 import Icon from "react-native-vector-icons/MaterialIcons";
+import PropTypes from 'prop-types';
 import VersionNumber from "react-native-version-number";
 // import messaging from '@react-native-firebase/messaging';
 import Sound from "react-native-sound";
@@ -315,6 +316,31 @@ class Home extends React.Component {
       </SafeAreaView>
     );
   }
+}
+
+Home.propTypes={
+  appVersion:PropTypes.string.isRequired,
+  setAppVersion:PropTypes.func.isRequired,
+  baniLength:PropTypes.string.isRequired,
+  language:PropTypes.string.isRequired,
+  fontFace:PropTypes.string.isRequired,
+  setFontFace:PropTypes.func.isRequired,
+  screenAwake:PropTypes.string.isRequired,
+  autoScroll:PropTypes.string.isRequired,
+  statusBar:PropTypes.string.isRequired,
+  statistics:PropTypes.string.isRequired,
+  reminderSound:PropTypes.string.isRequired,
+  reminderBanis:PropTypes.string.isRequired,
+  reminders:PropTypes.string.isRequired,
+  baniOrder:PropTypes.string.isRequired,
+  transliterationLanguage:PropTypes.string.isRequired,
+  setCurrentShabad:PropTypes.func.isRequired,
+  mergedBaniData:PropTypes.string.isRequired,
+  setMergedBaniData:PropTypes.func.isRequired,
+  navigation:PropTypes.string.isRequired,
+  nightMode:PropTypes.string.isRequired,
+  fontSize:PropTypes.string.isRequired,
+  transliteration:PropTypes.string.isRequired
 }
 
 function mapStateToProps(state) {

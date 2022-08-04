@@ -8,6 +8,7 @@ import {
   Text,
   StatusBar,
 } from "react-native";
+import PropTypes from 'prop-types';
 import { WebView } from "react-native-webview";
 import { connect } from "react-redux";
 import { Header, Slider } from "react-native-elements";
@@ -778,6 +779,35 @@ class Reader extends React.Component {
   }
 }
 
+Reader.propTypes={
+  setScrollIndex:PropTypes.func.isRequired,
+  scrollIndex:PropTypes.string.isRequired,
+  baniLength:PropTypes.string.isRequired,
+  larivaar:PropTypes.string.isRequired,
+  larivaarAssist:PropTypes.string.isRequired,
+  paragraphMode:PropTypes.string.isRequired,
+  manglacharanPosition:PropTypes.string.isRequired,
+  padchhedSetting:PropTypes.string.isRequired,
+  visram:PropTypes.string.isRequired,
+  vishraamOption:PropTypes.string.isRequired,
+  vishraamSource:PropTypes.string.isRequired,
+  transliterationLanguage:PropTypes.string.isRequired,
+  navigation:PropTypes.string.isRequired,
+  autoScrollShabadSpeed:PropTypes.string.isRequired,
+  startBani:PropTypes.string.isRequired,
+  currentShabad:PropTypes.string.isRequired,
+  fontSize:PropTypes.string.isRequired,
+  fontFace:PropTypes.string.isRequired,
+  nightMode:PropTypes.string.isRequired,
+  transliteration:PropTypes.string.isRequired,
+  englishTranslations:PropTypes.string.isRequired,
+  punjabiTranslations:PropTypes.string.isRequired,
+  spanishTranslations:PropTypes.string.isRequired,
+  setStartBani:PropTypes.func.isRequired,
+  route:PropTypes.string.isRequired,
+  autoScroll:PropTypes.string.isRequired,
+  setAutoScrollSpeed:PropTypes.func.isRequired
+}
 
 
 function mapStateToProps(state) {
