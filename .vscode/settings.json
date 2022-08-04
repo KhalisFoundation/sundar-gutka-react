@@ -1,5 +1,6 @@
 {
-    "editor.formatOnSave": false,
-    "editor.codeActionsOnSave": {
-    }
+    "git.ignoreLimitWarning": true,
+    "editor.defaultFormatter": "esbenp.prettier-vscode",
+    "editor.formatOnSave": true,
+    "editor.formatOnPaste": true
 }

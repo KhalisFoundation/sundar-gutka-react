@@ -96,8 +96,9 @@ export const baseFontSize = (SIZE, transliteration) => {
   return fontSize;
 };
 
-export const fontSizeForReader = (SIZE, header, transliteration) => {
-  let fontSize = baseFontSize(SIZE, transliteration) * 0.75;
+export const fontSizeForReader = (SIZE, header, transliteration,larivaar=false) => {
+  const size = larivaar ? 0.90 : 0.75;
+  let fontSize = baseFontSize(SIZE, transliteration) * size;
   if (header === 6) {
     return fontSize * 0.75;
   } else if (header === 2) {

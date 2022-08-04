@@ -25,14 +25,6 @@ export default class App extends React.Component {
     BackHandler.addEventListener("hardwareBackPress", this.handleBackPress);
   }
 
-  notificationHandler() {
-    const firebaseNotifaction = new FirebaseNotification()
-    firebaseNotifaction.checkPermission();
-    firebaseNotifaction.backgroundMessageHandler();
-    firebaseNotifaction.foregroundMessage();
-    firebaseNotifaction.handleNotification();
-  }
-
   componentWillUnmount() {
     BackHandler.removeEventListener("hardwareBackPress", this.handleBackPress);
   }
@@ -49,6 +41,14 @@ export default class App extends React.Component {
     );
     return true;
   };
+
+  notificationHandler=()=> {
+    const firebaseNotifaction = new FirebaseNotification()
+    firebaseNotifaction.checkPermission();
+    firebaseNotifaction.backgroundMessageHandler();
+    firebaseNotifaction.foregroundMessage();
+    firebaseNotifaction.handleNotification();
+  }
 
   render() {
     return (
@@ -74,4 +74,4 @@ export default class App extends React.Component {
     );
   }
 }
-AppRegistry.registerHeadlessTask('RNFirebaseMessagingService', () => notificationHandler);
+AppRegistry.registerHeadlessTask('RNFirebaseMessagingService', () => this.notificationHandler);
