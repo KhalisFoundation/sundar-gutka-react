@@ -318,6 +318,176 @@ class Home extends React.Component {
   }
 }
 
+Home.defaultProps={
+    mergedBaniData: {
+      "baniOrder": [{
+        "gurmukhi": "gur mMqR",
+        "id": 1,
+        "translit": "gur ma(n)tr"
+      }, {
+        "gurmukhi": "jpujI swihb",
+        "id": 2,
+        "translit": "japujee saahib"
+      }, {
+        "gurmukhi": "Sbd hzwry",
+        "id": 3,
+        "translit": "shabadh hazaare"
+      }, {
+        "gurmukhi": "jwpu swihb",
+        "id": 4,
+        "translit": "jaap saahib"
+      }, {
+        "gurmukhi": "Sbd hzwry pwiqSwhI 10",
+        "id": 5,
+        "translit": "shabadh hazaare paatishaahee 10"
+      }, {
+        "gurmukhi": "qÍ pRswid sv`Xy (sRwvg su`D)",
+        "id": 6,
+        "translit": "tavai prasaadh sava'ye (sraavag su'dh)"
+      }, {
+        "gurmukhi": "qÍ pRswid sv`Xy (dInn kI)",
+        "id": 7,
+        "translit": "tavai prasaadh sava'ye (dheenan kee)"
+      }, {
+        "gurmukhi": "Akwl ausqq cOpeI",
+        "id": 8,
+        "translit": "akaal usatat chauapiee"
+      }, {
+        "gurmukhi": "bynqI cOpeI swihb",
+        "id": 9,
+        "translit": "benatee chauapiee saahib"
+      }, {
+        "gurmukhi": "Anµdu swihb",
+        "id": 10,
+        "translit": "ana(n)dh saahib"
+      }, {
+        "gurmukhi": "lwvW",
+        "id": 11,
+        "translit": "laavaa(n)"
+      }, {
+        "gurmukhi": "AQ cMfIcirqR",
+        "id": 12,
+        "translit": "ath cha(n)ddeecharitr"
+      }, {
+        "gurmukhi": "cMfI dI vwr",
+        "id": 13,
+        "translit": "cha(n)ddee dhee vaar"
+      }, {
+        "gurmukhi": "kucjI",
+        "id": 14,
+        "translit": "kuchajee"
+      }, {
+        "gurmukhi": "sucjI",
+        "id": 15,
+        "translit": "suchajee"
+      }, {
+        "gurmukhi": "guxvMqI",
+        "id": 16,
+        "translit": "gunava(n)tee"
+      }, {
+        "gurmukhi": "Punhy mhlw 5",
+        "id": 17,
+        "translit": "funahe mahalaa panjavaa"
+      }, {
+        "gurmukhi": "cauboly",
+        "id": 18,
+        "translit": "chaubole"
+      }, {
+        "gurmukhi": "SsqR nwm mwlw",
+        "id": 19,
+        "translit": "shasatr naam maalaa"
+      }, {
+        "gurmukhi": "Awsw dI vwr",
+        "id": 90,
+        "translit": "aasaa dhee vaar"
+      }, {
+        "gurmukhi": "rhrwis swihb",
+        "id": 21,
+        "translit": "raharaas saahib"
+      }, {
+        "gurmukhi": "AwrqI",
+        "id": 22,
+        "translit": "aaratee"
+      }, {
+        "gurmukhi": "soihlw swihb",
+        "id": 23,
+        "translit": "sohilaa saahib"
+      }, {
+        "gurmukhi": "Ardws",
+        "id": 24,
+        "translit": "aradhaas"
+      }, {
+        "gurmukhi": "sRI BgauqI AsqoqR (pMQ pRkwS)",
+        "id": 25,
+        "translit": "sree bhagautee asatotr (pa(n)th prakaash)"
+      }, {
+        "gurmukhi": "sRI BgauqI AsqoqR (sRI hzUr swihb)",
+        "id": 26,
+        "translit": "sree bhagautee asatotr (sree hazoor saahib)"
+      }, {
+        "gurmukhi": "bwrh mwhw mWJ",
+        "id": 27,
+        "translit": "baareh maahaa maa(n)jh"
+      }, {
+        "gurmukhi": "bwrh mwhw svYXw",
+        "id": 28,
+        "translit": "baareh maahaa savaiyaa"
+      }, {
+        "gurmukhi": "Akwl ausqq",
+        "id": 29,
+        "translit": "akaal usatat"
+      }, {
+        "gurmukhi": "slok mhlw 9",
+        "id": 30,
+        "translit": "salok mahalaa nauvaa"
+      }, {
+        "gurmukhi": "suKmnI swihb",
+        "id": 31,
+        "translit": "sukhamanee saahib"
+      }, {
+        "gurmukhi": "suKmnw swihb",
+        "id": 32,
+        "translit": "sukhamanaa saahib"
+      }, {
+        "gurmukhi": "bwvn AKrI",
+        "id": 33,
+        "translit": "baavan akharee"
+      }, {
+        "gurmukhi": "isD gosit",
+        "id": 34,
+        "translit": "sidh gosaT"
+      }, {
+        "gurmukhi": "dKxI EAMkwru",
+        "id": 35,
+        "translit": "dhakhanee oa(n)kaaru"
+      }, {
+        "gurmukhi": "duK BMjnI swihb",
+        "id": 36,
+        "translit": "dhukh bha(n)janee saahib"
+      }, {
+        "folder": [Array],
+        "gurmukhi": "AMimRq bwxI",
+        "translit": "amirat baaNee"
+      }, {
+        "folder": [Array],
+        "gurmukhi": "Bgq bwxI",
+        "translit": "bhagat baaNee"
+      }, {
+        "folder": [Array],
+        "gurmukhi": "22 vwrW",
+        "translit": "22 varaa(n)"
+      }, {
+        "folder": [Array],
+        "gurmukhi": "sv`Xy",
+        "translit": "sava'ye"
+      }, {
+        "gurmukhi": "rwg mwlw",
+        "id": 38,
+        "translit": "raag maalaa"
+      }]
+    }
+}
+
 Home.propTypes={
   appVersion:PropTypes.string.isRequired,
   setAppVersion:PropTypes.func.isRequired,
@@ -325,22 +495,46 @@ Home.propTypes={
   language:PropTypes.string.isRequired,
   fontFace:PropTypes.string.isRequired,
   setFontFace:PropTypes.func.isRequired,
-  screenAwake:PropTypes.string.isRequired,
-  autoScroll:PropTypes.string.isRequired,
-  statusBar:PropTypes.string.isRequired,
-  statistics:PropTypes.string.isRequired,
+  screenAwake:PropTypes.bool.isRequired,
+  autoScroll:PropTypes.bool.isRequired,
+  statusBar:PropTypes.bool.isRequired,
+  statistics:PropTypes.bool.isRequired,
   reminderSound:PropTypes.string.isRequired,
   reminderBanis:PropTypes.string.isRequired,
-  reminders:PropTypes.string.isRequired,
-  baniOrder:PropTypes.string.isRequired,
+  reminders:PropTypes.bool.isRequired,
+  baniOrder:PropTypes.arrayOf(PropTypes.number).isRequired,
   transliterationLanguage:PropTypes.string.isRequired,
   setCurrentShabad:PropTypes.func.isRequired,
-  mergedBaniData:PropTypes.string.isRequired,
+  mergedBaniData:PropTypes.shape({
+    baniOrder:PropTypes.arrayOf(PropTypes.shape({
+      gurmukhi:PropTypes.string,
+      id:PropTypes.number,
+      translit:PropTypes.string,
+    }))
+  }),
   setMergedBaniData:PropTypes.func.isRequired,
-  navigation:PropTypes.string.isRequired,
-  nightMode:PropTypes.string.isRequired,
+  navigation:PropTypes.shape({
+    addEventListener:PropTypes.func,
+    canGoBack:PropTypes.func,
+    dispatch:PropTypes.func,
+    getID:PropTypes.func,
+    getParent:PropTypes.func,
+    getState:PropTypes.func,
+    goBack:PropTypes.func,
+    isFocused:PropTypes.func,
+    navigate:PropTypes.func,
+    pop:PropTypes.func,
+    popToTop:PropTypes.func,
+    push:PropTypes.func,
+    removeListener:PropTypes.func,
+    replace:PropTypes.func,
+    reset:PropTypes.func,
+    setOptions:PropTypes.func,
+    setParams:PropTypes.func
+  }).isRequired,
+  nightMode:PropTypes.bool.isRequired,
   fontSize:PropTypes.string.isRequired,
-  transliteration:PropTypes.string.isRequired
+  transliteration:PropTypes.bool.isRequired
 }
 
 function mapStateToProps(state) {
