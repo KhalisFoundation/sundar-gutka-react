@@ -5,9 +5,8 @@
         android:drawable="@color/primary_dark"/>
 
     <item
-        android:width="600dp"
-        android:height="600dp"
-        android:drawable="@mipmap/ic_launcher_foreground"
+        
+        android:drawable="@mipmap/ic_launcher_splash"
         android:gravity="center" />
 
 </layer-list>

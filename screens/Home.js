@@ -233,7 +233,7 @@ class Home extends React.Component {
           backgroundColor={GLOBAL.COLOR.TOOLBAR_COLOR}
           containerStyle={[
             { height: 0, borderBottomWidth: 0 },
-            Platform.OS === "android" && { paddingTop: 10 },
+            Platform.OS === "android" && { paddingTop: 20 },
           ]}
         />
         <View
