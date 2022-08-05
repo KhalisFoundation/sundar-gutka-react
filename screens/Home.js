@@ -488,54 +488,56 @@ Home.defaultProps={
     }
 }
 
-Home.propTypes={
-  appVersion:PropTypes.string.isRequired,
-  setAppVersion:PropTypes.func.isRequired,
-  baniLength:PropTypes.string.isRequired,
-  language:PropTypes.string.isRequired,
-  fontFace:PropTypes.string.isRequired,
-  setFontFace:PropTypes.func.isRequired,
-  screenAwake:PropTypes.bool.isRequired,
-  autoScroll:PropTypes.bool.isRequired,
-  statusBar:PropTypes.bool.isRequired,
-  statistics:PropTypes.bool.isRequired,
-  reminderSound:PropTypes.string.isRequired,
-  reminderBanis:PropTypes.string.isRequired,
-  reminders:PropTypes.bool.isRequired,
-  baniOrder:PropTypes.arrayOf(PropTypes.number).isRequired,
-  transliterationLanguage:PropTypes.string.isRequired,
-  setCurrentShabad:PropTypes.func.isRequired,
-  mergedBaniData:PropTypes.shape({
-    baniOrder:PropTypes.arrayOf(PropTypes.shape({
-      gurmukhi:PropTypes.string,
-      id:PropTypes.number,
-      translit:PropTypes.string,
-    }))
+Home.propTypes = {
+  appVersion: PropTypes.string.isRequired,
+  setAppVersion: PropTypes.func.isRequired,
+  baniLength: PropTypes.string.isRequired,
+  language: PropTypes.string.isRequired,
+  fontFace: PropTypes.string.isRequired,
+  setFontFace: PropTypes.func.isRequired,
+  screenAwake: PropTypes.bool.isRequired,
+  autoScroll: PropTypes.bool.isRequired,
+  statusBar: PropTypes.bool.isRequired,
+  statistics: PropTypes.bool.isRequired,
+  reminderSound: PropTypes.string.isRequired,
+  reminderBanis: PropTypes.string.isRequired,
+  reminders: PropTypes.bool.isRequired,
+  baniOrder: PropTypes.arrayOf(PropTypes.number).isRequired,
+  transliterationLanguage: PropTypes.string.isRequired,
+  setCurrentShabad: PropTypes.func.isRequired,
+  mergedBaniData: PropTypes.shape({
+    baniOrder: PropTypes.arrayOf(
+      PropTypes.shape({
+        gurmukhi: PropTypes.string,
+        id: PropTypes.number,
+        translit: PropTypes.string,
+      })
+    ),
   }),
-  setMergedBaniData:PropTypes.func.isRequired,
-  navigation:PropTypes.shape({
-    addEventListener:PropTypes.func,
-    canGoBack:PropTypes.func,
-    dispatch:PropTypes.func,
-    getID:PropTypes.func,
-    getParent:PropTypes.func,
-    getState:PropTypes.func,
-    goBack:PropTypes.func,
-    isFocused:PropTypes.func,
-    navigate:PropTypes.func,
-    pop:PropTypes.func,
-    popToTop:PropTypes.func,
-    push:PropTypes.func,
-    removeListener:PropTypes.func,
-    replace:PropTypes.func,
-    reset:PropTypes.func,
-    setOptions:PropTypes.func,
-    setParams:PropTypes.func
+  setMergedBaniData: PropTypes.func.isRequired,
+  navigation: PropTypes.shape({
+    addEventListener: PropTypes.func,
+    canGoBack: PropTypes.func,
+    dispatch: PropTypes.func,
+    getID: PropTypes.func,
+    getParent: PropTypes.func,
+    getState: PropTypes.func,
+    goBack: PropTypes.func,
+    isFocused: PropTypes.func,
+    navigate: PropTypes.func,
+    pop: PropTypes.func,
+    popToTop: PropTypes.func,
+    push: PropTypes.func,
+    removeListener: PropTypes.func,
+    replace: PropTypes.func,
+    reset: PropTypes.func,
+    setOptions: PropTypes.func,
+    setParams: PropTypes.func,
   }).isRequired,
-  nightMode:PropTypes.bool.isRequired,
-  fontSize:PropTypes.string.isRequired,
-  transliteration:PropTypes.bool.isRequired
-}
+  nightMode: PropTypes.bool.isRequired,
+  fontSize: PropTypes.string.isRequired,
+  transliteration: PropTypes.bool.isRequired,
+};
 
 function mapStateToProps(state) {
   return {
