@@ -357,7 +357,7 @@ class Reader extends React.Component {
 
   loadScrollJS() {
     const listener = Platform.OS === "android" ? "document" : "window";
-    const position = this.currentBani.progress
+    const position = this.currentBani.progress;
     return `
     var autoScrollTimeout;
     var autoScrollSpeed = 0;
@@ -390,7 +390,7 @@ class Reader extends React.Component {
       return (window.pageYOffset / (document.body.scrollHeight - window.innerHeight));
     }
 
-    // Listen for scroll events
+  //  Listen for scroll events
     window.addEventListener('scroll', function ( event ) {
       // Clear our timeout throughout the scroll
       window.clearTimeout( isScrolling );
@@ -488,14 +488,12 @@ class Reader extends React.Component {
         autoScrollSpeed = message.autoScroll;
         scrollMultiplier = message.scrollMultiplier;
         
-        if(autoScrollTimeout == null) {
-          setAutoScroll();
-        }
+     
       }
     }, false);
       `;
   }
-  
+
   savePositionToProps(message) {
     const {startBani,setStartBani}=this.props
     const {data} = message.nativeEvent
