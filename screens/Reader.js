@@ -1,14 +1,6 @@
 import React from "react";
-import {
-  Animated,
-  Dimensions,
-  StyleSheet,
-  View,
-  Platform,
-  Text,
-  StatusBar,
-} from "react-native";
-import PropTypes from 'prop-types';
+import { Animated, Dimensions, StyleSheet, View, Platform, Text, StatusBar } from "react-native";
+import PropTypes from "prop-types";
 import { WebView } from "react-native-webview";
 import { connect } from "react-redux";
 import { Header, Slider } from "react-native-elements";
@@ -17,22 +9,17 @@ import Icon from "react-native-vector-icons/MaterialIcons";
 import GLOBAL from "../utils/globals";
 import Database from "../utils/database";
 import LoadingIndicator from "../components/LoadingIndicator";
-import {
-  fontSizeForReader,
-  fontColorForReader,
-  TextType,
-} from "../utils/helpers";
+import { fontSizeForReader, fontColorForReader, TextType } from "../utils/helpers";
 import * as actions from "../actions/actions";
 import AnalyticsManager from "../utils/analytics";
 
 const HEADER_POSITION = -120; // From react-native-elements Header source
 class Reader extends React.Component {
-
   currentBani = {
     id: 0,
-    translit: '',
-    progress: 0
-  }
+    translit: "",
+    progress: 0,
+  };
 
   constructor(props) {
     super(props);
@@ -57,7 +44,7 @@ class Reader extends React.Component {
 
   // eslint-disable-next-line camelcase
   UNSAFE_componentWillReceiveProps(nextProps) {
-    const {setScrollIndex}=this.props;
+    const { setScrollIndex } = this.props;
     if (nextProps.scrollIndex !== -1) {
       this.scrollToItem(nextProps.scrollIndex);
       setScrollIndex(-1);
@@ -65,7 +52,18 @@ class Reader extends React.Component {
   }
 
   componentDidUpdate(prevProps) {
-    const {baniLength,larivaar,larivaarAssist,paragraphMode,manglacharanPosition,padchhedSetting,visram,vishraamOption,vishraamSource,transliterationLanguage} = this.props;
+    const {
+      baniLength,
+      larivaar,
+      larivaarAssist,
+      paragraphMode,
+      manglacharanPosition,
+      padchhedSetting,
+      visram,
+      vishraamOption,
+      vishraamSource,
+      transliterationLanguage,
+    } = this.props;
     if (
       prevProps.baniLength !== baniLength ||
       prevProps.larivaar !== larivaar ||
@@ -88,16 +86,18 @@ class Reader extends React.Component {
     // };
   }
 
-  handleBackPress=()=> {
-    const {navigation}=this.props;
+  handleBackPress = () => {
+    const { navigation } = this.props;
     this.webView.postMessage(JSON.stringify({ Back: true }));
-    setTimeout(()=>{navigation.goBack();},100);
-   }
+    setTimeout(() => {
+      navigation.goBack();
+    }, 100);
+  };
 
-   handleMessage(message) {
-     const {animationPosition}=this.state
-    if (message.nativeEvent.data.includes('save')) {
-      this.savePositionToProps(message)
+  handleMessage(message) {
+    const { animationPosition } = this.state;
+    if (message.nativeEvent.data.includes("save")) {
+      this.savePositionToProps(message);
     }
     if (message.nativeEvent.data === "toggle") {
       if (JSON.stringify(animationPosition) === 0) {
@@ -110,9 +110,9 @@ class Reader extends React.Component {
     }
   }
 
-   onLayout() {
-     const {paused}=this.state
-     const {autoScrollShabadSpeed}=this.props
+  onLayout() {
+    const { paused } = this.state;
+    const { autoScrollShabadSpeed } = this.props;
     let multiplier = 1.0;
     const { width, height } = Dimensions.get("window");
     if (width > height) {
@@ -132,32 +132,44 @@ class Reader extends React.Component {
   }
 
   setPosition() {
-    const {startBani}=this.props;
+    const { startBani } = this.props;
     const startBaniList = JSON.parse(startBani);
     let progress = 0;
     if (startBaniList.length > 0) {
-     const data = startBaniList.find(bani=>bani.id===this.currentBani.id);
-     if(data) progress=data.progress
+      const data = startBaniList.find((bani) => bani.id === this.currentBani.id);
+      if (data) progress = data.progress;
     }
-    if(Number(progress)===1 || Number(progress)>1){
-      progress=0
+    if (Number(progress) === 1 || Number(progress) > 1) {
+      progress = 0;
     }
     this.currentBani.progress = progress;
   }
 
   toggleHeader(state) {
-    const {animationPosition}=this.state;
+    const { animationPosition } = this.state;
     Animated.timing(animationPosition, {
       duration: this.slideDuration,
       useNativeDriver: false,
       toValue: state === "hide" ? HEADER_POSITION : 0,
     }).start();
 
-    StatusBar.setHidden(state === "hide", 'fade');
+    StatusBar.setHidden(state === "hide", "fade");
   }
 
   loadShabad() {
-    const {currentShabad,baniLength,larivaar,larivaarAssist,padchhedSetting,manglacharanPosition,paragraphMode,visram,vishraamOption,vishraamSource,transliterationLanguage}=this.props
+    const {
+      currentShabad,
+      baniLength,
+      larivaar,
+      larivaarAssist,
+      padchhedSetting,
+      manglacharanPosition,
+      paragraphMode,
+      visram,
+      vishraamOption,
+      vishraamSource,
+      transliterationLanguage,
+    } = this.props;
     Database.getShabadForId(
       currentShabad,
       baniLength,
@@ -170,26 +182,28 @@ class Reader extends React.Component {
       vishraamOption,
       vishraamSource,
       transliterationLanguage
-    ).then((shabad) => {
-      this.setState({
-        data: shabad,
-        isLoading: false,
+    )
+      .then((shabad) => {
+        this.setState({
+          data: shabad,
+          isLoading: false,
+        });
+      })
+      .catch((error) => {
+        console.log(error);
       });
-    }).catch(error => {
-      console.log(error);
-    });
   }
 
   trackScreenForShabad(params) {
-    const name = params.item.translit
+    const name = params.item.translit;
     AnalyticsManager.getInstance().trackScreenView(name, this.constructor.name);
-    this.currentBani.id = params.item.id
-    this.currentBani.translit = params.item.translit
+    this.currentBani.id = params.item.id;
+    this.currentBani.translit = params.item.translit;
   }
 
   scrollToItem(index) {
     let viewPosition;
-    const {data}=this.state
+    const { data } = this.state;
     // eslint-disable-next-line no-plusplus
     for (let i = 0; i < data.length; i++) {
       if (data[i].id <= index) {
@@ -208,9 +222,17 @@ class Reader extends React.Component {
   }
 
   loadHTML(data, headerHeight) {
-    const {fontSize,fontFace,nightMode,transliteration,larivaar,englishTranslations,punjabiTranslations,spanishTranslations}=this.props
+    const {
+      fontSize,
+      fontFace,
+      nightMode,
+      transliteration,
+      larivaar,
+      englishTranslations,
+      punjabiTranslations,
+      spanishTranslations,
+    } = this.props;
     if (data.length > 0) {
-      
       let html =
         "<!DOCTYPE html><html><head>" +
         "<meta name='viewport' content='width=device-width, user-scalable=no'>" +
@@ -219,132 +241,103 @@ class Reader extends React.Component {
         ios: `${fontFace}.ttf`,
         android: `file:///android_asset/fonts/${fontFace}.ttf`,
       });
-      html +=
-        `@font-face {
+      html += `@font-face {
         font-family: '${fontFace}';
         src: local('${fontFace}'), url('${fileUri}') ;
-        }` ;
+        }`;
 
       html +=
-      `${"body { " +
-      "background-color: "}${ 
-      nightMode ? "#000" : "#fff" 
-      };` +
-      `word-break: break-word;` +
-      `color: ${ 
-      nightMode ? "#fff" : "#000" 
-      };` +
-      `padding-top: ${ 
-      headerHeight 
-      }px; }`;
+        `"body { " + "background-color: "}${nightMode ? "#000" : "#fff"};` +
+        `word-break: break-word;` +
+        `color: ${nightMode ? "#fff" : "#000"};` +
+        `padding-top: ${headerHeight}px; }`;
 
       html += "* { -webkit-user-select: none; }";
       html += `</style><script>${this.loadScrollJS()} </script>`;
       html += "</head><body>";
-      data.forEach(function (item) {
-        let textAlign='left'
-        switch(item.header){
-          case 0: textAlign="left";
-          break;
-          case 1: textAlign="center";
-          break;
-          case 2: textAlign="center";
-          break;
+      data.forEach((item) => {
+        let textAlign = "left";
+        switch (item.header) {
+          case 0:
+            textAlign = "left";
+            break;
+          case 1:
+            textAlign = "center";
+            break;
+          case 2:
+            textAlign = "center";
+            break;
           default:
-            textAlign="right";
+            textAlign = "right";
             break;
         }
         html += "<div style='padding-top: .5em'>";
-        html +=
-        `<div id='${ 
-        item.id 
-        }' style="padding: .2em; font-family:'${ 
-        fontFace 
-        }'; font-size: ${ 
-        fontSizeForReader(fontSize, item.header, false,larivaar) 
-        }pt; color: ${ 
-        fontColorForReader(item.header, nightMode, TextType.GURMUKHI) 
-        }; text-align: ${ 
-        textAlign 
-        };margin:0.1em;margin-left:0.2em">${ 
-        item.gurmukhi 
-        }</div>`;
+        html += `<div id='${
+          item.id
+        }' style="padding: .2em; font-family:'${fontFace}'; font-size: ${fontSizeForReader(
+          fontSize,
+          item.header,
+          false,
+          larivaar
+        )}pt; color: ${fontColorForReader(
+          item.header,
+          nightMode,
+          TextType.GURMUKHI
+        )}; text-align: ${textAlign};margin:0.1em;margin-left:0.2em">${item.gurmukhi}</div>`;
 
         if (transliteration) {
-          html +=
-          `<div style="padding: .2em; font-family:'Arial'; font-size: ${ 
-          fontSizeForReader(fontSize, item.header, true) 
-          }pt; color: ${ 
-          fontColorForReader(
+          html += `<div style="padding: .2em; font-family:'Arial'; font-size: ${fontSizeForReader(
+            fontSize,
+            item.header,
+            true
+          )}pt; color: ${fontColorForReader(
             item.header,
             nightMode,
             TextType.TRANSLITERATION
-          ) 
-          }; text-align: ${ 
-          textAlign
-          }; font-weight: ${ 
-          item.header === 0 ? "normal" : "bold" 
-          };">${ 
-          item.translit 
+          )}; text-align: ${textAlign}; font-weight: ${item.header === 0 ? "normal" : "bold"};">${
+            item.translit
           }</div>`;
         }
 
         if (englishTranslations) {
-          html +=
-          `<div style="padding: .2em; font-family:'Arial'; font-size: ${ 
-          fontSizeForReader(fontSize, item.header, true) 
-          }pt; color: ${ 
-          fontColorForReader(
+          html += `<div style="padding: .2em; font-family:'Arial'; font-size: ${fontSizeForReader(
+            fontSize,
+            item.header,
+            true
+          )}pt; color: ${fontColorForReader(
             item.header,
             nightMode,
             TextType.ENGLISH_TRANSLATION
-          ) 
-          }; text-align: ${ 
-          textAlign
-          }; font-weight: ${ 
-          item.header === 0 ? "normal" : "bold" 
-          };">${ 
-          item.englishTranslations 
+          )}; text-align: ${textAlign}; font-weight: ${item.header === 0 ? "normal" : "bold"};">${
+            item.englishTranslations
           }</div>`;
         }
 
         if (punjabiTranslations) {
-          html +=
-          `<div style="padding: .2em; font-family:'${ 
-          fontFace 
-          }'; font-size: ${ 
-          fontSizeForReader(fontSize, item.header, true) 
-          }pt; color: ${ 
-          fontColorForReader(
+          html += `<div style="padding: .2em; font-family:'${fontFace}'; font-size: ${fontSizeForReader(
+            fontSize,
+            item.header,
+            true
+          )}pt; color: ${fontColorForReader(
             item.header,
             nightMode,
             TextType.ENGLISH_TRANSLATION
-          ) 
-          }; text-align: ${ 
-          textAlign
-          }; font-weight: ${ 
-          item.header === 0 ? "normal" : "bold" 
-          };">${ 
-          item.punjabiTranslations 
+          )}; text-align: ${textAlign}; font-weight: ${item.header === 0 ? "normal" : "bold"};">${
+            item.punjabiTranslations
           }</div>`;
         }
 
         if (spanishTranslations) {
-          html +=
-          `<div style="padding: .2em; font-family:'Arial'; font-size: ${ 
-          fontSizeForReader(fontSize, item.header, true) 
-          }pt; color: ${ 
-          fontColorForReader(
+          html += `<div style="padding: .2em; font-family:'Arial'; font-size: ${fontSizeForReader(
+            fontSize,
+            item.header,
+            true
+          )}pt; color: ${fontColorForReader(
             item.header,
             nightMode,
             TextType.ENGLISH_TRANSLATION
-          ) 
-          }; text-align: ${ 
-            textAlign
-          }; font-weight: ${ 
-          item.header === 0 ? "normal" : "bold" 
-          };">${ 
-          item.spanishTranslations 
+          )}; text-align: ${textAlign}; font-weight: ${item.header === 0 ? "normal" : "bold"};">${
+            item.spanishTranslations
           }</div>`;
         }
         html += "</div>";
@@ -352,12 +345,12 @@ class Reader extends React.Component {
       html += "</body></html>";
       return html;
     }
-    return ""
+    return "";
   }
 
   loadScrollJS() {
     const listener = Platform.OS === "android" ? "document" : "window";
-    const position = this.currentBani.progress
+    const position = this.currentBani.progress;
     return `
     var autoScrollTimeout;
     var autoScrollSpeed = 0;
@@ -495,43 +488,51 @@ class Reader extends React.Component {
     }, false);
       `;
   }
-  
-  savePositionToProps(message) {
-    const {startBani,setStartBani}=this.props
-    const {data} = message.nativeEvent
-    const position = data.split('-')[1]
 
-    const startBaniList = JSON.parse(startBani)
-      if (startBaniList.length === 0) {
-        this.currentBani.progress = position
-        startBaniList.push(this.currentBani)
-      }
-      else {
-        let isFound = false
-        startBaniList.forEach(element => {
+  savePositionToProps(message) {
+    const { startBani, setStartBani } = this.props;
+    const { data } = message.nativeEvent;
+    const position = data.split("-")[1];
+
+    const startBaniList = JSON.parse(startBani);
+    if (startBaniList.length === 0) {
+      this.currentBani.progress = position;
+      startBaniList.push(this.currentBani);
+    } else {
+      let isFound = false;
+      startBaniList.forEach((element) => {
+        if (element.id === this.currentBani.id) {
+          isFound = true;
+        }
+      });
+      if (isFound) {
+        startBaniList.forEach((element) => {
           if (element.id === this.currentBani.id) {
-            isFound = true
+            // eslint-disable-next-line no-param-reassign
+            element.progress = position;
           }
         });
-        if (isFound) {
-          startBaniList.forEach(element => {
-            if (element.id === this.currentBani.id) {
-              // eslint-disable-next-line no-param-reassign
-              element.progress = position
-            }
-          })
-        }
-        else {
-          this.currentBani.progress = position
-          startBaniList.push(this.currentBani)
-        }
+      } else {
+        this.currentBani.progress = position;
+        startBaniList.push(this.currentBani);
       }
-    setStartBani(JSON.stringify(startBaniList))
+    }
+    setStartBani(JSON.stringify(startBaniList));
   }
 
-   render() {
-    const {route,nightMode,transliteration,fontFace,navigation,autoScroll,autoScrollShabadSpeed,currentShabad,setAutoScrollSpeed}=this.props;
-    const {data,isLoading,animationPosition,scrollMultiplier,paused}=this.state;
+  render() {
+    const {
+      route,
+      nightMode,
+      transliteration,
+      fontFace,
+      navigation,
+      autoScroll,
+      autoScrollShabadSpeed,
+      currentShabad,
+      setAutoScrollSpeed,
+    } = this.props;
+    const { data, isLoading, animationPosition, scrollMultiplier, paused } = this.state;
     const { params } = route.params;
     this.trackScreenForShabad(params);
     const styles = StyleSheet.create({
@@ -558,19 +559,19 @@ class Reader extends React.Component {
     });
     return (
       <View
-        style={[
-          styles.container,
-          nightMode && { backgroundColor: "#000" },
-        ]}
+        style={[styles.container, nightMode && { backgroundColor: "#000" }]}
         // eslint-disable-next-line react/jsx-no-bind
-        onLayout={this.onLayout.bind(this)}>
+        onLayout={this.onLayout.bind(this)}
+      >
         <LoadingIndicator isLoading={isLoading} />
 
         <WebView
           originWhitelist={["*"]}
           style={nightMode && { backgroundColor: "#000" }}
-          ref={(webView) => {this.webView = webView}}
-          decelerationRate='normal'
+          ref={(webView) => {
+            this.webView = webView;
+          }}
+          decelerationRate="normal"
           source={{
             html: this.loadHTML(data, this.headerHeight),
             baseUrl: "",
@@ -579,29 +580,18 @@ class Reader extends React.Component {
           onMessage={this.handleMessage.bind(this)}
         />
 
-        <Animated.View
-          style={[
-            styles.header,
-            { position: "absolute", top: animationPosition },
-          ]}>
+        <Animated.View style={[styles.header, { position: "absolute", top: animationPosition }]}>
           <StatusBar
             backgroundColor={
               nightMode
                 ? GLOBAL.COLOR.READER_STATUS_BAR_COLOR_NIGHT_MODE
                 : GLOBAL.COLOR.READER_STATUS_BAR_COLOR
             }
-            barStyle={
-              nightMode ||
-                Platform.OS === "android"
-                ? "light-content"
-                : "dark-content"
-            }
+            barStyle={nightMode || Platform.OS === "android" ? "light-content" : "dark-content"}
           />
           <Header
             backgroundColor={GLOBAL.COLOR.READER_HEADER_COLOR}
-            containerStyle={[
-              Platform.OS === "android" && { height: 86, paddingTop: 0 },
-            ]}
+            containerStyle={[Platform.OS === "android" && { height: 86, paddingTop: 0 }]}
             onLayout={(event) => {
               this.headerHeight = event.nativeEvent.layout.height;
             }}
@@ -620,9 +610,7 @@ class Reader extends React.Component {
                 : this.truncate.apply(params.item.gurmukhi, [25]),
               style: {
                 color: GLOBAL.COLOR.TOOLBAR_TINT,
-                fontFamily: transliteration
-                  ? null
-                  : fontFace,
+                fontFamily: transliteration ? null : fontFace,
                 fontSize: 20,
               },
             }}
@@ -635,13 +623,13 @@ class Reader extends React.Component {
                   onPress={() => {
                     const autoScrollSpeed = {
                       autoScroll: 0,
-                    scrollMultiplier,
+                      scrollMultiplier,
                     };
                     this.webView.postMessage(JSON.stringify(autoScrollSpeed));
                     this.setState({
                       paused: true,
                     });
-                    navigation.navigate('Settings');
+                    navigation.navigate("Settings");
                   }}
                 />
                 <Icon
@@ -650,10 +638,8 @@ class Reader extends React.Component {
                   color={GLOBAL.COLOR.TOOLBAR_TINT}
                   size={30}
                   onPress={() => {
-                    this.trackScreenForShabad(
-                      params
-                    );
-                    navigation.navigate('Bookmarks');
+                    this.trackScreenForShabad(params);
+                    navigation.navigate("Bookmarks");
                   }}
                 />
               </View>
@@ -671,7 +657,8 @@ class Reader extends React.Component {
                 paddingBottom: 25,
                 backgroundColor: GLOBAL.COLOR.READER_FOOTER_COLOR,
               },
-            ]}>
+            ]}
+          >
             <View style={{ flexDirection: "row" }}>
               {paused && (
                 <Icon
@@ -680,19 +667,12 @@ class Reader extends React.Component {
                   color={GLOBAL.COLOR.TOOLBAR_TINT}
                   size={30}
                   onPress={() => {
-                    let scrollSpeed = autoScrollShabadSpeed[
-                      currentShabad
-                    ]
-                      ? autoScrollShabadSpeed[
-                      currentShabad
-                      ]
+                    let scrollSpeed = autoScrollShabadSpeed[currentShabad]
+                      ? autoScrollShabadSpeed[currentShabad]
                       : 50;
                     if (scrollSpeed === 0) {
                       scrollSpeed = 1;
-                      setAutoScrollSpeed(
-                        scrollSpeed,
-                        currentShabad
-                      );
+                      setAutoScrollSpeed(scrollSpeed, currentShabad);
                     }
                     const autoScrollSpeed = {
                       autoScroll: scrollSpeed,
@@ -724,9 +704,7 @@ class Reader extends React.Component {
                 />
               )}
               <Slider
-                style={[
-                  { flex: 1, marginLeft: 25, marginRight: 25, marginTop: 10 },
-                ]}
+                style={[{ flex: 1, marginLeft: 25, marginRight: 25, marginTop: 10 }]}
                 minimumTrackTintColor="#BFBFBF"
                 maximumTrackTintColor="#464646"
                 thumbTintColor="#fff"
@@ -734,19 +712,17 @@ class Reader extends React.Component {
                 maximumValue={100}
                 step={1}
                 value={
-                  autoScrollShabadSpeed[currentShabad]
-                    ? autoScrollShabadSpeed[currentShabad]
-                    : 50
+                  autoScrollShabadSpeed[currentShabad] ? autoScrollShabadSpeed[currentShabad] : 50
                 }
                 onValueChange={(value) => {
-                  setAutoScrollSpeed(
-                    value,
-                    currentShabad
-                  );
+                  setAutoScrollSpeed(value, currentShabad);
                   const speed = value;
 
-                  if(speed === 0) {this.setState({ paused: true })}
-                  else{ this.setState({ paused: false })}
+                  if (speed === 0) {
+                    this.setState({ paused: true });
+                  } else {
+                    this.setState({ paused: false });
+                  }
 
                   const autoScrollSpeed = {
                     autoScroll: speed,
@@ -755,10 +731,7 @@ class Reader extends React.Component {
                   this.webView.postMessage(JSON.stringify(autoScrollSpeed));
                 }}
                 onSlidingComplete={(value) => {
-                  AnalyticsManager.getInstance().trackReaderEvent(
-                    "autoScrollSpeed",
-                    value
-                  );
+                  AnalyticsManager.getInstance().trackReaderEvent("autoScrollSpeed", value);
                 }}
               />
               <Text
@@ -766,10 +739,9 @@ class Reader extends React.Component {
                   color: GLOBAL.COLOR.TOOLBAR_TINT,
                   paddingTop: 20,
                   paddingRight: 20,
-                }}>
-                {autoScrollShabadSpeed[currentShabad]
-                  ? autoScrollShabadSpeed[currentShabad]
-                  : 50}
+                }}
+              >
+                {autoScrollShabadSpeed[currentShabad] ? autoScrollShabadSpeed[currentShabad] : 50}
               </Text>
             </View>
           </Animated.View>
@@ -809,7 +781,6 @@ Reader.propTypes = {
   setAutoScrollSpeed: PropTypes.func.isRequired,
 };
 
-
 function mapStateToProps(state) {
   return {
     nightMode: state.nightMode,
@@ -841,7 +812,4 @@ function mapDispatchToProps(dispatch) {
   return bindActionCreators(actions, dispatch);
 }
 
-export default connect(
-  mapStateToProps,
-  mapDispatchToProps
-)(Reader);
+export default connect(mapStateToProps, mapDispatchToProps)(Reader);
