@@ -146,14 +146,13 @@ class Reader extends React.Component {
   }
 
   toggleHeader(state) {
-    const {animationPosition}=this.state;
+    let value = state === "hide" ? HEADER_POSITION : 0;
+    const { animationPosition } = this.state;
     Animated.timing(animationPosition, {
       duration: this.slideDuration,
       useNativeDriver: false,
-      toValue: state === "hide" ? HEADER_POSITION : 0,
+      toValue: value,
     }).start();
-
-    StatusBar.setHidden(state === "hide", 'fade');
   }
 
   loadShabad() {
@@ -461,7 +460,7 @@ class Reader extends React.Component {
     });
     window.addEventListener('touchend', function() {
       if(autoScrollSpeed != 0 && autoScrollTimeout == null) {
-        setAutoScroll();
+       setAutoScroll();
       }
       if(!dragging && !holding)   
       {
