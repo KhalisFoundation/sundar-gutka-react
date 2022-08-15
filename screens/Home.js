@@ -221,15 +221,13 @@ class Home extends React.Component {
     return (
       <SafeAreaView
         style={{
-          flex: 1, 
-          backgroundColor: GLOBAL.COLOR.TOOLBAR_COLOR
-        }}>
-         
+          flex: 1,
+          backgroundColor: "#ecf0f1",
+        }}
+      >
         {showLengthSelector && <BaniLengthSelector />}
 
-        <StatusBar
-          barStyle="light-content"
-        />
+        <StatusBar barStyle="light-content" />
         <Header
           backgroundColor={GLOBAL.COLOR.TOOLBAR_COLOR}
           containerStyle={[
@@ -241,7 +239,8 @@ class Home extends React.Component {
           style={{
             backgroundColor: GLOBAL.COLOR.TOOLBAR_COLOR,
             paddingBottom: 10,
-          }}>
+          }}
+        >
           <Text
             style={[
               {
@@ -251,16 +250,17 @@ class Home extends React.Component {
                 textAlign: "center",
                 paddingBottom: 10,
               },
-            ]}>
+            ]}
+          >
             {Strings.fateh}
-
           </Text>
 
           <View
             style={{
               flexDirection: "row",
               justifyContent: "center",
-            }}>
+            }}
+          >
             <Text
               style={[
                 {
@@ -268,13 +268,15 @@ class Home extends React.Component {
                   fontFamily: "GurbaniAkharHeavyTrue",
                   fontSize: 28,
                 },
-              ]}>
+              ]}
+            >
               <Text
                 style={[
                   {
                     fontSize: 32,
                   },
-                ]}>
+                ]}
+              >
                 Œ
               </Text>{" "}
               {Strings.sg_title}{" "}
@@ -283,7 +285,8 @@ class Home extends React.Component {
                   {
                     fontSize: 32,
                   },
-                ]}>
+                ]}
+              >
                 ‰
               </Text>
             </Text>
@@ -297,9 +300,7 @@ class Home extends React.Component {
             }}
             color={GLOBAL.COLOR.TOOLBAR_TINT}
             size={30}
-            onPress={() =>
-              navigation.navigate('Settings')
-            }
+            onPress={() => navigation.navigate("Settings")}
           />
         </View>
         <BaniList

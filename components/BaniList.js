@@ -2,22 +2,29 @@ import React, { Component } from "react";
 import { StyleSheet, FlatList } from "react-native";
 import { ListItem, Avatar } from "react-native-elements";
 import { baseFontSize } from "../utils/helpers";
-import LoadingIndicator from "../components/LoadingIndicator";
+import LoadingIndicator from "./LoadingIndicator";
 
 class BaniList extends Component {
   render() {
-    const {
-      data,
-      nightMode,
-      fontSize,
-      fontFace,
-      transliteration,
-      navigation,
-      isLoading,
-      onPress,
-    } = this.props;
+    const { data, nightMode, fontSize, fontFace, transliteration, navigation, isLoading, onPress } =
+      this.props;
 
     <LoadingIndicator isLoading={isLoading} />;
+
+    const styles = StyleSheet.create({
+      loading: {
+        justifyContent: "center",
+      },
+      container: {
+        flex: 1,
+        marginTop: 0,
+      },
+      rowViewContainer: {
+        paddingBottom: 0.1,
+        borderBottomWidth: 0.2,
+        borderBottomColor: "#fff",
+      },
+    });
 
     return (
       <FlatList
@@ -25,13 +32,13 @@ class BaniList extends Component {
         data={data}
         extraData={[this.state]}
         renderItem={({ item }) => (
-          <ListItem bottomDivider
-            containerStyle={[
-              styles.container,
-              nightMode && { backgroundColor: "#000" }
-            ]}
-            onPress={() => onPress(item, navigation)}>
-            {item.folder && (<Avatar source={require("../images/foldericon.png")} />)}
+          <ListItem
+            bottomDivider
+            style={item.folder && styles.rowViewContainer}
+            containerStyle={[styles.container, nightMode && { backgroundColor: "#000" }]}
+            onPress={() => onPress(item, navigation)}
+          >
+            {item.folder && <Avatar source={require("../images/foldericon.png")} />}
 
             <ListItem.Content>
               <ListItem.Title
@@ -49,20 +56,10 @@ class BaniList extends Component {
             <ListItem.Chevron />
           </ListItem>
         )}
-        keyExtractor={(item) => "" + item.gurmukhi}
+        keyExtractor={(item) => `${item.gurmukhi}`}
       />
     );
   }
 }
-
-const styles = StyleSheet.create({
-  loading: {
-    justifyContent: "center",
-  },
-  container: {
-    flex: 1,
-    marginTop: 0,
-  },
-});
 
 export default BaniList;
