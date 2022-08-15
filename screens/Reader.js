@@ -558,19 +558,19 @@ class Reader extends React.Component {
     });
     return (
       <View
-        style={[
-          styles.container,
-          nightMode && { backgroundColor: "#000" },
-        ]}
+        style={[styles.container, nightMode && { backgroundColor: "#000" }]}
         // eslint-disable-next-line react/jsx-no-bind
-        onLayout={this.onLayout.bind(this)}>
+        onLayout={this.onLayout.bind(this)}
+      >
         <LoadingIndicator isLoading={isLoading} />
 
         <WebView
           originWhitelist={["*"]}
           style={nightMode && { backgroundColor: "#000" }}
-          ref={(webView) => {this.webView = webView}}
-          decelerationRate='normal'
+          ref={(webView) => {
+            this.webView = webView;
+          }}
+          decelerationRate="normal"
           source={{
             html: this.loadHTML(data, this.headerHeight),
             baseUrl: "",
@@ -579,29 +579,18 @@ class Reader extends React.Component {
           onMessage={this.handleMessage.bind(this)}
         />
 
-        <Animated.View
-          style={[
-            styles.header,
-            { position: "absolute", top: animationPosition },
-          ]}>
+        <Animated.View style={[styles.header, { position: "absolute", top: animationPosition }]}>
           <StatusBar
             backgroundColor={
               nightMode
                 ? GLOBAL.COLOR.READER_STATUS_BAR_COLOR_NIGHT_MODE
                 : GLOBAL.COLOR.READER_STATUS_BAR_COLOR
             }
-            barStyle={
-              nightMode ||
-                Platform.OS === "android"
-                ? "light-content"
-                : "dark-content"
-            }
+            barStyle={nightMode || Platform.OS === "android" ? "light-content" : "dark-content"}
           />
           <Header
             backgroundColor={GLOBAL.COLOR.READER_HEADER_COLOR}
-            containerStyle={[
-              Platform.OS === "android" && { height: 86, paddingTop: 0 },
-            ]}
+            containerStyle={[Platform.OS === "android" && { height: 86, padding: 10 }]}
             onLayout={(event) => {
               this.headerHeight = event.nativeEvent.layout.height;
             }}
@@ -620,9 +609,7 @@ class Reader extends React.Component {
                 : this.truncate.apply(params.item.gurmukhi, [25]),
               style: {
                 color: GLOBAL.COLOR.TOOLBAR_TINT,
-                fontFamily: transliteration
-                  ? null
-                  : fontFace,
+                fontFamily: transliteration ? null : fontFace,
                 fontSize: 20,
               },
             }}
@@ -635,13 +622,13 @@ class Reader extends React.Component {
                   onPress={() => {
                     const autoScrollSpeed = {
                       autoScroll: 0,
-                    scrollMultiplier,
+                      scrollMultiplier,
                     };
                     this.webView.postMessage(JSON.stringify(autoScrollSpeed));
                     this.setState({
                       paused: true,
                     });
-                    navigation.navigate('Settings');
+                    navigation.navigate("Settings");
                   }}
                 />
                 <Icon
@@ -650,10 +637,8 @@ class Reader extends React.Component {
                   color={GLOBAL.COLOR.TOOLBAR_TINT}
                   size={30}
                   onPress={() => {
-                    this.trackScreenForShabad(
-                      params
-                    );
-                    navigation.navigate('Bookmarks');
+                    this.trackScreenForShabad(params);
+                    navigation.navigate("Bookmarks");
                   }}
                 />
               </View>
@@ -671,7 +656,8 @@ class Reader extends React.Component {
                 paddingBottom: 25,
                 backgroundColor: GLOBAL.COLOR.READER_FOOTER_COLOR,
               },
-            ]}>
+            ]}
+          >
             <View style={{ flexDirection: "row" }}>
               {paused && (
                 <Icon
@@ -680,19 +666,12 @@ class Reader extends React.Component {
                   color={GLOBAL.COLOR.TOOLBAR_TINT}
                   size={30}
                   onPress={() => {
-                    let scrollSpeed = autoScrollShabadSpeed[
-                      currentShabad
-                    ]
-                      ? autoScrollShabadSpeed[
-                      currentShabad
-                      ]
+                    let scrollSpeed = autoScrollShabadSpeed[currentShabad]
+                      ? autoScrollShabadSpeed[currentShabad]
                       : 50;
                     if (scrollSpeed === 0) {
                       scrollSpeed = 1;
-                      setAutoScrollSpeed(
-                        scrollSpeed,
-                        currentShabad
-                      );
+                      setAutoScrollSpeed(scrollSpeed, currentShabad);
                     }
                     const autoScrollSpeed = {
                       autoScroll: scrollSpeed,
@@ -724,9 +703,7 @@ class Reader extends React.Component {
                 />
               )}
               <Slider
-                style={[
-                  { flex: 1, marginLeft: 25, marginRight: 25, marginTop: 10 },
-                ]}
+                style={[{ flex: 1, marginLeft: 25, marginRight: 25, marginTop: 10 }]}
                 minimumTrackTintColor="#BFBFBF"
                 maximumTrackTintColor="#464646"
                 thumbTintColor="#fff"
@@ -734,19 +711,17 @@ class Reader extends React.Component {
                 maximumValue={100}
                 step={1}
                 value={
-                  autoScrollShabadSpeed[currentShabad]
-                    ? autoScrollShabadSpeed[currentShabad]
-                    : 50
+                  autoScrollShabadSpeed[currentShabad] ? autoScrollShabadSpeed[currentShabad] : 50
                 }
                 onValueChange={(value) => {
-                  setAutoScrollSpeed(
-                    value,
-                    currentShabad
-                  );
+                  setAutoScrollSpeed(value, currentShabad);
                   const speed = value;
 
-                  if(speed === 0) {this.setState({ paused: true })}
-                  else{ this.setState({ paused: false })}
+                  if (speed === 0) {
+                    this.setState({ paused: true });
+                  } else {
+                    this.setState({ paused: false });
+                  }
 
                   const autoScrollSpeed = {
                     autoScroll: speed,
@@ -755,10 +730,7 @@ class Reader extends React.Component {
                   this.webView.postMessage(JSON.stringify(autoScrollSpeed));
                 }}
                 onSlidingComplete={(value) => {
-                  AnalyticsManager.getInstance().trackReaderEvent(
-                    "autoScrollSpeed",
-                    value
-                  );
+                  AnalyticsManager.getInstance().trackReaderEvent("autoScrollSpeed", value);
                 }}
               />
               <Text
@@ -766,10 +738,9 @@ class Reader extends React.Component {
                   color: GLOBAL.COLOR.TOOLBAR_TINT,
                   paddingTop: 20,
                   paddingRight: 20,
-                }}>
-                {autoScrollShabadSpeed[currentShabad]
-                  ? autoScrollShabadSpeed[currentShabad]
-                  : 50}
+                }}
+              >
+                {autoScrollShabadSpeed[currentShabad] ? autoScrollShabadSpeed[currentShabad] : 50}
               </Text>
             </View>
           </Animated.View>

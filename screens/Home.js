@@ -232,7 +232,7 @@ class Home extends React.Component {
           backgroundColor={GLOBAL.COLOR.TOOLBAR_COLOR}
           containerStyle={[
             { height: 0, borderBottomWidth: 0 },
-            Platform.OS === "android" && { paddingTop: 20 },
+            Platform.OS === "android" && { padding: 5 },
           ]}
         />
         <View
@@ -248,7 +248,7 @@ class Home extends React.Component {
                 fontFamily: "GurbaniAkharHeavyTrue",
                 fontSize: 18,
                 textAlign: "center",
-                paddingBottom: 10,
+                padding: 15,
               },
             ]}
           >
