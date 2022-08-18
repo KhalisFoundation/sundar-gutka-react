@@ -226,17 +226,12 @@ class Reader extends React.Component {
         }` ;
 
       html +=
-      `${"body { " +
-      "background-color: "}${ 
-      nightMode ? "#000" : "#fff" 
-      };` +
-      `word-break: break-word;` +
-      `color: ${ 
-      nightMode ? "#fff" : "#000" 
-      };` +
-      `padding-top: ${ 
-      headerHeight 
-      }px; }`;
+        `${"body { " + "background-color: "}${
+          nightMode ? GLOBAL.COLOR.NIGHT_BLACK : GLOBAL.COLOR.WHITE_COLOR
+        };` +
+        `word-break: break-word;` +
+        `color: ${nightMode ? GLOBAL.COLOR.WHITE_COLOR : GLOBAL.color.NIGHT_BLACK};` +
+        `padding-top: ${headerHeight}px; }`;
 
       html += "* { -webkit-user-select: none; }";
       html += `</style><script>${this.loadScrollJS()} </script>`;
@@ -558,7 +553,7 @@ class Reader extends React.Component {
     });
     return (
       <View
-        style={[styles.container, nightMode && { backgroundColor: "#000" }]}
+        style={[styles.container, nightMode && { backgroundColor: GLOBAL.COLOR.NIGHT_BLACK }]}
         // eslint-disable-next-line react/jsx-no-bind
         onLayout={this.onLayout.bind(this)}
       >
@@ -566,7 +561,7 @@ class Reader extends React.Component {
 
         <WebView
           originWhitelist={["*"]}
-          style={nightMode && { backgroundColor: "#000" }}
+          style={nightMode && { backgroundColor: GLOBAL.COLOR.NIGHT_BLACK }}
           ref={(webView) => {
             this.webView = webView;
           }}
