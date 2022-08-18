@@ -1,7 +1,9 @@
 import SQLite from 'react-native-sqlite-storage';
-import { getTranslitText } from './helpers';
+import constant from "./constant";
+import globals from "./globals";
+import { getTranslitText } from "./helpers";
 
-const databaseName = 'gutka.db';
+const databaseName = constant.DB;
 let db;
 
 class Database {
@@ -17,10 +19,10 @@ class Database {
           createFromLocation: 1,
         },
         () => {
-          console.log('Database open Successfully');
+          console.log("Database open Successfully");
         },
         (error) => {
-          console.log('Error', error);
+          console.log("Error", error);
         }
       );
       resolve(true);
@@ -30,24 +32,21 @@ class Database {
   static getBaniList(language) {
     return new Promise((resolve) => {
       Database.initDB().then(() => {
-        db.executeSql(
-          'SELECT ID, Gurmukhi, Transliterations FROM Banis',
-          [],
-          (results) => {
-            const totalResults = {};
-            const len = results.rows.length;
+        db.executeSql("SELECT ID, Gurmukhi, Transliterations FROM Banis", [], (results) => {
+          const totalResults = {};
+          const len = results.rows.length;
 
-            // eslint-disable-next-line no-plusplus
-            for (let i = 0; i < len; i++) {
-              const row = results.rows.item(i);
-              totalResults[row.ID] = {
-                gurmukhi: row.Gurmukhi,
-                translit: getTranslitText(row.Transliterations, language),
-              };
-            }
-            resolve(totalResults);
+          // eslint-disable-next-line no-plusplus
+          for (let i = 0; i < len; i++) {
+            const row = results.rows.item(i);
+            const { ID, Gurmukhi, Transliterations } = row;
+            totalResults[ID] = {
+              gurmukhi: Gurmukhi,
+              translit: getTranslitText(Transliterations, language),
+            };
           }
-        );
+          resolve(totalResults);
+        });
       });
     });
   }
@@ -67,26 +66,26 @@ class Database {
   ) {
     let baniLength;
     switch (length) {
-      case 'EXTRA_LONG':
-        baniLength = 'existsBuddhaDal';
+      case constant.EXTRA_LONG:
+        baniLength = constant.EXISTS_BUDDHA_DAL;
         break;
-      case 'LONG':
-        baniLength = 'existsTaksal';
+      case constant.LONG:
+        baniLength = constant.EXISTS_TAKSAL;
         break;
-      case 'MEDIUM':
-        baniLength = 'existsMedium';
+      case constant.MEDIUM:
+        baniLength = constant.EXISTS_MEDIUM;
         break;
-      case 'SHORT':
-        baniLength = 'existsSGPC';
+      case constant.SHORT:
+        baniLength = constant.EXISTS_SGPS;
         break;
       default:
-        baniLength = 'existsMedium';
+        baniLength = constant.EXISTS_MEDIUM;
     }
     return new Promise(function (resolve) {
       Database.initDB().then(() => {
         db.executeSql(
           `SELECT ID, Paragraph, header, Gurmukhi, Visraam, Transliterations, Translations FROM mv_Banis_Shabad WHERE Bani = ${baniId} AND ${baniLength} = 1 AND (MangalPosition IS NULL OR MangalPosition = ${
-            mangalPosition === 'CURRENT_SAROOPS' ? "'current'" : "'above'"
+            mangalPosition === "CURRENT_SAROOPS" ? "'current'" : "'above'"
           })ORDER BY Seq ASC;`,
           [],
           (results) => {
@@ -105,13 +104,23 @@ class Database {
             // eslint-disable-next-line no-plusplus
             for (let i = 0; i < len; i++) {
               const row = results.rows.item(i);
+              const {
+                GurmukhiBisram,
+                gurmukhi,
+                Visraam,
+                Transliterations,
+                Translations,
+                Paragraph,
+                English,
+                Punjabi,
+                Spanish,
+                ID,
+                header,
+              } = row;
 
-              const gurmukhiLine =
-                visram && row.GurmukhiBisram
-                  ? row.GurmukhiBisram
-                  : row.Gurmukhi;
+              const gurmukhiLine = visram && GurmukhiBisram ? GurmukhiBisram : Gurmukhi;
 
-              const vishraamJson = JSON.parse(row.Visraam);
+              const vishraamJson = JSON.parse(Visraam);
 
               const vishraamPositions = {};
               if (
@@ -124,71 +133,65 @@ class Database {
                   vishraamPositions[pos.p] = pos.t;
                 });
               }
-              const splitted = gurmukhiLine.split(' ');
+              const splitted = gurmukhiLine.split(" ");
 
               const arr = splitted.map((word, index) => {
-                let style = '';
+                let style = "";
 
                 if (visram && index in vishraamPositions) {
                   switch (vishraamOption) {
-                    case 'VISHRAAM_GRADIENT':
+                    case constant.VISHRAAM_GRADIENT:
                       style +=
-                        ' border-radius: 5px; background: linear-gradient(to right,rgba(229, 229, 229, 0) 20%, ';
+                        " border-radius: 5px; background: linear-gradient(to right,rgba(229, 229, 229, 0) 20%, ";
                       style +=
-                        vishraamPositions[index] === 'v'
-                          ? 'rgba(167, 0, 0, 0.5)'
-                          : 'rgba(255, 242, 41, 0.5)';
-                      style += ' 100%);';
+                        vishraamPositions[index] === "v"
+                          ? "rgba(167, 0, 0, 0.5)"
+                          : "rgba(255, 242, 41, 0.5)";
+                      style += " 100%);";
                       break;
-                    case 'VISHRAAM_COLORED':
+                    case constant.VISHRAAM_COLORED:
                     default:
-                      style += ' color:';
+                      style += " color:";
                       style +=
-                        vishraamPositions[index] === 'v'
-                          ? '#c0392b;'
-                          : '#ffc500;';
+                        vishraamPositions[index] === "v"
+                          ? `${globals.COLOR.VISHRAM_BASIC}`
+                          : `${globals.COLOR.VISHRAM_SHORT};`;
                   }
                   return `<span style='
                     ${style} white-space: nowrap;'>
                     ${word} </span>`;
                 }
                 if (larivaar && larivaarAssist && index % 2 !== 0) {
-                  style += ' opacity: .65;';
+                  style += " opacity: .65;";
                   return `<span style='${style} white-space: nowrap;'>${word}</span>`;
                 }
                 return word;
               });
-              let curGurmukhi = larivaar ? arr.join('&#8203;') : arr.join(' ');
+              let curGurmukhi = larivaar ? arr.join("&#8203;") : arr.join(" ");
 
-              const translationJson = JSON.parse(row.Translations);
+              const translationJson = JSON.parse(Translations);
               // Remove nulls
-              row.English =
+              English =
                 translationJson == null || translationJson.en.bdb == null
-                  ? ' '
+                  ? " "
                   : translationJson.en.bdb;
-              row.Punjabi =
+              Punjabi =
                 translationJson == null || translationJson.pu.bdb == null
-                  ? ' '
+                  ? " "
                   : translationJson.pu.bdb;
-              row.Spanish =
+              Spanish =
                 translationJson == null || translationJson.es.sn == null
-                  ? ' '
+                  ? " "
                   : translationJson.es.sn;
-              let translit = getTranslitText(row.Transliterations, language);
-              translit = translit === '' || translit == null ? ' ' : translit;
+              let translit = getTranslitText(Transliterations, language);
+              translit = translit === "" || translit == null ? " " : translit;
 
-              if (
-                (baniId === 9 || baniId === 21) &&
-                padcched === 'MAST_SABH_MAST'
-              ) {
-                curGurmukhi = curGurmukhi.replace(
-                  /smwpqm squ suBm squ/g,
-                  'smwpq msqu suB msqu'
-                );
+              if ((baniId === 9 || baniId === 21) && padcched === constant.MAST_SABH_MAST) {
+                curGurmukhi = curGurmukhi.replace(/smwpqm squ suBm squ/g, "smwpq msqu suB msqu");
               }
 
               if (paragraphMode) {
-                if (prevParagraph !== row.Paragraph) {
+                if (prevParagraph !== Paragraph) {
                   if (i !== 0) {
                     paragraphResults.push({
                       id: `${paragraphId}`,
@@ -200,20 +203,20 @@ class Database {
                       header: paragraphHeader,
                     });
                   }
-                  paragraphId = row.ID;
-                  paragraphHeader = row.header;
+                  paragraphId = ID;
+                  paragraphHeader = header;
                   gurmukhi = curGurmukhi;
                   transliteration = translit;
-                  englishTranslation = row.English;
-                  punjabiTranslation = row.Punjabi;
-                  spanishTranslation = row.Spanish;
-                  prevParagraph = row.Paragraph;
+                  englishTranslation = English;
+                  punjabiTranslation = Punjabi;
+                  spanishTranslation = Spanish;
+                  prevParagraph = Paragraph;
                 } else {
                   gurmukhi += larivaar ? curGurmukhi : ` ${curGurmukhi}`;
                   transliteration += ` ${translit}`;
-                  englishTranslation += ` ${row.English}`;
-                  punjabiTranslation += ` ${row.Punjabi}`;
-                  spanishTranslation += ` ${row.Spanish}`;
+                  englishTranslation += ` ${English}`;
+                  punjabiTranslation += ` ${Punjabi}`;
+                  spanishTranslation += ` ${Spanish}`;
                 }
 
                 if (i === len - 1) {
@@ -229,13 +232,13 @@ class Database {
                 }
               } else {
                 totalResults[i] = {
-                  id: `${row.ID}`,
+                  id: `${ID}`,
                   gurmukhi: curGurmukhi,
                   translit,
-                  englishTranslations: row.English,
-                  punjabiTranslations: row.Punjabi,
-                  spanishTranslations: row.Spanish,
-                  header: row.header,
+                  englishTranslations: English,
+                  punjabiTranslations: Punjabi,
+                  spanishTranslations: Spanish,
+                  header: header,
                 };
               }
             }
@@ -254,20 +257,20 @@ class Database {
   static getBookmarksForId(baniId, length, language) {
     let baniLength;
     switch (length) {
-      case 'EXTRA_LONG':
-        baniLength = 'existsBuddhaDal';
+      case constant.EXTRA_LONG:
+        baniLength = constant.EXISTS_BUDDHA_DAL;
         break;
-      case 'LONG':
-        baniLength = 'existsTaksal';
+      case constant.LONG:
+        baniLength = constant.EXISTS_TAKSAL;
         break;
-      case 'MEDIUM':
-        baniLength = 'existsMedium';
+      case constant.MEDIUM:
+        baniLength = constant.EXISTS_MEDIUM;
         break;
-      case 'SHORT':
-        baniLength = 'existsSGPC';
+      case constant.SHORT:
+        baniLength = constant.EXISTS_SGPS;
         break;
       default:
-        baniLength = 'existsMedium';
+        baniLength = constant.EXISTS_MEDIUM;
     }
 
     return new Promise(function (resolve) {
@@ -282,10 +285,11 @@ class Database {
             // eslint-disable-next-line no-plusplus
             for (let i = 0; i < len; i++) {
               const row = results.rows.item(i);
+              const { BaniShabadID, Gurmukhi, Transliterations } = row;
               totalResults[i] = {
-                shabadId: row.BaniShabadID,
-                gurmukhi: row.Gurmukhi,
-                translit: getTranslitText(row.Transliterations, language),
+                shabadId: BaniShabadID,
+                gurmukhi: Gurmukhi,
+                translit: getTranslitText(Transliterations, language),
               };
             }
             resolve(totalResults);
