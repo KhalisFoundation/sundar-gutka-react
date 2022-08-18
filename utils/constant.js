@@ -1,0 +1,14 @@
+export default {
+  EXTRA_LONG: "EXTRA_LONG",
+  LONG: "LONG",
+  MEDIUM: "MEDIUM",
+  SHORT: "SHORT",
+  EXISTS_BUDDHA_DAL: "existsBuddhaDal",
+  EXISTS_TAKSAL: "existsTaksal",
+  EXISTS_MEDIUM: "existsMedium",
+  EXISTS_SGPS: "existsSGPC",
+  DB: "gutka.db",
+  VISHRAAM_GRADIENT: "VISHRAAM_GRADIENT",
+  VISHRAAM_COLORED: "VISHRAAM_COLORED",
+  MAST_SABH_MAST: "MAST_SABH_MAST",
+};
