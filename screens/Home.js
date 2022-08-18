@@ -222,7 +222,7 @@ class Home extends React.Component {
       <SafeAreaView
         style={{
           flex: 1,
-          backgroundColor: "#ecf0f1",
+          backgroundColor: GLOBAL.COLOR.HOME_BACK_COLOR,
         }}
       >
         {showLengthSelector && <BaniLengthSelector />}
