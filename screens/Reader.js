@@ -511,8 +511,7 @@ class Reader extends React.Component {
         if (isFound) {
           startBaniList.forEach(element => {
             if (element.id === this.currentBani.id) {
-              // eslint-disable-next-line no-param-reassign
-              element.progress = position
+              element.progress = position;
             }
           })
         }
@@ -554,7 +553,6 @@ class Reader extends React.Component {
     return (
       <View
         style={[styles.container, nightMode && { backgroundColor: GLOBAL.COLOR.NIGHT_BLACK }]}
-        // eslint-disable-next-line react/jsx-no-bind
         onLayout={this.onLayout.bind(this)}
       >
         <LoadingIndicator isLoading={isLoading} />
@@ -570,7 +568,6 @@ class Reader extends React.Component {
             html: this.loadHTML(data, this.headerHeight),
             baseUrl: "",
           }}
-          // eslint-disable-next-line react/jsx-no-bind
           onMessage={this.handleMessage.bind(this)}
         />
 
@@ -594,7 +591,6 @@ class Reader extends React.Component {
                 name="arrow-back"
                 color={GLOBAL.COLOR.TOOLBAR_TINT}
                 size={30}
-                // eslint-disable-next-line react/jsx-no-bind
                 onPress={this.handleBackPress.bind(this)}
               />
             }
