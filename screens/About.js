@@ -15,13 +15,14 @@ import { Header } from "react-native-elements";
 import Icon from "react-native-vector-icons/MaterialIcons";
 import { connect } from "react-redux";
 import VersionNumber from "react-native-version-number";
-import GLOBAL from "../utils/globals";
 import AnalyticsManager from "../utils/analytics";
 import Strings from "../utils/localization";
+import GLOBAL from "../utils/globals";
+import constant from "../utils/constant";
 
 class Home extends React.Component {
   componentDidMount() {
-    AnalyticsManager.getInstance().trackScreenView("About", this.constructor.name);
+    AnalyticsManager.getInstance().trackScreenView(constant.ABOUT, this.constructor.name);
   }
 
   render() {
@@ -29,11 +30,11 @@ class Home extends React.Component {
       container: {
         flex: 1,
         padding: 8,
-        backgroundColor: "#fff",
+        backgroundColor: GLOBAL.COLOR.WHITE_COLOR,
       },
       nightMode: {
-        backgroundColor: "#000",
-        color: "#fff",
+        backgroundColor: GLOBAL.COLOR.NIGHT_BLACK,
+        color: GLOBAL.COLOR.WHITE_COLOR,
       },
       singleLine: {
         flexDirection: "row",
@@ -57,7 +58,7 @@ class Home extends React.Component {
         <StatusBar backgroundColor={GLOBAL.COLOR.TOOLBAR_COLOR_ALT2} barStyle="light-content" />
         <Header
           backgroundColor={GLOBAL.COLOR.TOOLBAR_COLOR_ALT2}
-          containerStyle={[Platform.OS === "android" && { height: 56, paddingTop: 0 }]}
+          containerStyle={[Platform.OS === constant.ANDROID && { height: 56, paddingTop: 0 }]}
           leftComponent={
             <Icon
               name="arrow-back"
@@ -71,15 +72,17 @@ class Home extends React.Component {
             style: { color: GLOBAL.COLOR.TOOLBAR_TINT, fontSize: 18 },
           }}
         />
-        <ScrollView style={[styles.container, nightMode && { backgroundColor: "#000" }]}>
+        <ScrollView
+          style={[styles.container, nightMode && { backgroundColor: GLOBAL.COLOR.NIGHT_BLACK }]}
+        >
           <Text style={[styles.title, nightMode && styles.nightMode]}>{Strings.sundar_gutka}</Text>
           <Text style={[styles.small, nightMode && styles.nightMode]}>
             {"\n"}
             {Strings.created_by}:
           </Text>
           <TouchableHighlight
-            underlayColor="#009bff"
-            onPress={() => Linking.openURL("https://khalisfoundation.org")}
+            underlayColor={GLOBAL.COLOR.UNDERLAY_COLOR}
+            onPress={() => Linking.openURL(constant.KHALIS_FOUNDATION_URL)}
           >
             <Image
               source={
@@ -100,10 +103,10 @@ class Home extends React.Component {
             </Text>
             <Text>
               <Text
-                style={{ color: "#009bff" }}
-                onPress={() => Linking.openURL("https://khalisfoundation.org")}
+                style={{ color: GLOBAL.COLOR.UNDERLAY_COLOR }}
+                onPress={() => Linking.openURL(constant.KHALIS_FOUNDATION_URL)}
               >
-                http://www.KhalisFoundation.org
+                constant.KHALIS_FOUNDATION_URL
               </Text>
               <Text>!</Text>
             </Text>
@@ -115,8 +118,8 @@ class Home extends React.Component {
             {"\n"}
             {Strings.about_4}{" "}
             <Text
-              style={{ color: "#009bff" }}
-              onPress={() => Linking.openURL("https://www.banidb.com/")}
+              style={{ color: GLOBAL.COLOR.UNDERLAY_COLOR }}
+              onPress={() => Linking.openURL(constant.BANI_DB_URL)}
             >
               {Strings.baniDB}
             </Text>{" "}
@@ -124,8 +127,8 @@ class Home extends React.Component {
             {"\n"}
           </Text>
           <TouchableHighlight
-            underlayColor="#009bff"
-            onPress={() => Linking.openURL("https://www.banidb.com/")}
+            underlayColor={GLOBAL.COLOR.UNDERLAY_COLOR}
+            onPress={() => Linking.openURL(constant.BANI_DB_URL)}
           >
             <Image source={require("../images/banidblogo.png")} />
           </TouchableHighlight>

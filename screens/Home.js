@@ -18,6 +18,7 @@ import * as actions from "../actions/actions";
 import BaniList from "../components/BaniList";
 import BaniLengthSelector from "../components/BaniLengthSelector";
 import Strings from "../utils/localization";
+import CONSTANT from "../utils/constant";
 
 class Home extends React.Component {
   static navigationOptions = { header: null };
@@ -32,7 +33,7 @@ class Home extends React.Component {
     };
 
     // Enable playback in silence mode
-    Sound.setCategory("Ambient", true); // true = mixWithOthers
+    Sound.setCategory(CONSTANT.AMBIENT, true); // true = mixWithOthers
   }
 
   async componentDidMount() {
@@ -64,12 +65,12 @@ class Home extends React.Component {
       this.setState({ showLengthSelector: true });
     }
 
-    if (language !== "DEFAULT") {
+    if (language !== CONSTANT.DEFAULT) {
       Strings.setLanguage(language);
     }
 
-    if (!fontFace || fontFace === "GurbaniAkharSG") {
-      setFontFace("GurbaniAkharTrue");
+    if (!fontFace || fontFace === CONSTANT.GURBANI_AKHAR_SG) {
+      setFontFace(CONSTANT.GURBANI_AKHAR_TRUE);
     }
 
     this.changeKeepAwake(screenAwake || autoScroll);
@@ -77,7 +78,7 @@ class Home extends React.Component {
     AnalyticsManager.getInstance().allowTracking(statistics);
 
     NotificationsManager.getInstance().updateReminders(reminders, reminderSound, reminderBanis);
-    AnalyticsManager.getInstance().trackScreenView("Home Screen", this.constructor.name);
+    AnalyticsManager.getInstance().trackScreenView(CONSTANT.HOME_SCREEN, this.constructor.name);
     NotificationsManager.getInstance().removeAllDeliveredNotifications();
   }
 
@@ -120,7 +121,6 @@ class Home extends React.Component {
           if (error) {
             return;
           }
-          // loaded successfully
           sound.play(() => {
             sound.reset();
           });
@@ -133,12 +133,12 @@ class Home extends React.Component {
     if (!item.folder) {
       const { setCurrentShabad } = this.props;
       setCurrentShabad(item.id);
-      navigator.navigate("Reader", {
+      navigator.navigate(CONSTANT.READER, {
         key: `Reader-${item.id}`,
         params: { item },
       });
     } else {
-      navigator.navigate("FolderBani", {
+      navigator.navigate(CONSTANT.FOLDER_BANI, {
         key: `Folder-${item.roman}`,
         params: { data: item.folder, title: item.gurmukhi },
       });
@@ -231,7 +231,7 @@ class Home extends React.Component {
           backgroundColor={GLOBAL.COLOR.TOOLBAR_COLOR}
           containerStyle={[
             { height: 0, borderBottomWidth: 0 },
-            Platform.OS === "android" && { paddingTop: 20 },
+            Platform.OS === CONSTANT.ANDROID && { paddingTop: 20 },
           ]}
         />
         <View
@@ -244,7 +244,7 @@ class Home extends React.Component {
             style={[
               {
                 color: GLOBAL.COLOR.TOOLBAR_TINT,
-                fontFamily: "GurbaniAkharHeavyTrue",
+                fontFamily: CONSTANT.GURBANI_AKHAR_HEAVY_TRUE,
                 fontSize: 18,
                 textAlign: "center",
                 paddingBottom: 10,
@@ -264,7 +264,7 @@ class Home extends React.Component {
               style={[
                 {
                   color: GLOBAL.COLOR.TOOLBAR_TINT,
-                  fontFamily: "GurbaniAkharHeavyTrue",
+                  fontFamily: CONSTANT.GURBANI_AKHAR_HEAVY_TRUE,
                   fontSize: 28,
                 },
               ]}
@@ -299,7 +299,7 @@ class Home extends React.Component {
             }}
             color={GLOBAL.COLOR.TOOLBAR_TINT}
             size={30}
-            onPress={() => navigation.navigate("Settings")}
+            onPress={() => navigation.navigate(CONSTANT.SETTINGS)}
           />
         </View>
         <BaniList

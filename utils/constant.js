@@ -1,0 +1,17 @@
+export default {
+  ABOUT: "About",
+  INDEX_REORDER: "Index Reorder",
+  ANDROID: "android",
+  KHALIS_FOUNDATION_URL: "https://khalisfoundation.org",
+  BANI_DB_URL: "https://www.banidb.com/",
+  MEDIUM: "MEDIUM",
+  READER: "Reader",
+  FOLDER_BANI: "FolderBani",
+  AMBIENT: "Ambient",
+  DEFAULT: "DEFAULT",
+  GURBANI_AKHAR_SG: "GurbaniAkharSG",
+  GURBANI_AKHAR_TRUE: "GurbaniAkharTrue",
+  HOME_SCREEN: "Home Screen",
+  GURBANI_AKHAR_HEAVY_TRUE: "GurbaniAkharHeavyTrue",
+  SETTINGS: "Settings",
+};

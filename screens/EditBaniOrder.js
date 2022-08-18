@@ -1,17 +1,5 @@
-/* eslint-disable no-underscore-dangle */
-/* eslint-disable max-classes-per-file */
 import React from "react";
-import {
-  Animated,
-  Easing,
-  StyleSheet,
-  Text,
-  Image,
-  View,
-  Dimensions,
-  Platform,
-  StatusBar,
-} from "react-native";
+import { StyleSheet, View, Dimensions, Platform, StatusBar } from "react-native";
 import PropTypes from "prop-types";
 import { Header } from "react-native-elements";
 import Icon from "react-native-vector-icons/MaterialIcons";
@@ -21,8 +9,10 @@ import { bindActionCreators } from "redux";
 import GLOBAL from "../utils/globals";
 import * as actions from "../actions/actions";
 import AnalyticsManager from "../utils/analytics";
-import { baseFontSize, defaultBaniOrderArray } from "../utils/helpers";
+import { defaultBaniOrderArray } from "../utils/helpers";
 import Strings from "../utils/localization";
+import CONSTANT from "../utils/constant";
+import Row from "./Row";
 
 const window = Dimensions.get("window");
 const styles = StyleSheet.create({
@@ -30,7 +20,7 @@ const styles = StyleSheet.create({
     flex: 1,
     justifyContent: "center",
     alignItems: "center",
-    backgroundColor: "#eee",
+    backgroundColor: GLOBAL.COLOR.BANI_ORDER_BACK_COLOR,
 
     ...Platform.select({
       ios: {
@@ -47,32 +37,6 @@ const styles = StyleSheet.create({
     width: window.width,
   },
 
-  row: {
-    flexDirection: "row",
-    alignItems: "center",
-    backgroundColor: "#fff",
-    padding: 16,
-    height: 80,
-    flex: 1,
-    marginTop: 4,
-    marginBottom: 4,
-    borderRadius: 4,
-
-    ...Platform.select({
-      ios: {
-        shadowColor: "rgba(0,0,0,0.2)",
-        shadowOpacity: 1,
-        shadowOffset: { height: 2, width: 2 },
-        shadowRadius: 2,
-      },
-
-      android: {
-        elevation: 0,
-        marginHorizontal: 30,
-      },
-    }),
-  },
-
   image: {
     width: 50,
     height: 50,
@@ -81,7 +45,7 @@ const styles = StyleSheet.create({
 });
 class EditBaniOrder extends React.Component {
   componentDidMount() {
-    AnalyticsManager.getInstance().trackScreenView("Index Reorder", this.constructor.name);
+    AnalyticsManager.getInstance().trackScreenView(CONSTANT.INDEX_REORDER, this.constructor.name);
   }
 
   _renderRow = ({ data, active }) => {
@@ -108,7 +72,7 @@ class EditBaniOrder extends React.Component {
         <StatusBar backgroundColor={GLOBAL.COLOR.TOOLBAR_COLOR_ALT2} barStyle="light-content" />
         <Header
           backgroundColor={GLOBAL.COLOR.TOOLBAR_COLOR_ALT2}
-          containerStyle={[Platform.OS === "android" && { height: 56, paddingTop: 0 }]}
+          containerStyle={[Platform.OS === CONSTANT.ANDROID && { height: 56, paddingTop: 0 }]}
           leftComponent={
             <Icon
               name="arrow-back"
@@ -149,80 +113,6 @@ class EditBaniOrder extends React.Component {
   }
 }
 
-class Row extends React.Component {
-  constructor(props) {
-    super(props);
-
-    this._active = new Animated.Value(0);
-
-    this._style = {
-      ...Platform.select({
-        ios: {
-          transform: [
-            {
-              scale: this._active.interpolate({
-                inputRange: [0, 1],
-                outputRange: [1, 1.1],
-              }),
-            },
-          ],
-          shadowRadius: this._active.interpolate({
-            inputRange: [0, 1],
-            outputRange: [2, 10],
-          }),
-        },
-
-        android: {
-          transform: [
-            {
-              scale: this._active.interpolate({
-                inputRange: [0, 1],
-                outputRange: [1, 1.07],
-              }),
-            },
-          ],
-          elevation: this._active.interpolate({
-            inputRange: [0, 1],
-            outputRange: [2, 6],
-          }),
-        },
-      }),
-    };
-  }
-
-  // eslint-disable-next-line camelcase
-  UNSAFE_componentWillReceiveProps(nextProps) {
-    const { active } = this.props;
-    if (active !== nextProps.active) {
-      Animated.timing(this._active, {
-        duration: 300,
-        easing: Easing.bounce,
-        toValue: Number(nextProps.active),
-      }).start();
-    }
-  }
-
-  render() {
-    const { data, nightMode, transliteration, fontFace } = this.props;
-
-    return (
-      <Animated.View style={[styles.row, nightMode && { backgroundColor: "#000" }, this._style]}>
-        {data.folder && <Image source={require("../images/foldericon.png")} style={styles.image} />}
-
-        <Text
-          style={[
-            { color: nightMode ? "#fff" : "#222222" },
-            !transliteration && { fontFamily: fontFace },
-            { fontSize: baseFontSize("MEDIUM", transliteration) },
-          ]}
-        >
-          {transliteration ? data.translit : data.gurmukhi}
-        </Text>
-      </Animated.View>
-    );
-  }
-}
-
 EditBaniOrder.propTypes = {
   nightMode: PropTypes.bool.isRequired,
   transliteration: PropTypes.string.isRequired,
@@ -239,14 +129,6 @@ EditBaniOrder.propTypes = {
     ),
   }).isRequired,
   baniOrder: PropTypes.arrayOf(PropTypes.number).isRequired,
-};
-
-Row.propTypes = {
-  data: PropTypes.shape().isRequired,
-  nightMode: PropTypes.bool.isRequired,
-  transliteration: PropTypes.string.isRequired,
-  fontFace: PropTypes.string.isRequired,
-  active: PropTypes.string.isRequired,
 };
 
 function mapStateToProps(state) {

@@ -30,6 +30,12 @@ export default {
     COMPONENT_COLOR_NIGHT_MODE: "#fefefe",
     COMPONENT_COLOR: "#232323",
     VISHRAM_SHORT: "#ffc500",
-    VISHRAM_LONG: "#ff4500"
-  }
+    VISHRAM_LONG: "#ff4500",
+    WHITE_COLOR: "#fff",
+    NIGHT_BLACK: "#000",
+    UNDERLAY_COLOR: "#009bff",
+    BANI_ORDER_BACK_COLOR: "eee",
+    IOS_SHADOW_COLOR: "rgba(0,0,0,0.2)",
+    LIGHT_MODE_COLOR: "#222222",
+  },
 };
