@@ -38,5 +38,7 @@ export default {
     IOS_SHADOW_COLOR: "rgba(0,0,0,0.2)",
     LIGHT_MODE_COLOR: "#222222",
     HOME_BACK_COLOR: "#ecf0f1",
+    SLIDER_TRACK_MAX_TINT: "#464646",
+    SLIDER_TRACK_MIN_TINT: "#BFBFBF",
   },
 };

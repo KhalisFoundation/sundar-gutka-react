@@ -704,9 +704,9 @@ class Reader extends React.Component {
               )}
               <Slider
                 style={[{ flex: 1, marginLeft: 25, marginRight: 25, marginTop: 10 }]}
-                minimumTrackTintColor="#BFBFBF"
-                maximumTrackTintColor="#464646"
-                thumbTintColor="#fff"
+                minimumTrackTintColor={GLOBAL.COLOR.SLIDER_TRACK_MIN_TINT}
+                maximumTrackTintColor={GLOBAL.COLOR.SLIDER_TRACK_MAX_TINT}
+                thumbTintColor={GLOBAL.COLOR.WHITE_COLOR}
                 minimumValue={0}
                 maximumValue={100}
                 step={1}
