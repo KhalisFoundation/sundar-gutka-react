@@ -36,8 +36,7 @@ class Database {
           const totalResults = {};
           const len = results.rows.length;
 
-          // eslint-disable-next-line no-plusplus
-          for (let i = 0; i < len; i++) {
+          for (let i = 0; i < len; i += 1) {
             const row = results.rows.item(i);
             const { ID, Gurmukhi, Transliterations } = row;
             totalResults[ID] = {
@@ -111,8 +110,7 @@ class Database {
             let spanishTranslation;
             let paragraphHeader;
             let prevParagraph;
-            // eslint-disable-next-line no-plusplus
-            for (let i = 0; i < len; i++) {
+            for (let i = 0; i < len; i += 1) {
               const row = results.rows.item(i);
               const {
                 GurmukhiBisram,
