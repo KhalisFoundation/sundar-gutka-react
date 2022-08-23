@@ -73,8 +73,7 @@ class Row extends React.Component {
     };
   }
 
-  // eslint-disable-next-line camelcase
-  UNSAFE_componentWillReceiveProps(nextProps) {
+  static getDerivedStateFromProps(nextProps) {
     const { active } = this.props;
     if (active !== nextProps.active) {
       Animated.timing(this.active, {

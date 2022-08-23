@@ -48,7 +48,7 @@ class EditBaniOrder extends React.Component {
     AnalyticsManager.getInstance().trackScreenView(CONSTANT.INDEX_REORDER, this.constructor.name);
   }
 
-  _renderRow = ({ data, active }) => {
+  renderRow = ({ data, active }) => {
     const { nightMode, transliteration, fontFace } = this.props;
     return (
       <Row
@@ -63,6 +63,7 @@ class EditBaniOrder extends React.Component {
 
   render() {
     const { navigation, setBaniOrder, nightMode, mergedBaniData, baniOrder } = this.props;
+    const { VIEW_BACK_COLOR } = GLOBAL.COLOR;
     return (
       <View
         style={{
@@ -94,7 +95,7 @@ class EditBaniOrder extends React.Component {
             />
           }
         />
-        <View style={[styles.container, nightMode && { backgroundColor: "#464646" }]}>
+        <View style={[styles.container, nightMode && { backgroundColor: VIEW_BACK_COLOR }]}>
           <SortableList
             style={styles.list}
             contentContainerStyle={styles.contentContainer}
@@ -103,8 +104,7 @@ class EditBaniOrder extends React.Component {
               this.newOrder = nextOrder;
             }}
             onReleaseRow={() => (this.newOrder !== undefined ? setBaniOrder(this.newOrder) : null)}
-            // eslint-disable-next-line no-underscore-dangle
-            renderRow={this._renderRow}
+            renderRow={this.renderRow}
             order={baniOrder}
           />
         </View>
