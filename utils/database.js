@@ -1,4 +1,4 @@
-import SQLite from 'react-native-sqlite-storage';
+import SQLite from "react-native-sqlite-storage";
 import constant from "./constant";
 import globals from "./globals";
 import { getTranslitText } from "./helpers";
@@ -65,21 +65,31 @@ class Database {
     language
   ) {
     let baniLength;
+    const {
+      EXTRA_LONG,
+      EXISTS_BUDDHA_DAL,
+      LONG,
+      EXISTS_SGPS,
+      EXISTS_TAKSAL,
+      EXISTS_MEDIUM,
+      SHORT,
+      MEDIUM,
+    } = constant;
     switch (length) {
-      case constant.EXTRA_LONG:
-        baniLength = constant.EXISTS_BUDDHA_DAL;
+      case EXTRA_LONG:
+        baniLength = EXISTS_BUDDHA_DAL;
         break;
-      case constant.LONG:
-        baniLength = constant.EXISTS_TAKSAL;
+      case LONG:
+        baniLength = EXISTS_TAKSAL;
         break;
-      case constant.MEDIUM:
-        baniLength = constant.EXISTS_MEDIUM;
+      case MEDIUM:
+        baniLength = EXISTS_MEDIUM;
         break;
-      case constant.SHORT:
-        baniLength = constant.EXISTS_SGPS;
+      case SHORT:
+        baniLength = EXISTS_SGPS;
         break;
       default:
-        baniLength = constant.EXISTS_MEDIUM;
+        baniLength = EXISTS_MEDIUM;
     }
     return new Promise(function (resolve) {
       Database.initDB().then(() => {
@@ -106,7 +116,7 @@ class Database {
               const row = results.rows.item(i);
               const {
                 GurmukhiBisram,
-                gurmukhi,
+                Gurmukhi,
                 Visraam,
                 Transliterations,
                 Translations,
@@ -137,10 +147,11 @@ class Database {
 
               const arr = splitted.map((word, index) => {
                 let style = "";
-
+                const { VISHRAAM_GRADIENT, VISHRAAM_COLORED } = constant;
+                const { VISHRAM_BASIC, VISHRAM_SHORT } = globals.COLOR;
                 if (visram && index in vishraamPositions) {
                   switch (vishraamOption) {
-                    case constant.VISHRAAM_GRADIENT:
+                    case VISHRAAM_GRADIENT:
                       style +=
                         " border-radius: 5px; background: linear-gradient(to right,rgba(229, 229, 229, 0) 20%, ";
                       style +=
@@ -149,13 +160,11 @@ class Database {
                           : "rgba(255, 242, 41, 0.5)";
                       style += " 100%);";
                       break;
-                    case constant.VISHRAAM_COLORED:
+                    case VISHRAAM_COLORED:
                     default:
                       style += " color:";
                       style +=
-                        vishraamPositions[index] === "v"
-                          ? `${globals.COLOR.VISHRAM_BASIC}`
-                          : `${globals.COLOR.VISHRAM_SHORT};`;
+                        vishraamPositions[index] === "v" ? `${VISHRAM_BASIC}` : `${VISHRAM_SHORT};`;
                   }
                   return `<span style='
                     ${style} white-space: nowrap;'>
@@ -238,7 +247,7 @@ class Database {
                   englishTranslations: English,
                   punjabiTranslations: Punjabi,
                   spanishTranslations: Spanish,
-                  header: header,
+                  header,
                 };
               }
             }
@@ -256,21 +265,31 @@ class Database {
 
   static getBookmarksForId(baniId, length, language) {
     let baniLength;
+    const {
+      EXTRA_LONG,
+      EXISTS_BUDDHA_DAL,
+      LONG,
+      EXISTS_SGPS,
+      EXISTS_TAKSAL,
+      EXISTS_MEDIUM,
+      SHORT,
+      MEDIUM,
+    } = constant;
     switch (length) {
-      case constant.EXTRA_LONG:
-        baniLength = constant.EXISTS_BUDDHA_DAL;
+      case EXTRA_LONG:
+        baniLength = EXISTS_BUDDHA_DAL;
         break;
-      case constant.LONG:
-        baniLength = constant.EXISTS_TAKSAL;
+      case LONG:
+        baniLength = EXISTS_TAKSAL;
         break;
-      case constant.MEDIUM:
-        baniLength = constant.EXISTS_MEDIUM;
+      case MEDIUM:
+        baniLength = EXISTS_MEDIUM;
         break;
-      case constant.SHORT:
-        baniLength = constant.EXISTS_SGPS;
+      case SHORT:
+        baniLength = EXISTS_SGPS;
         break;
       default:
-        baniLength = constant.EXISTS_MEDIUM;
+        baniLength = EXISTS_MEDIUM;
     }
 
     return new Promise(function (resolve) {
@@ -282,8 +301,7 @@ class Database {
           (results) => {
             const totalResults = new Array(results.rows.length);
             const len = results.rows.length;
-            // eslint-disable-next-line no-plusplus
-            for (let i = 0; i < len; i++) {
+            for (let i = 0; i < len; i += 1) {
               const row = results.rows.item(i);
               const { BaniShabadID, Gurmukhi, Transliterations } = row;
               totalResults[i] = {
