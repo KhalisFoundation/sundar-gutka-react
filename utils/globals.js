@@ -38,5 +38,6 @@ export default {
     IOS_SHADOW_COLOR: "rgba(0,0,0,0.2)",
     LIGHT_MODE_COLOR: "#222222",
     VIEW_BACK_COLOR: "#464646",
+    VISHRAM_BASIC: "#c0392b",
   },
 };
