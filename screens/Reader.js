@@ -81,9 +81,9 @@ class Reader extends React.Component {
   }
 
   componentWillUnmount() {
-    // this.setState = (state, callback) => {
-    //   return;
-    // };
+    this.setState = (state, callback) => {
+      return;
+    };
   }
 
   handleBackPress = () => {
@@ -147,14 +147,13 @@ class Reader extends React.Component {
   }
 
   toggleHeader(state) {
+    const value = state === "hide" ? HEADER_POSITION : 0;
     const { animationPosition } = this.state;
     Animated.timing(animationPosition, {
       duration: this.slideDuration,
       useNativeDriver: false,
-      toValue: state === "hide" ? HEADER_POSITION : 0,
+      toValue: value,
     }).start();
-
-    StatusBar.setHidden(state === "hide", "fade");
   }
 
   loadShabad() {
@@ -191,7 +190,7 @@ class Reader extends React.Component {
         });
       })
       .catch((error) => {
-        console.log(error);
+        console.error(error);
       });
   }
 
@@ -210,7 +209,6 @@ class Reader extends React.Component {
       if (data[i].id <= index) {
         viewPosition = index;
       }
-
       if (data[i].id === index) {
         break;
       }
@@ -386,7 +384,7 @@ class Reader extends React.Component {
       return (window.pageYOffset / (document.body.scrollHeight - window.innerHeight));
     }
 
-    // Listen for scroll events
+  //  Listen for scroll events
     window.addEventListener('scroll', function ( event ) {
       // Clear our timeout throughout the scroll
       window.clearTimeout( isScrolling );
@@ -457,7 +455,7 @@ class Reader extends React.Component {
     });
     window.addEventListener('touchend', function() {
       if(autoScrollSpeed != 0 && autoScrollTimeout == null) {
-        setAutoScroll();
+       setAutoScroll();
       }
       if(!dragging && !holding)   
       {
@@ -484,9 +482,7 @@ class Reader extends React.Component {
         autoScrollSpeed = message.autoScroll;
         scrollMultiplier = message.scrollMultiplier;
         
-        if(autoScrollTimeout == null) {
-          setAutoScroll();
-        }
+     
       }
     }, false);
       `;
@@ -511,6 +507,7 @@ class Reader extends React.Component {
       if (isFound) {
         startBaniList.forEach((element) => {
           if (element.id === this.currentBani.id) {
+            // eslint-disable-next-line no-param-reassign
             element.progress = position;
           }
         });
@@ -560,13 +557,19 @@ class Reader extends React.Component {
         backgroundColor: "transparent",
       },
     });
+    const {
+      READER_STATUS_BAR_COLOR_NIGHT_MODE,
+      READER_STATUS_BAR_COLOR,
+      READER_HEADER_COLOR,
+      TOOLBAR_TINT,
+      READER_FOOTER_COLOR,
+    } = GLOBAL.COLOR;
     return (
       <View
         style={[styles.container, nightMode && { backgroundColor: GLOBAL.COLOR.NIGHT_BLACK }]}
         onLayout={this.onLayout.bind(this)}
       >
         <LoadingIndicator isLoading={isLoading} />
-
         <WebView
           originWhitelist={["*"]}
           style={nightMode && { backgroundColor: GLOBAL.COLOR.NIGHT_BLACK }}
@@ -580,26 +583,23 @@ class Reader extends React.Component {
           }}
           onMessage={this.handleMessage.bind(this)}
         />
-
         <Animated.View style={[styles.header, { position: "absolute", top: animationPosition }]}>
           <StatusBar
             backgroundColor={
-              nightMode
-                ? GLOBAL.COLOR.READER_STATUS_BAR_COLOR_NIGHT_MODE
-                : GLOBAL.COLOR.READER_STATUS_BAR_COLOR
+              nightMode ? READER_STATUS_BAR_COLOR_NIGHT_MODE : READER_STATUS_BAR_COLOR
             }
             barStyle={nightMode || Platform.OS === "android" ? "light-content" : "dark-content"}
           />
           <Header
-            backgroundColor={GLOBAL.COLOR.READER_HEADER_COLOR}
-            containerStyle={[Platform.OS === "android" && { height: 86, padding: 10 }]}
+            backgroundColor={READER_HEADER_COLOR}
+            containerStyle={[Platform.OS === "android" && { height: 86, paddingTop: 10 }]}
             onLayout={(event) => {
               this.headerHeight = event.nativeEvent.layout.height;
             }}
             leftComponent={
               <Icon
                 name="arrow-back"
-                color={GLOBAL.COLOR.TOOLBAR_TINT}
+                color={TOOLBAR_TINT}
                 size={30}
                 onPress={this.handleBackPress.bind(this)}
               />
@@ -609,7 +609,7 @@ class Reader extends React.Component {
                 ? this.truncate.apply(params.item.translit, [24])
                 : this.truncate.apply(params.item.gurmukhi, [25]),
               style: {
-                color: GLOBAL.COLOR.TOOLBAR_TINT,
+                color: TOOLBAR_TINT,
                 fontFamily: transliteration ? null : fontFace,
                 fontSize: 20,
               },
@@ -618,7 +618,7 @@ class Reader extends React.Component {
               <View style={{ flexDirection: "row" }}>
                 <Icon
                   name="settings"
-                  color={GLOBAL.COLOR.TOOLBAR_TINT}
+                  color={TOOLBAR_TINT}
                   size={30}
                   onPress={() => {
                     const autoScrollSpeed = {
@@ -635,7 +635,7 @@ class Reader extends React.Component {
                 <Icon
                   style={{ paddingLeft: 15 }}
                   name="bookmark"
-                  color={GLOBAL.COLOR.TOOLBAR_TINT}
+                  color={TOOLBAR_TINT}
                   size={30}
                   onPress={() => {
                     this.trackScreenForShabad(params);
@@ -646,7 +646,6 @@ class Reader extends React.Component {
             }
           />
         </Animated.View>
-
         {autoScroll && (
           <Animated.View
             style={[
@@ -655,7 +654,7 @@ class Reader extends React.Component {
                 position: "absolute",
                 bottom: animationPosition,
                 paddingBottom: 25,
-                backgroundColor: GLOBAL.COLOR.READER_FOOTER_COLOR,
+                backgroundColor: READER_FOOTER_COLOR,
               },
             ]}
           >

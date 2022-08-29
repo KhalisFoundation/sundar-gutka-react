@@ -5,4 +5,5 @@
     "editor.formatOnPaste": true,
     "prettier.semi": true,
     "javascript.format.semicolons": "insert",
+    "prettier.printWidth": 100,
 }

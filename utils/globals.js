@@ -40,5 +40,7 @@ export default {
     HOME_BACK_COLOR: "#ecf0f1",
     SLIDER_TRACK_MAX_TINT: "#464646",
     SLIDER_TRACK_MIN_TINT: "#BFBFBF",
+    VIEW_BACK_COLOR: "#464646",
+    VISHRAM_BASIC: "#c0392b",
   },
 };
