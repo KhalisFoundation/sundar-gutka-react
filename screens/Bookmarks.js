@@ -4,6 +4,7 @@ import { bindActionCreators } from "redux";
 import { View, StatusBar, Platform } from "react-native";
 import { Header } from "react-native-elements";
 import Icon from "react-native-vector-icons/MaterialIcons";
+import PropTypes from "prop-types";
 import GLOBAL from "../utils/globals";
 import Database from "../utils/database";
 import BaniList from "../components/BaniList";
@@ -21,85 +22,106 @@ class Bookmarks extends React.Component {
   }
 
   componentDidMount() {
-    Database.getBookmarksForId(
-      this.props.currentShabad,
-      this.props.baniLength,
-      this.props.transliterationLanguage
-    ).then((bookmarks) => {
-      this.setState({
-        data: bookmarks,
-        isLoading: false,
-      });
-    });
+    const { currentShabad, baniLength, transliterationLanguage } = this.props;
+    Database.getBookmarksForId(currentShabad, baniLength, transliterationLanguage).then(
+      (bookmarks) => {
+        this.setState({
+          data: bookmarks,
+          isLoading: false,
+        });
+      }
+    );
   }
 
-  handleOnPress(item, navigator) {
-    this.props.setScrollIndex(item.shabadId);
-    this.props.navigation.goBack();
+  handleOnPress(item) {
+    const { setScrollIndex, navigation } = this.props;
+    setScrollIndex(item.shabadId);
+    navigation.goBack();
   }
 
   render() {
-    <LoadingIndicator isLoading={this.state.isLoading} />;
+    const { isLoading, data } = this.state;
+    const { nightMode, navigation, fontSize, fontFace, transliteration } = this.props;
+    <LoadingIndicator isLoading={isLoading} />;
 
     return (
       <View
         style={{
           flex: 1,
-        }}>
+        }}
+      >
         <StatusBar
           backgroundColor={
-            this.props.nightMode
-              ? GLOBAL.COLOR.TOOLBAR_COLOR_ALT_NIGHT_MODE
-              : GLOBAL.COLOR.TOOLBAR_COLOR_ALT
+            nightMode ? GLOBAL.COLOR.TOOLBAR_COLOR_ALT_NIGHT_MODE : GLOBAL.COLOR.TOOLBAR_COLOR_ALT
           }
-          barStyle={this.props.nightMode ? "light-content" : "dark-content"}
+          barStyle={nightMode ? "light-content" : "dark-content"}
         />
         <Header
           backgroundColor={
-            this.props.nightMode
-              ? GLOBAL.COLOR.TOOLBAR_COLOR_ALT_NIGHT_MODE
-              : GLOBAL.COLOR.TOOLBAR_COLOR_ALT
+            nightMode ? GLOBAL.COLOR.TOOLBAR_COLOR_ALT_NIGHT_MODE : GLOBAL.COLOR.TOOLBAR_COLOR_ALT
           }
-          containerStyle={[
-            Platform.OS === "android" && { height: 56, paddingTop: 0 },
-          ]}
+          containerStyle={[Platform.OS === "android" && { height: 56, paddingTop: 0 }]}
           leftComponent={
             <Icon
               name="arrow-back"
-              color={
-                this.props.nightMode
-                  ? GLOBAL.COLOR.TOOLBAR_TINT
-                  : GLOBAL.COLOR.TOOLBAR_TINT_DARK
-              }
+              color={nightMode ? GLOBAL.COLOR.TOOLBAR_TINT : GLOBAL.COLOR.TOOLBAR_TINT_DARK}
               size={30}
-              onPress={() => this.props.navigation.goBack()}
+              onPress={() => navigation.goBack()}
             />
           }
           centerComponent={{
             text: Strings.bookmarks,
             style: {
-              color: this.props.nightMode
-                ? GLOBAL.COLOR.TOOLBAR_TINT
-                : GLOBAL.COLOR.TOOLBAR_TINT_DARK,
+              color: nightMode ? GLOBAL.COLOR.TOOLBAR_TINT : GLOBAL.COLOR.TOOLBAR_TINT_DARK,
               fontSize: 18,
             },
           }}
         />
 
         <BaniList
-          data={this.state.data}
-          nightMode={this.props.nightMode}
-          fontSize={this.props.fontSize}
-          fontFace={this.props.fontFace}
-          transliteration={this.props.transliteration}
-          navigation={this.props.navigation}
-          isLoading={this.state.isLoading}
+          data={data}
+          nightMode={nightMode}
+          fontSize={fontSize}
+          fontFace={fontFace}
+          transliteration={transliteration}
+          navigation={navigation}
+          isLoading={isLoading}
           onPress={this.handleOnPress.bind(this)}
         />
       </View>
     );
   }
 }
+
+Bookmarks.propTypes = {
+  currentShabad: PropTypes.string.isRequired,
+  baniLength: PropTypes.string.isRequired,
+  transliterationLanguage: PropTypes.string.isRequired,
+  setScrollIndex: PropTypes.func.isRequired,
+  navigation: PropTypes.shape({
+    addEventListener: PropTypes.func,
+    canGoBack: PropTypes.func,
+    dispatch: PropTypes.func,
+    getID: PropTypes.func,
+    getParent: PropTypes.func,
+    getState: PropTypes.func,
+    goBack: PropTypes.func,
+    isFocused: PropTypes.func,
+    navigate: PropTypes.func,
+    pop: PropTypes.func,
+    popToTop: PropTypes.func,
+    push: PropTypes.func,
+    removeListener: PropTypes.func,
+    replace: PropTypes.func,
+    reset: PropTypes.func,
+    setOptions: PropTypes.func,
+    setParams: PropTypes.func,
+  }).isRequired,
+  nightMode: PropTypes.bool.isRequired,
+  fontSize: PropTypes.string.isRequired,
+  fontFace: PropTypes.string.isRequired,
+  transliteration: PropTypes.string.isRequired,
+};
 
 function mapStateToProps(state) {
   return {
@@ -117,7 +139,4 @@ function mapDispatchToProps(dispatch) {
   return bindActionCreators(actions, dispatch);
 }
 
-export default connect(
-  mapStateToProps,
-  mapDispatchToProps
-)(Bookmarks);
+export default connect(mapStateToProps, mapDispatchToProps)(Bookmarks);

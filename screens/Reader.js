@@ -347,7 +347,7 @@ class Reader extends React.Component {
   }
 
   loadScrollJS() {
-    const listener = Platform.OS == "android" ? "document" : "window";
+    const listener = Platform.OS === "android" ? "document" : "window";
     const position = this.currentBani.progress;
     return `
     var autoScrollTimeout;
@@ -714,7 +714,7 @@ class Reader extends React.Component {
                   setAutoScrollSpeed(value, currentShabad);
                   const speed = value;
 
-                  if (speed == 0) {
+                  if (speed === 0) {
                     this.setState({ paused: true });
                   } else {
                     this.setState({ paused: false });
