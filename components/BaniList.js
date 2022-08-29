@@ -68,7 +68,7 @@ class BaniList extends Component {
 }
 
 BaniList.propTypes = {
-  data: PropTypes.arrayOf().isRequired,
+  data: PropTypes.arrayOf(PropTypes.shape()).isRequired,
   nightMode: PropTypes.bool.isRequired,
   fontSize: PropTypes.string.isRequired,
   fontFace: PropTypes.string.isRequired,

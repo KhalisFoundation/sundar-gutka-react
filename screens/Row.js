@@ -73,13 +73,14 @@ class Row extends React.Component {
     };
   }
 
-  static getDerivedStateFromProps(nextProps) {
+  componentDidUpdate(prevProps) {
     const { active } = this.props;
-    if (active !== nextProps.active) {
+    if (active !== prevProps.active) {
       Animated.timing(this.active, {
         duration: 300,
         easing: Easing.bounce,
-        toValue: Number(nextProps.active),
+        toValue: Number(active),
+        useNativeDriver: true,
       }).start();
     }
   }
@@ -110,7 +111,8 @@ class Row extends React.Component {
 Row.propTypes = {
   data: PropTypes.shape().isRequired,
   nightMode: PropTypes.bool.isRequired,
-  transliteration: PropTypes.string.isRequired,
+  transliteration: PropTypes.bool.isRequired,
   fontFace: PropTypes.string.isRequired,
-  active: PropTypes.string.isRequired,
+  active: PropTypes.bool.isRequired,
 };
+export default Row;

@@ -13,6 +13,7 @@ import { defaultBaniOrderArray } from "../utils/helpers";
 import Strings from "../utils/localization";
 import CONSTANT from "../utils/constant";
 import Row from "./Row";
+import { current } from "@reduxjs/toolkit";
 
 const window = Dimensions.get("window");
 const styles = StyleSheet.create({
@@ -99,11 +100,18 @@ class EditBaniOrder extends React.Component {
           <SortableList
             style={styles.list}
             contentContainerStyle={styles.contentContainer}
+            decelerationRate={null}
             data={mergedBaniData.baniOrder}
             onChangeOrder={(nextOrder) => {
-              this.newOrder = nextOrder;
+              setBaniOrder(nextOrder);
             }}
-            onReleaseRow={() => (this.newOrder !== undefined ? setBaniOrder(this.newOrder) : null)}
+            // onReleaseRow={(key, currentOrder) => {
+            //   const newOrder = currentOrder.map((item) => {
+            //     return Number(item);
+            //   });
+            //   console.log(newOrder);
+            //   setBaniOrder(newOrder);
+            // }}
             renderRow={this.renderRow}
             order={baniOrder}
           />
@@ -115,19 +123,11 @@ class EditBaniOrder extends React.Component {
 
 EditBaniOrder.propTypes = {
   nightMode: PropTypes.bool.isRequired,
-  transliteration: PropTypes.string.isRequired,
+  transliteration: PropTypes.bool.isRequired,
   fontFace: PropTypes.string.isRequired,
-  navigation: PropTypes.func.isRequired,
+  navigation: PropTypes.shape().isRequired,
   setBaniOrder: PropTypes.func.isRequired,
-  mergedBaniData: PropTypes.shape({
-    baniOrder: PropTypes.arrayOf(
-      PropTypes.shape({
-        gurmukhi: PropTypes.string,
-        id: PropTypes.number,
-        translit: PropTypes.string,
-      })
-    ),
-  }).isRequired,
+  mergedBaniData: PropTypes.shape().isRequired,
   baniOrder: PropTypes.arrayOf(PropTypes.number).isRequired,
 };
 

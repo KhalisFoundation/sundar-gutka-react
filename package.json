@@ -37,7 +37,7 @@
     "react-native-modal-selector": "^2.1.0",
     "react-native-safe-area-context": "^3.3.2",
     "react-native-screens": "^3.9.0",
-    "react-native-sortable-list": "^0.0.24",
+    "react-native-sortable-list": "^0.0.25",
     "react-native-sound": "^0.11.1",
     "react-native-spinkit": "^1.5.1",
     "react-native-sqlite-storage": "^6.0.1",

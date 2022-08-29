@@ -94,7 +94,7 @@ class Bookmarks extends React.Component {
 }
 
 Bookmarks.propTypes = {
-  currentShabad: PropTypes.string.isRequired,
+  currentShabad: PropTypes.number.isRequired,
   baniLength: PropTypes.string.isRequired,
   transliterationLanguage: PropTypes.string.isRequired,
   setScrollIndex: PropTypes.func.isRequired,
@@ -120,7 +120,7 @@ Bookmarks.propTypes = {
   nightMode: PropTypes.bool.isRequired,
   fontSize: PropTypes.string.isRequired,
   fontFace: PropTypes.string.isRequired,
-  transliteration: PropTypes.string.isRequired,
+  transliteration: PropTypes.bool.isRequired,
 };
 
 function mapStateToProps(state) {

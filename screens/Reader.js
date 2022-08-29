@@ -250,7 +250,7 @@ class Reader extends React.Component {
           nightMode ? GLOBAL.COLOR.NIGHT_BLACK : GLOBAL.COLOR.WHITE_COLOR
         };` +
         `word-break: break-word;` +
-        `color: ${nightMode ? GLOBAL.COLOR.WHITE_COLOR : GLOBAL.color.NIGHT_BLACK};` +
+        `color: ${nightMode ? GLOBAL.COLOR.WHITE_COLOR : GLOBAL.COLOR.NIGHT_BLACK};` +
         `padding-top: ${headerHeight}px; }`;
 
       html += "* { -webkit-user-select: none; }";
