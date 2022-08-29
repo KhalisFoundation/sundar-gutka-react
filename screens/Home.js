@@ -221,7 +221,7 @@ class Home extends React.Component {
       <SafeAreaView
         style={{
           flex: 1,
-          backgroundColor: GLOBAL.COLOR.TOOLBAR_COLOR,
+          backgroundColor: GLOBAL.COLOR.HOME_BACK_COLOR,
         }}
       >
         {showLengthSelector && <BaniLengthSelector />}
@@ -231,7 +231,7 @@ class Home extends React.Component {
           backgroundColor={GLOBAL.COLOR.TOOLBAR_COLOR}
           containerStyle={[
             { height: 0, borderBottomWidth: 0 },
-            Platform.OS === CONSTANT.ANDROID && { paddingTop: 20 },
+            Platform.OS === CONSTANT.ANDROID && { paddingTop: 5 },
           ]}
         />
         <View
@@ -247,7 +247,7 @@ class Home extends React.Component {
                 fontFamily: CONSTANT.GURBANI_AKHAR_HEAVY_TRUE,
                 fontSize: 18,
                 textAlign: "center",
-                paddingBottom: 10,
+                padding: 15,
               },
             ]}
           >

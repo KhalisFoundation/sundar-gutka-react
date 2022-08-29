@@ -88,9 +88,10 @@ class Reader extends React.Component {
 
   handleBackPress = () => {
     const { navigation } = this.props;
+    const { goBack } = navigation;
     this.webView.postMessage(JSON.stringify({ Back: true }));
     setTimeout(() => {
-      navigation.goBack();
+      goBack();
     }, 100);
   };
 
@@ -245,9 +246,11 @@ class Reader extends React.Component {
         }`;
 
       html +=
-        `${"body { " + "background-color: "}${nightMode ? "#000" : "#fff"};` +
+        `${"body { " + "background-color: "}${
+          nightMode ? GLOBAL.COLOR.NIGHT_BLACK : GLOBAL.COLOR.WHITE_COLOR
+        };` +
         `word-break: break-word;` +
-        `color: ${nightMode ? "#fff" : "#000"};` +
+        `color: ${nightMode ? GLOBAL.COLOR.WHITE_COLOR : GLOBAL.color.NIGHT_BLACK};` +
         `padding-top: ${headerHeight}px; }`;
 
       html += "* { -webkit-user-select: none; }";
@@ -529,6 +532,7 @@ class Reader extends React.Component {
       setAutoScrollSpeed,
     } = this.props;
     const { data, isLoading, animationPosition, scrollMultiplier, paused } = this.state;
+    const { navigate } = navigation;
     const { params } = route.params;
     this.trackScreenForShabad(params);
     const styles = StyleSheet.create({
@@ -562,13 +566,13 @@ class Reader extends React.Component {
     } = GLOBAL.COLOR;
     return (
       <View
-        style={[styles.container, nightMode && { backgroundColor: "#000" }]}
+        style={[styles.container, nightMode && { backgroundColor: GLOBAL.COLOR.NIGHT_BLACK }]}
         onLayout={this.onLayout.bind(this)}
       >
         <LoadingIndicator isLoading={isLoading} />
         <WebView
           originWhitelist={["*"]}
-          style={nightMode && { backgroundColor: "#000" }}
+          style={nightMode && { backgroundColor: GLOBAL.COLOR.NIGHT_BLACK }}
           ref={(webView) => {
             this.webView = webView;
           }}
@@ -577,7 +581,6 @@ class Reader extends React.Component {
             html: this.loadHTML(data, this.headerHeight),
             baseUrl: "",
           }}
-          // eslint-disable-next-line react/jsx-no-bind
           onMessage={this.handleMessage.bind(this)}
         />
         <Animated.View style={[styles.header, { position: "absolute", top: animationPosition }]}>
@@ -589,7 +592,7 @@ class Reader extends React.Component {
           />
           <Header
             backgroundColor={READER_HEADER_COLOR}
-            containerStyle={[Platform.OS === "android" && { height: 86, paddingTop: 0 }]}
+            containerStyle={[Platform.OS === "android" && { height: 86, paddingTop: 10 }]}
             onLayout={(event) => {
               this.headerHeight = event.nativeEvent.layout.height;
             }}
@@ -626,7 +629,7 @@ class Reader extends React.Component {
                     this.setState({
                       paused: true,
                     });
-                    navigation.navigate("Settings");
+                    navigate("Settings");
                   }}
                 />
                 <Icon
@@ -636,7 +639,7 @@ class Reader extends React.Component {
                   size={30}
                   onPress={() => {
                     this.trackScreenForShabad(params);
-                    navigation.navigate("Bookmarks");
+                    navigate("Bookmarks");
                   }}
                 />
               </View>
@@ -701,9 +704,9 @@ class Reader extends React.Component {
               )}
               <Slider
                 style={[{ flex: 1, marginLeft: 25, marginRight: 25, marginTop: 10 }]}
-                minimumTrackTintColor="#BFBFBF"
-                maximumTrackTintColor="#464646"
-                thumbTintColor="#fff"
+                minimumTrackTintColor={GLOBAL.COLOR.SLIDER_TRACK_MIN_TINT}
+                maximumTrackTintColor={GLOBAL.COLOR.SLIDER_TRACK_MAX_TINT}
+                thumbTintColor={GLOBAL.COLOR.WHITE_COLOR}
                 minimumValue={0}
                 maximumValue={100}
                 step={1}
