@@ -42,23 +42,9 @@ export const SET_START_BANI = "SET_START_BANI";
  * other constants
  */
 
-export const FONT_SIZES = [
-  "EXTRA_SMALL",
-  "SMALL",
-  "MEDIUM",
-  "LARGE",
-  "EXTRA_LARGE",
-];
+export const FONT_SIZES = ["EXTRA_SMALL", "SMALL", "MEDIUM", "LARGE", "EXTRA_LARGE"];
 
-export const LANGUAGES = [
-  "DEFAULT",
-  "en-US",
-  "es",
-  "fr",
-  "it",
-  "hi",
-  "pa",
-];
+export const LANGUAGES = ["DEFAULT", "en-US", "es", "fr", "it", "hi", "pa"];
 
 export const languageNames = [
   `${Strings.default}`,
@@ -92,12 +78,7 @@ export const fontFaceNames = [
   `${Strings.gurbani_akhar_think}`,
 ];
 
-export const TRANSLITERATION_LANGUAGES = [
-  "ENGLISH",
-  "HINDI",
-  "SHAHMUKHI",
-  "IPA",
-];
+export const TRANSLITERATION_LANGUAGES = ["ENGLISH", "HINDI", "SHAHMUKHI", "IPA"];
 
 export const transliterationLanguageNames = [
   `${Strings.english}`,
@@ -115,10 +96,7 @@ export const baniLengthNames = [
   `${Strings.extra_long}`,
 ];
 
-export const MANGLACHARAN_POSITIONS = [
-  "CURRENT_SAROOPS",
-  "ABOVE_RAAG_HEADINGS",
-];
+export const MANGLACHARAN_POSITIONS = ["CURRENT_SAROOPS", "ABOVE_RAAG_HEADINGS"];
 
 export const manglacharanPositionNames = [
   `${Strings.current_saroops_default}`,
@@ -132,11 +110,7 @@ export const padchhedSettingNames = [
   `${Strings.mast_sabh_mast}`,
 ];
 
-export const REMINDER_SOUNDS = [
-  "default",
-  "wake_up_jap.mp3",
-  "waheguru_soul.mp3",
-];
+export const REMINDER_SOUNDS = ["default", "wake_up_jap.mp3", "waheguru_soul.mp3"];
 
 export const reminderSoundNames = [
   `${Strings.default}`,
@@ -146,17 +120,15 @@ export const reminderSoundNames = [
 
 export const VISHRAAM_OPTIONS = ["VISHRAAM_COLORED", "VISHRAAM_GRADIENT"];
 
-export const vishraamOptionNames = [
-  `${Strings.colored_words}`,
-  `${Strings.gradient_background}`,
-];
+export const vishraamOptionNames = [`${Strings.colored_words}`, `${Strings.gradient_background}`];
 
 export const VISHRAAM_SOURCES = ["sttm", "igurbani", "sttm2"];
 
 export const vishraamSourceNames = [
   `${Strings.banidb_living_default}`,
   `${Strings.iGurbani}`,
-  `${Strings.sttm2}`,];
+  `${Strings.sttm2}`,
+];
 
 /*
  * action creators
@@ -188,10 +160,7 @@ export function toggleTransliteration(value) {
 }
 
 export function setTransliterationLanguage(language) {
-  AnalyticsManager.getInstance().trackSettingsEvent(
-    "transliterationLanguage",
-    language
-  );
+  AnalyticsManager.getInstance().trackSettingsEvent("transliterationLanguage", language);
   return { type: SET_TRANSLITERATION_LANGUAGE, language };
 }
 
@@ -282,7 +251,7 @@ export function toggleAutoScroll(value) {
 }
 
 export function setAutoScrollSpeed(speed, shabad) {
-  let shabadSpeed = { [shabad]: speed };
+  const shabadSpeed = { [shabad]: speed };
   return { type: SET_AUTO_SCROLL_SPEED, shabadSpeed };
 }
 
