@@ -1,13 +1,15 @@
-import React, { Component } from "react";
+import React, { PureComponent } from "react";
 import { Text, StyleSheet, View } from "react-native";
-import {
-  fontSizeForReader,
-  fontColorForReader,
-  TextType,
-} from "../utils/helpers";
+import PropTypes from "prop-types";
+import { fontSizeForReader, fontColorForReader, TextType } from "../utils/helpers";
 
-class ReaderBaniItem extends Component {
+class ReaderBaniItem extends PureComponent {
   render() {
+    const styles = StyleSheet.create({
+      itemBlock: {
+        padding: 5,
+      },
+    });
     const {
       item,
       nightMode,
@@ -17,85 +19,76 @@ class ReaderBaniItem extends Component {
       transliteration,
       onItemLayout,
     } = this.props;
+    const { header, gurmukhi, translit } = item;
+    let textAlign = "";
+    switch (header) {
+      case 0:
+        textAlign = "left";
+        break;
+      case 1:
+        textAlign = "center";
+        break;
+      case 2:
+        textAlign = "center";
+        break;
+      default:
+        textAlign = "right";
+    }
     return (
       <View style={styles.itemBlock} onLayout={onItemLayout}>
         <Text
-          selectable={true}
+          selectable
           style={[
             {
-              color: fontColorForReader(
-                item.header,
-                nightMode,
-                TextType.GURMUKHI
-              ),
+              color: fontColorForReader(header, nightMode, TextType.GURMUKHI),
             },
             { fontFamily: fontFace },
             { padding: 5 },
             {
-              textAlign:
-                item.header === 0
-                  ? "left"
-                  : item.header === 1 || item.header === 2
-                    ? "center"
-                    : "right",
+              textAlign,
             },
             {
-              fontSize: fontSizeForReader(fontSize, item.header, false),
+              fontSize: fontSizeForReader(fontSize, header, false),
             },
-          ]}>
-          {item.gurmukhi}
+          ]}
+        >
+          {gurmukhi}
         </Text>
         {transliteration && (
           <Text
             style={[
               {
-                color: fontColorForReader(
-                  item.header,
-                  nightMode,
-                  TextType.TRANSLITERATION
-                ),
+                color: fontColorForReader(header, nightMode, TextType.TRANSLITERATION),
               },
               { padding: 5 },
-              { fontWeight: item.header === 0 ? "normal" : "bold" },
+              { fontWeight: header === 0 ? "normal" : "bold" },
               {
-                textAlign:
-                  item.header === 0
-                    ? "left"
-                    : item.header === 1 || item.header === 2
-                      ? "center"
-                      : "right",
+                textAlign,
               },
               {
-                fontSize: fontSizeForReader(fontSize, item.header, true),
+                fontSize: fontSizeForReader(fontSize, header, true),
               },
-            ]}>
-            {item.translit}
+            ]}
+          >
+            {translit}
           </Text>
         )}
         {englishTranslations && item.englishTranslations && (
           <Text
             style={[
               {
-                color: fontColorForReader(
-                  item.header,
-                  nightMode,
-                  TextType.ENGLISH_TRANSLATION
-                ),
+                color: fontColorForReader(header, nightMode, TextType.ENGLISH_TRANSLATION),
               },
               { padding: 5 },
-              { fontWeight: item.header === 0 ? "normal" : "bold" },
+              { fontWeight: header === 0 ? "normal" : "bold" },
               {
-                textAlign:
-                  item.header === 0
-                    ? "left"
-                    : item.header === 1 || item.header === 2
-                      ? "center"
-                      : "right",
+                textAlign,
               },
               {
-                fontSize: fontSizeForReader(fontSize, item.header, true),
+                fontSize: fontSizeForReader(fontSize, header, true),
               },
-            ]}>
+            ]}
+          >
             {item.englishTranslations}
           </Text>
         )}
@@ -103,11 +96,14 @@ class ReaderBaniItem extends Component {
     );
   }
 }
-
-const styles = StyleSheet.create({
-  itemBlock: {
-    padding: 5,
-  },
-});
+ReaderBaniItem.propTypes = {
+  item: PropTypes.shape().isRequired,
+  nightMode: PropTypes.bool.isRequired,
+  fontSize: PropTypes.string.isRequired,
+  fontFace: PropTypes.string.isRequired,
+  englishTranslations: PropTypes.bool.isRequired,
+  transliteration: PropTypes.bool.isRequired,
+  onItemLayout: PropTypes.bool.isRequired,
+};
 
 export default ReaderBaniItem;

@@ -1,7 +1,7 @@
 import React from "react";
 import { BackHandler, Alert, AppRegistry } from "react-native";
-import { NavigationContainer } from '@react-navigation/native';
-import { createNativeStackNavigator } from '@react-navigation/native-stack';
+import { NavigationContainer } from "@react-navigation/native";
+import { createNativeStackNavigator } from "@react-navigation/native-stack";
 import { Provider } from "react-redux";
 import { PersistGate } from "redux-persist/integration/react";
 import HomeScreen from "./screens/Home";
@@ -33,22 +33,19 @@ export default class App extends React.Component {
     Alert.alert(
       "Exit Sundar Gutka",
       "Are you sure you want to exit?",
-      [
-        { text: "Cancel" },
-        { text: "Exit", onPress: () => BackHandler.exitApp() }
-      ],
+      [{ text: "Cancel" }, { text: "Exit", onPress: () => BackHandler.exitApp() }],
       { cancelable: true }
     );
     return true;
   };
 
-  notificationHandler=()=> {
-    const firebaseNotifaction = new FirebaseNotification()
+  notificationHandler = () => {
+    const firebaseNotifaction = new FirebaseNotification();
     firebaseNotifaction.checkPermission();
     firebaseNotifaction.backgroundMessageHandler();
     firebaseNotifaction.foregroundMessage();
     firebaseNotifaction.handleNotification();
-  }
+  };
 
   render() {
     return (
@@ -57,8 +54,9 @@ export default class App extends React.Component {
           <NavigationContainer>
             <Stack.Navigator
               screenOptions={{
-                headerShown: false
-              }}>
+                headerShown: false,
+              }}
+            >
               <Stack.Screen name="Home" component={HomeScreen} />
               <Stack.Screen name="FolderBani" component={FolderBaniScreen} />
               <Stack.Screen name="Settings" component={SettingsScreen} />
@@ -74,4 +72,4 @@ export default class App extends React.Component {
     );
   }
 }
-AppRegistry.registerHeadlessTask('RNFirebaseMessagingService', () => this.notificationHandler);
+AppRegistry.registerHeadlessTask("RNFirebaseMessagingService", () => this.notificationHandler);

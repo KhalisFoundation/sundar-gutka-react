@@ -1,8 +1,9 @@
-import messaging from '@react-native-firebase/messaging';
+import messaging from "@react-native-firebase/messaging";
 import moment from "moment";
 
 export default class NotificationsManager {
   REMINDERS_CHANNEL = "reminders-channel";
+
   static myInstance = null;
 
   static getInstance() {
@@ -12,11 +13,11 @@ export default class NotificationsManager {
     return this.myInstance;
   }
 
-  checkPermissions(remindersOn) {
+  checkPermissions = (remindersOn) => {
     if (remindersOn) {
       messaging()
         .hasPermission()
-        .then(enabled => {
+        .then((enabled) => {
           if (!enabled) {
             // user doesn't have permission
             messaging()
@@ -24,7 +25,7 @@ export default class NotificationsManager {
               .then(() => {
                 // User has authorized
               })
-              .catch(error => {
+              .catch((error) => {
                 // User has rejected permissions
                 alert(
                   "Please enable Notifications for Sundar Gutka in OS Settings to use the Reminders feature."
@@ -33,7 +34,7 @@ export default class NotificationsManager {
           }
         });
     }
-  }
+  };
 
   updateReminders(remindersOn, sound, remindersList) {
     // firebase.notifications().cancelAllNotifications();
@@ -48,11 +49,11 @@ export default class NotificationsManager {
   }
 
   removeAllDeliveredNotifications() {
-    //firebase.notifications().removeAllDeliveredNotifications();
+    // firebase.notifications().removeAllDeliveredNotifications();
   }
 
   getScheduledNotifications() {
-    //firebase.notifications().getScheduledNotifications();
+    // firebase.notifications().getScheduledNotifications();
   }
 
   createReminder(reminder, sound) {
@@ -64,10 +65,8 @@ export default class NotificationsManager {
     // )
     //   .setSound(sound)
     //   .setDescription("Alert notification reminders for chosen Bani");
-
     // // Create the channel
     // firebase.notifications().android.createChannel(channel);
-
     // // Build notification
     // const notification = new firebase.notifications.Notification()
     //   .setNotificationId(reminder.key.toString())
@@ -79,17 +78,13 @@ export default class NotificationsManager {
     //     gurmukhi: reminder.gurmukhi,
     //     roman: reminder.translit
     //   });
-
     // notification.android
     //   .setChannelId(this.REMINDERS_CHANNEL)
     //   .android.setSmallIcon("ic_notification");
-
     // notification.ios.setBadge(1);
-
     // let aTime = moment(reminder.time, "h:mm A")
     //   .utc()
     //   .valueOf();
-
     // firebase.notifications().scheduleNotification(notification, {
     //   fireDate: aTime,
     //   repeatInterval: "day"

@@ -81,8 +81,8 @@ class Reader extends React.Component {
   }
 
   componentWillUnmount() {
-    this.setState = (state, callback) => {
-      return;
+    this.setState = () => {
+      return "";
     };
   }
 
@@ -246,7 +246,7 @@ class Reader extends React.Component {
         }`;
 
       html +=
-        `${"body { " + "background-color: "}${
+        `${"body {background-color: "}${
           nightMode ? GLOBAL.COLOR.NIGHT_BLACK : GLOBAL.COLOR.WHITE_COLOR
         };` +
         `word-break: break-word;` +

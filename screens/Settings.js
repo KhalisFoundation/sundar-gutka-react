@@ -34,6 +34,7 @@ class Settings extends React.Component {
   }
 
   componentDidMount() {
+    console.log("I am here");
     AnalyticsManager.getInstance().trackScreenView("In App Settings", this.constructor.name);
   }
 

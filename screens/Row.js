@@ -77,7 +77,7 @@ class Row extends React.Component {
     const { active } = this.props;
     if (active !== prevProps.active) {
       Animated.timing(this.active, {
-        duration: 300,
+        duration: 800,
         easing: Easing.bounce,
         toValue: Number(active),
         useNativeDriver: true,

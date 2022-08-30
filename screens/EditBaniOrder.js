@@ -13,7 +13,6 @@ import { defaultBaniOrderArray } from "../utils/helpers";
 import Strings from "../utils/localization";
 import CONSTANT from "../utils/constant";
 import Row from "./Row";
-import { current } from "@reduxjs/toolkit";
 
 const window = Dimensions.get("window");
 const styles = StyleSheet.create({
@@ -128,7 +127,7 @@ EditBaniOrder.propTypes = {
   navigation: PropTypes.shape().isRequired,
   setBaniOrder: PropTypes.func.isRequired,
   mergedBaniData: PropTypes.shape().isRequired,
-  baniOrder: PropTypes.arrayOf(PropTypes.number).isRequired,
+  baniOrder: PropTypes.arrayOf(PropTypes.string).isRequired,
 };
 
 function mapStateToProps(state) {

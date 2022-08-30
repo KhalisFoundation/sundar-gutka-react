@@ -42,5 +42,6 @@ export default {
     SLIDER_TRACK_MIN_TINT: "#BFBFBF",
     VIEW_BACK_COLOR: "#464646",
     VISHRAM_BASIC: "#c0392b",
+    MODAL_BACKGROUND_COLOR: "rgba(0,0,0,0.5)",
   },
 };

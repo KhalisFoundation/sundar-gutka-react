@@ -298,8 +298,10 @@ class Home extends React.Component {
               bottom: 15,
             }}
             color={GLOBAL.COLOR.TOOLBAR_TINT}
-            size={30}
-            onPress={() => navigation.navigate(CONSTANT.SETTINGS)}
+            size={35}
+            onPress={() => {
+              navigation.navigate(CONSTANT.SETTINGS);
+            }}
           />
         </View>
         <BaniList
@@ -310,7 +312,6 @@ class Home extends React.Component {
           transliteration={transliteration}
           navigation={navigation}
           isLoading={isLoading}
-          // eslint-disable-next-line react/jsx-no-bind
           onPress={this.handleOnPress.bind(this)}
         />
       </SafeAreaView>
@@ -338,7 +339,7 @@ Home.propTypes = {
   reminderSound: PropTypes.string.isRequired,
   reminderBanis: PropTypes.string.isRequired,
   reminders: PropTypes.bool.isRequired,
-  baniOrder: PropTypes.arrayOf(PropTypes.number).isRequired,
+  baniOrder: PropTypes.arrayOf(PropTypes.string).isRequired,
   transliterationLanguage: PropTypes.string.isRequired,
   setCurrentShabad: PropTypes.func.isRequired,
   mergedBaniData: PropTypes.shape({
