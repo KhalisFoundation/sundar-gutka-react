@@ -18,6 +18,7 @@ import Icon from "react-native-vector-icons/MaterialIcons";
 import { ActionSheet, ActionSheetItem } from "react-native-action-sheet-component";
 import { connect } from "react-redux";
 import { bindActionCreators } from "redux";
+import PropTypes from "prop-types";
 import { baniLengthInfo } from "../utils/helpers";
 import GLOBAL from "../utils/globals";
 import AnalyticsManager from "../utils/analytics";
@@ -34,7 +35,6 @@ class Settings extends React.Component {
   }
 
   componentDidMount() {
-    console.log("I am here");
     AnalyticsManager.getInstance().trackScreenView("In App Settings", this.constructor.name);
   }
 
@@ -988,6 +988,55 @@ class Settings extends React.Component {
     );
   }
 }
+Settings.propTypes = {
+  englishTranslations: PropTypes.bool.isRequired,
+  punjabiTranslations: PropTypes.bool.isRequired,
+  spanishTranslations: PropTypes.bool.isRequired,
+  navigation: PropTypes.shape().isRequired,
+  nightMode: PropTypes.bool.isRequired,
+  fontSize: PropTypes.string.isRequired,
+  fontFace: PropTypes.string.isRequired,
+  language: PropTypes.string.isRequired,
+  transliteration: PropTypes.bool.isRequired,
+  transliterationLanguage: PropTypes.string.isRequired,
+  toggleEnglishTranslations: PropTypes.func.isRequired,
+  togglePunjabiTranslations: PropTypes.func.isRequired,
+  toggleSpanishTranslations: PropTypes.func.isRequired,
+  toggleNightMode: PropTypes.func.isRequired,
+  toggleTransliteration: PropTypes.func.isRequired,
+  statusBar: PropTypes.bool.isRequired,
+  toggleStatusBar: PropTypes.func.isRequired,
+  autoScroll: PropTypes.bool.isRequired,
+  toggleAutoScroll: PropTypes.func.isRequired,
+  screenAwake: PropTypes.bool.isRequired,
+  toggleScreenAwake: PropTypes.func.isRequired,
+  baniLength: PropTypes.string.isRequired,
+  larivaar: PropTypes.bool.isRequired,
+  toggleLarivaar: PropTypes.func.isRequired,
+  larivaarAssist: PropTypes.bool.isRequired,
+  toggleLarivaarAssist: PropTypes.func.isRequired,
+  paragraphMode: PropTypes.bool.isRequired,
+  toggleParagraphMode: PropTypes.func.isRequired,
+  padchhedSetting: PropTypes.string.isRequired,
+  visram: PropTypes.bool.isRequired,
+  vishraamOption: PropTypes.string.isRequired,
+  toggleVisram: PropTypes.func.isRequired,
+  reminders: PropTypes.bool.isRequired,
+  toggleReminders: PropTypes.func.isRequired,
+  reminderSound: PropTypes.string.isRequired,
+  statistics: PropTypes.bool.isRequired,
+  toggleStatistics: PropTypes.func.isRequired,
+  setFontFace: PropTypes.func.isRequired,
+  setFontSize: PropTypes.func.isRequired,
+  setLanguage: PropTypes.func.isRequired,
+  setTransliterationLanguage: PropTypes.func.isRequired,
+  setBaniLength: PropTypes.func.isRequired,
+  setPadchhedSetting: PropTypes.func.isRequired,
+  setVishraamOption: PropTypes.func.isRequired,
+  setVishraamSource: PropTypes.func.isRequired,
+  setReminderSound: PropTypes.func.isRequired,
+  vishraamSource: PropTypes.string.isRequired,
+};
 function mapStateToProps(state) {
   return {
     fontSize: state.fontSize,

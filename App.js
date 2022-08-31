@@ -1,9 +1,9 @@
-import React from "react";
 import { BackHandler, Alert, AppRegistry } from "react-native";
 import { NavigationContainer } from "@react-navigation/native";
 import { createNativeStackNavigator } from "@react-navigation/native-stack";
 import { Provider } from "react-redux";
 import { PersistGate } from "redux-persist/integration/react";
+import * as React from "react";
 import HomeScreen from "./screens/Home";
 import FolderBaniScreen from "./screens/FolderBani";
 import SettingsScreen from "./screens/Settings";
