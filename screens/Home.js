@@ -221,7 +221,7 @@ class Home extends React.Component {
       <SafeAreaView
         style={{
           flex: 1,
-          backgroundColor: GLOBAL.COLOR.HOME_BACK_COLOR,
+          backgroundColor: GLOBAL.COLOR.TOOLBAR_COLOR,
         }}
       >
         {showLengthSelector && <BaniLengthSelector />}
@@ -339,7 +339,7 @@ Home.propTypes = {
   reminderSound: PropTypes.string.isRequired,
   reminderBanis: PropTypes.string.isRequired,
   reminders: PropTypes.bool.isRequired,
-  baniOrder: PropTypes.arrayOf(PropTypes.string).isRequired,
+  baniOrder: PropTypes.arrayOf(PropTypes.number).isRequired,
   transliterationLanguage: PropTypes.string.isRequired,
   setCurrentShabad: PropTypes.func.isRequired,
   mergedBaniData: PropTypes.shape({
