@@ -90,7 +90,7 @@ class Database {
       default:
         baniLength = EXISTS_MEDIUM;
     }
-    return new Promise(function (resolve) {
+    return new Promise((resolve) => {
       Database.initDB().then(() => {
         db.executeSql(
           `SELECT ID, Paragraph, header, Gurmukhi, Visraam, Transliterations, Translations FROM mv_Banis_Shabad WHERE Bani = ${baniId} AND ${baniLength} = 1 AND (MangalPosition IS NULL OR MangalPosition = ${
@@ -119,12 +119,10 @@ class Database {
                 Transliterations,
                 Translations,
                 Paragraph,
-                English,
-                Punjabi,
-                Spanish,
                 ID,
                 header,
               } = row;
+              let { English, Punjabi, Spanish } = row;
 
               const gurmukhiLine = visram && GurmukhiBisram ? GurmukhiBisram : Gurmukhi;
 
@@ -159,20 +157,35 @@ class Database {
                       style += " 100%);";
                       break;
                     case VISHRAAM_COLORED:
+                      style += " color:";
+                      style +=
+                        vishraamPositions[index] === "v" ? `${VISHRAM_BASIC}` : `${VISHRAM_SHORT};`;
+                      break;
                     default:
                       style += " color:";
                       style +=
                         vishraamPositions[index] === "v" ? `${VISHRAM_BASIC}` : `${VISHRAM_SHORT};`;
                   }
-                  return `<span style='
-                    ${style} white-space: nowrap;'>
+                  let line = "";
+                  if (style !== "") {
+                    line = `<span style='
+                    ${style}'>
                     ${word} </span>`;
+                  } else {
+                    line = word;
+                  }
+                  return line;
                 }
                 if (larivaar && larivaarAssist && index % 2 !== 0) {
                   style += " opacity: .65;";
-                  return `<span style='${style} white-space: nowrap;'>${word}</span>`;
                 }
-                return word;
+                let lineWord = "";
+                if (style !== "") {
+                  lineWord = `<span style='${style}'>${word}</span>`;
+                } else {
+                  lineWord = word;
+                }
+                return lineWord;
               });
               let curGurmukhi = larivaar ? arr.join("&#8203;") : arr.join(" ");
 
