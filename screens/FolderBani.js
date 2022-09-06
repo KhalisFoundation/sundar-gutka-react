@@ -24,7 +24,6 @@ class FolderBani extends React.Component {
     const { route, navigation, transliteration, fontFace, nightMode, fontSize } = this.props;
     const { goBack, navigate } = navigation;
     const { params } = route;
-    const { title, data } = params;
 
     return (
       <View
@@ -45,7 +44,7 @@ class FolderBani extends React.Component {
             />
           }
           centerComponent={{
-            text: `${title}`,
+            text: `${params.params.title}`,
             style: [
               {
                 color: GLOBAL.COLOR.TOOLBAR_TINT,
@@ -64,7 +63,7 @@ class FolderBani extends React.Component {
           }
         />
         <BaniList
-          data={data}
+          data={params.params.data}
           nightMode={nightMode}
           fontSize={fontSize}
           fontFace={fontFace}
@@ -79,8 +78,8 @@ class FolderBani extends React.Component {
 
 FolderBani.propTypes = {
   setCurrentShabad: PropTypes.func.isRequired,
-  route: PropTypes.shape.isRequired,
-  navigation: PropTypes.shape.isRequired,
+  route: PropTypes.shape().isRequired,
+  navigation: PropTypes.shape().isRequired,
   transliteration: PropTypes.bool.isRequired,
   fontFace: PropTypes.string.isRequired,
   nightMode: PropTypes.bool.isRequired,

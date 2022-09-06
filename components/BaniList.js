@@ -66,15 +66,19 @@ class BaniList extends Component {
     );
   }
 }
+BaniList.defaultProps = {
+  data: [],
+  isLoading: true,
+};
 
 BaniList.propTypes = {
-  data: PropTypes.arrayOf(PropTypes.shape()).isRequired,
+  data: PropTypes.arrayOf(PropTypes.shape()),
   nightMode: PropTypes.bool.isRequired,
   fontSize: PropTypes.string.isRequired,
   fontFace: PropTypes.string.isRequired,
   transliteration: PropTypes.bool.isRequired,
   navigation: PropTypes.shape().isRequired,
-  isLoading: PropTypes.bool.isRequired,
+  isLoading: PropTypes.bool,
   onPress: PropTypes.func.isRequired,
 };
 
