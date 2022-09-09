@@ -11,7 +11,7 @@ import VersionNumber from "react-native-version-number";
 import Sound from "react-native-sound";
 import GLOBAL from "../utils/globals";
 import AnalyticsManager from "../utils/analytics";
-import NotificationsManager from "../utils/notifications";
+// import NotificationsManager from "../utils/notifications";
 import Database from "../utils/database";
 import { mergedBaniList } from "../utils/helpers";
 import * as actions from "../actions/actions";
@@ -50,9 +50,9 @@ class Home extends React.Component {
       autoScroll,
       statusBar,
       statistics,
-      reminderSound,
-      reminderBanis,
-      reminders,
+      // reminderSound,
+      // reminderBanis,
+      // reminders,
     } = this.props;
     if (appVersion !== VersionNumber.appVersion) {
       if (appVersion === "") {
@@ -77,9 +77,9 @@ class Home extends React.Component {
     this.changeStatusBar(statusBar);
     AnalyticsManager.getInstance().allowTracking(statistics);
 
-    NotificationsManager.getInstance().updateReminders(reminders, reminderSound, reminderBanis);
+    // NotificationsManager.getInstance().updateReminders(reminders, reminderSound, reminderBanis);
     AnalyticsManager.getInstance().trackScreenView(CONSTANT.HOME_SCREEN, this.constructor.name);
-    NotificationsManager.getInstance().removeAllDeliveredNotifications();
+    // NotificationsManager.getInstance().removeAllDeliveredNotifications();
   }
 
   componentDidUpdate(prevProps) {
@@ -91,7 +91,7 @@ class Home extends React.Component {
       statusBar,
       statistics,
       reminders,
-      reminderBanis,
+      // reminderBanis,
       reminderSound,
     } = this.props;
     if (prevProps.baniOrder !== baniOrder) {
@@ -111,10 +111,10 @@ class Home extends React.Component {
     } else if (prevProps.statistics !== statistics) {
       AnalyticsManager.getInstance().allowTracking(statistics);
     } else if (prevProps.reminders !== reminders) {
-      NotificationsManager.getInstance().checkPermissions(reminders);
-      NotificationsManager.getInstance().updateReminders(reminders, reminderSound, reminderBanis);
+      // NotificationsManager.getInstance().checkPermissions(reminders);
+      // NotificationsManager.getInstance().updateReminders(reminders, reminderSound, reminderBanis);
     } else if (prevProps.reminderSound !== reminderSound) {
-      NotificationsManager.getInstance().updateReminders(reminders, reminderSound, reminderBanis);
+      // NotificationsManager.getInstance().updateReminders(reminders, reminderSound, reminderBanis);
 
       if (actions.REMINDER_SOUNDS.indexOf(reminderSound) !== 0) {
         const sound = new Sound(reminderSound, Sound.MAIN_BUNDLE, (error) => {
@@ -337,7 +337,7 @@ Home.propTypes = {
   statusBar: PropTypes.bool.isRequired,
   statistics: PropTypes.bool.isRequired,
   reminderSound: PropTypes.string.isRequired,
-  reminderBanis: PropTypes.string.isRequired,
+  // reminderBanis: PropTypes.string.isRequired,
   reminders: PropTypes.bool.isRequired,
   baniOrder: PropTypes.arrayOf(PropTypes.number).isRequired,
   transliterationLanguage: PropTypes.string.isRequired,

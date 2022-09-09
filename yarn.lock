@@ -1187,6 +1187,11 @@
     "@jridgewell/resolve-uri" "^3.0.3"
     "@jridgewell/sourcemap-codec" "^1.4.10"
 
+"@notifee/react-native@^5.7.0":
+  "integrity" "sha512-2AEI4IJvk+/qij0zkTnhF9aD04u9cs2RwXBk82bR/KaoYhbUc4M97q4IYBEkE+cATGzJE+qZT1rgUWqCiUhuSw=="
+  "resolved" "https://registry.npmjs.org/@notifee/react-native/-/react-native-5.7.0.tgz"
+  "version" "5.7.0"
+
 "@react-native-async-storage/async-storage@^1.17.10":
   "integrity" "sha512-KrR021BmBLsA0TT1AAsfH16bHYy0MSbhdAeBAqpriak3GS1T2alFcdTUvn13p0ZW6FKRD6Bd3ryU2zhU/IYYJQ=="
   "resolved" "https://registry.npmjs.org/@react-native-async-storage/async-storage/-/async-storage-1.17.10.tgz"

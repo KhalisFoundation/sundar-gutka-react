@@ -22,6 +22,7 @@ import * as Animatable from "react-native-animatable";
 import Modal from "react-native-modal";
 import moment from "moment";
 import ModalSelector from "react-native-modal-selector";
+import PropTypes from "prop-types";
 import NotificationsManager from "../utils/notifications";
 import AnalyticsManager from "../utils/analytics";
 import * as actions from "../actions/actions";
@@ -51,7 +52,7 @@ class ReminderOptions extends React.Component {
         {
           baniList,
         },
-        function () {
+        () => {
           if (JSON.parse(reminderBanis).length === 0) {
             this.setDefaultReminders();
           }
@@ -61,7 +62,11 @@ class ReminderOptions extends React.Component {
     AnalyticsManager.getInstance().trackScreenView("Reminder Options", this.constructor.name);
   }
 
-  handleSwitchToggled(value, key) {
+  componentWillUnmount() {
+    this.hidetimePicker();
+  }
+
+  async handleSwitchToggled(value, key) {
     const { reminderBanis, setReminderBanis, reminders, reminderSound } = this.props;
     const array = JSON.parse(reminderBanis);
     array
@@ -69,17 +74,17 @@ class ReminderOptions extends React.Component {
         return obj.key === key;
       })
       .map((foundObj) => {
-        foundObj.enabled = value;
+        return foundObj;
       });
     setReminderBanis(JSON.stringify(array));
-    NotificationsManager.getInstance().updateReminders(
+    await NotificationsManager.getInstance().updateReminders(
       reminders,
       reminderSound,
       JSON.stringify(array)
     );
   }
 
-  handleTimePicked = (time) => {
+  handleTimePicked = async (time) => {
     const { reminderBanis, setReminderBanis, reminders, reminderSound } = this.props;
     const { timePickerSectionKey } = this.state;
     this.hidetimePicker();
@@ -89,36 +94,38 @@ class ReminderOptions extends React.Component {
         return obj.key === timePickerSectionKey;
       })
       .map((foundObj) => {
-        foundObj.time = moment(time).local().format("h:mm A");
-        foundObj.enabled = true;
+        const temp = foundObj;
+        temp.time = moment(time).local().format("h:mm A");
+        temp.enabled = true;
+        return temp;
       });
     AnalyticsManager.getInstance().trackRemindersEvent(
       "updateReminder",
       array[timePickerSectionKey]
     );
     setReminderBanis(JSON.stringify(array));
-    NotificationsManager.getInstance().updateReminders(
+    await NotificationsManager.getInstance().updateReminders(
       reminders,
       reminderSound,
       JSON.stringify(array)
     );
   };
 
-  handleDeleteReminder(key) {
+  async handleDeleteReminder(key) {
     const { reminderBanis, setReminderBanis, reminders, reminderSound } = this.props;
     const array = JSON.parse(reminderBanis).filter((obj) => {
       return obj.key !== key;
     });
     this.state.activeSections = [];
     setReminderBanis(JSON.stringify(array));
-    NotificationsManager.getInstance().updateReminders(
+    await NotificationsManager.getInstance().updateReminders(
       reminders,
       reminderSound,
       JSON.stringify(array)
     );
   }
 
-  setDefaultReminders() {
+  async setDefaultReminders() {
     const defaultBanis = [];
     const { baniList } = this.state;
     const { setReminderBanis, reminders, reminderSound } = this.props;
@@ -163,20 +170,57 @@ class ReminderOptions extends React.Component {
     });
 
     setReminderBanis(JSON.stringify(defaultBanis));
-    NotificationsManager.getInstance().updateReminders(
+    await NotificationsManager.getInstance().updateReminders(
       reminders,
       reminderSound,
       JSON.stringify(defaultBanis)
     );
   }
 
-  toggleLabelModal = () => this.setState({ isLabelModalVisible: !this.state.isLabelModalVisible });
+  toggleLabelModal = () => {
+    const { isLabelModalVisible } = this.state;
+    this.setState({ isLabelModalVisible: !isLabelModalVisible });
+  };
 
   showTimePicker = () => this.setState({ isTimePickerVisible: true });
 
   hidetimePicker = () => this.setState({ isTimePickerVisible: false });
 
   renderHeader = (section, index, isActive) => {
+    const styles = StyleSheet.create({
+      container: {
+        flex: 1,
+      },
+      timeStyle: {
+        fontSize: 44,
+      },
+      header: {
+        paddingTop: 15,
+        paddingLeft: 10,
+        paddingRight: 10,
+      },
+      headerText: {
+        flex: 1,
+        fontSize: 24,
+      },
+      contentText: {
+        flex: 1,
+        fontSize: 14,
+        paddingLeft: 5,
+      },
+      content: {
+        padding: 10,
+      },
+      optionText: {
+        fontSize: 28,
+      },
+      separator: {
+        height: 2,
+      },
+      list: {
+        flex: 1,
+      },
+    });
     const { nightMode, transliteration } = this.props;
     const {
       ACTIVE_VIEW_COLOR,
@@ -187,6 +231,30 @@ class ReminderOptions extends React.Component {
       DISABLED_TEXT_COLOR_NIGHT_MODE,
       ENABELED_TEXT_COLOR_NIGHT_MODE,
     } = GLOBAL.COLOR;
+    let backColor = null;
+    if (isActive) {
+      switch (nightMode) {
+        case true:
+          backColor = ACTIVE_VIEW_COLOR_NIGHT_MODE;
+          break;
+        case false:
+          backColor = ACTIVE_VIEW_COLOR;
+          break;
+        default:
+          backColor = null;
+      }
+    } else {
+      switch (nightMode) {
+        case true:
+          backColor = INACTIVE_VIEW_COLOR_NIGHT_MODE;
+          break;
+        case false:
+          backColor = INACTIVE_VIEW_COLOR;
+          break;
+        default:
+          backColor = null;
+      }
+    }
     return (
       <Animatable.View
         duration={300}
@@ -194,13 +262,7 @@ class ReminderOptions extends React.Component {
         style={[
           styles.header,
           {
-            backgroundColor: isActive
-              ? nightMode
-                ? ACTIVE_VIEW_COLOR_NIGHT_MODE
-                : ACTIVE_VIEW_COLOR
-              : nightMode
-              ? INACTIVE_VIEW_COLOR_NIGHT_MODE
-              : INACTIVE_VIEW_COLOR,
+            backgroundColor: backColor,
           },
         ]}
       >
@@ -278,9 +340,7 @@ class ReminderOptions extends React.Component {
             }}
             name={isActive ? "keyboard-arrow-up" : "keyboard-arrow-down"}
             color={
-              this.props.nightMode
-                ? GLOBAL.COLOR.COMPONENT_COLOR_NIGHT_MODE
-                : GLOBAL.COLOR.COMPONENT_COLOR
+              nightMode ? GLOBAL.COLOR.COMPONENT_COLOR_NIGHT_MODE : GLOBAL.COLOR.COMPONENT_COLOR
             }
             size={30}
           />
@@ -297,6 +357,40 @@ class ReminderOptions extends React.Component {
   };
 
   renderContent = (section, index, isActive) => {
+    const styles = StyleSheet.create({
+      container: {
+        flex: 1,
+      },
+      timeStyle: {
+        fontSize: 44,
+      },
+      header: {
+        paddingTop: 15,
+        paddingLeft: 10,
+        paddingRight: 10,
+      },
+      headerText: {
+        flex: 1,
+        fontSize: 24,
+      },
+      contentText: {
+        flex: 1,
+        fontSize: 14,
+        paddingLeft: 5,
+      },
+      content: {
+        padding: 10,
+      },
+      optionText: {
+        fontSize: 28,
+      },
+      separator: {
+        height: 2,
+      },
+      list: {
+        flex: 1,
+      },
+    });
     const {
       COMPONENT_COLOR_NIGHT_MODE,
       COMPONENT_COLOR,
@@ -306,19 +400,37 @@ class ReminderOptions extends React.Component {
       INACTIVE_VIEW_COLOR,
     } = GLOBAL.COLOR;
     const { nightMode } = this.props;
+    let backColor = null;
+    if (isActive) {
+      switch (nightMode) {
+        case true:
+          backColor = ACTIVE_VIEW_COLOR_NIGHT_MODE;
+          break;
+        case false:
+          backColor = ACTIVE_VIEW_COLOR;
+          break;
+        default:
+          backColor = null;
+      }
+    } else {
+      switch (nightMode) {
+        case true:
+          backColor = INACTIVE_VIEW_COLOR_NIGHT_MODE;
+          break;
+        case false:
+          backColor = INACTIVE_VIEW_COLOR;
+          break;
+        default:
+          backColor = null;
+      }
+    }
     return (
       <Animatable.View
         duration={300}
         transition="backgroundColor"
         style={[
           {
-            backgroundColor: isActive
-              ? nightMode
-                ? ACTIVE_VIEW_COLOR_NIGHT_MODE
-                : ACTIVE_VIEW_COLOR
-              : nightMode
-              ? INACTIVE_VIEW_COLOR_NIGHT_MODE
-              : INACTIVE_VIEW_COLOR,
+            backgroundColor: backColor,
           },
         ]}
       >
@@ -392,9 +504,9 @@ class ReminderOptions extends React.Component {
     this.setState({ activeSections });
   };
 
-  confirmNewReminderLabel() {
+  async confirmNewReminderLabel() {
     const { reminderBanis, setReminderBanis, reminders, reminderSound } = this.props;
-    const { reminderModalSectionKey, reminderLabelText } = this.state;
+    const { reminderModalSectionKey } = this.state;
     const array = JSON.parse(reminderBanis);
 
     array
@@ -402,10 +514,10 @@ class ReminderOptions extends React.Component {
         return obj.key === reminderModalSectionKey;
       })
       .map((foundObj) => {
-        foundObj.title = reminderLabelText;
+        return foundObj;
       });
     setReminderBanis(JSON.stringify(array));
-    NotificationsManager.getInstance().updateReminders(
+    await NotificationsManager.getInstance().updateReminders(
       reminders,
       reminderSound,
       JSON.stringify(array)
@@ -428,7 +540,7 @@ class ReminderOptions extends React.Component {
     this.toggleLabelModal();
   }
 
-  addReminder(baniObject) {
+  async addReminder(baniObject) {
     const { reminderBanis, setReminderBanis, reminders, reminderSound } = this.props;
     const array = JSON.parse(reminderBanis);
 
@@ -442,7 +554,7 @@ class ReminderOptions extends React.Component {
     });
     AnalyticsManager.getInstance().trackRemindersEvent("addReminder", array);
     setReminderBanis(JSON.stringify(array));
-    NotificationsManager.getInstance().updateReminders(
+    await NotificationsManager.getInstance().updateReminders(
       reminders,
       reminderSound,
       JSON.stringify(array)
@@ -495,10 +607,6 @@ class ReminderOptions extends React.Component {
         },
       },
     ]);
-  }
-
-  componentDidUnmount() {
-    this.hidetimePicker();
   }
 
   render() {
@@ -710,6 +818,17 @@ class ReminderOptions extends React.Component {
     );
   }
 }
+
+ReminderOptions.propTypes = {
+  transliterationLanguage: PropTypes.string.isRequired,
+  reminderBanis: PropTypes.string.isRequired,
+  setReminderBanis: PropTypes.func.isRequired,
+  reminders: PropTypes.bool.isRequired,
+  reminderSound: PropTypes.string.isRequired,
+  nightMode: PropTypes.bool.isRequired,
+  transliteration: PropTypes.bool.isRequired,
+  navigation: PropTypes.shape().isRequired,
+};
 
 function mapStateToProps(state) {
   return {

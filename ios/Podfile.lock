@@ -495,6 +495,11 @@ PODS:
     - Firebase/Messaging (= 8.10.0)
     - React-Core
     - RNFBApp
+  - RNNotifee (5.7.0):
+    - React-Core
+    - RNNotifee/NotifeeCore (= 5.7.0)
+  - RNNotifee/NotifeeCore (5.7.0):
+    - React-Core
   - RNScreens (3.17.0):
     - React-Core
     - React-RCTImage
@@ -579,6 +584,7 @@ DEPENDENCIES:
   - "RNFBApp (from `../node_modules/@react-native-firebase/app`)"
   - "RNFBCrashlytics (from `../node_modules/@react-native-firebase/crashlytics`)"
   - "RNFBMessaging (from `../node_modules/@react-native-firebase/messaging`)"
+  - "RNNotifee (from `../node_modules/@notifee/react-native`)"
   - RNScreens (from `../node_modules/react-native-screens`)
   - RNSound (from `../node_modules/react-native-sound`)
   - RNVectorIcons (from `../node_modules/react-native-vector-icons`)
@@ -705,6 +711,8 @@ EXTERNAL SOURCES:
     :path: "../node_modules/@react-native-firebase/crashlytics"
   RNFBMessaging:
     :path: "../node_modules/@react-native-firebase/messaging"
+  RNNotifee:
+    :path: "../node_modules/@notifee/react-native"
   RNScreens:
     :path: "../node_modules/react-native-screens"
   RNSound:
@@ -785,6 +793,7 @@ SPEC CHECKSUMS:
   RNFBApp: 6e20f07b316346d96737191f377777f61f51a8d2
   RNFBCrashlytics: 649e0fa724d807362cb4265069fea98b2960c46b
   RNFBMessaging: eb8d1b08795c8718706007ed0743732d00e1acc4
+  RNNotifee: 5155e0a5e0a97d0c839030d8192783cd63053999
   RNScreens: 0df01424e9e0ed7827200d6ed1087ddd06c493f9
   RNSound: 6c156f925295bdc83e8e422e7d8b38d33bc71852
   RNVectorIcons: fcc2f6cb32f5735b586e66d14103a74ce6ad61f8
