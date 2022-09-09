@@ -19,6 +19,40 @@ export default class NotificationsManager {
     }
   };
 
+  // listenReminders = async () => {
+  //   notifee.onForegroundEvent(({ type, detail }) => {
+  //     switch (type) {
+  //       case EventType.DISMISSED:
+  //         console.log("User dismissed notification", detail.notification);
+  //         break;
+  //       case EventType.PRESS:
+  //         console.log("User pressed notification", detail.notification);
+  //         break;
+  //       default:
+  //         console.log("This is default");
+  //     }
+  //   });
+
+  //   notifee.onBackgroundEvent(async ({ type, detail }) => {
+  //     const { notification } = detail;
+
+  //     // Check if the user pressed the "Mark as read" action
+  //     if (type === EventType.ACTION_PRESS) {
+  //       // Update external API
+  //       // console.log("------", type);
+  //       // Remove the notification
+  //       // await notifee.cancelNotification(notification.id);
+  //     }
+  //   });
+
+  //   const initialNotification = await notifee.getInitialNotification();
+
+  //   if (initialNotification) {
+  //     console.log("Notification caused application to open", initialNotification.notification);
+  //     console.log("Press action used to open the app", initialNotification.pressAction);
+  //   }
+  // };
+
   updateReminders(remindersOn, sound, remindersList) {
     notifee.cancelAllNotifications();
     if (remindersOn) {
@@ -42,6 +76,7 @@ export default class NotificationsManager {
 
   async createReminder(reminder, sound) {
     // Build a channel
+    this.checkPermissions();
     const channel = await notifee.createChannel({
       id: this.REMINDERS_CHANNEL,
       name: "Reminders Channel",
@@ -53,13 +88,14 @@ export default class NotificationsManager {
     // Create the channel
     // firebase.notifications().android.createChannel(channel);
     // Build notification
-    // const currentTime = moment().utc().valueOf();
-    const aTime = moment(reminder.time, "h:mm A").utc().valueOf();
-    // if (aTime < currentTime) {
-    // }
+    const currentTime = moment().utc().valueOf();
+    let aTime = moment(reminder.time, "h:mm A").utc().valueOf();
+    if (aTime < currentTime) {
+      aTime = moment(reminder.time, "h:m A").add(1, "days");
+    }
     const trigger = {
       type: TriggerType.TIMESTAMP,
-      timestamp: aTime,
+      timestamp: Number(aTime),
       repeatFrequency: RepeatFrequency.DAILY,
     };
 

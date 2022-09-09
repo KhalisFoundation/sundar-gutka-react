@@ -45,6 +45,8 @@ export default class App extends React.Component {
     firebaseNotifaction.backgroundMessageHandler();
     firebaseNotifaction.foregroundMessage();
     firebaseNotifaction.handleNotification();
+    /// const notification = new NotificationsManager();
+    // notification.listenReminders();
   };
 
   render() {
