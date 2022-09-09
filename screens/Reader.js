@@ -481,7 +481,9 @@ class Reader extends React.Component {
       if(message.hasOwnProperty('autoScroll')){ 
         autoScrollSpeed = message.autoScroll;
         scrollMultiplier = message.scrollMultiplier;
-        
+        if(autoScrollTimeout == null) {
+          setAutoScroll();
+        }
      
       }
     }, false);
