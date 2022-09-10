@@ -11,7 +11,6 @@ import VersionNumber from "react-native-version-number";
 import Sound from "react-native-sound";
 import GLOBAL from "../utils/globals";
 import AnalyticsManager from "../utils/analytics";
-// import NotificationsManager from "../utils/notifications";
 import Database from "../utils/database";
 import { mergedBaniList } from "../utils/helpers";
 import * as actions from "../actions/actions";

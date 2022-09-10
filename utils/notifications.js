@@ -69,6 +69,10 @@ export default class NotificationsManager {
   //   notifee.removeAllDeliveredNotifications();
   // };
 
+  resetBadgeCount = () => {
+    notifee.setBadgeCount(0);
+  };
+
   getScheduledNotifications = () => {
     notifee.getTriggerNotificationIds();
     // .then((ids) => console.log("All trigger notifications: ", ids));
@@ -76,7 +80,7 @@ export default class NotificationsManager {
 
   async createReminder(reminder, sound) {
     // Build a channel
-    this.checkPermissions();
+    // this.checkPermissions();
     const channel = await notifee.createChannel({
       id: this.REMINDERS_CHANNEL,
       name: "Reminders Channel",

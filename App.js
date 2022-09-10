@@ -14,6 +14,7 @@ import ReaderScreen from "./screens/Reader";
 import BookmarksScreen from "./screens/Bookmarks";
 import createStore from "./config/store";
 import FirebaseNotification from "./utils/firebaseNotification";
+import NotificationsManager from "./utils/notifications";
 
 const Stack = createNativeStackNavigator();
 
@@ -45,11 +46,14 @@ export default class App extends React.Component {
     firebaseNotifaction.backgroundMessageHandler();
     firebaseNotifaction.foregroundMessage();
     firebaseNotifaction.handleNotification();
-    /// const notification = new NotificationsManager();
+    const notification = new NotificationsManager();
+    notification.resetBadgeCount();
     // notification.listenReminders();
   };
 
   render() {
+    const notification = new NotificationsManager();
+    notification.resetBadgeCount();
     return (
       <Provider store={store}>
         <PersistGate loading={null} persistor={persistor}>
