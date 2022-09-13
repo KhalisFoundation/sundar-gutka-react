@@ -1,4 +1,4 @@
-import { BackHandler, Alert, AppRegistry } from "react-native";
+import { BackHandler, Alert, AppRegistry, AppState } from "react-native";
 import { NavigationContainer } from "@react-navigation/native";
 import { createNativeStackNavigator } from "@react-navigation/native-stack";
 import { Provider } from "react-redux";
@@ -24,6 +24,13 @@ export default class App extends React.Component {
   componentDidMount() {
     this.notificationHandler();
     BackHandler.addEventListener("hardwareBackPress", this.handleBackPress);
+    // AppStateIOS.addEventListener("change", (state) => console.log("AppStateIOS changed to", state));
+    AppState.addEventListener("change", (state) => {
+      if (state === "active") {
+        const notification = new NotificationsManager();
+        notification.resetBadgeCount();
+      }
+    });
   }
 
   componentWillUnmount() {
@@ -47,7 +54,7 @@ export default class App extends React.Component {
     firebaseNotifaction.foregroundMessage();
     firebaseNotifaction.handleNotification();
     const notification = new NotificationsManager();
-    notification.resetBadgeCount();
+    notification.listenReminders();
     // notification.listenReminders();
   };
 

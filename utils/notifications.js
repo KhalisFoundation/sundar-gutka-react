@@ -1,4 +1,4 @@
-import notifee, { RepeatFrequency, TriggerType } from "@notifee/react-native";
+import notifee, { RepeatFrequency, TriggerType, EventType } from "@notifee/react-native";
 import moment from "moment";
 
 export default class NotificationsManager {
@@ -13,47 +13,47 @@ export default class NotificationsManager {
     return this.myInstance;
   }
 
+  cancelAllReminders = () => {
+    this.resetBadgeCount();
+    notifee.cancelAllNotifications();
+  };
+
   checkPermissions = async (remindersOn) => {
     if (remindersOn) {
       await notifee.requestPermission();
     }
   };
 
-  // listenReminders = async () => {
-  //   notifee.onForegroundEvent(({ type, detail }) => {
-  //     switch (type) {
-  //       case EventType.DISMISSED:
-  //         console.log("User dismissed notification", detail.notification);
-  //         break;
-  //       case EventType.PRESS:
-  //         console.log("User pressed notification", detail.notification);
-  //         break;
-  //       default:
-  //         console.log("This is default");
-  //     }
-  //   });
+  getBadgeCount = async () => {
+    await notifee.getBadgeCount();
+  };
 
-  //   notifee.onBackgroundEvent(async ({ type, detail }) => {
-  //     const { notification } = detail;
+  listenReminders = async () => {
+    notifee.onForegroundEvent(({ type }) => {
+      switch (type) {
+        case EventType.DISMISSED:
+          this.resetBadgeCount();
+          break;
+        case EventType.PRESS:
+          this.resetBadgeCount();
+          break;
+        default:
+          break;
+      }
+    });
 
-  //     // Check if the user pressed the "Mark as read" action
-  //     if (type === EventType.ACTION_PRESS) {
-  //       // Update external API
-  //       // console.log("------", type);
-  //       // Remove the notification
-  //       // await notifee.cancelNotification(notification.id);
-  //     }
-  //   });
+    notifee.onBackgroundEvent(async ({ type, detail }) => {
+      const { pressAction } = detail;
 
-  //   const initialNotification = await notifee.getInitialNotification();
-
-  //   if (initialNotification) {
-  //     console.log("Notification caused application to open", initialNotification.notification);
-  //     console.log("Press action used to open the app", initialNotification.pressAction);
-  //   }
-  // };
+      // Check if the user pressed the "Mark as read" action
+      if (type === EventType.ACTION_PRESS && pressAction.id === "mark-as-read") {
+        this.resetBadgeCount();
+      }
+    });
+  };
 
   updateReminders(remindersOn, sound, remindersList) {
+    this.resetBadgeCount();
     notifee.cancelAllNotifications();
     if (remindersOn) {
       const array = JSON.parse(remindersList);
@@ -65,9 +65,10 @@ export default class NotificationsManager {
     }
   }
 
-  // removeAllDeliveredNotifications = () => {
-  //   notifee.removeAllDeliveredNotifications();
-  // };
+  removeAllDeliveredNotifications = () => {
+    this.resetBadgeCount();
+    notifee.cancelDisplayedNotifications();
+  };
 
   resetBadgeCount = () => {
     notifee.setBadgeCount(0);

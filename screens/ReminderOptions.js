@@ -69,13 +69,8 @@ class ReminderOptions extends React.Component {
   async handleSwitchToggled(value, key) {
     const { reminderBanis, setReminderBanis, reminders, reminderSound } = this.props;
     const array = JSON.parse(reminderBanis);
-    array
-      .filter((obj) => {
-        return obj.key === key;
-      })
-      .map((foundObj) => {
-        return foundObj;
-      });
+    const index = array.findIndex((item) => item.key === Number(key));
+    if (index !== undefined) array[index].enabled = value;
     setReminderBanis(JSON.stringify(array));
     await NotificationsManager.getInstance().updateReminders(
       reminders,
@@ -506,16 +501,10 @@ class ReminderOptions extends React.Component {
 
   async confirmNewReminderLabel() {
     const { reminderBanis, setReminderBanis, reminders, reminderSound } = this.props;
-    const { reminderModalSectionKey } = this.state;
+    const { reminderModalSectionKey, reminderLabelText } = this.state;
     const array = JSON.parse(reminderBanis);
-
-    array
-      .filter((obj) => {
-        return obj.key === reminderModalSectionKey;
-      })
-      .map((foundObj) => {
-        return foundObj;
-      });
+    const index = array.findIndex((item) => item.key === reminderModalSectionKey);
+    if (index !== undefined) array[index].title = reminderLabelText;
     setReminderBanis(JSON.stringify(array));
     await NotificationsManager.getInstance().updateReminders(
       reminders,
@@ -540,21 +529,25 @@ class ReminderOptions extends React.Component {
     this.toggleLabelModal();
   }
 
-  async addReminder(baniObject) {
+  createReminder(baniObject) {
     const { reminderBanis, setReminderBanis, reminders, reminderSound } = this.props;
     const array = JSON.parse(reminderBanis);
-
-    array.push({
-      key: baniObject.key,
+    const obj = {
+      key: Number(baniObject.key),
       gurmukhi: baniObject.gurmukhi,
       translit: baniObject.translit,
       enabled: true,
       title: `${Strings.time_for} ${baniObject.translit}`,
       time: moment(new Date()).local().format("h:mm A"),
-    });
-    AnalyticsManager.getInstance().trackRemindersEvent("addReminder", array);
+    };
+    const found = array.filter((item) => item.key === obj.key);
+    if (found.length === 0) {
+      array.push(obj);
+    }
     setReminderBanis(JSON.stringify(array));
-    await NotificationsManager.getInstance().updateReminders(
+    AnalyticsManager.getInstance().trackRemindersEvent("addReminder", array);
+
+    NotificationsManager.getInstance().updateReminders(
       reminders,
       reminderSound,
       JSON.stringify(array)
@@ -568,12 +561,11 @@ class ReminderOptions extends React.Component {
     const isTransliteration = transliteration;
     const curBaniList = baniList;
 
-    const existingKeys = JSON.parse(reminderBanis).map(function (bani) {
+    const existingKeys = JSON.parse(reminderBanis).map((bani) => {
       return bani.key;
     });
-
-    Object.keys(curBaniList).forEach(function (key) {
-      if (!existingKeys.includes(key) && key < 10000) {
+    Object.keys(curBaniList).forEach((key) => {
+      if (!existingKeys.includes(Number(key)) && key < 100000) {
         baniOptions.push({
           key,
           label: isTransliteration ? curBaniList[key].translit : curBaniList[key].gurmukhi,
@@ -644,7 +636,7 @@ class ReminderOptions extends React.Component {
         flex: 1,
       },
     });
-    const { navigation, nightMode, reminderBanis, transliteration } = this.props;
+    const { navigation, nightMode, reminderBanis } = this.props;
     const { goBack } = navigation;
     const {
       TOOLBAR_TINT,
@@ -768,16 +760,14 @@ class ReminderOptions extends React.Component {
           ref={(selector) => {
             this.selector = selector;
           }}
-          optionTextStyle={[
-            styles.optionText,
-            !transliteration && {
-              fontFamily: "GurbaniAkharHeavyTrue",
-            },
-          ]}
+          optionTextStyle={{
+            fontFamily: "GurbaniAkharHeavyTrue",
+            fontSize: 28,
+          }}
           customSelector={<View />}
           cancelText={Strings.cancel}
           onChange={(option) => {
-            this.addReminder(option);
+            this.createReminder(option);
           }}
         />
         <ScrollView

@@ -24,6 +24,7 @@ import GLOBAL from "../utils/globals";
 import AnalyticsManager from "../utils/analytics";
 import * as actions from "../actions/actions";
 import Strings from "../utils/localization";
+import NotificationsManager from "../utils/notifications";
 
 class Settings extends React.Component {
   constructor(props) {
@@ -56,6 +57,15 @@ class Settings extends React.Component {
       );
     }
     return items;
+  };
+
+  remindersToggle = (value) => {
+    const { toggleReminders, reminders } = this.props;
+    toggleReminders(value);
+    if (reminders) {
+      const notifications = new NotificationsManager();
+      notifications.cancelAllReminders();
+    }
   };
 
   render() {
@@ -121,7 +131,6 @@ class Settings extends React.Component {
       vishraamOption,
       toggleVisram,
       reminders,
-      toggleReminders,
       reminderSound,
       statistics,
       toggleStatistics,
@@ -678,7 +687,7 @@ class Settings extends React.Component {
                 {Strings.reminders}
               </ListItem.Title>
             </ListItem.Content>
-            <Switch style={switchStyle} value={reminders} onValueChange={toggleReminders} />
+            <Switch style={switchStyle} value={reminders} onValueChange={this.remindersToggle} />
           </ListItem>
           <Divider />
           {reminders && (
