@@ -61,8 +61,9 @@ export default class NotificationsManager {
     this.resetBadgeCount();
     notifee.cancelAllNotifications();
     if (remindersOn) {
+      // await notifee.deleteChannel("sound");
       await notifee.createChannel({
-        id: this.REMINDERS_CHANNEL,
+        id: "sound",
         name: "Reminders Channel",
         sound: sound.split(".")[0],
         description: "Alert notification reminders for chosen Bani",
@@ -91,7 +92,7 @@ export default class NotificationsManager {
     // .then((ids) => console.log("All trigger notifications: ", ids));
   };
 
-  async createReminder(reminder, sound) {
+  createReminder = async (reminder, sound) => {
     // Build a channel
     // this.checkPermissions();
 
@@ -120,8 +121,7 @@ export default class NotificationsManager {
           roman: reminder.translit,
         },
         android: {
-          channelId: this.REMINDERS_CHANNEL,
-          sound: sound.split(".")[0],
+          channelId: "sound",
         },
         ios: {
           badgeCount: 1,
@@ -150,5 +150,5 @@ export default class NotificationsManager {
     //   fireDate: aTime,
     //   repeatInterval: "day",
     // });
-  }
+  };
 }
