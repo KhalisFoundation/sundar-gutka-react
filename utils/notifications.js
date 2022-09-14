@@ -1,4 +1,9 @@
-import notifee, { RepeatFrequency, TriggerType, EventType } from "@notifee/react-native";
+import notifee, {
+  RepeatFrequency,
+  TriggerType,
+  EventType,
+  AndroidImportance,
+} from "@notifee/react-native";
 import moment from "moment";
 
 export default class NotificationsManager {
@@ -52,10 +57,17 @@ export default class NotificationsManager {
     });
   };
 
-  updateReminders(remindersOn, sound, remindersList) {
+  async updateReminders(remindersOn, sound, remindersList) {
     this.resetBadgeCount();
     notifee.cancelAllNotifications();
     if (remindersOn) {
+      await notifee.createChannel({
+        id: this.REMINDERS_CHANNEL,
+        name: "Reminders Channel",
+        sound: sound.split(".")[0],
+        description: "Alert notification reminders for chosen Bani",
+        importance: AndroidImportance.HIGH,
+      });
       const array = JSON.parse(remindersList);
       for (let i = 0; i < array.length; i += 1) {
         if (array[i].enabled) {
@@ -82,12 +94,7 @@ export default class NotificationsManager {
   async createReminder(reminder, sound) {
     // Build a channel
     // this.checkPermissions();
-    const channel = await notifee.createChannel({
-      id: this.REMINDERS_CHANNEL,
-      name: "Reminders Channel",
-      sound,
-      description: "Alert notification reminders for chosen Bani",
-    });
+
     // .setSound(sound)
     // .setDescription("Alert notification reminders for chosen Bani");
     // Create the channel
@@ -103,7 +110,6 @@ export default class NotificationsManager {
       timestamp: Number(aTime),
       repeatFrequency: RepeatFrequency.DAILY,
     };
-
     await notifee.createTriggerNotification(
       {
         title: reminder.title,
@@ -114,8 +120,8 @@ export default class NotificationsManager {
           roman: reminder.translit,
         },
         android: {
-          channelId: channel,
-          smallIcon: "ic_notification",
+          channelId: this.REMINDERS_CHANNEL,
+          sound: sound.split(".")[0],
         },
         ios: {
           badgeCount: 1,
