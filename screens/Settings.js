@@ -9,7 +9,7 @@ import {
   StatusBar,
   ScrollView,
 } from "react-native";
-import { Header, ListItem, Avatar, Switch, Divider } from "react-native-elements";
+import { Header, ListItem, Avatar, Switch } from "react-native-elements";
 import MaterialIcons from "react-native-vector-icons/MaterialCommunityIcons";
 import FontAwesomeIcons from "react-native-vector-icons/FontAwesome";
 import FontAwesome5Icons from "react-native-vector-icons/FontAwesome5";
@@ -172,7 +172,7 @@ class Settings extends React.Component {
           backgroundColor={
             nightMode ? GLOBAL.COLOR.TOOLBAR_COLOR_ALT_NIGHT_MODE : GLOBAL.COLOR.TOOLBAR_COLOR_ALT
           }
-          containerStyle={[Platform.OS === "android" && { height: 86, paddingTop: 0 }]}
+          containerStyle={[Platform.OS === "android"]}
           leftComponent={
             <Icon
               name="arrow-back"
@@ -237,7 +237,6 @@ class Settings extends React.Component {
             </ListItem.Title>
             <ListItem.Chevron />
           </ListItem>
-          <Divider />
 
           <ListItem
             bottomDivider
@@ -282,7 +281,7 @@ class Settings extends React.Component {
               onValueChange={toggleTransliteration}
             />
           </ListItem>
-          <Divider />
+
           {transliteration && (
             <ListItem
               bottomDivider
@@ -310,6 +309,7 @@ class Settings extends React.Component {
           )}
 
           <ListItem.Accordion
+            bottomDivider
             containerStyle={[nightMode && { backgroundColor: "#464646" }]}
             isExpanded={showTranslationOptions}
             onPress={() =>
@@ -379,7 +379,7 @@ class Settings extends React.Component {
               />
             </ListItem>
           </ListItem.Accordion>
-          <Divider />
+
           <ListItem
             bottomDivider
             containerStyle={[styles.titleText, nightMode && { backgroundColor: "#464646" }]}
@@ -485,7 +485,6 @@ class Settings extends React.Component {
             </ListItem.Title>
             <ListItem.Chevron />
           </ListItem>
-          <Divider />
 
           <ListItem
             bottomDivider
@@ -610,7 +609,7 @@ class Settings extends React.Component {
             </ListItem.Content>
             <Switch style={switchStyle} value={visram} onValueChange={toggleVisram} />
           </ListItem>
-          <Divider />
+
           {visram && (
             <ListItem
               bottomDivider
@@ -639,7 +638,7 @@ class Settings extends React.Component {
               <ListItem.Chevron />
             </ListItem>
           )}
-          <Divider />
+
           {visram && (
             <ListItem
               bottomDivider
@@ -668,7 +667,6 @@ class Settings extends React.Component {
               <ListItem.Chevron />
             </ListItem>
           )}
-          <Divider />
 
           <ListItem
             bottomDivider
@@ -689,7 +687,7 @@ class Settings extends React.Component {
             </ListItem.Content>
             <Switch style={switchStyle} value={reminders} onValueChange={this.remindersToggle} />
           </ListItem>
-          <Divider />
+
           {reminders && (
             <ListItem
               bottomDivider
@@ -712,7 +710,7 @@ class Settings extends React.Component {
               <ListItem.Chevron />
             </ListItem>
           )}
-          <Divider />
+
           {reminders && (
             <ListItem
               bottomDivider
@@ -741,7 +739,7 @@ class Settings extends React.Component {
               <ListItem.Chevron />
             </ListItem>
           )}
-          <Divider />
+
           <Text style={[styles.headerStyle, nightMode && { color: "#fff" }]}>
             {Strings.other_options}
           </Text>
@@ -758,7 +756,6 @@ class Settings extends React.Component {
             </ListItem.Content>
             <Switch style={switchStyle} value={statistics} onValueChange={toggleStatistics} />
           </ListItem>
-          <Divider />
 
           <ListItem
             bottomDivider
@@ -780,7 +777,6 @@ class Settings extends React.Component {
             </ListItem.Content>
             <ListItem.Chevron />
           </ListItem>
-          <Divider />
 
           <ListItem
             bottomDivider
@@ -802,7 +798,6 @@ class Settings extends React.Component {
             </ListItem.Content>
             <ListItem.Chevron />
           </ListItem>
-          <Divider />
         </ScrollView>
 
         <ActionSheet

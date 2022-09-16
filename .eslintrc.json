@@ -9,7 +9,8 @@
   "rules": {
     "import/no-unresolved": "off",
     "global-require": 0,
-    "react/jsx-no-bind":0,
+    "react/jsx-no-bind": 0,
+    "prefer-destructuring": ["error", { "object": true, "array": false }],
     "react/jsx-filename-extension": [
       1,
       {
@@ -20,7 +21,7 @@
       "error",
       {
         "trailingComma": "es5",
-        "printWidth":100
+        "printWidth": 100
       }
     ]
   },

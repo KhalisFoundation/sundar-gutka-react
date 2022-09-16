@@ -3,7 +3,8 @@ import { Animated, Dimensions, StyleSheet, View, Platform, Text, StatusBar } fro
 import PropTypes from "prop-types";
 import { WebView } from "react-native-webview";
 import { connect } from "react-redux";
-import { Header, Slider } from "react-native-elements";
+import { Header } from "react-native-elements";
+import Slider from "@react-native-community/slider";
 import { bindActionCreators } from "redux";
 import Icon from "react-native-vector-icons/MaterialIcons";
 import GLOBAL from "../utils/globals";
@@ -138,6 +139,7 @@ class Reader extends React.Component {
     let progress = 0;
     if (startBaniList.length > 0) {
       const data = startBaniList.find((bani) => bani.id === this.currentBani.id);
+      // eslint-disable-next-line prefer-destructuring
       if (data) progress = data.progress;
     }
     if (Number(progress) === 1 || Number(progress) > 1) {
@@ -594,7 +596,7 @@ class Reader extends React.Component {
           />
           <Header
             backgroundColor={READER_HEADER_COLOR}
-            containerStyle={[Platform.OS === "android" && { height: 86, paddingTop: 10 }]}
+            containerStyle={[Platform.OS === "android"]}
             onLayout={(event) => {
               this.headerHeight = event.nativeEvent.layout.height;
             }}
@@ -709,12 +711,10 @@ class Reader extends React.Component {
                 minimumTrackTintColor={GLOBAL.COLOR.SLIDER_TRACK_MIN_TINT}
                 maximumTrackTintColor={GLOBAL.COLOR.SLIDER_TRACK_MAX_TINT}
                 thumbTintColor={GLOBAL.COLOR.WHITE_COLOR}
-                minimumValue={0}
+                minimumValue={1}
                 maximumValue={100}
                 step={1}
-                value={
-                  autoScrollShabadSpeed[currentShabad] ? autoScrollShabadSpeed[currentShabad] : 50
-                }
+                value={50}
                 onValueChange={(value) => {
                   setAutoScrollSpeed(value, currentShabad);
                   const speed = value;

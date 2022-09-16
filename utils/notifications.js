@@ -60,15 +60,28 @@ export default class NotificationsManager {
   async updateReminders(remindersOn, sound, remindersList) {
     this.resetBadgeCount();
     notifee.cancelAllNotifications();
+    await notifee.createChannel({
+      id: "sound",
+      name: "Reminders default",
+      sound: "default",
+      description: "Alert notification reminders for chosen Bani",
+      importance: AndroidImportance.HIGH,
+    });
+    await notifee.createChannel({
+      id: "waheguru_soul",
+      name: "Reminders waheguru soul",
+      sound: "waheguru_soul",
+      description: "Alert notification reminders for chosen Bani",
+      importance: AndroidImportance.HIGH,
+    });
+    await notifee.createChannel({
+      id: "wake_up_jap",
+      name: "Reminders wake up jap",
+      sound: "wake_up_jap",
+      description: "Alert notification reminders for chosen Bani",
+      importance: AndroidImportance.HIGH,
+    });
     if (remindersOn) {
-      // await notifee.deleteChannel("sound");
-      await notifee.createChannel({
-        id: "sound",
-        name: "Reminders Channel",
-        sound: sound.split(".")[0],
-        description: "Alert notification reminders for chosen Bani",
-        importance: AndroidImportance.HIGH,
-      });
       const array = JSON.parse(remindersList);
       for (let i = 0; i < array.length; i += 1) {
         if (array[i].enabled) {
@@ -106,6 +119,10 @@ export default class NotificationsManager {
     if (aTime < currentTime) {
       aTime = moment(reminder.time, "h:m A").add(1, "days");
     }
+    let channel = "sound";
+    if (sound !== "default") {
+      channel = sound.split(".")[0];
+    }
     const trigger = {
       type: TriggerType.TIMESTAMP,
       timestamp: Number(aTime),
@@ -121,7 +138,7 @@ export default class NotificationsManager {
           roman: reminder.translit,
         },
         android: {
-          channelId: "sound",
+          channelId: channel,
         },
         ios: {
           badgeCount: 1,

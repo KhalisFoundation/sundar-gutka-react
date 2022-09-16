@@ -34,7 +34,7 @@ class FolderBani extends React.Component {
         <StatusBar backgroundColor={GLOBAL.COLOR.TOOLBAR_COLOR} barStyle="light-content" />
         <Header
           backgroundColor={GLOBAL.COLOR.TOOLBAR_COLOR}
-          containerStyle={[Platform.OS === constant.ANDROID && { height: 56, paddingTop: 0 }]}
+          containerStyle={[Platform.OS === constant.ANDROID]}
           leftComponent={
             <Icon
               name="arrow-back"

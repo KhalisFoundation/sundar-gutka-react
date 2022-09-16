@@ -58,7 +58,7 @@ class BaniList extends Component {
                 {transliteration ? item.translit : item.gurmukhi}
               </ListItem.Title>
             </ListItem.Content>
-            <ListItem.Chevron />
+            {item.folder && <ListItem.Chevron />}
           </ListItem>
         )}
         keyExtractor={(item) => `${item.gurmukhi}`}

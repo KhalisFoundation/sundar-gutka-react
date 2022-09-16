@@ -665,7 +665,7 @@ class ReminderOptions extends React.Component {
         <StatusBar backgroundColor={TOOLBAR_COLOR_ALT2} barStyle="light-content" />
         <Header
           backgroundColor={TOOLBAR_COLOR_ALT2}
-          containerStyle={[Platform.OS === "android" && { height: 56, paddingTop: 0 }]}
+          containerStyle={[Platform.OS === "android"]}
           leftComponent={
             <Icon name="arrow-back" color={TOOLBAR_TINT} size={30} onPress={() => goBack()} />
           }
