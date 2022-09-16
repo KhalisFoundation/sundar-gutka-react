@@ -568,6 +568,9 @@ class Reader extends React.Component {
       TOOLBAR_TINT,
       READER_FOOTER_COLOR,
     } = GLOBAL.COLOR;
+    if (!this.headerHeight || this.headerHeight <= 55) {
+      this.headerHeight = 82;
+    }
     return (
       <View
         style={[styles.container, nightMode && { backgroundColor: GLOBAL.COLOR.NIGHT_BLACK }]}
