@@ -3,16 +3,17 @@ import { Animated, Dimensions, StyleSheet, View, Platform, Text, StatusBar } fro
 import PropTypes from "prop-types";
 import { WebView } from "react-native-webview";
 import { connect } from "react-redux";
-import { Header } from "react-native-elements";
 import Slider from "@react-native-community/slider";
 import { bindActionCreators } from "redux";
 import Icon from "react-native-vector-icons/MaterialIcons";
+import { SafeAreaView } from "react-native-safe-area-context";
 import GLOBAL from "../utils/globals";
 import Database from "../utils/database";
 import LoadingIndicator from "../components/LoadingIndicator";
 import { fontSizeForReader, fontColorForReader, TextType } from "../utils/helpers";
 import * as actions from "../actions/actions";
 import AnalyticsManager from "../utils/analytics";
+import CONSTANT from "../utils/constant";
 
 const HEADER_POSITION = -120; // From react-native-elements Header source
 class Reader extends React.Component {
@@ -25,11 +26,23 @@ class Reader extends React.Component {
   constructor(props) {
     super(props);
 
+    const isPortrait = () => {
+      const dim = Dimensions.get("screen");
+      return dim.height >= dim.width;
+    };
+
+    Dimensions.addEventListener("change", () => {
+      this.setState({
+        orientation: isPortrait() ? CONSTANT.PORTRAIT : CONSTANT.LANDSCAPE,
+      });
+    });
+
     this.state = {
       data: [],
       paused: true,
       scrollMultiplier: 1.0,
       isLoading: false,
+      orientation: isPortrait() ? CONSTANT.PORTRAIT : CONSTANT.LANDSCAPE,
       animationPosition: new Animated.Value(0), // The header and footer position
     };
 
@@ -102,6 +115,7 @@ class Reader extends React.Component {
       this.savePositionToProps(message);
     }
     if (message.nativeEvent.data === "toggle") {
+      console.log("AnimationPosition", animationPosition);
       if (JSON.stringify(animationPosition) === 0) {
         this.toggleHeader("hide");
       } else {
@@ -535,7 +549,8 @@ class Reader extends React.Component {
       currentShabad,
       setAutoScrollSpeed,
     } = this.props;
-    const { data, isLoading, animationPosition, scrollMultiplier, paused } = this.state;
+    const { data, isLoading, animationPosition, scrollMultiplier, paused, orientation } =
+      this.state;
     const { navigate } = navigation;
     const { params } = route.params;
     this.trackScreenForShabad(params);
@@ -569,10 +584,11 @@ class Reader extends React.Component {
       READER_FOOTER_COLOR,
     } = GLOBAL.COLOR;
     if (!this.headerHeight || this.headerHeight <= 55) {
-      this.headerHeight = 82;
+      this.headerHeight = 64;
     }
+    const isPortrait = orientation === CONSTANT.PORTRAIT;
     return (
-      <View
+      <SafeAreaView
         style={[styles.container, nightMode && { backgroundColor: GLOBAL.COLOR.NIGHT_BLACK }]}
         onLayout={this.onLayout.bind(this)}
       >
@@ -597,32 +613,33 @@ class Reader extends React.Component {
             }
             barStyle={nightMode || Platform.OS === "android" ? "light-content" : "dark-content"}
           />
-          <Header
-            backgroundColor={READER_HEADER_COLOR}
-            containerStyle={[Platform.OS === "android"]}
-            onLayout={(event) => {
-              this.headerHeight = event.nativeEvent.layout.height;
-            }}
-            leftComponent={
+          <View style={{ backgroundColor: READER_HEADER_COLOR, height: 90 }}>
+            <View style={{ flex: 1, flexDirection: "row", top: 50 }}>
               <Icon
                 name="arrow-back"
                 color={TOOLBAR_TINT}
                 size={30}
+                style={[
+                  { left: 10 },
+                  isPortrait && { flexGrow: 3 },
+                  !isPortrait && { flexGrow: 1 },
+                ]}
                 onPress={this.handleBackPress.bind(this)}
               />
-            }
-            centerComponent={{
-              text: transliteration
-                ? this.truncate.apply(params.item.translit, [24])
-                : this.truncate.apply(params.item.gurmukhi, [25]),
-              style: {
-                color: TOOLBAR_TINT,
-                fontFamily: transliteration ? null : fontFace,
-                fontSize: 20,
-              },
-            }}
-            rightComponent={
-              <View style={{ flexDirection: "row" }}>
+              <Text
+                style={{
+                  color: TOOLBAR_TINT,
+                  fontFamily: transliteration ? null : fontFace,
+                  fontSize: 20,
+                  textAlign: "center",
+                  flexGrow: 8,
+                }}
+              >
+                {transliteration
+                  ? this.truncate.apply(params.item.translit, [24])
+                  : this.truncate.apply(params.item.gurmukhi, [25])}
+              </Text>
+              <View style={{ flexDirection: "row", flexGrow: 1 }}>
                 <Icon
                   name="settings"
                   color={TOOLBAR_TINT}
@@ -640,7 +657,7 @@ class Reader extends React.Component {
                   }}
                 />
                 <Icon
-                  style={{ paddingLeft: 15 }}
+                  style={{ paddingLeft: 10 }}
                   name="bookmark"
                   color={TOOLBAR_TINT}
                   size={30}
@@ -650,8 +667,8 @@ class Reader extends React.Component {
                   }}
                 />
               </View>
-            }
-          />
+            </View>
+          </View>
         </Animated.View>
         {autoScroll && (
           <Animated.View
@@ -750,7 +767,7 @@ class Reader extends React.Component {
             </View>
           </Animated.View>
         )}
-      </View>
+      </SafeAreaView>
     );
   }
 }

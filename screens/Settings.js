@@ -8,8 +8,9 @@ import {
   TouchableOpacity,
   StatusBar,
   ScrollView,
+  Dimensions,
 } from "react-native";
-import { Header, ListItem, Avatar, Switch } from "react-native-elements";
+import { ListItem, Avatar, Switch } from "react-native-elements";
 import MaterialIcons from "react-native-vector-icons/MaterialCommunityIcons";
 import FontAwesomeIcons from "react-native-vector-icons/FontAwesome";
 import FontAwesome5Icons from "react-native-vector-icons/FontAwesome5";
@@ -19,18 +20,32 @@ import { ActionSheet, ActionSheetItem } from "react-native-action-sheet-componen
 import { connect } from "react-redux";
 import { bindActionCreators } from "redux";
 import PropTypes from "prop-types";
+import { SafeAreaView } from "react-native-safe-area-context";
 import { baniLengthInfo } from "../utils/helpers";
 import GLOBAL from "../utils/globals";
 import AnalyticsManager from "../utils/analytics";
 import * as actions from "../actions/actions";
 import Strings from "../utils/localization";
 import NotificationsManager from "../utils/notifications";
+import CONSTANT from "../utils/constant";
 
 class Settings extends React.Component {
   constructor(props) {
     super(props);
     const { englishTranslations, punjabiTranslations, spanishTranslations } = this.props;
+
+    const isPortrait = () => {
+      const dim = Dimensions.get("screen");
+      return dim.height >= dim.width;
+    };
+
+    Dimensions.addEventListener("change", () => {
+      this.setState({
+        orientation: isPortrait() ? CONSTANT.PORTRAIT : CONSTANT.LANDSCAPE,
+      });
+    });
     this.state = {
+      orientation: isPortrait() ? CONSTANT.PORTRAIT : CONSTANT.LANDSCAPE,
       showTranslationOptions: englishTranslations || punjabiTranslations || spanishTranslations,
     };
   }
@@ -85,12 +100,7 @@ class Settings extends React.Component {
       titleInfoStyle: {
         fontSize: 12,
       },
-      viewStyle: {
-        backgroundColor: "#EFEFF4",
-        flex: 1,
-      },
       headerStyle: {
-        marginTop: 10,
         padding: 5,
         paddingLeft: 10,
       },
@@ -146,7 +156,7 @@ class Settings extends React.Component {
       setReminderSound,
     } = this.props;
     const { navigate, goBack } = navigation;
-    const { showTranslationOptions } = this.state;
+    const { showTranslationOptions, orientation } = this.state;
 
     const checkedIcon = <MaterialIcons name="check" size={30} />;
 
@@ -159,22 +169,57 @@ class Settings extends React.Component {
             },
           }
         : {};
+    const backColor =
+      orientation === CONSTANT.PORTRAIT ? GLOBAL.COLOR.TOOLBAR_COLOR_ALT : GLOBAL.COLOR.NIGHT_BLACK;
+    const darModeBackColor =
+      orientation === CONSTANT.PORTRAIT
+        ? GLOBAL.COLOR.TOOLBAR_COLOR_ALT_NIGHT_MODE
+        : GLOBAL.COLOR.NIGHT_BLACK;
 
     return (
-      <View style={[styles.viewStyle, nightMode && { backgroundColor: "#000" }]}>
+      <SafeAreaView
+        style={[{ backgroundColor: backColor }, nightMode && { backgroundColor: darModeBackColor }]}
+      >
         <StatusBar
           backgroundColor={
             nightMode ? GLOBAL.COLOR.TOOLBAR_COLOR_ALT_NIGHT_MODE : GLOBAL.COLOR.TOOLBAR_COLOR_ALT
           }
           barStyle={nightMode ? "light-content" : "dark-content"}
         />
-        <Header
+        <View
+          style={[
+            { backgroundColor: GLOBAL.COLOR.TOOLBAR_COLOR_ALT },
+            nightMode && { backgroundColor: GLOBAL.COLOR.TOOLBAR_COLOR_ALT_NIGHT_MODE },
+          ]}
+        >
+          <Icon
+            style={{ position: "absolute", left: 10, bottom: 15, zIndex: 10 }}
+            name="arrow-back"
+            color={nightMode ? GLOBAL.COLOR.TOOLBAR_TINT : GLOBAL.COLOR.TOOLBAR_TINT_DARK}
+            size={30}
+            onPress={() => goBack()}
+          />
+          <Text
+            style={[
+              {
+                color: nightMode ? GLOBAL.COLOR.TOOLBAR_TINT : GLOBAL.COLOR.TOOLBAR_TINT_DARK,
+                fontSize: 18,
+                textAlign: "center",
+                padding: 15,
+              },
+            ]}
+          >
+            {Strings.settings}
+          </Text>
+        </View>
+        {/* <Header
+          containerStyle={{}}
           backgroundColor={
             nightMode ? GLOBAL.COLOR.TOOLBAR_COLOR_ALT_NIGHT_MODE : GLOBAL.COLOR.TOOLBAR_COLOR_ALT
           }
-          containerStyle={[Platform.OS === "android"]}
           leftComponent={
             <Icon
+              style={{}}
               name="arrow-back"
               color={nightMode ? GLOBAL.COLOR.TOOLBAR_TINT : GLOBAL.COLOR.TOOLBAR_TINT_DARK}
               size={30}
@@ -188,13 +233,15 @@ class Settings extends React.Component {
               fontSize: 18,
             },
           }}
-        />
+        /> */}
         <ScrollView
           style={{
-            backgroundColor: nightMode ? "#000" : GLOBAL.COLOR.SETTING_BACKGROUND_COLOR,
+            backgroundColor: nightMode
+              ? GLOBAL.COLOR.NIGHT_BLACK
+              : GLOBAL.COLOR.SETTING_BACKGROUND_COLOR,
           }}
         >
-          <Text style={[styles.headerStyle, nightMode && { color: "#fff" }]}>
+          <Text style={[styles.headerStyle, nightMode && { color: GLOBAL.COLOR.WHITE_COLOR }]}>
             {Strings.display_options}
           </Text>
 
@@ -988,7 +1035,7 @@ class Settings extends React.Component {
             setReminderSound
           )}
         </ActionSheet>
-      </View>
+      </SafeAreaView>
     );
   }
 }

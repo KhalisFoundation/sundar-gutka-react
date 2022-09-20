@@ -26,21 +26,19 @@ class BaniList extends Component {
         borderBottomWidth: 0.2,
         borderBottomColor: GLOBAL.COLOR.WHITE_COLOR,
       },
+      row: {},
     });
 
     return (
       <FlatList
-        style={[styles.container, nightMode && { backgroundColor: GLOBAL.COLOR.NIGHT_BLACK }]}
+        style={[styles.row, nightMode && { backgroundColor: GLOBAL.COLOR.NIGHT_BLACK }]}
         data={data}
         extraData={[this.state]}
         renderItem={({ item }) => (
           <ListItem
             bottomDivider
             style={item.folder && styles.rowViewContainer}
-            containerStyle={[
-              styles.container,
-              nightMode && { backgroundColor: GLOBAL.COLOR.NIGHT_BLACK },
-            ]}
+            containerStyle={[nightMode && { backgroundColor: GLOBAL.COLOR.NIGHT_BLACK }]}
             onPress={() => onPress(item, navigation)}
           >
             {item.folder && <Avatar source={require("../images/foldericon.png")} />}

@@ -2,13 +2,13 @@ import React from "react";
 import { connect } from "react-redux";
 import { bindActionCreators } from "redux";
 import KeepAwake from "react-native-keep-awake";
-import { SafeAreaView, View, Text, StatusBar, Platform } from "react-native";
-import { Header } from "react-native-elements";
+import { View, Text, StatusBar, Dimensions } from "react-native";
 import Icon from "react-native-vector-icons/MaterialIcons";
 import PropTypes from "prop-types";
 import VersionNumber from "react-native-version-number";
 // import messaging from '@react-native-firebase/messaging';
 import Sound from "react-native-sound";
+import { SafeAreaView } from "react-native-safe-area-context";
 import GLOBAL from "../utils/globals";
 import AnalyticsManager from "../utils/analytics";
 import Database from "../utils/database";
@@ -26,10 +26,22 @@ class Home extends React.Component {
   constructor(props) {
     super(props);
 
+    const isPortrait = () => {
+      const dim = Dimensions.get("screen");
+      return dim.height >= dim.width;
+    };
+
+    Dimensions.addEventListener("change", () => {
+      this.setState({
+        orientation: isPortrait() ? CONSTANT.PORTRAIT : CONSTANT.LANDSCAPE,
+      });
+    });
+
     this.state = {
       data: [],
       isLoading: true,
       showLengthSelector: false,
+      orientation: isPortrait() ? CONSTANT.PORTRAIT : CONSTANT.LANDSCAPE,
     };
 
     // Enable playback in silence mode
@@ -215,25 +227,19 @@ class Home extends React.Component {
   }
 
   render() {
-    const { showLengthSelector, data, isLoading } = this.state;
+    const { showLengthSelector, data, isLoading, orientation } = this.state;
     const { navigation, nightMode, fontSize, fontFace, transliteration } = this.props;
+    const backColor =
+      orientation === CONSTANT.PORTRAIT ? GLOBAL.COLOR.TOOLBAR_COLOR : GLOBAL.COLOR.NIGHT_BLACK;
     return (
       <SafeAreaView
         style={{
-          flex: 1,
-          backgroundColor: GLOBAL.COLOR.TOOLBAR_COLOR,
+          backgroundColor: backColor,
         }}
       >
         {showLengthSelector && <BaniLengthSelector />}
 
         <StatusBar barStyle="light-content" />
-        <Header
-          backgroundColor={GLOBAL.COLOR.TOOLBAR_COLOR}
-          containerStyle={[
-            { height: 0, borderBottomWidth: 0 },
-            Platform.OS === CONSTANT.ANDROID && { paddingTop: 5 },
-          ]}
-        />
         <View
           style={{
             backgroundColor: GLOBAL.COLOR.TOOLBAR_COLOR,
