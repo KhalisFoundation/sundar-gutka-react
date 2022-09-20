@@ -115,7 +115,6 @@ class Reader extends React.Component {
       this.savePositionToProps(message);
     }
     if (message.nativeEvent.data === "toggle") {
-      console.log("AnimationPosition", animationPosition);
       if (JSON.stringify(animationPosition) === 0) {
         this.toggleHeader("hide");
       } else {
