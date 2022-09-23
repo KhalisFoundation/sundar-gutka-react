@@ -9,7 +9,6 @@ import Icon from "react-native-vector-icons/MaterialIcons";
 import { SafeAreaView } from "react-native-safe-area-context";
 import GLOBAL from "../utils/globals";
 import Database from "../utils/database";
-import LoadingIndicator from "../components/LoadingIndicator";
 import { fontSizeForReader, fontColorForReader, TextType } from "../utils/helpers";
 import * as actions from "../actions/actions";
 import AnalyticsManager from "../utils/analytics";
@@ -41,9 +40,9 @@ class Reader extends React.Component {
       data: [],
       paused: true,
       scrollMultiplier: 1.0,
-      isLoading: false,
       orientation: isPortrait() ? CONSTANT.PORTRAIT : CONSTANT.LANDSCAPE,
       animationPosition: new Animated.Value(0), // The header and footer position
+      viewLoaded: false,
     };
 
     // How long does the slide animation take
@@ -201,7 +200,6 @@ class Reader extends React.Component {
       .then((shabad) => {
         this.setState({
           data: shabad,
-          isLoading: false,
         });
       })
       .catch((error) => {
@@ -367,6 +365,7 @@ class Reader extends React.Component {
   loadScrollJS() {
     const listener = Platform.OS === "android" ? "document" : "window";
     const position = this.currentBani.progress;
+    const { nightMode } = this.props;
     return `
     var autoScrollTimeout;
     var autoScrollSpeed = 0;
@@ -379,7 +378,7 @@ class Reader extends React.Component {
     var isManuallyScrolling = false;
     window.addEventListener("orientationchange", function() {
       setTimeout(function(){        
-        let scrollY = (document.body.scrollHeight - window.innerHeight) * curPosition;
+        var scrollY = (document.body.scrollHeight - window.innerHeight) * curPosition;
         window.scrollTo(0, scrollY);
         curPosition = scrollY;
         
@@ -388,7 +387,7 @@ class Reader extends React.Component {
 
     (function scrollToPosition(){
       setTimeout(function(){        
-        let scrollY = (document.body.scrollHeight - window.innerHeight) * ${position};
+        var scrollY = (document.body.scrollHeight - window.innerHeight) * ${position};
         window.scrollTo(0, scrollY);
         curPosition = scrollY;
         
@@ -410,8 +409,25 @@ class Reader extends React.Component {
 
     }, false);
 
+    if(${nightMode}){
+    //fade event
+   window.addEventListener("load", fadeInEffect(), false);
+
+function fadeInEffect() {
+    var fadeTarget = document.getElementsByTagName("HTML")[0];
+  fadeTarget.style.opacity=0
+    var fadeEffect = setInterval(function () {
+        if (Number(fadeTarget.style.opacity) < 1) {
+            fadeTarget.style.opacity =Number(fadeTarget.style.opacity) + 0.1;
+               console.log(fadeTarget.style.opacity)
+        } else {
+          fadeTarget.style.opacity=1;
+        }
+    }, 100);
+}
+  }
     function setAutoScroll() {
-      let speed = autoScrollSpeed;
+      var speed = autoScrollSpeed;
       if(speed > 0) {
         if(!isManuallyScrolling) {
           window.scrollBy({
@@ -482,7 +498,7 @@ class Reader extends React.Component {
     });
 
     ${listener}.addEventListener("message", function(event) {
-      let message = JSON.parse(event.data);
+      var message = JSON.parse(event.data);
 
       if(message.hasOwnProperty('Back')){
         currentPosition=getScrollPercent();
@@ -499,7 +515,6 @@ class Reader extends React.Component {
         if(autoScrollTimeout == null) {
           setAutoScroll();
         }
-     
       }
     }, false);
       `;
@@ -548,7 +563,7 @@ class Reader extends React.Component {
       currentShabad,
       setAutoScrollSpeed,
     } = this.props;
-    const { data, isLoading, animationPosition, scrollMultiplier, paused, orientation } =
+    const { data, animationPosition, scrollMultiplier, paused, orientation, viewLoaded } =
       this.state;
     const { navigate } = navigation;
     const { params } = route.params;
@@ -591,10 +606,19 @@ class Reader extends React.Component {
         style={[styles.container, nightMode && { backgroundColor: GLOBAL.COLOR.NIGHT_BLACK }]}
         onLayout={this.onLayout.bind(this)}
       >
-        <LoadingIndicator isLoading={isLoading} />
         <WebView
           originWhitelist={["*"]}
-          style={nightMode && { backgroundColor: GLOBAL.COLOR.NIGHT_BLACK }}
+          style={[
+            nightMode && {
+              backgroundColor: GLOBAL.COLOR.NIGHT_BLACK,
+              opacity: viewLoaded ? 1 : 0.1,
+            },
+          ]}
+          onLoadStart={() => {
+            setTimeout(() => {
+              this.setState({ viewLoaded: true });
+            }, 500);
+          }}
           ref={(webView) => {
             this.webView = webView;
           }}
@@ -605,7 +629,13 @@ class Reader extends React.Component {
           }}
           onMessage={this.handleMessage.bind(this)}
         />
-        <Animated.View style={[styles.header, { position: "absolute", top: animationPosition }]}>
+        <Animated.View
+          style={[
+            styles.header,
+            { position: "absolute", top: animationPosition },
+            nightMode && { opacity: viewLoaded ? 1 : 0.2 },
+          ]}
+        >
           <StatusBar
             backgroundColor={
               nightMode ? READER_STATUS_BAR_COLOR_NIGHT_MODE : READER_STATUS_BAR_COLOR

@@ -39,7 +39,6 @@ class Home extends React.Component {
 
     this.state = {
       data: [],
-      isLoading: true,
       showLengthSelector: false,
       orientation: isPortrait() ? CONSTANT.PORTRAIT : CONSTANT.LANDSCAPE,
     };
@@ -204,9 +203,6 @@ class Home extends React.Component {
     const baniList = await Database.getBaniList(transliterationLanguage);
     setMergedBaniData(mergedBaniList(baniList));
     this.sortBani();
-    this.setState({
-      isLoading: false,
-    });
   }
 
   reorder(arr, index) {
@@ -227,7 +223,7 @@ class Home extends React.Component {
   }
 
   render() {
-    const { showLengthSelector, data, isLoading, orientation } = this.state;
+    const { showLengthSelector, data, orientation } = this.state;
     const { navigation, nightMode, fontSize, fontFace, transliteration } = this.props;
     const backColor =
       orientation === CONSTANT.PORTRAIT ? GLOBAL.COLOR.TOOLBAR_COLOR : GLOBAL.COLOR.NIGHT_BLACK;
@@ -317,7 +313,6 @@ class Home extends React.Component {
           fontFace={fontFace}
           transliteration={transliteration}
           navigation={navigation}
-          isLoading={isLoading}
           onPress={this.handleOnPress.bind(this)}
         />
       </SafeAreaView>
