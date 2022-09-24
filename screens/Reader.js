@@ -598,7 +598,7 @@ function fadeInEffect() {
       READER_FOOTER_COLOR,
     } = GLOBAL.COLOR;
     if (!this.headerHeight || this.headerHeight <= 55) {
-      this.headerHeight = 64;
+      this.headerHeight = 74;
     }
     const isPortrait = orientation === CONSTANT.PORTRAIT;
     return (

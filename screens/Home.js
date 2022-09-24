@@ -230,12 +230,14 @@ class Home extends React.Component {
     return (
       <SafeAreaView
         style={{
+          flex: 1,
           backgroundColor: backColor,
+          paddingBottom: -30,
         }}
       >
         {showLengthSelector && <BaniLengthSelector />}
 
-        <StatusBar barStyle="light-content" />
+        <StatusBar barStyle="light-content" style={{ backgroundColor: "#000" }} />
         <View
           style={{
             backgroundColor: GLOBAL.COLOR.TOOLBAR_COLOR,

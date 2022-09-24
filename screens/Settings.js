@@ -178,7 +178,10 @@ class Settings extends React.Component {
 
     return (
       <SafeAreaView
-        style={[{ backgroundColor: backColor }, nightMode && { backgroundColor: darModeBackColor }]}
+        style={[
+          { backgroundColor: backColor, flex: 1, paddingBottom: -30 },
+          nightMode && { backgroundColor: darModeBackColor },
+        ]}
       >
         <StatusBar
           backgroundColor={
