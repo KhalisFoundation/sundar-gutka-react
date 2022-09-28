@@ -1,0 +1,9 @@
+{
+    "git.ignoreLimitWarning": true,
+    "editor.defaultFormatter": "esbenp.prettier-vscode",
+    "editor.formatOnSave": true,
+    "editor.formatOnPaste": true,
+    "prettier.semi": true,
+    "javascript.format.semicolons": "insert",
+    "prettier.printWidth": 100,
+}

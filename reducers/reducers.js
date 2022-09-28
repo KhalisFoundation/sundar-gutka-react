@@ -3,7 +3,9 @@ import { defaultBaniOrderArray } from "../utils/helpers";
 import {
   SET_FONT_SIZE,
   SET_FONT_FACE,
-  TOGGLE_ROMANIZED,
+  SET_LANGUAGE,
+  TOGGLE_TRANSLITERATION,
+  SET_TRANSLITERATION_LANGUAGE,
   TOGGLE_ENGLISH_TRANSLATIONS,
   TOGGLE_PUNJABI_TRANSLATIONS,
   TOGGLE_SPANISH_TRANSLATIONS,
@@ -12,6 +14,7 @@ import {
   SET_BANI_ORDER,
   SET_BANI_LENGTH,
   TOGGLE_LARIVAAR,
+  TOGGLE_LARIVAAR_ASSIST,
   SET_MANGLACHARAN_POSITION,
   SET_PADCHHED_SETTINGS,
   TOGGLE_STATISTICS,
@@ -28,7 +31,8 @@ import {
   TOGGLE_REMINDERS,
   SET_REMINDER_BANIS,
   SET_REMINDER_SOUND,
-  SET_APP_VERSION
+  SET_APP_VERSION,
+  SET_START_BANI
 } from "../actions/actions";
 
 function fontSize(state = "SMALL", action) {
@@ -40,7 +44,7 @@ function fontSize(state = "SMALL", action) {
   }
 }
 
-function fontFace(state = "GurbaniAkharSG", action) {
+function fontFace(state = "GurbaniAkharTrue", action) {
   switch (action.type) {
     case SET_FONT_FACE:
       return action.font;
@@ -49,10 +53,28 @@ function fontFace(state = "GurbaniAkharSG", action) {
   }
 }
 
-function romanized(state = false, action) {
+function language(state = "DEFAULT", action) {
   switch (action.type) {
-    case TOGGLE_ROMANIZED:
+    case SET_LANGUAGE:
+      return action.language;
+    default:
+      return state;
+  }
+}
+
+function transliteration(state = false, action) {
+  switch (action.type) {
+    case TOGGLE_TRANSLITERATION:
       return action.value;
+    default:
+      return state;
+  }
+}
+
+function transliterationLanguage(state = "ENGLISH", action) {
+  switch (action.type) {
+    case SET_TRANSLITERATION_LANGUAGE:
+      return action.language;
     default:
       return state;
   }
@@ -124,6 +146,15 @@ function baniLength(state = "", action) {
 function larivaar(state = false, action) {
   switch (action.type) {
     case TOGGLE_LARIVAAR:
+      return action.value;
+    default:
+      return state;
+  }
+}
+
+function larivaarAssist(state = false, action) {
+  switch (action.type) {
+    case TOGGLE_LARIVAAR_ASSIST:
       return action.value;
     default:
       return state;
@@ -229,7 +260,7 @@ function visram(state = false, action) {
   }
 }
 
-function vishraamOption(state = 'VISHRAAM_COLORED', action) {
+function vishraamOption(state = "VISHRAAM_COLORED", action) {
   switch (action.type) {
     case SET_VISHRAAM_OPTION:
       return action.option;
@@ -238,7 +269,7 @@ function vishraamOption(state = 'VISHRAAM_COLORED', action) {
   }
 }
 
-function vishraamSource(state = 'sttm', action) {
+function vishraamSource(state = "sttm", action) {
   switch (action.type) {
     case SET_VISHRAAM_SOURCE:
       return action.source;
@@ -265,7 +296,7 @@ function reminderBanis(state = JSON.stringify([]), action) {
   }
 }
 
-function reminderSound(state = 'default', action) {
+function reminderSound(state = "default", action) {
   switch (action.type) {
     case SET_REMINDER_SOUND:
       return action.sound;
@@ -282,12 +313,21 @@ function appVersion(state = "", action) {
       return state;
   }
 }
-
+function startBani(state = JSON.stringify([]), action) {
+  switch (action.type) {
+    case SET_START_BANI:
+      return action.progressList
+    default:
+      return state
+  }
+}
 // Combine all the reducers
 const rootReducer = combineReducers({
   fontSize,
   fontFace,
-  romanized,
+  language,
+  transliteration,
+  transliterationLanguage,
   englishTranslations,
   punjabiTranslations,
   spanishTranslations,
@@ -296,6 +336,7 @@ const rootReducer = combineReducers({
   baniOrder,
   baniLength,
   larivaar,
+  larivaarAssist,
   manglacharanPosition,
   padchhedSetting,
   statistics,
@@ -312,7 +353,8 @@ const rootReducer = combineReducers({
   reminders,
   reminderBanis,
   reminderSound,
-  appVersion
+  appVersion,
+  startBani
 });
 
 export default rootReducer;

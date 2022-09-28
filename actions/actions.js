@@ -1,4 +1,5 @@
 import AnalyticsManager from "../utils/analytics";
+import Strings from "../utils/localization";
 
 /*
  * action types
@@ -6,7 +7,9 @@ import AnalyticsManager from "../utils/analytics";
 
 export const SET_FONT_SIZE = "SET_FONT_SIZE";
 export const SET_FONT_FACE = "SET_FONT_FACE";
-export const TOGGLE_ROMANIZED = "TOGGLE_ROMANIZED";
+export const SET_LANGUAGE = "SET_LANGUAGE";
+export const TOGGLE_TRANSLITERATION = "TOGGLE_TRANSLITERATION";
+export const SET_TRANSLITERATION_LANGUAGE = "SET_TRANSLITERATION_LANGUAGE";
 export const TOGGLE_ENGLISH_TRANSLATIONS = "TOGGLE_ENGLISH_TRANSLATIONS";
 export const TOGGLE_PUNJABI_TRANSLATIONS = "TOGGLE_PUNJABI_TRANSLATIONS";
 export const TOGGLE_SPANISH_TRANSLATIONS = "TOGGLE_SPANISH_TRANSLATIONS";
@@ -15,6 +18,7 @@ export const TOGGLE_SCREEN_AWAKE = "TOGGLE_SCREEN_AWAKE";
 export const SET_BANI_ORDER = "SET_BANI_ORDER";
 export const SET_BANI_LENGTH = "SET_BANI_LENGTH";
 export const TOGGLE_LARIVAAR = "TOGGLE_LARIVAAR";
+export const TOGGLE_LARIVAAR_ASSIST = "TOGGLE_LARIVAAR_ASSIST";
 export const SET_MANGLACHARAN_POSITION = "SET_MANGLACHARAN_POSITION";
 export const SET_PADCHHED_SETTINGS = "SET_PADCHHED_SETTINGS";
 export const TOGGLE_STATISTICS = "TOGGLE_STATISTICS";
@@ -32,73 +36,99 @@ export const TOGGLE_REMINDERS = "TOGGLE_REMINDERS";
 export const SET_REMINDER_BANIS = "SET_REMINDER_BANIS";
 export const SET_REMINDER_SOUND = "SET_REMINDER_SOUND";
 export const SET_APP_VERSION = "SET_APP_VERSION";
+export const SET_START_BANI = "SET_START_BANI";
 
 /*
  * other constants
  */
 
-export const FONT_SIZES = [
-  "EXTRA_SMALL",
-  "SMALL",
-  "MEDIUM",
-  "LARGE",
-  "EXTRA_LARGE"
+export const FONT_SIZES = ["EXTRA_SMALL", "SMALL", "MEDIUM", "LARGE", "EXTRA_LARGE"];
+
+export const LANGUAGES = ["DEFAULT", "en-US", "es", "fr", "it", "hi", "pa"];
+
+export const languageNames = [
+  `${Strings.default}`,
+  `English`,
+  `Español`,
+  `Français`,
+  `Italiano`,
+  `हिंदी`,
+  `ਪੰਜਾਬੀ`,
 ];
 
 export const fontSizeNames = [
-  "Extra Small",
-  "Small (default)",
-  "Medium",
-  "Large",
-  "Extra Large"
+  `${Strings.extra_small}`,
+  `${Strings.small_default}`,
+  `${Strings.medium}`,
+  `${Strings.large}`,
+  `${Strings.extra_large}`,
 ];
 
 export const FONT_FACES = [
   "AnmolLipiSG",
-  "GurbaniAkharSG",
-  "GurbaniAkharHeavySG",
-  "GurbaniAkharThickSG"
+  "GurbaniAkharTrue",
+  "GurbaniAkharHeavyTrue",
+  "GurbaniAkharThickTrue",
 ];
 
 export const fontFaceNames = [
-  "Anmol Lipi",
-  "Gurbani Akhar (default)",
-  "Gurbani Akhar Heavy",
-  "Gurbani Akhar Thick"
+  `${Strings.anmol_lipi}`,
+  `${Strings.gurbani_akhar_default}`,
+  `${Strings.gurbani_akhar_heavy}`,
+  `${Strings.gurbani_akhar_think}`,
+];
+
+export const TRANSLITERATION_LANGUAGES = ["ENGLISH", "HINDI", "SHAHMUKHI", "IPA"];
+
+export const transliterationLanguageNames = [
+  `${Strings.english}`,
+  `${Strings.hindi}`,
+  `${Strings.shahmukhi}`,
+  `${Strings.ipa}`,
 ];
 
 export const BANI_LENGTHS = ["SHORT", "MEDIUM", "LONG", "EXTRA_LONG"];
 
-export const baniLengthNames = ["Short", "Medium", "Long", "Extra Long"];
-
-export const MANGLACHARAN_POSITIONS = [
-  "CURRENT_SAROOPS",
-  "ABOVE_RAAG_HEADINGS"
+export const baniLengthNames = [
+  `${Strings.short}`,
+  `${Strings.medium}`,
+  `${Strings.long}`,
+  `${Strings.extra_long}`,
 ];
 
+export const MANGLACHARAN_POSITIONS = ["CURRENT_SAROOPS", "ABOVE_RAAG_HEADINGS"];
+
 export const manglacharanPositionNames = [
-  "Current Saroops (default)",
-  "Above Raag Headings"
+  `${Strings.current_saroops_default}`,
+  `${Strings.above_raag_headings}`,
 ];
 
 export const PADCHHED_SETTINGS = ["SAT_SUBHAM_SAT", "MAST_SABH_MAST"];
 
 export const padchhedSettingNames = [
-  "Sat Subham Sat (default)",
-  "Mast Sabh Mast"
+  `${Strings.sat_subham_sat_default}`,
+  `${Strings.mast_sabh_mast}`,
 ];
 
 export const REMINDER_SOUNDS = ["default", "wake_up_jap.mp3", "waheguru_soul.mp3"];
 
-export const reminderSoundNames = ["Default", "Wake Up Jap", "Waheguru Soul"]
+export const reminderSoundNames = [
+  `${Strings.default}`,
+  `${Strings.wake_up_jap}`,
+  `${Strings.waheguru_soul}`,
+];
 
 export const VISHRAAM_OPTIONS = ["VISHRAAM_COLORED", "VISHRAAM_GRADIENT"];
 
-export const vishraamOptionNames = ["Colored Words", "Gradient Background"]
+export const vishraamOptionNames = [`${Strings.colored_words}`, `${Strings.gradient_background}`];
 
 export const VISHRAAM_SOURCES = ["sttm", "igurbani", "sttm2"];
 
-export const vishraamSourceNames = ["BaniDB Living", "iGurbani", "STTM 2"]
+export const vishraamSourceNames = [
+  `${Strings.banidb_living_default}`,
+  `${Strings.iGurbani}`,
+  `${Strings.sttm2}`,
+];
 
 /*
  * action creators
@@ -114,9 +144,24 @@ export function setFontFace(font) {
   return { type: SET_FONT_FACE, font };
 }
 
-export function toggleRomanized(value) {
-  AnalyticsManager.getInstance().trackSettingsEvent("romanized", value);
-  return { type: TOGGLE_ROMANIZED, value };
+export function setLanguage(language) {
+  AnalyticsManager.getInstance().trackSettingsEvent("appLanguage", language);
+  if (language !== "DEFAULT") {
+    Strings.setLanguage(language);
+  } else {
+    Strings.setLanguage(Strings.getInterfaceLanguage());
+  }
+  return { type: SET_LANGUAGE, language };
+}
+
+export function toggleTransliteration(value) {
+  AnalyticsManager.getInstance().trackSettingsEvent("transliteration", value);
+  return { type: TOGGLE_TRANSLITERATION, value };
+}
+
+export function setTransliterationLanguage(language) {
+  AnalyticsManager.getInstance().trackSettingsEvent("transliterationLanguage", language);
+  return { type: SET_TRANSLITERATION_LANGUAGE, language };
 }
 
 export function toggleEnglishTranslations(value) {
@@ -156,6 +201,11 @@ export function setBaniLength(length) {
 export function toggleLarivaar(value) {
   AnalyticsManager.getInstance().trackSettingsEvent("larivaar", value);
   return { type: TOGGLE_LARIVAAR, value };
+}
+
+export function toggleLarivaarAssist(value) {
+  AnalyticsManager.getInstance().trackSettingsEvent("larivaarAssist", value);
+  return { type: TOGGLE_LARIVAAR_ASSIST, value };
 }
 
 export function setManglacharanPosition(position) {
@@ -201,7 +251,7 @@ export function toggleAutoScroll(value) {
 }
 
 export function setAutoScrollSpeed(speed, shabad) {
-  let shabadSpeed = { [shabad]: speed };
+  const shabadSpeed = { [shabad]: speed };
   return { type: SET_AUTO_SCROLL_SPEED, shabadSpeed };
 }
 
@@ -236,4 +286,8 @@ export function setReminderSound(sound) {
 
 export function setAppVersion(version) {
   return { type: SET_APP_VERSION, version };
+}
+
+export function setStartBani(progressList) {
+  return { type: SET_START_BANI, progressList };
 }

@@ -1,7 +1,8 @@
-import firebase from "react-native-firebase";
+import { firebase } from "@react-native-firebase/analytics";
 
 export default class AnalyticsManager {
   static myInstance = null;
+
   _trackingOn = false;
 
   static getInstance() {
@@ -18,14 +19,17 @@ export default class AnalyticsManager {
 
   trackScreenView(screen, className) {
     if (this._trackingOn) {
-      firebase.analytics().setCurrentScreen(screen, className);
+      firebase.analytics().logScreenView({
+        screen_name: screen,
+        screen_class: className,
+      });
     }
   }
 
   trackReaderEvent(action, label) {
     if (this._trackingOn) {
       firebase.analytics().logEvent("reader", {
-        [action]: "" + label
+        [action]: `${label}`,
       });
     }
   }
@@ -33,7 +37,7 @@ export default class AnalyticsManager {
   trackSettingsEvent(action, label) {
     if (this._trackingOn) {
       firebase.analytics().logEvent("setting", {
-        [action]: "" + label
+        [action]: `${label}`,
       });
     }
   }
@@ -41,7 +45,7 @@ export default class AnalyticsManager {
   trackRemindersEvent(action, label) {
     if (this._trackingOn) {
       firebase.analytics().logEvent("reminder", {
-        [action]: "" + label
+        [action]: `${label}`,
       });
     }
   }

@@ -1,256 +1,143 @@
 import React from "react";
-import {
-  Animated,
-  Easing,
-  StyleSheet,
-  Text,
-  Image,
-  View,
-  Dimensions,
-  Platform,
-  StatusBar
-} from "react-native";
+import { StyleSheet, View, Dimensions, Platform, StatusBar } from "react-native";
+import PropTypes from "prop-types";
 import { Header } from "react-native-elements";
 import Icon from "react-native-vector-icons/MaterialIcons";
-import GLOBAL from "../utils/globals";
 import SortableList from "react-native-sortable-list";
 import { connect } from "react-redux";
 import { bindActionCreators } from "redux";
+import GLOBAL from "../utils/globals";
 import * as actions from "../actions/actions";
 import AnalyticsManager from "../utils/analytics";
-import { baseFontSize } from "../utils/helpers";
 import { defaultBaniOrderArray } from "../utils/helpers";
+import Strings from "../utils/localization";
+import CONSTANT from "../utils/constant";
+import Row from "./Row";
 
 const window = Dimensions.get("window");
+const styles = StyleSheet.create({
+  container: {
+    flex: 1,
+    justifyContent: "center",
+    alignItems: "center",
+    backgroundColor: GLOBAL.COLOR.BANI_ORDER_BACK_COLOR,
 
+    ...Platform.select({
+      ios: {
+        paddingTop: 0,
+      },
+    }),
+  },
+
+  list: {
+    flex: 1,
+  },
+
+  contentContainer: {
+    width: window.width,
+  },
+
+  image: {
+    width: 50,
+    height: 50,
+    marginRight: 20,
+  },
+});
 class EditBaniOrder extends React.Component {
   componentDidMount() {
-    AnalyticsManager.getInstance().trackScreenView(
-      "Index Reorder",
-      this.constructor.name
-    );
+    AnalyticsManager.getInstance().trackScreenView(CONSTANT.INDEX_REORDER, this.constructor.name);
   }
 
+  renderRow = ({ data, active }) => {
+    const { nightMode, transliteration, fontFace } = this.props;
+    return (
+      <Row
+        data={data}
+        active={active}
+        nightMode={nightMode}
+        transliteration={transliteration}
+        fontFace={fontFace}
+      />
+    );
+  };
+
   render() {
+    const { navigation, setBaniOrder, nightMode, mergedBaniData, baniOrder } = this.props;
+    const { VIEW_BACK_COLOR } = GLOBAL.COLOR;
     return (
       <View
         style={{
-          flex: 1
+          flex: 1,
         }}
       >
-        <StatusBar
-          backgroundColor={GLOBAL.COLOR.TOOLBAR_COLOR_ALT2}
-          barStyle={"light-content"}
-        />
+        <StatusBar backgroundColor={GLOBAL.COLOR.TOOLBAR_COLOR_ALT2} barStyle="light-content" />
         <Header
           backgroundColor={GLOBAL.COLOR.TOOLBAR_COLOR_ALT2}
-          containerStyle={[Platform.OS === "android" && { height: 56, paddingTop: 0 }]}
+          containerStyle={[Platform.OS === CONSTANT.ANDROID]}
           leftComponent={
             <Icon
               name="arrow-back"
               color={GLOBAL.COLOR.TOOLBAR_TINT}
               size={30}
-              onPress={() => this.props.navigation.goBack()}
+              onPress={() => navigation.goBack()}
             />
           }
           centerComponent={{
-            text: "Edit Bani Order",
-            style: { color: GLOBAL.COLOR.TOOLBAR_TINT, fontSize: 18 }
+            text: Strings.edit_bani_order,
+            style: { color: GLOBAL.COLOR.TOOLBAR_TINT, fontSize: 18 },
           }}
           rightComponent={
             <Icon
               name="refresh"
               color={GLOBAL.COLOR.TOOLBAR_TINT}
               size={30}
-              onPress={() => this.props.setBaniOrder(defaultBaniOrderArray)}
+              onPress={() => setBaniOrder(defaultBaniOrderArray)}
             />
           }
         />
-        <View
-          style={[
-            styles.container,
-            this.props.nightMode && { backgroundColor: "#464646" }
-          ]}
-        >
+        <View style={[styles.container, nightMode && { backgroundColor: VIEW_BACK_COLOR }]}>
           <SortableList
             style={styles.list}
             contentContainerStyle={styles.contentContainer}
-            data={this.props.mergedBaniData.baniOrder}
-            onChangeOrder={nextOrder => {
-              this.newOrder = nextOrder;
+            decelerationRate={null}
+            data={mergedBaniData.baniOrder}
+            onChangeOrder={(nextOrder) => {
+              setBaniOrder(nextOrder);
             }}
-            onReleaseRow={key =>
-              this.newOrder !== undefined
-                ? this.props.setBaniOrder(this.newOrder)
-                : null
-            }
-            renderRow={this._renderRow}
-            order={this.props.baniOrder}
+            // onReleaseRow={(key, currentOrder) => {
+            //   const newOrder = currentOrder.map((item) => {
+            //     return Number(item);
+            //   });
+            //   console.log(newOrder);
+            //   setBaniOrder(newOrder);
+            // }}
+            renderRow={this.renderRow}
+            order={baniOrder}
           />
         </View>
       </View>
     );
   }
-
-  _renderRow = ({ data, active }) => {
-    return (
-      <Row
-        data={data}
-        active={active}
-        nightMode={this.props.nightMode}
-        romanized={this.props.romanized}
-        fontFace={this.props.fontFace}
-      />
-    );
-  };
 }
 
-class Row extends React.Component {
-  constructor(props) {
-    super(props);
-
-    this._active = new Animated.Value(0);
-
-    this._style = {
-      ...Platform.select({
-        ios: {
-          transform: [
-            {
-              scale: this._active.interpolate({
-                inputRange: [0, 1],
-                outputRange: [1, 1.1]
-              })
-            }
-          ],
-          shadowRadius: this._active.interpolate({
-            inputRange: [0, 1],
-            outputRange: [2, 10]
-          })
-        },
-
-        android: {
-          transform: [
-            {
-              scale: this._active.interpolate({
-                inputRange: [0, 1],
-                outputRange: [1, 1.07]
-              })
-            }
-          ],
-          elevation: this._active.interpolate({
-            inputRange: [0, 1],
-            outputRange: [2, 6]
-          })
-        }
-      })
-    };
-  }
-
-  componentWillReceiveProps(nextProps) {
-    if (this.props.active !== nextProps.active) {
-      Animated.timing(this._active, {
-        duration: 300,
-        easing: Easing.bounce,
-        toValue: Number(nextProps.active)
-      }).start();
-    }
-  }
-
-  render() {
-    const { data, active, nightMode, romanized, fontFace } = this.props;
-
-    return (
-      <Animated.View
-        style={[
-          styles.row,
-          nightMode && { backgroundColor: "#000" },
-          this._style
-        ]}
-      >
-        {data.folder && (
-          <Image
-            source={require("../images/foldericon.png")}
-            style={styles.image}
-          />
-        )}
-
-        <Text
-          style={[
-            { color: nightMode ? "#fff" : "#222222" },
-            !romanized && { fontFamily: fontFace },
-            { fontSize: baseFontSize("MEDIUM", romanized) }
-          ]}
-        >
-          {romanized ? data.roman : data.gurmukhi}
-        </Text>
-      </Animated.View>
-    );
-  }
-}
-
-const styles = StyleSheet.create({
-  container: {
-    flex: 1,
-    justifyContent: "center",
-    alignItems: "center",
-    backgroundColor: "#eee",
-
-    ...Platform.select({
-      ios: {
-        paddingTop: 0
-      }
-    })
-  },
-
-  list: {
-    flex: 1
-  },
-
-  contentContainer: {
-    width: window.width
-  },
-
-  row: {
-    flexDirection: "row",
-    alignItems: "center",
-    backgroundColor: "#fff",
-    padding: 16,
-    height: 80,
-    flex: 1,
-    marginTop: 4,
-    marginBottom: 4,
-    borderRadius: 4,
-
-    ...Platform.select({
-      ios: {
-        shadowColor: "rgba(0,0,0,0.2)",
-        shadowOpacity: 1,
-        shadowOffset: { height: 2, width: 2 },
-        shadowRadius: 2
-      },
-
-      android: {
-        elevation: 0,
-        marginHorizontal: 30
-      }
-    })
-  },
-
-  image: {
-    width: 50,
-    height: 50,
-    marginRight: 20
-  }
-});
+EditBaniOrder.propTypes = {
+  nightMode: PropTypes.bool.isRequired,
+  transliteration: PropTypes.bool.isRequired,
+  fontFace: PropTypes.string.isRequired,
+  navigation: PropTypes.shape().isRequired,
+  setBaniOrder: PropTypes.func.isRequired,
+  mergedBaniData: PropTypes.shape().isRequired,
+  baniOrder: PropTypes.arrayOf(PropTypes.string).isRequired,
+};
 
 function mapStateToProps(state) {
   return {
     nightMode: state.nightMode,
     baniOrder: state.baniOrder,
     mergedBaniData: state.mergedBaniData,
-    romanized: state.romanized,
+    transliteration: state.transliteration,
     fontSize: state.fontSize,
-    fontFace: state.fontFace
+    fontFace: state.fontFace,
   };
 }
 
@@ -258,7 +145,4 @@ function mapDispatchToProps(dispatch) {
   return bindActionCreators(actions, dispatch);
 }
 
-export default connect(
-  mapStateToProps,
-  mapDispatchToProps
-)(EditBaniOrder);
+export default connect(mapStateToProps, mapDispatchToProps)(EditBaniOrder);

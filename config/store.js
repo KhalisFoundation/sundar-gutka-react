@@ -1,12 +1,12 @@
 import { createStore } from "redux";
 import { persistStore, persistReducer } from "redux-persist";
-import storage from "redux-persist/lib/storage"; // defaults to localStorage for web and AsyncStorage for react-native
+import AsyncStorage from '@react-native-async-storage/async-storage';
 
 import rootReducer from "../reducers/reducers";
 
 const persistConfig = {
   key: "root",
-  storage,
+  storage: AsyncStorage,
   blacklist: ['navigation', 'mergedBaniData', 'currentShabad', 'scrollIndex'] // content will not be persisted
 };
 
@@ -17,4 +17,3 @@ export default () => {
   let persistor = persistStore(store);
   return { store, persistor };
 };
-  

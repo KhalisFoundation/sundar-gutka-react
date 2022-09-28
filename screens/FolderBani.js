@@ -4,75 +4,71 @@ import { bindActionCreators } from "redux";
 import { View, StatusBar, Platform } from "react-native";
 import { Header } from "react-native-elements";
 import Icon from "react-native-vector-icons/MaterialIcons";
+import PropTypes from "prop-types";
 import GLOBAL from "../utils/globals";
 import * as actions from "../actions/actions";
 import BaniList from "../components/BaniList";
+import constant from "../utils/constant";
 
 class FolderBani extends React.Component {
   handleOnPress(item, navigator) {
-    this.props.setCurrentShabad(item.id);
-    navigator.navigate({
-      key: "Reader-" + item.id,
-      routeName: "Reader",
-      params: { item: item }
+    const { setCurrentShabad } = this.props;
+    setCurrentShabad(item.id);
+    navigator.navigate(constant.READER, {
+      key: `Reader-${item.id}`,
+      params: { item },
     });
   }
 
   render() {
-    const { params } = this.props.navigation.state;
+    const { route, navigation, transliteration, fontFace, nightMode, fontSize } = this.props;
+    const { goBack, navigate } = navigation;
+    const { params } = route;
 
     return (
       <View
         style={{
-          flex: 1
+          flex: 1,
         }}
       >
-        <StatusBar
-          backgroundColor={GLOBAL.COLOR.TOOLBAR_COLOR}
-          barStyle={"light-content"}
-        />
+        <StatusBar backgroundColor={GLOBAL.COLOR.TOOLBAR_COLOR} barStyle="light-content" />
         <Header
           backgroundColor={GLOBAL.COLOR.TOOLBAR_COLOR}
-          containerStyle={[Platform.OS === "android" && { height: 56, paddingTop: 0 }]}
+          containerStyle={[Platform.OS === constant.ANDROID]}
           leftComponent={
             <Icon
               name="arrow-back"
               color={GLOBAL.COLOR.TOOLBAR_TINT}
               size={30}
-              onPress={() => this.props.navigation.goBack()}
+              onPress={() => goBack()}
             />
           }
           centerComponent={{
-            text: `${this.props.navigation.state.params.title}`,
+            text: `${params.params.title}`,
             style: [
               {
                 color: GLOBAL.COLOR.TOOLBAR_TINT,
-                fontFamily: "GurbaniAkharHeavySG",
-                fontSize: 24
-              }
-            ]
+                fontFamily: !transliteration ? fontFace : null,
+                fontSize: 24,
+              },
+            ],
           }}
           rightComponent={
             <Icon
               name="settings"
               color={GLOBAL.COLOR.TOOLBAR_TINT}
               size={30}
-              onPress={() =>
-                this.props.navigation.navigate({
-                  key: "Settings",
-                  routeName: "Settings"
-                })
-              }
+              onPress={() => navigate("Settings")}
             />
           }
         />
         <BaniList
-          data={params.data}
-          nightMode={this.props.nightMode}
-          fontSize={this.props.fontSize}
-          fontFace={this.props.fontFace}
-          romanized={this.props.romanized}
-          navigation={this.props.navigation}
+          data={params.params.data}
+          nightMode={nightMode}
+          fontSize={fontSize}
+          fontFace={fontFace}
+          transliteration={transliteration}
+          navigation={navigation}
           onPress={this.handleOnPress.bind(this)}
         />
       </View>
@@ -80,12 +76,22 @@ class FolderBani extends React.Component {
   }
 }
 
+FolderBani.propTypes = {
+  setCurrentShabad: PropTypes.func.isRequired,
+  route: PropTypes.shape().isRequired,
+  navigation: PropTypes.shape().isRequired,
+  transliteration: PropTypes.bool.isRequired,
+  fontFace: PropTypes.string.isRequired,
+  nightMode: PropTypes.bool.isRequired,
+  fontSize: PropTypes.string.isRequired,
+};
+
 function mapStateToProps(state) {
   return {
     nightMode: state.nightMode,
-    romanized: state.romanized,
+    transliteration: state.transliteration,
     fontSize: state.fontSize,
-    fontFace: state.fontFace
+    fontFace: state.fontFace,
   };
 }
 
@@ -93,7 +99,4 @@ function mapDispatchToProps(dispatch) {
   return bindActionCreators(actions, dispatch);
 }
 
-export default connect(
-  mapStateToProps,
-  mapDispatchToProps
-)(FolderBani);
+export default connect(mapStateToProps, mapDispatchToProps)(FolderBani);
