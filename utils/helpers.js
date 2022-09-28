@@ -3,7 +3,7 @@
  */
 
 import { Alert } from "react-native";
-import Strings from "./localization"
+import Strings from "./localization";
 
 export const defaultBaniOrderArray = Array(
   require("../config/defaultBaniOrder.json").baniOrder.length
@@ -16,7 +16,7 @@ export const mergedBaniList = (baniList) => {
   const mergedData = { baniOrder: [] };
   defaultBani.baniOrder.forEach((obj) => {
     if (obj.id) {
-      var baniItem = baniList[obj.id];
+      const baniItem = baniList[obj.id];
       if (baniItem) {
         mergedData.baniOrder.push({
           id: obj.id,
@@ -25,9 +25,9 @@ export const mergedBaniList = (baniList) => {
         });
       }
     } else {
-      var folder = [];
+      const folder = [];
       obj.folder.forEach((item) => {
-        var baniItem = baniList[item.id];
+        const baniItem = baniList[item.id];
         folder.push({
           id: item.id,
           gurmukhi: baniItem.gurmukhi,
@@ -56,11 +56,11 @@ export const fontColorForReader = (header, nightMode, text) => {
     case TextType.GURMUKHI: {
       if (header === 1) {
         return nightMode ? "#77baff" : "#0066FF";
-      } else if (header === 2 || header === 6) {
-        return nightMode ? "#BFBFBF" : "#727272";
-      } else {
-        return nightMode ? "#fff" : "#000";
       }
+      if (header === 2 || header === 6) {
+        return nightMode ? "#BFBFBF" : "#727272";
+      }
+      return nightMode ? "#fff" : "#000";
     }
     case TextType.TRANSLITERATION:
       return nightMode ? "#77baff" : "#0066FF";
@@ -70,7 +70,7 @@ export const fontColorForReader = (header, nightMode, text) => {
 };
 
 export const baseFontSize = (SIZE, transliteration) => {
-  var fontSize;
+  let fontSize;
   switch (SIZE) {
     case "EXTRA_SMALL":
       fontSize = 16;
@@ -90,24 +90,25 @@ export const baseFontSize = (SIZE, transliteration) => {
   }
 
   if (transliteration) {
-    fontSize = fontSize / 1.25;
+    fontSize /= 1.25;
   }
 
   return fontSize;
 };
 
-export const fontSizeForReader = (SIZE, header, transliteration,larivaar=false) => {
-  const size = larivaar ? 0.90 : 0.75;
-  let fontSize = baseFontSize(SIZE, transliteration) * size;
+export const fontSizeForReader = (SIZE, header, transliteration, larivaar = false) => {
+  const size = larivaar ? 0.9 : 0.75;
+  const fontSize = baseFontSize(SIZE, transliteration) * size;
   if (header === 6) {
     return fontSize * 0.75;
-  } else if (header === 2) {
-    return fontSize * 1.1;
-  } else if (header === 1) {
-    return fontSize * 1.2;
-  } else {
-    return fontSize;
   }
+  if (header === 2) {
+    return fontSize * 1.1;
+  }
+  if (header === 1) {
+    return fontSize * 1.2;
+  }
+  return fontSize;
 };
 
 export const baniLengthInfo = () => {
@@ -126,7 +127,7 @@ export const baniLengthInfo = () => {
 };
 
 export const getTranslitText = (translit, language) => {
-  let json = JSON.parse(translit);
+  const json = JSON.parse(translit);
   switch (language) {
     case "ENGLISH":
       return json.en;

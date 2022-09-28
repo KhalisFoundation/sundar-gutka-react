@@ -3,15 +3,16 @@ import { Animated, Dimensions, StyleSheet, View, Platform, Text, StatusBar } fro
 import PropTypes from "prop-types";
 import { WebView } from "react-native-webview";
 import { connect } from "react-redux";
-import { Header, Slider } from "react-native-elements";
+import Slider from "@react-native-community/slider";
 import { bindActionCreators } from "redux";
 import Icon from "react-native-vector-icons/MaterialIcons";
+import { SafeAreaView } from "react-native-safe-area-context";
 import GLOBAL from "../utils/globals";
 import Database from "../utils/database";
-import LoadingIndicator from "../components/LoadingIndicator";
 import { fontSizeForReader, fontColorForReader, TextType } from "../utils/helpers";
 import * as actions from "../actions/actions";
 import AnalyticsManager from "../utils/analytics";
+import CONSTANT from "../utils/constant";
 
 const HEADER_POSITION = -120; // From react-native-elements Header source
 class Reader extends React.Component {
@@ -24,12 +25,24 @@ class Reader extends React.Component {
   constructor(props) {
     super(props);
 
+    const isPortrait = () => {
+      const dim = Dimensions.get("screen");
+      return dim.height >= dim.width;
+    };
+
+    Dimensions.addEventListener("change", () => {
+      this.setState({
+        orientation: isPortrait() ? CONSTANT.PORTRAIT : CONSTANT.LANDSCAPE,
+      });
+    });
+
     this.state = {
       data: [],
       paused: true,
       scrollMultiplier: 1.0,
-      isLoading: false,
+      orientation: isPortrait() ? CONSTANT.PORTRAIT : CONSTANT.LANDSCAPE,
       animationPosition: new Animated.Value(0), // The header and footer position
+      viewLoaded: false,
     };
 
     // How long does the slide animation take
@@ -81,8 +94,8 @@ class Reader extends React.Component {
   }
 
   componentWillUnmount() {
-    this.setState = (state, callback) => {
-      return;
+    this.setState = () => {
+      return "";
     };
   }
 
@@ -138,6 +151,7 @@ class Reader extends React.Component {
     let progress = 0;
     if (startBaniList.length > 0) {
       const data = startBaniList.find((bani) => bani.id === this.currentBani.id);
+      // eslint-disable-next-line prefer-destructuring
       if (data) progress = data.progress;
     }
     if (Number(progress) === 1 || Number(progress) > 1) {
@@ -186,7 +200,6 @@ class Reader extends React.Component {
       .then((shabad) => {
         this.setState({
           data: shabad,
-          isLoading: false,
         });
       })
       .catch((error) => {
@@ -246,11 +259,11 @@ class Reader extends React.Component {
         }`;
 
       html +=
-        `${"body { " + "background-color: "}${
+        `${"body {background-color: "}${
           nightMode ? GLOBAL.COLOR.NIGHT_BLACK : GLOBAL.COLOR.WHITE_COLOR
         };` +
         `word-break: break-word;` +
-        `color: ${nightMode ? GLOBAL.COLOR.WHITE_COLOR : GLOBAL.color.NIGHT_BLACK};` +
+        `color: ${nightMode ? GLOBAL.COLOR.WHITE_COLOR : GLOBAL.COLOR.NIGHT_BLACK};` +
         `padding-top: ${headerHeight}px; }`;
 
       html += "* { -webkit-user-select: none; }";
@@ -352,6 +365,7 @@ class Reader extends React.Component {
   loadScrollJS() {
     const listener = Platform.OS === "android" ? "document" : "window";
     const position = this.currentBani.progress;
+    const { nightMode } = this.props;
     return `
     var autoScrollTimeout;
     var autoScrollSpeed = 0;
@@ -364,7 +378,7 @@ class Reader extends React.Component {
     var isManuallyScrolling = false;
     window.addEventListener("orientationchange", function() {
       setTimeout(function(){        
-        let scrollY = (document.body.scrollHeight - window.innerHeight) * curPosition;
+        var scrollY = (document.body.scrollHeight - window.innerHeight) * curPosition;
         window.scrollTo(0, scrollY);
         curPosition = scrollY;
         
@@ -373,7 +387,7 @@ class Reader extends React.Component {
 
     (function scrollToPosition(){
       setTimeout(function(){        
-        let scrollY = (document.body.scrollHeight - window.innerHeight) * ${position};
+        var scrollY = (document.body.scrollHeight - window.innerHeight) * ${position};
         window.scrollTo(0, scrollY);
         curPosition = scrollY;
         
@@ -395,8 +409,25 @@ class Reader extends React.Component {
 
     }, false);
 
+    if(${nightMode}){
+    //fade event
+   window.addEventListener("load", fadeInEffect(), false);
+
+function fadeInEffect() {
+    var fadeTarget = document.getElementsByTagName("HTML")[0];
+  fadeTarget.style.opacity=0
+    var fadeEffect = setInterval(function () {
+        if (Number(fadeTarget.style.opacity) < 1) {
+            fadeTarget.style.opacity =Number(fadeTarget.style.opacity) + 0.1;
+               console.log(fadeTarget.style.opacity)
+        } else {
+          fadeTarget.style.opacity=1;
+        }
+    }, 100);
+}
+  }
     function setAutoScroll() {
-      let speed = autoScrollSpeed;
+      var speed = autoScrollSpeed;
       if(speed > 0) {
         if(!isManuallyScrolling) {
           window.scrollBy({
@@ -467,7 +498,7 @@ class Reader extends React.Component {
     });
 
     ${listener}.addEventListener("message", function(event) {
-      let message = JSON.parse(event.data);
+      var message = JSON.parse(event.data);
 
       if(message.hasOwnProperty('Back')){
         currentPosition=getScrollPercent();
@@ -481,8 +512,9 @@ class Reader extends React.Component {
       if(message.hasOwnProperty('autoScroll')){ 
         autoScrollSpeed = message.autoScroll;
         scrollMultiplier = message.scrollMultiplier;
-        
-     
+        if(autoScrollTimeout == null) {
+          setAutoScroll();
+        }
       }
     }, false);
       `;
@@ -531,7 +563,8 @@ class Reader extends React.Component {
       currentShabad,
       setAutoScrollSpeed,
     } = this.props;
-    const { data, isLoading, animationPosition, scrollMultiplier, paused } = this.state;
+    const { data, animationPosition, scrollMultiplier, paused, orientation, viewLoaded } =
+      this.state;
     const { navigate } = navigation;
     const { params } = route.params;
     this.trackScreenForShabad(params);
@@ -564,15 +597,28 @@ class Reader extends React.Component {
       TOOLBAR_TINT,
       READER_FOOTER_COLOR,
     } = GLOBAL.COLOR;
+    if (!this.headerHeight || this.headerHeight <= 55) {
+      this.headerHeight = 74;
+    }
+    const isPortrait = orientation === CONSTANT.PORTRAIT;
     return (
-      <View
+      <SafeAreaView
         style={[styles.container, nightMode && { backgroundColor: GLOBAL.COLOR.NIGHT_BLACK }]}
         onLayout={this.onLayout.bind(this)}
       >
-        <LoadingIndicator isLoading={isLoading} />
         <WebView
           originWhitelist={["*"]}
-          style={nightMode && { backgroundColor: GLOBAL.COLOR.NIGHT_BLACK }}
+          style={[
+            nightMode && {
+              backgroundColor: GLOBAL.COLOR.NIGHT_BLACK,
+              opacity: viewLoaded ? 1 : 0.1,
+            },
+          ]}
+          onLoadStart={() => {
+            setTimeout(() => {
+              this.setState({ viewLoaded: true });
+            }, 500);
+          }}
           ref={(webView) => {
             this.webView = webView;
           }}
@@ -583,39 +629,46 @@ class Reader extends React.Component {
           }}
           onMessage={this.handleMessage.bind(this)}
         />
-        <Animated.View style={[styles.header, { position: "absolute", top: animationPosition }]}>
+        <Animated.View
+          style={[
+            styles.header,
+            { position: "absolute", top: animationPosition },
+            nightMode && { opacity: viewLoaded ? 1 : 0.2 },
+          ]}
+        >
           <StatusBar
             backgroundColor={
               nightMode ? READER_STATUS_BAR_COLOR_NIGHT_MODE : READER_STATUS_BAR_COLOR
             }
             barStyle={nightMode || Platform.OS === "android" ? "light-content" : "dark-content"}
           />
-          <Header
-            backgroundColor={READER_HEADER_COLOR}
-            containerStyle={[Platform.OS === "android" && { height: 86, paddingTop: 10 }]}
-            onLayout={(event) => {
-              this.headerHeight = event.nativeEvent.layout.height;
-            }}
-            leftComponent={
+          <View style={{ backgroundColor: READER_HEADER_COLOR, height: 90 }}>
+            <View style={{ flex: 1, flexDirection: "row", top: 50 }}>
               <Icon
                 name="arrow-back"
                 color={TOOLBAR_TINT}
                 size={30}
+                style={[
+                  { left: 10 },
+                  isPortrait && { flexGrow: 3 },
+                  !isPortrait && { flexGrow: 1 },
+                ]}
                 onPress={this.handleBackPress.bind(this)}
               />
-            }
-            centerComponent={{
-              text: transliteration
-                ? this.truncate.apply(params.item.translit, [24])
-                : this.truncate.apply(params.item.gurmukhi, [25]),
-              style: {
-                color: TOOLBAR_TINT,
-                fontFamily: transliteration ? null : fontFace,
-                fontSize: 20,
-              },
-            }}
-            rightComponent={
-              <View style={{ flexDirection: "row" }}>
+              <Text
+                style={{
+                  color: TOOLBAR_TINT,
+                  fontFamily: transliteration ? null : fontFace,
+                  fontSize: 20,
+                  textAlign: "center",
+                  flexGrow: 8,
+                }}
+              >
+                {transliteration
+                  ? this.truncate.apply(params.item.translit, [24])
+                  : this.truncate.apply(params.item.gurmukhi, [25])}
+              </Text>
+              <View style={{ flexDirection: "row", flexGrow: 1 }}>
                 <Icon
                   name="settings"
                   color={TOOLBAR_TINT}
@@ -633,7 +686,7 @@ class Reader extends React.Component {
                   }}
                 />
                 <Icon
-                  style={{ paddingLeft: 15 }}
+                  style={{ paddingLeft: 10 }}
                   name="bookmark"
                   color={TOOLBAR_TINT}
                   size={30}
@@ -643,8 +696,8 @@ class Reader extends React.Component {
                   }}
                 />
               </View>
-            }
-          />
+            </View>
+          </View>
         </Animated.View>
         {autoScroll && (
           <Animated.View
@@ -707,12 +760,10 @@ class Reader extends React.Component {
                 minimumTrackTintColor={GLOBAL.COLOR.SLIDER_TRACK_MIN_TINT}
                 maximumTrackTintColor={GLOBAL.COLOR.SLIDER_TRACK_MAX_TINT}
                 thumbTintColor={GLOBAL.COLOR.WHITE_COLOR}
-                minimumValue={0}
+                minimumValue={1}
                 maximumValue={100}
                 step={1}
-                value={
-                  autoScrollShabadSpeed[currentShabad] ? autoScrollShabadSpeed[currentShabad] : 50
-                }
+                value={50}
                 onValueChange={(value) => {
                   setAutoScrollSpeed(value, currentShabad);
                   const speed = value;
@@ -745,7 +796,7 @@ class Reader extends React.Component {
             </View>
           </Animated.View>
         )}
-      </View>
+      </SafeAreaView>
     );
   }
 }

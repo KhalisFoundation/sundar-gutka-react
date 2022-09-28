@@ -106,7 +106,7 @@ class Home extends React.Component {
                 style={{ color: GLOBAL.COLOR.UNDERLAY_COLOR }}
                 onPress={() => Linking.openURL(constant.KHALIS_FOUNDATION_URL)}
               >
-                constant.KHALIS_FOUNDATION_URL
+                {constant.KHALIS_FOUNDATION_URL}
               </Text>
               <Text>!</Text>
             </Text>

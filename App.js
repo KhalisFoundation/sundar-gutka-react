@@ -1,9 +1,9 @@
-import React from "react";
-import { BackHandler, Alert, AppRegistry } from "react-native";
-import { NavigationContainer } from '@react-navigation/native';
-import { createNativeStackNavigator } from '@react-navigation/native-stack';
+import { BackHandler, Alert, AppRegistry, AppState } from "react-native";
+import { NavigationContainer } from "@react-navigation/native";
+import { createNativeStackNavigator } from "@react-navigation/native-stack";
 import { Provider } from "react-redux";
 import { PersistGate } from "redux-persist/integration/react";
+import * as React from "react";
 import HomeScreen from "./screens/Home";
 import FolderBaniScreen from "./screens/FolderBani";
 import SettingsScreen from "./screens/Settings";
@@ -14,6 +14,7 @@ import ReaderScreen from "./screens/Reader";
 import BookmarksScreen from "./screens/Bookmarks";
 import createStore from "./config/store";
 import FirebaseNotification from "./utils/firebaseNotification";
+import NotificationsManager from "./utils/notifications";
 
 const Stack = createNativeStackNavigator();
 
@@ -23,6 +24,13 @@ export default class App extends React.Component {
   componentDidMount() {
     this.notificationHandler();
     BackHandler.addEventListener("hardwareBackPress", this.handleBackPress);
+    // AppStateIOS.addEventListener("change", (state) => console.log("AppStateIOS changed to", state));
+    AppState.addEventListener("change", (state) => {
+      if (state === "active") {
+        const notification = new NotificationsManager();
+        notification.resetBadgeCount();
+      }
+    });
   }
 
   componentWillUnmount() {
@@ -33,32 +41,35 @@ export default class App extends React.Component {
     Alert.alert(
       "Exit Sundar Gutka",
       "Are you sure you want to exit?",
-      [
-        { text: "Cancel" },
-        { text: "Exit", onPress: () => BackHandler.exitApp() }
-      ],
+      [{ text: "Cancel" }, { text: "Exit", onPress: () => BackHandler.exitApp() }],
       { cancelable: true }
     );
     return true;
   };
 
-  notificationHandler=()=> {
-    const firebaseNotifaction = new FirebaseNotification()
+  notificationHandler = () => {
+    const firebaseNotifaction = new FirebaseNotification();
     firebaseNotifaction.checkPermission();
     firebaseNotifaction.backgroundMessageHandler();
     firebaseNotifaction.foregroundMessage();
     firebaseNotifaction.handleNotification();
-  }
+    const notification = new NotificationsManager();
+    notification.listenReminders();
+    // notification.listenReminders();
+  };
 
   render() {
+    const notification = new NotificationsManager();
+    notification.resetBadgeCount();
     return (
       <Provider store={store}>
         <PersistGate loading={null} persistor={persistor}>
           <NavigationContainer>
             <Stack.Navigator
               screenOptions={{
-                headerShown: false
-              }}>
+                headerShown: false,
+              }}
+            >
               <Stack.Screen name="Home" component={HomeScreen} />
               <Stack.Screen name="FolderBani" component={FolderBaniScreen} />
               <Stack.Screen name="Settings" component={SettingsScreen} />
@@ -74,4 +85,4 @@ export default class App extends React.Component {
     );
   }
 }
-AppRegistry.registerHeadlessTask('RNFirebaseMessagingService', () => this.notificationHandler);
+AppRegistry.registerHeadlessTask("RNFirebaseMessagingService", () => this.notificationHandler);

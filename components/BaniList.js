@@ -26,21 +26,19 @@ class BaniList extends Component {
         borderBottomWidth: 0.2,
         borderBottomColor: GLOBAL.COLOR.WHITE_COLOR,
       },
+      row: {},
     });
 
     return (
       <FlatList
-        style={[styles.container, nightMode && { backgroundColor: GLOBAL.COLOR.NIGHT_BLACK }]}
+        style={[styles.row, nightMode && { backgroundColor: GLOBAL.COLOR.NIGHT_BLACK }]}
         data={data}
         extraData={[this.state]}
         renderItem={({ item }) => (
           <ListItem
             bottomDivider
             style={item.folder && styles.rowViewContainer}
-            containerStyle={[
-              styles.container,
-              nightMode && { backgroundColor: GLOBAL.COLOR.NIGHT_BLACK },
-            ]}
+            containerStyle={[nightMode && { backgroundColor: GLOBAL.COLOR.NIGHT_BLACK }]}
             onPress={() => onPress(item, navigation)}
           >
             {item.folder && <Avatar source={require("../images/foldericon.png")} />}
@@ -58,7 +56,7 @@ class BaniList extends Component {
                 {transliteration ? item.translit : item.gurmukhi}
               </ListItem.Title>
             </ListItem.Content>
-            <ListItem.Chevron />
+            {item.folder && <ListItem.Chevron />}
           </ListItem>
         )}
         keyExtractor={(item) => `${item.gurmukhi}`}
@@ -66,15 +64,19 @@ class BaniList extends Component {
     );
   }
 }
+BaniList.defaultProps = {
+  data: [],
+  isLoading: true,
+};
 
 BaniList.propTypes = {
-  data: PropTypes.arrayOf().isRequired,
+  data: PropTypes.arrayOf(PropTypes.shape()),
   nightMode: PropTypes.bool.isRequired,
   fontSize: PropTypes.string.isRequired,
   fontFace: PropTypes.string.isRequired,
   transliteration: PropTypes.bool.isRequired,
   navigation: PropTypes.shape().isRequired,
-  isLoading: PropTypes.bool.isRequired,
+  isLoading: PropTypes.bool,
   onPress: PropTypes.func.isRequired,
 };
 

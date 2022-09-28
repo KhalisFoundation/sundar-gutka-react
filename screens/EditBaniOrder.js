@@ -73,7 +73,7 @@ class EditBaniOrder extends React.Component {
         <StatusBar backgroundColor={GLOBAL.COLOR.TOOLBAR_COLOR_ALT2} barStyle="light-content" />
         <Header
           backgroundColor={GLOBAL.COLOR.TOOLBAR_COLOR_ALT2}
-          containerStyle={[Platform.OS === CONSTANT.ANDROID && { height: 56, paddingTop: 0 }]}
+          containerStyle={[Platform.OS === CONSTANT.ANDROID]}
           leftComponent={
             <Icon
               name="arrow-back"
@@ -99,11 +99,18 @@ class EditBaniOrder extends React.Component {
           <SortableList
             style={styles.list}
             contentContainerStyle={styles.contentContainer}
+            decelerationRate={null}
             data={mergedBaniData.baniOrder}
             onChangeOrder={(nextOrder) => {
-              this.newOrder = nextOrder;
+              setBaniOrder(nextOrder);
             }}
-            onReleaseRow={() => (this.newOrder !== undefined ? setBaniOrder(this.newOrder) : null)}
+            // onReleaseRow={(key, currentOrder) => {
+            //   const newOrder = currentOrder.map((item) => {
+            //     return Number(item);
+            //   });
+            //   console.log(newOrder);
+            //   setBaniOrder(newOrder);
+            // }}
             renderRow={this.renderRow}
             order={baniOrder}
           />
@@ -115,20 +122,12 @@ class EditBaniOrder extends React.Component {
 
 EditBaniOrder.propTypes = {
   nightMode: PropTypes.bool.isRequired,
-  transliteration: PropTypes.string.isRequired,
+  transliteration: PropTypes.bool.isRequired,
   fontFace: PropTypes.string.isRequired,
-  navigation: PropTypes.func.isRequired,
+  navigation: PropTypes.shape().isRequired,
   setBaniOrder: PropTypes.func.isRequired,
-  mergedBaniData: PropTypes.shape({
-    baniOrder: PropTypes.arrayOf(
-      PropTypes.shape({
-        gurmukhi: PropTypes.string,
-        id: PropTypes.number,
-        translit: PropTypes.string,
-      })
-    ),
-  }).isRequired,
-  baniOrder: PropTypes.arrayOf(PropTypes.number).isRequired,
+  mergedBaniData: PropTypes.shape().isRequired,
+  baniOrder: PropTypes.arrayOf(PropTypes.string).isRequired,
 };
 
 function mapStateToProps(state) {

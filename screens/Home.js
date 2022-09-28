@@ -2,16 +2,15 @@ import React from "react";
 import { connect } from "react-redux";
 import { bindActionCreators } from "redux";
 import KeepAwake from "react-native-keep-awake";
-import { SafeAreaView, View, Text, StatusBar, Platform } from "react-native";
-import { Header } from "react-native-elements";
+import { View, Text, StatusBar, Dimensions } from "react-native";
 import Icon from "react-native-vector-icons/MaterialIcons";
 import PropTypes from "prop-types";
 import VersionNumber from "react-native-version-number";
 // import messaging from '@react-native-firebase/messaging';
 import Sound from "react-native-sound";
+import { SafeAreaView } from "react-native-safe-area-context";
 import GLOBAL from "../utils/globals";
 import AnalyticsManager from "../utils/analytics";
-import NotificationsManager from "../utils/notifications";
 import Database from "../utils/database";
 import { mergedBaniList } from "../utils/helpers";
 import * as actions from "../actions/actions";
@@ -19,6 +18,7 @@ import BaniList from "../components/BaniList";
 import BaniLengthSelector from "../components/BaniLengthSelector";
 import Strings from "../utils/localization";
 import CONSTANT from "../utils/constant";
+import NotificationsManager from "../utils/notifications";
 
 class Home extends React.Component {
   static navigationOptions = { header: null };
@@ -26,10 +26,21 @@ class Home extends React.Component {
   constructor(props) {
     super(props);
 
+    const isPortrait = () => {
+      const dim = Dimensions.get("screen");
+      return dim.height >= dim.width;
+    };
+
+    Dimensions.addEventListener("change", () => {
+      this.setState({
+        orientation: isPortrait() ? CONSTANT.PORTRAIT : CONSTANT.LANDSCAPE,
+      });
+    });
+
     this.state = {
       data: [],
-      isLoading: true,
       showLengthSelector: false,
+      orientation: isPortrait() ? CONSTANT.PORTRAIT : CONSTANT.LANDSCAPE,
     };
 
     // Enable playback in silence mode
@@ -111,7 +122,7 @@ class Home extends React.Component {
     } else if (prevProps.statistics !== statistics) {
       AnalyticsManager.getInstance().allowTracking(statistics);
     } else if (prevProps.reminders !== reminders) {
-      NotificationsManager.getInstance().checkPermissions(reminders);
+      // NotificationsManager.getInstance().checkPermissions(reminders);
       NotificationsManager.getInstance().updateReminders(reminders, reminderSound, reminderBanis);
     } else if (prevProps.reminderSound !== reminderSound) {
       NotificationsManager.getInstance().updateReminders(reminders, reminderSound, reminderBanis);
@@ -192,9 +203,6 @@ class Home extends React.Component {
     const baniList = await Database.getBaniList(transliterationLanguage);
     setMergedBaniData(mergedBaniList(baniList));
     this.sortBani();
-    this.setState({
-      isLoading: false,
-    });
   }
 
   reorder(arr, index) {
@@ -215,25 +223,21 @@ class Home extends React.Component {
   }
 
   render() {
-    const { showLengthSelector, data, isLoading } = this.state;
+    const { showLengthSelector, data, orientation } = this.state;
     const { navigation, nightMode, fontSize, fontFace, transliteration } = this.props;
+    const backColor =
+      orientation === CONSTANT.PORTRAIT ? GLOBAL.COLOR.TOOLBAR_COLOR : GLOBAL.COLOR.NIGHT_BLACK;
     return (
       <SafeAreaView
         style={{
           flex: 1,
-          backgroundColor: GLOBAL.COLOR.HOME_BACK_COLOR,
+          backgroundColor: backColor,
+          paddingBottom: -30,
         }}
       >
         {showLengthSelector && <BaniLengthSelector />}
 
-        <StatusBar barStyle="light-content" />
-        <Header
-          backgroundColor={GLOBAL.COLOR.TOOLBAR_COLOR}
-          containerStyle={[
-            { height: 0, borderBottomWidth: 0 },
-            Platform.OS === CONSTANT.ANDROID && { paddingTop: 5 },
-          ]}
-        />
+        <StatusBar barStyle="light-content" style={{ backgroundColor: "#000" }} />
         <View
           style={{
             backgroundColor: GLOBAL.COLOR.TOOLBAR_COLOR,
@@ -298,8 +302,10 @@ class Home extends React.Component {
               bottom: 15,
             }}
             color={GLOBAL.COLOR.TOOLBAR_TINT}
-            size={30}
-            onPress={() => navigation.navigate(CONSTANT.SETTINGS)}
+            size={35}
+            onPress={() => {
+              navigation.navigate(CONSTANT.SETTINGS);
+            }}
           />
         </View>
         <BaniList
@@ -309,8 +315,6 @@ class Home extends React.Component {
           fontFace={fontFace}
           transliteration={transliteration}
           navigation={navigation}
-          isLoading={isLoading}
-          // eslint-disable-next-line react/jsx-no-bind
           onPress={this.handleOnPress.bind(this)}
         />
       </SafeAreaView>
