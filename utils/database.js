@@ -168,9 +168,14 @@ class Database {
                   }
                   let line = "";
                   if (style !== "") {
-                    line = `<span style='
+                    if (larivaar) {
+                      line = `<span style='
+                    ${style}'>${word}</span>`;
+                    } else {
+                      line = `<span style='
                     ${style}'>
                     ${word} </span>`;
+                    }
                   } else {
                     line = word;
                   }
