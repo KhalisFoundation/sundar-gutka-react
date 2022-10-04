@@ -191,7 +191,7 @@ class Settings extends React.Component {
         />
         <View
           style={[
-            { backgroundColor: GLOBAL.COLOR.TOOLBAR_COLOR_ALT },
+            { backgroundColor: GLOBAL.COLOR.TOOLBAR_COLOR_ALT, paddingTop: 15 },
             nightMode && { backgroundColor: GLOBAL.COLOR.TOOLBAR_COLOR_ALT_NIGHT_MODE },
           ]}
         >
