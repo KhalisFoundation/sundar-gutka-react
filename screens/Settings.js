@@ -9,6 +9,7 @@ import {
   StatusBar,
   ScrollView,
   Dimensions,
+  Appearance,
 } from "react-native";
 import { ListItem, Avatar, Switch } from "react-native-elements";
 import MaterialIcons from "react-native-vector-icons/MaterialCommunityIcons";
@@ -54,7 +55,7 @@ class Settings extends React.Component {
     AnalyticsManager.getInstance().trackScreenView("In App Settings", this.constructor.name);
   }
 
-  actionSheetOptions = (names, options, checkedIcon, dispatch) => {
+  actionSheetOptions = (names, options, checkedIcon, dispatch, module = "") => {
     const items = [];
     // eslint-disable-next-line no-plusplus
     for (let i = 0; i < names.length; i++) {
@@ -65,6 +66,9 @@ class Settings extends React.Component {
           style={{ paddingTop: 15, paddingBottom: 15 }}
           selectedIcon={checkedIcon}
           onPress={(value) => {
+            if (module === "theme") {
+              this.themeToggle(value);
+            }
             dispatch(value);
           }}
           key={i}
@@ -80,6 +84,25 @@ class Settings extends React.Component {
     if (reminders) {
       const notifications = new NotificationsManager();
       notifications.cancelAllReminders();
+    }
+  };
+
+  themeToggle = (value) => {
+    const { toggleNightMode } = this.props;
+    const colorScheme = Appearance.getColorScheme();
+    switch (value) {
+      case "Light":
+        toggleNightMode(false);
+        break;
+      case "Dark":
+        toggleNightMode(true);
+        break;
+      default:
+        if (colorScheme === "light") {
+          toggleNightMode(false);
+        } else {
+          toggleNightMode(true);
+        }
     }
   };
 
@@ -121,7 +144,6 @@ class Settings extends React.Component {
       togglePunjabiTranslations,
       spanishTranslations,
       toggleSpanishTranslations,
-      toggleNightMode,
       toggleTransliteration,
       statusBar,
       toggleStatusBar,
@@ -154,6 +176,8 @@ class Settings extends React.Component {
       vishraamSource,
       setVishraamSource,
       setReminderSound,
+      setAppearance,
+      appearance,
     } = this.props;
     const { navigate, goBack } = navigation;
     const { showTranslationOptions, orientation } = this.state;
@@ -433,14 +457,22 @@ class Settings extends React.Component {
           <ListItem
             bottomDivider
             containerStyle={[styles.titleText, nightMode && { backgroundColor: "#464646" }]}
+            onPress={() => this.appearanceActionSheet.show()}
           >
             <Avatar source={require("../images/bgcoloricon.png")} />
             <ListItem.Content>
               <ListItem.Title style={[nightMode && { color: "#fff" }]}>
-                {Strings.dark_mode}
+                {Strings.theme}
               </ListItem.Title>
             </ListItem.Content>
-            <Switch style={switchStyle} value={nightMode} onValueChange={toggleNightMode} />
+            <ListItem.Title
+              right
+              style={[styles.titleInfoStyle, { color: nightMode ? "#fff" : "#a3a3a3" }]}
+            >
+              {appearance}
+            </ListItem.Title>
+            <ListItem.Chevron />
+            {/* <Switch style={switchStyle} value={nightMode} onValueChange={toggleNightMode} /> */}
           </ListItem>
           <ListItem
             bottomDivider
@@ -867,6 +899,24 @@ class Settings extends React.Component {
             setFontSize
           )}
         </ActionSheet>
+        <ActionSheet
+          ref={(actionSheet) => {
+            this.appearanceActionSheet = actionSheet;
+          }}
+          position="bottom"
+          defaultValue={appearance}
+        >
+          <View>
+            <Text style={styles.actionSheetTitle}>{Strings.theme}</Text>
+          </View>
+          {this.actionSheetOptions(
+            actions.APPEARANCES,
+            actions.APPEARANCES,
+            checkedIcon,
+            setAppearance,
+            "theme"
+          )}
+        </ActionSheet>
 
         <ActionSheet
           ref={(actionSheet) => {
@@ -1090,6 +1140,8 @@ Settings.propTypes = {
   setVishraamSource: PropTypes.func.isRequired,
   setReminderSound: PropTypes.func.isRequired,
   vishraamSource: PropTypes.string.isRequired,
+  setAppearance: PropTypes.func.isRequired,
+  appearance: PropTypes.string.isRequired,
 };
 function mapStateToProps(state) {
   return {
@@ -1117,6 +1169,7 @@ function mapStateToProps(state) {
     vishraamSource: state.vishraamSource,
     reminders: state.reminders,
     reminderSound: state.reminderSound,
+    appearance: state.appearance,
   };
 }
 

@@ -2,7 +2,7 @@ import React from "react";
 import { connect } from "react-redux";
 import { bindActionCreators } from "redux";
 import KeepAwake from "react-native-keep-awake";
-import { View, Text, StatusBar, Dimensions } from "react-native";
+import { View, Text, StatusBar, Dimensions, Appearance, AppState } from "react-native";
 import Icon from "react-native-vector-icons/MaterialIcons";
 import PropTypes from "prop-types";
 import VersionNumber from "react-native-version-number";
@@ -64,7 +64,19 @@ class Home extends React.Component {
       reminderSound,
       reminderBanis,
       reminders,
+      appearance,
     } = this.props;
+
+    if (appearance === "Default") {
+      this.updateTheme();
+    }
+    AppState.addEventListener("change", (state) => {
+      if (state === "active") {
+        if (appearance === "Default") {
+          this.updateTheme();
+        }
+      }
+    });
     if (appVersion !== VersionNumber.appVersion) {
       if (appVersion === "") {
         // Is first install
@@ -105,6 +117,7 @@ class Home extends React.Component {
       reminderBanis,
       reminderSound,
     } = this.props;
+
     if (prevProps.baniOrder !== baniOrder) {
       this.sortBani();
     } else if (prevProps.transliterationLanguage !== transliterationLanguage) {
@@ -166,6 +179,16 @@ class Home extends React.Component {
 
   changeStatusBar = (shouldBeHidden) => {
     StatusBar.setHidden(shouldBeHidden);
+  };
+
+  updateTheme = () => {
+    const { toggleNightMode } = this.props;
+    const colorScheme = Appearance.getColorScheme();
+    if (colorScheme === "light") {
+      toggleNightMode(false);
+    } else {
+      toggleNightMode(true);
+    }
   };
 
   // handleNotificationEvent(notificationOpen) {
@@ -377,6 +400,8 @@ Home.propTypes = {
   nightMode: PropTypes.bool.isRequired,
   fontSize: PropTypes.string.isRequired,
   transliteration: PropTypes.bool.isRequired,
+  appearance: PropTypes.string.isRequired,
+  toggleNightMode: PropTypes.func.isRequired,
 };
 
 function mapStateToProps(state) {
@@ -399,6 +424,8 @@ function mapStateToProps(state) {
     reminders: state.reminders,
     reminderBanis: state.reminderBanis,
     reminderSound: state.reminderSound,
+    appearance: state.appearance,
+    systemTheme: state.systemTheme,
   };
 }
 

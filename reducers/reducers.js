@@ -32,13 +32,23 @@ import {
   SET_REMINDER_BANIS,
   SET_REMINDER_SOUND,
   SET_APP_VERSION,
-  SET_START_BANI
+  SET_START_BANI,
+  SET_APPEARANCE,
 } from "../actions/actions";
 
 function fontSize(state = "SMALL", action) {
   switch (action.type) {
     case SET_FONT_SIZE:
       return action.size;
+    default:
+      return state;
+  }
+}
+
+function appearance(state = "Light", action) {
+  switch (action.type) {
+    case SET_APPEARANCE:
+      return action.appearance;
     default:
       return state;
   }
@@ -245,7 +255,7 @@ function autoScroll(state = false, action) {
 function autoScrollShabadSpeed(state = {}, action) {
   switch (action.type) {
     case SET_AUTO_SCROLL_SPEED:
-      return Object.assign({}, state, action.shabadSpeed);
+      return { ...state, ...action.shabadSpeed };
     default:
       return state;
   }
@@ -316,9 +326,9 @@ function appVersion(state = "", action) {
 function startBani(state = JSON.stringify([]), action) {
   switch (action.type) {
     case SET_START_BANI:
-      return action.progressList
+      return action.progressList;
     default:
-      return state
+      return state;
   }
 }
 // Combine all the reducers
@@ -354,7 +364,8 @@ const rootReducer = combineReducers({
   reminderBanis,
   reminderSound,
   appVersion,
-  startBani
+  startBani,
+  appearance,
 });
 
 export default rootReducer;

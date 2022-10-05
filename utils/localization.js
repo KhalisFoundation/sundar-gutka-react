@@ -113,6 +113,7 @@ const Strings = new LocalizedStrings({
     fateh: "<> sRI vwihgurU jI kI Piqh ]",
     khalsa_sundar_gutka: "Kwlsw suMdr gutkw",
     sg_title: "suMdr gutkw",
+    theme: "Theme",
   },
   hi: {
     about: "हमारे बारे",
@@ -224,6 +225,7 @@ const Strings = new LocalizedStrings({
     fateh: "ੴ श्री वाहेगुरु जी की फतेह",
     khalsa_sundar_gutka: "खालसा सुंदर गुटका",
     sg_title: "सुंदर गुटका",
+    theme: "थीम",
   },
   pa: {
     about: "ਸਾਡੇ ਬਾਰੇ",
@@ -334,6 +336,7 @@ const Strings = new LocalizedStrings({
     fateh: "ੴ ਸ੍ਰੀ ਵਾਹਿਗੁਰੂ ਜੀ ਕੀ ਫਤਹਿ",
     khalsa_sundar_gutka: "ਖਾਲਸਾ ਸੁੰਦਰ ਗੁਟਕਾ",
     sg_title: "ਸੁੰਦਰ ਗੁਟਕਾ",
+    theme: "ਥੀਮ",
   },
   fr: {
     about: "Infos",
@@ -448,6 +451,7 @@ const Strings = new LocalizedStrings({
     fateh: "<> sRI vwihgurU jI kI Piqh ]",
     khalsa_sundar_gutka: "Kwlsw suMdr gutkw",
     sg_title: "suMdr gutkw",
+    theme: "Thème",
   },
   it: {
     about: "Info",
@@ -560,6 +564,7 @@ const Strings = new LocalizedStrings({
     fateh: "<> sRI vwihgurU jI kI Piqh ]",
     khalsa_sundar_gutka: "Kwlsw suMdr gutkw",
     sg_title: "suMdr gutkw",
+    theme: "Tema",
   },
   es: {
     about: "Sobre Nosotros",
@@ -672,7 +677,8 @@ const Strings = new LocalizedStrings({
     fateh: "<> sRI vwihgurU jI kI Piqh ]",
     khalsa_sundar_gutka: "Kwlsw suMdr gutkw",
     sg_title: "suMdr gutkw",
+    theme: "Tema",
   },
 });
 
-module.exports = Strings;
+export default Strings;
