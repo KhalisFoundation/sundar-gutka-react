@@ -606,7 +606,7 @@
 				ASSETCATALOG_COMPILER_INCLUDE_ALL_APPICON_ASSETS = NO;
 				CLANG_ENABLE_MODULES = YES;
 				CODE_SIGN_ENTITLEMENTS = SundarGutka/SundarGutka.entitlements;
-				CURRENT_PROJECT_VERSION = 29;
+				CURRENT_PROJECT_VERSION = 3;
 				DEVELOPMENT_TEAM = B3W82WVBU9;
 				ENABLE_BITCODE = NO;
 				INFOPLIST_FILE = SundarGutka/Info.plist;
@@ -614,7 +614,7 @@
 					"$(inherited)",
 					"@executable_path/Frameworks",
 				);
-				MARKETING_VERSION = 5.8;
+				MARKETING_VERSION = 5.8.1;
 				OTHER_LDFLAGS = (
 					"$(inherited)",
 					"-ObjC",
@@ -637,14 +637,14 @@
 				ASSETCATALOG_COMPILER_INCLUDE_ALL_APPICON_ASSETS = NO;
 				CLANG_ENABLE_MODULES = YES;
 				CODE_SIGN_ENTITLEMENTS = SundarGutka/SundarGutka.entitlements;
-				CURRENT_PROJECT_VERSION = 29;
+				CURRENT_PROJECT_VERSION = 3;
 				DEVELOPMENT_TEAM = B3W82WVBU9;
 				INFOPLIST_FILE = SundarGutka/Info.plist;
 				LD_RUNPATH_SEARCH_PATHS = (
 					"$(inherited)",
 					"@executable_path/Frameworks",
 				);
-				MARKETING_VERSION = 5.8;
+				MARKETING_VERSION = 5.8.1;
 				OTHER_LDFLAGS = (
 					"$(inherited)",
 					"-ObjC",
