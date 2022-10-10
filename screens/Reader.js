@@ -172,8 +172,9 @@ class Reader extends React.Component {
 
   loadShabad() {
     const {
-      currentShabad,
       baniLength,
+      route,
+      setCurrentShabad,
       larivaar,
       larivaarAssist,
       padchhedSetting,
@@ -184,8 +185,11 @@ class Reader extends React.Component {
       vishraamSource,
       transliterationLanguage,
     } = this.props;
+    setCurrentShabad(Number(route.params.params.item.id));
+    const shabadID = route.params.params.item.id;
+
     Database.getShabadForId(
-      currentShabad,
+      shabadID,
       baniLength,
       larivaar,
       larivaarAssist,
@@ -807,6 +811,8 @@ function fadeInEffect() {
   }
 }
 
+Reader.defaultProps = { currentShabad: null };
+
 Reader.propTypes = {
   setScrollIndex: PropTypes.func.isRequired,
   scrollIndex: PropTypes.number.isRequired,
@@ -823,7 +829,7 @@ Reader.propTypes = {
   navigation: PropTypes.shape().isRequired,
   autoScrollShabadSpeed: PropTypes.shape().isRequired,
   startBani: PropTypes.string.isRequired,
-  currentShabad: PropTypes.number.isRequired,
+  currentShabad: PropTypes.number,
   fontSize: PropTypes.string.isRequired,
   fontFace: PropTypes.string.isRequired,
   nightMode: PropTypes.bool.isRequired,
@@ -835,6 +841,7 @@ Reader.propTypes = {
   route: PropTypes.shape().isRequired,
   autoScroll: PropTypes.bool.isRequired,
   setAutoScrollSpeed: PropTypes.func.isRequired,
+  setCurrentShabad: PropTypes.func.isRequired,
 };
 
 function mapStateToProps(state) {

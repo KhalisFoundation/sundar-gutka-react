@@ -4,6 +4,7 @@ import { createNativeStackNavigator } from "@react-navigation/native-stack";
 import { Provider } from "react-redux";
 import { PersistGate } from "redux-persist/integration/react";
 import * as React from "react";
+import notifee, { EventType } from "@notifee/react-native";
 import HomeScreen from "./screens/Home";
 import FolderBaniScreen from "./screens/FolderBani";
 import SettingsScreen from "./screens/Settings";
@@ -14,7 +15,9 @@ import ReaderScreen from "./screens/Reader";
 import BookmarksScreen from "./screens/Bookmarks";
 import createStore from "./config/store";
 import FirebaseNotification from "./utils/firebaseNotification";
+import CONSTANT from "./utils/constant";
 import NotificationsManager from "./utils/notifications";
+import * as rootNavigation from "./utils/rootNavigation";
 
 const Stack = createNativeStackNavigator();
 
@@ -22,6 +25,7 @@ const { store, persistor } = createStore();
 
 export default class App extends React.Component {
   componentDidMount() {
+    this.listenNotification();
     this.notificationHandler();
     BackHandler.addEventListener("hardwareBackPress", this.handleBackPress);
     // AppStateIOS.addEventListener("change", (state) => console.log("AppStateIOS changed to", state));
@@ -36,6 +40,33 @@ export default class App extends React.Component {
   componentWillUnmount() {
     BackHandler.removeEventListener("hardwareBackPress", this.handleBackPress);
   }
+
+  listenNotification = async () => {
+    const notification = new NotificationsManager();
+    const initialNotification = await notifee.getInitialNotification();
+    if (initialNotification) {
+      notification.resetBadgeCount();
+      this.nav(initialNotification);
+    }
+
+    notifee.onForegroundEvent(({ type, detail }) => {
+      switch (type) {
+        case EventType.PRESS:
+          this.nav(detail);
+          notification.resetBadgeCount();
+          break;
+        default:
+          notification.resetBadgeCount();
+          break;
+      }
+    });
+  };
+
+  nav = (incoming) => {
+    const { data } = incoming.notification;
+    const params = { key: `Reader-${data.id}`, params: { item: data } };
+    rootNavigation.navigate(CONSTANT.READER, params);
+  };
 
   handleBackPress = () => {
     Alert.alert(
@@ -53,18 +84,16 @@ export default class App extends React.Component {
     firebaseNotifaction.backgroundMessageHandler();
     firebaseNotifaction.foregroundMessage();
     firebaseNotifaction.handleNotification();
-    const notification = new NotificationsManager();
-    notification.listenReminders();
+    // const notification = new NotificationsManager();
+    // notification.listenReminders();
     // notification.listenReminders();
   };
 
   render() {
-    const notification = new NotificationsManager();
-    notification.resetBadgeCount();
     return (
       <Provider store={store}>
         <PersistGate loading={null} persistor={persistor}>
-          <NavigationContainer>
+          <NavigationContainer ref={rootNavigation.navigationRef}>
             <Stack.Navigator
               screenOptions={{
                 headerShown: false,
