@@ -52,11 +52,11 @@ class Home extends React.Component {
     let showBaniLengthSelector = false;
     const {
       appVersion,
-      setAppVersion,
-      baniLength,
       language,
       fontFace,
       setFontFace,
+      setAppVersion,
+      baniLength,
       screenAwake,
       autoScroll,
       statusBar,
@@ -65,6 +65,9 @@ class Home extends React.Component {
       reminderBanis,
       reminders,
       appearance,
+      setLanguage,
+      transliteration,
+      toggleTransliteration,
     } = this.props;
 
     if (appearance === "Default") {
@@ -87,8 +90,13 @@ class Home extends React.Component {
     if (showBaniLengthSelector || baniLength === "") {
       this.setState({ showLengthSelector: true });
     }
-
-    if (language !== CONSTANT.DEFAULT) {
+    if (!language) {
+      setLanguage(CONSTANT.DEFAULT);
+    }
+    if (!transliteration) {
+      toggleTransliteration(false);
+    }
+    if (!language || language !== CONSTANT.DEFAULT) {
       Strings.setLanguage(language);
     }
 
@@ -402,6 +410,8 @@ Home.propTypes = {
   transliteration: PropTypes.bool.isRequired,
   appearance: PropTypes.string.isRequired,
   toggleNightMode: PropTypes.func.isRequired,
+  setLanguage: PropTypes.func.isRequired,
+  toggleTransliteration: PropTypes.func.isRequired,
 };
 
 function mapStateToProps(state) {
