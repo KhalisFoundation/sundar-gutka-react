@@ -46,7 +46,7 @@ export default class App extends React.Component {
     const initialNotification = await notifee.getInitialNotification();
     if (initialNotification) {
       notification.resetBadgeCount();
-      this.nav(initialNotification);
+      // this.nav(initialNotification);
     }
 
     notifee.onForegroundEvent(({ type, detail }) => {
