@@ -5,12 +5,14 @@ import { View, StatusBar, Platform } from "react-native";
 import { Header } from "react-native-elements";
 import Icon from "react-native-vector-icons/MaterialIcons";
 import PropTypes from "prop-types";
+import ErrorBoundary from "react-native-error-boundary";
 import GLOBAL from "../utils/globals";
 import Database from "../utils/database";
 import BaniList from "../components/BaniList";
 import LoadingIndicator from "../components/LoadingIndicator";
 import * as actions from "../actions/actions";
 import Strings from "../utils/localization";
+import errorHandler from "../utils/errorHandler";
 
 class Bookmarks extends React.Component {
   constructor(props) {
@@ -45,50 +47,52 @@ class Bookmarks extends React.Component {
     <LoadingIndicator isLoading={isLoading} />;
 
     return (
-      <View
-        style={{
-          flex: 1,
-        }}
-      >
-        <StatusBar
-          backgroundColor={
-            nightMode ? GLOBAL.COLOR.TOOLBAR_COLOR_ALT_NIGHT_MODE : GLOBAL.COLOR.TOOLBAR_COLOR_ALT
-          }
-          barStyle={nightMode ? "light-content" : "dark-content"}
-        />
-        <Header
-          backgroundColor={
-            nightMode ? GLOBAL.COLOR.TOOLBAR_COLOR_ALT_NIGHT_MODE : GLOBAL.COLOR.TOOLBAR_COLOR_ALT
-          }
-          containerStyle={[Platform.OS === "android" && { height: 56, paddingTop: 0 }]}
-          leftComponent={
-            <Icon
-              name="arrow-back"
-              color={nightMode ? GLOBAL.COLOR.TOOLBAR_TINT : GLOBAL.COLOR.TOOLBAR_TINT_DARK}
-              size={30}
-              onPress={() => navigation.goBack()}
-            />
-          }
-          centerComponent={{
-            text: Strings.bookmarks,
-            style: {
-              color: nightMode ? GLOBAL.COLOR.TOOLBAR_TINT : GLOBAL.COLOR.TOOLBAR_TINT_DARK,
-              fontSize: 18,
-            },
+      <ErrorBoundary onError={errorHandler}>
+        <View
+          style={{
+            flex: 1,
           }}
-        />
+        >
+          <StatusBar
+            backgroundColor={
+              nightMode ? GLOBAL.COLOR.TOOLBAR_COLOR_ALT_NIGHT_MODE : GLOBAL.COLOR.TOOLBAR_COLOR_ALT
+            }
+            barStyle={nightMode ? "light-content" : "dark-content"}
+          />
+          <Header
+            backgroundColor={
+              nightMode ? GLOBAL.COLOR.TOOLBAR_COLOR_ALT_NIGHT_MODE : GLOBAL.COLOR.TOOLBAR_COLOR_ALT
+            }
+            containerStyle={[Platform.OS === "android" && { height: 56, paddingTop: 0 }]}
+            leftComponent={
+              <Icon
+                name="arrow-back"
+                color={nightMode ? GLOBAL.COLOR.TOOLBAR_TINT : GLOBAL.COLOR.TOOLBAR_TINT_DARK}
+                size={30}
+                onPress={() => navigation.goBack()}
+              />
+            }
+            centerComponent={{
+              text: Strings.bookmarks,
+              style: {
+                color: nightMode ? GLOBAL.COLOR.TOOLBAR_TINT : GLOBAL.COLOR.TOOLBAR_TINT_DARK,
+                fontSize: 18,
+              },
+            }}
+          />
 
-        <BaniList
-          data={data}
-          nightMode={nightMode}
-          fontSize={fontSize}
-          fontFace={fontFace}
-          transliteration={transliteration}
-          navigation={navigation}
-          isLoading={isLoading}
-          onPress={this.handleOnPress.bind(this)}
-        />
-      </View>
+          <BaniList
+            data={data}
+            nightMode={nightMode}
+            fontSize={fontSize}
+            fontFace={fontFace}
+            transliteration={transliteration}
+            navigation={navigation}
+            isLoading={isLoading}
+            onPress={this.handleOnPress.bind(this)}
+          />
+        </View>
+      </ErrorBoundary>
     );
   }
 }

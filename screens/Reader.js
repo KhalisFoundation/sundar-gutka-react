@@ -7,12 +7,14 @@ import Slider from "@react-native-community/slider";
 import { bindActionCreators } from "redux";
 import Icon from "react-native-vector-icons/MaterialIcons";
 import { SafeAreaView } from "react-native-safe-area-context";
+import ErrorBoundary from "react-native-error-boundary";
 import GLOBAL from "../utils/globals";
 import Database from "../utils/database";
 import { fontSizeForReader, fontColorForReader, TextType } from "../utils/helpers";
 import * as actions from "../actions/actions";
 import AnalyticsManager from "../utils/analytics";
 import CONSTANT from "../utils/constant";
+import errorHandler from "../utils/errorHandler";
 
 const HEADER_POSITION = -120; // From react-native-elements Header source
 class Reader extends React.Component {
@@ -610,203 +612,205 @@ function fadeInEffect() {
     }
     const isPortrait = orientation === CONSTANT.PORTRAIT;
     return (
-      <SafeAreaView
-        style={[styles.container, nightMode && { backgroundColor: GLOBAL.COLOR.NIGHT_BLACK }]}
-        onLayout={this.onLayout.bind(this)}
-      >
-        <WebView
-          originWhitelist={["*"]}
-          style={[
-            nightMode && {
-              backgroundColor: GLOBAL.COLOR.NIGHT_BLACK,
-              opacity: viewLoaded ? 1 : 0.1,
-            },
-          ]}
-          onLoadStart={() => {
-            setTimeout(() => {
-              this.setState({ viewLoaded: true });
-            }, 500);
-          }}
-          ref={(webView) => {
-            this.webView = webView;
-          }}
-          decelerationRate="normal"
-          source={{
-            html: this.loadHTML(data, this.headerHeight),
-            baseUrl: "",
-          }}
-          onMessage={this.handleMessage.bind(this)}
-        />
-        <Animated.View
-          style={[
-            styles.header,
-            { position: "absolute", top: animationPosition },
-            nightMode && { opacity: viewLoaded ? 1 : 0.2 },
-          ]}
+      <ErrorBoundary onError={errorHandler}>
+        <SafeAreaView
+          style={[styles.container, nightMode && { backgroundColor: GLOBAL.COLOR.NIGHT_BLACK }]}
+          onLayout={this.onLayout.bind(this)}
         >
-          <StatusBar
-            backgroundColor={
-              nightMode ? READER_STATUS_BAR_COLOR_NIGHT_MODE : READER_STATUS_BAR_COLOR
-            }
-            barStyle={nightMode || Platform.OS === "android" ? "light-content" : "dark-content"}
-          />
-          <View style={{ backgroundColor: READER_HEADER_COLOR, height: 90 }}>
-            <View style={{ flex: 1, flexDirection: "row", top: 50 }}>
-              <Icon
-                name="arrow-back"
-                color={TOOLBAR_TINT}
-                size={30}
-                style={[
-                  { left: 10 },
-                  isPortrait && { flexGrow: 3 },
-                  !isPortrait && { flexGrow: 1 },
-                ]}
-                onPress={this.handleBackPress.bind(this)}
-              />
-              <Text
-                style={{
-                  color: TOOLBAR_TINT,
-                  fontFamily: transliteration ? null : fontFace,
-                  fontSize: 20,
-                  textAlign: "center",
-                  flexGrow: 8,
-                }}
-              >
-                {transliteration
-                  ? this.truncate.apply(params.item.translit, [24])
-                  : this.truncate.apply(params.item.gurmukhi, [25])}
-              </Text>
-              <View style={{ flexDirection: "row", flexGrow: 1 }}>
-                <Icon
-                  name="settings"
-                  color={TOOLBAR_TINT}
-                  size={30}
-                  onPress={() => {
-                    const autoScrollSpeed = {
-                      autoScroll: 0,
-                      scrollMultiplier,
-                    };
-                    this.webView.postMessage(JSON.stringify(autoScrollSpeed));
-                    this.setState({
-                      paused: true,
-                    });
-                    navigate("Settings");
-                  }}
-                />
-                <Icon
-                  style={{ paddingLeft: 10 }}
-                  name="bookmark"
-                  color={TOOLBAR_TINT}
-                  size={30}
-                  onPress={() => {
-                    this.trackScreenForShabad(params);
-                    navigate("Bookmarks");
-                  }}
-                />
-              </View>
-            </View>
-          </View>
-        </Animated.View>
-        {autoScroll && (
-          <Animated.View
+          <WebView
+            originWhitelist={["*"]}
             style={[
-              styles.footer,
-              {
-                position: "absolute",
-                bottom: animationPosition,
-                paddingBottom: 25,
-                backgroundColor: READER_FOOTER_COLOR,
+              nightMode && {
+                backgroundColor: GLOBAL.COLOR.NIGHT_BLACK,
+                opacity: viewLoaded ? 1 : 0.1,
               },
             ]}
+            onLoadStart={() => {
+              setTimeout(() => {
+                this.setState({ viewLoaded: true });
+              }, 500);
+            }}
+            ref={(webView) => {
+              this.webView = webView;
+            }}
+            decelerationRate="normal"
+            source={{
+              html: this.loadHTML(data, this.headerHeight),
+              baseUrl: "",
+            }}
+            onMessage={this.handleMessage.bind(this)}
+          />
+          <Animated.View
+            style={[
+              styles.header,
+              { position: "absolute", top: animationPosition },
+              nightMode && { opacity: viewLoaded ? 1 : 0.2 },
+            ]}
           >
-            <View style={{ flexDirection: "row" }}>
-              {paused && (
+            <StatusBar
+              backgroundColor={
+                nightMode ? READER_STATUS_BAR_COLOR_NIGHT_MODE : READER_STATUS_BAR_COLOR
+              }
+              barStyle={nightMode || Platform.OS === "android" ? "light-content" : "dark-content"}
+            />
+            <View style={{ backgroundColor: READER_HEADER_COLOR, height: 90 }}>
+              <View style={{ flex: 1, flexDirection: "row", top: 50 }}>
                 <Icon
-                  style={{ paddingTop: 15, paddingLeft: 25, width: 55 }}
-                  name="play-arrow"
-                  color={GLOBAL.COLOR.TOOLBAR_TINT}
+                  name="arrow-back"
+                  color={TOOLBAR_TINT}
                   size={30}
-                  onPress={() => {
-                    let scrollSpeed = autoScrollShabadSpeed[currentShabad]
-                      ? autoScrollShabadSpeed[currentShabad]
-                      : 50;
-                    if (scrollSpeed === 0) {
-                      scrollSpeed = 1;
-                      setAutoScrollSpeed(scrollSpeed, currentShabad);
-                    }
-                    const autoScrollSpeed = {
-                      autoScroll: scrollSpeed,
-                      scrollMultiplier,
-                    };
-                    this.setState({
-                      paused: false,
-                    });
-                    this.webView.postMessage(JSON.stringify(autoScrollSpeed));
-                  }}
+                  style={[
+                    { left: 10 },
+                    isPortrait && { flexGrow: 3 },
+                    !isPortrait && { flexGrow: 1 },
+                  ]}
+                  onPress={this.handleBackPress.bind(this)}
                 />
-              )}
-              {!paused && (
-                <Icon
-                  style={{ paddingTop: 15, paddingLeft: 25, width: 55 }}
-                  name="pause"
-                  color={GLOBAL.COLOR.TOOLBAR_TINT}
-                  size={30}
-                  onPress={() => {
-                    const autoScrollSpeed = {
-                      autoScroll: 0,
-                      scrollMultiplier,
-                    };
-                    this.setState({
-                      paused: true,
-                    });
-                    this.webView.postMessage(JSON.stringify(autoScrollSpeed));
+                <Text
+                  style={{
+                    color: TOOLBAR_TINT,
+                    fontFamily: transliteration ? null : fontFace,
+                    fontSize: 20,
+                    textAlign: "center",
+                    flexGrow: 8,
                   }}
-                />
-              )}
-              <Slider
-                style={[{ flex: 1, marginLeft: 25, marginRight: 25, marginTop: 10 }]}
-                minimumTrackTintColor={GLOBAL.COLOR.SLIDER_TRACK_MIN_TINT}
-                maximumTrackTintColor={GLOBAL.COLOR.SLIDER_TRACK_MAX_TINT}
-                thumbTintColor={GLOBAL.COLOR.WHITE_COLOR}
-                minimumValue={1}
-                maximumValue={100}
-                step={1}
-                value={
-                  autoScrollShabadSpeed[currentShabad] ? autoScrollShabadSpeed[currentShabad] : 50
-                }
-                onValueChange={(value) => {
-                  setAutoScrollSpeed(value, currentShabad);
-                  const speed = value;
-
-                  if (speed === 0) {
-                    this.setState({ paused: true });
-                  } else {
-                    this.setState({ paused: false });
-                  }
-
-                  const autoScrollSpeed = {
-                    autoScroll: speed,
-                    scrollMultiplier,
-                  };
-                  this.webView.postMessage(JSON.stringify(autoScrollSpeed));
-                }}
-                onSlidingComplete={(value) => {
-                  AnalyticsManager.getInstance().trackReaderEvent("autoScrollSpeed", value);
-                }}
-              />
-              <Text
-                style={{
-                  color: GLOBAL.COLOR.TOOLBAR_TINT,
-                  paddingTop: 20,
-                  paddingRight: 20,
-                }}
-              >
-                {autoScrollShabadSpeed[currentShabad] ? autoScrollShabadSpeed[currentShabad] : 50}
-              </Text>
+                >
+                  {transliteration
+                    ? this.truncate.apply(params.item.translit, [24])
+                    : this.truncate.apply(params.item.gurmukhi, [25])}
+                </Text>
+                <View style={{ flexDirection: "row", flexGrow: 1 }}>
+                  <Icon
+                    name="settings"
+                    color={TOOLBAR_TINT}
+                    size={30}
+                    onPress={() => {
+                      const autoScrollSpeed = {
+                        autoScroll: 0,
+                        scrollMultiplier,
+                      };
+                      this.webView.postMessage(JSON.stringify(autoScrollSpeed));
+                      this.setState({
+                        paused: true,
+                      });
+                      navigate("Settings");
+                    }}
+                  />
+                  <Icon
+                    style={{ paddingLeft: 10 }}
+                    name="bookmark"
+                    color={TOOLBAR_TINT}
+                    size={30}
+                    onPress={() => {
+                      this.trackScreenForShabad(params);
+                      navigate("Bookmarks");
+                    }}
+                  />
+                </View>
+              </View>
             </View>
           </Animated.View>
-        )}
-      </SafeAreaView>
+          {autoScroll && (
+            <Animated.View
+              style={[
+                styles.footer,
+                {
+                  position: "absolute",
+                  bottom: animationPosition,
+                  paddingBottom: 25,
+                  backgroundColor: READER_FOOTER_COLOR,
+                },
+              ]}
+            >
+              <View style={{ flexDirection: "row" }}>
+                {paused && (
+                  <Icon
+                    style={{ paddingTop: 15, paddingLeft: 25, width: 55 }}
+                    name="play-arrow"
+                    color={GLOBAL.COLOR.TOOLBAR_TINT}
+                    size={30}
+                    onPress={() => {
+                      let scrollSpeed = autoScrollShabadSpeed[currentShabad]
+                        ? autoScrollShabadSpeed[currentShabad]
+                        : 50;
+                      if (scrollSpeed === 0) {
+                        scrollSpeed = 1;
+                        setAutoScrollSpeed(scrollSpeed, currentShabad);
+                      }
+                      const autoScrollSpeed = {
+                        autoScroll: scrollSpeed,
+                        scrollMultiplier,
+                      };
+                      this.setState({
+                        paused: false,
+                      });
+                      this.webView.postMessage(JSON.stringify(autoScrollSpeed));
+                    }}
+                  />
+                )}
+                {!paused && (
+                  <Icon
+                    style={{ paddingTop: 15, paddingLeft: 25, width: 55 }}
+                    name="pause"
+                    color={GLOBAL.COLOR.TOOLBAR_TINT}
+                    size={30}
+                    onPress={() => {
+                      const autoScrollSpeed = {
+                        autoScroll: 0,
+                        scrollMultiplier,
+                      };
+                      this.setState({
+                        paused: true,
+                      });
+                      this.webView.postMessage(JSON.stringify(autoScrollSpeed));
+                    }}
+                  />
+                )}
+                <Slider
+                  style={[{ flex: 1, marginLeft: 25, marginRight: 25, marginTop: 10 }]}
+                  minimumTrackTintColor={GLOBAL.COLOR.SLIDER_TRACK_MIN_TINT}
+                  maximumTrackTintColor={GLOBAL.COLOR.SLIDER_TRACK_MAX_TINT}
+                  thumbTintColor={GLOBAL.COLOR.WHITE_COLOR}
+                  minimumValue={1}
+                  maximumValue={100}
+                  step={1}
+                  value={
+                    autoScrollShabadSpeed[currentShabad] ? autoScrollShabadSpeed[currentShabad] : 50
+                  }
+                  onValueChange={(value) => {
+                    setAutoScrollSpeed(value, currentShabad);
+                    const speed = value;
+
+                    if (speed === 0) {
+                      this.setState({ paused: true });
+                    } else {
+                      this.setState({ paused: false });
+                    }
+
+                    const autoScrollSpeed = {
+                      autoScroll: speed,
+                      scrollMultiplier,
+                    };
+                    this.webView.postMessage(JSON.stringify(autoScrollSpeed));
+                  }}
+                  onSlidingComplete={(value) => {
+                    AnalyticsManager.getInstance().trackReaderEvent("autoScrollSpeed", value);
+                  }}
+                />
+                <Text
+                  style={{
+                    color: GLOBAL.COLOR.TOOLBAR_TINT,
+                    paddingTop: 20,
+                    paddingRight: 20,
+                  }}
+                >
+                  {autoScrollShabadSpeed[currentShabad] ? autoScrollShabadSpeed[currentShabad] : 50}
+                </Text>
+              </View>
+            </Animated.View>
+          )}
+        </SafeAreaView>
+      </ErrorBoundary>
     );
   }
 }

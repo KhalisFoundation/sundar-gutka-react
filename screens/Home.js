@@ -9,6 +9,7 @@ import VersionNumber from "react-native-version-number";
 // import messaging from '@react-native-firebase/messaging';
 import Sound from "react-native-sound";
 import { SafeAreaView } from "react-native-safe-area-context";
+import ErrorBoundary from "react-native-error-boundary";
 import GLOBAL from "../utils/globals";
 import AnalyticsManager from "../utils/analytics";
 import Database from "../utils/database";
@@ -19,6 +20,7 @@ import BaniLengthSelector from "../components/BaniLengthSelector";
 import Strings from "../utils/localization";
 import CONSTANT from "../utils/constant";
 import NotificationsManager from "../utils/notifications";
+import errorHandler from "../utils/errorHandler";
 
 class Home extends React.Component {
   static navigationOptions = { header: null };
@@ -259,40 +261,21 @@ class Home extends React.Component {
     const backColor =
       orientation === CONSTANT.PORTRAIT ? GLOBAL.COLOR.TOOLBAR_COLOR : GLOBAL.COLOR.NIGHT_BLACK;
     return (
-      <SafeAreaView
-        style={{
-          flex: 1,
-          backgroundColor: backColor,
-          paddingBottom: -30,
-        }}
-      >
-        {showLengthSelector && <BaniLengthSelector />}
-
-        <StatusBar barStyle="light-content" style={{ backgroundColor: "#000" }} />
-        <View
+      <ErrorBoundary onError={errorHandler}>
+        <SafeAreaView
           style={{
-            backgroundColor: GLOBAL.COLOR.TOOLBAR_COLOR,
-            paddingBottom: 10,
+            flex: 1,
+            backgroundColor: backColor,
+            paddingBottom: -30,
           }}
         >
-          <Text
-            style={[
-              {
-                color: GLOBAL.COLOR.TOOLBAR_TINT,
-                fontFamily: CONSTANT.GURBANI_AKHAR_HEAVY_TRUE,
-                fontSize: 18,
-                textAlign: "center",
-                padding: 15,
-              },
-            ]}
-          >
-            {Strings.fateh}
-          </Text>
+          {showLengthSelector && <BaniLengthSelector />}
 
+          <StatusBar barStyle="light-content" style={{ backgroundColor: "#000" }} />
           <View
             style={{
-              flexDirection: "row",
-              justifyContent: "center",
+              backgroundColor: GLOBAL.COLOR.TOOLBAR_COLOR,
+              paddingBottom: 10,
             }}
           >
             <Text
@@ -300,55 +283,76 @@ class Home extends React.Component {
                 {
                   color: GLOBAL.COLOR.TOOLBAR_TINT,
                   fontFamily: CONSTANT.GURBANI_AKHAR_HEAVY_TRUE,
-                  fontSize: 28,
+                  fontSize: 18,
+                  textAlign: "center",
+                  padding: 15,
                 },
               ]}
+            >
+              {Strings.fateh}
+            </Text>
+
+            <View
+              style={{
+                flexDirection: "row",
+                justifyContent: "center",
+              }}
             >
               <Text
                 style={[
                   {
-                    fontSize: 32,
+                    color: GLOBAL.COLOR.TOOLBAR_TINT,
+                    fontFamily: CONSTANT.GURBANI_AKHAR_HEAVY_TRUE,
+                    fontSize: 28,
                   },
                 ]}
               >
-                Œ
-              </Text>{" "}
-              {Strings.sg_title}{" "}
-              <Text
-                style={[
-                  {
-                    fontSize: 32,
-                  },
-                ]}
-              >
-                ‰
+                <Text
+                  style={[
+                    {
+                      fontSize: 32,
+                    },
+                  ]}
+                >
+                  Œ
+                </Text>{" "}
+                {Strings.sg_title}{" "}
+                <Text
+                  style={[
+                    {
+                      fontSize: 32,
+                    },
+                  ]}
+                >
+                  ‰
+                </Text>
               </Text>
-            </Text>
+            </View>
+            <Icon
+              name="settings"
+              style={{
+                position: "absolute",
+                right: 10,
+                bottom: 15,
+              }}
+              color={GLOBAL.COLOR.TOOLBAR_TINT}
+              size={35}
+              onPress={() => {
+                navigation.navigate(CONSTANT.SETTINGS);
+              }}
+            />
           </View>
-          <Icon
-            name="settings"
-            style={{
-              position: "absolute",
-              right: 10,
-              bottom: 15,
-            }}
-            color={GLOBAL.COLOR.TOOLBAR_TINT}
-            size={35}
-            onPress={() => {
-              navigation.navigate(CONSTANT.SETTINGS);
-            }}
+          <BaniList
+            data={data}
+            nightMode={nightMode}
+            fontSize={fontSize}
+            fontFace={fontFace}
+            transliteration={transliteration}
+            navigation={navigation}
+            onPress={this.handleOnPress.bind(this)}
           />
-        </View>
-        <BaniList
-          data={data}
-          nightMode={nightMode}
-          fontSize={fontSize}
-          fontFace={fontFace}
-          transliteration={transliteration}
-          navigation={navigation}
-          onPress={this.handleOnPress.bind(this)}
-        />
-      </SafeAreaView>
+        </SafeAreaView>
+      </ErrorBoundary>
     );
   }
 }

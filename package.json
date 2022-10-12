@@ -34,6 +34,7 @@
     "react-native-cli": "^2.0.1",
     "react-native-collapsible": "^1.6.0",
     "react-native-elements": "^3.4.2",
+    "react-native-error-boundary": "^1.1.16",
     "react-native-keep-awake": "^4.0.0",
     "react-native-localization": "^2.1.7",
     "react-native-modal": "^13.0.0",
