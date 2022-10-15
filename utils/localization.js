@@ -114,6 +114,11 @@ const Strings = new LocalizedStrings({
     khalsa_sundar_gutka: "Kwlsw suMdr gutkw",
     sg_title: "suMdr gutkw",
     theme: "Theme",
+    errorTitle: "Something Went Wrong",
+    errorMessage:
+      "Click on the Reload Button to try again. If this error persists, you can click on report button to send us the error log.",
+    errorReload: "Reload",
+    errorReport: "Report",
   },
   hi: {
     about: "हमारे बारे",
@@ -226,6 +231,11 @@ const Strings = new LocalizedStrings({
     khalsa_sundar_gutka: "खालसा सुंदर गुटका",
     sg_title: "सुंदर गुटका",
     theme: "थीम",
+    errorTitle: "कुछ गलत हो गया",
+    errorMessage:
+      "पुनः प्रयास करने के लिए पुनर्प्रारंभ बटन पर क्लिक करें। यदि यह त्रुटि बनी रहती है, तो आप हमें त्रुटि लॉग भेजने के लिए रिपोर्ट बटन पर क्लिक कर सकते हैं।",
+    errorReload: "पुनर्प्रारंभ",
+    errorReport: "रिपोर्ट",
   },
   pa: {
     about: "ਸਾਡੇ ਬਾਰੇ",
@@ -337,6 +347,11 @@ const Strings = new LocalizedStrings({
     khalsa_sundar_gutka: "ਖਾਲਸਾ ਸੁੰਦਰ ਗੁਟਕਾ",
     sg_title: "ਸੁੰਦਰ ਗੁਟਕਾ",
     theme: "ਥੀਮ",
+    errorTitle: "ਕੁਝ ਗਲਤ ਹੋ ਗਿਆ",
+    errorMessage:
+      "ਦੁਬਾਰਾ ਕੋਸ਼ਿਸ਼ ਕਰਨ ਲਈ ਰੀਲੋਡ ਬਟਨ 'ਤੇ ਕਲਿੱਕ ਕਰੋ। ਜੇਕਰ ਇਹ ਤਰੁੱਟੀ ਬਣੀ ਰਹਿੰਦੀ ਹੈ, ਤਾਂ ਤੁਸੀਂ ਸਾਨੂੰ ਗਲਤੀ ਲੌਗ ਭੇਜਣ ਲਈ ਰਿਪੋਰਟ ਬਟਨ 'ਤੇ ਕਲਿੱਕ ਕਰ ਸਕਦੇ ਹੋ।",
+    errorReload: "ਰੀਲੋਡ",
+    errorReport: "ਰਿਪੋਰਟ",
   },
   fr: {
     about: "Infos",
@@ -452,6 +467,11 @@ const Strings = new LocalizedStrings({
     khalsa_sundar_gutka: "Kwlsw suMdr gutkw",
     sg_title: "suMdr gutkw",
     theme: "Thème",
+    errorTitle: "Quelque chose s'est mal passé",
+    errorMessage:
+      "Cliquez sur le bouton Recharger pour réessayer. Si cette erreur persiste, vous pouvez cliquer sur le bouton rapport pour nous envoyer le journal des erreurs.",
+    errorReload: "Recharger",
+    errorReport: "Signaler",
   },
   it: {
     about: "Info",
@@ -565,6 +585,11 @@ const Strings = new LocalizedStrings({
     khalsa_sundar_gutka: "Kwlsw suMdr gutkw",
     sg_title: "suMdr gutkw",
     theme: "Tema",
+    errorTitle: "Qualcosa è andato storto",
+    errorMessage:
+      "Fare clic sul pulsante Ricarica per riprovare. Se l'errore persiste, puoi fare clic sul pulsante di segnalazione per inviarci il registro degli errori.",
+    errorReport: "Rapporto",
+    errorReload: "Ricaricare",
   },
   es: {
     about: "Sobre Nosotros",
@@ -678,6 +703,11 @@ const Strings = new LocalizedStrings({
     khalsa_sundar_gutka: "Kwlsw suMdr gutkw",
     sg_title: "suMdr gutkw",
     theme: "Tema",
+    errorTitle: "Algo salió mal",
+    errorMessage:
+      "Haga clic en el botón Recargar para volver a intentarlo. Si este error persiste, puede hacer clic en el botón de informe para enviarnos el registro de errores.",
+    errorReload: "Recargar",
+    errorReport: "Reporte",
   },
 });
 

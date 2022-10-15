@@ -15,12 +15,10 @@ import { Header } from "react-native-elements";
 import Icon from "react-native-vector-icons/MaterialIcons";
 import { connect } from "react-redux";
 import VersionNumber from "react-native-version-number";
-import ErrorBoundary from "react-native-error-boundary";
 import AnalyticsManager from "../utils/analytics";
 import Strings from "../utils/localization";
 import GLOBAL from "../utils/globals";
 import constant from "../utils/constant";
-import errorHandler from "../utils/errorHandler";
 
 class Home extends React.Component {
   componentDidMount() {
@@ -50,114 +48,110 @@ class Home extends React.Component {
         fontSize: 11,
       },
     });
+
     const { navigation, nightMode } = this.props;
     return (
-      <ErrorBoundary onError={errorHandler}>
-        <View
-          style={{
-            flex: 1,
+      <View
+        style={{
+          flex: 1,
+        }}
+      >
+        <StatusBar backgroundColor={GLOBAL.COLOR.TOOLBAR_COLOR_ALT2} barStyle="light-content" />
+        <Header
+          backgroundColor={GLOBAL.COLOR.TOOLBAR_COLOR_ALT2}
+          containerStyle={[Platform.OS === constant.ANDROID && { height: 56, paddingTop: 0 }]}
+          leftComponent={
+            <Icon
+              name="arrow-back"
+              color={GLOBAL.COLOR.TOOLBAR_TINT}
+              size={30}
+              onPress={() => navigation.goBack()}
+            />
+          }
+          centerComponent={{
+            text: Strings.about,
+            style: { color: GLOBAL.COLOR.TOOLBAR_TINT, fontSize: 18 },
           }}
+        />
+        <ScrollView
+          style={[styles.container, nightMode && { backgroundColor: GLOBAL.COLOR.NIGHT_BLACK }]}
         >
-          <StatusBar backgroundColor={GLOBAL.COLOR.TOOLBAR_COLOR_ALT2} barStyle="light-content" />
-          <Header
-            backgroundColor={GLOBAL.COLOR.TOOLBAR_COLOR_ALT2}
-            containerStyle={[Platform.OS === constant.ANDROID && { height: 56, paddingTop: 0 }]}
-            leftComponent={
-              <Icon
-                name="arrow-back"
-                color={GLOBAL.COLOR.TOOLBAR_TINT}
-                size={30}
-                onPress={() => navigation.goBack()}
-              />
-            }
-            centerComponent={{
-              text: Strings.about,
-              style: { color: GLOBAL.COLOR.TOOLBAR_TINT, fontSize: 18 },
-            }}
-          />
-          <ScrollView
-            style={[styles.container, nightMode && { backgroundColor: GLOBAL.COLOR.NIGHT_BLACK }]}
+          <Text style={[styles.title, nightMode && styles.nightMode]}>{Strings.sundar_gutka}</Text>
+          <Text style={[styles.small, nightMode && styles.nightMode]}>
+            {"\n"}
+            {Strings.created_by}:
+          </Text>
+          <TouchableHighlight
+            underlayColor={GLOBAL.COLOR.UNDERLAY_COLOR}
+            onPress={() => Linking.openURL(constant.KHALIS_FOUNDATION_URL)}
           >
-            <Text style={[styles.title, nightMode && styles.nightMode]}>
-              {Strings.sundar_gutka}
+            <Image
+              source={
+                nightMode
+                  ? require("../images/khalislogo150white.png")
+                  : require("../images/khalislogo150.png")
+              }
+            />
+          </TouchableHighlight>
+          <Text style={nightMode && styles.nightMode}>
+            <Text>
+              {"\n"}
+              {Strings.about_1}
+              {"\n"}
+              {"\n"}
+              {Strings.about_2}
+              {"\n"}
             </Text>
-            <Text style={[styles.small, nightMode && styles.nightMode]}>
-              {"\n"}
-              {Strings.created_by}:
-            </Text>
-            <TouchableHighlight
-              underlayColor={GLOBAL.COLOR.UNDERLAY_COLOR}
-              onPress={() => Linking.openURL(constant.KHALIS_FOUNDATION_URL)}
-            >
-              <Image
-                source={
-                  nightMode
-                    ? require("../images/khalislogo150white.png")
-                    : require("../images/khalislogo150.png")
-                }
-              />
-            </TouchableHighlight>
-            <Text style={nightMode && styles.nightMode}>
-              <Text>
-                {"\n"}
-                {Strings.about_1}
-                {"\n"}
-                {"\n"}
-                {Strings.about_2}
-                {"\n"}
-              </Text>
-              <Text>
-                <Text
-                  style={{ color: GLOBAL.COLOR.UNDERLAY_COLOR }}
-                  onPress={() => Linking.openURL(constant.KHALIS_FOUNDATION_URL)}
-                >
-                  {constant.KHALIS_FOUNDATION_URL}
-                </Text>
-                <Text>!</Text>
-              </Text>
-            </Text>
-            <Text style={nightMode && styles.nightMode}>
-              {"\n"}
-              {Strings.about_3}
-              {"\n"}
-              {"\n"}
-              {Strings.about_4}{" "}
+            <Text>
               <Text
                 style={{ color: GLOBAL.COLOR.UNDERLAY_COLOR }}
-                onPress={() => Linking.openURL(constant.BANI_DB_URL)}
+                onPress={() => Linking.openURL(constant.KHALIS_FOUNDATION_URL)}
               >
-                {Strings.baniDB}
-              </Text>{" "}
-              {Strings.about_5}
-              {"\n"}
+                {constant.KHALIS_FOUNDATION_URL}
+              </Text>
+              <Text>!</Text>
             </Text>
-            <TouchableHighlight
-              underlayColor={GLOBAL.COLOR.UNDERLAY_COLOR}
+          </Text>
+          <Text style={nightMode && styles.nightMode}>
+            {"\n"}
+            {Strings.about_3}
+            {"\n"}
+            {"\n"}
+            {Strings.about_4}{" "}
+            <Text
+              style={{ color: GLOBAL.COLOR.UNDERLAY_COLOR }}
               onPress={() => Linking.openURL(constant.BANI_DB_URL)}
             >
-              <Image source={require("../images/banidblogo.png")} />
-            </TouchableHighlight>
-            <Text style={nightMode && styles.nightMode}>
-              {"\n"}
-              {Strings.about_6}
-              {"\n"}
-            </Text>
-            <Text style={[styles.small, nightMode && styles.nightMode]} />
+              {Strings.baniDB}
+            </Text>{" "}
+            {Strings.about_5}
+            {"\n"}
+          </Text>
+          <TouchableHighlight
+            underlayColor={GLOBAL.COLOR.UNDERLAY_COLOR}
+            onPress={() => Linking.openURL(constant.BANI_DB_URL)}
+          >
+            <Image source={require("../images/banidblogo.png")} />
+          </TouchableHighlight>
+          <Text style={nightMode && styles.nightMode}>
+            {"\n"}
+            {Strings.about_6}
+            {"\n"}
+          </Text>
+          <Text style={[styles.small, nightMode && styles.nightMode]} />
 
-            <View style={styles.singleLine}>
-              <View style={styles.leftContainer}>
-                <Text style={[styles.small, nightMode && styles.nightMode]}>
-                  &copy; {new Date().getFullYear()} {Strings.khalis_foundation}
-                </Text>
-              </View>
+          <View style={styles.singleLine}>
+            <View style={styles.leftContainer}>
               <Text style={[styles.small, nightMode && styles.nightMode]}>
-                {Strings.app_version}: {VersionNumber.appVersion} ({VersionNumber.buildVersion})
-                {"\n"}
+                &copy; {new Date().getFullYear()} {Strings.khalis_foundation}
               </Text>
             </View>
-          </ScrollView>
-        </View>
-      </ErrorBoundary>
+            <Text style={[styles.small, nightMode && styles.nightMode]}>
+              {Strings.app_version}: {VersionNumber.appVersion} ({VersionNumber.buildVersion}){"\n"}
+            </Text>
+          </View>
+        </ScrollView>
+      </View>
     );
   }
 }
