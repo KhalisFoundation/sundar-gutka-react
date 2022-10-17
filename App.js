@@ -103,11 +103,7 @@ export default class App extends React.Component {
           <Button onPress={() => RNRestart.Restart()} title={Strings.errorReload} />
           <Text> </Text>
           <Button
-            onPress={() =>
-              Linking.openURL(
-                "mailto:techsupport@khalisfoundation.org?subject=Sundar%20Gutka%20help%20"
-              )
-            }
+            onPress={() => Linking.openURL("https://form.jotform.com/222881039684161")}
             title={Strings.errorReport}
           />
         </View>

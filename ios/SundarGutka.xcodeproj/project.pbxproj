@@ -23,6 +23,7 @@
 		9E86D5E92E2F2FC35AD48546 /* libPods-SundarGutka.a in Frameworks */ = {isa = PBXBuildFile; fileRef = 85DEEE05CB7163895FD4905E /* libPods-SundarGutka.a */; };
 		D415A16167364C1AB236B752 /* GurbaniAkharHeavyTrue.ttf in Resources */ = {isa = PBXBuildFile; fileRef = 3660122BE88F427CBF61B924 /* GurbaniAkharHeavyTrue.ttf */; };
 		D82F3A9CD1CD4F4AB8F8D5D2 /* GurbaniAkharThickTrue.ttf in Resources */ = {isa = PBXBuildFile; fileRef = FB9810CCD77A4B7EBA031CB3 /* GurbaniAkharThickTrue.ttf */; };
+		DA35D12428FDBE44001798FB /* File.swift in Sources */ = {isa = PBXBuildFile; fileRef = DA35D12328FDBE44001798FB /* File.swift */; };
 		DDC8CA8990934D99A9DF4DC0 /* GurbaniAkharHeavyTrue.ttf in Resources */ = {isa = PBXBuildFile; fileRef = 1C71F11403534A0CBFBEB67A /* GurbaniAkharHeavyTrue.ttf */; };
 		E35DCFCCF39549C1A7DEAD35 /* AnmolLipiSG.ttf in Resources */ = {isa = PBXBuildFile; fileRef = 6316A216AAD146CCABB0E877 /* AnmolLipiSG.ttf */; };
 		EA68FE2B89464EC0AA6373DA /* GurbaniAkharTrue.ttf in Resources */ = {isa = PBXBuildFile; fileRef = A108522FFA6B43008AC3292B /* GurbaniAkharTrue.ttf */; };
@@ -81,6 +82,8 @@
 		BCA51CCB7A11BFE749BF8572 /* Pods-SundarGutka-SundarGutkaTests.debug.xcconfig */ = {isa = PBXFileReference; includeInIndex = 1; lastKnownFileType = text.xcconfig; name = "Pods-SundarGutka-SundarGutkaTests.debug.xcconfig"; path = "Target Support Files/Pods-SundarGutka-SundarGutkaTests/Pods-SundarGutka-SundarGutkaTests.debug.xcconfig"; sourceTree = "<group>"; };
 		BCD3BE0E45F84924BDFD828A /* GurbaniAkharThickTrue.ttf */ = {isa = PBXFileReference; explicitFileType = undefined; fileEncoding = 9; includeInIndex = 0; lastKnownFileType = unknown; name = GurbaniAkharThickTrue.ttf; path = ../assets/fonts/GurbaniAkharThickTrue.ttf; sourceTree = "<group>"; };
 		CF27F93D84654519B847AF84 /* SimpleLineIcons.ttf */ = {isa = PBXFileReference; explicitFileType = undefined; fileEncoding = 9; includeInIndex = 0; lastKnownFileType = unknown; name = SimpleLineIcons.ttf; path = "../node_modules/react-native-vector-icons/Fonts/SimpleLineIcons.ttf"; sourceTree = "<group>"; };
+		DA35D12228FDBE43001798FB /* SundarGutka-Bridging-Header.h */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.h; path = "SundarGutka-Bridging-Header.h"; sourceTree = "<group>"; };
+		DA35D12328FDBE44001798FB /* File.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = File.swift; sourceTree = "<group>"; };
 		DA6655FC282DE5AA0059B041 /* GurbaniAkharHeavyTrue.ttf */ = {isa = PBXFileReference; lastKnownFileType = file; name = GurbaniAkharHeavyTrue.ttf; path = ../../Downloads/TTF_Fonts_2022_AS/GurbaniAkharHeavyTrue.ttf; sourceTree = "<group>"; };
 		E56D406FD38A4401A315B005 /* Arial.ttf */ = {isa = PBXFileReference; explicitFileType = undefined; fileEncoding = 9; includeInIndex = 0; lastKnownFileType = unknown; name = Arial.ttf; path = ../assets/fonts/Arial.ttf; sourceTree = "<group>"; };
 		ED297162215061F000B7C4FE /* JavaScriptCore.framework */ = {isa = PBXFileReference; lastKnownFileType = wrapper.framework; name = JavaScriptCore.framework; path = System/Library/Frameworks/JavaScriptCore.framework; sourceTree = SDKROOT; };
@@ -190,6 +193,7 @@
 		83CBB9F61A601CBA00E9B192 = {
 			isa = PBXGroup;
 			children = (
+				DA35D12328FDBE44001798FB /* File.swift */,
 				DA6655FC282DE5AA0059B041 /* GurbaniAkharHeavyTrue.ttf */,
 				9AD5FF1A27323D15003A6DAF /* waheguru_soul.mp3 */,
 				9AD5FF1927323D14003A6DAF /* wake_up_jap.mp3 */,
@@ -202,6 +206,7 @@
 				2D16E6871FA4F8E400B85C8A /* Frameworks */,
 				FFB197A14274C6D3C6C8B92A /* Pods */,
 				394A1613B5FC485F86A206A4 /* Resources */,
+				DA35D12228FDBE43001798FB /* SundarGutka-Bridging-Header.h */,
 			);
 			indentWidth = 2;
 			sourceTree = "<group>";
@@ -289,7 +294,7 @@
 						TestTargetID = 13B07F861A680F5B00A75B9A;
 					};
 					13B07F861A680F5B00A75B9A = {
-						LastSwiftMigration = 1120;
+						LastSwiftMigration = 1400;
 					};
 				};
 			};
@@ -532,6 +537,7 @@
 			buildActionMask = 2147483647;
 			files = (
 				13B07FBC1A68108700A75B9A /* AppDelegate.m in Sources */,
+				DA35D12428FDBE44001798FB /* File.swift in Sources */,
 				13B07FC11A68108700A75B9A /* main.m in Sources */,
 			);
 			runOnlyForDeploymentPostprocessing = 0;
@@ -551,6 +557,7 @@
 			isa = XCBuildConfiguration;
 			baseConfigurationReference = BCA51CCB7A11BFE749BF8572 /* Pods-SundarGutka-SundarGutkaTests.debug.xcconfig */;
 			buildSettings = {
+				ALWAYS_EMBED_SWIFT_STANDARD_LIBRARIES = YES;
 				BUNDLE_LOADER = "$(TEST_HOST)";
 				GCC_PREPROCESSOR_DEFINITIONS = (
 					"DEBUG=1",
@@ -578,6 +585,7 @@
 			isa = XCBuildConfiguration;
 			baseConfigurationReference = 84992728F60781995E1B8D17 /* Pods-SundarGutka-SundarGutkaTests.release.xcconfig */;
 			buildSettings = {
+				ALWAYS_EMBED_SWIFT_STANDARD_LIBRARIES = YES;
 				BUNDLE_LOADER = "$(TEST_HOST)";
 				COPY_PHASE_STRIP = NO;
 				INFOPLIST_FILE = SundarGutkaTests/Info.plist;
@@ -606,7 +614,7 @@
 				ASSETCATALOG_COMPILER_INCLUDE_ALL_APPICON_ASSETS = NO;
 				CLANG_ENABLE_MODULES = YES;
 				CODE_SIGN_ENTITLEMENTS = SundarGutka/SundarGutka.entitlements;
-				CURRENT_PROJECT_VERSION = 5;
+				CURRENT_PROJECT_VERSION = 7;
 				DEVELOPMENT_TEAM = B3W82WVBU9;
 				ENABLE_BITCODE = NO;
 				INFOPLIST_FILE = SundarGutka/Info.plist;
@@ -622,6 +630,10 @@
 				);
 				PRODUCT_BUNDLE_IDENTIFIER = com.WahegurooNetwork.SundarGutka;
 				PRODUCT_NAME = SundarGutka;
+				SUPPORTED_PLATFORMS = "iphoneos iphonesimulator";
+				SUPPORTS_MACCATALYST = YES;
+				SUPPORTS_MAC_DESIGNED_FOR_IPHONE_IPAD = NO;
+				SWIFT_OBJC_BRIDGING_HEADER = "SundarGutka-Bridging-Header.h";
 				SWIFT_OPTIMIZATION_LEVEL = "-Onone";
 				SWIFT_VERSION = 5.0;
 				TARGETED_DEVICE_FAMILY = "1,2";
@@ -637,7 +649,7 @@
 				ASSETCATALOG_COMPILER_INCLUDE_ALL_APPICON_ASSETS = NO;
 				CLANG_ENABLE_MODULES = YES;
 				CODE_SIGN_ENTITLEMENTS = SundarGutka/SundarGutka.entitlements;
-				CURRENT_PROJECT_VERSION = 5;
+				CURRENT_PROJECT_VERSION = 7;
 				DEVELOPMENT_TEAM = B3W82WVBU9;
 				INFOPLIST_FILE = SundarGutka/Info.plist;
 				LD_RUNPATH_SEARCH_PATHS = (
@@ -652,6 +664,10 @@
 				);
 				PRODUCT_BUNDLE_IDENTIFIER = com.WahegurooNetwork.SundarGutka;
 				PRODUCT_NAME = SundarGutka;
+				SUPPORTED_PLATFORMS = "iphoneos iphonesimulator";
+				SUPPORTS_MACCATALYST = YES;
+				SUPPORTS_MAC_DESIGNED_FOR_IPHONE_IPAD = NO;
+				SWIFT_OBJC_BRIDGING_HEADER = "SundarGutka-Bridging-Header.h";
 				SWIFT_VERSION = 5.0;
 				TARGETED_DEVICE_FAMILY = "1,2";
 				VERSIONING_SYSTEM = "apple-generic";
