@@ -472,7 +472,6 @@ class Settings extends React.Component {
               {appearance}
             </ListItem.Title>
             <ListItem.Chevron />
-            {/* <Switch style={switchStyle} value={nightMode} onValueChange={toggleNightMode} /> */}
           </ListItem>
           <ListItem
             bottomDivider

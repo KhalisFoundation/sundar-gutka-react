@@ -477,7 +477,7 @@ function fadeInEffect() {
     window.onscroll = scrollFunc;
 
     window.addEventListener('touchstart', function() {
-      if(autoScrollSpeed != 0) {
+      if(autoScrollSpeed !== 0) {
         clearScrollTimeout();
       }
       dragging = false;
@@ -489,9 +489,9 @@ function fadeInEffect() {
       dragging = true;
     });
     window.addEventListener('touchend', function() {
-      if(autoScrollSpeed != 0 && autoScrollTimeout == null) {
-      setTimeout(function() { window.ReactNativeWebView.postMessage('hide');},5000)
-       setAutoScroll();
+      if(autoScrollSpeed !== 0 && autoScrollTimeout === null) {
+        setTimeout(function() { window.ReactNativeWebView.postMessage('hide');},5000)
+        setAutoScroll();
       }
       if(!dragging && !holding)   
       {
@@ -517,8 +517,8 @@ function fadeInEffect() {
       if(message.hasOwnProperty('autoScroll')){ 
         autoScrollSpeed = message.autoScroll;
         scrollMultiplier = message.scrollMultiplier;
-        if(autoScrollSpeed!=0){
-        setTimeout(function() { window.ReactNativeWebView.postMessage('toggle');},5000)
+        if(autoScrollSpeed !== 0){
+          setTimeout(function() { window.ReactNativeWebView.postMessage('toggle');},5000)
         }
         if(autoScrollTimeout == null) {
           setAutoScroll();
@@ -771,9 +771,7 @@ function fadeInEffect() {
                 minimumValue={1}
                 maximumValue={100}
                 step={1}
-                value={
-                  autoScrollShabadSpeed[currentShabad] ? autoScrollShabadSpeed[currentShabad] : 50
-                }
+                value={autoScrollShabadSpeed[currentShabad] || 50}
                 onValueChange={(value) => {
                   setAutoScrollSpeed(value, currentShabad);
                   const speed = value;
