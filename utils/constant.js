@@ -27,4 +27,5 @@ export default {
   MAST_SABH_MAST: "MAST_SABH_MAST",
   PORTRAIT: "portrait",
   LANDSCAPE: "landscape",
+  THEME: "Theme",
 };

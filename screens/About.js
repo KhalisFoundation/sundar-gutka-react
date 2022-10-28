@@ -48,6 +48,7 @@ class Home extends React.Component {
         fontSize: 11,
       },
     });
+
     const { navigation, nightMode } = this.props;
     return (
       <View

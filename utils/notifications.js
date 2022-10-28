@@ -133,9 +133,9 @@ export default class NotificationsManager {
         title: reminder.title,
         body: reminder.time,
         data: {
-          key: "reminder.key",
+          id: reminder.key.toString(),
           gurmukhi: reminder.gurmukhi,
-          roman: reminder.translit,
+          translit: reminder.translit,
         },
         android: {
           channelId: channel,

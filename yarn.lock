@@ -7337,6 +7337,16 @@
     "react-native-ratings" "8.0.4"
     "react-native-size-matters" "^0.3.1"
 
+"react-native-error-boundary@^1.1.16":
+  "integrity" "sha512-yCbKhjGo2kMJBoUdy503L3oaInrLo1gychGr5e/IrezfPhfUGhfr8EtG2EKgZDcSfmvodBXvARq942hWis5sUA=="
+  "resolved" "https://registry.npmjs.org/react-native-error-boundary/-/react-native-error-boundary-1.1.16.tgz"
+  "version" "1.1.16"
+
+"react-native-exception-handler@^2.10.10":
+  "integrity" "sha512-otAXGoZDl1689OoUJWN/rXxVbdoZ3xcmyF1uq/CsizdLwwyZqVGd6d+p/vbYvnF996FfEyAEBnHrdFxulTn51w=="
+  "resolved" "https://registry.npmjs.org/react-native-exception-handler/-/react-native-exception-handler-2.10.10.tgz"
+  "version" "2.10.10"
+
 "react-native-gradle-plugin@^0.0.7":
   "integrity" "sha512-+4JpbIx42zGTONhBTIXSyfyHICHC29VTvhkkoUOJAh/XHPEixpuBduYgf6Y4y9wsN1ARlQhBBoptTvXvAFQf5g=="
   "resolved" "https://registry.npmjs.org/react-native-gradle-plugin/-/react-native-gradle-plugin-0.0.7.tgz"
@@ -7382,6 +7392,11 @@
   "version" "8.0.4"
   dependencies:
     "lodash" "^4.17.15"
+
+"react-native-restart@^0.0.24":
+  "integrity" "sha512-pvJNU3NwQk6bCG2gOWcQpZ4IxhtELB0K9gzmtixfsaTFbW1UXXHkJNjk1kHazcbH5hrD7QbUkR63fsAVh8X4VQ=="
+  "resolved" "https://registry.npmjs.org/react-native-restart/-/react-native-restart-0.0.24.tgz"
+  "version" "0.0.24"
 
 "react-native-root-siblings@^1.2.0":
   "integrity" "sha1-RuQGNKXthHN5ZYY7TcVR+g4lHGg= sha512-i6Apl5WQSvTqPezZzeS4nvzwLKpV72deUo9/kl+PhnR3+kobniYaPvSzByikKkU00JlN7iT8x2oCOpfKsCbJmQ=="
@@ -7855,6 +7870,11 @@
   "version" "2.7.1"
   dependencies:
     "glob" "^7.1.3"
+
+"rn-test-exception-handler@^1.3.2":
+  "integrity" "sha512-TkyEcY/kwbZKfeAmPKYJgzhE/3cgZ/Loa1xo//GyiadDyGUsXwCYssEwnKJeU+m/dQSYrWVuK3OYIGnbEDyqbA=="
+  "resolved" "https://registry.npmjs.org/rn-test-exception-handler/-/rn-test-exception-handler-1.3.2.tgz"
+  "version" "1.3.2"
 
 "rsvp@^4.8.4":
   "integrity" "sha512-nfMOlASu9OnRJo1mbEk2cz0D56a1MBNrJ7orjRZQG10XDyuvwksKbuXNp6qa+kbn839HwjwhBzhFmdsaEAfauA=="

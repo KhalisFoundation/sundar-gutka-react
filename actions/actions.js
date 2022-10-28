@@ -37,6 +37,7 @@ export const SET_REMINDER_BANIS = "SET_REMINDER_BANIS";
 export const SET_REMINDER_SOUND = "SET_REMINDER_SOUND";
 export const SET_APP_VERSION = "SET_APP_VERSION";
 export const SET_START_BANI = "SET_START_BANI";
+export const SET_APPEARANCE = "SET_APPEARANCE";
 
 /*
  * other constants
@@ -56,6 +57,7 @@ export const languageNames = [
   `ਪੰਜਾਬੀ`,
 ];
 
+export const APPEARANCES = ["Default", "Light", "Dark"];
 export const fontSizeNames = [
   `${Strings.extra_small}`,
   `${Strings.small_default}`,
@@ -196,6 +198,10 @@ export function setBaniOrder(order) {
 export function setBaniLength(length) {
   AnalyticsManager.getInstance().trackSettingsEvent("baniLength", length);
   return { type: SET_BANI_LENGTH, length };
+}
+export function setAppearance(appearance) {
+  AnalyticsManager.getInstance().trackSettingsEvent("Theme", appearance);
+  return { type: SET_APPEARANCE, appearance };
 }
 
 export function toggleLarivaar(value) {
