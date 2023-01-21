@@ -202,6 +202,7 @@ class Reader extends React.Component {
       transliterationLanguage
     )
       .then((shabad) => {
+        console.log("shabad: ", shabad);
         this.setState({
           data: shabad,
         });
@@ -292,7 +293,7 @@ class Reader extends React.Component {
         html += "<div style='padding-top: .5em'>";
         html += `<div id='${
           item.id
-        }' style="padding: .2em; font-family:'${fontFace}'; font-size: ${fontSizeForReader(
+        }' style="padding-horizontal: .2em; font-family:'${fontFace}'; font-size: ${fontSizeForReader(
           fontSize,
           item.header,
           false,
@@ -671,16 +672,14 @@ ${listener}.addEventListener(
             barStyle={nightMode || Platform.OS === "android" ? "light-content" : "dark-content"}
           />
           <View style={{ backgroundColor: READER_HEADER_COLOR, height: 90 }}>
-            <View style={{ flex: 1, flexDirection: "row", top: 50 }}>
+            <View
+              style={{ flex: 1, flexDirection: "row", top: 50, justifyContent: "space-between" }}
+            >
               <Icon
                 name="arrow-back"
                 color={TOOLBAR_TINT}
                 size={30}
-                style={[
-                  { left: 10 },
-                  isPortrait && { flexGrow: 3 },
-                  !isPortrait && { flexGrow: 1 },
-                ]}
+                style={[{ left: 10 }]}
                 onPress={this.handleBackPress.bind(this)}
               />
               <Text
@@ -689,14 +688,13 @@ ${listener}.addEventListener(
                   fontFamily: transliteration ? null : fontFace,
                   fontSize: 20,
                   textAlign: "center",
-                  flexGrow: 8,
                 }}
               >
                 {transliteration
-                  ? this.truncate.apply(params.item.translit, [24])
-                  : this.truncate.apply(params.item.gurmukhi, [25])}
+                  ? this.truncate.apply(params.item.translit, [isPortrait ? 24 : 48])
+                  : this.truncate.apply(params.item.gurmukhi, [isPortrait ? 25 : 50])}
               </Text>
-              <View style={{ flexDirection: "row", flexGrow: 1 }}>
+              <View style={{ flexDirection: "row" }}>
                 <Icon
                   name="settings"
                   color={TOOLBAR_TINT}
@@ -714,7 +712,6 @@ ${listener}.addEventListener(
                   }}
                 />
                 <Icon
-                  style={{ paddingLeft: 10 }}
                   name="bookmark"
                   color={TOOLBAR_TINT}
                   size={30}
