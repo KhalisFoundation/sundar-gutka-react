@@ -202,7 +202,6 @@ class Reader extends React.Component {
       transliterationLanguage
     )
       .then((shabad) => {
-        console.log("shabad: ", shabad);
         this.setState({
           data: shabad,
         });
