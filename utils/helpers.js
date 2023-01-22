@@ -4,6 +4,7 @@
 
 import { Alert } from "react-native";
 import Strings from "./localization";
+import * as Anvaad from "anvaad-js";
 
 export const defaultBaniOrderArray = Array(
   require("../config/defaultBaniOrder.json").baniOrder.length
@@ -20,7 +21,7 @@ export const mergedBaniList = (baniList) => {
       if (baniItem) {
         mergedData.baniOrder.push({
           id: obj.id,
-          gurmukhi: baniItem.gurmukhi,
+          gurmukhi: Anvaad.unicode(baniItem.gurmukhi),
           translit: baniItem.translit,
         });
       }
@@ -30,13 +31,13 @@ export const mergedBaniList = (baniList) => {
         const baniItem = baniList[item.id];
         folder.push({
           id: item.id,
-          gurmukhi: baniItem.gurmukhi,
+          gurmukhi: Anvaad.unicode(baniItem.gurmukhi),
           translit: baniItem.translit,
         });
       });
 
       mergedData.baniOrder.push({
-        gurmukhi: obj.gurmukhi,
+        gurmukhi: Anvaad.unicode(obj.gurmukhi),
         translit: obj.translit,
         folder,
       });

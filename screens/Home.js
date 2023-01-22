@@ -19,6 +19,7 @@ import BaniLengthSelector from "../components/BaniLengthSelector";
 import Strings from "../utils/localization";
 import CONSTANT from "../utils/constant";
 import NotificationsManager from "../utils/notifications";
+import * as anvaad from "anvaad-js";
 
 class Home extends React.Component {
   static navigationOptions = { header: null };
@@ -286,7 +287,7 @@ class Home extends React.Component {
               },
             ]}
           >
-            {Strings.fateh}
+            {anvaad.unicode(Strings.fateh)}
           </Text>
 
           <View
@@ -311,9 +312,9 @@ class Home extends React.Component {
                   },
                 ]}
               >
-                Œ
+                {anvaad.unicode("Œ")}
               </Text>{" "}
-              {Strings.sg_title}{" "}
+              {anvaad.unicode(Strings.sg_title)}{" "}
               <Text
                 style={[
                   {
@@ -321,7 +322,7 @@ class Home extends React.Component {
                   },
                 ]}
               >
-                ‰
+                {anvaad.unicode("‰")}
               </Text>
             </Text>
           </View>
