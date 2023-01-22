@@ -5,7 +5,6 @@ import PropTypes from "prop-types";
 import { baseFontSize } from "../utils/helpers";
 import LoadingIndicator from "./LoadingIndicator";
 import GLOBAL from "../utils/globals";
-import * as anvaad from "anvaad-js";
 
 class BaniList extends Component {
   render() {
@@ -54,7 +53,7 @@ class BaniList extends Component {
                   },
                 ]}
               >
-                {transliteration ? item.translit : anvaad.unicode(item.gurmukhi)}
+                {transliteration ? item.translit : item.gurmukhi}
               </ListItem.Title>
             </ListItem.Content>
             {item.folder && <ListItem.Chevron />}
