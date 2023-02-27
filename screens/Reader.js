@@ -154,7 +154,7 @@ class Reader extends React.Component {
       // eslint-disable-next-line prefer-destructuring
       if (data) progress = data.progress;
     }
-    if (Number(progress) === 1 || Number(progress) > 1) {
+    if (Number(progress) === 1 || Number(progress) > 0.9) {
       progress = 0;
     }
     this.currentBani.progress = progress;
