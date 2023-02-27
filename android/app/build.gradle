@@ -135,8 +135,8 @@ android {
         applicationId "com.WahegurooNetwork.SundarGutka"
         minSdkVersion rootProject.ext.minSdkVersion
         targetSdkVersion rootProject.ext.targetSdkVersion
-        versionCode 103
-        versionName "5.8"
+        versionCode 131
+        versionName "5.8.1"
     }
     splits {
         abi {

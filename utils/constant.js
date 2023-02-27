@@ -10,6 +10,8 @@ export default {
   AMBIENT: "Ambient",
   DEFAULT: "DEFAULT",
   GURBANI_AKHAR_SG: "GurbaniAkharSG",
+  GURBANI_AKHAR_HEAVY_SG: "GurbaniAkharHeavySG",
+  GURBANI_AKHAR_THICK_SG: "GurbaniAkharThickSG",
   GURBANI_AKHAR_TRUE: "GurbaniAkharTrue",
   HOME_SCREEN: "Home Screen",
   GURBANI_AKHAR_HEAVY_TRUE: "GurbaniAkharHeavyTrue",

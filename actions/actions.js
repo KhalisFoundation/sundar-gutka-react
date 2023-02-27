@@ -148,11 +148,14 @@ export function setFontFace(font) {
 
 export function setLanguage(language) {
   AnalyticsManager.getInstance().trackSettingsEvent("appLanguage", language);
-  if (language !== "DEFAULT") {
-    Strings.setLanguage(language);
-  } else {
-    Strings.setLanguage(Strings.getInterfaceLanguage());
-  }
+  Strings.setLanguage(language);
+  // if (language !== "DEFAULT") {
+  //   console.log("----------- changing language", language);
+  //   Strings.setLanguage(language);
+  // } else {
+  //   console.log("-------------", Strings.getInterfaceLanguage());
+  //   Strings.setLanguage(Strings.getInterfaceLanguage());
+  // }
   return { type: SET_LANGUAGE, language };
 }
 

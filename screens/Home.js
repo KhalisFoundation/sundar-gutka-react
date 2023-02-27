@@ -19,7 +19,7 @@ import BaniLengthSelector from "../components/BaniLengthSelector";
 import Strings from "../utils/localization";
 import CONSTANT from "../utils/constant";
 import NotificationsManager from "../utils/notifications";
-import * as anvaad from "anvaad-js";
+// import * as anvaad from "anvaad-js";
 
 class Home extends React.Component {
   static navigationOptions = { header: null };
@@ -53,7 +53,6 @@ class Home extends React.Component {
     let showBaniLengthSelector = false;
     const {
       appVersion,
-      language,
       fontFace,
       setFontFace,
       setAppVersion,
@@ -66,9 +65,6 @@ class Home extends React.Component {
       reminderBanis,
       reminders,
       appearance,
-      setLanguage,
-      transliteration,
-      toggleTransliteration,
     } = this.props;
 
     if (appearance === "Default") {
@@ -91,17 +87,21 @@ class Home extends React.Component {
     if (showBaniLengthSelector || baniLength === "") {
       this.setState({ showLengthSelector: true });
     }
-    if (!language) {
-      setLanguage(CONSTANT.DEFAULT);
-    }
-    if (!transliteration) {
-      toggleTransliteration(false);
-    }
-    if (!language || language !== CONSTANT.DEFAULT) {
-      Strings.setLanguage(language);
-    }
+    // if (!transliteration) {
+    //   toggleTransliteration(false);
+    // }
 
-    if (!fontFace || fontFace === CONSTANT.GURBANI_AKHAR_SG) {
+    // console.log("------transliteration", transliteration);
+
+    // console.log("--------- Language", language);
+    // console.log("----------- Strings", Strings.sg_title);
+    // console.log("------------Checking Font Face", fontFace);
+    if (
+      !fontFace ||
+      fontFace === CONSTANT.GURBANI_AKHAR_SG ||
+      fontFace === CONSTANT.GURBANI_AKHAR_HEAVY_SG ||
+      fontFace === CONSTANT.GURBANI_AKHAR_THICK_SG
+    ) {
       setFontFace(CONSTANT.GURBANI_AKHAR_TRUE);
     }
 
@@ -280,14 +280,13 @@ class Home extends React.Component {
             style={[
               {
                 color: GLOBAL.COLOR.TOOLBAR_TINT,
-                fontFamily: CONSTANT.GURBANI_AKHAR_HEAVY_TRUE,
                 fontSize: 18,
                 textAlign: "center",
                 padding: 15,
               },
             ]}
           >
-            {anvaad.unicode(Strings.fateh)}
+            {Strings.fateh}
           </Text>
 
           <View
@@ -300,7 +299,6 @@ class Home extends React.Component {
               style={[
                 {
                   color: GLOBAL.COLOR.TOOLBAR_TINT,
-                  fontFamily: CONSTANT.GURBANI_AKHAR_HEAVY_TRUE,
                   fontSize: 28,
                 },
               ]}
@@ -309,20 +307,22 @@ class Home extends React.Component {
                 style={[
                   {
                     fontSize: 32,
+                    fontFamily: CONSTANT.GURBANI_AKHAR_TRUE,
                   },
                 ]}
               >
-                {anvaad.unicode("Œ")}
+                Œ
               </Text>{" "}
-              {anvaad.unicode(Strings.sg_title)}{" "}
+              {Strings.sg_title}{" "}
               <Text
                 style={[
                   {
+                    fontFamily: CONSTANT.GURBANI_AKHAR_TRUE,
                     fontSize: 32,
                   },
                 ]}
               >
-                {anvaad.unicode("‰")}
+                ‰
               </Text>
             </Text>
           </View>
@@ -364,7 +364,6 @@ Home.propTypes = {
   appVersion: PropTypes.string.isRequired,
   setAppVersion: PropTypes.func.isRequired,
   baniLength: PropTypes.string.isRequired,
-  language: PropTypes.string.isRequired,
   fontFace: PropTypes.string.isRequired,
   setFontFace: PropTypes.func.isRequired,
   screenAwake: PropTypes.bool.isRequired,
@@ -411,8 +410,6 @@ Home.propTypes = {
   transliteration: PropTypes.bool.isRequired,
   appearance: PropTypes.string.isRequired,
   toggleNightMode: PropTypes.func.isRequired,
-  setLanguage: PropTypes.func.isRequired,
-  toggleTransliteration: PropTypes.func.isRequired,
 };
 
 function mapStateToProps(state) {

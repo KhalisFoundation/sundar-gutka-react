@@ -4,7 +4,7 @@
 
 import { Alert } from "react-native";
 import Strings from "./localization";
-import * as Anvaad from "anvaad-js";
+// import * as Anvaad from "anvaad-js";
 
 export const defaultBaniOrderArray = Array(
   require("../config/defaultBaniOrder.json").baniOrder.length
@@ -21,7 +21,7 @@ export const mergedBaniList = (baniList) => {
       if (baniItem) {
         mergedData.baniOrder.push({
           id: obj.id,
-          gurmukhi: Anvaad.unicode(baniItem.gurmukhi),
+          gurmukhi: baniItem.gurmukhi,
           translit: baniItem.translit,
         });
       }
@@ -31,13 +31,13 @@ export const mergedBaniList = (baniList) => {
         const baniItem = baniList[item.id];
         folder.push({
           id: item.id,
-          gurmukhi: Anvaad.unicode(baniItem.gurmukhi),
+          gurmukhi: baniItem.gurmukhi,
           translit: baniItem.translit,
         });
       });
 
       mergedData.baniOrder.push({
-        gurmukhi: Anvaad.unicode(obj.gurmukhi),
+        gurmukhi: obj.gurmukhi,
         translit: obj.translit,
         folder,
       });
@@ -53,21 +53,28 @@ export const TextType = Object.freeze({
 });
 
 export const fontColorForReader = (header, nightMode, text) => {
+  let color;
   switch (text) {
     case TextType.GURMUKHI: {
       if (header === 1) {
-        return nightMode ? "#77baff" : "#0066FF";
+        color = nightMode ? "#77baff" : "#0066FF";
       }
       if (header === 2 || header === 6) {
-        return nightMode ? "#BFBFBF" : "#727272";
+        color = nightMode ? "#BFBFBF" : "#727272";
       }
-      return nightMode ? "#fff" : "#000";
+      color = nightMode ? "#fff" : "#000";
+      break;
     }
     case TextType.TRANSLITERATION:
-      return nightMode ? "#77baff" : "#0066FF";
+      color = nightMode ? "#77baff" : "#0066FF";
+      break;
     case TextType.ENGLISH_TRANSLATION:
-      return nightMode ? "#BFBFBF" : "#727272";
+      color = nightMode ? "#BFBFBF" : "#727272";
+      break;
+    default:
+      return color;
   }
+  return color;
 };
 
 export const baseFontSize = (SIZE, transliteration) => {
@@ -88,6 +95,8 @@ export const baseFontSize = (SIZE, transliteration) => {
     case "EXTRA_LARGE":
       fontSize = 46;
       break;
+    default:
+      fontSize = 16;
   }
 
   if (transliteration) {
