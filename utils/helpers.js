@@ -4,7 +4,6 @@
 
 import { Alert } from "react-native";
 import Strings from "./localization";
-// import * as Anvaad from "anvaad-js";
 
 export const defaultBaniOrderArray = Array(
   require("../config/defaultBaniOrder.json").baniOrder.length
@@ -58,11 +57,11 @@ export const fontColorForReader = (header, nightMode, text) => {
     case TextType.GURMUKHI: {
       if (header === 1) {
         color = nightMode ? "#77baff" : "#0066FF";
-      }
-      if (header === 2 || header === 6) {
+      } else if (header === 2 || header === 6) {
         color = nightMode ? "#BFBFBF" : "#727272";
+      } else {
+        color = nightMode ? "#fff" : "#000";
       }
-      color = nightMode ? "#fff" : "#000";
       break;
     }
     case TextType.TRANSLITERATION:

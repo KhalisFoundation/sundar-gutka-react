@@ -19,7 +19,6 @@ import BaniLengthSelector from "../components/BaniLengthSelector";
 import Strings from "../utils/localization";
 import CONSTANT from "../utils/constant";
 import NotificationsManager from "../utils/notifications";
-// import * as anvaad from "anvaad-js";
 
 class Home extends React.Component {
   static navigationOptions = { header: null };
@@ -87,22 +86,15 @@ class Home extends React.Component {
     if (showBaniLengthSelector || baniLength === "") {
       this.setState({ showLengthSelector: true });
     }
-    // if (!transliteration) {
-    //   toggleTransliteration(false);
-    // }
-
-    // console.log("------transliteration", transliteration);
-
-    // console.log("--------- Language", language);
-    // console.log("----------- Strings", Strings.sg_title);
-    // console.log("------------Checking Font Face", fontFace);
+    const { GURBANI_AKHAR_SG, GURBANI_AKHAR_HEAVY_SG, GURBANI_AKHAR_THICK_SG, GURBANI_AKHAR_TRUE } =
+      CONSTANT;
     if (
       !fontFace ||
-      fontFace === CONSTANT.GURBANI_AKHAR_SG ||
-      fontFace === CONSTANT.GURBANI_AKHAR_HEAVY_SG ||
-      fontFace === CONSTANT.GURBANI_AKHAR_THICK_SG
+      fontFace === GURBANI_AKHAR_SG ||
+      fontFace === GURBANI_AKHAR_HEAVY_SG ||
+      fontFace === GURBANI_AKHAR_THICK_SG
     ) {
-      setFontFace(CONSTANT.GURBANI_AKHAR_TRUE);
+      setFontFace(GURBANI_AKHAR_TRUE);
     }
 
     this.changeKeepAwake(screenAwake || autoScroll);
@@ -259,6 +251,7 @@ class Home extends React.Component {
     const { navigation, nightMode, fontSize, fontFace, transliteration } = this.props;
     const backColor =
       orientation === CONSTANT.PORTRAIT ? GLOBAL.COLOR.TOOLBAR_COLOR : GLOBAL.COLOR.NIGHT_BLACK;
+    const { GURBANI_AKHAR_TRUE } = CONSTANT;
     return (
       <SafeAreaView
         style={{
@@ -307,7 +300,7 @@ class Home extends React.Component {
                 style={[
                   {
                     fontSize: 32,
-                    fontFamily: CONSTANT.GURBANI_AKHAR_TRUE,
+                    fontFamily: GURBANI_AKHAR_TRUE,
                   },
                 ]}
               >
@@ -317,7 +310,7 @@ class Home extends React.Component {
               <Text
                 style={[
                   {
-                    fontFamily: CONSTANT.GURBANI_AKHAR_TRUE,
+                    fontFamily: GURBANI_AKHAR_TRUE,
                     fontSize: 32,
                   },
                 ]}
