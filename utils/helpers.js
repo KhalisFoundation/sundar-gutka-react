@@ -52,21 +52,28 @@ export const TextType = Object.freeze({
 });
 
 export const fontColorForReader = (header, nightMode, text) => {
+  let color;
   switch (text) {
     case TextType.GURMUKHI: {
       if (header === 1) {
-        return nightMode ? "#77baff" : "#0066FF";
+        color = nightMode ? "#77baff" : "#0066FF";
+      } else if (header === 2 || header === 6) {
+        color = nightMode ? "#BFBFBF" : "#727272";
+      } else {
+        color = nightMode ? "#fff" : "#000";
       }
-      if (header === 2 || header === 6) {
-        return nightMode ? "#BFBFBF" : "#727272";
-      }
-      return nightMode ? "#fff" : "#000";
+      break;
     }
     case TextType.TRANSLITERATION:
-      return nightMode ? "#77baff" : "#0066FF";
+      color = nightMode ? "#77baff" : "#0066FF";
+      break;
     case TextType.ENGLISH_TRANSLATION:
-      return nightMode ? "#BFBFBF" : "#727272";
+      color = nightMode ? "#BFBFBF" : "#727272";
+      break;
+    default:
+      return color;
   }
+  return color;
 };
 
 export const baseFontSize = (SIZE, transliteration) => {
@@ -87,6 +94,8 @@ export const baseFontSize = (SIZE, transliteration) => {
     case "EXTRA_LARGE":
       fontSize = 46;
       break;
+    default:
+      fontSize = 16;
   }
 
   if (transliteration) {

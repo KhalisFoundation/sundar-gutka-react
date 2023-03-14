@@ -148,11 +148,7 @@ export function setFontFace(font) {
 
 export function setLanguage(language) {
   AnalyticsManager.getInstance().trackSettingsEvent("appLanguage", language);
-  if (language !== "DEFAULT") {
-    Strings.setLanguage(language);
-  } else {
-    Strings.setLanguage(Strings.getInterfaceLanguage());
-  }
+  Strings.setLanguage(language);
   return { type: SET_LANGUAGE, language };
 }
 

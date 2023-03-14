@@ -45,7 +45,7 @@ function fontSize(state = "SMALL", action) {
   }
 }
 
-function appearance(state = "Light", action) {
+function appearance(state = "Default", action) {
   switch (action.type) {
     case SET_APPEARANCE:
       return action.appearance;

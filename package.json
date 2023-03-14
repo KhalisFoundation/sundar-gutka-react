@@ -24,6 +24,7 @@
     "@react-navigation/native": "^6.0.12",
     "@react-navigation/native-stack": "^6.8.0",
     "@reduxjs/toolkit": "^1.8.5",
+    "anvaad-js": "^1.4.3",
     "deprecated-react-native-prop-types": "^2.3.0",
     "moment": "^2.29.4",
     "prop-types": "^15.8.1",

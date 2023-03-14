@@ -52,7 +52,6 @@ class Home extends React.Component {
     let showBaniLengthSelector = false;
     const {
       appVersion,
-      language,
       fontFace,
       setFontFace,
       setAppVersion,
@@ -65,9 +64,6 @@ class Home extends React.Component {
       reminderBanis,
       reminders,
       appearance,
-      setLanguage,
-      transliteration,
-      toggleTransliteration,
     } = this.props;
 
     if (appearance === "Default") {
@@ -90,18 +86,15 @@ class Home extends React.Component {
     if (showBaniLengthSelector || baniLength === "") {
       this.setState({ showLengthSelector: true });
     }
-    if (!language) {
-      setLanguage(CONSTANT.DEFAULT);
-    }
-    if (!transliteration) {
-      toggleTransliteration(false);
-    }
-    if (!language || language !== CONSTANT.DEFAULT) {
-      Strings.setLanguage(language);
-    }
-
-    if (!fontFace || fontFace === CONSTANT.GURBANI_AKHAR_SG) {
-      setFontFace(CONSTANT.GURBANI_AKHAR_TRUE);
+    const { GURBANI_AKHAR_SG, GURBANI_AKHAR_HEAVY_SG, GURBANI_AKHAR_THICK_SG, GURBANI_AKHAR_TRUE } =
+      CONSTANT;
+    if (
+      !fontFace ||
+      fontFace === GURBANI_AKHAR_SG ||
+      fontFace === GURBANI_AKHAR_HEAVY_SG ||
+      fontFace === GURBANI_AKHAR_THICK_SG
+    ) {
+      setFontFace(GURBANI_AKHAR_TRUE);
     }
 
     this.changeKeepAwake(screenAwake || autoScroll);
@@ -258,6 +251,7 @@ class Home extends React.Component {
     const { navigation, nightMode, fontSize, fontFace, transliteration } = this.props;
     const backColor =
       orientation === CONSTANT.PORTRAIT ? GLOBAL.COLOR.TOOLBAR_COLOR : GLOBAL.COLOR.NIGHT_BLACK;
+    const { GURBANI_AKHAR_TRUE } = CONSTANT;
     return (
       <SafeAreaView
         style={{
@@ -279,7 +273,6 @@ class Home extends React.Component {
             style={[
               {
                 color: GLOBAL.COLOR.TOOLBAR_TINT,
-                fontFamily: CONSTANT.GURBANI_AKHAR_HEAVY_TRUE,
                 fontSize: 18,
                 textAlign: "center",
                 padding: 15,
@@ -299,7 +292,6 @@ class Home extends React.Component {
               style={[
                 {
                   color: GLOBAL.COLOR.TOOLBAR_TINT,
-                  fontFamily: CONSTANT.GURBANI_AKHAR_HEAVY_TRUE,
                   fontSize: 28,
                 },
               ]}
@@ -308,6 +300,7 @@ class Home extends React.Component {
                 style={[
                   {
                     fontSize: 32,
+                    fontFamily: GURBANI_AKHAR_TRUE,
                   },
                 ]}
               >
@@ -317,6 +310,7 @@ class Home extends React.Component {
               <Text
                 style={[
                   {
+                    fontFamily: GURBANI_AKHAR_TRUE,
                     fontSize: 32,
                   },
                 ]}
@@ -363,7 +357,6 @@ Home.propTypes = {
   appVersion: PropTypes.string.isRequired,
   setAppVersion: PropTypes.func.isRequired,
   baniLength: PropTypes.string.isRequired,
-  language: PropTypes.string.isRequired,
   fontFace: PropTypes.string.isRequired,
   setFontFace: PropTypes.func.isRequired,
   screenAwake: PropTypes.bool.isRequired,
@@ -410,8 +403,6 @@ Home.propTypes = {
   transliteration: PropTypes.bool.isRequired,
   appearance: PropTypes.string.isRequired,
   toggleNightMode: PropTypes.func.isRequired,
-  setLanguage: PropTypes.func.isRequired,
-  toggleTransliteration: PropTypes.func.isRequired,
 };
 
 function mapStateToProps(state) {
