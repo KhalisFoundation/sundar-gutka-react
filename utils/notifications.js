@@ -105,67 +105,45 @@ export default class NotificationsManager {
     // .then((ids) => console.log("All trigger notifications: ", ids));
   };
 
-  createReminder = async (reminder, sound) => {
-    // Build a channel
-    // this.checkPermissions();
+  // Create a notification reminder using Notifee library
+  createReminder = async (notification, sound) => {
+    try {
+      // Set up channel
+      const channelName = sound !== "default" ? sound.split(".")[0] : "sound";
+      const androidChannel = { channelId: channelName };
 
-    // .setSound(sound)
-    // .setDescription("Alert notification reminders for chosen Bani");
-    // Create the channel
-    // firebase.notifications().android.createChannel(channel);
-    // Build notification
-    const currentTime = moment().utc().valueOf();
-    let aTime = moment(reminder.time, "h:mm A").utc().valueOf();
-    if (aTime < currentTime) {
-      aTime = moment(reminder.time, "h:m A").add(1, "days");
+      // Set up trigger
+      const currentTime = moment().utc().valueOf();
+      let notificationTime = moment(notification.time, "h:mm A").utc().valueOf();
+      if (notificationTime < currentTime) {
+        notificationTime = moment(notification.time, "h:m A").add(1, "days");
+      }
+      const trigger = {
+        type: TriggerType.TIMESTAMP,
+        timestamp: Number(notificationTime),
+        repeatFrequency: RepeatFrequency.DAILY,
+      };
+
+      // Create notification
+      await notifee.createTriggerNotification(
+        {
+          title: notification.title,
+          body: notification.time,
+          data: {
+            id: notification.key.toString(),
+            gurmukhi: notification.gurmukhi,
+            translit: String(notification.translit) || "",
+          },
+          android: androidChannel,
+          ios: {
+            badgeCount: 1,
+            sound,
+          },
+        },
+        trigger
+      );
+    } catch (error) {
+      console.error(`Error creating reminder: ${error}`);
     }
-    let channel = "sound";
-    if (sound !== "default") {
-      channel = sound.split(".")[0];
-    }
-    const trigger = {
-      type: TriggerType.TIMESTAMP,
-      timestamp: Number(aTime),
-      repeatFrequency: RepeatFrequency.DAILY,
-    };
-    await notifee.createTriggerNotification(
-      {
-        title: reminder.title,
-        body: reminder.time,
-        data: {
-          id: reminder.key.toString(),
-          gurmukhi: reminder.gurmukhi,
-          translit: reminder.translit,
-        },
-        android: {
-          channelId: channel,
-        },
-        ios: {
-          badgeCount: 1,
-          sound,
-        },
-      },
-      trigger
-    );
-
-    // const notification = new firebase.notifications.Notification()
-    //   .setNotificationId(reminder.key.toString())
-    //   .setTitle(reminder.title)
-    //   .setBody(reminder.time)
-    //   .setSound(channel.sound)
-    //   .setData({
-    //     key: reminder.key,
-    //     gurmukhi: reminder.gurmukhi,
-    //     roman: reminder.translit,
-    //   });
-    // notification.android
-    //   .setChannelId(this.REMINDERS_CHANNEL)
-    //   .android.setSmallIcon("ic_notification");
-    // notification.ios.setBadge(1);
-
-    // firebase.notifications().scheduleNotification(notification, {
-    //   fireDate: aTime,
-    //   repeatInterval: "day",
-    // });
   };
 }

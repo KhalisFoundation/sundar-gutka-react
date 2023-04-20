@@ -29,7 +29,7 @@
     "moment": "^2.29.4",
     "prop-types": "^15.8.1",
     "react": "^18.2.0",
-    "react-native": "^0.69.5",
+    "react-native": "^0.70.8",
     "react-native-action-sheet-component": "^0.0.36",
     "react-native-animatable": "^1.3.3",
     "react-native-cli": "^2.0.1",
