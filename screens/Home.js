@@ -207,13 +207,13 @@ class Home extends React.Component {
   //   });
   // }
 
-  sortBani() {
+  sortBani = () => {
     const { mergedBaniData, baniOrder } = this.props;
 
     this.setState({
       data: this.reorder(mergedBaniData.baniOrder, baniOrder),
     });
-  }
+  };
 
   // async requestUserPermission() {
   //   const authStatus = await messaging().requestPermission();
@@ -222,12 +222,18 @@ class Home extends React.Component {
   //     authStatus === messaging.AuthorizationStatus.PROVISIONAL;
   // }
 
-  async loadBaniList() {
+  loadBaniList = async () => {
     const { transliterationLanguage, setMergedBaniData } = this.props;
-    const baniList = await Database.getBaniList(transliterationLanguage);
-    setMergedBaniData(mergedBaniList(baniList));
-    this.sortBani();
-  }
+
+    try {
+      const baniList = await Database.getBaniList(transliterationLanguage);
+      setMergedBaniData(mergedBaniList(baniList));
+      this.sortBani();
+    } catch (error) {
+      console.error("Error loading bani list:", error);
+      // handle the error appropriately
+    }
+  };
 
   reorder(arr, index) {
     const ordered = [];

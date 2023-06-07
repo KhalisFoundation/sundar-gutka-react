@@ -30,23 +30,28 @@ class Database {
   }
 
   static getBaniList(language) {
-    return new Promise((resolve) => {
-      Database.initDB().then(() => {
-        db.executeSql("SELECT ID, Gurmukhi, Transliterations FROM Banis", [], (results) => {
-          const totalResults = {};
-          const len = results.rows.length;
+    return new Promise((resolve, reject) => {
+      Database.initDB()
+        .then(() => {
+          db.executeSql("SELECT ID, Gurmukhi, Transliterations FROM Banis", [], (results) => {
+            const totalResults = {};
+            const len = results.rows.length;
 
-          for (let i = 0; i < len; i += 1) {
-            const row = results.rows.item(i);
-            const { ID, Gurmukhi, Transliterations } = row;
-            totalResults[ID] = {
-              gurmukhi: Gurmukhi,
-              translit: getTranslitText(Transliterations, language),
-            };
-          }
-          resolve(totalResults);
+            for (let i = 0; i < len; i += 1) {
+              const row = results.rows.item(i);
+              const { ID, Gurmukhi, Transliterations } = row;
+              totalResults[ID] = {
+                gurmukhi: Gurmukhi,
+                translit: getTranslitText(Transliterations, language),
+              };
+            }
+            resolve(totalResults);
+          });
+        })
+        .catch((error) => {
+          console.error(`Error: Creating Bani List ${error}`);
+          reject(error);
         });
-      });
     });
   }
 
