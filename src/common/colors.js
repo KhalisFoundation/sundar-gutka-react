@@ -43,4 +43,5 @@ export default {
   VISHRAM_BASIC: "#c0392b",
   MODAL_BACKGROUND_COLOR: "rgba(0,0,0,0.5)",
   LABEL_COLORS: "#ecf0f1",
+  NIGHT_GREY_COLOR: "#464646",
 };

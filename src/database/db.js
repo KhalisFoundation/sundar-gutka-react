@@ -1,7 +1,7 @@
 import { initDB } from "./connect";
 import { getTranslitText } from "./utils/utils";
 
-export function getBaniList() {
+export function getBaniList(language) {
   return new Promise((resolve, reject) => {
     initDB()
       .then((db) => {
@@ -18,7 +18,7 @@ export function getBaniList() {
                 totalResults.push({
                   id: ID,
                   gurmukhi: Gurmukhi,
-                  translit: getTranslitText(Transliterations, "en"),
+                  translit: getTranslitText(Transliterations, language),
                 });
               }
               resolve(totalResults);

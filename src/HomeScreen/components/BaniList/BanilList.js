@@ -1,16 +1,12 @@
 import React from "react";
-import { StyleSheet, FlatList } from "react-native";
+import { FlatList } from "react-native";
 import { ListItem } from "@rneui/themed";
 import PropTypes from "prop-types";
 import constant from "../../../common/constant";
+import { useSelector } from "react-redux";
+import { baseFontSize } from "../../../common/helpers";
 
-const styles = StyleSheet.create({
-  text: {
-    fontFamily: constant.GURBANI_AKHAR_TRUE,
-  },
-});
-
-const renderBanis = (item, navigate) => {
+const renderBanis = (item, navigate, fontSize, fontFace, isTransliteration) => {
   return (
     <ListItem
       bottomDivider
@@ -22,17 +18,29 @@ const renderBanis = (item, navigate) => {
       }}
     >
       <ListItem.Content>
-        <ListItem.Title style={styles.text}>{item.item.gurmukhi}</ListItem.Title>
+        <ListItem.Title
+          style={{
+            fontSize: baseFontSize(fontSize, isTransliteration),
+            fontFamily: !isTransliteration ? fontFace : null,
+          }}
+        >
+          {isTransliteration ? item.item.translit : item.item.gurmukhi}
+        </ListItem.Title>
       </ListItem.Content>
     </ListItem>
   );
 };
 function BaniList(props) {
+  const { fontSize, fontFace, isTransliteration, transliterationLanguage } = useSelector(
+    (state) => state
+  );
   const { data, navigate } = props;
   return (
     <FlatList
       data={data}
-      renderItem={(item) => renderBanis(item, navigate)}
+      renderItem={(item) =>
+        renderBanis(item, navigate, fontSize, fontFace, isTransliteration, transliterationLanguage)
+      }
       keyExtractor={(item) => item.id}
     />
   );

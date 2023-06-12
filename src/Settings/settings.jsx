@@ -7,6 +7,7 @@ import STRINGS from "../common/localization";
 import ListComponent from "./ListComponents";
 import colors from "../common/colors";
 import styles from "./styles";
+import { SafeAreaProvider } from "react-native-safe-area-context";
 
 function HeaderComponent({ backNav }) {
   const { isNightMode } = useSelector((state) => state);
@@ -38,16 +39,15 @@ function Settings({ navigation }) {
 
   const { goBack } = navigation;
   return (
-    <SafeAreaView
-      style={[
-        styles.settingsView,
-        isNightMode && { backgroundColor: colors.TOOLBAR_COLOR_ALT_NIGHT_MODE },
-      ]}
-    >
-      <StatusBar barStyle={isNightMode ? "light-content" : "dark-content"} />
-      <HeaderComponent backNav={goBack} />
-      <ListComponent />
-    </SafeAreaView>
+    <>
+      <SafeAreaProvider>
+        <SafeAreaView>
+          <StatusBar barStyle={isNightMode ? "light-content" : "dark-content"} />
+          {/* <HeaderComponent backNav={goBack} /> */}
+          <ListComponent navigation={navigation} />
+        </SafeAreaView>
+      </SafeAreaProvider>
+    </>
   );
 }
 

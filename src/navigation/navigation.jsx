@@ -4,20 +4,59 @@ import { createNativeStackNavigator } from "@react-navigation/native-stack";
 import HomeScreen from "../HomeScreen/HomeScreen";
 import Reader from "../ReaderScreen/reader";
 import Settings from "../Settings";
+import AboutScreen from "../AboutScreen";
+import colors from "../common/colors";
+import STRINGS from "../common/localization";
+import { useSelector } from "react-redux";
+import { Icon } from "@rneui/themed";
 
 const Stack = createNativeStackNavigator();
 
 function Navigation() {
+  const { isNightMode } = useSelector((state) => state);
   return (
     <NavigationContainer>
       <Stack.Navigator
         screenOptions={{
-          headerShown: false,
+          headerShown: true,
         }}
       >
-        <Stack.Screen name="Home" component={HomeScreen} />
+        <Stack.Screen
+          options={{
+            title: STRINGS.fateh,
+            headerTitleStyle: { fontSize: 18, color: colors.WHITE_COLOR, fontWeight: "normal" },
+            headerStyle: {
+              backgroundColor: colors.TOOLBAR_COLOR,
+            },
+          }}
+          name="Home"
+          component={HomeScreen}
+        />
         <Stack.Screen name="Reader" component={Reader} />
-        <Stack.Screen name="Settings" component={Settings} />
+        <Stack.Screen
+          options={({ navigation }) => ({
+            headerLeft: () => (
+              <Icon
+                name="arrow-back"
+                size={30}
+                onPress={() => navigation.goBack()}
+                color={isNightMode ? colors.TOOLBAR_TINT : colors.TOOLBAR_TINT_DARK}
+              />
+            ),
+            headerTitleStyle: {
+              color: !isNightMode ? colors.NIGHT_BLACK : colors.WHITE_COLOR,
+              fontWeight: "normal",
+            },
+            headerStyle: {
+              backgroundColor: !isNightMode
+                ? colors.TOOLBAR_COLOR_ALT
+                : colors.TOOLBAR_COLOR_ALT_NIGHT_MODE,
+            },
+          })}
+          name="Settings"
+          component={Settings}
+        />
+        <Stack.Screen name="About" component={AboutScreen} />
       </Stack.Navigator>
     </NavigationContainer>
   );
