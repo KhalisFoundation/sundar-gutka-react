@@ -42,7 +42,12 @@ function Settings({ navigation }) {
     <>
       <SafeAreaProvider>
         <SafeAreaView>
-          <StatusBar barStyle={isNightMode ? "light-content" : "dark-content"} />
+          <StatusBar
+            barStyle={isNightMode ? "light-content" : "dark-content"}
+            backgroundColor={
+              !isNightMode ? colors.TOOLBAR_COLOR_ALT : colors.TOOLBAR_COLOR_ALT_NIGHT_MODE
+            }
+          />
           {/* <HeaderComponent backNav={goBack} /> */}
           <ListComponent navigation={navigation} />
         </SafeAreaView>

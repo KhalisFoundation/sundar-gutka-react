@@ -22,6 +22,7 @@ import {
   TOGGLE_ENGLISH_TRANSLATION,
   TOGGLE_PUNJABI_TRANSLATION,
   TOGGLE_SPANISH_TRANSLATION,
+  SET_BOOKMARK_POSITION,
 } from "./actions";
 import constant from "./constant";
 
@@ -206,6 +207,14 @@ function isSpanishTranslation(state = false, action) {
       return state;
   }
 }
+function bookmarkPosition(state = 0, action) {
+  switch (action.type) {
+    case SET_BOOKMARK_POSITION:
+      return action.value;
+    default:
+      return state;
+  }
+}
 
 const rootReducer = combineReducers({
   isNightMode,
@@ -230,5 +239,6 @@ const rootReducer = combineReducers({
   isEnglishTranslation,
   isPunjabiTranslation,
   isSpanishTranslation,
+  bookmarkPosition,
 });
 export default rootReducer;

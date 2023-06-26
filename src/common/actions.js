@@ -22,6 +22,7 @@ export const TOGGLE_STATISTICS = "TOGGLE_STATISTICS";
 export const TOGGLE_ENGLISH_TRANSLATION = "TOGGLE_ENGLISH_TRANSLATION";
 export const TOGGLE_PUNJABI_TRANSLATION = "TOGGLE_PUNJABI_TRANSLATION";
 export const TOGGLE_SPANISH_TRANSLATION = "TOGGLE_SPANISH_TRANSLATION";
+export const SET_BOOKMARK_POSITION = "SET_BOOKMARK_POSITION";
 
 export const THEMES = ["Default", "Light", "Dark"];
 
@@ -158,4 +159,7 @@ export function togglePunjabiTranslation(value) {
 }
 export function toggleSpanishTranslation(value) {
   return { type: TOGGLE_SPANISH_TRANSLATION, value };
+}
+export function setBookmarkPosition(value) {
+  return { type: SET_BOOKMARK_POSITION, value };
 }

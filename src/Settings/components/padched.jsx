@@ -17,21 +17,28 @@ function PadchedSettingsComponent({ isNightMode, dispatch }) {
       <ListItem
         key={item.key}
         bottomDivider
+        containerStyle={[
+          { backgroundColor: isNightMode ? colors.NIGHT_GREY_COLOR : colors.WHITE_COLOR },
+        ]}
         onPress={() => {
           toggleVisible(false);
           dispatch(setPadched(item.key));
         }}
       >
         <ListItem.Content>
-          <ListItem.Title>{item.title}</ListItem.Title>
+          <ListItem.Title style={[isNightMode && { color: colors.WHITE_COLOR }]}>
+            {item.title}
+          </ListItem.Title>
         </ListItem.Content>
-        {padched === item.key && <Icon name="check" />}
+        {padched === item.key && <Icon color={isNightMode && colors.WHITE_COLOR} name="check" />}
       </ListItem>
     );
   };
   const BottomSheetContent = () => (
     <BottomSheet modalProps={{}} isVisible>
-      <Text style={styles.bottomSheetTitle}>{STRINGS.padchhed_settings}</Text>
+      <Text style={[styles.bottomSheetTitle, , isNightMode && { color: colors.WHITE_COLOR }]}>
+        {STRINGS.padchhed_settings}
+      </Text>
       {PADCHED_SETTINGS.map((item) => renderItem(item, dispatch))}
     </BottomSheet>
   );
@@ -40,7 +47,9 @@ function PadchedSettingsComponent({ isNightMode, dispatch }) {
     return (
       <ListItem
         bottomDivider
-        containerStyle={[{ backgroundColor: isNightMode ? colors.NIGHT_GREY_COLOR : null }]}
+        containerStyle={[
+          { backgroundColor: isNightMode ? colors.NIGHT_GREY_COLOR : colors.WHITE_COLOR },
+        ]}
         onPress={() => {
           toggleVisible(true);
         }}

@@ -100,7 +100,9 @@ function VishraamComponent({ isNightMode, dispatch }) {
     return (
       <ListItem
         bottomDivider
-        containerStyle={[{ backgroundColor: isNightMode ? colors.NIGHT_GREY_COLOR : null }]}
+        containerStyle={[
+          { backgroundColor: isNightMode ? colors.NIGHT_GREY_COLOR : colors.WHITE_COLOR },
+        ]}
       >
         <Icon
           color={isNightMode ? colors.COMPONENT_COLOR_NIGHT_MODE : colors.COMPONENT_COLOR}

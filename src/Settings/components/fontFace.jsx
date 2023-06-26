@@ -17,21 +17,28 @@ function FontFaceComponent({ isNightMode, dispatch }) {
       <ListItem
         key={item.key}
         bottomDivider
+        containerStyle={[
+          { backgroundColor: isNightMode ? colors.NIGHT_GREY_COLOR : colors.WHITE_COLOR },
+        ]}
         onPress={() => {
           toggleVisible(false);
           dispatch(setFontFace(item.key));
         }}
       >
         <ListItem.Content>
-          <ListItem.Title>{item.title}</ListItem.Title>
+          <ListItem.Title style={[isNightMode && { color: colors.WHITE_COLOR }]}>
+            {item.title}
+          </ListItem.Title>
         </ListItem.Content>
-        {fontFace === item.key && <Icon name="check" />}
+        {fontFace === item.key && <Icon color={isNightMode && colors.WHITE_COLOR} name="check" />}
       </ListItem>
     );
   };
   const BottomSheetContent = () => (
     <BottomSheet modalProps={{}} isVisible>
-      <Text style={styles.bottomSheetTitle}>{STRINGS.font_face}</Text>
+      <Text style={[styles.bottomSheetTitle, isNightMode && { color: colors.WHITE_COLOR }]}>
+        {STRINGS.font_face}
+      </Text>
       {FONT_FACES.map((item) => renderItem(item, dispatch))}
     </BottomSheet>
   );
@@ -40,7 +47,9 @@ function FontFaceComponent({ isNightMode, dispatch }) {
     return (
       <ListItem
         bottomDivider
-        containerStyle={[{ backgroundColor: isNightMode ? colors.NIGHT_GREY_COLOR : null }]}
+        containerStyle={[
+          { backgroundColor: isNightMode ? colors.NIGHT_GREY_COLOR : colors.WHITE_COLOR },
+        ]}
         onPress={() => {
           toggleVisible(true);
         }}

@@ -49,7 +49,9 @@ function ListComponent({ navigation }) {
       <ThemeComponent isNightMode={isNightMode} dispatch={dispatch} />
       <ListItem
         bottomDivider
-        containerStyle={[{ backgroundColor: isNightMode ? colors.NIGHT_GREY_COLOR : null }]}
+        containerStyle={[
+          { backgroundColor: isNightMode ? colors.NIGHT_GREY_COLOR : colors.WHITE_COLOR },
+        ]}
       >
         {!isStatusBar && (
           <Icon
@@ -75,7 +77,9 @@ function ListComponent({ navigation }) {
       {/** Auto Scroll */}
       <ListItem
         bottomDivider
-        containerStyle={[{ backgroundColor: isNightMode ? colors.NIGHT_GREY_COLOR : null }]}
+        containerStyle={[
+          { backgroundColor: isNightMode ? colors.NIGHT_GREY_COLOR : colors.WHITE_COLOR },
+        ]}
       >
         <Icon
           color={isNightMode ? colors.COMPONENT_COLOR_NIGHT_MODE : colors.COMPONENT_COLOR}
@@ -92,7 +96,9 @@ function ListComponent({ navigation }) {
       {/** Keep awake */}
       <ListItem
         bottomDivider
-        containerStyle={[{ backgroundColor: isNightMode ? colors.NIGHT_GREY_COLOR : null }]}
+        containerStyle={[
+          { backgroundColor: isNightMode ? colors.NIGHT_GREY_COLOR : colors.WHITE_COLOR },
+        ]}
       >
         <Avatar source={require("../../images/screenonicon.png")} />
         <ListItem.Content>
@@ -120,7 +126,9 @@ function ListComponent({ navigation }) {
       </Text>
       <ListItem
         bottomDivider
-        containerStyle={[{ backgroundColor: isNightMode ? colors.NIGHT_GREY_COLOR : null }]}
+        containerStyle={[
+          { backgroundColor: isNightMode ? colors.NIGHT_GREY_COLOR : colors.WHITE_COLOR },
+        ]}
         onPress={() => navigate("EditBaniOrder")}
       >
         <Avatar source={require("../../images/rearrangeicon.png")} />
@@ -135,7 +143,9 @@ function ListComponent({ navigation }) {
       <LarivaarComponent isNightMode={isNightMode} dispatch={dispatch} />
       <ListItem
         bottomDivider
-        containerStyle={[{ backgroundColor: isNightMode ? colors.NIGHT_GREY_COLOR : null }]}
+        containerStyle={[
+          { backgroundColor: isNightMode ? colors.NIGHT_GREY_COLOR : colors.WHITE_COLOR },
+        ]}
       >
         <Icon
           color={isNightMode ? colors.COMPONENT_COLOR_NIGHT_MODE : colors.COMPONENT_COLOR}
@@ -156,7 +166,9 @@ function ListComponent({ navigation }) {
       <VishraamComponent isNightMode={isNightMode} dispatch={dispatch} />
       <ListItem
         bottomDivider
-        containerStyle={[{ backgroundColor: isNightMode ? colors.NIGHT_GREY_COLOR : null }]}
+        containerStyle={[
+          { backgroundColor: isNightMode ? colors.NIGHT_GREY_COLOR : colors.WHITE_COLOR },
+        ]}
       >
         <Icon
           color={isNightMode ? colors.COMPONENT_COLOR_NIGHT_MODE : colors.COMPONENT_COLOR}
@@ -183,7 +195,9 @@ function ListComponent({ navigation }) {
       </Text>
       <ListItem
         bottomDivider
-        containerStyle={[{ backgroundColor: isNightMode ? colors.NIGHT_GREY_COLOR : null }]}
+        containerStyle={[
+          { backgroundColor: isNightMode ? colors.NIGHT_GREY_COLOR : colors.WHITE_COLOR },
+        ]}
       >
         <Avatar source={require("../../images/analyticsicon.png")} />
         <ListItem.Content>
@@ -195,7 +209,9 @@ function ListComponent({ navigation }) {
       </ListItem>
       <ListItem
         bottomDivider
-        containerStyle={[{ backgroundColor: isNightMode ? colors.NIGHT_GREY_COLOR : null }]}
+        containerStyle={[
+          { backgroundColor: isNightMode ? colors.NIGHT_GREY_COLOR : colors.WHITE_COLOR },
+        ]}
         onPress={() => Linking.openURL("https://khalisfoundation.org/donate/")}
       >
         <Icon
@@ -211,7 +227,9 @@ function ListComponent({ navigation }) {
         <ListItem.Chevron />
       </ListItem>
       <ListItem
-        containerStyle={[{ backgroundColor: isNightMode ? colors.NIGHT_GREY_COLOR : null }]}
+        containerStyle={[
+          { backgroundColor: isNightMode ? colors.NIGHT_GREY_COLOR : colors.WHITE_COLOR },
+        ]}
         bottomDivider
         onPress={() => navigate("About")}
       >
@@ -228,7 +246,10 @@ function ListComponent({ navigation }) {
         <ListItem.Chevron />
       </ListItem>
       <Text
-        style={[styles.end, { backgroundColor: isNightMode ? colors.NIGHT_BLACK : null }]}
+        style={[
+          styles.end,
+          { backgroundColor: isNightMode ? colors.NIGHT_BLACK : colors.WHITE_COLOR },
+        ]}
       ></Text>
     </ScrollView>
   );

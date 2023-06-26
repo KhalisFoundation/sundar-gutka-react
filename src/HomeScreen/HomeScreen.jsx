@@ -2,14 +2,13 @@ import React, { useEffect, useState } from "react";
 import { SafeAreaView, View, Text, StatusBar } from "react-native";
 import { Icon } from "@rneui/themed";
 import PropTypes from "prop-types";
-import BaniList from "./components/BaniList";
+import { useSelector } from "react-redux";
+import BaniList from "../common/components/BaniList/BanilList";
 import { getBaniList } from "../database/db";
 import STRINGS from "../common/localization";
 import colors from "../common/colors";
 import styles from "./styles";
 import constant from "../common/constant";
-import { useSelector } from "react-redux";
-import { BackgroundImage } from "@rneui/base";
 
 function BaniHeader(props) {
   const { navigate } = props;
@@ -41,7 +40,14 @@ function BaniHeader(props) {
 function HomeScreen({ navigation }) {
   const { navigate } = navigation;
   const [data, setData] = useState([]);
-  const { transliterationLanguage } = useSelector((state) => state);
+  const { transliterationLanguage, isNightMode } = useSelector((state) => state);
+
+  function onPress(item) {
+    navigate(constant.READER, {
+      key: `Reader-${item.item.id}`,
+      params: { id: item.item.id, title: item.item.gurmukhi },
+    });
+  }
 
   useEffect(() => {
     (async () => {
@@ -55,11 +61,13 @@ function HomeScreen({ navigation }) {
   }, [transliterationLanguage]);
 
   return (
-    <SafeAreaView style={styles.container}>
-      <StatusBar barStyle="light-content" />
+    <SafeAreaView
+      style={[isNightMode && { backgroundColor: colors.NIGHT_BLACK }, styles.container]}
+    >
+      <StatusBar barStyle="light-content" backgroundColor={colors.TOOLBAR_COLOR} />
       <BaniHeader navigate={navigate} />
 
-      <BaniList data={data} navigate={navigate} />
+      <BaniList data={data} onPress={onPress.bind(this)} />
     </SafeAreaView>
   );
 }

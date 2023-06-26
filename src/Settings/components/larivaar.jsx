@@ -30,7 +30,9 @@ function LarivaarComponent({ isNightMode, dispatch }) {
     return (
       <ListItem
         bottomDivider
-        containerStyle={[{ backgroundColor: isNightMode ? colors.NIGHT_GREY_COLOR : null }]}
+        containerStyle={[
+          { backgroundColor: isNightMode ? colors.NIGHT_GREY_COLOR : colors.WHITE_COLOR },
+        ]}
       >
         <Avatar source={require("../../../images/larivaaricon.png")} />
         <ListItem.Content>

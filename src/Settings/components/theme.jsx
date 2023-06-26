@@ -34,20 +34,27 @@ function ThemeComponent({ isNightMode, dispatch }) {
       <ListItem
         key={item}
         bottomDivider
+        containerStyle={[
+          { backgroundColor: isNightMode ? colors.NIGHT_GREY_COLOR : colors.WHITE_COLOR },
+        ]}
         onPress={() => {
           toggleIsNightMode(item);
         }}
       >
         <ListItem.Content>
-          <ListItem.Title>{item}</ListItem.Title>
+          <ListItem.Title style={[isNightMode && { color: colors.WHITE_COLOR }]}>
+            {item}
+          </ListItem.Title>
         </ListItem.Content>
-        {theme === item && <Icon name="check" />}
+        {theme === item && <Icon color={isNightMode && colors.WHITE_COLOR} name="check" />}
       </ListItem>
     );
   };
   const BottomSheetContent = () => (
     <BottomSheet modalProps={{}} isVisible>
-      <Text style={styles.bottomSheetTitle}>{STRINGS.theme}</Text>
+      <Text style={[styles.bottomSheetTitle, isNightMode && { color: colors.WHITE_COLOR }]}>
+        {STRINGS.theme}
+      </Text>
       {THEMES.map((item) => renderItem(item, dispatch))}
     </BottomSheet>
   );
@@ -56,7 +63,9 @@ function ThemeComponent({ isNightMode, dispatch }) {
     return (
       <ListItem
         bottomDivider
-        containerStyle={[{ backgroundColor: isNightMode ? colors.NIGHT_GREY_COLOR : null }]}
+        containerStyle={[
+          { backgroundColor: isNightMode ? colors.NIGHT_GREY_COLOR : colors.WHITE_COLOR },
+        ]}
         onPress={() => {
           toggleVisible(true);
         }}

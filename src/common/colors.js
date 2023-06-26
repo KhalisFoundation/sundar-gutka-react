@@ -44,4 +44,7 @@ export default {
   MODAL_BACKGROUND_COLOR: "rgba(0,0,0,0.5)",
   LABEL_COLORS: "#ecf0f1",
   NIGHT_GREY_COLOR: "#464646",
+  HEADER_COLOR_1_DARK: "#77baff",
+  HEADER_COLOR_1_LIGHT: "#0066ff",
+  HEADER_COLOR_2_LIGHT: "#727272",
 };

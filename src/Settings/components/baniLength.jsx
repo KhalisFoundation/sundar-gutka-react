@@ -17,21 +17,28 @@ function BaniLengthComponent({ isNightMode, dispatch }) {
       <ListItem
         key={item.key}
         bottomDivider
+        containerStyle={[
+          { backgroundColor: isNightMode ? colors.NIGHT_GREY_COLOR : colors.WHITE_COLOR },
+        ]}
         onPress={() => {
           toggleVisible(false);
           dispatch(setBaniLength(item.key));
         }}
       >
         <ListItem.Content>
-          <ListItem.Title>{item.title}</ListItem.Title>
+          <ListItem.Title style={[isNightMode && { color: colors.WHITE_COLOR }]}>
+            {item.title}
+          </ListItem.Title>
         </ListItem.Content>
-        {baniLength === item.key && <Icon name="check" />}
+        {baniLength === item.key && <Icon color={isNightMode && colors.WHITE_COLOR} name="check" />}
       </ListItem>
     );
   };
   const BottomSheetContent = () => (
     <BottomSheet modalProps={{}} isVisible>
-      <Text style={styles.bottomSheetTitle}>{STRINGS.bani_length}</Text>
+      <Text style={[styles.bottomSheetTitle, isNightMode && { color: colors.WHITE_COLOR }]}>
+        {STRINGS.bani_length}
+      </Text>
       {BANI_LENGTHS.map((item) => renderItem(item, dispatch))}
     </BottomSheet>
   );
@@ -40,7 +47,9 @@ function BaniLengthComponent({ isNightMode, dispatch }) {
     return (
       <ListItem
         bottomDivider
-        containerStyle={[{ backgroundColor: isNightMode ? colors.NIGHT_GREY_COLOR : null }]}
+        containerStyle={[
+          { backgroundColor: isNightMode ? colors.NIGHT_GREY_COLOR : colors.WHITE_COLOR },
+        ]}
         onPress={() => {
           toggleVisible(true);
         }}
@@ -52,9 +61,7 @@ function BaniLengthComponent({ isNightMode, dispatch }) {
           </ListItem.Title>
         </ListItem.Content>
         {baniLength && (
-          <ListItem.Title
-            style={[styles.titleInfoStyle, { color: isNightMode ? colors.WHITE_COLOR : "#a3a3a3" }]}
-          >
+          <ListItem.Title style={[{ color: isNightMode ? colors.WHITE_COLOR : "#a3a3a3" }]}>
             {BANI_LENGTHS.filter((item) => item.key === baniLength).map((item) => item.title)[0]}
           </ListItem.Title>
         )}

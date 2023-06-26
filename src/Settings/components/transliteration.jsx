@@ -21,27 +21,42 @@ function TransliterationComponent({ isNightMode, dispatch }) {
       <ListItem
         key={item.key}
         bottomDivider
+        containerStyle={[
+          { backgroundColor: isNightMode ? colors.NIGHT_GREY_COLOR : colors.WHITE_COLOR },
+        ]}
         onPress={() => {
           toggleVisible(false);
           dispatch(setTransliteration(item.key));
         }}
       >
         <ListItem.Content>
-          <ListItem.Title>{item.title}</ListItem.Title>
+          <ListItem.Title style={[isNightMode && { color: colors.WHITE_COLOR }]}>
+            {item.title}
+          </ListItem.Title>
         </ListItem.Content>
-        {transliterationLanguage === item.key && <Icon name="check" />}
+        {transliterationLanguage === item.key && (
+          <Icon color={isNightMode && colors.WHITE_COLOR} name="check" />
+        )}
       </ListItem>
     );
   };
   const BottomSheetComponent = () => (
     <BottomSheet modalProps={{}} isVisible>
-      <Text style={styles.bottomSheetTitle}>{STRINGS.language}</Text>
+      <Text style={[styles.bottomSheetTitle, isNightMode && { color: colors.WHITE_COLOR }]}>
+        {STRINGS.language}
+      </Text>
       {TRANSLITERATION_LANGUAGES.map((item) => renderItem(item, dispatch))}
     </BottomSheet>
   );
 
   const TransliterationExpand = () => (
-    <ListItem bottomDivider onPress={() => toggleVisible(true)}>
+    <ListItem
+      bottomDivider
+      onPress={() => toggleVisible(true)}
+      containerStyle={[
+        { backgroundColor: isNightMode ? colors.NIGHT_GREY_COLOR : colors.WHITE_COLOR },
+      ]}
+    >
       <Avatar />
       <ListItem.Content>
         <ListItem.Title style={[isNightMode && { color: colors.WHITE_COLOR }]}>
@@ -66,7 +81,9 @@ function TransliterationComponent({ isNightMode, dispatch }) {
     return (
       <ListItem
         bottomDivider
-        containerStyle={[{ backgroundColor: isNightMode ? colors.NIGHT_GREY_COLOR : null }]}
+        containerStyle={[
+          { backgroundColor: isNightMode ? colors.NIGHT_GREY_COLOR : colors.WHITE_COLOR },
+        ]}
       >
         <Avatar source={require("../../../images/romanizeicon.png")} />
         <ListItem.Content>
