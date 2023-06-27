@@ -1,9 +1,8 @@
-import React from "react";
-import { useState } from "react";
-import { useEffect } from "react";
+import React, { useState, useEffect } from "react";
 import { SafeAreaProvider, SafeAreaView } from "react-native-safe-area-context";
 import { Icon } from "@rneui/themed";
 import { useSelector, useDispatch } from "react-redux";
+import PropTypes from "prop-types";
 import { getBookmarksForID } from "../database/db";
 import BaniList from "../common/components/BaniList/BanilList";
 import colors from "../common/colors";
@@ -19,6 +18,15 @@ function Bookmarks({ navigation, route }) {
     navigation.goBack();
   }
 
+  const headerLeft = () => (
+    <Icon
+      name="arrow-back"
+      size={30}
+      onPress={() => navigation.goBack()}
+      color={colors.WHITE_COLOR}
+    />
+  );
+
   useEffect(() => {
     navigation.setOptions({
       headerTitleStyle: {
@@ -31,14 +39,7 @@ function Bookmarks({ navigation, route }) {
           ? colors.TOOLBAR_COLOR_ALT
           : colors.TOOLBAR_COLOR_ALT_NIGHT_MODE,
       },
-      headerLeft: () => (
-        <Icon
-          name="arrow-back"
-          size={30}
-          onPress={() => navigation.goBack()}
-          color={colors.WHITE_COLOR}
-        />
-      ),
+      headerLeft,
     });
   }, []);
 
@@ -50,8 +51,6 @@ function Bookmarks({ navigation, route }) {
         transliterationLanguage
       );
       setData(bookmarks);
-      try {
-      } catch (error) {}
     })();
   }, []);
   return (
@@ -62,4 +61,8 @@ function Bookmarks({ navigation, route }) {
     </SafeAreaProvider>
   );
 }
+Bookmarks.propTypes = {
+  navigation: PropTypes.shape().isRequired,
+  route: PropTypes.shape().isRequired,
+};
 export default Bookmarks;

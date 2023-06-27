@@ -1,4 +1,7 @@
+import React, { useState } from "react";
 import { ListItem, Avatar, Switch } from "@rneui/themed";
+import { useSelector } from "react-redux";
+import PropTypes from "prop-types";
 import colors from "../../common/colors";
 import STRINGS from "../../common/localization";
 import {
@@ -6,8 +9,6 @@ import {
   togglePunjabiTranslation,
   toggleSpanishTranslation,
 } from "../../common/actions";
-import { useSelector } from "react-redux";
-import { useState } from "react";
 
 function TranslationComponent({ isNightMode, dispatch }) {
   const { isEnglishTranslation, isSpanishTranslation, isPunjabiTranslation } = useSelector(
@@ -84,5 +85,10 @@ function TranslationComponent({ isNightMode, dispatch }) {
     </ListItem.Accordion>
   );
 }
+
+TranslationComponent.propTypes = {
+  isNightMode: PropTypes.bool.isRequired,
+  dispatch: PropTypes.func.isRequired,
+};
 
 export default TranslationComponent;

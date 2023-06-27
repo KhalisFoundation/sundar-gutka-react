@@ -3,11 +3,11 @@ import React from "react";
 import { useSelector } from "react-redux";
 import PropTypes from "prop-types";
 import { SafeAreaView, StatusBar, View, Text } from "react-native";
+import { SafeAreaProvider } from "react-native-safe-area-context";
 import STRINGS from "../common/localization";
 import ListComponent from "./ListComponents";
 import colors from "../common/colors";
 import styles from "./styles";
-import { SafeAreaProvider } from "react-native-safe-area-context";
 
 function HeaderComponent({ backNav }) {
   const { isNightMode } = useSelector((state) => state);
@@ -37,22 +37,19 @@ function HeaderComponent({ backNav }) {
 function Settings({ navigation }) {
   const { isNightMode } = useSelector((state) => state);
 
-  const { goBack } = navigation;
   return (
-    <>
-      <SafeAreaProvider>
-        <SafeAreaView>
-          <StatusBar
-            barStyle={isNightMode ? "light-content" : "dark-content"}
-            backgroundColor={
-              !isNightMode ? colors.TOOLBAR_COLOR_ALT : colors.TOOLBAR_COLOR_ALT_NIGHT_MODE
-            }
-          />
-          {/* <HeaderComponent backNav={goBack} /> */}
-          <ListComponent navigation={navigation} />
-        </SafeAreaView>
-      </SafeAreaProvider>
-    </>
+    <SafeAreaProvider>
+      <SafeAreaView>
+        <StatusBar
+          barStyle={isNightMode ? "light-content" : "dark-content"}
+          backgroundColor={
+            !isNightMode ? colors.TOOLBAR_COLOR_ALT : colors.TOOLBAR_COLOR_ALT_NIGHT_MODE
+          }
+        />
+        {/* <HeaderComponent backNav={goBack} /> */}
+        <ListComponent navigation={navigation} />
+      </SafeAreaView>
+    </SafeAreaProvider>
   );
 }
 

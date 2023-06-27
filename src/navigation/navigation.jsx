@@ -14,8 +14,17 @@ import Bookmarks from "../Bookmarks";
 
 const Stack = createNativeStackNavigator();
 
+const headerLeft = (navigation, isNightMode) => (
+  <Icon
+    name="arrow-back"
+    style={{ fontSize: 30 }}
+    onPress={() => navigation.goBack()}
+    color={isNightMode ? colors.TOOLBAR_TINT : colors.TOOLBAR_TINT_DARK}
+  />
+);
 function Navigation() {
   const { isNightMode } = useSelector((state) => state);
+
   return (
     <NavigationContainer>
       <Stack.Navigator
@@ -38,14 +47,7 @@ function Navigation() {
         <Stack.Screen name="Reader" component={Reader} />
         <Stack.Screen
           options={({ navigation }) => ({
-            headerLeft: () => (
-              <Icon
-                name="arrow-back"
-                style={{ fontSize: 30 }}
-                onPress={() => navigation.goBack()}
-                color={isNightMode ? colors.TOOLBAR_TINT : colors.TOOLBAR_TINT_DARK}
-              />
-            ),
+            headerLeft: () => headerLeft(navigation, isNightMode),
             headerTitleStyle: {
               color: !isNightMode ? colors.NIGHT_BLACK : colors.WHITE_COLOR,
               fontWeight: "normal",

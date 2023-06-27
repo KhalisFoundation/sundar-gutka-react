@@ -2,6 +2,7 @@ import React from "react";
 import { Text, Linking, ScrollView } from "react-native";
 import { ListItem, Avatar, Switch, Icon } from "@rneui/themed";
 import { useSelector, useDispatch } from "react-redux";
+import PropTypes from "prop-types";
 import STRINGS from "../common/localization";
 import styles from "./styles";
 import colors from "../common/colors";
@@ -250,8 +251,13 @@ function ListComponent({ navigation }) {
           styles.end,
           { backgroundColor: isNightMode ? colors.NIGHT_BLACK : colors.WHITE_COLOR },
         ]}
-      ></Text>
+      />
     </ScrollView>
   );
 }
+
+ListComponent.propTypes = {
+  navigation: PropTypes.shape().isRequired,
+};
+
 export default ListComponent;

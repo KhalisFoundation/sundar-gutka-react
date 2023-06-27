@@ -1,43 +1,37 @@
-import React from "react";
-import { useState } from "react";
+import React, { useState } from "react";
 import { Text } from "react-native";
-import { ListItem, BottomSheet, Avatar, Icon } from "@rneui/themed";
+import { ListItem, BottomSheet, Icon } from "@rneui/themed";
+import { useSelector } from "react-redux";
+import PropTypes from "prop-types";
 import STRINGS from "../../common/localization";
 import styles from "../styles";
 import { setLanguage, LANGUAGES } from "../../common/actions";
-import { useSelector } from "react-redux";
 import colors from "../../common/colors";
+
+const renderItem = (item, dispatch, language, toggleVisible) => {
+  return (
+    <ListItem
+      key={item.key}
+      bottomDivider
+      onPress={() => {
+        toggleVisible(false);
+        dispatch(setLanguage(item.key));
+      }}
+    >
+      <ListItem.Content>
+        <ListItem.Title>{item.title}</ListItem.Title>
+      </ListItem.Content>
+      {language === item.key && <Icon name="check" />}
+    </ListItem>
+  );
+};
 
 function LanguageComponent({ isNightMode, dispatch }) {
   const [isVisible, toggleVisible] = useState(false);
   const { language } = useSelector((state) => state);
 
-  const renderItem = (item, dispatch) => {
-    return (
-      <ListItem
-        key={item.key}
-        bottomDivider
-        onPress={() => {
-          toggleVisible(false);
-          dispatch(setLanguage(item.key));
-        }}
-      >
-        <ListItem.Content>
-          <ListItem.Title>{item.title}</ListItem.Title>
-        </ListItem.Content>
-        {language === item.key && <Icon name="check" />}
-      </ListItem>
-    );
-  };
-  const BottomSheetContent = () => (
-    <BottomSheet modalProps={{}} isVisible>
-      <Text style={styles.bottomSheetTitle}>{STRINGS.language}</Text>
-      {LANGUAGES.map((item) => renderItem(item, dispatch))}
-    </BottomSheet>
-  );
-
-  const TriggerComponent = () => {
-    return (
+  return (
+    <>
       <ListItem
         bottomDivider
         containerStyle={[
@@ -67,13 +61,17 @@ function LanguageComponent({ isNightMode, dispatch }) {
         )}
         <ListItem.Chevron />
       </ListItem>
-    );
-  };
-  return (
-    <>
-      <TriggerComponent />
-      {isVisible && <BottomSheetContent />}
+      {isVisible && (
+        <BottomSheet modalProps={{}} isVisible>
+          <Text style={styles.bottomSheetTitle}>{STRINGS.language}</Text>
+          {LANGUAGES.map((item) => renderItem(item, dispatch, language, toggleVisible))}
+        </BottomSheet>
+      )}
     </>
   );
 }
+LanguageComponent.propTypes = {
+  isNightMode: PropTypes.bool.isRequired,
+  dispatch: PropTypes.func.isRequired,
+};
 export default LanguageComponent;

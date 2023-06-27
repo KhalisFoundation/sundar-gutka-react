@@ -1,4 +1,5 @@
 import constant from "./constant";
+
 export const baseFontSize = (size, isTransliteration) => {
   let fontSize;
 

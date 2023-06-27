@@ -1,50 +1,43 @@
-import React from "react";
-import { useState } from "react";
+import React, { useState } from "react";
 import { Text } from "react-native";
 import { ListItem, BottomSheet, Avatar, Icon } from "@rneui/themed";
+import { useSelector } from "react-redux";
+import PropTypes from "prop-types";
 import STRINGS from "../../common/localization";
 import styles from "../styles";
 import { setBaniLength, BANI_LENGTHS } from "../../common/actions";
-import { useSelector } from "react-redux";
 import colors from "../../common/colors";
+
+const renderItem = (item, dispatch, isNightMode, toggleVisible) => {
+  const { baniLength } = useSelector((state) => state);
+  return (
+    <ListItem
+      key={item.key}
+      bottomDivider
+      containerStyle={[
+        { backgroundColor: isNightMode ? colors.NIGHT_GREY_COLOR : colors.WHITE_COLOR },
+      ]}
+      onPress={() => {
+        toggleVisible(false);
+        dispatch(setBaniLength(item.key));
+      }}
+    >
+      <ListItem.Content>
+        <ListItem.Title style={[isNightMode && { color: colors.WHITE_COLOR }]}>
+          {item.title}
+        </ListItem.Title>
+      </ListItem.Content>
+      {baniLength === item.key && <Icon color={isNightMode && colors.WHITE_COLOR} name="check" />}
+    </ListItem>
+  );
+};
 
 function BaniLengthComponent({ isNightMode, dispatch }) {
   const [isVisible, toggleVisible] = useState(false);
   const { baniLength } = useSelector((state) => state);
 
-  const renderItem = (item, dispatch) => {
-    return (
-      <ListItem
-        key={item.key}
-        bottomDivider
-        containerStyle={[
-          { backgroundColor: isNightMode ? colors.NIGHT_GREY_COLOR : colors.WHITE_COLOR },
-        ]}
-        onPress={() => {
-          toggleVisible(false);
-          dispatch(setBaniLength(item.key));
-        }}
-      >
-        <ListItem.Content>
-          <ListItem.Title style={[isNightMode && { color: colors.WHITE_COLOR }]}>
-            {item.title}
-          </ListItem.Title>
-        </ListItem.Content>
-        {baniLength === item.key && <Icon color={isNightMode && colors.WHITE_COLOR} name="check" />}
-      </ListItem>
-    );
-  };
-  const BottomSheetContent = () => (
-    <BottomSheet modalProps={{}} isVisible>
-      <Text style={[styles.bottomSheetTitle, isNightMode && { color: colors.WHITE_COLOR }]}>
-        {STRINGS.bani_length}
-      </Text>
-      {BANI_LENGTHS.map((item) => renderItem(item, dispatch))}
-    </BottomSheet>
-  );
-
-  const TriggerComponent = () => {
-    return (
+  return (
+    <>
       <ListItem
         bottomDivider
         containerStyle={[
@@ -67,13 +60,20 @@ function BaniLengthComponent({ isNightMode, dispatch }) {
         )}
         <ListItem.Chevron />
       </ListItem>
-    );
-  };
-  return (
-    <>
-      <TriggerComponent />
-      {isVisible && <BottomSheetContent />}
+      {isVisible && (
+        <BottomSheet modalProps={{}} isVisible>
+          <Text style={[styles.bottomSheetTitle, isNightMode && { color: colors.WHITE_COLOR }]}>
+            {STRINGS.bani_length}
+          </Text>
+          {BANI_LENGTHS.map((item) => renderItem(item, dispatch, isNightMode, toggleVisible))}
+        </BottomSheet>
+      )}
     </>
   );
 }
+
+BaniLengthComponent.propTypes = {
+  isNightMode: PropTypes.bool.isRequired,
+  dispatch: PropTypes.func.isRequired,
+};
 export default BaniLengthComponent;

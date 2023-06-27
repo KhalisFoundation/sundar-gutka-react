@@ -1,14 +1,16 @@
 import { useDispatch, useSelector } from "react-redux";
 import React, { useEffect, useState, useRef } from "react";
-import { FlatList, View, StatusBar, Text, StyleSheet, Dimensions, ScrollView } from "react-native";
+import { View, StatusBar, Text, StyleSheet, ScrollView } from "react-native";
+import PropTypes from "prop-types";
 import { Icon } from "@rneui/themed";
+import { SafeAreaProvider, SafeAreaView } from "react-native-safe-area-context";
 import { getShabadFromID } from "../database/db";
 import colors from "../common/colors";
 import constant from "../common/constant";
-import { SafeAreaProvider, SafeAreaView } from "react-native-safe-area-context";
 import { fontSizeForReader, fontColorForReader } from "./utils/util";
 import { setBookmarkPosition } from "../common/actions";
-const { height, width } = Dimensions.get("window");
+
+// const { height, width } = Dimensions.get("window");
 
 function Reader({ navigation, route }) {
   const readerRef = useRef();
@@ -35,6 +37,10 @@ function Reader({ navigation, route }) {
   const [maxPageLength, setMaxPageLength] = useState(50);
   const dispatch = useDispatch();
 
+  const pagination = (data) => {
+    setPage(data.slice(0, maxPageLength));
+  };
+
   useEffect(() => {
     (async () => {
       try {
@@ -47,7 +53,37 @@ function Reader({ navigation, route }) {
       }
     })();
   }, [shabadID, transliterationLanguage, bookmarkPosition]);
-
+  const headerLeft = () => (
+    <Icon
+      name="arrow-back"
+      size={30}
+      onPress={() => navigation.goBack()}
+      color={colors.WHITE_COLOR}
+    />
+  );
+  const headerRight = () => {
+    return (
+      <>
+        <Icon
+          name="bookmark"
+          color={colors.TOOLBAR_TINT}
+          size={30}
+          onPress={() => {
+            // this.trackScreenForShabad(params);
+            navigation.navigate("Bookmarks", { id: shabadID });
+          }}
+        />
+        <Icon
+          name="settings"
+          color={colors.TOOLBAR_TINT}
+          size={30}
+          onPress={() => {
+            navigation.navigate(constant.SETTINGS);
+          }}
+        />
+      </>
+    );
+  };
   useEffect(() => {
     navigation.setOptions({
       title: route.params.params.title,
@@ -62,43 +98,11 @@ function Reader({ navigation, route }) {
           ? colors.READER_STATUS_BAR_COLOR
           : colors.READER_STATUS_BAR_COLOR_NIGHT_MODE,
       },
-      headerLeft: () => (
-        <Icon
-          name="arrow-back"
-          size={30}
-          onPress={() => navigation.goBack()}
-          color={colors.WHITE_COLOR}
-        />
-      ),
-      headerRight: () => {
-        return (
-          <>
-            <Icon
-              name="bookmark"
-              color={colors.TOOLBAR_TINT}
-              size={30}
-              onPress={() => {
-                // this.trackScreenForShabad(params);
-                navigation.navigate("Bookmarks", { id: shabadID });
-              }}
-            />
-            <Icon
-              name="settings"
-              color={colors.TOOLBAR_TINT}
-              size={30}
-              onPress={() => {
-                navigation.navigate(constant.SETTINGS);
-              }}
-            />
-          </>
-        );
-      },
+      headerLeft,
+      headerRight,
     });
   }, []);
 
-  const pagination = (data) => {
-    setPage(data.slice(0, maxPageLength));
-  };
   const handleScroll = (event) => {
     const scrollPosition = event.nativeEvent.contentOffset.y;
     const scrollViewHeight = event.nativeEvent.layoutMeasurement.height;
@@ -120,9 +124,7 @@ function Reader({ navigation, route }) {
 
   useEffect(() => {
     if (bookmarkPosition !== 0) {
-      console.log("bookmarkPosition", bookmarkPosition);
       const index = shabad.findIndex((item) => item.id === bookmarkPosition);
-      console.log("bookmarkIndex", index);
       setBookmarkIndex(index);
       dispatch(setBookmarkPosition(0));
       if (page.length < index && maxPageLength < index) {
@@ -133,7 +135,6 @@ function Reader({ navigation, route }) {
   }, [bookmarkPosition, page]);
   useEffect(() => {
     if (bookmarkIndex > 0 && rowHeights.length >= bookmarkIndex) {
-      console.log("it's running");
       const position = rowHeights.slice(0, bookmarkIndex).reduce((a, b) => a + b, 0);
       readerRef.current?.scrollTo({ y: position, animated: true });
     }
@@ -271,5 +272,10 @@ function Reader({ navigation, route }) {
     </SafeAreaProvider>
   );
 }
+
+Reader.propTypes = {
+  navigation: PropTypes.shape().isRequired,
+  route: PropTypes.shape().isRequired,
+};
 
 export default Reader;

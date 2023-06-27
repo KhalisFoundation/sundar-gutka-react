@@ -1,7 +1,8 @@
-import React from "react";
-import { useState } from "react";
+import React, { useState } from "react";
 import { Text } from "react-native";
-import { ListItem, BottomSheet, Avatar, Icon, Switch } from "@rneui/themed";
+import { ListItem, BottomSheet, Icon, Switch } from "@rneui/themed";
+import { useSelector } from "react-redux";
+import PropTypes from "prop-types";
 import STRINGS from "../../common/localization";
 import {
   setVishraamOption,
@@ -10,49 +11,40 @@ import {
   VISHRAAM_OPTIONS,
   VISHRAAM_SOURCES,
 } from "../../common/actions";
-import { useSelector } from "react-redux";
 import colors from "../../common/colors";
 import styles from "../styles";
 
-function VishraamComponent({ isNightMode, dispatch }) {
-  const [isVishraamOptionVisible, toggleVishraamOptionVisible] = useState(false);
-  const [isVishraamSourceVisible, toggleVishraamSourceVisible] = useState(false);
-  const { isVishraam, vishraamOption, vishraamSource } = useSelector((state) => state);
-
-  const renderItem = (item, action, name) => {
-    return (
-      <ListItem
-        key={item.key}
-        bottomDivider
-        onPress={() => {
-          toggleVishraamOptionVisible(false);
-          toggleVishraamSourceVisible(false);
-          dispatch(action(item.key));
-        }}
-      >
-        <ListItem.Content>
-          <ListItem.Title>{item.title}</ListItem.Title>
-        </ListItem.Content>
-        {name == "source" && vishraamSource === item.key && <Icon name="check" />}
-        {name == "option" && vishraamOption === item.key && <Icon name="check" />}
-      </ListItem>
-    );
-  };
-  const VishraamOptionComponent = () => (
-    <BottomSheet modalProps={{}} isVisible={isVishraamOptionVisible}>
-      <Text style={styles.bottomSheetTitle}>{STRINGS.vishraam_options}</Text>
-      {VISHRAAM_OPTIONS.map((item) => renderItem(item, setVishraamOption, "option"))}
-    </BottomSheet>
+const renderItem = (
+  item,
+  action,
+  name,
+  toggleVishraamOptionVisible,
+  toggleVishraamSourceVisible,
+  dispatch
+) => {
+  const { vishraamOption, vishraamSource } = useSelector((state) => state);
+  return (
+    <ListItem
+      key={item.key}
+      bottomDivider
+      onPress={() => {
+        toggleVishraamOptionVisible(false);
+        toggleVishraamSourceVisible(false);
+        dispatch(action(item.key));
+      }}
+    >
+      <ListItem.Content>
+        <ListItem.Title>{item.title}</ListItem.Title>
+      </ListItem.Content>
+      {name.toLowerCase() === "source" && vishraamSource === item.key && <Icon name="check" />}
+      {name.toLowerCase() === "option" && vishraamOption === item.key && <Icon name="check" />}
+    </ListItem>
   );
+};
 
-  const VishraamSourceComponent = () => (
-    <BottomSheet modalProps={{}} isVisible={isVishraamSourceVisible}>
-      <Text style={styles.bottomSheetTitle}>{STRINGS.vishraam_source}</Text>
-      {VISHRAAM_SOURCES.map((item) => renderItem(item, setVishraamSource, "source"))}
-    </BottomSheet>
-  );
-
-  const VishraamExpand = () => (
+function vishraamExpand(isNightMode, toggleVishraamOptionVisible, toggleVishraamSourceVisible) {
+  const { vishraamOption, vishraamSource } = useSelector((state) => state);
+  return (
     <>
       <ListItem bottomDivider onPress={() => toggleVishraamOptionVisible(true)}>
         <Icon name="format-color-fill" size={30} />
@@ -95,9 +87,14 @@ function VishraamComponent({ isNightMode, dispatch }) {
       </ListItem>
     </>
   );
+}
+function VishraamComponent({ isNightMode, dispatch }) {
+  const [isVishraamOptionVisible, toggleVishraamOptionVisible] = useState(false);
+  const [isVishraamSourceVisible, toggleVishraamSourceVisible] = useState(false);
+  const { isVishraam } = useSelector((state) => state);
 
-  const TriggerComponent = () => {
-    return (
+  return (
+    <>
       <ListItem
         bottomDivider
         containerStyle={[
@@ -116,15 +113,37 @@ function VishraamComponent({ isNightMode, dispatch }) {
         </ListItem.Content>
         <Switch value={isVishraam} onValueChange={(value) => dispatch(toggleVishraam(value))} />
       </ListItem>
-    );
-  };
-  return (
-    <>
-      <TriggerComponent />
-      {isVishraam && <VishraamExpand />}
-      {isVishraamOptionVisible && <VishraamOptionComponent />}
-      {isVishraamSourceVisible && <VishraamSourceComponent />}
+
+      {isVishraam &&
+        vishraamExpand(isNightMode, toggleVishraamOptionVisible, toggleVishraamSourceVisible)}
+
+      {isVishraamOptionVisible && (
+        <BottomSheet modalProps={{}} isVisible={isVishraamOptionVisible}>
+          <Text style={styles.bottomSheetTitle}>{STRINGS.vishraam_options}</Text>
+          {VISHRAAM_OPTIONS.map((item) =>
+            renderItem(
+              item,
+              setVishraamOption,
+              "option",
+              toggleVishraamOptionVisible,
+              toggleVishraamSourceVisible,
+              dispatch
+            )
+          )}
+        </BottomSheet>
+      )}
+
+      {isVishraamSourceVisible && (
+        <BottomSheet modalProps={{}} isVisible={isVishraamSourceVisible}>
+          <Text style={styles.bottomSheetTitle}>{STRINGS.vishraam_source}</Text>
+          {VISHRAAM_SOURCES.map((item) => renderItem(item, setVishraamSource, "source"))}
+        </BottomSheet>
+      )}
     </>
   );
 }
+VishraamComponent.propTypes = {
+  isNightMode: PropTypes.bool.isRequired,
+  dispatch: PropTypes.func.isRequired,
+};
 export default VishraamComponent;

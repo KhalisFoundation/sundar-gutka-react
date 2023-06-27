@@ -126,7 +126,7 @@ export function getBookmarksForID(baniId, length, language) {
       baniLength = EXISTS_MEDIUM;
   }
 
-  return new Promise((resolve, reject) => {
+  return new Promise((resolve) => {
     initDB().then((db) => {
       db.transaction((tx) => {
         tx.executeSql(

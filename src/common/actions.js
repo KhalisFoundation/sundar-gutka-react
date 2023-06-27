@@ -1,5 +1,6 @@
 import constant from "./constant";
 import STRINGS from "./localization";
+
 export const TOGGLE_NIGHT_MODE = "TOGGLE_NIGHT_MODE";
 export const SET_FONT_SIZE = "SET_FONT_SIZE";
 export const SET_FONT_FACE = "SET_FONT_FACE";
@@ -46,7 +47,7 @@ export const LANGUAGES = [
   { key: "es", title: constant.ESPANOL },
   { key: "fr", title: constant.FRANCAIS },
   { key: "it", title: constant.ITALIANO },
-  { key: "hi", title: constant._HINDI },
+  { key: "hi", title: constant.HINDI },
   { key: "pa", title: constant.PUNJABI },
 ];
 
