@@ -94,7 +94,9 @@ function TransliterationComponent({ isNightMode, dispatch }) {
           <Text style={[styles.bottomSheetTitle, isNightMode && { color: colors.WHITE_COLOR }]}>
             {STRINGS.language}
           </Text>
-          {TRANSLITERATION_LANGUAGES.map((item) => renderItem(item, dispatch))}
+          {TRANSLITERATION_LANGUAGES.map((item) =>
+            renderItem(item, dispatch, isNightMode, toggleVisible, transliterationLanguage)
+          )}
         </BottomSheet>
       )}
     </>

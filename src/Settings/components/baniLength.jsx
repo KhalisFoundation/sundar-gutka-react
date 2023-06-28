@@ -8,8 +8,7 @@ import styles from "../styles";
 import { setBaniLength, BANI_LENGTHS } from "../../common/actions";
 import colors from "../../common/colors";
 
-const renderItem = (item, dispatch, isNightMode, toggleVisible) => {
-  const { baniLength } = useSelector((state) => state);
+const renderItem = (item, dispatch, isNightMode, toggleVisible, baniLength) => {
   return (
     <ListItem
       key={item.key}
@@ -65,7 +64,9 @@ function BaniLengthComponent({ isNightMode, dispatch }) {
           <Text style={[styles.bottomSheetTitle, isNightMode && { color: colors.WHITE_COLOR }]}>
             {STRINGS.bani_length}
           </Text>
-          {BANI_LENGTHS.map((item) => renderItem(item, dispatch, isNightMode, toggleVisible))}
+          {BANI_LENGTHS.map((item) =>
+            renderItem(item, dispatch, isNightMode, toggleVisible, baniLength)
+          )}
         </BottomSheet>
       )}
     </>

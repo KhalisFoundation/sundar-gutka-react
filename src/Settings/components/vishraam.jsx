@@ -20,9 +20,10 @@ const renderItem = (
   name,
   toggleVishraamOptionVisible,
   toggleVishraamSourceVisible,
-  dispatch
+  dispatch,
+  vishraamSource,
+  vishraamOption
 ) => {
-  const { vishraamOption, vishraamSource } = useSelector((state) => state);
   return (
     <ListItem
       key={item.key}
@@ -42,8 +43,13 @@ const renderItem = (
   );
 };
 
-function vishraamExpand(isNightMode, toggleVishraamOptionVisible, toggleVishraamSourceVisible) {
-  const { vishraamOption, vishraamSource } = useSelector((state) => state);
+function vishraamExpand(
+  isNightMode,
+  toggleVishraamOptionVisible,
+  toggleVishraamSourceVisible,
+  vishraamSource,
+  vishraamOption
+) {
   return (
     <>
       <ListItem bottomDivider onPress={() => toggleVishraamOptionVisible(true)}>
@@ -91,7 +97,7 @@ function vishraamExpand(isNightMode, toggleVishraamOptionVisible, toggleVishraam
 function VishraamComponent({ isNightMode, dispatch }) {
   const [isVishraamOptionVisible, toggleVishraamOptionVisible] = useState(false);
   const [isVishraamSourceVisible, toggleVishraamSourceVisible] = useState(false);
-  const { isVishraam } = useSelector((state) => state);
+  const { isVishraam, vishraamOption, vishraamSource } = useSelector((state) => state);
 
   return (
     <>
@@ -115,7 +121,13 @@ function VishraamComponent({ isNightMode, dispatch }) {
       </ListItem>
 
       {isVishraam &&
-        vishraamExpand(isNightMode, toggleVishraamOptionVisible, toggleVishraamSourceVisible)}
+        vishraamExpand(
+          isNightMode,
+          toggleVishraamOptionVisible,
+          toggleVishraamSourceVisible,
+          vishraamSource,
+          vishraamOption
+        )}
 
       {isVishraamOptionVisible && (
         <BottomSheet modalProps={{}} isVisible={isVishraamOptionVisible}>
@@ -127,7 +139,9 @@ function VishraamComponent({ isNightMode, dispatch }) {
               "option",
               toggleVishraamOptionVisible,
               toggleVishraamSourceVisible,
-              dispatch
+              dispatch,
+              vishraamSource,
+              vishraamOption
             )
           )}
         </BottomSheet>
