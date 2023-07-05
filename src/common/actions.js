@@ -24,6 +24,8 @@ export const TOGGLE_ENGLISH_TRANSLATION = "TOGGLE_ENGLISH_TRANSLATION";
 export const TOGGLE_PUNJABI_TRANSLATION = "TOGGLE_PUNJABI_TRANSLATION";
 export const TOGGLE_SPANISH_TRANSLATION = "TOGGLE_SPANISH_TRANSLATION";
 export const SET_BOOKMARK_POSITION = "SET_BOOKMARK_POSITION";
+export const TOGGLE_REMINDERS = "TOGGLE_REMINDERS";
+export const SET_REMINDER_BANIS = "SET_REMINDER_BANIS";
 
 export const THEMES = ["Default", "Light", "Dark"];
 
@@ -163,4 +165,11 @@ export function toggleSpanishTranslation(value) {
 }
 export function setBookmarkPosition(value) {
   return { type: SET_BOOKMARK_POSITION, value };
+}
+export function toggleReminders(value) {
+  return { type: TOGGLE_REMINDERS, value };
+}
+
+export function setReminderBanis(list) {
+  return { type: SET_REMINDER_BANIS, list };
 }

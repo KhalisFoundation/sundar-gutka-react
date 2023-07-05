@@ -23,6 +23,7 @@ import LarivaarComponent from "./components/larivaar";
 import PadchedSettingsComponent from "./components/padched";
 import VishraamComponent from "./components/vishraam";
 import TranslationComponent from "./components/translation";
+import RemindersComponent from "./components/reminders";
 
 function ListComponent({ navigation }) {
   const { navigate } = navigation;
@@ -165,24 +166,7 @@ function ListComponent({ navigation }) {
       </ListItem>
       <PadchedSettingsComponent isNightMode={isNightMode} dispatch={dispatch} />
       <VishraamComponent isNightMode={isNightMode} dispatch={dispatch} />
-      <ListItem
-        bottomDivider
-        containerStyle={[
-          { backgroundColor: isNightMode ? colors.NIGHT_GREY_COLOR : colors.WHITE_COLOR },
-        ]}
-      >
-        <Icon
-          color={isNightMode ? colors.COMPONENT_COLOR_NIGHT_MODE : colors.COMPONENT_COLOR}
-          name="timer"
-          size={30}
-        />
-        <ListItem.Content>
-          <ListItem.Title style={[isNightMode && { color: colors.WHITE_COLOR }]}>
-            {STRINGS.reminders}
-          </ListItem.Title>
-        </ListItem.Content>
-        <Switch />
-      </ListItem>
+      <RemindersComponent navigation={navigation} />
       <Text
         style={[
           styles.displayOptionsText,

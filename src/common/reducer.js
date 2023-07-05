@@ -23,6 +23,8 @@ import {
   TOGGLE_PUNJABI_TRANSLATION,
   TOGGLE_SPANISH_TRANSLATION,
   SET_BOOKMARK_POSITION,
+  TOGGLE_REMINDERS,
+  SET_REMINDER_BANIS,
 } from "./actions";
 import constant from "./constant";
 
@@ -215,6 +217,22 @@ function bookmarkPosition(state = 0, action) {
       return state;
   }
 }
+function isReminders(state = false, action) {
+  switch (action.type) {
+    case TOGGLE_REMINDERS:
+      return action.value;
+    default:
+      return state;
+  }
+}
+function reminderBanis(state = JSON.stringify([]), action) {
+  switch (action.type) {
+    case SET_REMINDER_BANIS:
+      return action.list;
+    default:
+      return state;
+  }
+}
 
 const rootReducer = combineReducers({
   isNightMode,
@@ -240,5 +258,7 @@ const rootReducer = combineReducers({
   isPunjabiTranslation,
   isSpanishTranslation,
   bookmarkPosition,
+  isReminders,
+  reminderBanis,
 });
 export default rootReducer;
