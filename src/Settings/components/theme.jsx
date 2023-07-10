@@ -9,7 +9,7 @@ import { setTheme, THEMES, toggleNightMode } from "../../common/actions";
 import colors from "../../common/colors";
 import constant from "../../common/constant";
 
-const toggleIsNightMode = (value, dispatch, toggleVisible) => {
+const handleTheme = (value, dispatch, toggleVisible) => {
   toggleVisible(false);
   dispatch(setTheme(value));
   const colorScheme = Appearance.getColorScheme();
@@ -34,7 +34,7 @@ const renderItem = (item, dispatch, isNightMode, theme, toggleVisible) => {
         { backgroundColor: isNightMode ? colors.NIGHT_GREY_COLOR : colors.WHITE_COLOR },
       ]}
       onPress={() => {
-        toggleIsNightMode(item, dispatch, toggleVisible);
+        handleTheme(item, dispatch, toggleVisible);
       }}
     >
       <ListItem.Content>
