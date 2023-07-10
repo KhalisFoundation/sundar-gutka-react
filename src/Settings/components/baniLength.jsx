@@ -53,7 +53,9 @@ function BaniLengthComponent({ isNightMode, dispatch }) {
           </ListItem.Title>
         </ListItem.Content>
         {baniLength && (
-          <ListItem.Title style={[{ color: isNightMode ? colors.WHITE_COLOR : "#a3a3a3" }]}>
+          <ListItem.Title
+            style={[{ color: isNightMode ? colors.WHITE_COLOR : colors.DISABLED_TEXT_COLOR }]}
+          >
             {BANI_LENGTHS.filter((item) => item.key === baniLength).map((item) => item.title)[0]}
           </ListItem.Title>
         )}

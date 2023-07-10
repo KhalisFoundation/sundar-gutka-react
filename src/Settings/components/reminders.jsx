@@ -1,15 +1,43 @@
-import React from "react";
-import { ListItem, Icon, Switch } from "@rneui/themed";
+import React, { useState } from "react";
+import { ListItem, Icon, Switch, BottomSheet } from "@rneui/themed";
+import { Text } from "react-native";
 import { useSelector, useDispatch } from "react-redux";
 import PropTypes from "prop-types";
-import { toggleReminders } from "../../common/actions";
+import { REMINDER_SOUNDS, toggleReminders, setReminderSound } from "../../common/actions";
+import styles from "../styles";
 import colors from "../../common/colors";
 import STRINGS from "../../common/localization";
 
 function RemindersComponent({ navigation }) {
-  const { isNightMode, isReminders } = useSelector((state) => state);
+  const { isNightMode, isReminders, reminderSound } = useSelector((state) => state);
+  const [isReminderSound, toggleReminderSound] = useState(false);
   const dispatch = useDispatch();
   const { navigate } = navigation;
+  const renderItem = (item) => {
+    return (
+      <ListItem
+        key={item.key}
+        bottomDivider
+        containerStyle={[
+          { backgroundColor: isNightMode ? colors.NIGHT_GREY_COLOR : colors.WHITE_COLOR },
+        ]}
+        onPress={() => {
+          toggleReminderSound(false);
+          dispatch(setReminderSound(item.key));
+        }}
+      >
+        <ListItem.Content>
+          <ListItem.Title style={[isNightMode && { color: colors.WHITE_COLOR }]}>
+            {item.title}
+          </ListItem.Title>
+        </ListItem.Content>
+        {reminderSound === item.key && (
+          <Icon color={isNightMode && colors.WHITE_COLOR} name="check" />
+        )}
+      </ListItem>
+    );
+  };
+
   return (
     <>
       <ListItem
@@ -54,6 +82,9 @@ function RemindersComponent({ navigation }) {
         <ListItem
           bottomDivider
           containerStyle={[isNightMode && { backgroundColor: colors.NIGHT_GREY_COLOR }]}
+          onPress={() => {
+            toggleReminderSound(true);
+          }}
         >
           <Icon
             name="speaker-phone"
@@ -67,7 +98,26 @@ function RemindersComponent({ navigation }) {
               {STRINGS.reminder_sound}
             </ListItem.Title>
           </ListItem.Content>
+          {reminderSound && (
+            <ListItem.Title
+              style={{ color: isNightMode ? colors.WHITE_COLOR : colors.DISABLED_TEXT_COLOR }}
+            >
+              {
+                REMINDER_SOUNDS.filter((item) => item.key === reminderSound).map(
+                  (item) => item.title
+                )[0]
+              }
+            </ListItem.Title>
+          )}
         </ListItem>
+      )}
+      {isReminderSound && (
+        <BottomSheet modalProps={{}} isVisible={isReminderSound}>
+          <Text style={[styles.bottomSheetTitle, isNightMode && { color: colors.WHITE_COLOR }]}>
+            {STRINGS.reminder_sound}
+          </Text>
+          {REMINDER_SOUNDS.map((item) => renderItem(item))}
+        </BottomSheet>
       )}
     </>
   );

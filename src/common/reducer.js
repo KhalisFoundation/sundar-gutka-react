@@ -25,6 +25,7 @@ import {
   SET_BOOKMARK_POSITION,
   TOGGLE_REMINDERS,
   SET_REMINDER_BANIS,
+  SET_REMINDER_SOUND,
 } from "./actions";
 import constant from "./constant";
 
@@ -234,6 +235,15 @@ function reminderBanis(state = JSON.stringify([]), action) {
   }
 }
 
+function reminderSound(state = constant.Default.toLowerCase(), action) {
+  switch (action.type) {
+    case SET_REMINDER_SOUND:
+      return action.sound;
+    default:
+      return state;
+  }
+}
+
 const rootReducer = combineReducers({
   isNightMode,
   fontSize,
@@ -260,5 +270,6 @@ const rootReducer = combineReducers({
   bookmarkPosition,
   isReminders,
   reminderBanis,
+  reminderSound,
 });
 export default rootReducer;

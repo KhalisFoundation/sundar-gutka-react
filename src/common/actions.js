@@ -26,6 +26,7 @@ export const TOGGLE_SPANISH_TRANSLATION = "TOGGLE_SPANISH_TRANSLATION";
 export const SET_BOOKMARK_POSITION = "SET_BOOKMARK_POSITION";
 export const TOGGLE_REMINDERS = "TOGGLE_REMINDERS";
 export const SET_REMINDER_BANIS = "SET_REMINDER_BANIS";
+export const SET_REMINDER_SOUND = "SET_REMINDER_SOUND";
 
 export const THEMES = ["Default", "Light", "Dark"];
 
@@ -82,6 +83,14 @@ export const VISHRAAM_SOURCES = [
   { key: "sttm2", title: STRINGS.sttm2 },
 ];
 
+export const REMINDER_SOUNDS = [
+  {
+    key: "default",
+    title: STRINGS.default,
+  },
+  { key: "wake_up_jap.mp3", title: STRINGS.wake_up_jap },
+  { key: "waheguru_soul.mp3", title: STRINGS.waheguru_soul },
+];
 export const toggleNightMode = (value) => {
   return { type: TOGGLE_NIGHT_MODE, value };
 };
@@ -172,4 +181,7 @@ export function toggleReminders(value) {
 
 export function setReminderBanis(list) {
   return { type: SET_REMINDER_BANIS, list };
+}
+export function setReminderSound(sound) {
+  return { type: SET_REMINDER_SOUND, sound };
 }

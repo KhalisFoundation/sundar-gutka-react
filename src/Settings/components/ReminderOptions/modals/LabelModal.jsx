@@ -1,33 +1,46 @@
 import React, { useState } from "react";
 import { Modal, Text, TextInput, View, TouchableOpacity } from "react-native";
-import { useSelector } from "react-redux";
+import { useDispatch, useSelector } from "react-redux";
 import PropTypes from "prop-types";
 import colors from "../../../../common/colors";
 import STRINGS from "../../../../common/localization";
+import styles from "../styles";
+import { setReminderBanis } from "../../../../common/actions";
 
 function LabelModal({ section, onHide }) {
   const { title } = section;
   const [reminderTitle, setReminderTitle] = useState(title);
-  const { isNightMode } = useSelector((state) => state);
-  const confirmReminderLabel = () => {};
+  const { isNightMode, reminderBanis } = useSelector((state) => state);
+  const dispatch = useDispatch();
+  const confirmReminderLabel = () => {
+    const array = JSON.parse(reminderBanis);
+    const index = array.findIndex((item) => item.key === section.key);
+    if (index !== -1) array[index].title = reminderTitle;
+    dispatch(setReminderBanis(JSON.stringify(array)));
+    onHide();
+  };
 
   return (
     <Modal visible transparent onRequestClose={onHide}>
-      <View style={[{ flex: 1, justifyContent: "center", alignItems: "center" }]}>
-        <View style={{ backgroundColor: colors.WHITE_COLOR }}>
-          <Text>{STRINGS.notification_text}</Text>
+      <View style={styles.labelModalWrapper}>
+        <View style={styles.labelViewWrapper}>
+          <Text style={styles.labelText}>{STRINGS.notification_text}</Text>
           <TextInput
-            style={isNightMode ? colors.MODAL_TEXT_NIGHT_MODE : colors.MODAL_TEXT}
+            style={[
+              isNightMode ? colors.MODAL_TEXT_NIGHT_MODE : colors.MODAL_TEXT,
+              styles.textInput,
+            ]}
             value={reminderTitle}
             onChangeText={(label) => setReminderTitle(label)}
             selectionColor={colors.MODAL_ACCENT_NIGHT_MODE}
           />
 
-          <View>
+          <View style={styles.labelButtonWrapper}>
             <TouchableOpacity
               onPress={() => {
                 onHide();
               }}
+              style={{ marginRight: 30 }}
             >
               <Text> {STRINGS.cancel}</Text>
             </TouchableOpacity>

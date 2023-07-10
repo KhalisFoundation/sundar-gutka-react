@@ -109,7 +109,7 @@ function ListComponent({ navigation }) {
           </ListItem.Title>
         </ListItem.Content>
         <Switch
-          value={isScreenAwake}
+          value={isScreenAwake || isAutoScroll}
           disabled={isAutoScroll}
           onValueChange={(value) => dispatch(toggleScreenAwake(value))}
         />

@@ -1,8 +1,10 @@
-import React from "react";
+import React, { useState } from "react";
 import { View, TouchableOpacity, Text } from "react-native";
 import { Switch, Icon, Divider } from "@rneui/themed";
 import PropTypes from "prop-types";
 import { useDispatch, useSelector } from "react-redux";
+import DateTimePicker from "react-native-modal-datetime-picker";
+import moment from "moment";
 import colors from "../../../../common/colors";
 import constant from "../../../../common/constant";
 import styles from "../styles";
@@ -11,6 +13,7 @@ import { setReminderBanis } from "../../../../common/actions";
 function AccordianHeader({ section, isActive }) {
   const { isNightMode, isTransliteration } = useSelector((state) => state);
   const { reminderBanis } = useSelector((state) => state);
+  const [isTimePicker, toggleTimePicker] = useState(false);
   const dispatch = useDispatch();
 
   const hanldeSwitchToggled = (value, key) => {
@@ -21,6 +24,22 @@ function AccordianHeader({ section, isActive }) {
       const updatedArrayString = JSON.stringify(array);
       dispatch(setReminderBanis(updatedArrayString));
     }
+  };
+  const hideDateTimePicker = () => {
+    toggleTimePicker(false);
+  };
+
+  const handleTimePicked = (time) => {
+    const array = JSON.parse(reminderBanis);
+    const targetIndex = array.findIndex((item) => item.key === Number(section.key));
+    if (targetIndex !== -1)
+      array[targetIndex] = {
+        ...array[targetIndex],
+        enabled: true,
+        time: moment(time).local().format("h:mm A"),
+      };
+    dispatch(setReminderBanis(JSON.stringify(array)));
+    hideDateTimePicker();
   };
 
   return (
@@ -43,7 +62,7 @@ function AccordianHeader({ section, isActive }) {
           />
         </View>
         <View style={styles.viewRow}>
-          <TouchableOpacity onPress={() => {}}>
+          <TouchableOpacity onPress={() => toggleTimePicker(true)}>
             <Text
               style={[
                 styles.timeFont,
@@ -64,6 +83,13 @@ function AccordianHeader({ section, isActive }) {
         </View>
         <Divider color={colors.DISABLED_TEXT_COLOR_NIGHT_MODE} />
       </View>
+      <DateTimePicker
+        isVisible={isTimePicker}
+        onConfirm={(time) => handleTimePicked(time)}
+        onCancel={hideDateTimePicker}
+        is24Hour={false}
+        mode="time"
+      />
     </View>
   );
 }
