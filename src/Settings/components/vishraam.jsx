@@ -14,35 +14,6 @@ import {
 import colors from "../../common/colors";
 import styles from "../styles";
 
-const renderItem = (
-  item,
-  action,
-  name,
-  toggleVishraamOptionVisible,
-  toggleVishraamSourceVisible,
-  dispatch,
-  vishraamSource,
-  vishraamOption
-) => {
-  return (
-    <ListItem
-      key={item.key}
-      bottomDivider
-      onPress={() => {
-        toggleVishraamOptionVisible(false);
-        toggleVishraamSourceVisible(false);
-        dispatch(action(item.key));
-      }}
-    >
-      <ListItem.Content>
-        <ListItem.Title>{item.title}</ListItem.Title>
-      </ListItem.Content>
-      {name.toLowerCase() === "source" && vishraamSource === item.key && <Icon name="check" />}
-      {name.toLowerCase() === "option" && vishraamOption === item.key && <Icon name="check" />}
-    </ListItem>
-  );
-};
-
 function vishraamExpand(
   isNightMode,
   toggleVishraamOptionVisible,
@@ -99,6 +70,25 @@ function VishraamComponent({ isNightMode, dispatch }) {
   const [isVishraamSourceVisible, toggleVishraamSourceVisible] = useState(false);
   const { isVishraam, vishraamOption, vishraamSource } = useSelector((state) => state);
 
+  const renderItem = (item, action) => {
+    return (
+      <ListItem
+        key={item.key}
+        bottomDivider
+        onPress={() => {
+          toggleVishraamOptionVisible(false);
+          toggleVishraamSourceVisible(false);
+          dispatch(action(item.key));
+        }}
+      >
+        <ListItem.Content>
+          <ListItem.Title>{item.title}</ListItem.Title>
+        </ListItem.Content>
+        {(vishraamSource === item.key || vishraamOption === item.key) && <Icon name="check" />}
+      </ListItem>
+    );
+  };
+
   return (
     <>
       <ListItem
@@ -132,25 +122,14 @@ function VishraamComponent({ isNightMode, dispatch }) {
       {isVishraamOptionVisible && (
         <BottomSheet modalProps={{}} isVisible={isVishraamOptionVisible}>
           <Text style={styles.bottomSheetTitle}>{STRINGS.vishraam_options}</Text>
-          {VISHRAAM_OPTIONS.map((item) =>
-            renderItem(
-              item,
-              setVishraamOption,
-              "option",
-              toggleVishraamOptionVisible,
-              toggleVishraamSourceVisible,
-              dispatch,
-              vishraamSource,
-              vishraamOption
-            )
-          )}
+          {VISHRAAM_OPTIONS.map((item) => renderItem(item, setVishraamOption))}
         </BottomSheet>
       )}
 
       {isVishraamSourceVisible && (
         <BottomSheet modalProps={{}} isVisible={isVishraamSourceVisible}>
           <Text style={styles.bottomSheetTitle}>{STRINGS.vishraam_source}</Text>
-          {VISHRAAM_SOURCES.map((item) => renderItem(item, setVishraamSource, "source"))}
+          {VISHRAAM_SOURCES.map((item) => renderItem(item, setVishraamSource))}
         </BottomSheet>
       )}
     </>

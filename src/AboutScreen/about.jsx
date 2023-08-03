@@ -34,12 +34,17 @@ function AboutScreen({ navigation }) {
   }, []);
   return (
     <View
-      style={{ flex: 1, backgroundColor: isNightMode ? colors.NIGHT_BLACK : colors.WHITE_COLOR }}
+      style={{
+        flex: 1,
+        backgroundColor: isNightMode ? colors.NIGHT_BLACK : colors.WHITE_COLOR,
+      }}
     >
       <StatusBar backgroundColor={colors.TOOLBAR_COLOR_ALT2} barStyle="light-content" />
-      <View>
-        <Text style={[isNightMode && styles.nightMode]}>{STRINGS.sundar_gutka}</Text>
-        <Text style={[styles.small, isNightMode && styles.nightMode]}>{STRINGS.created_by}:</Text>
+      <View style={{ margin: 10 }}>
+        <Text style={[isNightMode && styles.nightMode, styles.SGTitle]}>
+          {STRINGS.sundar_gutka}
+        </Text>
+        <Text style={[styles.margin, isNightMode && styles.nightMode]}>{STRINGS.created_by}:</Text>
         <TouchableHighlight
           underlayColor={colors.UNDERLAY_COLOR}
           onPress={() => Linking.openURL(constant.KHALIS_FOUNDATION_URL)}
@@ -52,40 +57,46 @@ function AboutScreen({ navigation }) {
             }
           />
         </TouchableHighlight>
-        <Text style={isNightMode && styles.nightMode}>
-          <Text>{STRINGS.about_1}</Text>
-          <Text>{STRINGS.about_2}</Text>
-        </Text>
-        <Text
-          style={{ color: colors.WHITE_COLOR }}
-          onPress={() => Linking.openURL(constant.KHALIS_FOUNDATION_URL)}
-        >
-          {constant.KHALIS_FOUNDATION_URL}
-        </Text>
-        <Text style={isNightMode && styles.nightMode}>{STRINGS.about_3}</Text>
-        <Text style={isNightMode && styles.nightMode}>{STRINGS.about_4}</Text>
+        <Text style={[isNightMode && styles.nightMode, styles.margin]}>{STRINGS.about_1}</Text>
 
-        <Text
-          style={{ color: colors.UNDERLAY_COLOR }}
-          onPress={() => Linking.openURL(constant.BANI_DB_URL)}
-        >
-          {STRINGS.baniDB}
+        <View style={styles.margin}>
+          <Text style={[isNightMode && styles.nightMode]}>{STRINGS.about_2}</Text>
+          <Text
+            style={{ color: colors.UNDERLAY_COLOR }}
+            onPress={() => Linking.openURL(constant.KHALIS_FOUNDATION_URL)}
+          >
+            {constant.KHALIS_FOUNDATION_URL}
+          </Text>
+        </View>
+
+        <Text style={[isNightMode && styles.nightMode, styles.margin]}>{STRINGS.about_3}</Text>
+        <Text style={[isNightMode && styles.nightMode, styles.margin]}>
+          {STRINGS.about_4}{" "}
+          <Text
+            style={{ color: colors.UNDERLAY_COLOR }}
+            onPress={() => Linking.openURL(constant.BANI_DB_URL)}
+          >
+            {STRINGS.baniDB}
+          </Text>
+          <Text> {STRINGS.about_5}</Text>
         </Text>
-        <Text> {STRINGS.about_5}</Text>
+
         <TouchableHighlight
+          style={styles.margin}
           underlayColor={colors.UNDERLAY_COLOR}
           onPress={() => Linking.openURL(constant.BANI_DB_URL)}
         >
           <Image source={require("../../images/banidblogo.png")} />
         </TouchableHighlight>
-        <Text style={isNightMode && styles.nightMode}>{STRINGS.about_6}</Text>
+        <Text style={[isNightMode && styles.nightMode, styles.margin]}>{STRINGS.about_6}</Text>
+
         <View style={styles.singleLine}>
           <View style={styles.leftContainer}>
-            <Text style={[styles.small, isNightMode && styles.nightMode]}>
+            <Text style={[styles.margin, isNightMode && styles.nightMode]}>
               &copy; {new Date().getFullYear()} {STRINGS.khalis_foundation}
             </Text>
           </View>
-          <Text style={[styles.small, isNightMode && styles.nightMode]}>
+          <Text style={[styles.margin, isNightMode && styles.nightMode]}>
             {STRINGS.app_version}: {getVersion()} ({getBuildNumber()})
           </Text>
         </View>

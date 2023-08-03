@@ -3,6 +3,7 @@ import notifee, {
   RepeatFrequency,
   EventType,
   AndroidImportance,
+  AuthorizationStatus,
 } from "@notifee/react-native";
 import moment from "moment";
 import constant from "./constant";
@@ -11,7 +12,7 @@ export const createReminder = async (notification, sound) => {
   try {
     const channelName =
       sound !== constant.DEFAULT.toLowerCase() ? sound.split(".")[0] : constant.SOUND.toLowerCase();
-    const androidChannel = { chanelId: channelName };
+    const androidChannel = { channelId: channelName.toString() };
 
     const currentTime = moment().utc().valueOf();
     let notificationTime = moment(notification.time, "h:mm A").utc().valueOf();
@@ -67,24 +68,24 @@ export const cancelAllReminders = () => {
 export const updateReminders = async (remindersOn, sound, remindersList) => {
   cancelAllReminders();
   await notifee.createChannel({
-    id: "sound",
-    name: "Reminders default",
-    sound: "default",
-    description: "Alert notification reminders for chosen Bani",
+    id: constant.SOUND,
+    name: constant.REMINDERS_DEFAULT,
+    sound: constant.DEFAULT.toLowerCase(),
+    description: constant.ALERT_DESCRIPTION,
     importance: AndroidImportance.HIGH,
   });
   await notifee.createChannel({
-    id: "waheguru_soul",
-    name: "Reminders waheguru soul",
-    sound: "waheguru_soul",
-    description: "Alert notification reminders for chosen Bani",
+    id: constant.WAHEGURU_SOUL,
+    name: constant.REMINDERS_WAHEGURU_SOUL,
+    sound: constant.WAHEGURU_SOUL,
+    description: constant.ALERT_DESCRIPTION,
     importance: AndroidImportance.HIGH,
   });
   await notifee.createChannel({
-    id: "wake_up_jap",
-    name: "Reminders wake up jap",
-    sound: "wake_up_jap",
-    description: "Alert notification reminders for chosen Bani",
+    id: constant.WAKE_UP_JAP,
+    name: constant.REMINDERS_WAKE_UP,
+    sound: constant.WAKE_UP_JAP,
+    description: constant.ALERT_DESCRIPTION,
     importance: AndroidImportance.HIGH,
   });
   if (remindersOn) {
@@ -99,7 +100,10 @@ export const updateReminders = async (remindersOn, sound, remindersList) => {
 
 export const checkPermissions = async (remindersOn) => {
   if (remindersOn) {
-    await notifee.requestPermission();
+    const settings = await notifee.requestPermission();
+    if (settings.authorizationStatus >= AuthorizationStatus.AUTHORIZED) {
+      console.log("Permission settings:", settings);
+    }
   }
 };
 
@@ -121,7 +125,7 @@ export const listenReminders = async () => {
     const { pressAction } = detail;
 
     // Check if the user pressed the "Mark as read" action
-    if (type === EventType.ACTION_PRESS && pressAction.id === "mark-as-read") {
+    if (type === EventType.ACTION_PRESS && pressAction.id === constant.MARK_AS_READ) {
       this.resetBadgeCount();
     }
   });

@@ -3,7 +3,7 @@ import { SafeAreaView, View, Text, StatusBar } from "react-native";
 import { Icon } from "@rneui/themed";
 import PropTypes from "prop-types";
 import { useSelector } from "react-redux";
-import BaniList from "../common/components/BaniList/BanilList";
+import BaniList from "../common/components/BaniList/BaniList";
 import { getBaniList } from "../database/db";
 import STRINGS from "../common/localization";
 import colors from "../common/colors";
@@ -37,15 +37,15 @@ function BaniHeader(props) {
   );
 }
 
-function HomeScreen({ navigation }) {
+const HomeScreen = React.memo(({ navigation }) => {
   const { navigate } = navigation;
   const [data, setData] = useState([]);
   const { transliterationLanguage, isNightMode } = useSelector((state) => state);
 
-  function onPress(item) {
+  function onPress(row) {
     navigate(constant.READER, {
-      key: `Reader-${item.item.id}`,
-      params: { id: item.item.id, title: item.item.gurmukhi },
+      key: `Reader-${row.item.id}`,
+      params: { id: row.item.id, title: row.item.gurmukhi },
     });
   }
 
@@ -70,7 +70,7 @@ function HomeScreen({ navigation }) {
       <BaniList data={data} onPress={onPress.bind(this)} />
     </SafeAreaView>
   );
-}
+});
 
 HomeScreen.propTypes = {
   navigation: PropTypes.shape().isRequired,

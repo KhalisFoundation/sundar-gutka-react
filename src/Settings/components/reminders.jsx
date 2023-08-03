@@ -7,6 +7,7 @@ import { REMINDER_SOUNDS, toggleReminders, setReminderSound } from "../../common
 import styles from "../styles";
 import colors from "../../common/colors";
 import STRINGS from "../../common/localization";
+import { cancelAllReminders, checkPermissions } from "../../common/notifications";
 
 function RemindersComponent({ navigation }) {
   const { isNightMode, isReminders, reminderSound } = useSelector((state) => state);
@@ -37,6 +38,13 @@ function RemindersComponent({ navigation }) {
       </ListItem>
     );
   };
+  const handleReminders = (value) => {
+    checkPermissions(value);
+    dispatch(toggleReminders(value));
+    if (!value) {
+      cancelAllReminders();
+    }
+  };
 
   return (
     <>
@@ -56,7 +64,7 @@ function RemindersComponent({ navigation }) {
             {STRINGS.reminders}
           </ListItem.Title>
         </ListItem.Content>
-        <Switch value={isReminders} onValueChange={(value) => dispatch(toggleReminders(value))} />
+        <Switch value={isReminders} onValueChange={(value) => handleReminders(value)} />
       </ListItem>
 
       {isReminders && (
@@ -93,7 +101,7 @@ function RemindersComponent({ navigation }) {
           />
           <ListItem.Content>
             <ListItem.Title
-              style={{ color: isNightMode ? colors.WHITE_COLOR : colors.DISABLED_TEXT_COLOR }}
+              style={{ color: isNightMode ? colors.WHITE_COLOR : colors.NIGHT_BLACK }}
             >
               {STRINGS.reminder_sound}
             </ListItem.Title>

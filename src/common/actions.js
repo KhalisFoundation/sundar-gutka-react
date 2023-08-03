@@ -27,6 +27,8 @@ export const SET_BOOKMARK_POSITION = "SET_BOOKMARK_POSITION";
 export const TOGGLE_REMINDERS = "TOGGLE_REMINDERS";
 export const SET_REMINDER_BANIS = "SET_REMINDER_BANIS";
 export const SET_REMINDER_SOUND = "SET_REMINDER_SOUND";
+export const SET_AUTO_SCROLL_SPEED = "SET_AUTO_SCROLL_SPEED";
+export const SET_CACHE_SHABAD = "SET_CACHE_SHABAD";
 
 export const THEMES = ["Default", "Light", "Dark"];
 
@@ -184,4 +186,13 @@ export function setReminderBanis(list) {
 }
 export function setReminderSound(sound) {
   return { type: SET_REMINDER_SOUND, sound };
+}
+
+export function setAutoScrollSpeed(speed, shabad) {
+  const shabadSpeed = { [shabad]: speed };
+  return { type: SET_AUTO_SCROLL_SPEED, shabadSpeed };
+}
+export function setCacheShabad(shabad, shabadID) {
+  const cache = { [shabadID]: shabad };
+  return { type: SET_CACHE_SHABAD, cache };
 }

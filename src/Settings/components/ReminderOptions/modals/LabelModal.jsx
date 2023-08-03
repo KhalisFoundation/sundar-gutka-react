@@ -6,17 +6,20 @@ import colors from "../../../../common/colors";
 import STRINGS from "../../../../common/localization";
 import styles from "../styles";
 import { setReminderBanis } from "../../../../common/actions";
+import { updateReminders } from "../../../../common/notifications";
 
 function LabelModal({ section, onHide }) {
   const { title } = section;
   const [reminderTitle, setReminderTitle] = useState(title);
-  const { isNightMode, reminderBanis } = useSelector((state) => state);
+  const { isNightMode, reminderBanis, isReminders, reminderSound } = useSelector((state) => state);
   const dispatch = useDispatch();
+
   const confirmReminderLabel = () => {
     const array = JSON.parse(reminderBanis);
     const index = array.findIndex((item) => item.key === section.key);
     if (index !== -1) array[index].title = reminderTitle;
     dispatch(setReminderBanis(JSON.stringify(array)));
+    updateReminders(isReminders, reminderSound, JSON.stringify(array));
     onHide();
   };
 

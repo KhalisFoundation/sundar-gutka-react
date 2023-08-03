@@ -11,6 +11,7 @@ import {
 } from "../../common/actions";
 
 function TranslationComponent({ isNightMode, dispatch }) {
+  const translationAvatar = require("../../../images/englishicon.png");
   const { isEnglishTranslation, isSpanishTranslation, isPunjabiTranslation } = useSelector(
     (state) => state
   );
@@ -24,7 +25,7 @@ function TranslationComponent({ isNightMode, dispatch }) {
       onPress={() => toggleIsExpanded(!isExpanded)}
       content={
         <>
-          <Avatar source={require("../../../images/englishicon.png")} />
+          <Avatar source={translationAvatar} />
           <ListItem.Content>
             <ListItem.Title
               style={[{ paddingLeft: 16 }, isNightMode && { color: colors.WHITE_COLOR }]}

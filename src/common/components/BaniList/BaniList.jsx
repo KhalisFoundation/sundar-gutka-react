@@ -9,14 +9,14 @@ import colors from "../../colors";
 function BaniList(props) {
   const { fontSize, fontFace, isTransliteration, isNightMode } = useSelector((state) => state);
   const { data, onPress } = props;
-  const renderBanis = (item) => {
+  const renderBanis = (row) => {
     return (
       <ListItem
         bottomDivider
         containerStyle={isNightMode && { backgroundColor: colors.NIGHT_BLACK }}
-        onPress={() => onPress(item)}
+        onPress={() => onPress(row)}
       >
-        {item.folder && <Avatar source={require("../../../../images/foldericon.png")} />}
+        {row.folder && <Avatar source={require("../../../../images/foldericon.png")} />}
         <ListItem.Content>
           <ListItem.Title
             style={[
@@ -27,24 +27,27 @@ function BaniList(props) {
               },
             ]}
           >
-            {isTransliteration ? item.item.translit : item.item.gurmukhi}
+            {isTransliteration ? row.item.translit : row.item.gurmukhi}
           </ListItem.Title>
         </ListItem.Content>
       </ListItem>
     );
   };
 
-  return (
-    <FlatList
-      data={data}
-      renderItem={(item) => renderBanis(item)}
-      keyExtractor={(item) => item.id}
-    />
-  );
+  return <FlatList data={data} renderItem={renderBanis} keyExtractor={(item) => item.id} />;
 }
 
 BaniList.propTypes = {
-  data: PropTypes.arrayOf(PropTypes.shape()).isRequired,
+  data: PropTypes.arrayOf(
+    PropTypes.shape({
+      item: PropTypes.shape({
+        id: PropTypes.number.isRequired,
+        gurmukhi: PropTypes.string.isRequired,
+        translit: PropTypes.string.isRequired,
+      }),
+    })
+  ).isRequired,
+  onPress: PropTypes.func.isRequired,
 };
 
 export default BaniList;

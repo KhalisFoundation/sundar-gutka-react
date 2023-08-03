@@ -26,6 +26,8 @@ import {
   TOGGLE_REMINDERS,
   SET_REMINDER_BANIS,
   SET_REMINDER_SOUND,
+  SET_AUTO_SCROLL_SPEED,
+  SET_CACHE_SHABAD,
 } from "./actions";
 import constant from "./constant";
 
@@ -160,7 +162,7 @@ function isVishraam(state = false, action) {
       return state;
   }
 }
-function vishraamOption(state = "VISHRAAM_COLORED", action) {
+function vishraamOption(state = constant.VISHRAAM_COLORED, action) {
   switch (action.type) {
     case SET_VISHRAAM_OPTION:
       return action.option;
@@ -169,7 +171,7 @@ function vishraamOption(state = "VISHRAAM_COLORED", action) {
   }
 }
 
-function vishraamSource(state = "sttm", action) {
+function vishraamSource(state = constant.sttm, action) {
   switch (action.type) {
     case SET_VISHRAAM_SOURCE:
       return action.source;
@@ -244,6 +246,24 @@ function reminderSound(state = constant.Default.toLowerCase(), action) {
   }
 }
 
+function autoScrollSpeedObj(state = {}, action) {
+  switch (action.type) {
+    case SET_AUTO_SCROLL_SPEED:
+      return { ...state, ...action.shabadSpeed };
+    default:
+      return state;
+  }
+}
+
+function cacheShabad(state = {}, action) {
+  switch (action.type) {
+    case SET_CACHE_SHABAD:
+      return { ...state, ...action.cache };
+    default:
+      return state;
+  }
+}
+
 const rootReducer = combineReducers({
   isNightMode,
   fontSize,
@@ -271,5 +291,7 @@ const rootReducer = combineReducers({
   isReminders,
   reminderBanis,
   reminderSound,
+  autoScrollSpeedObj,
+  cacheShabad,
 });
 export default rootReducer;

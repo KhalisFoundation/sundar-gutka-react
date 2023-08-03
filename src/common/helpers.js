@@ -20,6 +20,8 @@ export const baseFontSize = (size, isTransliteration) => {
       fontSize = 18;
   }
 
-  if (isTransliteration) fontSize /= 1.2;
+  if (isTransliteration) {
+    fontSize /= 1.2;
+  }
   return fontSize;
 };

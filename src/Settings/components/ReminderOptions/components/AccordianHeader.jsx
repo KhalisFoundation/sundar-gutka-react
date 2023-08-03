@@ -9,20 +9,23 @@ import colors from "../../../../common/colors";
 import constant from "../../../../common/constant";
 import styles from "../styles";
 import { setReminderBanis } from "../../../../common/actions";
+import { updateReminders } from "../../../../common/notifications";
 
 function AccordianHeader({ section, isActive }) {
-  const { isNightMode, isTransliteration } = useSelector((state) => state);
-  const { reminderBanis } = useSelector((state) => state);
+  const { reminderBanis, isNightMode, isTransliteration, isReminders, reminderSound } = useSelector(
+    (state) => state
+  );
   const [isTimePicker, toggleTimePicker] = useState(false);
   const dispatch = useDispatch();
 
-  const hanldeSwitchToggled = (value, key) => {
+  const hanldeSwitchToggled = async (value, key) => {
     const array = JSON.parse(reminderBanis);
     const targetIndex = array.findIndex((item) => item.key === Number(key));
     if (targetIndex !== -1) {
       array[targetIndex] = { ...array[targetIndex], enabled: value };
       const updatedArrayString = JSON.stringify(array);
       dispatch(setReminderBanis(updatedArrayString));
+      await updateReminders(isReminders, reminderSound, JSON.stringify(updatedArrayString));
     }
   };
   const hideDateTimePicker = () => {
@@ -40,6 +43,7 @@ function AccordianHeader({ section, isActive }) {
       };
     dispatch(setReminderBanis(JSON.stringify(array)));
     hideDateTimePicker();
+    updateReminders(isReminders, reminderSound, JSON.stringify(array));
   };
 
   return (

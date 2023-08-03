@@ -15,11 +15,17 @@ import styles from "./styles";
 import AccordianContent from "./components/AccordianContent";
 import AccordianHeader from "./components/AccordianHeader";
 import STRINGS from "../../../common/localization";
+import { updateReminders } from "../../../common/notifications";
 
 function ReminderOptions({ navigation }) {
-  const { transliterationLanguage, reminderBanis, isNightMode, isTransliteration } = useSelector(
-    (state) => state
-  );
+  const {
+    transliterationLanguage,
+    reminderBanis,
+    isNightMode,
+    isTransliteration,
+    isReminders,
+    reminderSound,
+  } = useSelector((state) => state);
   const [stateData, setStateData] = useState([]);
   const [activeSections, setActiveSections] = useState([]);
   const [reminderBaniData, setReminderBaniData] = useState([]);
@@ -29,10 +35,11 @@ function ReminderOptions({ navigation }) {
   const updateSections = (sections) => {
     setActiveSections(sections);
   };
-  const setDefaultReminders = (baniList) => {
+  const setDefaultReminders = async (baniList) => {
     const data = defaultReminders(baniList);
     dispatch(setReminderBanis(JSON.stringify(data)));
     setStateData(data);
+    await updateReminders(isReminders, reminderSound, JSON.stringify(data));
     return data;
   };
 
@@ -106,7 +113,7 @@ function ReminderOptions({ navigation }) {
     })();
   }, [transliterationLanguage, reminderBanis]);
 
-  const createReminder = (selectedOption) => {
+  const createReminder = async (selectedOption) => {
     const array = JSON.parse(reminderBanis);
     const newObjKey = Number(selectedOption.key);
     const existingObjIndex = array.findIndex((item) => item.key === newObjKey);
@@ -125,6 +132,7 @@ function ReminderOptions({ navigation }) {
     }
 
     dispatch(setReminderBanis(JSON.stringify(array)));
+    await updateReminders(isReminders, reminderSound, JSON.stringify(array));
   };
 
   return (

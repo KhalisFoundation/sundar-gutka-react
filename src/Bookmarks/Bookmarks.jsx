@@ -4,7 +4,7 @@ import { Icon } from "@rneui/themed";
 import { useSelector, useDispatch } from "react-redux";
 import PropTypes from "prop-types";
 import { getBookmarksForID } from "../database/db";
-import BaniList from "../common/components/BaniList/BanilList";
+import BaniList from "../common/components/BaniList/BaniList";
 import colors from "../common/colors";
 import { setBookmarkPosition } from "../common/actions";
 

@@ -16,6 +16,7 @@ export function getBaniList(language) {
               const totalResults = [];
               for (let i = 0; i < count; i += 1) {
                 const { ID, Gurmukhi, Transliterations } = rows.item(i);
+
                 totalResults.push({
                   id: ID,
                   gurmukhi: Gurmukhi,

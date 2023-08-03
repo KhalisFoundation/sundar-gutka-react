@@ -37,6 +37,7 @@ const renderItem = (item, dispatch, isNightMode, toggleVisible, transliterationL
   );
 };
 function TransliterationComponent({ isNightMode, dispatch }) {
+  const romanizedIcon = require("../../../images/romanizeicon.png");
   const [isVisible, toggleVisible] = useState(false);
   const { transliterationLanguage, isTransliteration } = useSelector((state) => state);
 
@@ -48,7 +49,7 @@ function TransliterationComponent({ isNightMode, dispatch }) {
           { backgroundColor: isNightMode ? colors.NIGHT_GREY_COLOR : colors.WHITE_COLOR },
         ]}
       >
-        <Avatar source={require("../../../images/romanizeicon.png")} />
+        <Avatar source={romanizedIcon} />
         <ListItem.Content>
           <ListItem.Title style={[isNightMode && { color: colors.WHITE_COLOR }]}>
             {STRINGS.transliteration}
