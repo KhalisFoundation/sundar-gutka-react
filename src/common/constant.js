@@ -5,6 +5,7 @@ export default {
   SHAHMUKHI: "SHAHMUKHI",
   IPA: "IPA",
   GURBANI_AKHAR_TRUE: "GurbaniAkharTrue",
+  GURBANI_AKHAR_THICK_TRUE: "GurbaniAkharThickTrue",
   READER: "Reader",
   SETTINGS: "Settings",
   EXTRA_SMALL: "EXTRA_SMALL",
