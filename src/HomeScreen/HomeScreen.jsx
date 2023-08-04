@@ -4,6 +4,7 @@ import { Icon } from "@rneui/themed";
 import PropTypes from "prop-types";
 import { useSelector } from "react-redux";
 import BaniList from "../common/components/BaniList/BaniList";
+import useKeepAwake from "../common/hooks/keepAwake";
 import { getBaniList } from "../database/db";
 import STRINGS from "../common/localization";
 import colors from "../common/colors";
@@ -41,6 +42,7 @@ const HomeScreen = React.memo(({ navigation }) => {
   const { navigate } = navigation;
   const [data, setData] = useState([]);
   const { transliterationLanguage, isNightMode } = useSelector((state) => state);
+  useKeepAwake();
 
   function onPress(row) {
     navigate(constant.READER, {
