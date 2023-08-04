@@ -18,7 +18,9 @@ export const useFetchShabad = (shabadID) => {
       } else {
         toggleLoading(true);
         data = await getShabadFromID(shabadID, baniLength, transliterationLanguage);
-        if (data) dispatch(setCacheShabad(data, shabadID));
+        if (data) {
+          dispatch(setCacheShabad(data, shabadID));
+        }
         toggleLoading(false);
       }
       setShabad(data);
@@ -49,7 +51,9 @@ export const usePagination = (data, itemsPerPage) => {
       vishraamSource,
       vishraamOption
     );
-    if (isParagraphMode) processShabad = convertToParagraph(processShabad);
+    if (isParagraphMode) {
+      processShabad = convertToParagraph(processShabad);
+    }
     return processShabad;
   };
 
