@@ -10,7 +10,7 @@ import styles from "./styles";
 import constant from "../common/constant";
 
 function AboutScreen({ navigation }) {
-  const { isNightMode } = useSelector((state) => state);
+  const { isNightMode, isStatusBar } = useSelector((state) => state);
   const headerLeft = () => (
     <Icon
       name="arrow-back"
@@ -39,7 +39,11 @@ function AboutScreen({ navigation }) {
         backgroundColor: isNightMode ? colors.NIGHT_BLACK : colors.WHITE_COLOR,
       }}
     >
-      <StatusBar backgroundColor={colors.TOOLBAR_COLOR_ALT2} barStyle="light-content" />
+      <StatusBar
+        hidden={isStatusBar}
+        backgroundColor={colors.TOOLBAR_COLOR_ALT2}
+        barStyle="light-content"
+      />
       <View style={{ margin: 10 }}>
         <Text style={[isNightMode && styles.nightMode, styles.SGTitle]}>
           {STRINGS.sundar_gutka}
