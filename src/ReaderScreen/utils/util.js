@@ -3,7 +3,7 @@ import { Text } from "react-native";
 import { baseFontSize } from "../../common/helpers";
 import constant from "../../common/constant";
 import colors from "../../common/colors";
-import styles from "../styles";
+import { styles } from "../styles";
 
 export const fontColorForReader = (header, nightMode, text) => {
   const colorMapping = {

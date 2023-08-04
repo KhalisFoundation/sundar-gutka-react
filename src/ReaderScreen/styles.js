@@ -2,7 +2,7 @@ import { StyleSheet } from "react-native";
 import constant from "../common/constant";
 import colors from "../common/colors";
 
-const styles = StyleSheet.create({
+export const styles = StyleSheet.create({
   gurmukhiText: {
     margin: 5,
   },
@@ -57,4 +57,16 @@ const styles = StyleSheet.create({
   },
 });
 
-export default styles;
+export const getHeaderStyles = (isNightMode) => ({
+  headerTitleStyle: {
+    color: colors.WHITE_COLOR,
+    fontWeight: "normal",
+    fontFamily: constant.GURBANI_AKHAR_TRUE,
+    fontSize: 20,
+  },
+  headerStyle: {
+    backgroundColor: !isNightMode
+      ? colors.READER_STATUS_BAR_COLOR
+      : colors.READER_STATUS_BAR_COLOR_NIGHT_MODE,
+  },
+});

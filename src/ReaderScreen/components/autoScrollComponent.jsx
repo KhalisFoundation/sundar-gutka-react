@@ -17,11 +17,13 @@ function AutoScrollComponent({ shabadID }) {
 
   const handleSpeed = (value) => {
     dispatch(setAutoScrollSpeed(value, shabadID));
-    if (value === 0) togglePaused(true);
+    if (value === 0) {
+      togglePaused(true);
+    }
   };
   const handlePause = () => {};
   const handlePlay = () => {};
-  const handleScroll = () => {};
+  // const handleScroll = () => {};
   return (
     <View style={styles.container}>
       <View style={styles.wrapper}>

@@ -2,7 +2,7 @@ import React from "react";
 import { View, Text } from "react-native";
 import PropTypes from "prop-types";
 import { useSelector } from "react-redux";
-import styles from "../styles";
+import { styles } from "../styles";
 import { fontColorForReader, fontSizeForReader } from "../utils/util";
 import constant from "../../common/constant";
 
@@ -81,8 +81,5 @@ const ShabadItem = React.memo(({ item: tuk }) => {
 
 ShabadItem.propTypes = {
   item: PropTypes.shape().isRequired,
-  // setRowHeights: PropTypes.func.isRequired,
-  // rowHeights: PropTypes.arrayOf(PropTypes.number).isRequired,
-  // index: PropTypes.number.isRequired,
 };
 export default ShabadItem;

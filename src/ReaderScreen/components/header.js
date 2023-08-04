@@ -3,10 +3,12 @@ import { Icon } from "@rneui/themed";
 import PropTypes from "prop-types";
 import { useSelector } from "react-redux";
 import colors from "../../common/colors";
-import constant from "../../common/constant";
+import { getHeaderStyles } from "../styles";
 
 function Header({ navigation, title, handleBackPress, handleBookmarkPress, handleSettingsPress }) {
   const { isNightMode } = useSelector((state) => state);
+  const styles = getHeaderStyles(isNightMode);
+
   const headerLeft = () => {
     return (
       <Icon name="arrow-back" size={30} onPress={handleBackPress} color={colors.WHITE_COLOR} />
@@ -24,17 +26,8 @@ function Header({ navigation, title, handleBackPress, handleBookmarkPress, handl
   useEffect(() => {
     navigation.setOptions({
       title,
-      headerTitleStyle: {
-        color: colors.WHITE_COLOR,
-        fontWeight: "normal",
-        fontFamily: constant.GURBANI_AKHAR_TRUE,
-        fontSize: 20,
-      },
-      headerStyle: {
-        backgroundColor: !isNightMode
-          ? colors.READER_STATUS_BAR_COLOR
-          : colors.READER_STATUS_BAR_COLOR_NIGHT_MODE,
-      },
+      headerTitleStyle: styles.headerTitleStyle,
+      headerStyle: styles.headerStyle,
       headerLeft,
       headerRight,
     });
