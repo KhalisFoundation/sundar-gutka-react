@@ -23,7 +23,7 @@ function AutoScrollComponent({ shabadID }) {
   };
   const handlePause = () => {};
   const handlePlay = () => {};
-  // const handleScroll = () => {};
+
   return (
     <View style={styles.container}>
       <View style={styles.wrapper}>
