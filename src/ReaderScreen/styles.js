@@ -56,7 +56,6 @@ export const styles = StyleSheet.create({
     color: colors.TOOLBAR_TINT,
   },
 });
-
 export const getHeaderStyles = (isNightMode) => ({
   headerTitleStyle: {
     color: colors.WHITE_COLOR,

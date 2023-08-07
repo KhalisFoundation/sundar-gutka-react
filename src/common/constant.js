@@ -47,4 +47,5 @@ export default {
   REMINDERS_WAHEGURU_SOUL: "Reminders waheguru soul",
   WAKE_UP_JAP: "wake_up_jap",
   REMINDERS_WAKE_UP: "Reminders wake up jap",
+  FOLDERSCREEN: "FolderScreen",
 };
