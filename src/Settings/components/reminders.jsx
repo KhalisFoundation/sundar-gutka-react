@@ -131,6 +131,8 @@ function RemindersComponent({ navigation }) {
   );
 }
 
-RemindersComponent.propTypes = { navigation: PropTypes.shape().isRequired };
+RemindersComponent.propTypes = {
+  navigation: PropTypes.shape({ navigate: PropTypes.func.isRequired }).isRequired,
+};
 
 export default RemindersComponent;

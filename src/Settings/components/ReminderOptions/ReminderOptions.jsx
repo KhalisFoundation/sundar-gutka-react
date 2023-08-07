@@ -169,6 +169,9 @@ function ReminderOptions({ navigation }) {
 }
 
 ReminderOptions.propTypes = {
-  navigation: PropTypes.shape().isRequired,
+  navigation: PropTypes.shape({
+    goBack: PropTypes.func.isRequired,
+    setOptions: PropTypes.func.isRequired,
+  }).isRequired,
 };
 export default ReminderOptions;

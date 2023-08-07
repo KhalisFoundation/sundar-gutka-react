@@ -30,16 +30,16 @@ export const fontColorForReader = (header, nightMode, text) => {
 export const fontSizeForReader = (SIZE, header, transliteration) => {
   const size = 0.9;
   const fontSize = baseFontSize(SIZE, transliteration) * size;
-  if (header === 6) {
-    return fontSize * 0.75;
+  switch (header) {
+    case 6:
+      return fontSize * 0.75;
+    case 2:
+      return fontSize * 1.1;
+    case 1:
+      return fontSize * 1.2;
+    default:
+      return fontSize;
   }
-  if (header === 2) {
-    return fontSize * 1.1;
-  }
-  if (header === 1) {
-    return fontSize * 1.2;
-  }
-  return fontSize;
 };
 
 export const convertToParagraph = (data) => {

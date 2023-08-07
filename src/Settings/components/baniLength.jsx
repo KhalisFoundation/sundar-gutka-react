@@ -9,24 +9,25 @@ import { setBaniLength, BANI_LENGTHS } from "../../common/actions";
 import colors from "../../common/colors";
 
 const renderItem = (item, dispatch, isNightMode, toggleVisible, baniLength) => {
+  const { key, title } = item;
   return (
     <ListItem
-      key={item.key}
+      key={key}
       bottomDivider
       containerStyle={[
         { backgroundColor: isNightMode ? colors.NIGHT_GREY_COLOR : colors.WHITE_COLOR },
       ]}
       onPress={() => {
         toggleVisible(false);
-        dispatch(setBaniLength(item.key));
+        dispatch(setBaniLength(key));
       }}
     >
       <ListItem.Content>
         <ListItem.Title style={[isNightMode && { color: colors.WHITE_COLOR }]}>
-          {item.title}
+          {title}
         </ListItem.Title>
       </ListItem.Content>
-      {baniLength === item.key && <Icon color={isNightMode && colors.WHITE_COLOR} name="check" />}
+      {baniLength === key && <Icon color={isNightMode && colors.WHITE_COLOR} name="check" />}
     </ListItem>
   );
 };
