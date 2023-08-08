@@ -99,7 +99,7 @@ function AccordianHeader({ section, isActive }) {
 AccordianHeader.propTypes = {
   section: PropTypes.shape({
     enabled: PropTypes.bool.isRequired,
-    key: PropTypes.string.isRequired,
+    key: PropTypes.number.isRequired,
     translit: PropTypes.string.isRequired,
     gurmukhi: PropTypes.string.isRequired,
     time: PropTypes.string.isRequired,

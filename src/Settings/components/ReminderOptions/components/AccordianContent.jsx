@@ -81,7 +81,7 @@ function AccordianContent({ section, isActive }) {
   );
 }
 AccordianContent.propTypes = {
-  section: PropTypes.shape({ key: PropTypes.string.isRequired, title: PropTypes.string.isRequired })
+  section: PropTypes.shape({ key: PropTypes.number.isRequired, title: PropTypes.string.isRequired })
     .isRequired,
   isActive: PropTypes.bool.isRequired,
 };
