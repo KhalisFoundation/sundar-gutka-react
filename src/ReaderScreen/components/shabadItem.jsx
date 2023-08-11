@@ -3,16 +3,8 @@ import { View, Text } from "react-native";
 import PropTypes from "prop-types";
 import { useSelector } from "react-redux";
 import { styles } from "../styles";
-import { fontColorForReader, fontSizeForReader } from "../utils/util";
+import commonStyle from "../commonStyle";
 import constant from "../../common/constant";
-
-const commonStyle = (header, isNightMode, type, fontSize, fontFace) => ({
-  fontSize: fontSizeForReader(fontSize, header, type !== constant.GURMUKHI),
-  color: fontColorForReader(header, isNightMode, type),
-  textAlign: header ? "center" : "left",
-  fontWeight: header === 0 ? "normal" : "bold",
-  fontFamily: type === constant.TRANSLITERATION ? undefined : fontFace,
-});
 
 const ShabadItem = React.memo(({ item: tuk }) => {
   const {
