@@ -10,6 +10,7 @@ import STRINGS from "../common/localization";
 import colors from "../common/colors";
 import styles from "./styles";
 import constant from "../common/constant";
+import BaniLengthSelector from "../common/components/BaniLengthSelector";
 
 function BaniHeader(props) {
   const { navigate } = props;
@@ -39,9 +40,12 @@ function BaniHeader(props) {
 }
 
 const HomeScreen = React.memo(({ navigation }) => {
+  const [baniLengthSelector, toggleBaniLengthSelector] = useState(false);
   const { navigate } = navigation;
   const [data, setData] = useState([]);
-  const { transliterationLanguage, isNightMode } = useSelector((state) => state);
+  const { transliterationLanguage, isNightMode, baniLength, isStatusBar } = useSelector(
+    (state) => state
+  );
   useKeepAwake();
 
   function onPress(row) {
@@ -51,6 +55,11 @@ const HomeScreen = React.memo(({ navigation }) => {
     });
   }
 
+  useEffect(() => {
+    if (baniLength === "") {
+      toggleBaniLengthSelector(true);
+    }
+  }, []);
   useEffect(() => {
     (async () => {
       try {
@@ -66,9 +75,14 @@ const HomeScreen = React.memo(({ navigation }) => {
     <SafeAreaView
       style={[isNightMode && { backgroundColor: colors.NIGHT_BLACK }, styles.container]}
     >
-      <StatusBar barStyle="light-content" backgroundColor={colors.TOOLBAR_COLOR} />
+      <StatusBar
+        hidden={isStatusBar}
+        barStyle="light-content"
+        backgroundColor={colors.TOOLBAR_COLOR}
+      />
       <BaniHeader navigate={navigate} />
 
+      {baniLengthSelector && <BaniLengthSelector />}
       <BaniList data={data} onPress={onPress.bind(this)} />
     </SafeAreaView>
   );

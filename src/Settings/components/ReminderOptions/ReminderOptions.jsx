@@ -1,4 +1,4 @@
-import React, { useEffect, useState, useRef } from "react";
+import React, { useEffect, useState, useRef, useMemo } from "react";
 import { useDispatch, useSelector } from "react-redux";
 import { View, StatusBar } from "react-native";
 import { Icon } from "@rneui/themed";
@@ -31,6 +31,7 @@ function ReminderOptions({ navigation }) {
   const [reminderBaniData, setReminderBaniData] = useState([]);
   const dispatch = useDispatch();
   const selector = useRef(null);
+  const parsedReminderBanis = useMemo(() => JSON.parse(reminderBanis), [reminderBanis]);
 
   const updateSections = (sections) => {
     setActiveSections(sections);
@@ -79,7 +80,7 @@ function ReminderOptions({ navigation }) {
     (async () => {
       try {
         const data = await getBaniList(transliterationLanguage);
-        const existingKeysSet = new Set(JSON.parse(reminderBanis).map((bani) => bani.key));
+        const existingKeysSet = new Set(parsedReminderBanis.map((bani) => bani.key));
         const baniOptions = Object.entries(data)
           .filter(([key]) => !existingKeysSet.has(Number(key)) && key < 100000)
           .map(([key, bani]) => ({
@@ -89,10 +90,10 @@ function ReminderOptions({ navigation }) {
             translit: bani.translit,
           }));
         setReminderBaniData(baniOptions);
-        if (JSON.parse(reminderBanis).length === 0) {
+        if (parsedReminderBanis.length === 0) {
           setStateData(setDefaultReminders(data));
         } else {
-          setStateData(JSON.parse(reminderBanis));
+          setStateData(parsedReminderBanis);
         }
         navigation.setOptions({
           title: constant.REMINDER_OPTIONS,
@@ -114,7 +115,7 @@ function ReminderOptions({ navigation }) {
   }, [transliterationLanguage, reminderBanis]);
 
   const createReminder = async (selectedOption) => {
-    const array = JSON.parse(reminderBanis);
+    const array = parsedReminderBanis;
     const newObjKey = Number(selectedOption.key);
     const existingObjIndex = array.findIndex((item) => item.key === newObjKey);
 
@@ -169,6 +170,9 @@ function ReminderOptions({ navigation }) {
 }
 
 ReminderOptions.propTypes = {
-  navigation: PropTypes.shape().isRequired,
+  navigation: PropTypes.shape({
+    goBack: PropTypes.func.isRequired,
+    setOptions: PropTypes.func.isRequired,
+  }).isRequired,
 };
 export default ReminderOptions;

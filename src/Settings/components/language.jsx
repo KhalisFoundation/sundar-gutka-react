@@ -9,19 +9,20 @@ import { setLanguage, LANGUAGES } from "../../common/actions";
 import colors from "../../common/colors";
 
 const renderItem = (item, dispatch, language, toggleVisible) => {
+  const { key, title } = item;
   return (
     <ListItem
-      key={item.key}
+      key={key}
       bottomDivider
       onPress={() => {
         toggleVisible(false);
-        dispatch(setLanguage(item.key));
+        dispatch(setLanguage(key));
       }}
     >
       <ListItem.Content>
-        <ListItem.Title>{item.title}</ListItem.Title>
+        <ListItem.Title>{title}</ListItem.Title>
       </ListItem.Content>
-      {language === item.key && <Icon name="check" />}
+      {language === key && <Icon name="check" />}
     </ListItem>
   );
 };

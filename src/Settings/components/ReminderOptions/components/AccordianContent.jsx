@@ -14,6 +14,7 @@ function AccordianContent({ section, isActive }) {
   const [isLabelModal, toggleLabelModal] = useState(false);
   const { reminderBanis } = useSelector((state) => state);
   const dispatch = useDispatch();
+  const { key, title } = section;
   let backColor;
   if (isActive) {
     backColor = isNightMode ? colors.ACTIVE_VIEW_COLOR_NIGHT_MODE : colors.ACTIVE_VIEW_COLOR;
@@ -23,12 +24,13 @@ function AccordianContent({ section, isActive }) {
   const hideModal = () => {
     toggleLabelModal(false);
   };
-  const handleDeleteReminder = (key) => {
+  const handleDeleteReminder = (keyItem) => {
     const arr = JSON.parse(reminderBanis).filter((obj) => {
-      return obj.key !== key;
+      return obj.key !== keyItem;
     });
     dispatch(setReminderBanis(JSON.stringify(arr)));
   };
+
   return (
     <View style={{ backgroundColor: backColor }}>
       <TouchableOpacity
@@ -48,14 +50,14 @@ function AccordianContent({ section, isActive }) {
               { color: isNightMode ? colors.COMPONENT_COLOR_NIGHT_MODE : colors.COMPONENT_COLOR },
             ]}
           >
-            {section.title}
+            {title}
           </Text>
         </View>
       </TouchableOpacity>
 
       <TouchableOpacity
         onPress={() => {
-          handleDeleteReminder(section.key);
+          handleDeleteReminder(key);
         }}
       >
         <View style={styles.accContentWrapper}>
@@ -79,7 +81,8 @@ function AccordianContent({ section, isActive }) {
   );
 }
 AccordianContent.propTypes = {
-  section: PropTypes.shape().isRequired,
+  section: PropTypes.shape({ key: PropTypes.number.isRequired, title: PropTypes.string.isRequired })
+    .isRequired,
   isActive: PropTypes.bool.isRequired,
 };
 export default AccordianContent;
