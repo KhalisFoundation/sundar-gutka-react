@@ -7,12 +7,13 @@ import ListComponent from "./ListComponents";
 import colors from "../common/colors";
 
 function Settings({ navigation }) {
-  const { isNightMode } = useSelector((state) => state);
+  const { isNightMode, isStatusBar } = useSelector((state) => state);
 
   return (
     <SafeAreaProvider>
       <SafeAreaView>
         <StatusBar
+          hidden={isStatusBar}
           barStyle={isNightMode ? "light-content" : "dark-content"}
           backgroundColor={
             !isNightMode ? colors.TOOLBAR_COLOR_ALT : colors.TOOLBAR_COLOR_ALT_NIGHT_MODE

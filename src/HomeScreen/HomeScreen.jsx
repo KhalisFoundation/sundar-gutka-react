@@ -40,7 +40,7 @@ function BaniHeader(props) {
 const HomeScreen = React.memo(({ navigation }) => {
   const { navigate } = navigation;
   const [data, setData] = useState([]);
-  const { transliterationLanguage, isNightMode } = useSelector((state) => state);
+  const { transliterationLanguage, isNightMode, isStatusBar } = useSelector((state) => state);
 
   function onPress(row) {
     navigate(constant.READER, {
@@ -64,7 +64,11 @@ const HomeScreen = React.memo(({ navigation }) => {
     <SafeAreaView
       style={[isNightMode && { backgroundColor: colors.NIGHT_BLACK }, styles.container]}
     >
-      <StatusBar barStyle="light-content" backgroundColor={colors.TOOLBAR_COLOR} />
+      <StatusBar
+        hidden={isStatusBar}
+        barStyle="light-content"
+        backgroundColor={colors.TOOLBAR_COLOR}
+      />
       <BaniHeader navigate={navigate} />
 
       <BaniList data={data} onPress={onPress.bind(this)} />

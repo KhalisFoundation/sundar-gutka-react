@@ -14,7 +14,9 @@ import { useFetchShabad, usePagination } from "./utils/hooks";
 function Reader({ navigation, route }) {
   const readerRef = useRef(null);
 
-  const { isNightMode, bookmarkPosition, isAutoScroll } = useSelector((state) => state);
+  const { isNightMode, bookmarkPosition, isAutoScroll, isStatusBar } = useSelector(
+    (state) => state
+  );
   const [shabadID] = useState(Number(route.params.params.id));
   const [rowHeights, setRowHeights] = useState([]);
   const [itemsCount, setItemsCount] = useState(50);
@@ -49,6 +51,7 @@ function Reader({ navigation, route }) {
     >
       <SafeAreaView style={{ flex: 1 }}>
         <StatusBar
+          hidden={isStatusBar}
           backgroundColor={
             isNightMode ? colors.READER_STATUS_BAR_COLOR_NIGHT_MODE : colors.READER_STATUS_BAR_COLOR
           }
