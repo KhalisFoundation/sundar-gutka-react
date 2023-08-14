@@ -29,6 +29,7 @@ export const SET_REMINDER_BANIS = "SET_REMINDER_BANIS";
 export const SET_REMINDER_SOUND = "SET_REMINDER_SOUND";
 export const SET_AUTO_SCROLL_SPEED = "SET_AUTO_SCROLL_SPEED";
 export const SET_CACHE_SHABAD = "SET_CACHE_SHABAD";
+export const SET_SAVE_POSITION = "SET_SAVE_POSITION";
 
 export const THEMES = ["Default", "Light", "Dark"];
 
@@ -195,4 +196,9 @@ export function setAutoScrollSpeed(speed, shabad) {
 export function setCacheShabad(shabad, shabadID) {
   const cache = { [shabadID]: shabad };
   return { type: SET_CACHE_SHABAD, cache };
+}
+
+export function setPosition(pos, shabadID) {
+  const position = { [shabadID]: pos };
+  return { type: SET_SAVE_POSITION, position };
 }

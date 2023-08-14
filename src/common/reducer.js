@@ -28,6 +28,7 @@ import {
   SET_REMINDER_SOUND,
   SET_AUTO_SCROLL_SPEED,
   SET_CACHE_SHABAD,
+  SET_SAVE_POSITION,
 } from "./actions";
 import constant from "./constant";
 
@@ -263,6 +264,14 @@ function cacheShabad(state = {}, action) {
       return state;
   }
 }
+function savePosition(state = {}, action) {
+  switch (action.type) {
+    case SET_SAVE_POSITION:
+      return { ...state, ...action.position };
+    default:
+      return state;
+  }
+}
 
 const rootReducer = combineReducers({
   isNightMode,
@@ -293,5 +302,6 @@ const rootReducer = combineReducers({
   reminderSound,
   autoScrollSpeedObj,
   cacheShabad,
+  savePosition,
 });
 export default rootReducer;

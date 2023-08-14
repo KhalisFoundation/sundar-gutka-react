@@ -56,10 +56,11 @@ const HomeScreen = React.memo(({ navigation }) => {
   }
 
   useEffect(() => {
+    toggleBaniLengthSelector(false);
     if (baniLength === "") {
       toggleBaniLengthSelector(true);
     }
-  }, []);
+  }, [baniLength]);
   useEffect(() => {
     (async () => {
       try {
