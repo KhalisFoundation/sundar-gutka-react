@@ -10,20 +10,23 @@ import ShabadItem from "./components/shabadItem";
 import AutoScrollComponent from "./components/autoScrollComponent";
 import Header from "./components/header";
 import { useFetchShabad, usePagination } from "./utils/hooks";
+import { styles } from "./styles";
 
 function Reader({ navigation, route }) {
   const readerRef = useRef(null);
+  const headerRef = useRef(null);
 
   const { isNightMode, bookmarkPosition, isAutoScroll, isStatusBar, savePosition } = useSelector(
     (state) => state
   );
   const [shabadID] = useState(Number(route.params.params.id));
+  const [isHeader, toggleIsHeader] = useState(true);
   const [rowHeights, setRowHeights] = useState([]);
   const [itemsCount, setItemsCount] = useState(50);
   const [scrollPosition, setScrollPosition] = useState(0);
   const dispatch = useDispatch();
   const { shabad, isLoading } = useFetchShabad(shabadID);
-  const { currentPage, handleScroll } = usePagination(shabad, itemsCount);
+  const { currentPage, fetchScrollData } = usePagination(shabad, itemsCount);
 
   const handleBackPress = useCallback(() => navigation.goBack(), [navigation]);
   const handleBookmarkPress = useCallback(() => {
@@ -59,6 +62,17 @@ function Reader({ navigation, route }) {
     }
   }, [bookmarkPosition, rowHeights, itemsCount]);
 
+  const handleScroll = (event) => {
+    const scrollPosition = event.nativeEvent.contentOffset.y;
+    const scrollViewHeight = event.nativeEvent.layoutMeasurement.height;
+    const contentHeight = event.nativeEvent.contentSize.height;
+    toggleIsHeader(scrollPosition <= 5);
+    if (headerRef.current && headerRef.current.toggle) {
+      headerRef.current.toggle(isHeader);
+    }
+    fetchScrollData(scrollPosition, scrollViewHeight, contentHeight);
+  };
+
   return (
     <SafeAreaProvider
       style={{ backgroundColor: isNightMode ? colors.NIGHT_BLACK : colors.WHITE_COLOR }}
@@ -73,6 +87,7 @@ function Reader({ navigation, route }) {
         />
 
         <Header
+          ref={headerRef}
           navigation={navigation}
           title={route.params.params.title}
           handleBackPress={handleBackPress}
@@ -82,6 +97,7 @@ function Reader({ navigation, route }) {
 
         {isLoading && <ActivityIndicator size="small" color={colors.READER_STATUS_BAR_COLOR} />}
         <ScrollView
+          style={isHeader && styles.top50}
           ref={readerRef}
           showsVerticalScrollIndicator
           scrollEventThrottle={16}

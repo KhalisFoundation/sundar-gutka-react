@@ -55,6 +55,27 @@ export const styles = StyleSheet.create({
   sliderText: {
     color: colors.TOOLBAR_TINT,
   },
+  headerViewWrapper: {
+    backgroundColor: colors.READER_HEADER_COLOR,
+    height: 90,
+  },
+  headerWrapper: {
+    flex: 1,
+    flexDirection: "row",
+    marginTop: 50,
+    margin: 10,
+    justifyContent: "space-between",
+  },
+  top50: {
+    top: 50,
+  },
+  animatedView: {
+    position: "absolute",
+    left: 0,
+    right: 0,
+    overflow: "hidden",
+    backgroundColor: "transparent",
+  },
 });
 
 export const getHeaderStyles = (isNightMode) => ({

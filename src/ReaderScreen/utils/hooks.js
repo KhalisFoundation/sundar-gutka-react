@@ -71,11 +71,7 @@ export const usePagination = (data, itemsPerPage) => {
     isParagraphMode,
   ]);
 
-  const handleScroll = (event) => {
-    const scrollPosition = event.nativeEvent.contentOffset.y;
-    const scrollViewHeight = event.nativeEvent.layoutMeasurement.height;
-    const contentHeight = event.nativeEvent.contentSize.height;
-
+  const fetchScrollData = (scrollPosition, scrollViewHeight, contentHeight) => {
     const isEndReached = scrollPosition + scrollViewHeight >= contentHeight - itemsPerPage;
     if (!isEndReached) {
       const nextPageItems = process(
@@ -85,5 +81,5 @@ export const usePagination = (data, itemsPerPage) => {
     }
   };
 
-  return { currentPage, handleScroll };
+  return { currentPage, fetchScrollData };
 };
