@@ -4,7 +4,7 @@ import { Icon } from "@rneui/themed";
 import PropTypes from "prop-types";
 import { useSelector } from "react-redux";
 import colors from "../../common/colors";
-import { getHeaderStyles, styles } from "../styles";
+import { getHeaderStyles, styles } from "../styles/styles";
 
 const Header = React.forwardRef(
   ({ navigation, title, handleBackPress, handleBookmarkPress, handleSettingsPress }, ref) => {

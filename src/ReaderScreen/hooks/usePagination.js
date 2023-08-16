@@ -1,36 +1,8 @@
-import { useEffect, useState } from "react";
-import { useDispatch, useSelector } from "react-redux";
-import { getShabadFromID } from "../../database/db";
-import { convertToParagraph, processData } from "./util";
-import { setCacheShabad } from "../../common/actions";
+import { useSelector } from "react-redux";
+import { useState, useEffect } from "react";
+import { processData, convertToParagraph } from "../utils/util";
 
-export const useFetchShabad = (shabadID) => {
-  const dispatch = useDispatch();
-  const [shabad, setShabad] = useState([]);
-  const [isLoading, toggleLoading] = useState(false);
-  const { baniLength, cacheShabad, transliterationLanguage } = useSelector((state) => state);
-  useEffect(() => {
-    (async () => {
-      let data;
-
-      if (cacheShabad[shabadID]) {
-        data = cacheShabad[shabadID];
-      } else {
-        toggleLoading(true);
-        data = await getShabadFromID(shabadID, baniLength, transliterationLanguage);
-        if (data) {
-          dispatch(setCacheShabad(data, shabadID));
-        }
-        toggleLoading(false);
-      }
-      setShabad(data);
-    })();
-  }, [shabadID]);
-
-  return { shabad, isLoading };
-};
-
-export const usePagination = (data, itemsPerPage) => {
+const usePagination = (data, itemsPerPage) => {
   const {
     isVishraam,
     isLarivaar,
@@ -83,3 +55,5 @@ export const usePagination = (data, itemsPerPage) => {
 
   return { currentPage, fetchScrollData };
 };
+
+export default usePagination;

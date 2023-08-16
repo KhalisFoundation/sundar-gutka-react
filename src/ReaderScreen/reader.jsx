@@ -1,6 +1,6 @@
 import { useDispatch, useSelector } from "react-redux";
 import React, { useEffect, useState, useRef, useCallback } from "react";
-import { View, StatusBar, ScrollView, ActivityIndicator } from "react-native";
+import { View, StatusBar, ScrollView, ActivityIndicator, Pressable } from "react-native";
 import PropTypes from "prop-types";
 import { SafeAreaProvider, SafeAreaView } from "react-native-safe-area-context";
 import colors from "../common/colors";
@@ -9,26 +9,39 @@ import { setBookmarkPosition, setPosition } from "../common/actions";
 import ShabadItem from "./components/shabadItem";
 import AutoScrollComponent from "./components/autoScrollComponent";
 import Header from "./components/header";
-import { useFetchShabad, usePagination } from "./utils/hooks";
-import { styles } from "./styles";
+import useFetchShabad from "./hooks/useFetchShabad";
+import usePagination from "./hooks/usePagination";
+import { styles } from "./styles/styles";
+import useSaveScroll from "./hooks/useSaveScroll";
 
 function Reader({ navigation, route }) {
   const readerRef = useRef(null);
   const headerRef = useRef(null);
+  const currentScrollPosition = useRef(0);
+  const isEndReached = useRef(false);
 
-  const { isNightMode, bookmarkPosition, isAutoScroll, isStatusBar, savePosition } = useSelector(
+  const { isNightMode, bookmarkPosition, isAutoScroll, isStatusBar } = useSelector(
     (state) => state
   );
   const [shabadID] = useState(Number(route.params.params.id));
   const [isHeader, toggleIsHeader] = useState(true);
   const [rowHeights, setRowHeights] = useState([]);
   const [itemsCount, setItemsCount] = useState(50);
-  const [scrollPosition, setScrollPosition] = useState(0);
+
+  const [isLayout, toggleLayout] = useState(false);
   const dispatch = useDispatch();
   const { shabad, isLoading } = useFetchShabad(shabadID);
   const { currentPage, fetchScrollData } = usePagination(shabad, itemsCount);
+  useSaveScroll(isLayout, currentPage, readerRef, currentScrollPosition, shabadID);
 
-  const handleBackPress = useCallback(() => navigation.goBack(), [navigation]);
+  const handleBackPress = () => {
+    let position = currentScrollPosition.current;
+    if (isEndReached.current) {
+      position = 0;
+    }
+    dispatch(setPosition(position, shabadID));
+    navigation.goBack();
+  };
   const handleBookmarkPress = useCallback(() => {
     navigation.navigate("Bookmarks", { id: shabadID });
   }, [navigation, shabadID]);
@@ -37,19 +50,6 @@ function Reader({ navigation, route }) {
     [navigation]
   );
 
-  useEffect(() => {
-    if (!savePosition[shabadID]) {
-      dispatch(setPosition(position, shabadID));
-    }
-  }, [handleBackPress]);
-
-  const scrollToPosition = () => {
-    if (currentPage && currentPage.length > 0) {
-      setTimeout(() => {
-        readerRef.current?.scrollTo({ y: 100, animated: true });
-      }, 50);
-    }
-  };
   useEffect(() => {
     if (bookmarkPosition !== 0) {
       setItemsCount(bookmarkPosition + 10);
@@ -66,12 +66,17 @@ function Reader({ navigation, route }) {
     const scrollPosition = event.nativeEvent.contentOffset.y;
     const scrollViewHeight = event.nativeEvent.layoutMeasurement.height;
     const contentHeight = event.nativeEvent.contentSize.height;
+    const isEnd = scrollPosition + scrollViewHeight >= contentHeight - itemsCount - 500;
+    isEndReached.current = isEnd;
+    currentScrollPosition.current = scrollPosition;
     toggleIsHeader(scrollPosition <= 5);
+    fetchScrollData(scrollPosition, scrollViewHeight, contentHeight);
+  };
+  useEffect(() => {
     if (headerRef.current && headerRef.current.toggle) {
       headerRef.current.toggle(isHeader);
     }
-    fetchScrollData(scrollPosition, scrollViewHeight, contentHeight);
-  };
+  }, [isHeader]);
 
   return (
     <SafeAreaProvider
@@ -103,21 +108,26 @@ function Reader({ navigation, route }) {
           scrollEventThrottle={16}
           onScroll={handleScroll}
         >
-          <View onLayout={scrollToPosition}>
-            {currentPage.map((item, index) => (
-              <View
-                key={item.id}
-                onLayout={({ nativeEvent }) => {
-                  const newRowHeights = rowHeights;
-                  newRowHeights[index] = nativeEvent.layout.height;
-
-                  setRowHeights(newRowHeights);
-                }}
-              >
-                <ShabadItem item={item} index={index} />
-              </View>
-            ))}
-          </View>
+          <Pressable onPress={() => toggleIsHeader(!isHeader)}>
+            <View
+              onLayout={() => {
+                toggleLayout(true);
+              }}
+            >
+              {currentPage.map((item, index) => (
+                <View
+                  key={item.id}
+                  onLayout={({ nativeEvent }) => {
+                    const newRowHeights = rowHeights;
+                    newRowHeights[index] = nativeEvent.layout.height;
+                    setRowHeights(newRowHeights);
+                  }}
+                >
+                  <ShabadItem item={item} index={index} />
+                </View>
+              ))}
+            </View>
+          </Pressable>
         </ScrollView>
 
         {isAutoScroll && <AutoScrollComponent shabadID={shabadID} />}
