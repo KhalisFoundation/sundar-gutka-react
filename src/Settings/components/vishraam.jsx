@@ -1,8 +1,7 @@
 import React, { useState } from "react";
 import { Text } from "react-native";
 import { ListItem, BottomSheet, Icon, Switch } from "@rneui/themed";
-import { useSelector } from "react-redux";
-import PropTypes from "prop-types";
+import { useDispatch, useSelector } from "react-redux";
 import STRINGS from "../../common/localization";
 import {
   setVishraamOption,
@@ -12,7 +11,7 @@ import {
   VISHRAAM_SOURCES,
 } from "../../common/actions";
 import colors from "../../common/colors";
-import styles from "../styles";
+import styles from "../styles/styles";
 
 function vishraamExpand(
   isNightMode,
@@ -65,10 +64,11 @@ function vishraamExpand(
     </>
   );
 }
-function VishraamComponent({ isNightMode, dispatch }) {
+function VishraamComponent() {
   const [isVishraamOptionVisible, toggleVishraamOptionVisible] = useState(false);
   const [isVishraamSourceVisible, toggleVishraamSourceVisible] = useState(false);
-  const { isVishraam, vishraamOption, vishraamSource } = useSelector((state) => state);
+  const { isVishraam, vishraamOption, vishraamSource, isNightMode } = useSelector((state) => state);
+  const dispatch = useDispatch();
 
   const renderItem = (item, action) => {
     return (
@@ -135,8 +135,4 @@ function VishraamComponent({ isNightMode, dispatch }) {
     </>
   );
 }
-VishraamComponent.propTypes = {
-  isNightMode: PropTypes.bool.isRequired,
-  dispatch: PropTypes.func.isRequired,
-};
 export default VishraamComponent;

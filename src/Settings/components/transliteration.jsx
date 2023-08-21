@@ -1,8 +1,7 @@
 import React, { useState } from "react";
 import { Text } from "react-native";
 import { ListItem, BottomSheet, Avatar, Icon, Switch } from "@rneui/themed";
-import { useSelector } from "react-redux";
-import PropTypes from "prop-types";
+import { useDispatch, useSelector } from "react-redux";
 import STRINGS from "../../common/localization";
 import {
   setTransliteration,
@@ -10,7 +9,7 @@ import {
   TRANSLITERATION_LANGUAGES,
 } from "../../common/actions";
 import colors from "../../common/colors";
-import styles from "../styles";
+import styles from "../styles/styles";
 
 const renderItem = (item, dispatch, isNightMode, toggleVisible, transliterationLanguage) => {
   return (
@@ -36,10 +35,11 @@ const renderItem = (item, dispatch, isNightMode, toggleVisible, transliterationL
     </ListItem>
   );
 };
-function TransliterationComponent({ isNightMode, dispatch }) {
+function TransliterationComponent() {
   const romanizedIcon = require("../../../images/romanizeicon.png");
   const [isVisible, toggleVisible] = useState(false);
-  const { transliterationLanguage, isTransliteration } = useSelector((state) => state);
+  const { transliterationLanguage, isTransliteration, isNightMode } = useSelector((state) => state);
+  const dispatch = useDispatch();
 
   return (
     <>
@@ -103,9 +103,5 @@ function TransliterationComponent({ isNightMode, dispatch }) {
     </>
   );
 }
-TransliterationComponent.propTypes = {
-  isNightMode: PropTypes.bool.isRequired,
-  dispatch: PropTypes.func.isRequired,
-};
 
 export default TransliterationComponent;

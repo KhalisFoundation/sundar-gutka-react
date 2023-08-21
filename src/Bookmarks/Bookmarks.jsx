@@ -1,16 +1,16 @@
-import React, { useState, useEffect } from "react";
+import React from "react";
 import { SafeAreaProvider, SafeAreaView } from "react-native-safe-area-context";
-import { Icon } from "@rneui/themed";
-import { useSelector, useDispatch } from "react-redux";
+import { useDispatch } from "react-redux";
 import PropTypes from "prop-types";
-import { getBookmarksForID } from "../database/db";
 import BaniList from "../common/components/BaniList/BaniList";
-import colors from "../common/colors";
 import { setBookmarkPosition } from "../common/actions";
+import useHeader from "./hooks/useHeader";
+import useBookmarks from "./hooks/useBookmarks";
 
 function Bookmarks({ navigation, route }) {
-  const { baniLength, transliterationLanguage, isNightMode } = useSelector((state) => state);
-  const [data, setData] = useState([]);
+  useHeader(navigation);
+  const { data } = useBookmarks(route);
+
   const dispatch = useDispatch();
 
   function onPress(item) {
@@ -18,41 +18,6 @@ function Bookmarks({ navigation, route }) {
     navigation.goBack();
   }
 
-  const headerLeft = () => (
-    <Icon
-      name="arrow-back"
-      size={30}
-      onPress={() => navigation.goBack()}
-      color={colors.WHITE_COLOR}
-    />
-  );
-
-  useEffect(() => {
-    navigation.setOptions({
-      headerTitleStyle: {
-        color: colors.WHITE_COLOR,
-        fontWeight: "normal",
-        fontSize: 20,
-      },
-      headerStyle: {
-        backgroundColor: !isNightMode
-          ? colors.TOOLBAR_COLOR_ALT
-          : colors.TOOLBAR_COLOR_ALT_NIGHT_MODE,
-      },
-      headerLeft,
-    });
-  }, []);
-
-  useEffect(() => {
-    (async () => {
-      const bookmarks = await getBookmarksForID(
-        route.params.id,
-        baniLength,
-        transliterationLanguage
-      );
-      setData(bookmarks);
-    })();
-  }, []);
   return (
     <SafeAreaProvider>
       <SafeAreaView>

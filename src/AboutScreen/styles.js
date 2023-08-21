@@ -6,5 +6,7 @@ const styles = StyleSheet.create({
   margin: { marginTop: 20 },
   SGTitle: { fontSize: 20, fontWeight: "bold" },
   singleLine: { flexDirection: "row", justifyContent: "space-between" },
+  headerTitleStyle: { color: colors.WHITE_COLOR, fontWeight: "normal", fontSize: 18 },
+  headerStyle: { backgroundColor: colors.TOOLBAR_COLOR_ALT2 },
 });
 export default styles;

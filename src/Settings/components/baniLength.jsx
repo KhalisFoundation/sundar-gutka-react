@@ -1,10 +1,9 @@
 import React, { useState } from "react";
 import { Text } from "react-native";
 import { ListItem, BottomSheet, Avatar, Icon } from "@rneui/themed";
-import { useSelector } from "react-redux";
-import PropTypes from "prop-types";
+import { useDispatch, useSelector } from "react-redux";
 import STRINGS from "../../common/localization";
-import styles from "../styles";
+import styles from "../styles/styles";
 import { setBaniLength, BANI_LENGTHS } from "../../common/actions";
 import colors from "../../common/colors";
 
@@ -32,9 +31,10 @@ const renderItem = (item, dispatch, isNightMode, toggleVisible, baniLength) => {
   );
 };
 
-function BaniLengthComponent({ isNightMode, dispatch }) {
+function BaniLengthComponent() {
   const [isVisible, toggleVisible] = useState(false);
-  const { baniLength } = useSelector((state) => state);
+  const { baniLength, isNightMode } = useSelector((state) => state);
+  const dispatch = useDispatch();
 
   return (
     <>
@@ -76,8 +76,4 @@ function BaniLengthComponent({ isNightMode, dispatch }) {
   );
 }
 
-BaniLengthComponent.propTypes = {
-  isNightMode: PropTypes.bool.isRequired,
-  dispatch: PropTypes.func.isRequired,
-};
 export default BaniLengthComponent;

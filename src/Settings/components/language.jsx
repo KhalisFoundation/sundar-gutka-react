@@ -1,10 +1,9 @@
 import React, { useState } from "react";
 import { Text } from "react-native";
 import { ListItem, BottomSheet, Icon } from "@rneui/themed";
-import { useSelector } from "react-redux";
-import PropTypes from "prop-types";
+import { useSelector, useDispatch } from "react-redux";
 import STRINGS from "../../common/localization";
-import styles from "../styles";
+import styles from "../styles/styles";
 import { setLanguage, LANGUAGES } from "../../common/actions";
 import colors from "../../common/colors";
 
@@ -27,9 +26,10 @@ const renderItem = (item, dispatch, language, toggleVisible) => {
   );
 };
 
-function LanguageComponent({ isNightMode, dispatch }) {
+function LanguageComponent() {
   const [isVisible, toggleVisible] = useState(false);
-  const { language } = useSelector((state) => state);
+  const { language, isNightMode } = useSelector((state) => state);
+  const dispatch = useDispatch();
 
   return (
     <>
@@ -71,8 +71,5 @@ function LanguageComponent({ isNightMode, dispatch }) {
     </>
   );
 }
-LanguageComponent.propTypes = {
-  isNightMode: PropTypes.bool.isRequired,
-  dispatch: PropTypes.func.isRequired,
-};
+
 export default LanguageComponent;

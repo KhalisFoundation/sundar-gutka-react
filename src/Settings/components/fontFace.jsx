@@ -1,10 +1,9 @@
 import React, { useState } from "react";
 import { Text } from "react-native";
 import { ListItem, BottomSheet, Avatar, Icon } from "@rneui/themed";
-import { useSelector } from "react-redux";
-import PropTypes from "prop-types";
+import { useDispatch, useSelector } from "react-redux";
 import STRINGS from "../../common/localization";
-import styles from "../styles";
+import styles from "../styles/styles";
 import { setFontFace, FONT_FACES } from "../../common/actions";
 import colors from "../../common/colors";
 
@@ -30,9 +29,10 @@ const renderItem = (item, dispatch, isNightMode, toggleVisible, fontFace) => {
     </ListItem>
   );
 };
-function FontFaceComponent({ isNightMode, dispatch }) {
+function FontFaceComponent() {
   const [isVisible, toggleVisible] = useState(false);
-  const { fontFace } = useSelector((state) => state);
+  const { fontFace, isNightMode } = useSelector((state) => state);
+  const dispatch = useDispatch();
 
   return (
     <>
@@ -73,8 +73,5 @@ function FontFaceComponent({ isNightMode, dispatch }) {
     </>
   );
 }
-FontFaceComponent.propTypes = {
-  isNightMode: PropTypes.bool.isRequired,
-  dispatch: PropTypes.func.isRequired,
-};
+
 export default FontFaceComponent;

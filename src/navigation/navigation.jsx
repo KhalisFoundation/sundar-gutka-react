@@ -12,6 +12,7 @@ import STRINGS from "../common/localization";
 import EditBaniOrder from "../EditBaniOrder";
 import Bookmarks from "../Bookmarks";
 import ReminderOptions from "../Settings/components/ReminderOptions";
+import { styles, getSettingsStyle } from "./styles";
 
 const Stack = createNativeStackNavigator();
 
@@ -25,6 +26,7 @@ const headerLeft = (navigation, isNightMode) => (
 );
 function Navigation() {
   const { isNightMode } = useSelector((state) => state);
+  const { headerTitleStyle, headerStyle } = getSettingsStyle(isNightMode);
 
   return (
     <NavigationContainer>
@@ -37,10 +39,8 @@ function Navigation() {
         <Stack.Screen
           options={{
             title: STRINGS.fateh,
-            headerTitleStyle: { fontSize: 18, color: colors.WHITE_COLOR, fontWeight: "normal" },
-            headerStyle: {
-              backgroundColor: colors.TOOLBAR_COLOR,
-            },
+            headerTitleStyle: styles.homeHeaderTitle,
+            headerStyle: styles.homeHeaderStyle,
           }}
           name="Home"
           component={HomeScreen}
@@ -49,15 +49,8 @@ function Navigation() {
         <Stack.Screen
           options={({ navigation }) => ({
             headerLeft: () => headerLeft(navigation, isNightMode),
-            headerTitleStyle: {
-              color: !isNightMode ? colors.NIGHT_BLACK : colors.WHITE_COLOR,
-              fontWeight: "normal",
-            },
-            headerStyle: {
-              backgroundColor: !isNightMode
-                ? colors.TOOLBAR_COLOR_ALT
-                : colors.TOOLBAR_COLOR_ALT_NIGHT_MODE,
-            },
+            headerTitleStyle,
+            headerStyle,
           })}
           name="Settings"
           component={Settings}

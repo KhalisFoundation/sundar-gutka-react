@@ -1,10 +1,9 @@
 import React, { useState } from "react";
 import { Text } from "react-native";
 import { ListItem, BottomSheet, Avatar, Icon } from "@rneui/themed";
-import { useSelector } from "react-redux";
-import PropTypes from "prop-types";
+import { useDispatch, useSelector } from "react-redux";
 import STRINGS from "../../common/localization";
-import styles from "../styles";
+import styles from "../styles/styles";
 import { setPadched, PADCHED_SETTINGS } from "../../common/actions";
 import colors from "../../common/colors";
 
@@ -31,9 +30,10 @@ const renderItem = (item, dispatch, isNightMode, padched, toggleVisible) => {
   );
 };
 
-function PadchedSettingsComponent({ isNightMode, dispatch }) {
+function PadchedSettingsComponent() {
   const [isVisible, toggleVisible] = useState(false);
-  const { padched } = useSelector((state) => state);
+  const { padched, isNightMode } = useSelector((state) => state);
+  const dispatch = useDispatch();
 
   return (
     <>
@@ -74,8 +74,5 @@ function PadchedSettingsComponent({ isNightMode, dispatch }) {
     </>
   );
 }
-PadchedSettingsComponent.propTypes = {
-  isNightMode: PropTypes.bool.isRequired,
-  dispatch: PropTypes.func.isRequired,
-};
+
 export default PadchedSettingsComponent;

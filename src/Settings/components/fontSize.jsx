@@ -1,10 +1,9 @@
 import React, { useState } from "react";
 import { Text } from "react-native";
 import { ListItem, BottomSheet, Avatar, Icon } from "@rneui/themed";
-import { useSelector } from "react-redux";
-import PropTypes from "prop-types";
+import { useSelector, useDispatch } from "react-redux";
 import STRINGS from "../../common/localization";
-import styles from "../styles";
+import styles from "../styles/styles";
 import { setFontSize, FONT_SIZES } from "../../common/actions";
 import colors from "../../common/colors";
 
@@ -31,9 +30,10 @@ const renderItem = (item, dispatch, isNightMode, toggleVisible, fontSize) => {
   );
 };
 
-function FontSizeComponent({ isNightMode, dispatch }) {
+function FontSizeComponent() {
   const [isVisible, toggleVisible] = useState(false);
-  const { fontSize } = useSelector((state) => state);
+  const { fontSize, isNightMode } = useSelector((state) => state);
+  const dispatch = useDispatch();
 
   return (
     <>
@@ -74,10 +74,5 @@ function FontSizeComponent({ isNightMode, dispatch }) {
     </>
   );
 }
-
-FontSizeComponent.propTypes = {
-  isNightMode: PropTypes.bool.isRequired,
-  dispatch: PropTypes.func.isRequired,
-};
 
 export default FontSizeComponent;
