@@ -11,10 +11,11 @@ function FolderScreen({ navigation, route }) {
   const { data, title } = route.params.params;
 
   const onPress = (row) => {
-    const bani = row.item;
+    const item = { row };
+    const { id, gurmukhi } = item;
     navigate(constant.READER, {
-      key: `Reader-${bani.id}`,
-      params: { id: bani.id, title: bani.gurmukhi },
+      key: `Reader-${id}`,
+      params: { id, title: gurmukhi },
     });
   };
   return (

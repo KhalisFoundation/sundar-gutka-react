@@ -8,7 +8,7 @@ import constant from "../common/constant";
 
 function Header({ navigation, title }) {
   const { isNightMode } = useSelector((state) => state);
-  const styles = getHeaderStyles(isNightMode);
+  const { headerStyle, headerTitleStyle } = getHeaderStyles(isNightMode);
   const handleBackPress = useCallback(() => navigation.goBack(), [navigation]);
   const handleSettingsPress = useCallback(
     () => navigation.navigate(constant.SETTINGS),
@@ -28,8 +28,8 @@ function Header({ navigation, title }) {
   useEffect(() => {
     navigation.setOptions({
       title,
-      headerTitleStyle: styles.headerTitleStyle,
-      headerStyle: styles.headerStyle,
+      headerTitleStyle,
+      headerStyle,
       headerLeft,
       headerRight,
     });

@@ -28,6 +28,7 @@ const headerLeft = (navigation, isNightMode) => (
 function Navigation() {
   const { isNightMode } = useSelector((state) => state);
   const settingsStyle = SettingsStyle(isNightMode);
+  const { homeHeaderStyle, homeHeaderTitle } = styles;
 
   return (
     <NavigationContainer>
@@ -40,8 +41,8 @@ function Navigation() {
         <Stack.Screen
           options={{
             title: STRINGS.fateh,
-            headerTitleStyle: styles.homeHeaderTitle,
-            headerStyle: styles.homeHeaderStyle,
+            headerTitleStyle: homeHeaderTitle,
+            headerStyle: homeHeaderStyle,
           }}
           name="Home"
           component={HomeScreen}

@@ -1,18 +1,26 @@
+const fetchDefaultBaniOrder = () => require("../../defaultBaniOrder.json");
+const findBaniById = (baniList, id) => baniList.find((item) => item.id === id);
+const extractBaniDetails = (baniItem) => {
+  return {
+    id: baniItem.id,
+    gurmukhi: baniItem.gurmukhi,
+    translit: baniItem.translit,
+  };
+};
 const oderedBani = (baniList) => {
-  const defaultBaniOrder = require("../../defaultBaniOrder.json");
+  const defaultBaniOrder = fetchDefaultBaniOrder();
   const banis = [];
 
   defaultBaniOrder.baniOrder.forEach((obj) => {
     if (obj.id) {
-      const baniItem = baniList.filter((item) => item.id === obj.id)[0];
+      const baniItem = findBaniById(baniList, obj.id);
       if (baniItem) {
-        banis.push({ id: obj.id, gurmukhi: baniItem.gurmukhi, translit: baniItem.translit });
+        banis.push(extractBaniDetails(baniItem));
       }
     } else {
-      const folder = [];
-      obj.folder.forEach((item) => {
-        const bani = baniList.filter((listItem) => listItem.id === item.id)[0];
-        folder.push({ id: item.id, gurmukhi: bani.gurmukhi, translit: bani.translit });
+      const folder = obj.folder.map((item) => {
+        const bani = findBaniById(baniList, item.id);
+        return extractBaniDetails(bani);
       });
 
       banis.push({ gurmukhi: obj.gurmukhi, translit: obj.translit, folder });
