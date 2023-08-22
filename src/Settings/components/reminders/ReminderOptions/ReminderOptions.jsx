@@ -6,16 +6,16 @@ import Accordion from "react-native-collapsible/Accordion";
 import PropTypes from "prop-types";
 import ModalSelector from "react-native-modal-selector";
 import moment from "moment";
-import colors from "../../../common/colors";
-import constant from "../../../common/constant";
+import colors from "../../../../common/colors";
+import constant from "../../../../common/constant";
 import { defaultReminders } from "./utils/helpers";
-import { setReminderBanis } from "../../../common/actions";
-import { getBaniList } from "../../../database/db";
+import { setReminderBanis } from "../../../../common/actions";
+import { getBaniList } from "../../../../database/db";
 import styles from "./styles";
 import AccordianContent from "./components/AccordianContent";
 import AccordianHeader from "./components/AccordianHeader";
-import STRINGS from "../../../common/localization";
-import { updateReminders } from "../../../common/notifications";
+import STRINGS from "../../../../common/localization";
+import { updateReminders } from "../../../../common/notifications";
 
 function ReminderOptions({ navigation }) {
   const {

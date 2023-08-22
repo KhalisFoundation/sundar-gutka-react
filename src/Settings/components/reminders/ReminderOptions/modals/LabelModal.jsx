@@ -2,11 +2,11 @@ import React, { useState } from "react";
 import { Modal, Text, TextInput, View, TouchableOpacity } from "react-native";
 import { useDispatch, useSelector } from "react-redux";
 import PropTypes from "prop-types";
-import colors from "../../../../common/colors";
-import STRINGS from "../../../../common/localization";
+import colors from "../../../../../common/colors";
+import STRINGS from "../../../../../common/localization";
 import styles from "../styles";
-import { setReminderBanis } from "../../../../common/actions";
-import { updateReminders } from "../../../../common/notifications";
+import { setReminderBanis } from "../../../../../common/actions";
+import { updateReminders } from "../../../../../common/notifications";
 
 function LabelModal({ section, onHide }) {
   const { title } = section;

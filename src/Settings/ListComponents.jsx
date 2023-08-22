@@ -14,7 +14,7 @@ import LarivaarComponent from "./components/larivaar";
 import PadchedSettingsComponent from "./components/padched";
 import VishraamComponent from "./components/vishraam";
 import TranslationComponent from "./components/translation";
-import RemindersComponent from "./components/reminders";
+import RemindersComponent from "./components/reminders/reminders";
 import { nightModeStyles } from "./styles/nightModeStyles";
 import StatusBar from "./components/statusBar";
 import AutoScroll from "./components/autoScroll";

@@ -1,6 +1,6 @@
 import React, { useState } from "react";
 import { Text } from "react-native";
-import { ListItem, BottomSheet, Avatar, Icon, Switch } from "@rneui/themed";
+import { ListItem, BottomSheet, Avatar, Switch } from "@rneui/themed";
 import { useDispatch, useSelector } from "react-redux";
 import STRINGS from "../../common/localization";
 import {
@@ -10,31 +10,8 @@ import {
 } from "../../common/actions";
 import colors from "../../common/colors";
 import styles from "../styles/styles";
+import RenderItem from "./comon/render";
 
-const renderItem = (item, dispatch, isNightMode, toggleVisible, transliterationLanguage) => {
-  return (
-    <ListItem
-      key={item.key}
-      bottomDivider
-      containerStyle={[
-        { backgroundColor: isNightMode ? colors.NIGHT_GREY_COLOR : colors.WHITE_COLOR },
-      ]}
-      onPress={() => {
-        toggleVisible(false);
-        dispatch(setTransliteration(item.key));
-      }}
-    >
-      <ListItem.Content>
-        <ListItem.Title style={[isNightMode && { color: colors.WHITE_COLOR }]}>
-          {item.title}
-        </ListItem.Title>
-      </ListItem.Content>
-      {transliterationLanguage === item.key && (
-        <Icon color={isNightMode && colors.WHITE_COLOR} name="check" />
-      )}
-    </ListItem>
-  );
-};
 function TransliterationComponent() {
   const romanizedIcon = require("../../../images/romanizeicon.png");
   const [isVisible, toggleVisible] = useState(false);
@@ -95,9 +72,15 @@ function TransliterationComponent() {
           <Text style={[styles.bottomSheetTitle, isNightMode && { color: colors.WHITE_COLOR }]}>
             {STRINGS.language}
           </Text>
-          {TRANSLITERATION_LANGUAGES.map((item) =>
-            renderItem(item, dispatch, isNightMode, toggleVisible, transliterationLanguage)
-          )}
+          {TRANSLITERATION_LANGUAGES.map((item) => (
+            <RenderItem
+              key={item.key}
+              item={item}
+              toggleVisible={toggleVisible}
+              value={transliterationLanguage}
+              action={setTransliteration}
+            />
+          ))}
         </BottomSheet>
       )}
     </>

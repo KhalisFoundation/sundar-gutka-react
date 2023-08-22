@@ -1,35 +1,16 @@
 import React, { useState } from "react";
 import { Text } from "react-native";
 import { ListItem, BottomSheet, Icon } from "@rneui/themed";
-import { useSelector, useDispatch } from "react-redux";
+import { useSelector } from "react-redux";
 import STRINGS from "../../common/localization";
 import styles from "../styles/styles";
 import { setLanguage, LANGUAGES } from "../../common/actions";
 import colors from "../../common/colors";
-
-const renderItem = (item, dispatch, language, toggleVisible) => {
-  const { key, title } = item;
-  return (
-    <ListItem
-      key={key}
-      bottomDivider
-      onPress={() => {
-        toggleVisible(false);
-        dispatch(setLanguage(key));
-      }}
-    >
-      <ListItem.Content>
-        <ListItem.Title>{title}</ListItem.Title>
-      </ListItem.Content>
-      {language === key && <Icon name="check" />}
-    </ListItem>
-  );
-};
+import RenderItem from "./comon/render";
 
 function LanguageComponent() {
   const [isVisible, toggleVisible] = useState(false);
   const { language, isNightMode } = useSelector((state) => state);
-  const dispatch = useDispatch();
 
   return (
     <>
@@ -65,7 +46,15 @@ function LanguageComponent() {
       {isVisible && (
         <BottomSheet modalProps={{}} isVisible>
           <Text style={styles.bottomSheetTitle}>{STRINGS.language}</Text>
-          {LANGUAGES.map((item) => renderItem(item, dispatch, language, toggleVisible))}
+          {LANGUAGES.map((item) => (
+            <RenderItem
+              key={item.key}
+              item={item}
+              toggleVisible={toggleVisible}
+              value={language}
+              action={setLanguage}
+            />
+          ))}
         </BottomSheet>
       )}
     </>

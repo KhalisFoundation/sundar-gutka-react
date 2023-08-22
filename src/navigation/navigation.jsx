@@ -11,7 +11,7 @@ import colors from "../common/colors";
 import STRINGS from "../common/localization";
 import EditBaniOrder from "../EditBaniOrder";
 import Bookmarks from "../Bookmarks";
-import ReminderOptions from "../Settings/components/ReminderOptions";
+import ReminderOptions from "../Settings/components/reminders/ReminderOptions";
 import { styles, getSettingsStyle } from "./styles";
 
 const Stack = createNativeStackNavigator();
