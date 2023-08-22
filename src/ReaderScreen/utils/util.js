@@ -1,6 +1,6 @@
 import React from "react";
 import { Text } from "react-native";
-import { baseFontSize } from "../../common/helpers";
+import baseFontSize from "../../common/helpers";
 import constant from "../../common/constant";
 import colors from "../../common/colors";
 import { styles } from "../styles/styles";
@@ -11,6 +11,7 @@ export const fontColorForReader = (header, nightMode, text) => {
       1: nightMode ? colors.HEADER_COLOR_1_DARK : colors.HEADER_COLOR_1_LIGHT,
       2: nightMode ? colors.SLIDER_TRACK_MIN_TINT : colors.HEADER_COLOR_2_LIGHT,
       6: nightMode ? colors.SLIDER_TRACK_MIN_TINT : colors.HEADER_COLOR_2_LIGHT,
+      default: nightMode ? colors.SLIDER_TRACK_MIN_TINT : colors.HEADER_COLOR_2_LIGHT,
     },
     [constant.TRANSLITERATION]: nightMode
       ? colors.HEADER_COLOR_1_DARK
@@ -19,7 +20,6 @@ export const fontColorForReader = (header, nightMode, text) => {
   };
 
   const color = colorMapping[text];
-
   if (typeof color === "object") {
     return color[header] || color.default;
   }
