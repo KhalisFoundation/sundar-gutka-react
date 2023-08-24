@@ -20,10 +20,18 @@ const HomeScreen = React.memo(({ navigation }) => {
   const { baniLengthSelector } = useBaniLength();
 
   function onPress(row) {
-    navigate(constant.READER, {
-      key: `Reader-${row.item.id}`,
-      params: { id: row.item.id, title: row.item.gurmukhi },
-    });
+    const bani = row.item;
+    if (!bani.folder) {
+      navigate(constant.READER, {
+        key: `Reader-${bani.id}`,
+        params: { id: bani.id, title: bani.gurmukhi },
+      });
+    } else {
+      navigate(constant.FOLDERSCREEN, {
+        key: `Folder-${bani.roman}`,
+        params: { data: bani.folder, title: bani.gurmukhi },
+      });
+    }
   }
 
   return (
