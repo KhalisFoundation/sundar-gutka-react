@@ -12,6 +12,8 @@ import STRINGS from "../common/localization";
 import EditBaniOrder from "../EditBaniOrder";
 import Bookmarks from "../Bookmarks";
 import ReminderOptions from "../Settings/components/ReminderOptions";
+import FolderScreen from "../FolderScreen";
+import { styles, SettingsStyle } from "./style";
 
 const Stack = createNativeStackNavigator();
 
@@ -25,6 +27,8 @@ const headerLeft = (navigation, isNightMode) => (
 );
 function Navigation() {
   const { isNightMode } = useSelector((state) => state);
+  const settingsStyle = SettingsStyle(isNightMode);
+  const { homeHeaderStyle, homeHeaderTitle } = styles;
 
   return (
     <NavigationContainer>
@@ -37,10 +41,8 @@ function Navigation() {
         <Stack.Screen
           options={{
             title: STRINGS.fateh,
-            headerTitleStyle: { fontSize: 18, color: colors.WHITE_COLOR, fontWeight: "normal" },
-            headerStyle: {
-              backgroundColor: colors.TOOLBAR_COLOR,
-            },
+            headerTitleStyle: homeHeaderTitle,
+            headerStyle: homeHeaderStyle,
           }}
           name="Home"
           component={HomeScreen}
@@ -49,20 +51,14 @@ function Navigation() {
         <Stack.Screen
           options={({ navigation }) => ({
             headerLeft: () => headerLeft(navigation, isNightMode),
-            headerTitleStyle: {
-              color: !isNightMode ? colors.NIGHT_BLACK : colors.WHITE_COLOR,
-              fontWeight: "normal",
-            },
-            headerStyle: {
-              backgroundColor: !isNightMode
-                ? colors.TOOLBAR_COLOR_ALT
-                : colors.TOOLBAR_COLOR_ALT_NIGHT_MODE,
-            },
+            headerTitleStyle: settingsStyle.headerTitleStyle,
+            headerStyle: settingsStyle.headerStyle,
           })}
           name="Settings"
           component={Settings}
         />
         <Stack.Screen name="About" component={AboutScreen} />
+        <Stack.Screen name="FolderScreen" component={FolderScreen} />
         <Stack.Screen name="EditBaniOrder" component={EditBaniOrder} />
         <Stack.Screen name="Bookmarks" component={Bookmarks} />
         <Stack.Screen name="ReminderOptions" component={ReminderOptions} />
