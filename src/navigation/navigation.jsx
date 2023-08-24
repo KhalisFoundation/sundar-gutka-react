@@ -12,7 +12,8 @@ import STRINGS from "../common/localization";
 import EditBaniOrder from "../EditBaniOrder";
 import Bookmarks from "../Bookmarks";
 import ReminderOptions from "../Settings/components/reminders/ReminderOptions";
-import { styles, getSettingsStyle } from "./styles";
+import FolderScreen from "../FolderScreen";
+import { styles, SettingsStyle } from "./style";
 
 const Stack = createNativeStackNavigator();
 
@@ -26,7 +27,9 @@ const headerLeft = (navigation, isNightMode) => (
 );
 function Navigation() {
   const { isNightMode } = useSelector((state) => state);
-  const { headerTitleStyle, headerStyle } = getSettingsStyle(isNightMode);
+  const settingsStyle = SettingsStyle(isNightMode);
+  const { homeHeaderStyle, homeHeaderTitle } = styles;
+  const { headerTitleStyle, headerStyle } = settingsStyle;
 
   return (
     <NavigationContainer>
@@ -39,8 +42,8 @@ function Navigation() {
         <Stack.Screen
           options={{
             title: STRINGS.fateh,
-            headerTitleStyle: styles.homeHeaderTitle,
-            headerStyle: styles.homeHeaderStyle,
+            headerTitleStyle: homeHeaderTitle,
+            headerStyle: homeHeaderStyle,
           }}
           name="Home"
           component={HomeScreen}
@@ -56,6 +59,7 @@ function Navigation() {
           component={Settings}
         />
         <Stack.Screen name="About" component={AboutScreen} />
+        <Stack.Screen name="FolderScreen" component={FolderScreen} />
         <Stack.Screen name="EditBaniOrder" component={EditBaniOrder} />
         <Stack.Screen name="Bookmarks" component={Bookmarks} />
         <Stack.Screen name="ReminderOptions" component={ReminderOptions} />

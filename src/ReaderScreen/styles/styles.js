@@ -77,7 +77,6 @@ export const styles = StyleSheet.create({
     backgroundColor: "transparent",
   },
 });
-
 export const getHeaderStyles = (isNightMode) => ({
   headerTitleStyle: {
     color: colors.WHITE_COLOR,
