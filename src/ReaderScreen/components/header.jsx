@@ -45,7 +45,7 @@ const Header = React.forwardRef(
       const value = isHeader ? 0 : -120;
       Animated.timing(animationPosition, {
         duration: 200,
-        useNativeDriver: false,
+        useNativeDriver: true,
         toValue: value,
       }).start();
     };
@@ -59,7 +59,7 @@ const Header = React.forwardRef(
         style={[
           styles.animatedView,
           {
-            top: animationPosition,
+            transform: [{ translateY: animationPosition }],
           },
         ]}
       >

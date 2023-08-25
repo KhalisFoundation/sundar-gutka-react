@@ -1,6 +1,6 @@
 import { useSelector } from "react-redux";
 import { useState, useEffect } from "react";
-import { processData, convertToParagraph } from "../utils/util";
+import { processData, convertToParagraph } from "../utils";
 
 const usePagination = (data, itemsPerPage) => {
   const {
