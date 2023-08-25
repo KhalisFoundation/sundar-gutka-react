@@ -1,4 +1,4 @@
-import { fontSizeForReader, fontColorForReader } from "../utils/util";
+import { fontSizeForReader, fontColorForReader } from "../utils";
 import constant from "../../common/constant";
 
 const commonStyle = (header, isNightMode, type, fontSize, fontFace) => ({
