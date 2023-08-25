@@ -1,5 +1,5 @@
-import { fontSizeForReader, fontColorForReader } from "./utils/util";
-import constant from "../common/constant";
+import { fontSizeForReader, fontColorForReader } from "../utils";
+import constant from "../../common/constant";
 
 const commonStyle = (header, isNightMode, type, fontSize, fontFace) => ({
   fontSize: fontSizeForReader(fontSize, header, type !== constant.GURMUKHI),
