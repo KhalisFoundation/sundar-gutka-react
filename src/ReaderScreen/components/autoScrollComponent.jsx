@@ -5,7 +5,7 @@ import { useDispatch, useSelector } from "react-redux";
 import { Icon } from "@rneui/themed";
 import PropTypes from "prop-types";
 import colors from "../../common/colors";
-import { styles } from "../styles/styles";
+import { styles } from "../styles";
 import constant from "../../common/constant";
 import { setAutoScrollSpeed } from "../../common/actions";
 
