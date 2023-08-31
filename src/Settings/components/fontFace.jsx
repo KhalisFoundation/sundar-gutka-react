@@ -6,7 +6,7 @@ import STRINGS from "../../common/localization";
 import styles from "../styles/styles";
 import { setFontFace, FONT_FACES } from "../../common/actions";
 import colors from "../../common/colors";
-import RenderItem from "./comon/render";
+import RenderBottomSheetItem from "./comon/render";
 
 function FontFaceComponent() {
   const [isVisible, toggleVisible] = useState(false);
@@ -44,7 +44,7 @@ function FontFaceComponent() {
             {STRINGS.font_face}
           </Text>
           {FONT_FACES.map((item) => (
-            <RenderItem
+            <RenderBottomSheetItem
               key={item.key}
               item={item}
               toggleVisible={toggleVisible}

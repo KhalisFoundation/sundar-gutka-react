@@ -4,7 +4,7 @@ import { useSelector, useDispatch } from "react-redux";
 import PropTypes from "prop-types";
 import { nightModeColor, nightModeStyles } from "../../styles/nightModeStyles";
 
-function RenderItem({ item, toggleVisible, value, action }) {
+function RenderBottomSheetItem({ item, toggleVisible, value, action }) {
   const { isNightMode } = useSelector((state) => state);
   const dispatch = useDispatch();
   const { key, title } = item;
@@ -27,11 +27,11 @@ function RenderItem({ item, toggleVisible, value, action }) {
     </ListItem>
   );
 }
-RenderItem.propTypes = {
+RenderBottomSheetItem.propTypes = {
   item: PropTypes.shape({ key: PropTypes.string.isRequired, title: PropTypes.string.isRequired })
     .isRequired,
   toggleVisible: PropTypes.func.isRequired,
   value: PropTypes.string.isRequired,
   action: PropTypes.func.isRequired,
 };
-export default RenderItem;
+export default RenderBottomSheetItem;

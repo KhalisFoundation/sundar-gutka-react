@@ -6,7 +6,7 @@ import STRINGS from "../../common/localization";
 import styles from "../styles/styles";
 import { setLanguage, LANGUAGES } from "../../common/actions";
 import colors from "../../common/colors";
-import RenderItem from "./comon/render";
+import RenderBottomSheetItem from "./comon/render";
 
 function LanguageComponent() {
   const [isVisible, toggleVisible] = useState(false);
@@ -47,7 +47,7 @@ function LanguageComponent() {
         <BottomSheet modalProps={{}} isVisible>
           <Text style={styles.bottomSheetTitle}>{STRINGS.language}</Text>
           {LANGUAGES.map((item) => (
-            <RenderItem
+            <RenderBottomSheetItem
               key={item.key}
               item={item}
               toggleVisible={toggleVisible}

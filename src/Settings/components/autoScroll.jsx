@@ -21,6 +21,7 @@ function AutoScroll() {
       <Switch
         value={isAutoScroll}
         onValueChange={(value) => {
+          /* The screen should remain active whenever Auto Scroll is enabled. */
           dispatch(toggleScreenAwake(value));
           dispatch(toggleAutoScroll(value));
         }}

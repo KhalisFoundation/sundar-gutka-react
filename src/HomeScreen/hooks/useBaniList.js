@@ -3,18 +3,18 @@ import { useSelector } from "react-redux";
 import { getBaniList } from "../../database/db";
 
 const useBaniList = () => {
-  const [data, setData] = useState([]);
+  const [baniListData, setBaniListData] = useState([]);
   const { transliterationLanguage } = useSelector;
   useEffect(() => {
     (async () => {
       try {
-        const d = await getBaniList(transliterationLanguage);
-        setData(d);
+        const transliteratedList = await getBaniList(transliterationLanguage);
+        setBaniListData(transliteratedList);
       } catch (error) {
         console.log("Error eh wala ", error);
       }
     })();
   }, [transliterationLanguage]);
-  return { data };
+  return { baniListData };
 };
 export default useBaniList;

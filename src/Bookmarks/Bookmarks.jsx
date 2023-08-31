@@ -9,7 +9,7 @@ import useBookmarks from "./hooks/useBookmarks";
 
 function Bookmarks({ navigation, route }) {
   useHeader(navigation);
-  const { data } = useBookmarks(route);
+  const { bookmarksData } = useBookmarks(route);
 
   const dispatch = useDispatch();
 
@@ -21,7 +21,7 @@ function Bookmarks({ navigation, route }) {
   return (
     <SafeAreaProvider>
       <SafeAreaView>
-        <BaniList data={data} onPress={onPress.bind(this)} />
+        <BaniList data={bookmarksData} onPress={onPress.bind(this)} />
       </SafeAreaView>
     </SafeAreaProvider>
   );

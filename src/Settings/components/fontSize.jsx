@@ -6,7 +6,7 @@ import STRINGS from "../../common/localization";
 import styles from "../styles/styles";
 import { setFontSize, FONT_SIZES } from "../../common/actions";
 import colors from "../../common/colors";
-import RenderItem from "./comon/render";
+import RenderBottomSheetItem from "./comon/render";
 
 function FontSizeComponent() {
   const [isVisible, toggleVisible] = useState(false);
@@ -44,7 +44,7 @@ function FontSizeComponent() {
             {STRINGS.font_size}
           </Text>
           {FONT_SIZES.map((item) => (
-            <RenderItem
+            <RenderBottomSheetItem
               key={item.key}
               item={item}
               toggleVisible={toggleVisible}

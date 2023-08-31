@@ -10,7 +10,7 @@ import {
 } from "../../common/actions";
 import colors from "../../common/colors";
 import styles from "../styles/styles";
-import RenderItem from "./comon/render";
+import RenderBottomSheetItem from "./comon/render";
 
 function TransliterationComponent() {
   const romanizedIcon = require("../../../images/romanizeicon.png");
@@ -73,7 +73,7 @@ function TransliterationComponent() {
             {STRINGS.language}
           </Text>
           {TRANSLITERATION_LANGUAGES.map((item) => (
-            <RenderItem
+            <RenderBottomSheetItem
               key={item.key}
               item={item}
               toggleVisible={toggleVisible}
