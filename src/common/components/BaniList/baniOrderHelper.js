@@ -9,9 +9,7 @@ const extractBaniDetails = (baniItem) => {
 };
 export const oderedBani = (baniList, baniOrder) => {
   const defaultBaniOrder = baniOrder;
-  console.log("Default BaniOrder", defaultBaniOrder);
   const banis = [];
-
   defaultBaniOrder.baniOrder.forEach((obj) => {
     if (obj.id) {
       const baniItem = findBaniById(baniList, obj.id);

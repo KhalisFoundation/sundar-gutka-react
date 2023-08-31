@@ -2,7 +2,7 @@ import React, { useEffect, useState } from "react";
 import { SafeAreaView, View, Text, StatusBar } from "react-native";
 import { Icon } from "@rneui/themed";
 import PropTypes from "prop-types";
-import { useDispatch, useSelector } from "react-redux";
+import { useSelector } from "react-redux";
 import BaniList from "../common/components/BaniList/BaniList";
 import useKeepAwake from "../common/hooks/keepAwake";
 import { getBaniList } from "../database/db";
@@ -11,8 +11,6 @@ import colors from "../common/colors";
 import styles from "./styles";
 import constant from "../common/constant";
 import BaniLengthSelector from "../common/components/BaniLengthSelector";
-import { setBaniList } from "../common/actions";
-import { oderedBani } from "../common/components/BaniList/baniOrderHelper";
 
 function BaniHeader(props) {
   const { navigate } = props;

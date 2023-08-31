@@ -17,7 +17,6 @@ function BaniList(props) {
   const dispatch = useDispatch();
 
   useEffect(() => {
-    console.log("BaniOrder", baniOrder);
     if (data.length > 0 && !isFolderScreen) {
       const orderedData = oderedBani(data, baniOrder);
       setShabad(orderedData);
@@ -25,7 +24,7 @@ function BaniList(props) {
     } else {
       setShabad(data);
     }
-  }, [data]);
+  }, [data, baniOrder]);
   const renderBanis = (row) => {
     return (
       <ListItem
