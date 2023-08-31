@@ -2,19 +2,26 @@ import React, { useEffect, useState } from "react";
 import { FlatList } from "react-native";
 import { ListItem, Avatar } from "@rneui/themed";
 import PropTypes from "prop-types";
-import { useSelector } from "react-redux";
+import { useDispatch, useSelector } from "react-redux";
 import { baseFontSize } from "../../helpers";
 import colors from "../../colors";
-import oderedBani from "./baniOrderHelper";
+import { oderedBani } from "./baniOrderHelper";
+import { setBaniList } from "../../actions";
 
 function BaniList(props) {
-  const { fontSize, fontFace, isTransliteration, isNightMode } = useSelector((state) => state);
+  const { fontSize, fontFace, isTransliteration, isNightMode, baniOrder } = useSelector(
+    (state) => state
+  );
   const { data, onPress, isFolderScreen } = props;
   const [shabad, setShabad] = useState(data);
+  const dispatch = useDispatch();
 
   useEffect(() => {
+    console.log("BaniOrder", baniOrder);
     if (data.length > 0 && !isFolderScreen) {
-      setShabad(oderedBani(data));
+      const orderedData = oderedBani(data, baniOrder);
+      setShabad(orderedData);
+      dispatch(setBaniList(orderedData));
     } else {
       setShabad(data);
     }

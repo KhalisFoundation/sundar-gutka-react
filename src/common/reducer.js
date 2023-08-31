@@ -28,7 +28,10 @@ import {
   SET_REMINDER_SOUND,
   SET_AUTO_SCROLL_SPEED,
   SET_CACHE_SHABAD,
+  SET_BANI_ORDER,
+  SET_BANI_LIST,
 } from "./actions";
+import { fetchDefaultBaniOrder } from "./components/BaniList/baniOrderHelper";
 import constant from "./constant";
 
 function isNightMode(state = false, action) {
@@ -263,6 +266,23 @@ function cacheShabad(state = {}, action) {
       return state;
   }
 }
+function baniOrder(state = fetchDefaultBaniOrder(), action) {
+  switch (action.type) {
+    case SET_BANI_ORDER:
+      return action.order;
+    default:
+      return state;
+  }
+}
+
+function baniList(state = [], action) {
+  switch (action.type) {
+    case SET_BANI_LIST:
+      return action.list;
+    default:
+      return state;
+  }
+}
 
 const rootReducer = combineReducers({
   isNightMode,
@@ -293,5 +313,7 @@ const rootReducer = combineReducers({
   reminderSound,
   autoScrollSpeedObj,
   cacheShabad,
+  baniOrder,
+  baniList,
 });
 export default rootReducer;

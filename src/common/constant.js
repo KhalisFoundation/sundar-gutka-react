@@ -49,4 +49,5 @@ export default {
   WAKE_UP_JAP: "wake_up_jap",
   REMINDERS_WAKE_UP: "Reminders wake up jap",
   FOLDERSCREEN: "FolderScreen",
+  EDIT_BANI_ORDER: "Edit Bani Order",
 };

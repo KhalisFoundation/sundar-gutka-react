@@ -29,6 +29,8 @@ export const SET_REMINDER_BANIS = "SET_REMINDER_BANIS";
 export const SET_REMINDER_SOUND = "SET_REMINDER_SOUND";
 export const SET_AUTO_SCROLL_SPEED = "SET_AUTO_SCROLL_SPEED";
 export const SET_CACHE_SHABAD = "SET_CACHE_SHABAD";
+export const SET_BANI_ORDER = "SET_BANI_ORDER";
+export const SET_BANI_LIST = "SET_BANI_LIST";
 
 export const THEMES = ["Default", "Light", "Dark"];
 
@@ -195,4 +197,12 @@ export function setAutoScrollSpeed(speed, shabad) {
 export function setCacheShabad(shabad, shabadID) {
   const cache = { [shabadID]: shabad };
   return { type: SET_CACHE_SHABAD, cache };
+}
+
+export function setBaniOrder(order) {
+  return { type: SET_BANI_ORDER, order };
+}
+
+export function setBaniList(list) {
+  return { type: SET_BANI_LIST, list };
 }
