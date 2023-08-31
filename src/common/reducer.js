@@ -30,6 +30,7 @@ import {
   SET_CACHE_SHABAD,
   SET_BANI_ORDER,
   SET_BANI_LIST,
+  SET_SAVE_POSITION,
 } from "./actions";
 import { fetchDefaultBaniOrder } from "./components/BaniList/baniOrderHelper";
 import constant from "./constant";
@@ -283,6 +284,14 @@ function baniList(state = [], action) {
       return state;
   }
 }
+function savePosition(state = {}, action) {
+  switch (action.type) {
+    case SET_SAVE_POSITION:
+      return { ...state, ...action.position };
+    default:
+      return state;
+  }
+}
 
 const rootReducer = combineReducers({
   isNightMode,
@@ -315,5 +324,6 @@ const rootReducer = combineReducers({
   cacheShabad,
   baniOrder,
   baniList,
+  savePosition,
 });
 export default rootReducer;

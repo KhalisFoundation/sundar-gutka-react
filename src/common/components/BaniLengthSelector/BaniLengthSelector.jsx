@@ -28,7 +28,7 @@ function BaniLengthSelector() {
     return res;
   };
   const handleOnpress = (length) => {
-    setBaniLength(length);
+    dispatch(setBaniLength(length));
     fetchBanis(length);
     toggleModalVissible(false);
   };

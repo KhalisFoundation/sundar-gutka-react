@@ -4,7 +4,7 @@ import { Icon } from "@rneui/themed";
 import PropTypes from "prop-types";
 import { useSelector } from "react-redux";
 import colors from "../../common/colors";
-import { getHeaderStyles, styles } from "../styles";
+import { getHeaderStyles, styles } from "../styles/styles";
 
 const Header = React.forwardRef(
   ({ navigation, title, handleBackPress, handleBookmarkPress, handleSettingsPress }, ref) => {
@@ -45,7 +45,7 @@ const Header = React.forwardRef(
       const value = isHeader ? 0 : -120;
       Animated.timing(animationPosition, {
         duration: 200,
-        useNativeDriver: false,
+        useNativeDriver: true,
         toValue: value,
       }).start();
     };
@@ -59,7 +59,7 @@ const Header = React.forwardRef(
         style={[
           styles.animatedView,
           {
-            top: animationPosition,
+            transform: [{ translateY: animationPosition }],
           },
         ]}
       >

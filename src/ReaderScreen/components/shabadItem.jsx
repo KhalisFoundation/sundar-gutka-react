@@ -2,8 +2,7 @@ import React from "react";
 import { View, Text } from "react-native";
 import PropTypes from "prop-types";
 import { useSelector } from "react-redux";
-import { styles } from "../styles";
-import commonStyle from "../commonStyle";
+import { styles, commonStyle } from "../styles";
 import constant from "../../common/constant";
 
 const ShabadItem = React.memo(({ item: tuk }) => {

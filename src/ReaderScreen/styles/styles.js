@@ -1,6 +1,6 @@
 import { StyleSheet } from "react-native";
-import constant from "../common/constant";
-import colors from "../common/colors";
+import constant from "../../common/constant";
+import colors from "../../common/colors";
 
 export const styles = StyleSheet.create({
   gurmukhiText: {
