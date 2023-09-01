@@ -32,221 +32,117 @@ import {
 } from "./actions";
 import constant from "./constant";
 
-function isNightMode(state = false, action) {
-  switch (action.type) {
-    case TOGGLE_NIGHT_MODE:
-      return action.value;
-    default:
-      return state;
-  }
-}
-function fontSize(state = constant.SMALL, action) {
-  switch (action.type) {
-    case SET_FONT_SIZE:
-      return action.size;
-    default:
-      return state;
-  }
-}
-function fontFace(state = constant.GURBANI_AKHAR_TRUE, action) {
-  switch (action.type) {
-    case SET_FONT_FACE:
-      return action.font;
-    default:
-      return state;
-  }
-}
-function language(state = constant.DEFAULT, action) {
-  switch (action.type) {
-    case SET_LANGUAGE:
-      return action.language;
-    default:
-      return state;
-  }
-}
-function isTransliteration(state = false, action) {
-  switch (action.type) {
-    case TOGGLE_TRANSLITERATION:
-      return action.value;
-    default:
-      return state;
-  }
-}
+const createReducer =
+  (initialState, handlers) =>
+  (state = initialState, action) => {
+    if (Object.prototype.hasOwnProperty.call(handlers, action.type)) {
+      return handlers[action.type](state, action);
+    }
+    return state;
+  };
 
-function transliterationLanguage(state = constant.ENGLISH, action) {
-  switch (action.type) {
-    case SET_TRANSLITERATION:
-      return action.language;
-    default:
-      return state;
-  }
-}
-function theme(state = constant.Default, action) {
-  switch (action.type) {
-    case SET_THEME:
-      return action.theme;
-    default:
-      return state;
-  }
-}
-function isStatusBar(state = false, action) {
-  switch (action.type) {
-    case TOGGLE_STATUS_BAR:
-      return action.value;
-    default:
-      return state;
-  }
-}
+const isNightMode = createReducer(false, {
+  [TOGGLE_NIGHT_MODE]: (state, action) => action.value,
+});
 
-function isScreenAwake(state = false, action) {
-  switch (action.type) {
-    case TOGGLE_SCREEN_AWAKE:
-      return action.value;
-    default:
-      return state;
-  }
-}
-function isAutoScroll(state = false, action) {
-  switch (action.type) {
-    case TOGGLE_AUTO_SCROLL:
-      return action.value;
-    default:
-      return state;
-  }
-}
-function baniLength(state = "", action) {
-  switch (action.type) {
-    case SET_BANI_LENGTH:
-      return action.length;
-    default:
-      return state;
-  }
-}
-function isLarivaar(state = false, action) {
-  switch (action.type) {
-    case TOGGLE_LARIVAAR:
-      return action.value;
-    default:
-      return state;
-  }
-}
+const fontSize = createReducer(constant.SMALL, {
+  [SET_FONT_SIZE]: (state, action) => action.size,
+});
 
-function isLarivaarAssist(state = false, action) {
-  switch (action.type) {
-    case TOGGLE_LARIVAAR_ASSIST:
-      return action.value;
-    default:
-      return state;
-  }
-}
-function isParagraphMode(state = false, action) {
-  switch (action.type) {
-    case TOGGLE_PARAGRAPH_MODE:
-      return action.value;
-    default:
-      return state;
-  }
-}
-function padched(state = constant.SAT_SUBHAM_SAT, action) {
-  switch (action.type) {
-    case SET_PADCHHED:
-      return action.setting;
-    default:
-      return state;
-  }
-}
-function isVishraam(state = false, action) {
-  switch (action.type) {
-    case TOGGLE_VISHRAAM:
-      return action.value;
-    default:
-      return state;
-  }
-}
-function vishraamOption(state = constant.VISHRAAM_COLORED, action) {
-  switch (action.type) {
-    case SET_VISHRAAM_OPTION:
-      return action.option;
-    default:
-      return state;
-  }
-}
+const transliterationLanguage = createReducer(constant.ENGLISH, {
+  [SET_TRANSLITERATION]: (state, action) => action.language,
+});
 
-function vishraamSource(state = constant.sttm, action) {
-  switch (action.type) {
-    case SET_VISHRAAM_SOURCE:
-      return action.source;
-    default:
-      return state;
-  }
-}
+const fontFace = createReducer(constant.GURBANI_AKHAR_TRUE, {
+  [SET_FONT_FACE]: (state, action) => action.font,
+});
+const language = createReducer(constant.Default.toUpperCase(), {
+  [SET_LANGUAGE]: (state, action) => action.language,
+});
 
-function isStatistics(state = true, action) {
-  switch (action.type) {
-    case TOGGLE_STATISTICS:
-      return action.value;
-    default:
-      return state;
-  }
-}
-function isEnglishTranslation(state = false, action) {
-  switch (action.type) {
-    case TOGGLE_ENGLISH_TRANSLATION:
-      return action.value;
-    default:
-      return state;
-  }
-}
-function isPunjabiTranslation(state = false, action) {
-  switch (action.type) {
-    case TOGGLE_PUNJABI_TRANSLATION:
-      return action.value;
-    default:
-      return state;
-  }
-}
-function isSpanishTranslation(state = false, action) {
-  switch (action.type) {
-    case TOGGLE_SPANISH_TRANSLATION:
-      return action.value;
-    default:
-      return state;
-  }
-}
-function bookmarkPosition(state = 0, action) {
-  switch (action.type) {
-    case SET_BOOKMARK_POSITION:
-      return action.value;
-    default:
-      return state;
-  }
-}
-function isReminders(state = false, action) {
-  switch (action.type) {
-    case TOGGLE_REMINDERS:
-      return action.value;
-    default:
-      return state;
-  }
-}
-function reminderBanis(state = JSON.stringify([]), action) {
-  switch (action.type) {
-    case SET_REMINDER_BANIS:
-      return action.list;
-    default:
-      return state;
-  }
-}
+const isTransliteration = createReducer(false, {
+  [TOGGLE_TRANSLITERATION]: (state, action) => action.value,
+});
 
-function reminderSound(state = constant.Default.toLowerCase(), action) {
-  switch (action.type) {
-    case SET_REMINDER_SOUND:
-      return action.sound;
-    default:
-      return state;
-  }
-}
+const theme = createReducer(constant.Default, {
+  [SET_THEME]: (state, action) => action.theme,
+});
 
+const isStatusBar = createReducer(false, {
+  [TOGGLE_STATUS_BAR]: (state, action) => action.value,
+});
+
+const isScreenAwake = createReducer(false, {
+  [TOGGLE_SCREEN_AWAKE]: (state, action) => action.value,
+});
+
+const isAutoScroll = createReducer(false, {
+  [TOGGLE_AUTO_SCROLL]: (state, action) => action.value,
+});
+
+const baniLength = createReducer("", {
+  [SET_BANI_LENGTH]: (state, action) => action.length,
+});
+
+const isLarivaar = createReducer(false, {
+  [TOGGLE_LARIVAAR]: (state, action) => action.value,
+});
+
+const isLarivaarAssist = createReducer(false, {
+  [TOGGLE_LARIVAAR_ASSIST]: (state, action) => action.value,
+});
+
+const isParagraphMode = createReducer(false, {
+  [TOGGLE_PARAGRAPH_MODE]: (state, action) => action.value,
+});
+
+const padched = createReducer(constant.SAT_SUBHAM_SAT, {
+  [SET_PADCHHED]: (state, action) => action.setting,
+});
+
+const isVishraam = createReducer(false, {
+  [TOGGLE_VISHRAAM]: (state, action) => action.value,
+});
+
+const vishraamOption = createReducer(constant.VISHRAAM_COLORED, {
+  [SET_VISHRAAM_OPTION]: (state, action) => action.option,
+});
+
+const vishraamSource = createReducer(constant.sttm, {
+  [SET_VISHRAAM_SOURCE]: (state, action) => action.source,
+});
+
+const isStatistics = createReducer(false, {
+  [TOGGLE_STATISTICS]: (state, action) => action.value,
+});
+
+const isEnglishTranslation = createReducer(false, {
+  [TOGGLE_ENGLISH_TRANSLATION]: (state, action) => action.value,
+});
+
+const isSpanishTranslation = createReducer(false, {
+  [TOGGLE_SPANISH_TRANSLATION]: (state, action) => action.value,
+});
+
+const isPunjabiTranslation = createReducer(false, {
+  [TOGGLE_PUNJABI_TRANSLATION]: (state, action) => action.value,
+});
+
+const bookmarkPosition = createReducer(0, {
+  [SET_BOOKMARK_POSITION]: (state, action) => action.value,
+});
+
+const isReminders = createReducer(false, {
+  [TOGGLE_REMINDERS]: (state, action) => action.value,
+});
+
+const reminderBanis = createReducer(JSON.stringify([]), {
+  [SET_REMINDER_BANIS]: (state, action) => action.list,
+});
+
+const reminderSound = createReducer(constant.Default.toLowerCase(), {
+  [SET_REMINDER_SOUND]: (state, action) => action.sound,
+});
 function autoScrollSpeedObj(state = {}, action) {
   switch (action.type) {
     case SET_AUTO_SCROLL_SPEED:
