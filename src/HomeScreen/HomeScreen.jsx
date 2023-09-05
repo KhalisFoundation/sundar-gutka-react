@@ -11,6 +11,8 @@ import colors from "../common/colors";
 import styles from "./styles";
 import constant from "../common/constant";
 import BaniLengthSelector from "../common/components/BaniLengthSelector";
+import useAppFirstTime from "./hooks/useAppFirstTime";
+import useAnalytics from "./hooks/useAnalytics";
 
 function BaniHeader(props) {
   const { navigate } = props;
@@ -47,6 +49,8 @@ const HomeScreen = React.memo(({ navigation }) => {
     (state) => state
   );
   useKeepAwake();
+  useAnalytics();
+  const isAppOpenFirstTime = useAppFirstTime();
 
   function onPress(row) {
     const bani = row.item;
@@ -90,8 +94,7 @@ const HomeScreen = React.memo(({ navigation }) => {
         backgroundColor={colors.TOOLBAR_COLOR}
       />
       <BaniHeader navigate={navigate} />
-
-      {baniLengthSelector && <BaniLengthSelector />}
+      {isAppOpenFirstTime && baniLengthSelector && <BaniLengthSelector />}
       <BaniList data={data} onPress={onPress.bind(this)} />
     </SafeAreaView>
   );
