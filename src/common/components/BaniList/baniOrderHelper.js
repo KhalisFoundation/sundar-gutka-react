@@ -7,7 +7,7 @@ const extractBaniDetails = (baniItem) => {
     translit: baniItem.translit,
   };
 };
-export const oderedBani = (baniList, baniOrder) => {
+export const orderedBani = (baniList, baniOrder) => {
   const defaultBaniOrder = baniOrder;
   const banis = [];
   defaultBaniOrder.baniOrder.forEach((obj) => {

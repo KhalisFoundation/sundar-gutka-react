@@ -15,42 +15,45 @@ import { fetchDefaultBaniOrder } from "../common/components/BaniList/baniOrderHe
 function EditBaniOrder({ navigation }) {
   const { baniList, isNightMode } = useSelector((state) => state);
   useHeader(navigation);
-  const [data, setData] = useState(baniList);
+  const [baniListdata, setBaniListData] = useState(baniList);
   const { rowItem, text, gestureBackColor } = styles;
   const dispatch = useDispatch();
   const defaultOrder = fetchDefaultBaniOrder();
   const nightColor = nightStyles(isNightMode);
 
-  const renderItem = useCallback(({ item, drag, isActive }) => {
-    const activeStyle = activeColor(isActive, item.backgroundColor);
-    return (
-      <ShadowDecorator>
-        <ScaleDecorator>
-          <TouchableOpacity
-            key={item.id}
-            activeOpacity={1}
-            onLongPress={drag}
-            disabled={isActive}
-            style={activeStyle}
-          >
-            <View style={[rowItem, nightColor.backColor]}>
-              <Text style={[text, nightColor.textColor]}>{item.gurmukhi}</Text>
-            </View>
-          </TouchableOpacity>
-        </ScaleDecorator>
-      </ShadowDecorator>
-    );
-  }, []);
+  const renderItem = useCallback(
+    ({ item, drag, isActive }) => {
+      const activeStyle = activeColor(isActive, item.backgroundColor);
+      return (
+        <ShadowDecorator>
+          <ScaleDecorator>
+            <TouchableOpacity
+              key={item.id}
+              activeOpacity={1}
+              onLongPress={drag}
+              disabled={isActive}
+              style={activeStyle}
+            >
+              <View style={[rowItem, nightColor.backColor]}>
+                <Text style={[text, nightColor.textColor]}>{item.gurmukhi}</Text>
+              </View>
+            </TouchableOpacity>
+          </ScaleDecorator>
+        </ShadowDecorator>
+      );
+    },
+    [rowItem, nightColor, text]
+  );
 
   useEffect(() => {
-    setData(baniList);
+    setBaniListData(baniList);
   }, [baniList]);
 
   const handleDragEnd = (newOrder) => {
     const ids = newOrder.data.map((item) => {
       return { id: item.id };
     });
-    setData(newOrder.data);
+    setBaniListData(newOrder.data);
     const newOrderIds = ids.map((id, index) => {
       return ids[index].id !== undefined ? ids[index] : defaultOrder.baniOrder[index];
     });
@@ -60,7 +63,7 @@ function EditBaniOrder({ navigation }) {
   return (
     <GestureHandlerRootView style={gestureBackColor}>
       <DraggableFlatList
-        data={data}
+        data={baniListdata}
         keyExtractor={(item) => item.id}
         renderItem={renderItem}
         onDragEnd={(nextOrder) => {
@@ -70,5 +73,7 @@ function EditBaniOrder({ navigation }) {
     </GestureHandlerRootView>
   );
 }
-EditBaniOrder.propTypes = { navigation: PropTypes.shape().isRequired };
+EditBaniOrder.propTypes = {
+  navigation: PropTypes.shape({ goBack: PropTypes.func.isRequired }).isRequired,
+};
 export default EditBaniOrder;

@@ -45,7 +45,7 @@ const HomeScreen = React.memo(({ navigation }) => {
   );
   const [baniLengthSelector, toggleBaniLengthSelector] = useState(false);
   const { navigate } = navigation;
-  const [data, setData] = useState([]);
+  const [baniListData, setBaniListData] = useState([]);
   useKeepAwake();
 
   function onPress(row) {
@@ -73,7 +73,7 @@ const HomeScreen = React.memo(({ navigation }) => {
     (async () => {
       try {
         const d = await getBaniList(transliterationLanguage);
-        setData(d);
+        setBaniListData(d);
       } catch (error) {
         console.log("Error eh wala ", error);
       }
@@ -92,7 +92,7 @@ const HomeScreen = React.memo(({ navigation }) => {
       <BaniHeader navigate={navigate} />
 
       {baniLengthSelector && <BaniLengthSelector />}
-      <BaniList data={data} onPress={onPress.bind(this)} />
+      <BaniList data={baniListData} onPress={onPress.bind(this)} />
     </SafeAreaView>
   );
 });

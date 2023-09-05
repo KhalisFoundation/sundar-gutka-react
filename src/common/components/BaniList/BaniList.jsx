@@ -5,7 +5,7 @@ import PropTypes from "prop-types";
 import { useDispatch, useSelector } from "react-redux";
 import { baseFontSize } from "../../helpers";
 import colors from "../../colors";
-import { oderedBani } from "./baniOrderHelper";
+import { orderedBani } from "./baniOrderHelper";
 import { setBaniList } from "../../actions";
 
 function BaniList(props) {
@@ -18,7 +18,7 @@ function BaniList(props) {
 
   useEffect(() => {
     if (data.length > 0 && !isFolderScreen) {
-      const orderedData = oderedBani(data, baniOrder);
+      const orderedData = orderedBani(data, baniOrder);
       setShabad(orderedData);
       dispatch(setBaniList(orderedData));
     } else {
