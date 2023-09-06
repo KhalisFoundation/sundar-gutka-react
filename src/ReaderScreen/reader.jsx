@@ -30,6 +30,7 @@ function Reader({ navigation, route }) {
   const [isHeader, toggleIsHeader] = useState(true);
   const [rowHeights, setRowHeights] = useState([]);
   const [itemsCount] = useState(50);
+  const { title } = route.params.params;
 
   const [isLayout, toggleLayout] = useState(false);
   const dispatch = useDispatch();
@@ -38,9 +39,11 @@ function Reader({ navigation, route }) {
   useSaveScroll(isLayout, currentPage, readerRef, currentScrollPosition, shabadID);
   useBookmarks(readerRef, shabad, bookmarkPosition, rowHeights, layoutHeight);
   const nightModeColors = nightColors(isNightMode);
+  const { backgroundColor } = nightModeColors;
 
   const { safeAreaViewBack } = nightModeColors;
   const { READER_STATUS_BAR_COLOR } = colors;
+  const { top50 } = styles;
   const handleBackPress = () => {
     let position = currentScrollPosition.current;
     if (isEndReached.current) {
@@ -78,14 +81,14 @@ function Reader({ navigation, route }) {
       <SafeAreaView style={{ flex: 1 }}>
         <StatusBar
           hidden={isStatusBar}
-          backgroundColor={nightColors.backgroundColor}
+          backgroundColor={backgroundColor}
           barStyle={isNightMode ? "light-content" : "dark-content"}
         />
 
         <Header
           ref={headerRef}
           navigation={navigation}
-          title={route.params.params.title}
+          title={title}
           handleBackPress={handleBackPress}
           handleBookmarkPress={handleBookmarkPress}
           handleSettingsPress={handleSettingsPress}
@@ -93,7 +96,7 @@ function Reader({ navigation, route }) {
 
         {isLoading && <ActivityIndicator size="small" color={READER_STATUS_BAR_COLOR} />}
         <ScrollView
-          style={isHeader && styles.top50}
+          style={isHeader && top50}
           ref={readerRef}
           showsVerticalScrollIndicator
           scrollEventThrottle={16}
@@ -102,7 +105,8 @@ function Reader({ navigation, route }) {
           <Pressable onPress={() => toggleIsHeader(!isHeader)}>
             <View
               onLayout={(event) => {
-                layoutHeight.current = event.nativeEvent.layout.height;
+                const { height } = event.nativeEvent.layout;
+                layoutHeight.current = height;
 
                 toggleLayout(true);
               }}

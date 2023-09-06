@@ -6,17 +6,17 @@ import colors from "../../common/colors";
 import { styles } from "../styles/styles";
 
 export const fontColorForReader = (header, nightMode, text) => {
+  const { HEADER_COLOR_1_DARK, HEADER_COLOR_1_LIGHT, HEADER_COLOR_2_LIGHT, SLIDER_TRACK_MIN_TINT } =
+    colors;
   const colorMapping = {
     [constant.GURMUKHI]: {
-      1: nightMode ? colors.HEADER_COLOR_1_DARK : colors.HEADER_COLOR_1_LIGHT,
-      2: nightMode ? colors.SLIDER_TRACK_MIN_TINT : colors.HEADER_COLOR_2_LIGHT,
-      6: nightMode ? colors.SLIDER_TRACK_MIN_TINT : colors.HEADER_COLOR_2_LIGHT,
-      default: nightMode ? colors.SLIDER_TRACK_MIN_TINT : colors.HEADER_COLOR_2_LIGHT,
+      1: nightMode ? HEADER_COLOR_1_DARK : HEADER_COLOR_1_LIGHT,
+      2: nightMode ? SLIDER_TRACK_MIN_TINT : HEADER_COLOR_2_LIGHT,
+      6: nightMode ? SLIDER_TRACK_MIN_TINT : HEADER_COLOR_2_LIGHT,
+      default: nightMode ? SLIDER_TRACK_MIN_TINT : HEADER_COLOR_2_LIGHT,
     },
-    [constant.TRANSLITERATION]: nightMode
-      ? colors.HEADER_COLOR_1_DARK
-      : colors.HEADER_COLOR_1_LIGHT,
-    [constant.TRANSLATION]: nightMode ? colors.SLIDER_TRACK_MIN_TINT : colors.HEADER_COLOR_2_LIGHT,
+    [constant.TRANSLITERATION]: nightMode ? HEADER_COLOR_1_DARK : HEADER_COLOR_1_LIGHT,
+    [constant.TRANSLATION]: nightMode ? SLIDER_TRACK_MIN_TINT : HEADER_COLOR_2_LIGHT,
   };
 
   const color = colorMapping[text];
