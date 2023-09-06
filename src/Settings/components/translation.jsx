@@ -1,7 +1,6 @@
 import React, { useState } from "react";
 import { ListItem, Avatar, Switch } from "@rneui/themed";
-import { useSelector } from "react-redux";
-import PropTypes from "prop-types";
+import { useSelector, useDispatch } from "react-redux";
 import colors from "../../common/colors";
 import STRINGS from "../../common/localization";
 import {
@@ -10,11 +9,11 @@ import {
   toggleSpanishTranslation,
 } from "../../common/actions";
 
-function TranslationComponent({ isNightMode, dispatch }) {
+function TranslationComponent() {
   const translationAvatar = require("../../../images/englishicon.png");
-  const { isEnglishTranslation, isSpanishTranslation, isPunjabiTranslation } = useSelector(
-    (state) => state
-  );
+  const { isEnglishTranslation, isSpanishTranslation, isPunjabiTranslation, isNightMode } =
+    useSelector((state) => state);
+  const dispatch = useDispatch();
   const [isExpanded, toggleIsExpanded] = useState(false);
 
   return (
@@ -86,10 +85,5 @@ function TranslationComponent({ isNightMode, dispatch }) {
     </ListItem.Accordion>
   );
 }
-
-TranslationComponent.propTypes = {
-  isNightMode: PropTypes.bool.isRequired,
-  dispatch: PropTypes.func.isRequired,
-};
 
 export default TranslationComponent;

@@ -1,40 +1,16 @@
 import React, { useState } from "react";
 import { Text } from "react-native";
-import { ListItem, BottomSheet, Avatar, Icon } from "@rneui/themed";
+import { ListItem, BottomSheet, Avatar } from "@rneui/themed";
 import { useSelector } from "react-redux";
-import PropTypes from "prop-types";
 import STRINGS from "../../common/localization";
-import styles from "../styles";
+import styles from "../styles/styles";
 import { setBaniLength, BANI_LENGTHS } from "../../common/actions";
 import colors from "../../common/colors";
+import RenderBottomSheetItem from "./comon/render";
 
-const renderItem = (item, dispatch, isNightMode, toggleVisible, baniLength) => {
-  const { key, title } = item;
-  return (
-    <ListItem
-      key={key}
-      bottomDivider
-      containerStyle={[
-        { backgroundColor: isNightMode ? colors.NIGHT_GREY_COLOR : colors.WHITE_COLOR },
-      ]}
-      onPress={() => {
-        toggleVisible(false);
-        dispatch(setBaniLength(key));
-      }}
-    >
-      <ListItem.Content>
-        <ListItem.Title style={[isNightMode && { color: colors.WHITE_COLOR }]}>
-          {title}
-        </ListItem.Title>
-      </ListItem.Content>
-      {baniLength === key && <Icon color={isNightMode && colors.WHITE_COLOR} name="check" />}
-    </ListItem>
-  );
-};
-
-function BaniLengthComponent({ isNightMode, dispatch }) {
+function BaniLengthComponent() {
   const [isVisible, toggleVisible] = useState(false);
-  const { baniLength } = useSelector((state) => state);
+  const { baniLength, isNightMode } = useSelector((state) => state);
 
   return (
     <>
@@ -67,17 +43,19 @@ function BaniLengthComponent({ isNightMode, dispatch }) {
           <Text style={[styles.bottomSheetTitle, isNightMode && { color: colors.WHITE_COLOR }]}>
             {STRINGS.bani_length}
           </Text>
-          {BANI_LENGTHS.map((item) =>
-            renderItem(item, dispatch, isNightMode, toggleVisible, baniLength)
-          )}
+          {BANI_LENGTHS.map((item) => (
+            <RenderBottomSheetItem
+              key={item.key}
+              item={item}
+              toggleVisible={toggleVisible}
+              value={baniLength}
+              action={setBaniLength}
+            />
+          ))}
         </BottomSheet>
       )}
     </>
   );
 }
 
-BaniLengthComponent.propTypes = {
-  isNightMode: PropTypes.bool.isRequired,
-  dispatch: PropTypes.func.isRequired,
-};
 export default BaniLengthComponent;

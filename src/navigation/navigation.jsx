@@ -11,7 +11,7 @@ import colors from "../common/colors";
 import STRINGS from "../common/localization";
 import EditBaniOrder from "../EditBaniOrder";
 import Bookmarks from "../Bookmarks";
-import ReminderOptions from "../Settings/components/ReminderOptions";
+import ReminderOptions from "../Settings/components/reminders/ReminderOptions";
 import FolderScreen from "../FolderScreen";
 import { styles, SettingsStyle } from "./style";
 
@@ -29,6 +29,7 @@ function Navigation() {
   const { isNightMode } = useSelector((state) => state);
   const settingsStyle = SettingsStyle(isNightMode);
   const { homeHeaderStyle, homeHeaderTitle } = styles;
+  const { headerTitleStyle, headerStyle } = settingsStyle;
 
   return (
     <NavigationContainer>
@@ -51,8 +52,8 @@ function Navigation() {
         <Stack.Screen
           options={({ navigation }) => ({
             headerLeft: () => headerLeft(navigation, isNightMode),
-            headerTitleStyle: settingsStyle.headerTitleStyle,
-            headerStyle: settingsStyle.headerStyle,
+            headerTitleStyle,
+            headerStyle,
           })}
           name="Settings"
           component={Settings}

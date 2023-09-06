@@ -1,10 +1,9 @@
 import React, { useState } from "react";
 import { Text, Appearance } from "react-native";
 import { ListItem, BottomSheet, Avatar, Icon } from "@rneui/themed";
-import { useSelector } from "react-redux";
-import PropTypes from "prop-types";
+import { useDispatch, useSelector } from "react-redux";
 import STRINGS from "../../common/localization";
-import styles from "../styles";
+import styles from "../styles/styles";
 import { setTheme, THEMES, toggleNightMode } from "../../common/actions";
 import colors from "../../common/colors";
 import constant from "../../common/constant";
@@ -47,9 +46,10 @@ const renderItem = (item, dispatch, isNightMode, theme, toggleVisible) => {
   );
 };
 
-function ThemeComponent({ isNightMode, dispatch }) {
+function ThemeComponent() {
   const [isVisible, toggleVisible] = useState(false);
-  const { theme } = useSelector((state) => state);
+  const { theme, isNightMode } = useSelector((state) => state);
+  const dispatch = useDispatch();
 
   return (
     <>
@@ -88,8 +88,5 @@ function ThemeComponent({ isNightMode, dispatch }) {
     </>
   );
 }
-ThemeComponent.propTypes = {
-  isNightMode: PropTypes.bool.isRequired,
-  dispatch: PropTypes.func.isRequired,
-};
+
 export default ThemeComponent;
