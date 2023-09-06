@@ -2,34 +2,15 @@ import React, { useState } from "react";
 import { Text } from "react-native";
 import { ListItem, BottomSheet, Icon } from "@rneui/themed";
 import { useSelector } from "react-redux";
-import PropTypes from "prop-types";
 import STRINGS from "../../common/localization";
-import styles from "../styles";
+import styles from "../styles/styles";
 import { setLanguage, LANGUAGES } from "../../common/actions";
 import colors from "../../common/colors";
+import RenderBottomSheetItem from "./comon/render";
 
-const renderItem = (item, dispatch, language, toggleVisible) => {
-  const { key, title } = item;
-  return (
-    <ListItem
-      key={key}
-      bottomDivider
-      onPress={() => {
-        toggleVisible(false);
-        dispatch(setLanguage(key));
-      }}
-    >
-      <ListItem.Content>
-        <ListItem.Title>{title}</ListItem.Title>
-      </ListItem.Content>
-      {language === key && <Icon name="check" />}
-    </ListItem>
-  );
-};
-
-function LanguageComponent({ isNightMode, dispatch }) {
+function LanguageComponent() {
   const [isVisible, toggleVisible] = useState(false);
-  const { language } = useSelector((state) => state);
+  const { language, isNightMode } = useSelector((state) => state);
 
   return (
     <>
@@ -65,14 +46,19 @@ function LanguageComponent({ isNightMode, dispatch }) {
       {isVisible && (
         <BottomSheet modalProps={{}} isVisible>
           <Text style={styles.bottomSheetTitle}>{STRINGS.language}</Text>
-          {LANGUAGES.map((item) => renderItem(item, dispatch, language, toggleVisible))}
+          {LANGUAGES.map((item) => (
+            <RenderBottomSheetItem
+              key={item.key}
+              item={item}
+              toggleVisible={toggleVisible}
+              value={language}
+              action={setLanguage}
+            />
+          ))}
         </BottomSheet>
       )}
     </>
   );
 }
-LanguageComponent.propTypes = {
-  isNightMode: PropTypes.bool.isRequired,
-  dispatch: PropTypes.func.isRequired,
-};
+
 export default LanguageComponent;

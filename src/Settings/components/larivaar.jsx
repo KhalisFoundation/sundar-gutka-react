@@ -1,13 +1,13 @@
 import React from "react";
 import { ListItem, Avatar, Icon, Switch } from "@rneui/themed";
-import { useSelector } from "react-redux";
-import PropTypes from "prop-types";
+import { useDispatch, useSelector } from "react-redux";
 import STRINGS from "../../common/localization";
 import { toggleLarivaar, toggleLarivaarAssist } from "../../common/actions";
 import colors from "../../common/colors";
 
-function LarivaarComponent({ isNightMode, dispatch }) {
-  const { isLarivaar, isLarivaarAssist } = useSelector((state) => state);
+function LarivaarComponent() {
+  const { isLarivaar, isLarivaarAssist, isNightMode } = useSelector((state) => state);
+  const dispatch = useDispatch();
 
   return (
     <>
@@ -42,8 +42,5 @@ function LarivaarComponent({ isNightMode, dispatch }) {
     </>
   );
 }
-LarivaarComponent.propTypes = {
-  isNightMode: PropTypes.bool.isRequired,
-  dispatch: PropTypes.func.isRequired,
-};
+
 export default LarivaarComponent;

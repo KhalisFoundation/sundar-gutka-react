@@ -1,4 +1,4 @@
-import STRINGS from "../../../../common/localization";
+import STRINGS from "../../../../../common/localization";
 
 export const defaultReminders = (baniList) => {
   return [

@@ -1,6 +1,5 @@
-import React, { useEffect } from "react";
+import React from "react";
 import { Linking, Image, StatusBar, View, Text, TouchableHighlight } from "react-native";
-import { Icon } from "@rneui/themed";
 import PropTypes from "prop-types";
 import { useSelector } from "react-redux";
 import { getVersion, getBuildNumber } from "react-native-device-info";
@@ -8,30 +7,12 @@ import colors from "../common/colors";
 import STRINGS from "../common/localization";
 import styles from "./styles";
 import constant from "../common/constant";
+import useHeader from "./hooks/useHeader";
 
 function AboutScreen({ navigation }) {
   const { isNightMode, isStatusBar } = useSelector((state) => state);
-  const headerLeft = () => (
-    <Icon
-      name="arrow-back"
-      size={30}
-      onPress={() => navigation.goBack()}
-      color={colors.WHITE_COLOR}
-    />
-  );
-  useEffect(() => {
-    navigation.setOptions({
-      headerTitleStyle: {
-        color: colors.WHITE_COLOR,
-        fontWeight: "normal",
-        fontSize: 18,
-      },
-      headerStyle: {
-        backgroundColor: colors.TOOLBAR_COLOR_ALT2,
-      },
-      headerLeft,
-    });
-  }, []);
+  useHeader(navigation);
+
   return (
     <View
       style={{

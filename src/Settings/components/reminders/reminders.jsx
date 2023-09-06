@@ -3,11 +3,11 @@ import { ListItem, Icon, Switch, BottomSheet } from "@rneui/themed";
 import { Text } from "react-native";
 import { useSelector, useDispatch } from "react-redux";
 import PropTypes from "prop-types";
-import { REMINDER_SOUNDS, toggleReminders, setReminderSound } from "../../common/actions";
-import styles from "../styles";
-import colors from "../../common/colors";
-import STRINGS from "../../common/localization";
-import { cancelAllReminders, checkPermissions } from "../../common/notifications";
+import { REMINDER_SOUNDS, toggleReminders, setReminderSound } from "../../../common/actions";
+import styles from "../../styles/styles";
+import colors from "../../../common/colors";
+import STRINGS from "../../../common/localization";
+import { cancelAllReminders, checkPermissions } from "../../../common/notifications";
 
 function RemindersComponent({ navigation }) {
   const { isNightMode, isReminders, reminderSound } = useSelector((state) => state);

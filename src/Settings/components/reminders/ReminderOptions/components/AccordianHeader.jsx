@@ -5,11 +5,11 @@ import PropTypes from "prop-types";
 import { useDispatch, useSelector } from "react-redux";
 import DateTimePicker from "react-native-modal-datetime-picker";
 import moment from "moment";
-import colors from "../../../../common/colors";
-import constant from "../../../../common/constant";
+import colors from "../../../../../common/colors";
+import constant from "../../../../../common/constant";
 import styles from "../styles";
-import { setReminderBanis } from "../../../../common/actions";
-import { updateReminders } from "../../../../common/notifications";
+import { setReminderBanis } from "../../../../../common/actions";
+import { updateReminders } from "../../../../../common/notifications";
 
 function AccordianHeader({ section, isActive }) {
   const { reminderBanis, isNightMode, isTransliteration, isReminders, reminderSound } = useSelector(
