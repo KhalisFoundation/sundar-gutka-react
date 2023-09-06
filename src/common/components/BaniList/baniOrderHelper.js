@@ -1,4 +1,4 @@
-const fetchDefaultBaniOrder = () => require("../../defaultBaniOrder.json");
+export const fetchDefaultBaniOrder = () => require("../../defaultBaniOrder.json");
 const findBaniById = (baniList, id) => baniList.find((item) => item.id === id);
 const extractBaniDetails = (baniItem) => {
   return {
@@ -7,10 +7,9 @@ const extractBaniDetails = (baniItem) => {
     translit: baniItem.translit,
   };
 };
-const oderedBani = (baniList) => {
-  const defaultBaniOrder = fetchDefaultBaniOrder();
+export const orderedBani = (baniList, baniOrder) => {
+  const defaultBaniOrder = baniOrder;
   const banis = [];
-
   defaultBaniOrder.baniOrder.forEach((obj) => {
     if (obj.id) {
       const baniItem = findBaniById(baniList, obj.id);
@@ -28,4 +27,3 @@ const oderedBani = (baniList) => {
   });
   return banis;
 };
-export default oderedBani;

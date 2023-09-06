@@ -4,7 +4,7 @@ import { getBookmarksForID } from "../../database/db";
 
 const useBookmarks = (route) => {
   const { baniLength, transliterationLanguage } = useSelector((state) => state);
-  const [data, setData] = useState([]);
+  const [bookmarksData, setBookmarksData] = useState([]);
   useEffect(() => {
     (async () => {
       const bookmarks = await getBookmarksForID(
@@ -12,9 +12,9 @@ const useBookmarks = (route) => {
         baniLength,
         transliterationLanguage
       );
-      setData(bookmarks);
+      setBookmarksData(bookmarks);
     })();
   }, []);
-  return { data };
+  return { bookmarksData };
 };
 export default useBookmarks;

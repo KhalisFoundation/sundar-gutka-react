@@ -6,7 +6,7 @@ import STRINGS from "../../common/localization";
 import styles from "../styles/styles";
 import { setPadched, PADCHED_SETTINGS } from "../../common/actions";
 import colors from "../../common/colors";
-import RenderItem from "./comon/render";
+import RenderBottomSheetItem from "./comon/render";
 
 function PadchedSettingsComponent() {
   const [isVisible, toggleVisible] = useState(false);
@@ -44,7 +44,7 @@ function PadchedSettingsComponent() {
             {STRINGS.padchhed_settings}
           </Text>
           {PADCHED_SETTINGS.map((item) => (
-            <RenderItem
+            <RenderBottomSheetItem
               key={item.key}
               item={item}
               toggleVisible={toggleVisible}

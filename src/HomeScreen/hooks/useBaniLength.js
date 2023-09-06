@@ -5,10 +5,7 @@ const useBaniLength = () => {
   const [baniLengthSelector, toggleBaniLengthSelector] = useState(false);
   const { baniLength } = useSelector((state) => state);
   useEffect(() => {
-    toggleBaniLengthSelector(false);
-    if (baniLength === "") {
-      toggleBaniLengthSelector(true);
-    }
+    toggleBaniLengthSelector(baniLength === "");
   }, [baniLength]);
   return { baniLengthSelector };
 };

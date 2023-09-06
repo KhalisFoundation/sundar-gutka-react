@@ -6,7 +6,7 @@ import STRINGS from "../../common/localization";
 import styles from "../styles/styles";
 import { setBaniLength, BANI_LENGTHS } from "../../common/actions";
 import colors from "../../common/colors";
-import RenderItem from "./comon/render";
+import RenderBottomSheetItem from "./comon/render";
 
 function BaniLengthComponent() {
   const [isVisible, toggleVisible] = useState(false);
@@ -44,7 +44,7 @@ function BaniLengthComponent() {
             {STRINGS.bani_length}
           </Text>
           {BANI_LENGTHS.map((item) => (
-            <RenderItem
+            <RenderBottomSheetItem
               key={item.key}
               item={item}
               toggleVisible={toggleVisible}

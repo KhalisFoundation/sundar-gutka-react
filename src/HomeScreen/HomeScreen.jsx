@@ -14,7 +14,7 @@ import useBaniList from "./hooks/useBaniList";
 
 const HomeScreen = React.memo(({ navigation }) => {
   const { navigate } = navigation;
-  const { data } = useBaniList();
+  const { baniListData } = useBaniList();
   const { isNightMode, isStatusBar } = useSelector((state) => state);
   useKeepAwake();
   const { baniLengthSelector } = useBaniLength();
@@ -46,13 +46,13 @@ const HomeScreen = React.memo(({ navigation }) => {
       <BaniHeader navigate={navigate} />
 
       {baniLengthSelector && <BaniLengthSelector />}
-      <BaniList data={data} onPress={onPress.bind(this)} />
+      <BaniList data={baniListData} onPress={onPress.bind(this)} />
     </SafeAreaView>
   );
 });
 
 HomeScreen.propTypes = {
-  navigation: PropTypes.shape().isRequired,
+  navigation: PropTypes.shape({ navigate: PropTypes.func.isRequired }).isRequired,
 };
 
 export default HomeScreen;
