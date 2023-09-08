@@ -38,10 +38,7 @@ function Reader({ navigation, route }) {
   const { currentPage, fetchScrollData } = usePagination(shabad, itemsCount);
   useSaveScroll(isLayout, currentPage, readerRef, currentScrollPosition, shabadID);
   useBookmarks(readerRef, shabad, bookmarkPosition, rowHeights, layoutHeight);
-  const nightModeColors = nightColors(isNightMode);
-  const { backgroundColor } = nightModeColors;
-
-  const { safeAreaViewBack } = nightModeColors;
+  const { backgroundColor, safeAreaViewBack } = nightColors(isNightMode);
   const { READER_STATUS_BAR_COLOR } = colors;
   const { top50 } = styles;
   const handleBackPress = () => {

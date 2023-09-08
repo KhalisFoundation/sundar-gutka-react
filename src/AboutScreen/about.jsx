@@ -18,13 +18,13 @@ function AboutScreen({ navigation }) {
   const {
     CREATED_BY,
     SUNDAR_GUTKA,
-    ABOUT_1,
-    ABOUT_2,
-    ABOUT_3,
-    ABOUT_4,
-    ABOUT_5,
-    ABOUT_6,
-    baniDB,
+    ABOUT_WELCOME,
+    ABOUT_HELP,
+    ABOUT_RESPECT,
+    ABOUT_SG,
+    ABOUT_OPEN_SOURCE,
+    ABOUT_PARDON,
+    BANI_DB,
     APP_VERSION,
     KHALIS_FOUNDATION,
   } = STRINGS;
@@ -56,22 +56,22 @@ function AboutScreen({ navigation }) {
         >
           <Image source={isNightMode ? khalislogo150white : khalislogo150} />
         </TouchableHighlight>
-        <Text style={[isNightMode && nightMode, margin]}>{ABOUT_1}</Text>
+        <Text style={[isNightMode && nightMode, margin]}>{ABOUT_WELCOME}</Text>
 
         <View style={margin}>
-          <Text style={[isNightMode && nightMode]}>{ABOUT_2}</Text>
+          <Text style={[isNightMode && nightMode]}>{ABOUT_HELP}</Text>
           <Text style={underlayColor} onPress={() => Linking.openURL(KHALIS_FOUNDATION_URL)}>
             {KHALIS_FOUNDATION_URL}
           </Text>
         </View>
 
-        <Text style={[isNightMode && nightMode, margin]}>{ABOUT_3}</Text>
+        <Text style={[isNightMode && nightMode, margin]}>{ABOUT_RESPECT}</Text>
         <Text style={[isNightMode && nightMode, margin]}>
-          {ABOUT_4}{" "}
+          {ABOUT_SG}{" "}
           <Text style={underlayColor} onPress={() => Linking.openURL(constant.BANI_DB_URL)}>
-            {baniDB}
+            {BANI_DB}
           </Text>
-          <Text> {ABOUT_5}</Text>
+          <Text> {ABOUT_OPEN_SOURCE}</Text>
         </Text>
 
         <TouchableHighlight
@@ -81,7 +81,7 @@ function AboutScreen({ navigation }) {
         >
           <Image source={baniDBLogo} />
         </TouchableHighlight>
-        <Text style={[isNightMode && nightMode, margin]}>{ABOUT_6}</Text>
+        <Text style={[isNightMode && nightMode, margin]}>{ABOUT_PARDON}</Text>
 
         <View style={singleLine}>
           <View style={leftContainer}>

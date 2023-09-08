@@ -3,13 +3,13 @@ import LocalizedStrings from "react-native-localization";
 const STRINGS = new LocalizedStrings({
   "en-US": {
     about: "About",
-    ABOUT_1: "We welcome your comments, suggestions, and corrections!",
-    ABOUT_2: "For information, suggestions, or help, visit us at",
-    ABOUT_3: "Please respectfully cover your head and remove your shoes when using this app.",
-    ABOUT_4: "Sundar Gutka utilizes",
-    ABOUT_5:
+    ABOUT_WELCOME: "We welcome your comments, suggestions, and corrections!",
+    ABOUT_HELP: "For information, suggestions, or help, visit us at",
+    ABOUT_RESPECT: "Please respectfully cover your head and remove your shoes when using this app.",
+    ABOUT_SG: "Sundar Gutka utilizes",
+    ABOUT_OPEN_SOURCE:
       "- the open source gurbani database and api used in many gurbani applications, such as SikhiToTheMax.",
-    ABOUT_6: "Bhul Chuk Maaf!",
+    ABOUT_PARDON: "Bhul Chuk Maaf!",
     above_raag_headings: "Above Raag Headings",
     anmol_lipi: "Anmol Lipi",
     APP_VERSION: "App Version",
@@ -34,7 +34,7 @@ const STRINGS = new LocalizedStrings({
       "Based on user feedback, we know there are many different variations of certain Banis out there that people read. To make sure you get the best experience from our app, please choose a preference below which best describes your preferences.",
     bani_length_message_2:
       "This will be a one-time setup, but you can change these settings at any time by going to Settings > Bani Length in the app.",
-    baniDB: "BaniDB",
+    BANI_DB: "BaniDB",
     BANI_OPTIONS: "Bani Options",
     banidb_living_default: "BaniDB Living (default)",
     bookmarks: "Bookmarks",
@@ -122,12 +122,12 @@ const STRINGS = new LocalizedStrings({
   },
   hi: {
     about: "हमारे बारे",
-    ABOUT_1: "हम आप के सुझाव और टिप्पणिओं का स्वागत करते हैं।",
-    ABOUT_2: "और जानकारी, मदद या सुझाव के लिए यहां जाएँ।",
-    ABOUT_3: "एप्प का इस्तेमाल करने से पहले सत्कार सहत अपने जूते उतार के सिर ढक लें",
-    ABOUT_4: "सुंदर गुटका इस्तेमाल करता है",
-    ABOUT_5: "-ओपन सोर्स डाटाबेस और बहुत सारी गुरबाणी एप्प जैसे SikhiToTheMax",
-    ABOUT_6: "भूलों की क्षमा !",
+    ABOUT_WELCOME: "हम आप के सुझाव और टिप्पणिओं का स्वागत करते हैं।",
+    ABOUT_HELP: "और जानकारी, मदद या सुझाव के लिए यहां जाएँ।",
+    ABOUT_RESPECT: "एप्प का इस्तेमाल करने से पहले सत्कार सहत अपने जूते उतार के सिर ढक लें",
+    ABOUT_SG: "सुंदर गुटका इस्तेमाल करता है",
+    ABOUT_OPEN_SOURCE: "-ओपन सोर्स डाटाबेस और बहुत सारी गुरबाणी एप्प जैसे SikhiToTheMax",
+    ABOUT_PARDON: "भूलों की क्षमा !",
     above_raag_headings: "राग शीर्षक",
     anmol_lipi: "अनमोल लिपि",
     APP_VERSION: "एप्प वर्जन",
@@ -151,7 +151,7 @@ const STRINGS = new LocalizedStrings({
       "इस एप में अपना तज़ुर्बा और उत्तम करने के लिए अपनी पसंद के हिसाब से बाणी का चयन करें",
     bani_length_message_2:
       "यह चयन आपको एक बार ही करना पड़ेगा लेकिन आप कभी भी settings >bani  length में जाकर अपना चयन बदल सकते हैं।",
-    baniDB: "BaniDB",
+    BANI_DB: "BaniDB",
     BANI_OPTIONS: "बाणी विकल्प",
     banidb_living_default: "BaniDB जीवित (मूल)",
     bookmarks: "बुकमार्क",
@@ -239,12 +239,13 @@ const STRINGS = new LocalizedStrings({
   },
   pa: {
     about: "ਸਾਡੇ ਬਾਰੇ",
-    ABOUT_1: "ਅਸੀਂ ਤੁਹਾਡੀਆਂ ਟਿੱਪਣੀਆਂ ਅਤੇ ਸੁਝਾਵਾਂ ਨੂੰ ਖਿੜੇ ਮੱਥੇ ਪ੍ਰਵਾਨ ਕਰਦੇ ਆ।",
-    ABOUT_2: "ਹੋਰ ਜਾਣਕਾਰੀ, ਸੁਝਾਅ ਯਾ ਮੱਦਦ ਲਈ ਏਥੇ ਜਾਓ",
-    ABOUT_3: "ਐਪ ਨੂੰ ਵਰਤਣ ਲੱਗੇ ਸਤਿਕਾਰ ਸਹਿਤ ਆਪਣੇ ਜੋੜੇ ਲਾਹ ਕੇ ਸਿਰ ਢੱਕ ਲਓ",
-    ABOUT_4: "ਸੁੰਦਰ ਗੁਟਕਾ ਵਰਤਦਾ ਹੈ",
-    ABOUT_5: "- ਓਪਨ ਸੋਰਸ ਗੁਰਬਾਣੀ ਡਾਟਾਬੇਸ ਅਤੇ ਬਹੁਤ ਸਾਰੀਆਂ ਗੁਰਬਾਣੀ ਐਪਾਂ ਜਿਵੇਂ ਕੇ SikhiToTheMax",
-    ABOUT_6: "ਭੁੱਲ ਚੁੱਕ ਮਾਫ !",
+    ABOUT_WELCOME: "ਅਸੀਂ ਤੁਹਾਡੀਆਂ ਟਿੱਪਣੀਆਂ ਅਤੇ ਸੁਝਾਵਾਂ ਨੂੰ ਖਿੜੇ ਮੱਥੇ ਪ੍ਰਵਾਨ ਕਰਦੇ ਆ।",
+    ABOUT_HELP: "ਹੋਰ ਜਾਣਕਾਰੀ, ਸੁਝਾਅ ਯਾ ਮੱਦਦ ਲਈ ਏਥੇ ਜਾਓ",
+    ABOUT_RESPECT: "ਐਪ ਨੂੰ ਵਰਤਣ ਲੱਗੇ ਸਤਿਕਾਰ ਸਹਿਤ ਆਪਣੇ ਜੋੜੇ ਲਾਹ ਕੇ ਸਿਰ ਢੱਕ ਲਓ",
+    ABOUT_SG: "ਸੁੰਦਰ ਗੁਟਕਾ ਵਰਤਦਾ ਹੈ",
+    ABOUT_OPEN_SOURCE:
+      "- ਓਪਨ ਸੋਰਸ ਗੁਰਬਾਣੀ ਡਾਟਾਬੇਸ ਅਤੇ ਬਹੁਤ ਸਾਰੀਆਂ ਗੁਰਬਾਣੀ ਐਪਾਂ ਜਿਵੇਂ ਕੇ SikhiToTheMax",
+    ABOUT_PARDON: "ਭੁੱਲ ਚੁੱਕ ਮਾਫ !",
     above_raag_headings: "ਰਾਗ ਸਿਰਨਾਵੇਂ",
     anmol_lipi: "ਅਨਮੋਲ ਲਿਪੀ",
     APP_VERSION: "ਐਪ ਵਰਜ਼ਨ",
@@ -267,7 +268,7 @@ const STRINGS = new LocalizedStrings({
       "ਇਸ ਜੁਗਤ ਨਾਲ ਆਪਣਾ ਤਜਰਬਾ ਹੋਰ ਵਧੀਆ ਕਰਨ ਲਈ ਆਪਣੀ ਪਸੰਦ ਦੇ ਹਿਸਾਬ ਨਾਲ ਬਾਣੀ ਦੀ ਲੰਬਾਈ ਦੀ ਚੋਣ ਕਰੋ।",
     bani_length_message_2:
       "ਇਹ ਚੋਣ ਤੁਹਾਨੂੰ ਇੱਕ ਵਾਰ ਹੀ ਕਰਨੀ ਪਵੇਗੀ ਪਰ ਤੁਸੀਂ ਕਦੇ ਵੀ settings > bani length ਚ ਜਾਕੇ ਆਪਣੀ ਚੋਣ ਬਦਲ ਸਕਦੇ ਹੋ।",
-    baniDB: "BaniDB",
+    BANI_DB: "BaniDB",
     BANI_OPTIONS: "ਬਾਣੀ ਚੋਣਾਂ",
     banidb_living_default: "BaniDB ਜੀਵਿਤ (ਮੂਲ)",
     bookmarks: "ਬੁੱਕਮਾਰਕ",
@@ -355,14 +356,14 @@ const STRINGS = new LocalizedStrings({
   },
   fr: {
     about: "Infos",
-    ABOUT_1: "Veuillez envoyer vos commentaires, suggestions et corrections!",
-    ABOUT_2: "Pour des informations, des suggestions ou de l'aide, visitez-nous à",
-    ABOUT_3:
+    ABOUT_WELCOME: "Veuillez envoyer vos commentaires, suggestions et corrections!",
+    ABOUT_HELP: "Pour des informations, des suggestions ou de l'aide, visitez-nous à",
+    ABOUT_RESPECT:
       "Veuillez vous couvrir la tête et retirer vos chaussures par respect lorsque vous utilisez cette application",
-    ABOUT_4: "Sundar Gutka utilise",
-    ABOUT_5:
+    ABOUT_SG: "Sundar Gutka utilise",
+    ABOUT_OPEN_SOURCE:
       "- la base de données open source gurbani et l'api utilisées dans de nombreuses applications gurbani, telles que SikhiToTheMax.",
-    ABOUT_6: "Pardonnez les erreurs [Boule Chouc Màf]",
+    ABOUT_PARDON: "Pardonnez les erreurs [Boule Chouc Màf]",
     above_raag_headings: "Au-Dessus des rubriques raag",
     anmol_lipi: "Anmol Leppi",
     APP_VERSION: "Version de l'Application",
@@ -388,7 +389,7 @@ const STRINGS = new LocalizedStrings({
     bani_length_message_2:
       "Ce sera une configuration unique, mais vous pouvez modifier ces paramètres à tout moment en allant dans Paramètres> Longueur de Bani dans l'application.",
     BANI_OPTIONS: "Options de Bani",
-    baniDB: "BaniDB",
+    BANI_DB: "BaniDB",
     banidb_living_default: "BaniDB Vivant (défaut)",
     bookmarks: "Signets",
     cancel: "Annuler",
@@ -476,14 +477,14 @@ const STRINGS = new LocalizedStrings({
   },
   it: {
     about: "Info",
-    ABOUT_1: "Si prega di inviare commenti, suggerimenti e correzioni!",
-    ABOUT_2: "Per informazioni, suggerimenti o aiuto, visitare il sito Web",
-    ABOUT_3:
+    ABOUT_WELCOME: "Si prega di inviare commenti, suggerimenti e correzioni!",
+    ABOUT_HELP: "Per informazioni, suggerimenti o aiuto, visitare il sito Web",
+    ABOUT_RESPECT:
       "Si prega di coprire la testa e rimuovere le scarpe per rispetto quando si utilizza questa app.",
-    ABOUT_4: "Sundar Gutka utilizza",
-    ABOUT_5:
+    ABOUT_SG: "Sundar Gutka utilizza",
+    ABOUT_OPEN_SOURCE:
       "- il database gurbani open source e API utilizzati in molte applicazioni gurbani, come SikhiToTheMax.",
-    ABOUT_6: "Perdona gli errori [Bùll Ciùc Màf]",
+    ABOUT_PARDON: "Perdona gli errori [Bùll Ciùc Màf]",
     above_raag_headings: "Sopra i titoli raag ",
     anmol_lipi: "Anmòl Leppi",
     APP_VERSION: "Versione dell'App",
@@ -507,7 +508,7 @@ const STRINGS = new LocalizedStrings({
     bani_length_message_2:
       "Questa sarà un'impostazione unica, ma puoi modificare queste impostazioni in qualsiasi momento andando su Impostazioni > Lunghezza delle Bani nell'app.",
     BANI_OPTIONS: "Opzioni delle Bani",
-    baniDB: "BaniDB",
+    BANI_DB: "BaniDB",
     banidb_living_default: "BaniDB (default) ",
     bookmarks: "Segnalibri",
     cancel: "Annulla",
@@ -595,13 +596,14 @@ const STRINGS = new LocalizedStrings({
   },
   es: {
     about: "Sobre Nosotros",
-    ABOUT_1: "¡Agradecemos sus comentarios, sugerencias y correcciones!",
-    ABOUT_2: "Para información, sugerencias o ayuda, visite",
-    ABOUT_3: "Por respeto, cúbrase la cabeza y quítense los zapatos cuando uses esta aplicación.",
-    ABOUT_4: "Sundar Gutka utiliza",
-    ABOUT_5:
+    ABOUT_WELCOME: "¡Agradecemos sus comentarios, sugerencias y correcciones!",
+    ABOUT_HELP: "Para información, sugerencias o ayuda, visite",
+    ABOUT_RESPECT:
+      "Por respeto, cúbrase la cabeza y quítense los zapatos cuando uses esta aplicación.",
+    ABOUT_SG: "Sundar Gutka utiliza",
+    ABOUT_OPEN_SOURCE:
       "- la base de datos de código abierto de Gurbani y la API utilizada en muchas aplicaciones de Gurbani, como SikhiToTheMax.",
-    ABOUT_6: "Que se perdone los errores [Búl Chúk Máf]",
+    ABOUT_PARDON: "Que se perdone los errores [Búl Chúk Máf]",
     above_raag_headings: "Por encima de los títulos raag ",
     anmol_lipi: "Anmól Lippi ",
     APP_VERSION: "Versión de la aplicación",
@@ -626,7 +628,7 @@ const STRINGS = new LocalizedStrings({
     bani_length_message_2:
       "Esta será una configuración única, pero puede cambiar esta configuración en cualquier momento yendo a Configuración> Longitud de las Bani en la aplicación.",
     BANI_OPTIONS: "Opciones de las Bani",
-    baniDB: "BaniDB",
+    BANI_DB: "BaniDB",
     banidb_living_default: "BaniDB (predeterminados)",
     bookmarks: "Marcadores",
     cancel: "Cancelar",
