@@ -1,6 +1,6 @@
 import { StyleSheet } from "react-native";
-import colors from "../../../common/colors";
-import constant from "../../../common/constant";
+import colors from "../../../../common/colors";
+import constant from "../../../../common/constant";
 
 const styles = StyleSheet.create({
   viewColumn: { flexDirection: "column" },

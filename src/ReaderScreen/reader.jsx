@@ -5,7 +5,7 @@ import PropTypes from "prop-types";
 import { SafeAreaProvider, SafeAreaView } from "react-native-safe-area-context";
 import colors from "../common/colors";
 import constant from "../common/constant";
-import { setBookmarkPosition, setPosition } from "../common/actions";
+import { setPosition } from "../common/actions";
 import ShabadItem from "./components/shabadItem";
 import AutoScrollComponent from "./components/autoScrollComponent";
 import Header from "./components/header";
@@ -14,11 +14,13 @@ import usePagination from "./hooks/usePagination";
 import { styles } from "./styles/styles";
 import useSaveScroll from "./hooks/useSaveScroll";
 import useScreenAnalytics from "../common/hooks/useScreenAnalytics";
+import useBookmarks from "./hooks/useBookmarks";
 
 function Reader({ navigation, route }) {
   const readerRef = useRef(null);
   const headerRef = useRef(null);
   const currentScrollPosition = useRef(0);
+  const layoutHeight = useRef(0);
   const isEndReached = useRef(false);
 
   useScreenAnalytics(constant.READER);
@@ -28,13 +30,14 @@ function Reader({ navigation, route }) {
   const [shabadID] = useState(Number(route.params.params.id));
   const [isHeader, toggleIsHeader] = useState(true);
   const [rowHeights, setRowHeights] = useState([]);
-  const [itemsCount, setItemsCount] = useState(50);
+  const [itemsCount] = useState(50);
 
   const [isLayout, toggleLayout] = useState(false);
   const dispatch = useDispatch();
   const { shabad, isLoading } = useFetchShabad(shabadID);
   const { currentPage, fetchScrollData } = usePagination(shabad, itemsCount);
   useSaveScroll(isLayout, currentPage, readerRef, currentScrollPosition, shabadID);
+  useBookmarks(readerRef, shabad, bookmarkPosition, rowHeights, layoutHeight);
 
   const handleBackPress = () => {
     let position = currentScrollPosition.current;
@@ -51,18 +54,6 @@ function Reader({ navigation, route }) {
     () => navigation.navigate(constant.SETTINGS),
     [navigation]
   );
-
-  useEffect(() => {
-    if (bookmarkPosition !== 0) {
-      setItemsCount(bookmarkPosition + 10);
-      const index = shabad.findIndex((item) => item.id === bookmarkPosition);
-      if (index > 0 && rowHeights.length >= index) {
-        const position = rowHeights.slice(0, index).reduce((a, b) => a + b, 0);
-        readerRef.current?.scrollTo({ y: position, animated: true });
-      }
-      dispatch(setBookmarkPosition(0));
-    }
-  }, [bookmarkPosition, rowHeights, itemsCount]);
 
   const handleScroll = (event) => {
     const scrollPosition = event.nativeEvent.contentOffset.y;
@@ -112,7 +103,9 @@ function Reader({ navigation, route }) {
         >
           <Pressable onPress={() => toggleIsHeader(!isHeader)}>
             <View
-              onLayout={() => {
+              onLayout={(event) => {
+                layoutHeight.current = event.nativeEvent.layout.height;
+
                 toggleLayout(true);
               }}
             >

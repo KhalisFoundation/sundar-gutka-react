@@ -1,58 +1,29 @@
-import React, { useEffect, useState } from "react";
-import { SafeAreaView, View, Text, StatusBar } from "react-native";
-import { Icon } from "@rneui/themed";
+import React from "react";
+import { SafeAreaView, StatusBar } from "react-native";
 import PropTypes from "prop-types";
 import { useSelector } from "react-redux";
 import BaniList from "../common/components/BaniList/BaniList";
 import useKeepAwake from "../common/hooks/keepAwake";
-import { getBaniList } from "../database/db";
-import STRINGS from "../common/localization";
 import colors from "../common/colors";
 import styles from "./styles";
 import constant from "../common/constant";
 import BaniLengthSelector from "../common/components/BaniLengthSelector";
+import BaniHeader from "./components/BaniHeader";
+import useBaniLength from "./hooks/useBaniLength";
+import useBaniList from "./hooks/useBaniList";
 import useAppFirstTime from "./hooks/useAppFirstTime";
 import useAnalytics from "./hooks/useAnalytics";
 import useScreenAnalytics from "../common/hooks/useScreenAnalytics";
 
-function BaniHeader(props) {
-  const { navigate } = props;
-  return (
-    <View style={styles.header}>
-      <View>
-        {/* <Text style={styles.fateh}>{STRINGS.fateh}</Text> */}
-        <Text style={styles.titleContainer}>
-          <Text style={styles.headerDesign}>Œ</Text>
-          <Text style={styles.headerTitle}> {STRINGS.sg_title} </Text>
-          <Text style={styles.headerDesign}>‰</Text>
-        </Text>
-      </View>
-      <View style={styles.settingIcon}>
-        <Icon
-          name="settings"
-          type="material"
-          size={35}
-          color={colors.TOOLBAR_TINT}
-          onPress={() => {
-            navigate(constant.SETTINGS);
-          }}
-        />
-      </View>
-    </View>
-  );
-}
-
 const HomeScreen = React.memo(({ navigation }) => {
-  const [baniLengthSelector, toggleBaniLengthSelector] = useState(false);
   const { navigate } = navigation;
-  const [data, setData] = useState([]);
-  const { transliterationLanguage, isNightMode, baniLength, isStatusBar } = useSelector(
-    (state) => state
-  );
+  const { baniListData } = useBaniList();
+  const { isNightMode, isStatusBar } = useSelector((state) => state);
   useKeepAwake();
   useAnalytics();
   useScreenAnalytics(constant.HOME_SCREEN);
   const isAppOpenFirstTime = useAppFirstTime();
+  const { baniLengthSelector } = useBaniLength();
 
   function onPress(row) {
     const bani = row.item;
@@ -69,23 +40,6 @@ const HomeScreen = React.memo(({ navigation }) => {
     }
   }
 
-  useEffect(() => {
-    toggleBaniLengthSelector(false);
-    if (baniLength === "") {
-      toggleBaniLengthSelector(true);
-    }
-  }, [baniLength]);
-  useEffect(() => {
-    (async () => {
-      try {
-        const d = await getBaniList(transliterationLanguage);
-        setData(d);
-      } catch (error) {
-        console.log("Error eh wala ", error);
-      }
-    })();
-  }, [transliterationLanguage]);
-
   return (
     <SafeAreaView
       style={[isNightMode && { backgroundColor: colors.NIGHT_BLACK }, styles.container]}
@@ -97,16 +51,13 @@ const HomeScreen = React.memo(({ navigation }) => {
       />
       <BaniHeader navigate={navigate} />
       {isAppOpenFirstTime && baniLengthSelector && <BaniLengthSelector />}
-      <BaniList data={data} onPress={onPress.bind(this)} />
+      <BaniList data={baniListData} onPress={onPress.bind(this)} />
     </SafeAreaView>
   );
 });
 
 HomeScreen.propTypes = {
-  navigation: PropTypes.shape().isRequired,
-};
-BaniHeader.propTypes = {
-  navigate: PropTypes.func.isRequired,
+  navigation: PropTypes.shape({ navigate: PropTypes.func.isRequired }).isRequired,
 };
 
 export default HomeScreen;
