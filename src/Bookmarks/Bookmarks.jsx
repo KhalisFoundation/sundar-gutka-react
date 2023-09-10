@@ -7,11 +7,14 @@ import { getBookmarksForID } from "../database/db";
 import BaniList from "../common/components/BaniList/BaniList";
 import colors from "../common/colors";
 import { setBookmarkPosition } from "../common/actions";
+import useScreenAnalytics from "../common/hooks/useScreenAnalytics";
+import constant from "../common/constant";
 
 function Bookmarks({ navigation, route }) {
   const { baniLength, transliterationLanguage, isNightMode } = useSelector((state) => state);
   const [data, setData] = useState([]);
   const dispatch = useDispatch();
+  useScreenAnalytics(constant.BOOKMARKS);
 
   function onPress(item) {
     dispatch(setBookmarkPosition(item.item.shabadID));

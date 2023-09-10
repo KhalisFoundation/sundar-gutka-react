@@ -13,6 +13,7 @@ import constant from "../common/constant";
 import BaniLengthSelector from "../common/components/BaniLengthSelector";
 import useAppFirstTime from "./hooks/useAppFirstTime";
 import useAnalytics from "./hooks/useAnalytics";
+import useScreenAnalytics from "../common/hooks/useScreenAnalytics";
 
 function BaniHeader(props) {
   const { navigate } = props;
@@ -50,6 +51,7 @@ const HomeScreen = React.memo(({ navigation }) => {
   );
   useKeepAwake();
   useAnalytics();
+  useScreenAnalytics(constant.HOME_SCREEN);
   const isAppOpenFirstTime = useAppFirstTime();
 
   function onPress(row) {

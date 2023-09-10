@@ -17,6 +17,7 @@
 		711185CC02C64148849936C6 /* GurbaniAkharTrue.ttf in Resources */ = {isa = PBXBuildFile; fileRef = FAE2F7F86FB14C858E603117 /* GurbaniAkharTrue.ttf */; };
 		81AB9BB82411601600AC10FF /* LaunchScreen.storyboard in Resources */ = {isa = PBXBuildFile; fileRef = 81AB9BB72411601600AC10FF /* LaunchScreen.storyboard */; };
 		9F26F74437CA410C9CED2877 /* Arial.ttf in Resources */ = {isa = PBXBuildFile; fileRef = 28D38692B74A4A1DAC2F2D3C /* Arial.ttf */; };
+		DA02AC552AABE2B500169483 /* GoogleService-Info.plist in Resources */ = {isa = PBXBuildFile; fileRef = DA02AC542AABE2B500169483 /* GoogleService-Info.plist */; };
 		DA119E1D2A5F0D7200FD0E10 /* waheguru_soul.mp3 in Resources */ = {isa = PBXBuildFile; fileRef = DA119E1B2A5F0D7200FD0E10 /* waheguru_soul.mp3 */; };
 		DA119E1E2A5F0D7200FD0E10 /* wake_up_jap.mp3 in Resources */ = {isa = PBXBuildFile; fileRef = DA119E1C2A5F0D7200FD0E10 /* wake_up_jap.mp3 */; };
 		DA188A682A22F3B800A1F892 /* www in Resources */ = {isa = PBXBuildFile; fileRef = DA188A672A22F3B800A1F892 /* www */; };
@@ -52,6 +53,7 @@
 		A034988E874CDC94F7C7DAFA /* Pods-SundarGutka-SundarGutkaTests.debug.xcconfig */ = {isa = PBXFileReference; includeInIndex = 1; lastKnownFileType = text.xcconfig; name = "Pods-SundarGutka-SundarGutkaTests.debug.xcconfig"; path = "Target Support Files/Pods-SundarGutka-SundarGutkaTests/Pods-SundarGutka-SundarGutkaTests.debug.xcconfig"; sourceTree = "<group>"; };
 		AD01849A84FC499ACB9AFEB6 /* Pods-SundarGutka-SundarGutkaTests.release.xcconfig */ = {isa = PBXFileReference; includeInIndex = 1; lastKnownFileType = text.xcconfig; name = "Pods-SundarGutka-SundarGutkaTests.release.xcconfig"; path = "Target Support Files/Pods-SundarGutka-SundarGutkaTests/Pods-SundarGutka-SundarGutkaTests.release.xcconfig"; sourceTree = "<group>"; };
 		C973C1C9E6ED468AA759E427 /* AnmolLipiSG.ttf */ = {isa = PBXFileReference; explicitFileType = undefined; fileEncoding = 9; includeInIndex = 0; lastKnownFileType = unknown; name = AnmolLipiSG.ttf; path = ../assets/fonts/AnmolLipiSG.ttf; sourceTree = "<group>"; };
+		DA02AC542AABE2B500169483 /* GoogleService-Info.plist */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = text.plist.xml; name = "GoogleService-Info.plist"; path = "../../Downloads/GoogleService-Info.plist"; sourceTree = "<group>"; };
 		DA119E1B2A5F0D7200FD0E10 /* waheguru_soul.mp3 */ = {isa = PBXFileReference; lastKnownFileType = audio.mp3; path = waheguru_soul.mp3; sourceTree = "<group>"; };
 		DA119E1C2A5F0D7200FD0E10 /* wake_up_jap.mp3 */ = {isa = PBXFileReference; lastKnownFileType = audio.mp3; path = wake_up_jap.mp3; sourceTree = "<group>"; };
 		DA188A672A22F3B800A1F892 /* www */ = {isa = PBXFileReference; lastKnownFileType = folder; name = www; path = ../../Downloads/www; sourceTree = "<group>"; };
@@ -133,6 +135,7 @@
 			isa = PBXGroup;
 			children = (
 				DA119E1B2A5F0D7200FD0E10 /* waheguru_soul.mp3 */,
+				DA02AC542AABE2B500169483 /* GoogleService-Info.plist */,
 				DA119E1C2A5F0D7200FD0E10 /* wake_up_jap.mp3 */,
 				DA188A672A22F3B800A1F892 /* www */,
 				13B07FAE1A68108700A75B9A /* SundarGutka */,
@@ -283,6 +286,7 @@
 				DA119E1E2A5F0D7200FD0E10 /* wake_up_jap.mp3 in Resources */,
 				9F26F74437CA410C9CED2877 /* Arial.ttf in Resources */,
 				16CFCFEA88304281997FBC21 /* GurbaniAkharHeavyTrue.ttf in Resources */,
+				DA02AC552AABE2B500169483 /* GoogleService-Info.plist in Resources */,
 				0A969EA195AE44A784B59F55 /* GurbaniAkharThickTrue.ttf in Resources */,
 				711185CC02C64148849936C6 /* GurbaniAkharTrue.ttf in Resources */,
 			);

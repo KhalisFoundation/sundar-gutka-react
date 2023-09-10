@@ -13,6 +13,7 @@ import useFetchShabad from "./hooks/useFetchShabad";
 import usePagination from "./hooks/usePagination";
 import { styles } from "./styles/styles";
 import useSaveScroll from "./hooks/useSaveScroll";
+import useScreenAnalytics from "../common/hooks/useScreenAnalytics";
 
 function Reader({ navigation, route }) {
   const readerRef = useRef(null);
@@ -20,6 +21,7 @@ function Reader({ navigation, route }) {
   const currentScrollPosition = useRef(0);
   const isEndReached = useRef(false);
 
+  useScreenAnalytics(constant.READER);
   const { isNightMode, bookmarkPosition, isAutoScroll, isStatusBar } = useSelector(
     (state) => state
   );
