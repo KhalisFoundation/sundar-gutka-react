@@ -8,16 +8,15 @@ const trackEvent = (category, action, label) => {
 
 const allowTracking = async () => {
   const appInstanceId = await analytics().getAppInstanceId();
-  console.log("app Instance ID", appInstanceId);
   if (!appInstanceId) {
     await firebase.analytics().setAnalyticsCollectionEnabled(true);
   }
 };
 
-const trackScreenView = (screenName, screenClass) => {
+const trackScreenView = (screenName, screenClass = screenName) => {
   firebase.analytics().logScreenView({
     screen_name: screenName,
-    screen_class: screenClass,
+    screen_class: screenClass.replace(/\s+/g, ""),
   });
 };
 

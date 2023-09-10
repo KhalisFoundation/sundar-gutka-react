@@ -15,6 +15,7 @@ import { styles } from "./styles/styles";
 import useSaveScroll from "./hooks/useSaveScroll";
 import useBookmarks from "./hooks/useBookmarks";
 import { nightColors } from "./styles/nightMode";
+import useScreenAnalytics from "../common/hooks/useScreenAnalytics";
 
 function Reader({ navigation, route }) {
   const readerRef = useRef(null);
@@ -24,6 +25,7 @@ function Reader({ navigation, route }) {
   const offset = useRef(0);
   const isEndReached = useRef(false);
 
+  useScreenAnalytics(constant.READER);
   const { isNightMode, bookmarkPosition, isAutoScroll, isStatusBar } = useSelector(
     (state) => state
   );

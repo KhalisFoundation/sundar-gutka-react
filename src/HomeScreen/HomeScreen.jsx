@@ -13,6 +13,7 @@ import useBaniLength from "./hooks/useBaniLength";
 import useBaniList from "./hooks/useBaniList";
 import useAppFirstTime from "./hooks/useAppFirstTime";
 import useAnalytics from "./hooks/useAnalytics";
+import useScreenAnalytics from "../common/hooks/useScreenAnalytics";
 
 const HomeScreen = React.memo(({ navigation }) => {
   const { navigate } = navigation;
@@ -21,6 +22,7 @@ const HomeScreen = React.memo(({ navigation }) => {
   useKeepAwake();
   const { baniLengthSelector } = useBaniLength();
   useAnalytics();
+  useScreenAnalytics(constant.HOME_SCREEN);
   const isAppOpenFirstTime = useAppFirstTime();
 
   function onPress(row) {

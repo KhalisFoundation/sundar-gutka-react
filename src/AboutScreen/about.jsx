@@ -7,10 +7,12 @@ import colors from "../common/colors";
 import STRINGS from "../common/localization";
 import { styles, nightStyles } from "./styles";
 import constant from "../common/constant";
+import useScreenAnalytics from "../common/hooks/useScreenAnalytics";
 import useHeader from "./hooks/useHeader";
 
 function AboutScreen({ navigation }) {
   const { isNightMode, isStatusBar } = useSelector((state) => state);
+  useScreenAnalytics(constant.ABOUT_SCREEN);
   useHeader(navigation);
   const { backgroundColor } = nightStyles(isNightMode);
   const { TOOLBAR_COLOR_ALT2 } = colors;
