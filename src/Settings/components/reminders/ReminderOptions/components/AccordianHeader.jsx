@@ -10,6 +10,7 @@ import constant from "../../../../../common/constant";
 import styles from "../styles";
 import { setReminderBanis } from "../../../../../common/actions";
 import { updateReminders } from "../../../../../common/notifications";
+import { trackReminderEvent } from "../../../../../common/analytics";
 
 function AccordianHeader({ section, isActive }) {
   const { reminderBanis, isNightMode, isTransliteration, isReminders, reminderSound } = useSelector(
@@ -46,6 +47,7 @@ function AccordianHeader({ section, isActive }) {
     dispatch(setReminderBanis(JSON.stringify(array)));
     hideDateTimePicker();
     updateReminders(isReminders, reminderSound, JSON.stringify(array));
+    trackReminderEvent(constant.UPDATE_REMINDER, array[targetIndex]);
   };
 
   return (

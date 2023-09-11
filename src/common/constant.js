@@ -72,6 +72,9 @@ export default {
   VISHRAAM_OPTION: "vishraamOption",
   VISHRAAM_SOURCE: "vishraamSource",
   REMINDERS: "reminders",
-  REMINDER_SOUNR: "reminderSound",
+  REMINDER_SOUND: "reminderSound",
   EDIT_BANI_ORDER: "Edit Bani Order",
+  ADD_REMINDER: "addReminder",
+  RESET_REMINDER: "resetReminderDefault",
+  UPDATE_REMINDER: "updateReminder",
 };

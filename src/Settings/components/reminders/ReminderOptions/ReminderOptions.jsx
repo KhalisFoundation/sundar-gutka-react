@@ -16,6 +16,7 @@ import AccordianContent from "./components/AccordianContent";
 import AccordianHeader from "./components/AccordianHeader";
 import STRINGS from "../../../../common/localization";
 import { updateReminders } from "../../../../common/notifications";
+import { trackReminderEvent } from "../../../../common/analytics";
 
 function ReminderOptions({ navigation }) {
   const {
@@ -41,6 +42,7 @@ function ReminderOptions({ navigation }) {
     dispatch(setReminderBanis(JSON.stringify(data)));
     setStateData(data);
     await updateReminders(isReminders, reminderSound, JSON.stringify(data));
+    trackReminderEvent(constant.RESET_REMINDER, true);
     return data;
   };
 
@@ -133,6 +135,7 @@ function ReminderOptions({ navigation }) {
     }
 
     dispatch(setReminderBanis(JSON.stringify(array)));
+    trackReminderEvent(constant.ADD_REMINDER, array);
     await updateReminders(isReminders, reminderSound, JSON.stringify(array));
   };
 
