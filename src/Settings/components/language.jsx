@@ -4,7 +4,8 @@ import { ListItem, BottomSheet, Icon } from "@rneui/themed";
 import { useSelector } from "react-redux";
 import STRINGS from "../../common/localization";
 import styles from "../styles/styles";
-import { setLanguage, LANGUAGES } from "../../common/actions";
+import { setLanguage } from "../../common/actions";
+import { LANGUAGES } from "../../common/actions/constant";
 import colors from "../../common/colors";
 import RenderBottomSheetItem from "./comon/render";
 

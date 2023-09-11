@@ -24,7 +24,7 @@ function Bookmarks({ navigation, route }) {
   return (
     <SafeAreaProvider>
       <SafeAreaView>
-        <BaniList data={bookmarksData} onPress={onPress.bind(this)} />
+        <BaniList data={bookmarksData} onPress={onPress.bind(this)} isFolderScreen />
       </SafeAreaView>
     </SafeAreaProvider>
   );

@@ -3,11 +3,8 @@ import { Text } from "react-native";
 import { ListItem, BottomSheet, Avatar, Switch } from "@rneui/themed";
 import { useDispatch, useSelector } from "react-redux";
 import STRINGS from "../../common/localization";
-import {
-  setTransliteration,
-  toggleTransliteration,
-  TRANSLITERATION_LANGUAGES,
-} from "../../common/actions";
+import { setTransliteration, toggleTransliteration } from "../../common/actions";
+import { TRANSLITERATION_LANGUAGES } from "../../common/actions/constant";
 import colors from "../../common/colors";
 import styles from "../styles/styles";
 import RenderBottomSheetItem from "./comon/render";
