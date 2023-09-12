@@ -12,6 +12,7 @@ const usePagination = (data, itemsPerPage) => {
     isParagraphMode,
   } = useSelector((state) => state);
   const [currentPage, setCurrentPage] = useState([]);
+  const [currentPageLength, setCurrentPageLength] = useState(0);
 
   const process = (shabad) => {
     let processShabad;
@@ -33,6 +34,7 @@ const usePagination = (data, itemsPerPage) => {
     const newItemsPrePage = data.length / 2;
     const shabad = data.slice(0, newItemsPrePage);
     setCurrentPage(process(shabad));
+    setCurrentPageLength(shabad.length);
   }, [
     data,
     itemsPerPage,
@@ -48,9 +50,10 @@ const usePagination = (data, itemsPerPage) => {
     const isEndReached = scrollPosition + scrollViewHeight >= contentHeight - itemsPerPage;
     if (!isEndReached) {
       const nextPageItems = process(
-        data.slice(currentPage.length, currentPage.length + itemsPerPage)
+        data.slice(currentPageLength, currentPageLength + itemsPerPage)
       );
       setCurrentPage((prevItems) => [...prevItems, ...nextPageItems]);
+      setCurrentPageLength(currentPageLength + itemsPerPage);
     }
   };
 
