@@ -1,25 +1,32 @@
 import React from "react";
 import { Text } from "react-native";
-import { baseFontSize } from "../../common/helpers";
+import baseFontSize from "../../common/helpers";
 import constant from "../../common/constant";
 import colors from "../../common/colors";
 import { styles } from "../styles/styles";
 
 export const fontColorForReader = (header, nightMode, text) => {
+  const { HEADER_COLOR_1_DARK, HEADER_COLOR_1_LIGHT, HEADER_COLOR_2_LIGHT, SLIDER_TRACK_MIN_TINT } =
+    colors;
+
+  const getHeaderColor1 = () => (nightMode ? HEADER_COLOR_1_DARK : HEADER_COLOR_1_LIGHT);
+  const getHeaderColor2 = () => (nightMode ? SLIDER_TRACK_MIN_TINT : HEADER_COLOR_2_LIGHT);
+
+  const defaultColor = getHeaderColor2();
+  const gurmukhiMapping = {
+    1: getHeaderColor1(),
+    2: defaultColor,
+    6: defaultColor,
+    default: defaultColor,
+  };
+
   const colorMapping = {
-    [constant.GURMUKHI]: {
-      1: nightMode ? colors.HEADER_COLOR_1_DARK : colors.HEADER_COLOR_1_LIGHT,
-      2: nightMode ? colors.SLIDER_TRACK_MIN_TINT : colors.HEADER_COLOR_2_LIGHT,
-      6: nightMode ? colors.SLIDER_TRACK_MIN_TINT : colors.HEADER_COLOR_2_LIGHT,
-    },
-    [constant.TRANSLITERATION]: nightMode
-      ? colors.HEADER_COLOR_1_DARK
-      : colors.HEADER_COLOR_1_LIGHT,
-    [constant.TRANSLATION]: nightMode ? colors.SLIDER_TRACK_MIN_TINT : colors.HEADER_COLOR_2_LIGHT,
+    [constant.GURMUKHI]: gurmukhiMapping,
+    [constant.TRANSLITERATION]: getHeaderColor1(),
+    [constant.TRANSLATION]: defaultColor,
   };
 
   const color = colorMapping[text];
-
   if (typeof color === "object") {
     return color[header] || color.default;
   }

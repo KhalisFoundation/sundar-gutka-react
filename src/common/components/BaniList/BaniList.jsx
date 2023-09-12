@@ -3,7 +3,7 @@ import { FlatList } from "react-native";
 import { ListItem, Avatar } from "@rneui/themed";
 import PropTypes from "prop-types";
 import { useDispatch, useSelector } from "react-redux";
-import { baseFontSize } from "../../helpers";
+import baseFontSize from "../../helpers";
 import colors from "../../colors";
 import { orderedBani } from "./baniOrderHelper";
 import { setBaniList } from "../../actions";

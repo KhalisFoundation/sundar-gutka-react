@@ -7,14 +7,16 @@ import ListComponent from "./ListComponents";
 import colors from "../common/colors";
 import useScreenAnalytics from "../common/hooks/useScreenAnalytics";
 import constant from "../common/constant";
+import { nightModeStyles } from "./styles/nightModeStyles";
 
 function Settings({ navigation }) {
-  const { isNightMode, isStatusBar } = useSelector((state) => state);
   useScreenAnalytics(constant.SETTINGS);
+  const { isNightMode, isStatusBar } = useSelector((state) => state);
+  const { scrollViewNightStyles } = nightModeStyles(isNightMode);
 
   return (
     <SafeAreaProvider>
-      <SafeAreaView>
+      <SafeAreaView style={scrollViewNightStyles}>
         <StatusBar
           hidden={isStatusBar}
           barStyle={isNightMode ? "light-content" : "dark-content"}
