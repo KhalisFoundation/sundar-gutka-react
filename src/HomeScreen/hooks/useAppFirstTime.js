@@ -5,11 +5,9 @@ const useAppFirstTime = () => {
   const [isFirstTime, setIsFirstTime] = useState(true);
   useEffect(() => {
     (async () => {
-      const value = await AsyncStorage.getItem("hasOpenedAppBefore");
-      if (value !== null) {
-        setIsFirstTime(false);
-      } else {
-        setIsFirstTime(true);
+      const isOpenedAppBefore = await AsyncStorage.getItem("hasOpenedAppBefore");
+      setIsFirstTime(isOpenedAppBefore === null);
+      if (isOpenedAppBefore === null) {
         await AsyncStorage.setItem("hasOpenedAppBefore", "true");
       }
     })();
