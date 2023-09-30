@@ -4,7 +4,8 @@ import { ListItem, BottomSheet, Avatar } from "@rneui/themed";
 import { useSelector } from "react-redux";
 import STRINGS from "../../common/localization";
 import styles from "../styles/styles";
-import { setPadched, PADCHED_SETTINGS } from "../../common/actions";
+import { setPadched } from "../../common/actions";
+import { PADCHED_SETTINGS } from "../../common/actions/constant";
 import colors from "../../common/colors";
 import RenderBottomSheetItem from "./comon/render";
 

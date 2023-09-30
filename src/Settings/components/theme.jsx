@@ -4,7 +4,8 @@ import { ListItem, BottomSheet, Avatar, Icon } from "@rneui/themed";
 import { useDispatch, useSelector } from "react-redux";
 import STRINGS from "../../common/localization";
 import styles from "../styles/styles";
-import { setTheme, THEMES, toggleNightMode } from "../../common/actions";
+import { setTheme, toggleNightMode } from "../../common/actions";
+import { THEMES } from "../../common/actions/constant";
 import colors from "../../common/colors";
 import constant from "../../common/constant";
 

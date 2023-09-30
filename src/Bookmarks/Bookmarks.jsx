@@ -4,6 +4,8 @@ import { useDispatch } from "react-redux";
 import PropTypes from "prop-types";
 import BaniList from "../common/components/BaniList/BaniList";
 import { setBookmarkPosition } from "../common/actions";
+import useScreenAnalytics from "../common/hooks/useScreenAnalytics";
+import constant from "../common/constant";
 import useHeader from "./hooks/useHeader";
 import useBookmarks from "./hooks/useBookmarks";
 
@@ -12,6 +14,7 @@ function Bookmarks({ navigation, route }) {
   const { bookmarksData } = useBookmarks(route);
 
   const dispatch = useDispatch();
+  useScreenAnalytics(constant.BOOKMARKS);
 
   function onPress(item) {
     dispatch(setBookmarkPosition(item.item.shabadID));
@@ -21,7 +24,7 @@ function Bookmarks({ navigation, route }) {
   return (
     <SafeAreaProvider>
       <SafeAreaView>
-        <BaniList data={bookmarksData} onPress={onPress.bind(this)} />
+        <BaniList data={bookmarksData} onPress={onPress.bind(this)} isFolderScreen />
       </SafeAreaView>
     </SafeAreaProvider>
   );

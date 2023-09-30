@@ -5,9 +5,12 @@ import { SafeAreaView, StatusBar } from "react-native";
 import { SafeAreaProvider } from "react-native-safe-area-context";
 import ListComponent from "./ListComponents";
 import colors from "../common/colors";
+import useScreenAnalytics from "../common/hooks/useScreenAnalytics";
+import constant from "../common/constant";
 import { nightModeStyles } from "./styles/nightModeStyles";
 
 function Settings({ navigation }) {
+  useScreenAnalytics(constant.SETTINGS);
   const { isNightMode, isStatusBar } = useSelector((state) => state);
   const { scrollViewNightStyles } = nightModeStyles(isNightMode);
 

@@ -4,7 +4,8 @@ import { ListItem, BottomSheet, Avatar } from "@rneui/themed";
 import { useSelector } from "react-redux";
 import STRINGS from "../../common/localization";
 import styles from "../styles/styles";
-import { setFontFace, FONT_FACES } from "../../common/actions";
+import { setFontFace } from "../../common/actions";
+import { FONT_FACES } from "../../common/actions/constant";
 import colors from "../../common/colors";
 import RenderBottomSheetItem from "./comon/render";
 

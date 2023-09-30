@@ -3,13 +3,8 @@ import { Text } from "react-native";
 import { ListItem, BottomSheet, Icon, Switch } from "@rneui/themed";
 import { useDispatch, useSelector } from "react-redux";
 import STRINGS from "../../common/localization";
-import {
-  setVishraamOption,
-  toggleVishraam,
-  setVishraamSource,
-  VISHRAAM_OPTIONS,
-  VISHRAAM_SOURCES,
-} from "../../common/actions";
+import { setVishraamOption, toggleVishraam, setVishraamSource } from "../../common/actions";
+import { VISHRAAM_OPTIONS, VISHRAAM_SOURCES } from "../../common/actions/constant";
 import colors from "../../common/colors";
 import styles from "../styles/styles";
 
