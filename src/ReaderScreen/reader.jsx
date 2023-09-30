@@ -21,6 +21,7 @@ function Reader({ navigation, route }) {
   const headerRef = useRef(null);
   const currentScrollPosition = useRef(0);
   const layoutHeight = useRef(0);
+  const offset = useRef(0);
   const isEndReached = useRef(false);
 
   const { isNightMode, bookmarkPosition, isAutoScroll, isStatusBar } = useSelector(
@@ -29,7 +30,7 @@ function Reader({ navigation, route }) {
   const [shabadID] = useState(Number(route.params.params.id));
   const [isHeader, toggleIsHeader] = useState(true);
   const [rowHeights, setRowHeights] = useState([]);
-  const [itemsCount] = useState(50);
+  const [itemsCount] = useState(25);
   const { title } = route.params.params;
 
   const [isLayout, toggleLayout] = useState(false);
@@ -65,6 +66,7 @@ function Reader({ navigation, route }) {
     isEndReached.current = isEnd;
     currentScrollPosition.current = scrollPosition;
     toggleIsHeader(scrollPosition <= 5);
+    offset.current = isEnd ? 0 : scrollPosition;
     fetchScrollData(scrollPosition, scrollViewHeight, contentHeight);
   };
   useEffect(() => {
@@ -99,7 +101,12 @@ function Reader({ navigation, route }) {
           scrollEventThrottle={16}
           onScroll={handleScroll}
         >
-          <Pressable onPress={() => toggleIsHeader(!isHeader)}>
+          <Pressable
+            onPress={() => {
+              console.log("It's Working");
+              toggleIsHeader(!isHeader);
+            }}
+          >
             <View
               onLayout={(event) => {
                 const { height } = event.nativeEvent.layout;
@@ -124,7 +131,9 @@ function Reader({ navigation, route }) {
           </Pressable>
         </ScrollView>
 
-        {isAutoScroll && <AutoScrollComponent shabadID={shabadID} />}
+        {isAutoScroll && (
+          <AutoScrollComponent shabadID={shabadID} readerRef={readerRef} offset={offset} />
+        )}
       </SafeAreaView>
     </SafeAreaProvider>
   );

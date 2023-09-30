@@ -30,7 +30,8 @@ const usePagination = (data, itemsPerPage) => {
   };
 
   useEffect(() => {
-    const shabad = data.slice(0, itemsPerPage);
+    const newItemsPrePage = data.length / 2;
+    const shabad = data.slice(0, newItemsPrePage);
     setCurrentPage(process(shabad));
   }, [
     data,
