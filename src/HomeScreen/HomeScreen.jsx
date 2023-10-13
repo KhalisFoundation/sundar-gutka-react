@@ -20,6 +20,9 @@ const HomeScreen = React.memo(({ navigation }) => {
   const { baniListData } = useBaniList();
   const { isNightMode, isStatusBar } = useSelector((state) => state);
   useKeepAwake();
+  useAnalytics();
+  useScreenAnalytics(constant.HOME_SCREEN);
+  const isAppOpenFirstTime = useAppFirstTime();
   const { baniLengthSelector } = useBaniLength();
   useAnalytics();
   useScreenAnalytics(constant.HOME_SCREEN);

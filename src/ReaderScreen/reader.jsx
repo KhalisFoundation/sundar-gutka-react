@@ -13,6 +13,7 @@ import useFetchShabad from "./hooks/useFetchShabad";
 import usePagination from "./hooks/usePagination";
 import { styles } from "./styles/styles";
 import useSaveScroll from "./hooks/useSaveScroll";
+import useScreenAnalytics from "../common/hooks/useScreenAnalytics";
 import useBookmarks from "./hooks/useBookmarks";
 import { nightColors } from "./styles/nightMode";
 import useScreenAnalytics from "../common/hooks/useScreenAnalytics";

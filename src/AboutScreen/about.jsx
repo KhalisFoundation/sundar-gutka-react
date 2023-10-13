@@ -9,6 +9,7 @@ import { styles, nightStyles } from "./styles";
 import constant from "../common/constant";
 import useScreenAnalytics from "../common/hooks/useScreenAnalytics";
 import useHeader from "./hooks/useHeader";
+import useScreenAnalytics from "../common/hooks/useScreenAnalytics";
 
 function AboutScreen({ navigation }) {
   const { isNightMode, isStatusBar } = useSelector((state) => state);

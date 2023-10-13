@@ -4,6 +4,8 @@ import { useDispatch } from "react-redux";
 import PropTypes from "prop-types";
 import BaniList from "../common/components/BaniList/BaniList";
 import { setBookmarkPosition } from "../common/actions";
+import useScreenAnalytics from "../common/hooks/useScreenAnalytics";
+import constant from "../common/constant";
 import useHeader from "./hooks/useHeader";
 import useBookmarks from "./hooks/useBookmarks";
 import useScreenAnalytics from "../common/hooks/useScreenAnalytics";
