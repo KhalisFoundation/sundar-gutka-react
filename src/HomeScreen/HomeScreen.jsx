@@ -24,6 +24,9 @@ const HomeScreen = React.memo(({ navigation }) => {
   useScreenAnalytics(constant.HOME_SCREEN);
   const isAppOpenFirstTime = useAppFirstTime();
   const { baniLengthSelector } = useBaniLength();
+  useAnalytics();
+  useScreenAnalytics(constant.HOME_SCREEN);
+  const isAppOpenFirstTime = useAppFirstTime();
 
   function onPress(row) {
     const bani = row.item;

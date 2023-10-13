@@ -8,6 +8,8 @@ import useScreenAnalytics from "../common/hooks/useScreenAnalytics";
 import constant from "../common/constant";
 import useHeader from "./hooks/useHeader";
 import useBookmarks from "./hooks/useBookmarks";
+import useScreenAnalytics from "../common/hooks/useScreenAnalytics";
+import constant from "../common/constant";
 
 function Bookmarks({ navigation, route }) {
   useHeader(navigation);

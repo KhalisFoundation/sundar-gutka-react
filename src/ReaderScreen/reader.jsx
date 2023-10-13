@@ -16,12 +16,14 @@ import useSaveScroll from "./hooks/useSaveScroll";
 import useScreenAnalytics from "../common/hooks/useScreenAnalytics";
 import useBookmarks from "./hooks/useBookmarks";
 import { nightColors } from "./styles/nightMode";
+import useScreenAnalytics from "../common/hooks/useScreenAnalytics";
 
 function Reader({ navigation, route }) {
   const readerRef = useRef(null);
   const headerRef = useRef(null);
   const currentScrollPosition = useRef(0);
   const layoutHeight = useRef(0);
+  const offset = useRef(0);
   const isEndReached = useRef(false);
 
   useScreenAnalytics(constant.READER);
@@ -67,6 +69,7 @@ function Reader({ navigation, route }) {
     isEndReached.current = isEnd;
     currentScrollPosition.current = scrollPosition;
     toggleIsHeader(scrollPosition <= 5);
+    offset.current = isEnd ? 0 : scrollPosition;
     fetchScrollData(scrollPosition, scrollViewHeight, contentHeight);
   };
   useEffect(() => {
@@ -101,7 +104,11 @@ function Reader({ navigation, route }) {
           scrollEventThrottle={16}
           onScroll={handleScroll}
         >
-          <Pressable onPress={() => toggleIsHeader(!isHeader)}>
+          <Pressable
+            onPress={() => {
+              toggleIsHeader(!isHeader);
+            }}
+          >
             <View
               onLayout={(event) => {
                 const { height } = event.nativeEvent.layout;
@@ -126,7 +133,9 @@ function Reader({ navigation, route }) {
           </Pressable>
         </ScrollView>
 
-        {isAutoScroll && <AutoScrollComponent shabadID={shabadID} />}
+        {isAutoScroll && (
+          <AutoScrollComponent shabadID={shabadID} readerRef={readerRef} offset={offset} />
+        )}
       </SafeAreaView>
     </SafeAreaProvider>
   );
