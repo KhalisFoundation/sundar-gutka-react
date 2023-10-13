@@ -32,7 +32,7 @@ function Reader({ navigation, route }) {
   const [shabadID] = useState(Number(route.params.params.id));
   const [isHeader, toggleIsHeader] = useState(true);
   const [rowHeights, setRowHeights] = useState([]);
-  const [itemsCount] = useState(25);
+  const [itemsCount] = useState(50);
   const { title } = route.params.params;
 
   const [isLayout, toggleLayout] = useState(false);
@@ -105,7 +105,6 @@ function Reader({ navigation, route }) {
         >
           <Pressable
             onPress={() => {
-              console.log("It's Working");
               toggleIsHeader(!isHeader);
             }}
           >

@@ -92,7 +92,7 @@ export const processData = (
     const vishramJson = visramDB ? JSON.parse(visramDB) : null;
     let vishramPositions = {};
 
-    if (isVishraam && vishramJson[vishraamSource]) {
+    if (isVishraam && vishramJson && vishramJson[vishraamSource]) {
       vishramPositions = vishramJson[vishraamSource].reduce((accumulator, pos) => {
         return { ...accumulator, [pos.p]: pos.t };
       }, {});
