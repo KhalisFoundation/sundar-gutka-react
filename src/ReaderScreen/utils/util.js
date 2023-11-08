@@ -1,9 +1,9 @@
 import React from "react";
 import { Text } from "react-native";
-import baseFontSize from "../../common/helpers";
 import constant from "../../common/constant";
 import colors from "../../common/colors";
 import { styles } from "../styles/styles";
+import baseFontSize from "../../common/helpers";
 
 export const fontColorForReader = (header, nightMode, text) => {
   const { HEADER_COLOR_1_DARK, HEADER_COLOR_1_LIGHT, HEADER_COLOR_2_LIGHT, SLIDER_TRACK_MIN_TINT } =
@@ -34,9 +34,10 @@ export const fontColorForReader = (header, nightMode, text) => {
   return color || null;
 };
 
-export const fontSizeForReader = (SIZE, header, transliteration) => {
+export const fontSizeForReader = (SIZE, header, type) => {
   const size = 0.9;
-  const fontSize = baseFontSize(SIZE, transliteration) * size;
+  const fontSize = baseFontSize(SIZE, type) * size;
+
   switch (header) {
     case 6:
       return fontSize * 0.75;
@@ -58,6 +59,7 @@ export const convertToParagraph = (data) => {
       punjabiTranslations,
       spanishTranslations,
       translit,
+      gurmukhiText,
     } = currentvalue;
 
     const lastTuk = accumulator[accumulator.length - 1];
@@ -68,6 +70,7 @@ export const convertToParagraph = (data) => {
       lastTuk.spanishTranslations += spanishTranslations;
       lastTuk.translit += translit;
       lastTuk.gurmukhi = [...lastTuk.gurmukhi, gurmukhi];
+      lastTuk.gurmukhiText += gurmukhiText;
     } else {
       currentvalue.gurmukhi = [currentvalue.gurmukhi];
       accumulator.push({ ...currentvalue });
@@ -125,6 +128,7 @@ export const processData = (
     );
     return {
       ...pankti,
+      gurmukhiText: gurmukhi,
       gurmukhi: tuk,
     };
   });

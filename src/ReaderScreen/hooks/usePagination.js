@@ -2,7 +2,8 @@ import { useSelector } from "react-redux";
 import { useState, useEffect } from "react";
 import { processData, convertToParagraph } from "../utils";
 
-const usePagination = (data, itemsPerPage) => {
+const usePagination = (data) => {
+  const itemsPerPage = data.length;
   const {
     isVishraam,
     isLarivaar,
@@ -29,6 +30,24 @@ const usePagination = (data, itemsPerPage) => {
     }
     return processShabad;
   };
+  const loadRestData = () => {
+    const multiplyItems = itemsPerPage * 2;
+    const nextIndex = currentPageLength + multiplyItems;
+    const nextPageItems = process(data.slice(currentPageLength, nextIndex));
+
+    setCurrentPage((prevItems) => [...prevItems, ...nextPageItems]);
+
+    setCurrentPageLength((prevLength) => prevLength + multiplyItems);
+  };
+
+  // useEffect(() => {
+  //   if (currentPageLength < data.length) {
+  //     setTimeout(() => {
+  //       console.log("it's running");
+  //       loadRestData();
+  //     }, 1000);
+  //   }
+  // }, [currentPageLength]);
 
   useEffect(() => {
     const shabad = data.slice(0, itemsPerPage);
