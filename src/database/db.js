@@ -57,7 +57,7 @@ export function getShabadFromID(shabadID, length, language) {
       .then((db) => {
         db.transaction((tx) => {
           tx.executeSql(
-            `SELECT ID, Seq,header, Paragraph, Gurmukhi, Visraam, Transliterations,Translations FROM mv_Banis_Shabad where Bani=${shabadID} AND ${baniLength}=1 ORDER BY Seq ASC;`,
+            `SELECT ID, Seq,header, Paragraph, Gurmukhi, Visraam, Transliterations,Translations FROM mv_Banis_Shabad where Bani=${shabadID} AND ${baniLength}=1 AND (MangalPosition IS NULL OR MangalPosition = 'current') ORDER BY Seq ASC;`,
             [],
             (_tx, results) => {
               const baniData = results.rows.raw().map((row) => {
