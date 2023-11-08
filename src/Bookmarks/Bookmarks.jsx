@@ -3,7 +3,7 @@ import { SafeAreaProvider, SafeAreaView } from "react-native-safe-area-context";
 import { useDispatch } from "react-redux";
 import PropTypes from "prop-types";
 import BaniList from "../common/components/BaniList/BaniList";
-import { setBookmarkPosition } from "../common/actions";
+import { setBookmarkPosition, toggleBookmarks } from "../common/actions";
 import useScreenAnalytics from "../common/hooks/useScreenAnalytics";
 import constant from "../common/constant";
 import useHeader from "./hooks/useHeader";
@@ -17,6 +17,7 @@ function Bookmarks({ navigation, route }) {
   useScreenAnalytics(constant.BOOKMARKS);
 
   function onPress(item) {
+    dispatch(toggleBookmarks(true));
     dispatch(setBookmarkPosition(item.item.shabadID));
     navigation.goBack();
   }

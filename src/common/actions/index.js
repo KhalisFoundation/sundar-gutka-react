@@ -49,6 +49,10 @@ export function toggleScreenAwake(value) {
   return { type: actionTypes.TOGGLE_SCREEN_AWAKE, value };
 }
 
+export function toggleBookmarks(value) {
+  return { type: actionTypes.TOGGLE_BOOKMARKS, value };
+}
+
 export function setBaniLength(length) {
   trackSettingEvent(constant.BANI_LENGTH, length);
   return { type: actionTypes.SET_BANI_LENGTH, length };
@@ -143,4 +147,8 @@ export function setBaniList(list) {
 export function setPosition(pos, shabadID) {
   const position = { [shabadID]: pos };
   return { type: actionTypes.SET_SAVE_POSITION, position };
+}
+export function setRowHeights(rowHeights, shabadID) {
+  const baniRowHeights = { [shabadID]: rowHeights };
+  return { type: actionTypes.SET_ROW_HEIGHTS, baniRowHeights };
 }

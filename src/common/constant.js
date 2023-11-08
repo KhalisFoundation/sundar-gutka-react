@@ -77,4 +77,8 @@ export default {
   ADD_REMINDER: "addReminder",
   RESET_REMINDER: "resetReminderDefault",
   UPDATE_REMINDER: "updateReminder",
+  DEFAULT_TUK_HEIGHT_NORMAL: 35,
+  DEFAULT_TUK_HEIGHT_MEDIUM: 60,
+  DEFAULT_TUK_HEIGHT_LARGE: 120,
+  FONT_SIZE_MULTIPLIER: 1.3,
 };

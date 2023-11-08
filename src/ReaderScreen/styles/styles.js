@@ -3,9 +3,7 @@ import constant from "../../common/constant";
 import colors from "../../common/colors";
 
 export const styles = StyleSheet.create({
-  gurmukhiText: {
-    margin: 5,
-  },
+  gurmukhiText: {},
   translit: {
     fontFamily: constant.Arial,
     padding: 0.2,

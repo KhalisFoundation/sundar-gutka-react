@@ -99,8 +99,11 @@ const isPunjabiTranslation = createReducer(false, {
   [actionTypes.TOGGLE_PUNJABI_TRANSLATION]: (state, action) => action.value,
 });
 
-const bookmarkPosition = createReducer(0, {
+const bookmarkPosition = createReducer(1, {
   [actionTypes.SET_BOOKMARK_POSITION]: (state, action) => action.value,
+});
+const bookmarks = createReducer(false, {
+  [actionTypes.TOGGLE_BOOKMARKS]: (state, action) => action.value,
 });
 
 const isReminders = createReducer(false, {
@@ -156,6 +159,14 @@ function savePosition(state = {}, action) {
       return state;
   }
 }
+function rowHeights(state = {}, action) {
+  switch (action.type) {
+    case actionTypes.SET_ROW_HEIGHTS:
+      return { ...state, ...action.baniRowHeights };
+    default:
+      return state;
+  }
+}
 
 const rootReducer = combineReducers({
   isNightMode,
@@ -189,5 +200,7 @@ const rootReducer = combineReducers({
   baniOrder,
   baniList,
   savePosition,
+  rowHeights,
+  bookmarks,
 });
 export default rootReducer;
