@@ -12,7 +12,7 @@ const useFetchShabad = (shabadID) => {
     (async () => {
       let data;
 
-      if (cacheShabad[shabadID]) {
+      if (cacheShabad[shabadID] && cacheShabad[shabadID].length > 0) {
         data = cacheShabad[shabadID];
       } else {
         toggleLoading(true);

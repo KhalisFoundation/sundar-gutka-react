@@ -6,7 +6,8 @@ const commonStyle = (header, isNightMode, type, fontSize, fontFace) => ({
   color: fontColorForReader(header, isNightMode, type),
   textAlign: header ? "center" : "left",
   fontWeight: header === 0 ? "normal" : "bold",
-  fontFamily: type === constant.TRANSLITERATION ? undefined : fontFace,
+  fontFamily:
+    type === constant.TRANSLITERATION || type === constant.TRANSLATION ? undefined : fontFace,
 });
 
 export default commonStyle;
