@@ -1,5 +1,5 @@
 import React, { useEffect, useState } from "react";
-import { View, Text, Animated } from "react-native";
+import { View, Text, Animated, Easing } from "react-native";
 import { Icon } from "@rneui/themed";
 import PropTypes from "prop-types";
 import { useSelector } from "react-redux";
@@ -14,7 +14,14 @@ const Header = React.forwardRef(
 
     const headerLeft = () => {
       return (
-        <Icon name="arrow-back" size={30} onPress={handleBackPress} color={colors.WHITE_COLOR} />
+        <Icon
+          name="arrow-back"
+          size={30}
+          onPress={() => {
+            handleBackPress();
+          }}
+          color={colors.WHITE_COLOR}
+        />
       );
     };
     const headerRight = () => {
@@ -30,7 +37,7 @@ const Header = React.forwardRef(
             name="settings"
             color={colors.TOOLBAR_TINT}
             size={30}
-            onPress={handleSettingsPress}
+            onPress={() => handleSettingsPress()}
           />
         </View>
       );
@@ -44,9 +51,10 @@ const Header = React.forwardRef(
     const toggleHeader = (isHeader) => {
       const value = isHeader ? 0 : -120;
       Animated.timing(animationPosition, {
-        duration: 200,
-        useNativeDriver: true,
         toValue: value,
+        duration: 500,
+        easing: Easing.ease,
+        useNativeDriver: true,
       }).start();
     };
 

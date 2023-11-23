@@ -4,27 +4,49 @@ import { getShabadFromID } from "../../database/db";
 import { setCacheShabad } from "../../common/actions";
 
 const useFetchShabad = (shabadID) => {
-  const dispatch = useDispatch();
   const [shabad, setShabad] = useState([]);
   const [isLoading, toggleLoading] = useState(false);
-  const { baniLength, cacheShabad, transliterationLanguage } = useSelector((state) => state);
+  const {
+    baniLength,
+    transliterationLanguage,
+    vishraamSource,
+    vishraamOption,
+    isLarivaar,
+    isLarivaarAssist,
+    isParagraphMode,
+    isVishraam,
+  } = useSelector((state) => state);
   useEffect(() => {
     (async () => {
-      let data;
-
-      if (cacheShabad[shabadID]) {
-        data = cacheShabad[shabadID];
-      } else {
-        toggleLoading(true);
-        data = await getShabadFromID(shabadID, baniLength, transliterationLanguage);
-        if (data) {
-          dispatch(setCacheShabad(data, shabadID));
-        }
+      toggleLoading(true);
+      const data = await getShabadFromID(
+        shabadID,
+        baniLength,
+        transliterationLanguage,
+        vishraamSource,
+        vishraamOption,
+        isLarivaar,
+        isLarivaarAssist,
+        isParagraphMode,
+        isVishraam
+      );
+      if (data) {
         toggleLoading(false);
+        // dispatch(setCacheShabad(data, shabadID));
+        setShabad(data);
       }
-      setShabad(data);
     })();
-  }, [shabadID]);
+  }, [
+    shabadID,
+    baniLength,
+    transliterationLanguage,
+    vishraamSource,
+    vishraamOption,
+    isLarivaar,
+    isLarivaarAssist,
+    isParagraphMode,
+    isVishraam,
+  ]);
 
   return { shabad, isLoading };
 };

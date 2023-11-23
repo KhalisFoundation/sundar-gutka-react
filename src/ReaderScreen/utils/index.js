@@ -1,3 +1,4 @@
-import { fontColorForReader, fontSizeForReader, convertToParagraph, processData } from "./util";
+import { fontColorForReader, fontSizeForReader } from "./util";
+import htmlTemplate from "./gutkahtml";
 
-export { fontColorForReader, fontSizeForReader, convertToParagraph, processData };
+export { fontColorForReader, fontSizeForReader, htmlTemplate };

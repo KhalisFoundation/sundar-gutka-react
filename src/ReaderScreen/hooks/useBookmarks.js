@@ -1,24 +1,11 @@
 import { useEffect } from "react";
-import { useDispatch } from "react-redux";
-import { setBookmarkPosition } from "../../common/actions";
 
-const useBookmarks = (readerRef, shabad, bookmarkPosition, rowHeights, layoutHeight) => {
-  const animationDelayTime = 50;
-  const dispatch = useDispatch();
+const useBookmarks = (webViewRef, shabad, bookmarkPosition) => {
   useEffect(() => {
-    if (bookmarkPosition !== 0) {
-      const index = shabad.findIndex((item) => item.id === bookmarkPosition);
-      const scrollBookmark = setInterval(() => {
-        readerRef.current?.scrollTo({ y: layoutHeight.current, animated: true });
-        if (index > 0 && rowHeights.length >= index) {
-          clearInterval(scrollBookmark);
-          const position = rowHeights.slice(0, index).reduce((a, b) => a + b, 0);
-          readerRef.current?.scrollTo({ y: position, animated: true });
-          dispatch(setBookmarkPosition(0));
-        }
-      }, animationDelayTime);
+    if (webViewRef.current && Number(bookmarkPosition) !== -1 && shabad.length > 0) {
+      webViewRef.current.postMessage(JSON.stringify({ bookmark: bookmarkPosition }));
     }
-  }, [bookmarkPosition]);
+  }, [bookmarkPosition, webViewRef.current, shabad]);
 };
 
 export default useBookmarks;

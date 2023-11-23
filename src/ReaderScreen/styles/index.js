@@ -1,4 +1,5 @@
-import { styles } from "./styles";
+import { styles, getHeaderStyles } from "./styles";
 import commonStyle from "./commonStyle";
+import nightColors from "./nightMode";
 
-export { styles, commonStyle };
+export { styles, commonStyle, nightColors, getHeaderStyles };

@@ -1,6 +1,6 @@
 import colors from "../../common/colors";
 
-export const nightColors = (isNightMode) => {
+const nightColors = (isNightMode) => {
   let bgColor;
   let safeAreaViewColor;
 
@@ -17,3 +17,5 @@ export const nightColors = (isNightMode) => {
     safeAreaViewBack: { backgroundColor: safeAreaViewColor },
   };
 };
+
+export default nightColors;

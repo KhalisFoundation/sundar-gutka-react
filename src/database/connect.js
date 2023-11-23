@@ -4,7 +4,7 @@ import CONSTANT from "../common/constant";
 enablePromise(true);
 let database;
 
-export const initDB = async () => {
+const initDB = async () => {
   if (database) {
     console.log("Database is already initialised: returning database instance");
     return database;
@@ -21,3 +21,5 @@ export const initDB = async () => {
     throw error; // This will propagate error to the caller if needed
   }
 };
+
+export default initDB;

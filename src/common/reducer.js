@@ -156,6 +156,14 @@ function savePosition(state = {}, action) {
       return state;
   }
 }
+function scrollPosition(state = 0, action) {
+  switch (action.type) {
+    case actionTypes.SET_SCROLL_POSITION:
+      return action.position;
+    default:
+      return state;
+  }
+}
 
 const rootReducer = combineReducers({
   isNightMode,
@@ -189,5 +197,6 @@ const rootReducer = combineReducers({
   baniOrder,
   baniList,
   savePosition,
+  scrollPosition,
 });
 export default rootReducer;

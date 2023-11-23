@@ -4,7 +4,7 @@ import { getBaniList } from "../../database/db";
 
 const useBaniList = () => {
   const [baniListData, setBaniListData] = useState([]);
-  const { transliterationLanguage } = useSelector;
+  const { transliterationLanguage } = useSelector((state) => state);
   useEffect(() => {
     (async () => {
       try {

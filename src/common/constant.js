@@ -39,6 +39,7 @@ export default {
   BANI_DB_URL: "https://www.banidb.com/",
   sttm: "sttm",
   VISHRAAM_COLORED: "VISHRAAM_COLORED",
+  VISHRAAM_GRADIENT: "VISHRAAM_GRADIENT",
   DEFAULT_SPEED: 50,
   MARK_AS_READ: "mark-as-read",
   SOUND: "sound",
