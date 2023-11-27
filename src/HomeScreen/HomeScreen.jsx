@@ -34,7 +34,7 @@ const HomeScreen = React.memo(({ navigation }) => {
       });
     } else {
       navigate(constant.FOLDERSCREEN, {
-        key: `Folder-${bani.roman}`,
+        key: `Folder-${bani.gurmukhi}`,
         params: { data: bani.folder, title: bani.gurmukhi },
       });
     }

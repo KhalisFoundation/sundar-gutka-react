@@ -1,59 +1,33 @@
 import React, { useState } from "react";
-import { Text } from "react-native";
-import { ListItem, BottomSheet, Avatar } from "@rneui/themed";
 import { useSelector } from "react-redux";
-import STRINGS from "../../common/localization";
-import styles from "../styles/styles";
-import { setFontSize } from "../../common/actions";
+import { STRINGS } from "../../common";
 import { FONT_SIZES } from "../../common/actions/constant";
-import colors from "../../common/colors";
-import RenderBottomSheetItem from "./comon/render";
+import { setFontSize } from "../../common/actions";
+import { BottomSheetComponent, ListItemComponent } from "./comon";
 
 function FontSizeComponent() {
   const [isVisible, toggleVisible] = useState(false);
-  const { fontSize, isNightMode } = useSelector((state) => state);
-
+  const { fontSize } = useSelector((state) => state);
+  const fontSizeIcon = require("../../../images/fontsizeicon.png");
   return (
     <>
-      <ListItem
-        bottomDivider
-        containerStyle={[
-          { backgroundColor: isNightMode ? colors.NIGHT_GREY_COLOR : colors.WHITE_COLOR },
-        ]}
-        onPress={() => {
-          toggleVisible(true);
-        }}
-      >
-        <Avatar source={require("../../../images/fontsizeicon.png")} />
-        <ListItem.Content>
-          <ListItem.Title style={[isNightMode && { color: colors.WHITE_COLOR }]}>
-            {STRINGS.font_size}
-          </ListItem.Title>
-        </ListItem.Content>
-        {fontSize && (
-          <ListItem.Title
-            style={[styles.titleInfoStyle, { color: isNightMode ? colors.WHITE_COLOR : "#a3a3a3" }]}
-          >
-            {FONT_SIZES.filter((item) => item.key === fontSize).map((item) => item.title)[0]}
-          </ListItem.Title>
-        )}
-        <ListItem.Chevron />
-      </ListItem>
+      <ListItemComponent
+        icon={fontSizeIcon.toString()}
+        title={STRINGS.font_size}
+        value={fontSize}
+        isAvatar
+        actionConstant={FONT_SIZES}
+        onPressAction={() => toggleVisible(true)}
+      />
       {isVisible && (
-        <BottomSheet modalProps={{}} isVisible>
-          <Text style={[styles.bottomSheetTitle, isNightMode && { color: colors.WHITE_COLOR }]}>
-            {STRINGS.font_size}
-          </Text>
-          {FONT_SIZES.map((item) => (
-            <RenderBottomSheetItem
-              key={item.key}
-              item={item}
-              toggleVisible={toggleVisible}
-              value={fontSize}
-              action={setFontSize}
-            />
-          ))}
-        </BottomSheet>
+        <BottomSheetComponent
+          isVisible={isVisible}
+          actionConstant={FONT_SIZES}
+          value={fontSize}
+          toggleVisible={toggleVisible}
+          title={STRINGS.font_size}
+          action={setFontSize}
+        />
       )}
     </>
   );

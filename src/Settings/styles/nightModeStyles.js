@@ -11,6 +11,12 @@ export const nightModeStyles = (isNightMode) => ({
   backgroundNightStyle: {
     backgroundColor: isNightMode ? colors.NIGHT_BLACK : colors.WHITE_COLOR,
   },
+  textNightStyle: {
+    color: isNightMode ? colors.WHITE_COLOR : colors.NIGHT_BLACK,
+  },
+  textNightGrey: {
+    color: isNightMode ? colors.WHITE_COLOR : colors.DISABLED_TEXT_COLOR,
+  },
 });
 
 export const iconNightColor = (isNightMode) => {

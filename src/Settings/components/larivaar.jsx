@@ -1,37 +1,30 @@
 import React from "react";
 import { ListItem, Avatar, Icon, Switch } from "@rneui/themed";
 import { useDispatch, useSelector } from "react-redux";
-import STRINGS from "../../common/localization";
+import { STRINGS } from "../../common";
 import { toggleLarivaar, toggleLarivaarAssist } from "../../common/actions";
-import colors from "../../common/colors";
+import { nightModeStyles, iconNightColor } from "../styles";
 
 function LarivaarComponent() {
   const { isLarivaar, isLarivaarAssist, isNightMode } = useSelector((state) => state);
   const dispatch = useDispatch();
-
+  const { containerNightStyles, textNightStyle } = nightModeStyles(isNightMode);
+  const iconColor = iconNightColor(isNightMode);
+  const larivaarIcon = require("../../../images/larivaaricon.png");
   return (
     <>
-      <ListItem
-        bottomDivider
-        containerStyle={[
-          { backgroundColor: isNightMode ? colors.NIGHT_GREY_COLOR : colors.WHITE_COLOR },
-        ]}
-      >
-        <Avatar source={require("../../../images/larivaaricon.png")} />
+      <ListItem bottomDivider containerStyle={containerNightStyles}>
+        <Avatar source={larivaarIcon} />
         <ListItem.Content>
-          <ListItem.Title style={[isNightMode && { color: colors.WHITE_COLOR }]}>
-            {STRINGS.larivaar}
-          </ListItem.Title>
+          <ListItem.Title style={textNightStyle}>{STRINGS.larivaar}</ListItem.Title>
         </ListItem.Content>
         <Switch value={isLarivaar} onValueChange={(value) => dispatch(toggleLarivaar(value))} />
       </ListItem>
       {isLarivaar && (
-        <ListItem bottomDivider>
-          <Icon name="opacity" size={30} />
+        <ListItem bottomDivider containerStyle={containerNightStyles}>
+          <Icon name="opacity" size={30} color={iconColor} />
           <ListItem.Content>
-            <ListItem.Title style={[isNightMode && { color: colors.WHITE_COLOR }]}>
-              {STRINGS.larivaar_assist}
-            </ListItem.Title>
+            <ListItem.Title style={textNightStyle}>{STRINGS.larivaar_assist}</ListItem.Title>
           </ListItem.Content>
           <Switch
             value={isLarivaarAssist}

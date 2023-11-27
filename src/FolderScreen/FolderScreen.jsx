@@ -13,7 +13,7 @@ function FolderScreen({ navigation, route }) {
   useScreenAnalytics(constant.FOLDERSCREEN);
 
   const onPress = (row) => {
-    const item = { row };
+    const { item } = row;
     const { id, gurmukhi } = item;
     navigate(constant.READER, {
       key: `Reader-${id}`,
@@ -33,10 +33,12 @@ FolderScreen.propTypes = {
   navigation: PropTypes.shape({
     navigate: PropTypes.func,
   }).isRequired,
-
   route: PropTypes.shape({
     params: PropTypes.shape({
-      params: PropTypes.shape({ data: PropTypes.arrayOf(), title: PropTypes.string }),
+      params: PropTypes.shape({
+        data: PropTypes.arrayOf(PropTypes.shape()),
+        title: PropTypes.string,
+      }),
     }),
   }).isRequired,
 };

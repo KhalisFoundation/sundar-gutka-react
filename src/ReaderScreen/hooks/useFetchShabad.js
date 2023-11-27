@@ -1,7 +1,6 @@
 import { useState, useEffect } from "react";
-import { useDispatch, useSelector } from "react-redux";
+import { useSelector } from "react-redux";
 import { getShabadFromID } from "../../database/db";
-import { setCacheShabad } from "../../common/actions";
 
 const useFetchShabad = (shabadID) => {
   const [shabad, setShabad] = useState([]);
@@ -32,7 +31,6 @@ const useFetchShabad = (shabadID) => {
       );
       if (data) {
         toggleLoading(false);
-        // dispatch(setCacheShabad(data, shabadID));
         setShabad(data);
       }
     })();

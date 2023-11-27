@@ -1,59 +1,33 @@
 import React, { useState } from "react";
-import { Text } from "react-native";
-import { ListItem, BottomSheet, Avatar } from "@rneui/themed";
 import { useSelector } from "react-redux";
 import STRINGS from "../../common/localization";
-import styles from "../styles/styles";
 import { setBaniLength } from "../../common/actions";
 import { BANI_LENGTHS } from "../../common/actions/constant";
-import colors from "../../common/colors";
-import RenderBottomSheetItem from "./comon/render";
+import { ListItemComponent, BottomSheetComponent } from "./comon";
 
 function BaniLengthComponent() {
   const [isVisible, toggleVisible] = useState(false);
-  const { baniLength, isNightMode } = useSelector((state) => state);
-
+  const { baniLength } = useSelector((state) => state);
+  const baniLengthIcon = require("../../../images/banilengthicon.png");
   return (
     <>
-      <ListItem
-        bottomDivider
-        containerStyle={[
-          { backgroundColor: isNightMode ? colors.NIGHT_GREY_COLOR : colors.WHITE_COLOR },
-        ]}
-        onPress={() => {
-          toggleVisible(true);
-        }}
-      >
-        <Avatar source={require("../../../images/banilengthicon.png")} />
-        <ListItem.Content>
-          <ListItem.Title style={[isNightMode && { color: colors.WHITE_COLOR }]}>
-            {STRINGS.bani_length}
-          </ListItem.Title>
-        </ListItem.Content>
-        {baniLength && (
-          <ListItem.Title
-            style={[{ color: isNightMode ? colors.WHITE_COLOR : colors.DISABLED_TEXT_COLOR }]}
-          >
-            {BANI_LENGTHS.filter((item) => item.key === baniLength).map((item) => item.title)[0]}
-          </ListItem.Title>
-        )}
-        <ListItem.Chevron />
-      </ListItem>
+      <ListItemComponent
+        icon={baniLengthIcon.toString()}
+        isAvatar
+        title={STRINGS.bani_length}
+        value={baniLength}
+        actionConstant={BANI_LENGTHS}
+        onPressAction={() => toggleVisible(true)}
+      />
       {isVisible && (
-        <BottomSheet modalProps={{}} isVisible>
-          <Text style={[styles.bottomSheetTitle, isNightMode && { color: colors.WHITE_COLOR }]}>
-            {STRINGS.bani_length}
-          </Text>
-          {BANI_LENGTHS.map((item) => (
-            <RenderBottomSheetItem
-              key={item.key}
-              item={item}
-              toggleVisible={toggleVisible}
-              value={baniLength}
-              action={setBaniLength}
-            />
-          ))}
-        </BottomSheet>
+        <BottomSheetComponent
+          isVisible={isVisible}
+          actionConstant={BANI_LENGTHS}
+          value={baniLength}
+          toggleVisible={toggleVisible}
+          title={STRINGS.bani_length}
+          action={setBaniLength}
+        />
       )}
     </>
   );
