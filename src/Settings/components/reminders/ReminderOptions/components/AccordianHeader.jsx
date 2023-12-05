@@ -7,7 +7,7 @@ import DateTimePicker from "react-native-modal-datetime-picker";
 import moment from "moment";
 import colors from "../../../../../common/colors";
 import constant from "../../../../../common/constant";
-import styles from "../styles";
+import { styles } from "../styles";
 import { setReminderBanis } from "../../../../../common/actions";
 import { updateReminders } from "../../../../../common/notifications";
 import { trackReminderEvent } from "../../../../../common/analytics";

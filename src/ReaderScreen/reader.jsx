@@ -9,6 +9,9 @@ import { Header, AutoScrollComponent } from "./components";
 import { useBookmarks, useFetchShabad } from "./hooks";
 import { styles, nightColors } from "./styles";
 import { fontSizeForReader, fontColorForReader, htmlTemplate } from "./utils";
+import errorHandler from "../common/errHandler";
+import FallBack from "../common/components/FallbackComponent";
+import script from "./utils/gutkaScript";
 
 function Reader({ navigation, route }) {
   const webViewRef = useRef(null);
@@ -35,6 +38,7 @@ function Reader({ navigation, route }) {
   const [shabadID] = useState(Number(route.params.params.id));
   const [isHeader, toggleIsHeader] = useState(true);
   const [event, setEvent] = useState("");
+  const [viewLoaded, toggleViewLoaded] = useState(false);
   const { title } = route.params.params;
   const dispatch = useDispatch();
   const { shabad, isLoading } = useFetchShabad(shabadID);
@@ -168,7 +172,8 @@ function Reader({ navigation, route }) {
       );
       return htmlContent;
     } catch (error) {
-      console.error("Failed to load HTML template", error);
+      errorHandler(error);
+      FallBack();
     }
   };
 
@@ -204,10 +209,16 @@ function Reader({ navigation, route }) {
             shabad,
           })}`}
           originWhitelist={["*"]}
+          injectedJavaScriptBeforeContentLoaded={script(isNightMode, savePosition[shabadID])}
+          onLoadStart={() => {
+            setTimeout(() => {
+              toggleViewLoaded(true);
+            }, 500);
+          }}
           ref={webViewRef}
           decelerationRate="normal"
           source={{ html: loadHTML(), baseUrl: "" }}
-          style={webView}
+          style={[webView, { opacity: viewLoaded ? 1 : 0.1 }]}
           onMessage={(message) => handleMessage(message)}
         />
 

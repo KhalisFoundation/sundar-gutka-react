@@ -6,17 +6,15 @@ import Accordion from "react-native-collapsible/Accordion";
 import PropTypes from "prop-types";
 import ModalSelector from "react-native-modal-selector";
 import moment from "moment";
-import colors from "../../../../common/colors";
-import constant from "../../../../common/constant";
+import { colors, constant, STRINGS, errorHandler } from "../../../../common";
 import { defaultReminders } from "./utils/helpers";
 import { setReminderBanis } from "../../../../common/actions";
 import { getBaniList } from "../../../../database/db";
-import styles from "./styles";
-import AccordianContent from "./components/AccordianContent";
-import AccordianHeader from "./components/AccordianHeader";
-import STRINGS from "../../../../common/localization";
+import { styles, accordianNightColor } from "./styles";
+import { AccordianContent, AccordianHeader } from "./components";
 import { updateReminders } from "../../../../common/notifications";
 import { trackReminderEvent } from "../../../../common/analytics";
+import FallBack from "../../../../common/components";
 
 function ReminderOptions({ navigation }) {
   const {
@@ -33,6 +31,7 @@ function ReminderOptions({ navigation }) {
   const dispatch = useDispatch();
   const selector = useRef(null);
   const parsedReminderBanis = useMemo(() => JSON.parse(reminderBanis), [reminderBanis]);
+  const accNightColor = useMemo(() => accordianNightColor(isNightMode), [isNightMode]);
 
   const updateSections = (sections) => {
     setActiveSections(sections);
@@ -77,42 +76,46 @@ function ReminderOptions({ navigation }) {
       </>
     );
   };
+  const fetchBani = async () => {
+    try {
+      const data = await getBaniList(transliterationLanguage);
+      const existingKeysSet = new Set(parsedReminderBanis.map((bani) => bani.key));
+      const baniOptions = Object.entries(data)
+        .filter(([key]) => !existingKeysSet.has(Number(key)) && key < 100000)
+        .map(([key, bani]) => ({
+          key,
+          label: isTransliteration ? bani.translit : bani.gurmukhi,
+          gurmukhi: bani.gurmukhi,
+          translit: bani.translit,
+        }));
+      setReminderBaniData(baniOptions);
+      if (parsedReminderBanis.length === 0) {
+        setStateData(setDefaultReminders(data));
+      } else {
+        setStateData(parsedReminderBanis);
+      }
+      navigation.setOptions({
+        title: constant.REMINDER_OPTIONS,
+        headerTitleStyle: {
+          color: colors.WHITE_COLOR,
+          fontWeight: "normal",
+          fontSize: 18,
+        },
+        headerStyle: {
+          backgroundColor: colors.TOOLBAR_COLOR_ALT2,
+        },
+        headerLeft,
+        headerRight: () => headerRight(data),
+      });
+    } catch (error) {
+      errorHandler(error);
+      FallBack();
+    }
+  };
 
   useEffect(() => {
     (async () => {
-      try {
-        const data = await getBaniList(transliterationLanguage);
-        const existingKeysSet = new Set(parsedReminderBanis.map((bani) => bani.key));
-        const baniOptions = Object.entries(data)
-          .filter(([key]) => !existingKeysSet.has(Number(key)) && key < 100000)
-          .map(([key, bani]) => ({
-            key,
-            label: isTransliteration ? bani.translit : bani.gurmukhi,
-            gurmukhi: bani.gurmukhi,
-            translit: bani.translit,
-          }));
-        setReminderBaniData(baniOptions);
-        if (parsedReminderBanis.length === 0) {
-          setStateData(setDefaultReminders(data));
-        } else {
-          setStateData(parsedReminderBanis);
-        }
-        navigation.setOptions({
-          title: constant.REMINDER_OPTIONS,
-          headerTitleStyle: {
-            color: colors.WHITE_COLOR,
-            fontWeight: "normal",
-            fontSize: 18,
-          },
-          headerStyle: {
-            backgroundColor: colors.TOOLBAR_COLOR_ALT2,
-          },
-          headerLeft,
-          headerRight: () => headerRight(data),
-        });
-      } catch (error) {
-        console.log("Error: Fetching the data: ", error);
-      }
+      fetchBani();
     })();
   }, [transliterationLanguage, reminderBanis]);
 
@@ -147,17 +150,20 @@ function ReminderOptions({ navigation }) {
       ]}
     >
       <StatusBar backgroundColor={colors.TOOLBAR_COLOR_ALT2} barStyle="light-content" />
-      <Accordion
-        activeSections={activeSections}
-        sections={stateData}
-        renderHeader={(section, index, isActive) => (
-          <AccordianHeader section={section} isActive={isActive} />
-        )}
-        renderContent={(section, index, isActive) => (
-          <AccordianContent section={section} isActive={isActive} />
-        )}
-        onChange={updateSections}
-      />
+      {stateData.length > 0 && (
+        <Accordion
+          activeSections={activeSections}
+          sections={stateData}
+          underlayColor={accNightColor}
+          renderHeader={(section, index, isActive) => (
+            <AccordianHeader section={section} isActive={isActive} />
+          )}
+          renderContent={(section, index, isActive) => (
+            <AccordianContent section={section} isActive={isActive} />
+          )}
+          onChange={updateSections}
+        />
+      )}
       <ModalSelector
         data={reminderBaniData}
         cancelText={STRINGS.cancel}

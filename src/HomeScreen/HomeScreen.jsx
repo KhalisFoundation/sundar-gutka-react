@@ -1,7 +1,7 @@
-import React from "react";
-import { SafeAreaView, StatusBar } from "react-native";
+import React, { useEffect, useMemo } from "react";
+import { Appearance, AppState, SafeAreaView, StatusBar } from "react-native";
 import PropTypes from "prop-types";
-import { useSelector } from "react-redux";
+import { useDispatch, useSelector } from "react-redux";
 import BaniList from "../common/components/BaniList/BaniList";
 import useKeepAwake from "../common/hooks/keepAwake";
 import colors from "../common/colors";
@@ -14,16 +14,35 @@ import useBaniList from "./hooks/useBaniList";
 import useAppFirstTime from "./hooks/useAppFirstTime";
 import useAnalytics from "./hooks/useAnalytics";
 import useScreenAnalytics from "../common/hooks/useScreenAnalytics";
+import { toggleNightMode } from "../common/actions";
 
 const HomeScreen = React.memo(({ navigation }) => {
   const { navigate } = navigation;
   const { baniListData } = useBaniList();
-  const { isNightMode, isStatusBar } = useSelector((state) => state);
+  const { isNightMode, isStatusBar, theme } = useSelector((state) => state);
   useKeepAwake();
   useAnalytics();
   useScreenAnalytics(constant.HOME_SCREEN);
   const isAppOpenFirstTime = useAppFirstTime();
   const { baniLengthSelector } = useBaniLength();
+  const dispatch = useDispatch();
+  const colorScheme = useMemo(() => Appearance.getColorScheme(), []);
+  const updateTheme = () => {
+    if (theme === constant.Default) {
+      dispatch(toggleNightMode(colorScheme === "dark"));
+    }
+  };
+  useEffect(() => {
+    const subscription = AppState.addEventListener("change", (state) => {
+      if (state === "active") {
+        updateTheme();
+      }
+    });
+
+    return () => {
+      subscription.remove();
+    };
+  }, [theme, colorScheme]);
 
   function onPress(row) {
     const bani = row.item;

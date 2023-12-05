@@ -1,13 +1,4 @@
-import script from "./gutkaScript";
-
-const htmlTemplate = (
-  backColor,
-  fontFileUri,
-  fontFace,
-  content,
-  isNightMode,
-  position
-) => `<!DOCTYPE html>
+const htmlTemplate = (backColor, fontFileUri, fontFace, content) => `<!DOCTYPE html>
 <html lang="en">
 <head>
   <meta charset="UTF-8">
@@ -44,7 +35,7 @@ const htmlTemplate = (
       text-align:right
     }
   </style>
-<script>${script(isNightMode, position)}</script>
+
 </head>
 <body>
   ${content}

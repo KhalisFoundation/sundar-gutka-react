@@ -6,7 +6,9 @@ import notifee, {
   AuthorizationStatus,
 } from "@notifee/react-native";
 import moment from "moment";
+import FallBack from "./components/FallbackComponent";
 import constant from "./constant";
+import errorHandler from "./errHandler";
 
 export const createReminder = async (notification, sound) => {
   try {
@@ -44,7 +46,8 @@ export const createReminder = async (notification, sound) => {
       trigger
     );
   } catch (error) {
-    console.error(`Error creating reminder: ${error}`);
+    errorHandler(error);
+    FallBack();
   }
 };
 export const resetBadgeCount = () => {
@@ -98,13 +101,10 @@ export const updateReminders = async (remindersOn, sound, remindersList) => {
   }
 };
 
-export const checkPermissions = async (remindersOn) => {
-  if (remindersOn) {
-    const settings = await notifee.requestPermission();
-    if (settings.authorizationStatus >= AuthorizationStatus.AUTHORIZED) {
-      console.log("Permission settings:", settings);
-    }
-  }
+export const checkPermissions = async () => {
+  const settings = await notifee.requestPermission();
+  const isAllowed = settings.authorizationStatus >= AuthorizationStatus.AUTHORIZED;
+  return isAllowed;
 };
 
 export const listenReminders = async () => {

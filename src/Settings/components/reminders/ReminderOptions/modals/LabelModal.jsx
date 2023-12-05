@@ -4,7 +4,7 @@ import { useDispatch, useSelector } from "react-redux";
 import PropTypes from "prop-types";
 import colors from "../../../../../common/colors";
 import STRINGS from "../../../../../common/localization";
-import styles from "../styles";
+import { styles } from "../styles";
 import { setReminderBanis } from "../../../../../common/actions";
 import { updateReminders } from "../../../../../common/notifications";
 

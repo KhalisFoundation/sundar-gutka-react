@@ -2,7 +2,7 @@ import { StyleSheet } from "react-native";
 import colors from "../../../../common/colors";
 import constant from "../../../../common/constant";
 
-const styles = StyleSheet.create({
+export const styles = StyleSheet.create({
   viewColumn: { flexDirection: "column" },
   viewRow: { flexDirection: "row", justifyContent: "space-between" },
   cardTitle: { fontSize: 24 },
@@ -29,4 +29,7 @@ const styles = StyleSheet.create({
   },
 });
 
-export default styles;
+export const accordianNightColor = (isNightMode) => {
+  const color = isNightMode ? colors.NIGHT_BLACK : colors.WHITE_COLOR;
+  return color;
+};

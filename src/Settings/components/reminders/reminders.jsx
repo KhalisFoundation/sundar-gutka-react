@@ -1,4 +1,5 @@
 import React, { useState } from "react";
+import { Alert, Linking } from "react-native";
 import { ListItem, Icon, Switch } from "@rneui/themed";
 import { useSelector, useDispatch } from "react-redux";
 import PropTypes from "prop-types";
@@ -8,6 +9,8 @@ import { STRINGS } from "../../../common";
 import { nightModeStyles, iconNightColor } from "../../styles";
 import { cancelAllReminders, checkPermissions } from "../../../common/notifications";
 import { ListItemComponent, BottomSheetComponent } from "../comon";
+import errorHandler from "../../../common/errHandler";
+import FallBack from "../../../common/components/FallbackComponent";
 
 function RemindersComponent({ navigation }) {
   const { isNightMode, isReminders, reminderSound } = useSelector((state) => state);
@@ -16,12 +19,37 @@ function RemindersComponent({ navigation }) {
   const { navigate } = navigation;
   const { containerNightStyles, textNightStyle } = nightModeStyles(isNightMode);
   const iconColor = iconNightColor(isNightMode);
+  const redirectToSettings = async () => {
+    Alert.alert(STRINGS.permissionTitle, STRINGS.premissionDescription, [
+      {
+        text: STRINGS.cancel,
+        style: "cancel",
+      },
+      {
+        text: STRINGS.openSettings,
+        onPress: () => Linking.openSettings(),
+      },
+    ]);
+  };
 
-  const handleReminders = (value) => {
-    checkPermissions(value);
-    dispatch(toggleReminders(value));
-    if (!value) {
-      cancelAllReminders();
+  const handleReminders = async (value) => {
+    try {
+      const isAllowed = await checkPermissions();
+
+      if (!isAllowed) {
+        dispatch(toggleReminders(false));
+        redirectToSettings();
+        cancelAllReminders();
+        return;
+      }
+      dispatch(toggleReminders(value));
+      if (!value) {
+        // disabling All Reminders
+        cancelAllReminders();
+      }
+    } catch (error) {
+      errorHandler(error);
+      FallBack();
     }
   };
 

@@ -1,90 +1,52 @@
-import React, { useState } from "react";
-import { Text, Appearance } from "react-native";
-import { ListItem, BottomSheet, Avatar, Icon } from "@rneui/themed";
+import React, { useState, useEffect } from "react";
+import { Appearance } from "react-native";
 import { useDispatch, useSelector } from "react-redux";
 import STRINGS from "../../common/localization";
-import styles from "../styles/styles";
 import { setTheme, toggleNightMode } from "../../common/actions";
 import { THEMES } from "../../common/actions/constant";
-import colors from "../../common/colors";
-import constant from "../../common/constant";
-
-const handleTheme = (value, dispatch, toggleVisible) => {
-  toggleVisible(false);
-  dispatch(setTheme(value));
-  const colorScheme = Appearance.getColorScheme();
-  switch (value) {
-    case constant.Light:
-      dispatch(toggleNightMode(false));
-      break;
-    case constant.Dark:
-      dispatch(toggleNightMode(true));
-      break;
-    default:
-      dispatch(toggleNightMode(colorScheme !== constant.Light.toLowerCase()));
-  }
-};
-
-const renderItem = (item, dispatch, isNightMode, theme, toggleVisible) => {
-  return (
-    <ListItem
-      key={item}
-      bottomDivider
-      containerStyle={[
-        { backgroundColor: isNightMode ? colors.NIGHT_GREY_COLOR : colors.WHITE_COLOR },
-      ]}
-      onPress={() => {
-        handleTheme(item, dispatch, toggleVisible);
-      }}
-    >
-      <ListItem.Content>
-        <ListItem.Title style={[isNightMode && { color: colors.WHITE_COLOR }]}>
-          {item}
-        </ListItem.Title>
-      </ListItem.Content>
-      {theme === item && <Icon color={isNightMode && colors.WHITE_COLOR} name="check" />}
-    </ListItem>
-  );
-};
+import { constant } from "../../common";
+import { BottomSheetComponent, ListItemComponent } from "./comon";
 
 function ThemeComponent() {
   const [isVisible, toggleVisible] = useState(false);
-  const { theme, isNightMode } = useSelector((state) => state);
+  const { theme } = useSelector((state) => state);
+  const themeIcon = require("../../../images/bgcoloricon.png");
   const dispatch = useDispatch();
+
+  useEffect(() => {
+    const colorScheme = Appearance.getColorScheme();
+
+    switch (theme) {
+      case constant.Light:
+        dispatch(toggleNightMode(false));
+        break;
+      case constant.Dark:
+        dispatch(toggleNightMode(true));
+        break;
+      default:
+        dispatch(toggleNightMode(colorScheme !== constant.Light.toLowerCase()));
+    }
+  }, [theme]);
 
   return (
     <>
-      <ListItem
-        bottomDivider
-        containerStyle={[
-          { backgroundColor: isNightMode ? colors.NIGHT_GREY_COLOR : colors.WHITE_COLOR },
-        ]}
-        onPress={() => {
-          toggleVisible(true);
-        }}
-      >
-        <Avatar source={require("../../../images/bgcoloricon.png")} />
-        <ListItem.Content>
-          <ListItem.Title style={[isNightMode && { color: colors.WHITE_COLOR }]}>
-            {STRINGS.theme}
-          </ListItem.Title>
-        </ListItem.Content>
-        {theme && (
-          <ListItem.Title
-            style={[styles.titleInfoStyle, { color: isNightMode ? colors.WHITE_COLOR : "#a3a3a3" }]}
-          >
-            {theme}
-          </ListItem.Title>
-        )}
-        <ListItem.Chevron />
-      </ListItem>
+      <ListItemComponent
+        icon={themeIcon.toString()}
+        title={STRINGS.theme}
+        value={theme}
+        isAvatar
+        actionConstant={THEMES}
+        onPressAction={() => toggleVisible(true)}
+      />
       {isVisible && (
-        <BottomSheet modalProps={{}} isVisible>
-          <Text style={[styles.bottomSheetTitle, isNightMode && { color: colors.WHITE_COLOR }]}>
-            {STRINGS.theme}
-          </Text>
-          {THEMES.map((item) => renderItem(item, dispatch, isNightMode, theme, toggleVisible))}
-        </BottomSheet>
+        <BottomSheetComponent
+          isVisible={isVisible}
+          actionConstant={THEMES}
+          value={theme}
+          toggleVisible={toggleVisible}
+          title={STRINGS.theme}
+          action={setTheme}
+        />
       )}
     </>
   );

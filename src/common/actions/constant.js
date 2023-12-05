@@ -1,7 +1,11 @@
 import STRINGS from "../localization";
 import constant from "../constant";
 
-export const THEMES = ["Default", "Light", "Dark"];
+export const THEMES = [
+  { key: "Default", title: `${STRINGS.default}` },
+  { key: "Light", title: `${STRINGS.light}` },
+  { key: "Dark", title: `${STRINGS.dark}` },
+];
 
 export const FONT_SIZES = [
   { key: "EXTRA_SMALL", title: `${STRINGS.extra_small}` },

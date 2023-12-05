@@ -4,7 +4,7 @@ import { Icon, Divider } from "@rneui/themed";
 import PropTypes from "prop-types";
 import { useDispatch, useSelector } from "react-redux";
 import colors from "../../../../../common/colors";
-import styles from "../styles";
+import { styles } from "../styles";
 import STRINGS from "../../../../../common/localization";
 import LabelModal from "../modals/LabelModal";
 import { setReminderBanis } from "../../../../../common/actions";
