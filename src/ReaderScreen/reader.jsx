@@ -218,7 +218,7 @@ function Reader({ navigation, route }) {
           ref={webViewRef}
           decelerationRate="normal"
           source={{ html: loadHTML(), baseUrl: "" }}
-          style={[webView, { opacity: viewLoaded ? 1 : 0.1 }]}
+          style={[webView, isNightMode && { opacity: viewLoaded ? 1 : 0.1 }]}
           onMessage={(message) => handleMessage(message)}
         />
 

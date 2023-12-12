@@ -83,7 +83,7 @@ const vishraamSource = createReducer(constant.sttm, {
   [actionTypes.SET_VISHRAAM_SOURCE]: (state, action) => action.source,
 });
 
-const isStatistics = createReducer(false, {
+const isStatistics = createReducer(true, {
   [actionTypes.TOGGLE_STATISTICS]: (state, action) => action.value,
 });
 

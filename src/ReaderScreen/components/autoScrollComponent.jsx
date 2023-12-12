@@ -8,11 +8,14 @@ import colors from "../../common/colors";
 import { styles } from "../styles";
 import constant from "../../common/constant";
 import { setAutoScrollSpeed } from "../../common/actions";
+import { trackReaderEvent } from "../../common/analytics";
 
 const AutoScrollComponent = React.forwardRef(({ shabadID }, ref) => {
   const [isPaused, togglePaused] = useState(true);
   const { autoScrollSpeedObj } = useSelector((state) => state);
-  const currentSpeed = autoScrollSpeedObj[shabadID] || constant.DEFAULT_SPEED;
+  const [currentSpeed, setCurrentSpeed] = useState(
+    autoScrollSpeedObj[shabadID] || constant.DEFAULT_SPEED
+  );
   const dispatch = useDispatch();
 
   useEffect(() => {
@@ -55,7 +58,11 @@ const AutoScrollComponent = React.forwardRef(({ shabadID }, ref) => {
           step={1}
           value={currentSpeed}
           onValueChange={(value) => {
+            setCurrentSpeed(value);
+          }}
+          onSlidingComplete={(value) => {
             handleSpeed(value);
+            trackReaderEvent("autoScrollSpeed", value);
           }}
         />
         <Text style={styles.sliderText}>{currentSpeed}</Text>

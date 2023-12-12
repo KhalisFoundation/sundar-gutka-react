@@ -1,5 +1,5 @@
 import React, { useEffect, useState } from "react";
-import { View, Text, Animated, Easing } from "react-native";
+import { View, Text, Animated } from "react-native";
 import { Icon } from "@rneui/themed";
 import PropTypes from "prop-types";
 import { useSelector } from "react-redux";
@@ -53,7 +53,7 @@ const Header = React.forwardRef(
       Animated.timing(animationPosition, {
         toValue: value,
         duration: 500,
-        easing: Easing.ease,
+        // easing: Easing.ease,
         useNativeDriver: true,
       }).start();
     };

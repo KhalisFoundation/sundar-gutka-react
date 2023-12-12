@@ -1,35 +1,19 @@
 import React, { useState } from "react";
 import { View, Text, Modal, SafeAreaView, Pressable, Alert } from "react-native";
 import { Icon } from "@rneui/themed";
-import { useDispatch, useSelector } from "react-redux";
+import { useDispatch } from "react-redux";
 import STRINGS from "../../localization";
 import styles from "./style";
 import colors from "../../colors";
-import { setBaniLength, setCacheShabad } from "../../actions";
-import { getBaniList, getShabadFromID } from "../../../database/db";
+import { setBaniLength } from "../../actions";
 
 function BaniLengthSelector() {
   const [modalVissible, toggleModalVissible] = useState(true);
   const baniLengths = [STRINGS.short, STRINGS.medium, STRINGS.long, STRINGS.extra_long];
   const dispatch = useDispatch();
-  const { transliterationLanguage, cacheShabad } = useSelector((state) => state);
-  const fetchBanis = async (length) => {
-    const baniList = await getBaniList(transliterationLanguage);
-    const shabadPromises = baniList
-      .filter((bani) => !cacheShabad[bani.id])
-      .map((bani) => {
-        const shabadID = bani.id;
-        return getShabadFromID(shabadID, length, transliterationLanguage).then((data) => {
-          dispatch(setCacheShabad(data, shabadID));
-          return data;
-        });
-      });
-    const res = await Promise.all(shabadPromises);
-    return res;
-  };
+
   const handleOnpress = (length) => {
     dispatch(setBaniLength(length));
-    fetchBanis(length);
     toggleModalVissible(false);
   };
   const baniLengthInfo = () => {

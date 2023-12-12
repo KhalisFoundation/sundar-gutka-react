@@ -51,6 +51,7 @@ function Navigation() {
         <Stack.Screen name="Reader" component={Reader} />
         <Stack.Screen
           options={({ navigation }) => ({
+            title: STRINGS.settings,
             headerLeft: () => headerLeft(navigation, isNightMode),
             headerTitleStyle,
             headerStyle,

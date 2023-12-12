@@ -69,7 +69,7 @@ const HomeScreen = React.memo(({ navigation }) => {
         backgroundColor={colors.TOOLBAR_COLOR}
       />
       <BaniHeader navigate={navigate} />
-      {isAppOpenFirstTime && baniLengthSelector && <BaniLengthSelector />}
+      {isAppOpenFirstTime || (baniLengthSelector && <BaniLengthSelector />)}
       <BaniList data={baniListData} onPress={onPress.bind(this)} />
     </SafeAreaView>
   );

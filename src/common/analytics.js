@@ -8,6 +8,7 @@ const trackEvent = (category, action, label) => {
 
 const allowTracking = async () => {
   const appInstanceId = await analytics().getAppInstanceId();
+  console.log("App InstanceID", appInstanceId);
   if (!appInstanceId) {
     await firebase.analytics().setAnalyticsCollectionEnabled(true);
   }
