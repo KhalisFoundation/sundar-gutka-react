@@ -1,6 +1,6 @@
 import { StyleSheet } from "react-native";
 import colors from "../common/colors";
-import constant from "../common/constant";
+import { constant } from "../common";
 
 export const styles = StyleSheet.create({
   rowItem: {
@@ -11,11 +11,9 @@ export const styles = StyleSheet.create({
     marginTop: 1,
   },
   text: {
-    color: colors.NIGHT_BLACK,
-    fontSize: 24,
-    fontWeight: "bold",
-    textAlign: "center",
     fontFamily: constant.GURBANI_AKHAR_TRUE,
+    fontSize: 24,
+    textAlign: "center",
   },
   gestureBackColor: {
     backgroundColor: colors.LABEL_COLORS,

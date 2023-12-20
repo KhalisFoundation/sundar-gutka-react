@@ -13,7 +13,7 @@ function BaniLengthSelector() {
   const dispatch = useDispatch();
 
   const handleOnpress = (length) => {
-    dispatch(setBaniLength(length));
+    dispatch(setBaniLength(length.toUpperCase()));
     toggleModalVissible(false);
   };
   const baniLengthInfo = () => {

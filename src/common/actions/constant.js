@@ -45,7 +45,7 @@ export const BANI_LENGTHS = [
 ];
 
 export const PADCHED_SETTINGS = [
-  { key: "SAT_SUBHAM_SAR", title: STRINGS.sat_subham_sat_default },
+  { key: "SAT_SUBHAM_SAT", title: STRINGS.sat_subham_sat_default },
   { key: "MAST_SABH_MAST", title: STRINGS.mast_sabh_mast },
 ];
 

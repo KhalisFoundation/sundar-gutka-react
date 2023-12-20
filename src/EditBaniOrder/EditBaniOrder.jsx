@@ -3,22 +3,23 @@ import DraggableFlatList, {
   ShadowDecorator,
   ScaleDecorator,
 } from "react-native-draggable-flatlist";
-import { TouchableOpacity, Text, View } from "react-native";
+import { Pressable, Text, View } from "react-native";
 import { GestureHandlerRootView } from "react-native-gesture-handler";
-import { useSelector, useDispatch } from "react-redux";
+import { useSelector, useDispatch, batch } from "react-redux";
 import PropTypes from "prop-types";
 import useHeader from "./hooks/useHeader";
 import { activeColor, nightStyles, styles } from "./styles";
 import { setBaniList, setBaniOrder } from "../common/actions";
-import { fetchDefaultBaniOrder } from "../common/components/BaniList/baniOrderHelper";
 
 function EditBaniOrder({ navigation }) {
   const { baniList, isNightMode } = useSelector((state) => state);
   useHeader(navigation);
-  const [baniListdata, setBaniListData] = useState(baniList);
+  const [baniListdata, setBaniListData] = useState(
+    baniList.filter((item) => item.id !== undefined)
+  );
+  const [orderData, setOrderData] = useState([]);
   const { rowItem, text, gestureBackColor } = styles;
   const dispatch = useDispatch();
-  const defaultOrder = fetchDefaultBaniOrder();
   const nightColor = nightStyles(isNightMode);
 
   const renderItem = useCallback(
@@ -27,17 +28,11 @@ function EditBaniOrder({ navigation }) {
       return (
         <ShadowDecorator>
           <ScaleDecorator>
-            <TouchableOpacity
-              key={item.id}
-              activeOpacity={1}
-              onLongPress={drag}
-              disabled={isActive}
-              style={activeStyle}
-            >
-              <View style={[rowItem, nightColor.backColor]}>
-                <Text style={[text, nightColor.textColor]}>{item.gurmukhi}</Text>
+            <Pressable activeOpacity={1} onLongPress={drag} disabled={isActive} style={activeStyle}>
+              <View key={item.id} style={[rowItem, nightColor.backColor]}>
+                <Text style={[nightColor.textColor, text]}>{item.gurmukhi}</Text>
               </View>
-            </TouchableOpacity>
+            </Pressable>
           </ScaleDecorator>
         </ShadowDecorator>
       );
@@ -46,19 +41,18 @@ function EditBaniOrder({ navigation }) {
   );
 
   useEffect(() => {
-    setBaniListData(baniList);
-  }, [baniList]);
+    batch(() => {
+      dispatch(setBaniList(baniListdata));
+      dispatch(setBaniOrder({ baniOrder: orderData }));
+    });
+  }, [baniListdata, orderData]);
 
-  const handleDragEnd = (newOrder) => {
-    const ids = newOrder.data.map((item) => {
+  const handleDragEnd = ({ data }) => {
+    const ids = data.map((item) => {
       return { id: item.id };
     });
-    setBaniListData(newOrder.data);
-    const newOrderIds = ids.map((id, index) => {
-      return ids[index].id !== undefined ? ids[index] : defaultOrder.baniOrder[index];
-    });
-    dispatch(setBaniOrder({ baniOrder: newOrderIds }));
-    dispatch(setBaniList(newOrder.data));
+    setBaniListData(data);
+    setOrderData(ids);
   };
   return (
     <GestureHandlerRootView style={gestureBackColor}>
@@ -66,9 +60,7 @@ function EditBaniOrder({ navigation }) {
         data={baniListdata}
         keyExtractor={(item) => item.id}
         renderItem={renderItem}
-        onDragEnd={(nextOrder) => {
-          handleDragEnd(nextOrder);
-        }}
+        onDragEnd={handleDragEnd}
       />
     </GestureHandlerRootView>
   );

@@ -44,7 +44,7 @@ function Reader({ navigation, route }) {
   const { shabad, isLoading } = useFetchShabad(shabadID);
   const { backgroundColor, safeAreaViewBack } = nightColors(isNightMode);
   const { READER_STATUS_BAR_COLOR } = colors;
-  useScreenAnalytics(constant.READER);
+  useScreenAnalytics(title);
   useBookmarks(webViewRef, shabad, bookmarkPosition);
 
   useEffect(() => {

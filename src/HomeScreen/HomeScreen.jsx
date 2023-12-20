@@ -19,7 +19,7 @@ import { toggleNightMode } from "../common/actions";
 const HomeScreen = React.memo(({ navigation }) => {
   const { navigate } = navigation;
   const { baniListData } = useBaniList();
-  const { isNightMode, isStatusBar, theme } = useSelector((state) => state);
+  const { isNightMode, isStatusBar, theme, baniLength } = useSelector((state) => state);
   useKeepAwake();
   useAnalytics();
   useScreenAnalytics(constant.HOME_SCREEN);
@@ -27,6 +27,7 @@ const HomeScreen = React.memo(({ navigation }) => {
   const { baniLengthSelector } = useBaniLength();
   const dispatch = useDispatch();
   const colorScheme = useMemo(() => Appearance.getColorScheme(), []);
+  console.log(baniLength);
   const updateTheme = () => {
     if (theme === constant.Default) {
       dispatch(toggleNightMode(colorScheme === "dark"));
@@ -69,7 +70,7 @@ const HomeScreen = React.memo(({ navigation }) => {
         backgroundColor={colors.TOOLBAR_COLOR}
       />
       <BaniHeader navigate={navigate} />
-      {isAppOpenFirstTime || (baniLengthSelector && <BaniLengthSelector />)}
+      {(isAppOpenFirstTime || baniLengthSelector) && <BaniLengthSelector />}
       <BaniList data={baniListData} onPress={onPress.bind(this)} />
     </SafeAreaView>
   );
