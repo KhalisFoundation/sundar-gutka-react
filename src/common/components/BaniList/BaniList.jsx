@@ -1,5 +1,5 @@
 import React, { useEffect, useState } from "react";
-import { FlatList } from "react-native";
+import { FlatList, Dimensions, Platform } from "react-native";
 import { ListItem, Avatar } from "@rneui/themed";
 import PropTypes from "prop-types";
 import { useDispatch, useSelector } from "react-redux";
@@ -14,7 +14,17 @@ function BaniList(props) {
   );
   const { data, onPress, isFolderScreen } = props;
   const [shabad, setShabad] = useState(data);
+  const [isPotrait, toggleIsPotrait] = useState(true);
   const dispatch = useDispatch();
+
+  const checkPotrait = () => {
+    const dim = Dimensions.get("screen");
+    return dim.height >= dim.width;
+  };
+
+  Dimensions.addEventListener("change", () => {
+    toggleIsPotrait(checkPotrait());
+  });
 
   useEffect(() => {
     if (data.length > 0 && !isFolderScreen) {
@@ -50,7 +60,14 @@ function BaniList(props) {
     );
   };
 
-  return <FlatList data={shabad} renderItem={renderBanis} keyExtractor={(item) => item.gurmukhi} />;
+  return (
+    <FlatList
+      style={!isPotrait && Platform.OS === "ios" && { marginLeft: 30 }}
+      data={shabad}
+      renderItem={renderBanis}
+      keyExtractor={(item) => item.gurmukhi}
+    />
+  );
 }
 
 BaniList.defaultProps = { isFolderScreen: false };

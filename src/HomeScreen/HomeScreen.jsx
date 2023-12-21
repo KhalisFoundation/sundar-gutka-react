@@ -1,5 +1,5 @@
 import React, { useEffect, useMemo } from "react";
-import { Appearance, AppState, SafeAreaView, StatusBar } from "react-native";
+import { Appearance, AppState, View, StatusBar } from "react-native";
 import PropTypes from "prop-types";
 import { useDispatch, useSelector } from "react-redux";
 import BaniList from "../common/components/BaniList/BaniList";
@@ -19,20 +19,21 @@ import { toggleNightMode } from "../common/actions";
 const HomeScreen = React.memo(({ navigation }) => {
   const { navigate } = navigation;
   const { baniListData } = useBaniList();
-  const { isNightMode, isStatusBar, theme, baniLength } = useSelector((state) => state);
+  const { isNightMode, isStatusBar, theme } = useSelector((state) => state);
   useKeepAwake();
   useAnalytics();
   useScreenAnalytics(constant.HOME_SCREEN);
   const isAppOpenFirstTime = useAppFirstTime();
   const { baniLengthSelector } = useBaniLength();
   const dispatch = useDispatch();
+
   const colorScheme = useMemo(() => Appearance.getColorScheme(), []);
-  console.log(baniLength);
   const updateTheme = () => {
     if (theme === constant.Default) {
       dispatch(toggleNightMode(colorScheme === "dark"));
     }
   };
+
   useEffect(() => {
     const subscription = AppState.addEventListener("change", (state) => {
       if (state === "active") {
@@ -61,9 +62,7 @@ const HomeScreen = React.memo(({ navigation }) => {
   }
 
   return (
-    <SafeAreaView
-      style={[isNightMode && { backgroundColor: colors.NIGHT_BLACK }, styles.container]}
-    >
+    <View style={[isNightMode && { backgroundColor: colors.NIGHT_BLACK }, styles.container]}>
       <StatusBar
         hidden={isStatusBar}
         barStyle="light-content"
@@ -72,7 +71,7 @@ const HomeScreen = React.memo(({ navigation }) => {
       <BaniHeader navigate={navigate} />
       {(isAppOpenFirstTime || baniLengthSelector) && <BaniLengthSelector />}
       <BaniList data={baniListData} onPress={onPress.bind(this)} />
-    </SafeAreaView>
+    </View>
   );
 });
 
