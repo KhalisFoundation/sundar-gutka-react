@@ -219,7 +219,7 @@ export function getBookmarksForID(baniId, length, language) {
     initDB().then((db) => {
       db.transaction((tx) => {
         tx.executeSql(
-          `SELECT ID, BaniShabadID, Seq, Gurmukhi, Transliterations FROM Banis_Bookmarks WHERE Bani = ${baniId} AND BaniShabadID in (SELECT ID from mv_Banis_Shabad where Bani = ${baniId} AND ${baniLength} = 1)` +
+          `SELECT ID, BaniShabadID, Seq, Gurmukhi, Transliterations, TukGurmukhi, TukTransliterations FROM Banis_Bookmarks WHERE Bani = ${baniId} AND BaniShabadID in (SELECT ID from mv_Banis_Shabad where Bani = ${baniId} AND ${baniLength} = 1)` +
             ` ORDER BY Seq ASC;`,
           [],
           (_tx, results) => {
@@ -227,11 +227,16 @@ export function getBookmarksForID(baniId, length, language) {
             const len = results.rows.length;
             for (let i = 0; i < len; i += 1) {
               const row = results.rows.item(i);
-              const { BaniShabadID, Gurmukhi, Transliterations } = row;
+              const { BaniShabadID, Gurmukhi, Transliterations, TukGurmukhi, TukTransliterations } =
+                row;
               totalResults[i] = {
                 shabadID: BaniShabadID,
                 gurmukhi: Gurmukhi,
+                tukGurmukhi: TukGurmukhi,
                 translit: getTranslitText(Transliterations, language),
+                tukTranslit: TukTransliterations
+                  ? getTranslitText(TukTransliterations, language)
+                  : null,
               };
             }
             return resolve(totalResults);

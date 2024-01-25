@@ -55,6 +55,17 @@ function BaniList(props) {
           >
             {isTransliteration ? row.item.translit : row.item.gurmukhi}
           </ListItem.Title>
+          {row.item.tukGurmukhi && (
+            <ListItem.Subtitle
+              style={[
+                isNightMode && { color: "#ecf0f1" },
+                { fontFamily: !isTransliteration ? fontFace : null },
+                { fontSize: 17 },
+              ]}
+            >
+              {isTransliteration ? row.item.tukTranslit : row.item.tukGurmukhi}
+            </ListItem.Subtitle>
+          )}
         </ListItem.Content>
       </ListItem>
     );
