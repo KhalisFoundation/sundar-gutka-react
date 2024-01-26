@@ -114,56 +114,56 @@ const reminderBanis = createReducer(JSON.stringify([]), {
 const reminderSound = createReducer(constant.Default.toLowerCase(), {
   [actionTypes.SET_REMINDER_SOUND]: (state, action) => action.sound,
 });
-function autoScrollSpeedObj(state = {}, action) {
+const autoScrollSpeedObj = (state = {}, action) => {
   switch (action.type) {
     case actionTypes.SET_AUTO_SCROLL_SPEED:
       return { ...state, ...action.shabadSpeed };
     default:
       return state;
   }
-}
+};
 
-function cacheShabad(state = {}, action) {
+const cacheShabad = (state = {}, action) => {
   switch (action.type) {
     case actionTypes.SET_CACHE_SHABAD:
       return { ...state, ...action.cache };
     default:
       return state;
   }
-}
-function baniOrder(state = fetchDefaultBaniOrder(), action) {
+};
+const baniOrder = (state = fetchDefaultBaniOrder(), action) => {
   switch (action.type) {
     case actionTypes.SET_BANI_ORDER:
       return action.order;
     default:
       return state;
   }
-}
+};
 
-function baniList(state = [], action) {
+const baniList = (state = [], action) => {
   switch (action.type) {
     case actionTypes.SET_BANI_LIST:
       return action.list;
     default:
       return state;
   }
-}
-function savePosition(state = {}, action) {
+};
+const savePosition = (state = {}, action) => {
   switch (action.type) {
     case actionTypes.SET_SAVE_POSITION:
       return { ...state, ...action.position };
     default:
       return state;
   }
-}
-function scrollPosition(state = 0, action) {
+};
+const scrollPosition = (state = 0, action) => {
   switch (action.type) {
     case actionTypes.SET_SCROLL_POSITION:
       return action.position;
     default:
       return state;
   }
-}
+};
 
 const rootReducer = combineReducers({
   isNightMode,

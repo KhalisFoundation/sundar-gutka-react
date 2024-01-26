@@ -4,7 +4,7 @@ import PropTypes from "prop-types";
 import { useSelector } from "react-redux";
 import { styles, nightModeStyles, iconNightColor } from "../../styles";
 
-function ListItemComponent({ icon, title, value, isAvatar, actionConstant, onPressAction }) {
+const ListItemComponent = ({ icon, title, value, isAvatar, actionConstant, onPressAction }) => {
   const { isNightMode } = useSelector((state) => state);
   const { containerNightStyles, textNightStyle, textNightGrey } = nightModeStyles(isNightMode);
   const iconColor = iconNightColor(isNightMode);
@@ -23,7 +23,7 @@ function ListItemComponent({ icon, title, value, isAvatar, actionConstant, onPre
       <ListItem.Chevron />
     </ListItem>
   );
-}
+};
 ListItemComponent.propTypes = {
   icon: PropTypes.string.isRequired,
   title: PropTypes.string.isRequired,

@@ -4,20 +4,20 @@ const script = (nightMode, position) => {
   const listener = Platform.OS === "android" ? "document" : "window";
   return `
 
-var autoScrollTimeout;
-var autoScrollSpeed = 0;
-var scrollMultiplier = 1.0;
-var dragging = false;
-var holding = false;
-var holdTimer;
-var curPosition = 0;
-var isScrolling;
-var isManuallyScrolling = false;
+let autoScrollTimeout;
+let autoScrollSpeed = 0;
+let scrollMultiplier = 1.0;
+let dragging = false;
+let holding = false;
+let holdTimer;
+let curPosition = 0;
+let isScrolling;
+let isManuallyScrolling = false;
 window.addEventListener(
   "orientationchange",
   function () {
     setTimeout(function () {
-      var scrollY = (document.body.scrollHeight - window.innerHeight) * curPosition;
+      let scrollY = (document.body.scrollHeight - window.innerHeight) * curPosition;
       window.scrollTo(0, scrollY);
       curPosition = scrollY;
     }, 50);
@@ -27,7 +27,7 @@ window.addEventListener(
 
 (function scrollToPosition() {
   setTimeout(function () {
-    var scrollY = (document.body.scrollHeight - window.innerHeight) * ${position};
+    let scrollY = (document.body.scrollHeight - window.innerHeight) * ${position};
     window.scrollTo(0, scrollY);
     curPosition = scrollY;
   }, 50);
@@ -56,9 +56,9 @@ if (${nightMode}) {
   window.addEventListener("load", fadeInEffect(), false);
 
   function fadeInEffect() {
-    var fadeTarget = document.getElementsByTagName("HTML")[0];
+    let fadeTarget = document.getElementsByTagName("HTML")[0];
     fadeTarget.style.opacity = 0;
-    var fadeEffect = setInterval(function () {
+    let fadeEffect = setInterval(function () {
       if (Number(fadeTarget.style.opacity) < 1) {
         fadeTarget.style.opacity = Number(fadeTarget.style.opacity) + 0.1;
         console.log(fadeTarget.style.opacity);
@@ -69,7 +69,7 @@ if (${nightMode}) {
   }
 }
 function setAutoScroll() {
-  var speed = autoScrollSpeed;
+  let speed = autoScrollSpeed;
   if (speed > 0) {
     if (!isManuallyScrolling) {
       window.scrollBy({
@@ -103,7 +103,7 @@ function scrollFunc(e) {
     scrollFunc.y = window.pageYOffset;
   }
   if (autoScrollSpeed == 0) {
-    var diffY = scrollFunc.y - window.pageYOffset;
+    let diffY = scrollFunc.y - window.pageYOffset;
     if (diffY < 0) {
       // Scroll down
       if (diffY < -3) {
@@ -150,7 +150,7 @@ window.addEventListener("touchend", function () {
 ${listener}.addEventListener(
   "message",
   function (event) {
-    var message = JSON.parse(event.data);
+    let message = JSON.parse(event.data);
 
     if (message.hasOwnProperty("Back")) {
       currentPosition = getScrollPercent();

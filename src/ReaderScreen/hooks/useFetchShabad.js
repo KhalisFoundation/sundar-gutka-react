@@ -18,7 +18,7 @@ const useFetchShabad = (shabadID) => {
   useEffect(() => {
     (async () => {
       toggleLoading(true);
-      const data = await getShabadFromID(
+      const shabadData = await getShabadFromID(
         shabadID,
         baniLength,
         transliterationLanguage,
@@ -29,9 +29,9 @@ const useFetchShabad = (shabadID) => {
         isParagraphMode,
         isVishraam
       );
-      if (data) {
+      if (shabadData) {
         toggleLoading(false);
-        setShabad(data);
+        setShabad(shabadData);
       }
     })();
   }, [
