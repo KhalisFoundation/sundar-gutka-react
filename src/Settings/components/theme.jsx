@@ -9,7 +9,7 @@ import { BottomSheetComponent, ListItemComponent } from "./comon";
 
 function ThemeComponent() {
   const [isVisible, toggleVisible] = useState(false);
-  const { theme } = useSelector((state) => state);
+  const { theme } = useSelector((state) => state.theme);
   const themeIcon = require("../../../images/bgcoloricon.png");
   const dispatch = useDispatch();
 

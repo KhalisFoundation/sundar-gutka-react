@@ -17,14 +17,13 @@ import { trackReminderEvent } from "../../../../common/analytics";
 import FallBack from "../../../../common/components";
 
 function ReminderOptions({ navigation }) {
-  const {
-    transliterationLanguage,
-    reminderBanis,
-    isNightMode,
-    isTransliteration,
-    isReminders,
-    reminderSound,
-  } = useSelector((state) => state);
+  const transliterationLanguage = useSelector((state) => state.transliterationLanguage);
+  const reminderBanis = useSelector((state) => state.reminderBanis);
+  const isNightMode = useSelector((state) => state.isNightMode);
+  const isTransliteration = useSelector((state) => state.isTransliteration);
+  const isReminders = useSelector((state) => state.isReminders);
+  const reminderSound = useSelector((state) => state.reminderSound);
+
   const [stateData, setStateData] = useState([]);
   const [activeSections, setActiveSections] = useState([]);
   const [reminderBaniData, setReminderBaniData] = useState([]);

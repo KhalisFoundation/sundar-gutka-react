@@ -6,7 +6,8 @@ import STRINGS from "../../common/localization";
 import { toggleStatistics } from "../../common/actions";
 
 function CollectStatistics() {
-  const { isNightMode, isStatistics } = useSelector((state) => state);
+  const { isNightMode } = useSelector((state) => state.isNightMode);
+  const { isStatistics } = useSelector((state) => state.isStatistics);
   const { containerNightStyles } = nightModeStyles(isNightMode);
   const nightColor = nightModeColor(isNightMode);
   const { COLLECT_STATISTICS } = STRINGS;

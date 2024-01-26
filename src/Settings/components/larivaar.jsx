@@ -6,7 +6,10 @@ import { toggleLarivaar, toggleLarivaarAssist } from "../../common/actions";
 import { nightModeStyles, iconNightColor } from "../styles";
 
 function LarivaarComponent() {
-  const { isLarivaar, isLarivaarAssist, isNightMode } = useSelector((state) => state);
+  const isNightMode = useSelector((state) => state.isNightMode);
+  const isLarivaar = useSelector((state) => state.isLarivaar);
+  const isLarivaarAssist = useSelector((state) => state.isLarivaarAssist);
+
   const dispatch = useDispatch();
   const { containerNightStyles, textNightStyle } = nightModeStyles(isNightMode);
   const iconColor = iconNightColor(isNightMode);

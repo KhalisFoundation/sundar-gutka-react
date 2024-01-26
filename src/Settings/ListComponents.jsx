@@ -27,7 +27,7 @@ import About from "./components/about";
 
 function ListComponent({ navigation }) {
   const { navigate } = navigation;
-  const { isNightMode } = useSelector((state) => state);
+  const { isNightMode } = useSelector((state) => state.isNightMode);
   const { scrollViewNightStyles, backgroundNightStyle } = nightModeStyles(isNightMode);
   const { displayOptionsText, end } = styles;
   const { DISPLAY_OPTIONS, BANI_OPTIONS, OTHER_OPTIONS } = STRINGS;

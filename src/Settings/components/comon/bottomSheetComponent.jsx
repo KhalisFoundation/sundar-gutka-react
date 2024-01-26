@@ -6,7 +6,7 @@ import { styles, nightModeStyles } from "../../styles";
 import RenderBottomSheetItem from "./render";
 
 function BottomSheetComponent({ isVisible, actionConstant, value, title, action, toggleVisible }) {
-  const { isNightMode } = useSelector((state) => state);
+  const { isNightMode } = useSelector((state) => state.isNightMode);
   const { containerNightStyles, textNightStyle } = nightModeStyles(isNightMode);
   return (
     <BottomSheet modalProps={{}} isVisible={isVisible} onBackdropPress={() => toggleVisible(false)}>

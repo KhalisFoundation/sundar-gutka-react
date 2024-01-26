@@ -10,7 +10,11 @@ import { BottomSheetComponent, ListItemComponent } from "./comon";
 function VishraamComponent() {
   const [isVishraamOptionVisible, toggleVishraamOptionVisible] = useState(false);
   const [isVishraamSourceVisible, toggleVishraamSourceVisible] = useState(false);
-  const { isVishraam, vishraamOption, vishraamSource, isNightMode } = useSelector((state) => state);
+  const isVishraam = useSelector((state) => state.isVishraam);
+  const vishraamOption = useSelector((state) => state.vishraamOption);
+  const vishraamSource = useSelector((state) => state.vishraamSource);
+  const isNightMode = useSelector((state) => state.isNightMode);
+
   const dispatch = useDispatch();
   const { containerNightStyles, textNightStyle } = nightModeStyles(isNightMode);
   const iconColor = iconNightColor(isNightMode);

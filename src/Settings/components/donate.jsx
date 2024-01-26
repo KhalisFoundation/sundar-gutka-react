@@ -6,7 +6,7 @@ import { iconNightColor, nightModeStyles, nightModeColor } from "../styles/night
 import STRINGS from "../../common/localization";
 
 function Donate() {
-  const { isNightMode } = useSelector((state) => state);
+  const { isNightMode } = useSelector((state) => state.isNightMode);
   const iconColor = iconNightColor(isNightMode);
   const { containerNightStyles } = nightModeStyles(isNightMode);
   const nightColor = nightModeColor(isNightMode);

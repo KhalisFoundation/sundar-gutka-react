@@ -11,7 +11,8 @@ import { nightModeStyles } from "./styles/nightModeStyles";
 
 function Settings({ navigation }) {
   useScreenAnalytics(constant.SETTINGS);
-  const { isNightMode, isStatusBar } = useSelector((state) => state);
+  const { isNightMode } = useSelector((state) => state.isNightMode);
+  const { isStatusBar } = useSelector((state) => state.isStatusBar);
   const { scrollViewNightStyles } = nightModeStyles(isNightMode);
 
   return (

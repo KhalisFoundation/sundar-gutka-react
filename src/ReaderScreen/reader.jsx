@@ -17,24 +17,24 @@ function Reader({ navigation, route }) {
   const webViewRef = useRef(null);
   const headerRef = useRef(null);
   const { webView } = styles;
-  const {
-    isNightMode,
-    bookmarkPosition,
-    isAutoScroll,
-    isStatusBar,
-    isTransliteration,
-    fontSize,
-    fontFace,
-    isLarivaar,
-    isLarivaarAssist,
-    isEnglishTranslation,
-    isPunjabiTranslation,
-    isSpanishTranslation,
-    isParagraphMode,
-    isVishraam,
-    vishraamOption,
-    savePosition,
-  } = useSelector((state) => state);
+
+  const isNightMode = useSelector((state) => state.isNightMode);
+  const bookmarkPosition = useSelector((state) => state.bookmarkPosition);
+  const isAutoScroll = useSelector((state) => state.isAutoScroll);
+  const isStatusBar = useSelector((state) => state.isStatusBar);
+  const isTransliteration = useSelector((state) => state.isTransliteration);
+  const fontSize = useSelector((state) => state.fontSize);
+  const fontFace = useSelector((state) => state.fontFace);
+  const isLarivaar = useSelector((state) => state.isLarivaar);
+  const isLarivaarAssist = useSelector((state) => state.isLarivaarAssist);
+  const isEnglishTranslation = useSelector((state) => state.isEnglishTranslation);
+  const isPunjabiTranslation = useSelector((state) => state.isPunjabiTranslation);
+  const isSpanishTranslation = useSelector((state) => state.isSpanishTranslation);
+  const isParagraphMode = useSelector((state) => state.isParagraphMode);
+  const isVishraam = useSelector((state) => state.isVishraam);
+  const vishraamOption = useSelector((state) => state.vishraamOption);
+  const savePosition = useSelector((state) => state.savePosition);
+
   const [shabadID] = useState(Number(route.params.params.id));
   const [isHeader, toggleIsHeader] = useState(true);
   const [event, setEvent] = useState("");

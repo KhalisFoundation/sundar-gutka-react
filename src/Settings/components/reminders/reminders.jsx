@@ -13,7 +13,10 @@ import errorHandler from "../../../common/errHandler";
 import FallBack from "../../../common/components/FallbackComponent";
 
 function RemindersComponent({ navigation }) {
-  const { isNightMode, isReminders, reminderSound } = useSelector((state) => state);
+  const isNightMode = useSelector((state) => state.isNightMode);
+  const isReminders = useSelector((state) => state.isReminders);
+  const reminderSound = useSelector((state) => state.reminderSound);
+
   const [isReminderSound, toggleReminderSound] = useState(false);
   const dispatch = useDispatch();
   const { navigate } = navigation;

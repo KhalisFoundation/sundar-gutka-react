@@ -26,7 +26,7 @@ const headerLeft = (navigation, isNightMode) => (
   />
 );
 function Navigation() {
-  const { isNightMode } = useSelector((state) => state);
+  const { isNightMode } = useSelector((state) => state.isNightMode);
   const settingsStyle = SettingsStyle(isNightMode);
   const { homeHeaderStyle, homeHeaderTitle } = styles;
   const { headerTitleStyle, headerStyle } = settingsStyle;

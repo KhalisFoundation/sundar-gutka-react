@@ -9,9 +9,11 @@ import { orderedBani } from "./baniOrderHelper";
 import { setBaniList } from "../../actions";
 
 function BaniList(props) {
-  const { fontSize, fontFace, isTransliteration, isNightMode, baniOrder } = useSelector(
-    (state) => state
-  );
+  const fontSize = useSelector((state) => state.fontSize);
+  const fontFace = useSelector((state) => state.fontFace);
+  const isTransliteration = useSelector((state) => state.isTransliteration);
+  const isNightMode = useSelector((state) => state.isNightMode);
+  const baniOrder = useSelector((state) => state.baniOrder);
   const { data, onPress, isFolderScreen } = props;
   const [shabad, setShabad] = useState(data);
   const [isPotrait, toggleIsPotrait] = useState(true);
@@ -21,13 +23,14 @@ function BaniList(props) {
     const dim = Dimensions.get("screen");
     return dim.height >= dim.width;
   };
-
-  Dimensions.addEventListener("change", () => {
-    toggleIsPotrait(checkPotrait());
-  });
-
   useEffect(() => {
-    if (data.length > 0 && !isFolderScreen) {
+    const subscription = Dimensions.addEventListener("change", () => {
+      toggleIsPotrait(checkPotrait());
+    });
+    return () => subscription.remove();
+  }, []);
+  useEffect(() => {
+    if (data.length > 0 && !isFolderScreen && baniOrder.baniOrder) {
       const orderedData = orderedBani(data, baniOrder);
       setShabad(orderedData);
       dispatch(setBaniList(orderedData));

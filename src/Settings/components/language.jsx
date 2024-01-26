@@ -7,7 +7,7 @@ import { BottomSheetComponent, ListItemComponent } from "./comon";
 
 function LanguageComponent() {
   const [isVisible, toggleVisible] = useState(false);
-  const { language } = useSelector((state) => state);
+  const { language } = useSelector((state) => state.language);
   return (
     <>
       <ListItemComponent

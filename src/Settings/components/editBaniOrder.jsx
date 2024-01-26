@@ -6,7 +6,7 @@ import { nightModeStyles, nightModeColor } from "../styles/nightModeStyles";
 import STRINGS from "../../common/localization";
 
 function EditBaniOrder({ navigate }) {
-  const { isNightMode } = useSelector((state) => state);
+  const { isNightMode } = useSelector((state) => state.isNightMode);
   const { containerNightStyles } = nightModeStyles(isNightMode);
   const nightColor = nightModeColor(isNightMode);
   const { EDIT_BANI_ORDER } = STRINGS;

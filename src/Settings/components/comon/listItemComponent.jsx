@@ -5,7 +5,7 @@ import { useSelector } from "react-redux";
 import { styles, nightModeStyles, iconNightColor } from "../../styles";
 
 const ListItemComponent = ({ icon, title, value, isAvatar, actionConstant, onPressAction }) => {
-  const { isNightMode } = useSelector((state) => state);
+  const { isNightMode } = useSelector((state) => state.isNightMode);
   const { containerNightStyles, textNightStyle, textNightGrey } = nightModeStyles(isNightMode);
   const iconColor = iconNightColor(isNightMode);
   return (

@@ -7,7 +7,7 @@ import { ListItemComponent, BottomSheetComponent } from "./comon";
 
 function BaniLengthComponent() {
   const [isVisible, toggleVisible] = useState(false);
-  const { baniLength } = useSelector((state) => state);
+  const { baniLength } = useSelector((state) => state.baniLength);
   const baniLengthIcon = require("../../../images/banilengthicon.png");
   return (
     <>

@@ -7,7 +7,7 @@ import getHeaderStyles from "./styles";
 import constant from "../common/constant";
 
 function Header({ navigation, title }) {
-  const { isNightMode } = useSelector((state) => state);
+  const { isNightMode } = useSelector((state) => state.isNightMode);
   const { headerStyle, headerTitleStyle } = getHeaderStyles(isNightMode);
   const handleBackPress = useCallback(() => navigation.goBack(), [navigation]);
   const handleSettingsPress = useCallback(

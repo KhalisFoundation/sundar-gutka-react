@@ -11,7 +11,11 @@ import { updateReminders } from "../../../../../common/notifications";
 function LabelModal({ section, onHide }) {
   const { title } = section;
   const [reminderTitle, setReminderTitle] = useState(title);
-  const { isNightMode, reminderBanis, isReminders, reminderSound } = useSelector((state) => state);
+  const isNightMode = useSelector((state) => state.isNightMode);
+  const reminderBanis = useSelector((state) => state.reminderBanis);
+  const isReminders = useSelector((state) => state.isReminders);
+  const reminderSound = useSelector((state) => state.reminderSound);
+
   const dispatch = useDispatch();
 
   const confirmReminderLabel = () => {

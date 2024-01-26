@@ -7,7 +7,10 @@ import { toggleScreenAwake } from "../../common/actions";
 
 function KeepAwake() {
   const dispatch = useDispatch();
-  const { isNightMode, isScreenAwake, isAutoScroll } = useSelector((state) => state);
+  const isNightMode = useSelector((state) => state.isNightMode);
+  const isScreenAwake = useSelector((state) => state.isScreenAwake);
+  const isAutoScroll = useSelector((state) => state.isAutoScroll);
+
   const { containerNightStyles } = nightModeStyles(isNightMode);
   const nightColor = nightModeColor(isNightMode);
   const { KEEP_AWAKE } = STRINGS;

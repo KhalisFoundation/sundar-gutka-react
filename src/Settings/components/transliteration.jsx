@@ -10,7 +10,10 @@ import { ListItemComponent, BottomSheetComponent } from "./comon";
 function TransliterationComponent() {
   const romanizedIcon = require("../../../images/romanizeicon.png");
   const [isVisible, toggleVisible] = useState(false);
-  const { transliterationLanguage, isTransliteration, isNightMode } = useSelector((state) => state);
+  const transliterationLanguage = useSelector((state) => state.transliterationLanguage);
+  const isTransliteration = useSelector((state) => state.isTransliteration);
+  const isNightMode = useSelector((state) => state.isNightMode);
+
   const dispatch = useDispatch();
 
   return (

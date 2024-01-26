@@ -11,8 +11,11 @@ import {
 
 function TranslationComponent() {
   const translationAvatar = require("../../../images/englishicon.png");
-  const { isEnglishTranslation, isSpanishTranslation, isPunjabiTranslation, isNightMode } =
-    useSelector((state) => state);
+  const isEnglishTranslation = useSelector((state) => state.isEnglishTranslation);
+  const isSpanishTranslation = useSelector((state) => state.isSpanishTranslation);
+  const isPunjabiTranslation = useSelector((state) => state.isPunjabiTranslation);
+  const isNightMode = useSelector((state) => state.isNightMode);
+
   const dispatch = useDispatch();
   const [isExpanded, toggleIsExpanded] = useState(false);
 

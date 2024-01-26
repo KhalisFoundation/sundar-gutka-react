@@ -13,9 +13,12 @@ import { updateReminders } from "../../../../../common/notifications";
 import { trackReminderEvent } from "../../../../../common/analytics";
 
 function AccordianHeader({ section, isActive }) {
-  const { reminderBanis, isNightMode, isTransliteration, isReminders, reminderSound } = useSelector(
-    (state) => state
-  );
+  const reminderBanis = useSelector((state) => state.reminderBanis);
+  const isNightMode = useSelector((state) => state.isNightMode);
+  const isTransliteration = useSelector((state) => state.isTransliteration);
+  const isReminders = useSelector((state) => state.isReminders);
+  const reminderSound = useSelector((state) => state.reminderSound);
+
   const [isTimePicker, toggleTimePicker] = useState(false);
   const dispatch = useDispatch();
   const { enabled, translit, gurmukhi, key, time } = section;

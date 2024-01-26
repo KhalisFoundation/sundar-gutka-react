@@ -12,7 +12,7 @@ import { trackReaderEvent } from "../../common/analytics";
 
 const AutoScrollComponent = React.forwardRef(({ shabadID }, ref) => {
   const [isPaused, togglePaused] = useState(true);
-  const { autoScrollSpeedObj } = useSelector((state) => state);
+  const { autoScrollSpeedObj } = useSelector((state) => state.autoScrollSpeedObj);
   const [currentSpeed, setCurrentSpeed] = useState(
     autoScrollSpeedObj[shabadID] || constant.DEFAULT_SPEED
   );
