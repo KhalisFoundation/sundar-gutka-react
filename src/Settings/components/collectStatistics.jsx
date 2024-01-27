@@ -16,7 +16,7 @@ function CollectStatistics() {
   const dispatch = useDispatch();
   return (
     <ListItem bottomDivider containerStyle={containerNightStyles}>
-      <Avatar title="Analytics Icon" source={analyticsIcon} avatarStyle={styles.avatarStyle} />
+      <Avatar source={analyticsIcon} avatarStyle={styles.avatarStyle} />
       <ListItem.Content>
         <ListItem.Title style={nightColor}>{COLLECT_STATISTICS}</ListItem.Title>
       </ListItem.Content>

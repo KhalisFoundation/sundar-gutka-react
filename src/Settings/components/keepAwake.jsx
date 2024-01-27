@@ -18,7 +18,7 @@ function KeepAwake() {
   const screenIcon = require("../../../images/screenonicon.png");
   return (
     <ListItem bottomDivider containerStyle={containerNightStyles}>
-      <Avatar title="Keep Awake Icon" source={screenIcon} avatarStyle={styles.avatarStyle} />
+      <Avatar source={screenIcon} avatarStyle={styles.avatarStyle} />
       <ListItem.Content>
         <ListItem.Title style={nightColor}>{KEEP_AWAKE}</ListItem.Title>
       </ListItem.Content>

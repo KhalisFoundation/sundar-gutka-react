@@ -18,11 +18,7 @@ function EditBaniOrder({ navigate }) {
       containerStyle={containerNightStyles}
       onPress={() => navigate("EditBaniOrder")}
     >
-      <Avatar
-        title="Edit bani order icon"
-        source={rearrangeIcon}
-        avatarStyle={styles.avatarStyle}
-      />
+      <Avatar source={rearrangeIcon} avatarStyle={styles.avatarStyle} />
       <ListItem.Content>
         <ListItem.Title style={nightColor}>{EDIT_BANI_ORDER}</ListItem.Title>
       </ListItem.Content>
