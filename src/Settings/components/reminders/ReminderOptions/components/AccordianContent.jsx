@@ -10,9 +10,9 @@ import LabelModal from "../modals/LabelModal";
 import { setReminderBanis } from "../../../../../common/actions";
 
 function AccordianContent({ section, isActive }) {
-  const { isNightMode } = useSelector((state) => state.isNightMode);
+  const isNightMode = useSelector((state) => state.isNightMode);
   const [isLabelModal, toggleLabelModal] = useState(false);
-  const { reminderBanis } = useSelector((state) => state.reminderBanis);
+  const reminderBanis = useSelector((state) => state.reminderBanis);
   const dispatch = useDispatch();
   const { key, title } = section;
   let backColor;

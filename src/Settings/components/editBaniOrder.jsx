@@ -4,9 +4,10 @@ import { useSelector } from "react-redux";
 import PropTypes from "prop-types";
 import { nightModeStyles, nightModeColor } from "../styles/nightModeStyles";
 import STRINGS from "../../common/localization";
+import { styles } from "../styles";
 
 function EditBaniOrder({ navigate }) {
-  const { isNightMode } = useSelector((state) => state.isNightMode);
+  const isNightMode = useSelector((state) => state.isNightMode);
   const { containerNightStyles } = nightModeStyles(isNightMode);
   const nightColor = nightModeColor(isNightMode);
   const { EDIT_BANI_ORDER } = STRINGS;
@@ -17,7 +18,11 @@ function EditBaniOrder({ navigate }) {
       containerStyle={containerNightStyles}
       onPress={() => navigate("EditBaniOrder")}
     >
-      <Avatar title="Edit bani order icon" source={rearrangeIcon} />
+      <Avatar
+        title="Edit bani order icon"
+        source={rearrangeIcon}
+        avatarStyle={styles.avatarStyle}
+      />
       <ListItem.Content>
         <ListItem.Title style={nightColor}>{EDIT_BANI_ORDER}</ListItem.Title>
       </ListItem.Content>

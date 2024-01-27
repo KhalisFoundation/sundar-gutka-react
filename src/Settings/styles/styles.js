@@ -4,6 +4,7 @@ import colors from "../../common/colors";
 const styles = StyleSheet.create({
   nightBackColor: { backgdroundColor: colors.NIGHT_BLACK },
   iconStyle: { alignSelf: "flex-start" },
+  imageStyle: {},
   headerView: { backgroundColor: colors.TOOLBAR_COLOR_ALT, padding: 15 },
   settingText: {
     fontSize: 18,
@@ -19,5 +20,6 @@ const styles = StyleSheet.create({
     fontSize: 12,
   },
   end: { padding: 40 },
+  avatarStyle: { width: "100%", height: "100%", resizeMode: "contain" },
 });
 export default styles;

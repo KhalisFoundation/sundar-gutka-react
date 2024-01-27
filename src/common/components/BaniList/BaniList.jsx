@@ -7,6 +7,7 @@ import baseFontSize from "../../helpers";
 import colors from "../../colors";
 import { orderedBani } from "./baniOrderHelper";
 import { setBaniList } from "../../actions";
+import { styles } from "../../../Settings/styles";
 
 function BaniList(props) {
   const fontSize = useSelector((state) => state.fontSize);
@@ -45,7 +46,12 @@ function BaniList(props) {
         containerStyle={isNightMode && { backgroundColor: colors.NIGHT_BLACK }}
         onPress={() => onPress(row)}
       >
-        {row.item.folder && <Avatar source={require("../../../../images/foldericon.png")} />}
+        {row.item.folder && (
+          <Avatar
+            source={require("../../../../images/foldericon.png")}
+            avatarStyle={styles.avatarStyle}
+          />
+        )}
         <ListItem.Content>
           <ListItem.Title
             style={[

@@ -7,7 +7,7 @@ import { BottomSheetComponent, ListItemComponent } from "./comon";
 
 function FontSizeComponent() {
   const [isVisible, toggleVisible] = useState(false);
-  const { fontSize } = useSelector((state) => state.fontSize);
+  const fontSize = useSelector((state) => state.fontSize);
   const fontSizeIcon = require("../../../images/fontsizeicon.png");
   return (
     <>

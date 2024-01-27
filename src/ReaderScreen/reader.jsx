@@ -42,7 +42,7 @@ function Reader({ navigation, route }) {
   const { title } = route.params.params;
   const dispatch = useDispatch();
   const { shabad, isLoading } = useFetchShabad(shabadID);
-  const { backgroundColor, safeAreaViewBack } = nightColors(isNightMode);
+  const { backgroundColor, safeAreaViewBack, backViewColor } = nightColors(isNightMode);
   const { READER_STATUS_BAR_COLOR } = colors;
   useScreenAnalytics(title);
   useBookmarks(webViewRef, shabad, bookmarkPosition);
@@ -183,7 +183,7 @@ function Reader({ navigation, route }) {
   };
   return (
     <SafeAreaProvider style={safeAreaViewBack}>
-      <SafeAreaView style={{ flex: 1 }}>
+      <SafeAreaView style={[{ flex: 1 }]}>
         <StatusBar
           hidden={isStatusBar}
           backgroundColor={backgroundColor}
@@ -218,7 +218,7 @@ function Reader({ navigation, route }) {
           ref={webViewRef}
           decelerationRate="normal"
           source={{ html: loadHTML(), baseUrl: "" }}
-          style={[webView, isNightMode && { opacity: viewLoaded ? 1 : 0.1 }]}
+          style={[webView, isNightMode && { opacity: viewLoaded ? 1 : 0.1 }, backViewColor]}
           onMessage={(message) => handleMessage(message)}
         />
 

@@ -7,7 +7,7 @@ import { ListItemComponent, BottomSheetComponent } from "./comon";
 
 function PadchedSettingsComponent() {
   const [isVisible, toggleVisible] = useState(false);
-  const { padched } = useSelector((state) => state.padched);
+  const padched = useSelector((state) => state.padched);
   const padchedIcon = require("../../../images/larivaaricon.png");
   return (
     <>

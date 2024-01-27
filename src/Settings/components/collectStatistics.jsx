@@ -4,10 +4,11 @@ import { useDispatch, useSelector } from "react-redux";
 import { nightModeStyles, nightModeColor } from "../styles/nightModeStyles";
 import STRINGS from "../../common/localization";
 import { toggleStatistics } from "../../common/actions";
+import { styles } from "../styles";
 
 function CollectStatistics() {
-  const { isNightMode } = useSelector((state) => state.isNightMode);
-  const { isStatistics } = useSelector((state) => state.isStatistics);
+  const isNightMode = useSelector((state) => state.isNightMode);
+  const isStatistics = useSelector((state) => state.isStatistics);
   const { containerNightStyles } = nightModeStyles(isNightMode);
   const nightColor = nightModeColor(isNightMode);
   const { COLLECT_STATISTICS } = STRINGS;
@@ -15,7 +16,7 @@ function CollectStatistics() {
   const dispatch = useDispatch();
   return (
     <ListItem bottomDivider containerStyle={containerNightStyles}>
-      <Avatar title="Analytics Icon" source={analyticsIcon} />
+      <Avatar title="Analytics Icon" source={analyticsIcon} avatarStyle={styles.avatarStyle} />
       <ListItem.Content>
         <ListItem.Title style={nightColor}>{COLLECT_STATISTICS}</ListItem.Title>
       </ListItem.Content>

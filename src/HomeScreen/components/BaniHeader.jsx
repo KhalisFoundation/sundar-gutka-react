@@ -11,6 +11,9 @@ function BaniHeader(props) {
   const { navigate } = props;
   return (
     <View style={styles.header}>
+      <View style={styles.fatehContainer}>
+        <Text style={styles.headerFatehStyle}>{STRINGS.fateh}</Text>
+      </View>
       <View>
         <Text style={styles.titleContainer}>
           <Text style={styles.headerDesign}>Œ</Text>

@@ -4,6 +4,7 @@ import { useSelector, useDispatch } from "react-redux";
 import { nightModeStyles, nightModeColor } from "../styles/nightModeStyles";
 import STRINGS from "../../common/localization";
 import { toggleScreenAwake } from "../../common/actions";
+import { styles } from "../styles";
 
 function KeepAwake() {
   const dispatch = useDispatch();
@@ -17,7 +18,7 @@ function KeepAwake() {
   const screenIcon = require("../../../images/screenonicon.png");
   return (
     <ListItem bottomDivider containerStyle={containerNightStyles}>
-      <Avatar title="Keep Awake Icon" source={screenIcon} />
+      <Avatar title="Keep Awake Icon" source={screenIcon} avatarStyle={styles.avatarStyle} />
       <ListItem.Content>
         <ListItem.Title style={nightColor}>{KEEP_AWAKE}</ListItem.Title>
       </ListItem.Content>

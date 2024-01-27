@@ -6,8 +6,8 @@ import STRINGS from "../../common/localization";
 import { toggleScreenAwake, toggleAutoScroll } from "../../common/actions";
 
 function AutoScroll() {
-  const { isNightMode } = useSelector((state) => state.isNightMode);
-  const { isAutoScroll } = useSelector((state) => state.isAutoScroll);
+  const isNightMode = useSelector((state) => state.isNightMode);
+  const isAutoScroll = useSelector((state) => state.isAutoScroll);
   const dispatch = useDispatch();
   const iconColor = iconNightColor(isNightMode);
   const { containerNightStyles } = nightModeStyles(isNightMode);

@@ -6,6 +6,7 @@ import { setTransliteration, toggleTransliteration } from "../../common/actions"
 import { TRANSLITERATION_LANGUAGES } from "../../common/actions/constant";
 import colors from "../../common/colors";
 import { ListItemComponent, BottomSheetComponent } from "./comon";
+import { styles } from "../styles";
 
 function TransliterationComponent() {
   const romanizedIcon = require("../../../images/romanizeicon.png");
@@ -24,7 +25,7 @@ function TransliterationComponent() {
           { backgroundColor: isNightMode ? colors.NIGHT_GREY_COLOR : colors.WHITE_COLOR },
         ]}
       >
-        <Avatar source={romanizedIcon} />
+        <Avatar source={romanizedIcon} avatarStyle={styles.avatarStyle} />
         <ListItem.Content>
           <ListItem.Title style={[isNightMode && { color: colors.WHITE_COLOR }]}>
             {STRINGS.transliteration}

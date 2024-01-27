@@ -6,7 +6,7 @@ import { styles, getHeaderStyle } from "../styles";
 
 const useHeader = (navigation) => {
   const { WHITE_COLOR } = colors;
-  const { isNightMode } = useSelector((state) => state.isNightMode);
+  const isNightMode = useSelector((state) => state.isNightMode);
   const { headerTitleStyle } = styles;
   const headerStyle = getHeaderStyle(isNightMode);
   const headerLeft = () => (

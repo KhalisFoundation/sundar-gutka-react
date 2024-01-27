@@ -13,7 +13,7 @@ import { nightMode } from "./styles";
 function Bookmarks({ navigation, route }) {
   useHeader(navigation);
   const { bookmarksData } = useBookmarks(route);
-  const { isNightMode } = useSelector((state) => state.isNightMode);
+  const isNightMode = useSelector((state) => state.isNightMode);
   const { backgroundColor } = nightMode(isNightMode);
   const dispatch = useDispatch();
   useScreenAnalytics(constant.BOOKMARKS);

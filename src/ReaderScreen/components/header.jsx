@@ -8,7 +8,7 @@ import { getHeaderStyles, styles } from "../styles/styles";
 
 const Header = React.forwardRef(
   ({ navigation, title, handleBackPress, handleBookmarkPress, handleSettingsPress }, ref) => {
-    const { isNightMode } = useSelector((state) => state.isNightMode);
+    const isNightMode = useSelector((state) => state.isNightMode);
     const getHeaderStyle = getHeaderStyles(isNightMode);
     const [animationPosition] = useState(new Animated.Value(0));
 

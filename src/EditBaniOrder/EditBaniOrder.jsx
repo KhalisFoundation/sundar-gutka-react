@@ -12,8 +12,8 @@ import { activeColor, nightStyles, styles } from "./styles";
 import { setBaniList, setBaniOrder } from "../common/actions";
 
 function EditBaniOrder({ navigation }) {
-  const { isNightMode } = useSelector((state) => state.isNightMode);
-  const { baniList } = useSelector((state) => state.baniList);
+  const isNightMode = useSelector((state) => state.isNightMode);
+  const baniList = useSelector((state) => state.baniList);
   useHeader(navigation);
   const [baniListdata, setBaniListData] = useState(
     baniList.filter((item) => item.id !== undefined)

@@ -19,9 +19,9 @@ import { toggleNightMode } from "../common/actions";
 const HomeScreen = React.memo(({ navigation }) => {
   const { navigate } = navigation;
   const { baniListData } = useBaniList();
-  const { isNightMode } = useSelector((state) => state.isNightMode);
-  const { isStatusBar } = useSelector((state) => state.isStatusBar);
-  const { theme } = useSelector((state) => state.theme);
+  const isNightMode = useSelector((state) => state.isNightMode);
+  const isStatusBar = useSelector((state) => state.isStatusBar);
+  const theme = useSelector((state) => state.theme);
   useKeepAwake();
   useAnalytics();
   useScreenAnalytics(constant.HOME_SCREEN);

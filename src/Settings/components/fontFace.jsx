@@ -7,7 +7,7 @@ import { BottomSheetComponent, ListItemComponent } from "./comon";
 
 function FontFaceComponent() {
   const [isVisible, toggleVisible] = useState(false);
-  const { fontFace } = useSelector((state) => state.fontFace);
+  const fontFace = useSelector((state) => state.fontFace);
   const fontFaceIcon = require("../../../images/fontfaceicon.png");
 
   return (

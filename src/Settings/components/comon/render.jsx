@@ -5,7 +5,7 @@ import PropTypes from "prop-types";
 import { nightModeColor, nightModeStyles } from "../../styles/nightModeStyles";
 
 function RenderBottomSheetItem({ item, toggleVisible, value, action }) {
-  const { isNightMode } = useSelector((state) => state.isNightMode);
+  const isNightMode = useSelector((state) => state.isNightMode);
   const dispatch = useDispatch();
   const { key, title } = item;
   const { containerNightStyles } = nightModeStyles(isNightMode);

@@ -6,7 +6,7 @@ import { iconNightColor, nightModeStyles, nightModeColor } from "../styles/night
 import STRINGS from "../../common/localization";
 
 function ParagraphMode() {
-  const { isParagraphMode } = useSelector((state) => state.isParagraphMode);
+  const isParagraphMode = useSelector((state) => state.isParagraphMode);
   const isNightMode = useSelector((state) => state.isNightMode);
 
   const dispatch = useDispatch();

@@ -3,8 +3,8 @@ import { useSelector } from "react-redux";
 import { getBookmarksForID } from "../../database/db";
 
 const useBookmarks = (route) => {
-  const { baniLength } = useSelector((state) => state.baniLength);
-  const { transliterationLanguage } = useSelector(state.transliterationLanguage);
+  const baniLength = useSelector((state) => state.baniLength);
+  const transliterationLanguage = useSelector(state.transliterationLanguage);
   const [bookmarksData, setBookmarksData] = useState([]);
   useEffect(() => {
     (async () => {
