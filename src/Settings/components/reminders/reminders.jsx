@@ -3,14 +3,17 @@ import { Alert, Linking } from "react-native";
 import { ListItem, Icon, Switch } from "@rneui/themed";
 import { useSelector, useDispatch } from "react-redux";
 import PropTypes from "prop-types";
-import { REMINDER_SOUNDS } from "../../../common/actions/constant";
-import { toggleReminders, setReminderSound } from "../../../common/actions";
-import { STRINGS } from "../../../common";
+import {
+  STRINGS,
+  cancelAllReminders,
+  checkPermissions,
+  errorHandler,
+  actionConstants,
+  actions,
+  FallBack,
+} from "../../../common";
 import { nightModeStyles, iconNightColor } from "../../styles";
-import { cancelAllReminders, checkPermissions } from "../../../common/notifications";
 import { ListItemComponent, BottomSheetComponent } from "../comon";
-import errorHandler from "../../../common/errHandler";
-import FallBack from "../../../common/components/FallbackComponent";
 import { getBaniList } from "../../../database/db";
 import useDefaultReminders from "./ReminderOptions/hooks/useDefaultReminders";
 
@@ -48,12 +51,12 @@ function RemindersComponent({ navigation }) {
       const isAllowed = await checkPermissions();
 
       if (!isAllowed) {
-        dispatch(toggleReminders(false));
+        dispatch(actions.toggleReminders(false));
         redirectToSettings();
         cancelAllReminders();
         return;
       }
-      dispatch(toggleReminders(value));
+      dispatch(actions.toggleReminders(value));
       await fetchBanis();
       if (!value) {
         // disabling All Reminders
@@ -94,18 +97,18 @@ function RemindersComponent({ navigation }) {
           isAvatar={false}
           title={STRINGS.reminder_sound}
           value={reminderSound}
-          actionConstant={REMINDER_SOUNDS}
+          actionConstant={actionConstants.REMINDER_SOUNDS}
           onPressAction={() => toggleReminderSound(true)}
         />
       )}
       {isReminderSound && (
         <BottomSheetComponent
           isVisible={isReminderSound}
-          actionConstant={REMINDER_SOUNDS}
+          actionConstant={actionConstants.REMINDER_SOUNDS}
           value={reminderSound}
           toggleVisible={toggleReminderSound}
           title={STRINGS.reminder_sound}
-          action={setReminderSound}
+          action={actions.setReminderSound}
         />
       )}
     </>

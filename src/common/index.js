@@ -11,6 +11,9 @@ import {
   trackSettingEvent,
   trackReminderEvent,
 } from "./analytics";
+import { updateReminders, cancelAllReminders, checkPermissions } from "./notifications";
+import * as actionConstants from "./actions/constant";
+import { FallBack } from "./components";
 
 export {
   colors,
@@ -24,4 +27,9 @@ export {
   trackScreenView,
   trackReminderEvent,
   trackSettingEvent,
+  updateReminders,
+  checkPermissions,
+  cancelAllReminders,
+  actionConstants,
+  FallBack,
 };

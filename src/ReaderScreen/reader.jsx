@@ -8,10 +8,9 @@ import { constant, colors, actions, useScreenAnalytics } from "../common";
 import { Header, AutoScrollComponent } from "./components";
 import { useBookmarks, useFetchShabad } from "./hooks";
 import { styles, nightColors } from "./styles";
-import { fontSizeForReader, fontColorForReader, htmlTemplate } from "./utils";
+import { fontSizeForReader, fontColorForReader, htmlTemplate, script } from "./utils";
 import errorHandler from "../common/errHandler";
 import FallBack from "../common/components/FallbackComponent";
-import script from "./utils/gutkaScript";
 
 function Reader({ navigation, route }) {
   const webViewRef = useRef(null);

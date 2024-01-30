@@ -5,15 +5,17 @@ import Accordion from "react-native-collapsible/Accordion";
 import PropTypes from "prop-types";
 import ModalSelector from "react-native-modal-selector";
 import moment from "moment";
-import { colors, constant, STRINGS } from "../../../../common";
-import { setReminderBanis } from "../../../../common/actions";
+import {
+  colors,
+  constant,
+  STRINGS,
+  actions,
+  trackReminderEvent,
+  updateReminders,
+} from "../../../../common";
 import { styles, accordianNightColor } from "./styles";
 import { AccordianContent, AccordianHeader } from "./components";
-import { updateReminders } from "../../../../common/notifications";
-import { trackReminderEvent } from "../../../../common/analytics";
-import useHeader from "./hooks/useHeader";
-import useFetchBani from "./hooks/useFetchBani";
-import useDefaultReminders from "./hooks/useDefaultReminders";
+import { useHeader, useDefaultReminders, useFetchBani } from "./hooks";
 
 function ReminderOptions({ navigation }) {
   const isNightMode = useSelector((state) => state.isNightMode);
@@ -61,7 +63,7 @@ function ReminderOptions({ navigation }) {
       array.push(newObj);
     }
 
-    dispatch(setReminderBanis(JSON.stringify(array)));
+    dispatch(actions.setReminderBanis(JSON.stringify(array)));
     trackReminderEvent(constant.ADD_REMINDER, array);
     await updateReminders(isReminders, reminderSound, JSON.stringify(array));
   };
