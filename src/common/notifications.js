@@ -16,8 +16,8 @@ export const createReminder = async (notification, sound) => {
       sound !== constant.DEFAULT.toLowerCase() ? sound.split(".")[0] : constant.SOUND.toLowerCase();
     const androidChannel = { channelId: channelName.toString() };
 
-    const currentTime = moment().utc().valueOf();
-    let notificationTime = moment(notification.time, "h:mm A").utc().valueOf();
+    const currentTime = moment().valueOf();
+    let notificationTime = moment(notification.time, "h:mm A").valueOf();
     if (notificationTime < currentTime) {
       notificationTime = moment(notification.time, "h:m A").add(1, "days");
     }
