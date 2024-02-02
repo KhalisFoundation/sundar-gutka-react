@@ -2,19 +2,18 @@ import React, { useEffect, useMemo } from "react";
 import { Appearance, AppState, View, StatusBar } from "react-native";
 import PropTypes from "prop-types";
 import { useDispatch, useSelector } from "react-redux";
-import BaniList from "../common/components/BaniList/BaniList";
-import useKeepAwake from "../common/hooks/keepAwake";
-import colors from "../common/colors";
 import styles from "./styles";
-import constant from "../common/constant";
-import BaniLengthSelector from "../common/components/BaniLengthSelector";
 import BaniHeader from "./components/BaniHeader";
-import useBaniLength from "./hooks/useBaniLength";
-import useBaniList from "./hooks/useBaniList";
-import useAppFirstTime from "./hooks/useAppFirstTime";
-import useAnalytics from "./hooks/useAnalytics";
-import useScreenAnalytics from "../common/hooks/useScreenAnalytics";
-import { toggleNightMode } from "../common/actions";
+import { useAnalytics, useAppFirstTime, useBaniLength, useBaniList } from "./hooks";
+import {
+  useScreenAnalytics,
+  actions,
+  BaniLengthSelector,
+  constant,
+  colors,
+  useKeepAwake,
+  BaniList,
+} from "../common";
 
 const HomeScreen = React.memo(({ navigation }) => {
   const { navigate } = navigation;
@@ -32,7 +31,7 @@ const HomeScreen = React.memo(({ navigation }) => {
   const colorScheme = useMemo(() => Appearance.getColorScheme(), []);
   const updateTheme = () => {
     if (theme === constant.Default) {
-      dispatch(toggleNightMode(colorScheme === "dark"));
+      dispatch(actions.toggleNightMode(colorScheme === "dark"));
     }
   };
 

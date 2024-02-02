@@ -4,13 +4,11 @@ import { StatusBar, ActivityIndicator, Platform } from "react-native";
 import { WebView } from "react-native-webview";
 import PropTypes from "prop-types";
 import { SafeAreaProvider, SafeAreaView } from "react-native-safe-area-context";
-import { constant, colors, actions, useScreenAnalytics } from "../common";
+import { constant, colors, actions, useScreenAnalytics, errorHandler, FallBack } from "../common";
 import { Header, AutoScrollComponent } from "./components";
 import { useBookmarks, useFetchShabad } from "./hooks";
 import { styles, nightColors } from "./styles";
 import { fontSizeForReader, fontColorForReader, htmlTemplate, script } from "./utils";
-import errorHandler from "../common/errHandler";
-import FallBack from "../common/components/FallbackComponent";
 
 function Reader({ navigation, route }) {
   const webViewRef = useRef(null);

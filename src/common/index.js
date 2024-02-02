@@ -13,7 +13,8 @@ import {
 } from "./analytics";
 import { updateReminders, cancelAllReminders, checkPermissions } from "./notifications";
 import * as actionConstants from "./actions/constant";
-import { FallBack } from "./components";
+import { FallBack, BaniLengthSelector, BaniList } from "./components";
+import useKeepAwake from "./hooks/keepAwake";
 
 export {
   colors,
@@ -32,4 +33,7 @@ export {
   cancelAllReminders,
   actionConstants,
   FallBack,
+  BaniLengthSelector,
+  useKeepAwake,
+  BaniList,
 };
