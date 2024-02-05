@@ -12,3 +12,7 @@ export const styles = StyleSheet.create({
 export const getHeaderStyle = (isNightMode) => ({
   backgroundColor: !isNightMode ? colors.TOOLBAR_COLOR_ALT : colors.TOOLBAR_COLOR_ALT_NIGHT_MODE,
 });
+
+export const nightMode = (isNightMode) => ({
+  backgroundColor: isNightMode ? colors.NIGHT_BLACK : colors.WHITE_COLOR,
+});

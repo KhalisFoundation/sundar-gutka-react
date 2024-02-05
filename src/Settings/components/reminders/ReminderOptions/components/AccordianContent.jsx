@@ -4,15 +4,15 @@ import { Icon, Divider } from "@rneui/themed";
 import PropTypes from "prop-types";
 import { useDispatch, useSelector } from "react-redux";
 import colors from "../../../../../common/colors";
-import styles from "../styles";
+import { styles } from "../styles";
 import STRINGS from "../../../../../common/localization";
 import LabelModal from "../modals/LabelModal";
 import { setReminderBanis } from "../../../../../common/actions";
 
 function AccordianContent({ section, isActive }) {
-  const { isNightMode } = useSelector((state) => state);
+  const isNightMode = useSelector((state) => state.isNightMode);
   const [isLabelModal, toggleLabelModal] = useState(false);
-  const { reminderBanis } = useSelector((state) => state);
+  const reminderBanis = useSelector((state) => state.reminderBanis);
   const dispatch = useDispatch();
   const { key, title } = section;
   let backColor;

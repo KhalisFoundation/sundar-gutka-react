@@ -6,7 +6,7 @@ import STRINGS from "../../common/localization";
 import { iconNightColor, nightModeStyles, nightModeColor } from "../styles/nightModeStyles";
 
 function About({ navigate }) {
-  const { isNightMode } = useSelector((state) => state);
+  const isNightMode = useSelector((state) => state.isNightMode);
   const iconColor = iconNightColor(isNightMode);
   const { containerNightStyles } = nightModeStyles(isNightMode);
   const nightColor = nightModeColor(isNightMode);

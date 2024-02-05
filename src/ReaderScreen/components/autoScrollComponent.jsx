@@ -1,5 +1,5 @@
-import React, { useState } from "react";
-import { View, Text } from "react-native";
+import React, { useState, useEffect } from "react";
+import { View, Text, Animated } from "react-native";
 import Slider from "@react-native-community/slider";
 import { useDispatch, useSelector } from "react-redux";
 import { Icon } from "@rneui/themed";
@@ -8,12 +8,23 @@ import colors from "../../common/colors";
 import { styles } from "../styles";
 import constant from "../../common/constant";
 import { setAutoScrollSpeed } from "../../common/actions";
+import { trackReaderEvent } from "../../common/analytics";
 
-function AutoScrollComponent({ shabadID }) {
+const AutoScrollComponent = React.forwardRef(({ shabadID }, ref) => {
   const [isPaused, togglePaused] = useState(true);
-  const { autoScrollSpeedObj } = useSelector((state) => state);
-  const currentSpeed = autoScrollSpeedObj[shabadID] || constant.DEFAULT_SPEED;
+  const autoScrollSpeedObj = useSelector((state) => state.autoScrollSpeedObj);
+  const [currentSpeed, setCurrentSpeed] = useState(
+    autoScrollSpeedObj[shabadID] || constant.DEFAULT_SPEED
+  );
   const dispatch = useDispatch();
+
+  useEffect(() => {
+    const autoScrollObj = {
+      autoScroll: isPaused ? 0 : currentSpeed,
+      scrollMultiplier: 1.0,
+    };
+    ref.current.postMessage(JSON.stringify(autoScrollObj));
+  }, [isPaused, currentSpeed]);
 
   const handleSpeed = (value) => {
     dispatch(setAutoScrollSpeed(value, shabadID));
@@ -21,17 +32,21 @@ function AutoScrollComponent({ shabadID }) {
       togglePaused(true);
     }
   };
-  const handlePause = () => {};
-  const handlePlay = () => {};
+  const handlePause = () => {
+    togglePaused(true);
+  };
+  const handlePlay = () => {
+    togglePaused(false);
+  };
 
   return (
-    <View style={styles.container}>
+    <Animated.View style={styles.container}>
       <View style={styles.wrapper}>
         {isPaused && (
           <Icon name="play-arrow" color={colors.TOOLBAR_TINT} size={30} onPress={handlePlay} />
         )}
         {!isPaused && (
-          <Icon name="pause" color={colors.color.TOOLBAR_TINT} size={30} onPress={handlePause} />
+          <Icon name="pause" color={colors.TOOLBAR_TINT} size={30} onPress={handlePause} />
         )}
         <Slider
           style={styles.slider}
@@ -40,16 +55,22 @@ function AutoScrollComponent({ shabadID }) {
           thumbTintColor={colors.WHITE_COLOR}
           minimumValue={1}
           maximumValue={100}
+          step={1}
           value={currentSpeed}
           onValueChange={(value) => {
-            handleSpeed(value);
+            setCurrentSpeed(value);
           }}
-          step={1}
+          onSlidingComplete={(value) => {
+            handleSpeed(value);
+            trackReaderEvent("autoScrollSpeed", value);
+          }}
         />
         <Text style={styles.sliderText}>{currentSpeed}</Text>
       </View>
-    </View>
+    </Animated.View>
   );
-}
-AutoScrollComponent.propTypes = { shabadID: PropTypes.number.isRequired };
+});
+AutoScrollComponent.propTypes = {
+  shabadID: PropTypes.number.isRequired,
+};
 export default AutoScrollComponent;

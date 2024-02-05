@@ -1,62 +1,32 @@
 import React, { useState } from "react";
-import { Text } from "react-native";
-import { ListItem, BottomSheet, Icon } from "@rneui/themed";
 import { useSelector } from "react-redux";
 import STRINGS from "../../common/localization";
-import styles from "../styles/styles";
 import { setLanguage } from "../../common/actions";
 import { LANGUAGES } from "../../common/actions/constant";
-import colors from "../../common/colors";
-import RenderBottomSheetItem from "./comon/render";
+import { BottomSheetComponent, ListItemComponent } from "./comon";
 
 function LanguageComponent() {
   const [isVisible, toggleVisible] = useState(false);
-  const { language, isNightMode } = useSelector((state) => state);
-
+  const language = useSelector((state) => state.language);
   return (
     <>
-      <ListItem
-        bottomDivider
-        containerStyle={[
-          { backgroundColor: isNightMode ? colors.NIGHT_GREY_COLOR : colors.WHITE_COLOR },
-        ]}
-        onPress={() => {
-          toggleVisible(true);
-        }}
-      >
-        <Icon
-          style={styles.imageStyle}
-          color={isNightMode ? colors.COMPONENT_COLOR_NIGHT_MODE : colors.COMPONENT_COLOR}
-          name="language"
-          size={30}
-        />
-        <ListItem.Content>
-          <ListItem.Title style={[isNightMode && { color: colors.WHITE_COLOR }]}>
-            {STRINGS.language}
-          </ListItem.Title>
-        </ListItem.Content>
-        {language && (
-          <ListItem.Title
-            style={[styles.titleInfoStyle, { color: isNightMode ? colors.WHITE_COLOR : "#a3a3a3" }]}
-          >
-            {LANGUAGES.filter((item) => item.key === language).map((item) => item.title)[0]}
-          </ListItem.Title>
-        )}
-        <ListItem.Chevron />
-      </ListItem>
+      <ListItemComponent
+        icon="language"
+        title={STRINGS.language}
+        value={language}
+        isAvatar={false}
+        actionConstant={LANGUAGES}
+        onPressAction={() => toggleVisible(true)}
+      />
       {isVisible && (
-        <BottomSheet modalProps={{}} isVisible>
-          <Text style={styles.bottomSheetTitle}>{STRINGS.language}</Text>
-          {LANGUAGES.map((item) => (
-            <RenderBottomSheetItem
-              key={item.key}
-              item={item}
-              toggleVisible={toggleVisible}
-              value={language}
-              action={setLanguage}
-            />
-          ))}
-        </BottomSheet>
+        <BottomSheetComponent
+          isVisible={isVisible}
+          actionConstant={LANGUAGES}
+          value={language}
+          toggleVisible={toggleVisible}
+          title={STRINGS.language}
+          action={setLanguage}
+        />
       )}
     </>
   );

@@ -1,18 +1,20 @@
 import React, { useState } from "react";
-import { Text } from "react-native";
-import { ListItem, BottomSheet, Avatar, Switch } from "@rneui/themed";
+import { ListItem, Avatar, Switch } from "@rneui/themed";
 import { useDispatch, useSelector } from "react-redux";
 import STRINGS from "../../common/localization";
 import { setTransliteration, toggleTransliteration } from "../../common/actions";
 import { TRANSLITERATION_LANGUAGES } from "../../common/actions/constant";
 import colors from "../../common/colors";
-import styles from "../styles/styles";
-import RenderBottomSheetItem from "./comon/render";
+import { ListItemComponent, BottomSheetComponent } from "./comon";
+import { styles } from "../styles";
 
 function TransliterationComponent() {
   const romanizedIcon = require("../../../images/romanizeicon.png");
   const [isVisible, toggleVisible] = useState(false);
-  const { transliterationLanguage, isTransliteration, isNightMode } = useSelector((state) => state);
+  const transliterationLanguage = useSelector((state) => state.transliterationLanguage);
+  const isTransliteration = useSelector((state) => state.isTransliteration);
+  const isNightMode = useSelector((state) => state.isNightMode);
+
   const dispatch = useDispatch();
 
   return (
@@ -23,7 +25,7 @@ function TransliterationComponent() {
           { backgroundColor: isNightMode ? colors.NIGHT_GREY_COLOR : colors.WHITE_COLOR },
         ]}
       >
-        <Avatar source={romanizedIcon} />
+        <Avatar source={romanizedIcon} avatarStyle={styles.avatarStyle} />
         <ListItem.Content>
           <ListItem.Title style={[isNightMode && { color: colors.WHITE_COLOR }]}>
             {STRINGS.transliteration}
@@ -35,50 +37,24 @@ function TransliterationComponent() {
         />
       </ListItem>
       {isTransliteration && (
-        <ListItem
-          bottomDivider
-          onPress={() => toggleVisible(true)}
-          containerStyle={[
-            { backgroundColor: isNightMode ? colors.NIGHT_GREY_COLOR : colors.WHITE_COLOR },
-          ]}
-        >
-          <Avatar />
-          <ListItem.Content>
-            <ListItem.Title style={[isNightMode && { color: colors.WHITE_COLOR }]}>
-              {STRINGS.language}
-            </ListItem.Title>
-          </ListItem.Content>
-          {transliterationLanguage && (
-            <ListItem.Title
-              style={[
-                styles.titleInfoStyle,
-                { color: isNightMode ? colors.WHITE_COLOR : "#a3a3a3" },
-              ]}
-            >
-              {
-                TRANSLITERATION_LANGUAGES.filter(
-                  (item) => item.key === transliterationLanguage
-                ).map((item) => item.title)[0]
-              }
-            </ListItem.Title>
-          )}
-        </ListItem>
+        <ListItemComponent
+          icon="subtitles"
+          title={STRINGS.language}
+          value={transliterationLanguage}
+          isAvatar={false}
+          actionConstant={TRANSLITERATION_LANGUAGES}
+          onPressAction={() => toggleVisible(true)}
+        />
       )}
       {isVisible && (
-        <BottomSheet modalProps={{}} isVisible>
-          <Text style={[styles.bottomSheetTitle, isNightMode && { color: colors.WHITE_COLOR }]}>
-            {STRINGS.language}
-          </Text>
-          {TRANSLITERATION_LANGUAGES.map((item) => (
-            <RenderBottomSheetItem
-              key={item.key}
-              item={item}
-              toggleVisible={toggleVisible}
-              value={transliterationLanguage}
-              action={setTransliteration}
-            />
-          ))}
-        </BottomSheet>
+        <BottomSheetComponent
+          isVisible={isVisible}
+          actionConstant={TRANSLITERATION_LANGUAGES}
+          value={transliterationLanguage}
+          toggleVisible={toggleVisible}
+          title={STRINGS.language}
+          action={setTransliteration}
+        />
       )}
     </>
   );

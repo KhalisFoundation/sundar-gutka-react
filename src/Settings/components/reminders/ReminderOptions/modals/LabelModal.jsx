@@ -4,14 +4,18 @@ import { useDispatch, useSelector } from "react-redux";
 import PropTypes from "prop-types";
 import colors from "../../../../../common/colors";
 import STRINGS from "../../../../../common/localization";
-import styles from "../styles";
+import { styles } from "../styles";
 import { setReminderBanis } from "../../../../../common/actions";
 import { updateReminders } from "../../../../../common/notifications";
 
 function LabelModal({ section, onHide }) {
   const { title } = section;
   const [reminderTitle, setReminderTitle] = useState(title);
-  const { isNightMode, reminderBanis, isReminders, reminderSound } = useSelector((state) => state);
+  const isNightMode = useSelector((state) => state.isNightMode);
+  const reminderBanis = useSelector((state) => state.reminderBanis);
+  const isReminders = useSelector((state) => state.isReminders);
+  const reminderSound = useSelector((state) => state.reminderSound);
+
   const dispatch = useDispatch();
 
   const confirmReminderLabel = () => {

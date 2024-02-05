@@ -144,3 +144,7 @@ export function setPosition(pos, shabadID) {
   const position = { [shabadID]: pos };
   return { type: actionTypes.SET_SAVE_POSITION, position };
 }
+
+export function setScrollPosition(position) {
+  return { type: actionTypes.SET_SCROLL_POSITION, position };
+}

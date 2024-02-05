@@ -24,15 +24,17 @@ export const styles = StyleSheet.create({
   vishraamGradient: {
     borderRadius: 5,
   },
-  vishramBasic: {
+  vishraamBasic: {
     color: colors.VISHRAM_BASIC,
   },
-  vishramShort: {
+  vishraamShort: {
     color: colors.VISHRAM_SHORT,
   },
   larivaarAssist: {
     opacity: 0.65,
   },
+  webView: { flex: 1 },
+  top50: { marginTop: 50 },
   paragraphStyle: { flex: 1, flexDirection: "row" },
   slider: {
     flex: 1,
@@ -66,15 +68,13 @@ export const styles = StyleSheet.create({
     margin: 10,
     justifyContent: "space-between",
   },
-  top50: {
-    top: 50,
-  },
   animatedView: {
     position: "absolute",
     left: 0,
     right: 0,
     overflow: "hidden",
     backgroundColor: "transparent",
+    zIndex: 1,
   },
 });
 export const getHeaderStyles = (isNightMode) => ({

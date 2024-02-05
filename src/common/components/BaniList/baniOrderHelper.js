@@ -10,20 +10,22 @@ const extractBaniDetails = (baniItem) => {
 export const orderedBani = (baniList, baniOrder) => {
   const defaultBaniOrder = baniOrder;
   const banis = [];
-  defaultBaniOrder.baniOrder.forEach((obj) => {
-    if (obj.id) {
-      const baniItem = findBaniById(baniList, obj.id);
-      if (baniItem) {
-        banis.push(extractBaniDetails(baniItem));
-      }
-    } else {
-      const folder = obj.folder.map((item) => {
-        const bani = findBaniById(baniList, item.id);
-        return extractBaniDetails(bani);
-      });
+  if (defaultBaniOrder.baniOrder.length > 0) {
+    for (const obj of defaultBaniOrder.baniOrder) {
+      if (obj.id) {
+        const baniItem = findBaniById(baniList, obj.id);
+        if (baniItem) {
+          banis.push(extractBaniDetails(baniItem));
+        }
+      } else {
+        const folder = obj.folder.map((item) => {
+          const bani = findBaniById(baniList, item.id);
+          return extractBaniDetails(bani);
+        });
 
-      banis.push({ gurmukhi: obj.gurmukhi, translit: obj.translit, folder });
+        banis.push({ gurmukhi: obj.gurmukhi, translit: obj.translit, folder });
+      }
     }
-  });
+  }
   return banis;
 };

@@ -3,7 +3,7 @@ import { useSelector } from "react-redux";
 
 const useBaniLength = () => {
   const [baniLengthSelector, toggleBaniLengthSelector] = useState(false);
-  const { baniLength } = useSelector((state) => state);
+  const baniLength = useSelector((state) => state.baniLength);
   useEffect(() => {
     toggleBaniLengthSelector(baniLength === "");
   }, [baniLength]);
