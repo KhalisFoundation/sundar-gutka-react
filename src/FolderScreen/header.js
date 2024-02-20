@@ -1,14 +1,12 @@
 import React, { useEffect, useCallback } from "react";
 import { Icon } from "@rneui/themed";
 import PropTypes from "prop-types";
-import { useSelector } from "react-redux";
 import colors from "../common/colors";
 import getHeaderStyles from "./styles";
 import constant from "../common/constant";
 
 function Header({ navigation, title }) {
-  const isNightMode = useSelector((state) => state.isNightMode);
-  const { headerStyle, headerTitleStyle } = getHeaderStyles(isNightMode);
+  const { headerStyle, headerTitleStyle } = getHeaderStyles();
   const handleBackPress = useCallback(() => navigation.goBack(), [navigation]);
   const handleSettingsPress = useCallback(
     () => navigation.navigate(constant.SETTINGS),
