@@ -1,5 +1,5 @@
 export default {
-  DB: "gutka.db",
+  DB: "gutka_v01.db",
   ENGLISH: "ENGLISH",
   HINDI: "HINDI",
   SHAHMUKHI: "SHAHMUKHI",

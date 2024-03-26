@@ -14,6 +14,8 @@ import {
   useKeepAwake,
   BaniList,
 } from "../common";
+import defaultBaniOrder from "../common/defaultBaniOrder";
+import { setBaniOrder } from "../common/actions";
 
 const HomeScreen = React.memo(({ navigation }) => {
   const { navigate } = navigation;
@@ -21,6 +23,7 @@ const HomeScreen = React.memo(({ navigation }) => {
   const isNightMode = useSelector((state) => state.isNightMode);
   const isStatusBar = useSelector((state) => state.isStatusBar);
   const theme = useSelector((state) => state.theme);
+  const baniOrder = useSelector((state) => state.baniOrder);
   useKeepAwake();
   useAnalytics();
   useScreenAnalytics(constant.HOME_SCREEN);
@@ -46,6 +49,11 @@ const HomeScreen = React.memo(({ navigation }) => {
       subscription.remove();
     };
   }, [theme, colorScheme]);
+  useEffect(() => {
+    if (isAppOpenFirstTime && !baniOrder.baniOrder) {
+      dispatch(setBaniOrder({ baniOrder: defaultBaniOrder.baniOrder }));
+    }
+  }, [isAppOpenFirstTime, baniLengthSelector]);
 
   function onPress(row) {
     const bani = row.item;

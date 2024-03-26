@@ -1,6 +1,6 @@
 import { combineReducers } from "redux";
 import * as actionTypes from "./actions/actionTypes";
-import { fetchDefaultBaniOrder } from "./components/BaniList/baniOrderHelper";
+import defaultBaniOrder from "./defaultBaniOrder";
 import constant from "./constant";
 
 const createReducer =
@@ -131,7 +131,7 @@ const cacheShabad = (state = {}, action) => {
       return state;
   }
 };
-const baniOrder = (state = fetchDefaultBaniOrder(), action) => {
+const baniOrder = (state = defaultBaniOrder, action) => {
   switch (action.type) {
     case actionTypes.SET_BANI_ORDER:
       return action.order;
