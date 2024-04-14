@@ -2,6 +2,7 @@ import React from "react";
 import PropTypes from "prop-types";
 import { View, Text } from "react-native";
 import { Icon } from "@rneui/themed";
+import { useSelector } from "react-redux";
 import constant from "../../common/constant";
 import styles from "../styles";
 import STRINGS from "../../common/localization";
@@ -9,8 +10,15 @@ import colors from "../../common/colors";
 
 function BaniHeader(props) {
   const { navigate } = props;
+  const isNightMode = useSelector((state) => state.isNightMode);
   return (
-    <View style={styles.header}>
+    <View
+      style={{
+        backgroundColor: isNightMode
+          ? colors.READER_STATUS_BAR_COLOR_NIGHT_MODE
+          : colors.TOOLBAR_COLOR,
+      }}
+    >
       <View style={styles.fatehContainer}>
         <Text style={styles.headerFatehStyle}>{STRINGS.fateh}</Text>
       </View>

@@ -13,7 +13,7 @@ import EditBaniOrder from "../EditBaniOrder";
 import Bookmarks from "../Bookmarks";
 import ReminderOptions from "../Settings/components/reminders/ReminderOptions";
 import FolderScreen from "../FolderScreen";
-import { styles, SettingsStyle } from "./style";
+import { SettingsStyle } from "./style";
 
 const Stack = createNativeStackNavigator();
 
@@ -28,7 +28,6 @@ const headerLeft = (navigation, isNightMode) => (
 function Navigation() {
   const isNightMode = useSelector((state) => state.isNightMode);
   const settingsStyle = SettingsStyle(isNightMode);
-  const { homeHeaderStyle, homeHeaderTitle } = styles;
   const { headerTitleStyle, headerStyle } = settingsStyle;
 
   return (
