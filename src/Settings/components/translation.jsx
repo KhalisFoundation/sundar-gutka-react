@@ -23,7 +23,9 @@ function TranslationComponent() {
   return (
     <ListItem.Accordion
       bottomDivider
-      containerStyle={[isNightMode && { backgroundColor: colors.NIGHT_GREY_COLOR }]}
+      containerStyle={{
+        backgroundColor: isNightMode ? colors.NIGHT_GREY_COLOR : colors.WHITE_COLOR,
+      }}
       isExpanded={isExpanded}
       onPress={() => toggleIsExpanded(!isExpanded)}
       content={
@@ -47,7 +49,9 @@ function TranslationComponent() {
     >
       <ListItem
         bottomDivider
-        containerStyle={[isNightMode && { backgroundColor: colors.NIGHT_GREY_COLOR }]}
+        containerStyle={{
+          backgroundColor: isNightMode ? colors.NIGHT_GREY_COLOR : colors.WHITE_COLOR,
+        }}
       >
         <Avatar />
         <ListItem.Content>
@@ -63,7 +67,9 @@ function TranslationComponent() {
 
       <ListItem
         bottomDivider
-        containerStyle={[isNightMode && { backgroundColor: colors.NIGHT_GREY_COLOR }]}
+        containerStyle={{
+          backgroundColor: isNightMode ? colors.NIGHT_GREY_COLOR : colors.WHITE_COLOR,
+        }}
       >
         <Avatar />
         <ListItem.Content>
@@ -79,7 +85,9 @@ function TranslationComponent() {
 
       <ListItem
         bottomDivider
-        containerStyle={[isNightMode && { backgroundColor: colors.NIGHT_GREY_COLOR }]}
+        containerStyle={{
+          backgroundColor: isNightMode ? colors.NIGHT_GREY_COLOR : colors.WHITE_COLOR,
+        }}
       >
         <Avatar />
         <ListItem.Content>

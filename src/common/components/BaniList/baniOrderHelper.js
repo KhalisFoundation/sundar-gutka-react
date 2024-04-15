@@ -1,4 +1,3 @@
-export const fetchDefaultBaniOrder = () => require("../../defaultBaniOrder.json");
 const findBaniById = (baniList, id) => baniList.find((item) => item.id === id);
 const extractBaniDetails = (baniItem) => {
   return {

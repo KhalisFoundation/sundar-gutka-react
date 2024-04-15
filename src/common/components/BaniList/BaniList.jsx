@@ -43,7 +43,7 @@ function BaniList(props) {
     return (
       <ListItem
         bottomDivider
-        containerStyle={isNightMode && { backgroundColor: colors.NIGHT_BLACK }}
+        containerStyle={{ backgroundColor: isNightMode ? colors.NIGHT_BLACK : colors.WHITE_COLOR }}
         onPress={() => onPress(row)}
       >
         {row.item.folder && (
