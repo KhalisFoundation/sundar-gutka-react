@@ -25,7 +25,6 @@ const AutoScrollComponent = React.forwardRef(({ shabadID }, ref) => {
     Animated.timing(animationPosition, {
       toValue: value,
       duration: 500,
-      // easing: Easing.ease,
       useNativeDriver: true,
     }).start();
   }, [isHeaderFooter]);
