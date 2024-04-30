@@ -1,6 +1,6 @@
+import React, { useState, useRef, useEffect } from "react";
 import { useDispatch, useSelector } from "react-redux";
-import React, { useEffect, useState, useRef } from "react";
-import { StatusBar, ActivityIndicator, Platform } from "react-native";
+import { StatusBar, ActivityIndicator, Platform, BackHandler } from "react-native";
 import { WebView } from "react-native-webview";
 import PropTypes from "prop-types";
 import { SafeAreaProvider, SafeAreaView } from "react-native-safe-area-context";
@@ -31,10 +31,10 @@ function Reader({ navigation, route }) {
   const isVishraam = useSelector((state) => state.isVishraam);
   const vishraamOption = useSelector((state) => state.vishraamOption);
   const savePosition = useSelector((state) => state.savePosition);
+  const isHeaderFooter = useSelector((state) => state.isHeaderFooter);
 
   const [shabadID] = useState(Number(route.params.params.id));
   const [isHeader, toggleIsHeader] = useState(true);
-  const [event, setEvent] = useState("");
   const [viewLoaded, toggleViewLoaded] = useState(false);
   const { title } = route.params.params;
   const dispatch = useDispatch();
@@ -50,25 +50,23 @@ function Reader({ navigation, route }) {
     }
   }, [isHeader]);
 
-  useEffect(() => {
-    if (event === "toggle") {
-      setTimeout(() => {
-        toggleIsHeader((current) => !current);
-      }, 100);
-    }
-    toggleIsHeader(event === "show");
-    if (event.includes("save")) {
-      const position = event.split("-")[1];
-      dispatch(actions.setPosition(position, shabadID));
-    }
-  }, [event]);
-
   const handleBackPress = () => {
     webViewRef.current.postMessage(JSON.stringify({ Back: true }));
     setTimeout(() => {
       navigation.goBack();
     }, 100);
   };
+  useEffect(() => {
+    const backAction = () => {
+      handleBackPress();
+      return true; // Return `true` to prevent default behavior
+    };
+
+    const backHandler = BackHandler.addEventListener("hardwareBackPress", backAction);
+
+    return () => backHandler.remove(); // Clean up
+  }, []);
+
   const handleBookmarkPress = () => navigation.navigate(constant.BOOKMARKS, { id: shabadID });
   const handleSettingsPress = () => navigation.navigate(constant.SETTINGS);
 
@@ -176,7 +174,23 @@ function Reader({ navigation, route }) {
 
   const handleMessage = (message) => {
     const env = message.nativeEvent.data;
-    setEvent(env);
+    if (env === "toggle") {
+      // If the event is "toggle", toggle the current state of isHeader
+      toggleIsHeader((prev) => !prev);
+      dispatch(actions.toggleHeaderFooter(!isHeaderFooter));
+    } else if (env === "show") {
+      // If the event is "show", set isHeader to true
+      toggleIsHeader(true);
+      dispatch(actions.toggleHeaderFooter(true));
+    } else if (env === "hide") {
+      // If the event is "hide", set isHeader to false
+      toggleIsHeader(false);
+      dispatch(actions.toggleHeaderFooter(false));
+    } else if (env.includes("save")) {
+      // Handle save event, where event is expected to be "save-<position>"
+      const position = env.split("-")[1];
+      dispatch(actions.setPosition(position, shabadID));
+    }
   };
   return (
     <SafeAreaProvider style={safeAreaViewBack}>

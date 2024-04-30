@@ -13,17 +13,30 @@ import { trackReaderEvent } from "../../common/analytics";
 const AutoScrollComponent = React.forwardRef(({ shabadID }, ref) => {
   const [isPaused, togglePaused] = useState(true);
   const autoScrollSpeedObj = useSelector((state) => state.autoScrollSpeedObj);
+  const isHeaderFooter = useSelector((state) => state.isHeaderFooter);
   const [currentSpeed, setCurrentSpeed] = useState(
     autoScrollSpeedObj[shabadID] || constant.DEFAULT_SPEED
   );
+  const [animationPosition] = useState(new Animated.Value(0));
   const dispatch = useDispatch();
+
+  useEffect(() => {
+    const value = isHeaderFooter ? 0 : 120;
+    Animated.timing(animationPosition, {
+      toValue: value,
+      duration: 500,
+      useNativeDriver: true,
+    }).start();
+  }, [isHeaderFooter]);
 
   useEffect(() => {
     const autoScrollObj = {
       autoScroll: isPaused ? 0 : currentSpeed,
       scrollMultiplier: 1.0,
     };
-    ref.current.postMessage(JSON.stringify(autoScrollObj));
+    if (ref.current && ref.current.postMessage) {
+      ref.current.postMessage(JSON.stringify(autoScrollObj));
+    }
   }, [isPaused, currentSpeed]);
 
   const handleSpeed = (value) => {
@@ -40,7 +53,7 @@ const AutoScrollComponent = React.forwardRef(({ shabadID }, ref) => {
   };
 
   return (
-    <Animated.View style={styles.container}>
+    <Animated.View style={[styles.container, { transform: [{ translateY: animationPosition }] }]}>
       <View style={styles.wrapper}>
         {isPaused && (
           <Icon name="play-arrow" color={colors.TOOLBAR_TINT} size={30} onPress={handlePlay} />

@@ -148,3 +148,6 @@ export function setPosition(pos, shabadID) {
 export function setScrollPosition(position) {
   return { type: actionTypes.SET_SCROLL_POSITION, position };
 }
+export function toggleHeaderFooter(isHeadFoot) {
+  return { type: actionTypes.TOGGLE_HEADER_FOOTER, isHeadFoot };
+}
