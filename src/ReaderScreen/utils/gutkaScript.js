@@ -133,6 +133,7 @@ window.addEventListener("touchmove", function () {
   dragging = true;
 });
 window.addEventListener("touchend", function () {
+    clearTimeout(holdTimer);
   if (autoScrollSpeed !== 0 && autoScrollTimeout === null) {
     setTimeout(function () {
       window.ReactNativeWebView.postMessage("hide");
@@ -142,7 +143,7 @@ window.addEventListener("touchend", function () {
   if (!dragging && !holding) {
     window.ReactNativeWebView.postMessage("toggle");
   }
-  clearTimeout(holdTimer);
+
   dragging = false;
   holding = false;
 });
