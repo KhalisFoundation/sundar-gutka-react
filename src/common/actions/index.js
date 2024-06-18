@@ -151,3 +151,7 @@ export function setScrollPosition(position) {
 export function toggleHeaderFooter(isHeadFoot) {
   return { type: actionTypes.TOGGLE_HEADER_FOOTER, isHeadFoot };
 }
+
+export function setFontSizeNumber(size) {
+  return { type: actionTypes.FONT_SIZE_NUMBER, size };
+}

@@ -13,6 +13,12 @@ let holdTimer;
 let curPosition = 0;
 let isScrolling;
 let isManuallyScrolling = false;
+let initialDistance = null;
+let fontSize=22; // Starting font size in pixels
+let maxFontSize = 54; // Maximum font size in pixels
+let minFontSize = 18; // Minimum font size in pixels
+let scale=1;
+
 window.addEventListener(
   "orientationchange",
   function () {
@@ -53,7 +59,7 @@ window.addEventListener(
 
 if (${nightMode}) {
   //fade event
-  window.addEventListener("load", fadeInEffect(), false);
+  // window.addEventListener("load", fadeInEffect(), false);
 
   function fadeInEffect() {
     let fadeTarget = document.getElementsByTagName("HTML")[0];
@@ -61,7 +67,6 @@ if (${nightMode}) {
     let fadeEffect = setInterval(function () {
       if (Number(fadeTarget.style.opacity) < 1) {
         fadeTarget.style.opacity = Number(fadeTarget.style.opacity) + 0.1;
-        console.log(fadeTarget.style.opacity);
       } else {
         fadeTarget.style.opacity = 1;
       }
@@ -117,8 +122,17 @@ function scrollFunc(e) {
   scrollFunc.y = window.pageYOffset;
 }
 window.onscroll = scrollFunc;
+function getDistance(touch1, touch2) {
+  const dx = touch1.pageX - touch2.pageX;
+  const dy = touch1.pageY - touch2.pageY;
+  return Math.sqrt(dx * dx + dy * dy);
+}
 
-window.addEventListener("touchstart", function () {
+window.addEventListener("touchstart", function (event) {
+   if (event.touches.length === 2) {
+    // Start the pinch
+    initialDistance = getDistance(event.touches[0], event.touches[1]);
+  }
   if (autoScrollSpeed !== 0) {
     clearScrollTimeout();
   }
@@ -127,12 +141,35 @@ window.addEventListener("touchstart", function () {
   holdTimer = setTimeout(function () {
     holding = true;
   }, 125); // Longer than 125 milliseconds is not a tap
-});
-window.addEventListener("touchmove", function () {
+},false);
+
+window.addEventListener("touchmove", function (event) {
+  if (event.touches.length === 2) {
+    // Calculate the change in distance between the two touches
+    const distance = getDistance(event.touches[0], event.touches[1]);
+     const scale = distance / initialDistance;
+    fontSize = Math.max(minFontSize, Math.min(maxFontSize, fontSize * scale));
+
+    var items = document.querySelectorAll('.content-item');
+          items.forEach(function(item) {
+              item.style.fontSize = fontSize + 'px';
+          });
+
+    // Update the initial distance for the next move
+    initialDistance = distance;
+    // scale = newScale;
+  }
   isManuallyScrolling = true;
   dragging = true;
 });
-window.addEventListener("touchend", function () {
+
+window.addEventListener("touchend", function (event) {
+if (event.touches.length < 2) {
+    // Reset initial distance when touches end
+    window.ReactNativeWebView.postMessage("fontSize-" + fontSize);
+    initialDistance = null;
+  }
+  
     clearTimeout(holdTimer);
   if (autoScrollSpeed !== 0 && autoScrollTimeout === null) {
     setTimeout(function () {
@@ -146,7 +183,7 @@ window.addEventListener("touchend", function () {
 
   dragging = false;
   holding = false;
-});
+},false);
 
 ${listener}.addEventListener(
   "message",
@@ -156,6 +193,11 @@ ${listener}.addEventListener(
     if (message.hasOwnProperty("Back")) {
       currentPosition = getScrollPercent();
       window.ReactNativeWebView.postMessage("save-" + currentPosition);
+    }
+    if(message.hasOwnProperty("fontSize")){
+      
+      fontSize=message.fontSize;
+      console.log("fontSize",fontSize);
     }
 
     if (message.hasOwnProperty("bookmark")) {

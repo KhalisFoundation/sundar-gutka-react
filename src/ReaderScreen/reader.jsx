@@ -8,7 +8,7 @@ import { constant, colors, actions, useScreenAnalytics, errorHandler, FallBack }
 import { Header, AutoScrollComponent } from "./components";
 import { useBookmarks, useFetchShabad } from "./hooks";
 import { styles, nightColors } from "./styles";
-import { fontSizeForReader, fontColorForReader, htmlTemplate, script } from "./utils";
+import { fontColorForReader, htmlTemplate, script } from "./utils";
 
 function Reader({ navigation, route }) {
   const webViewRef = useRef(null);
@@ -20,7 +20,6 @@ function Reader({ navigation, route }) {
   const isAutoScroll = useSelector((state) => state.isAutoScroll);
   const isStatusBar = useSelector((state) => state.isStatusBar);
   const isTransliteration = useSelector((state) => state.isTransliteration);
-  const fontSize = useSelector((state) => state.fontSize);
   const fontFace = useSelector((state) => state.fontFace);
   const isLarivaar = useSelector((state) => state.isLarivaar);
   const isLarivaarAssist = useSelector((state) => state.isLarivaarAssist);
@@ -32,6 +31,7 @@ function Reader({ navigation, route }) {
   const vishraamOption = useSelector((state) => state.vishraamOption);
   const savePosition = useSelector((state) => state.savePosition);
   const isHeaderFooter = useSelector((state) => state.isHeaderFooter);
+  const fontSizeNumber = useSelector((state) => state.fontSizeNumber);
 
   const [shabadID] = useState(Number(route.params.params.id));
   const [isHeader, toggleIsHeader] = useState(true);
@@ -49,6 +49,13 @@ function Reader({ navigation, route }) {
       headerRef.current.toggle(isHeader);
     }
   }, [isHeader]);
+
+  useEffect(() => {
+    if (webViewRef && webViewRef.current) {
+      console.log("its111111 running");
+      webViewRef.current.postMessage(JSON.stringify({ fontSize: fontSizeNumber }));
+    }
+  }, []);
 
   const handleBackPress = () => {
     webViewRef.current.postMessage(JSON.stringify({ Back: true }));
@@ -70,19 +77,17 @@ function Reader({ navigation, route }) {
   const handleBookmarkPress = () => navigation.navigate(constant.BOOKMARKS, { id: shabadID });
   const handleSettingsPress = () => navigation.navigate(constant.SETTINGS);
 
-  const createDiv = (content, header, type, textAlign, punjabiTranslation = "") => {
+  const createDiv = (content, header, type, textAlign, id, punjabiTranslation = "") => {
     const fontClass =
       type === constant.GURMUKHI.toLowerCase() || punjabiTranslation !== ""
         ? constant.GURMUKHI.toLowerCase()
         : type;
     return `
-    <div class="content-item ${fontClass} ${textAlign}" style="font-size: ${fontSizeForReader(
-      fontSize,
+    <div id="${id}" class="content-item ${fontClass} ${textAlign}" style="font-size: ${fontSizeNumber}px; color: ${fontColorForReader(
       header,
-      type === constant.TRANSLITERATION.toLowerCase() ||
-        type === constant.TRANSLATION.toLowerCase(),
-      isLarivaar
-    )}px; color: ${fontColorForReader(header, isNightMode, type.toUpperCase())};">
+      isNightMode,
+      type.toUpperCase()
+    )};">
       ${content}
     </div>
   `;
@@ -113,7 +118,8 @@ function Reader({ navigation, route }) {
             item.gurmukhi,
             item.header,
             constant.GURMUKHI.toLowerCase(),
-            textAlign
+            textAlign,
+            `gurmukhi-${item.id}`
           );
 
           if (isTransliteration) {
@@ -121,7 +127,8 @@ function Reader({ navigation, route }) {
               item.translit,
               item.header,
               constant.TRANSLITERATION.toLowerCase(),
-              textAlign
+              textAlign,
+              `translit-${item.id}`
             );
           }
 
@@ -130,7 +137,8 @@ function Reader({ navigation, route }) {
               item.englishTranslations,
               item.header,
               constant.TRANSLATION.toLowerCase(),
-              textAlign
+              textAlign,
+              `english-${item.id}`
             );
           }
 
@@ -140,6 +148,7 @@ function Reader({ navigation, route }) {
               item.header,
               constant.TRANSLATION.toLowerCase(),
               textAlign,
+              `punjabi-${item.id}`,
               constant.GURMUKHI.toLowerCase()
             );
           }
@@ -149,7 +158,8 @@ function Reader({ navigation, route }) {
               item.spanishTranslations,
               item.header,
               constant.TRANSLATION.toLowerCase(),
-              textAlign
+              textAlign,
+              `spanish-${item.id}`
             );
           }
 
@@ -190,6 +200,10 @@ function Reader({ navigation, route }) {
       // Handle save event, where event is expected to be "save-<position>"
       const position = env.split("-")[1];
       dispatch(actions.setPosition(position, shabadID));
+    } else if (env.includes("fontSize")) {
+      console.log("it's running");
+      const size = env.split("-")[1];
+      dispatch(actions.setFontSizeNumber(size));
     }
   };
   return (

@@ -118,6 +118,10 @@ const reminderSound = createReducer(constant.Default.toLowerCase(), {
 const isHeaderFooter = createReducer(false, {
   [actionTypes.TOGGLE_HEADER_FOOTER]: (state, action) => action.isHeadFoot,
 });
+
+const fontSizeNumber = createReducer(constant.DEFAULT_FONT_SIZE, {
+  [actionTypes.FONT_SIZE_NUMBER]: (state, action) => action.size,
+});
 const autoScrollSpeedObj = (state = {}, action) => {
   switch (action.type) {
     case actionTypes.SET_AUTO_SCROLL_SPEED:
@@ -203,5 +207,6 @@ const rootReducer = combineReducers({
   savePosition,
   scrollPosition,
   isHeaderFooter,
+  fontSizeNumber,
 });
 export default rootReducer;
