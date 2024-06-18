@@ -6,25 +6,26 @@ const extractBaniDetails = (baniItem) => {
     translit: baniItem.translit,
   };
 };
-export const orderedBani = (baniList, baniOrder) => {
+const orderedBani = (baniList, baniOrder) => {
   const defaultBaniOrder = baniOrder;
   const banis = [];
-  if (defaultBaniOrder.baniOrder.length > 0) {
-    for (const obj of defaultBaniOrder.baniOrder) {
-      if (obj.id) {
-        const baniItem = findBaniById(baniList, obj.id);
+  if (defaultBaniOrder && defaultBaniOrder.baniOrder.length > 0) {
+    defaultBaniOrder.baniOrder.forEach((element) => {
+      if (element.id) {
+        const baniItem = findBaniById(baniList, element.id);
         if (baniItem) {
           banis.push(extractBaniDetails(baniItem));
         }
       } else {
-        const folder = obj.folder.map((item) => {
+        const folder = element.folder.map((item) => {
           const bani = findBaniById(baniList, item.id);
           return extractBaniDetails(bani);
         });
-
-        banis.push({ gurmukhi: obj.gurmukhi, translit: obj.translit, folder });
+        banis.push({ gurmukhi: element.gurmukhi, translit: element.translit, folder });
       }
-    }
+    });
   }
   return banis;
 };
+
+export default orderedBani;

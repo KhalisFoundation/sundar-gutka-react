@@ -1,14 +1,14 @@
 import React, { useState, useRef, useEffect } from "react";
 import { useDispatch, useSelector } from "react-redux";
-import { StatusBar, ActivityIndicator, Platform, BackHandler } from "react-native";
+import { StatusBar, ActivityIndicator, BackHandler } from "react-native";
 import { WebView } from "react-native-webview";
 import PropTypes from "prop-types";
 import { SafeAreaProvider, SafeAreaView } from "react-native-safe-area-context";
-import { constant, colors, actions, useScreenAnalytics, errorHandler, FallBack } from "../common";
+import { constant, colors, actions, useScreenAnalytics } from "../common";
 import { Header, AutoScrollComponent } from "./components";
 import { useBookmarks, useFetchShabad } from "./hooks";
 import { styles, nightColors } from "./styles";
-import { fontSizeForReader, fontColorForReader, htmlTemplate, script } from "./utils";
+import { script, loadHTML } from "./utils";
 
 function Reader({ navigation, route }) {
   const webViewRef = useRef(null);
@@ -70,108 +70,6 @@ function Reader({ navigation, route }) {
   const handleBookmarkPress = () => navigation.navigate(constant.BOOKMARKS, { id: shabadID });
   const handleSettingsPress = () => navigation.navigate(constant.SETTINGS);
 
-  const createDiv = (content, header, type, textAlign, punjabiTranslation = "") => {
-    const fontClass =
-      type === constant.GURMUKHI.toLowerCase() || punjabiTranslation !== ""
-        ? constant.GURMUKHI.toLowerCase()
-        : type;
-    return `
-    <div class="content-item ${fontClass} ${textAlign}" style="font-size: ${fontSizeForReader(
-      fontSize,
-      header,
-      type === constant.TRANSLITERATION.toLowerCase() ||
-        type === constant.TRANSLATION.toLowerCase(),
-      isLarivaar
-    )}px; color: ${fontColorForReader(header, isNightMode, type.toUpperCase())};">
-      ${content}
-    </div>
-  `;
-  };
-
-  const loadHTML = () => {
-    try {
-      const backColor = isNightMode ? colors.NIGHT_BLACK : colors.WHITE_COLOR;
-      const fileUri = Platform.select({
-        ios: `${fontFace}.ttf`,
-        android: `file:///android_asset/fonts/${fontFace}.ttf`,
-      });
-
-      const content = shabad
-        .map((item) => {
-          const textAlignMap = {
-            0: "left",
-            1: "center",
-            2: "center",
-          };
-
-          let textAlign = textAlignMap[item.header];
-          if (textAlign === undefined) {
-            textAlign = "right";
-          }
-          let contentHtml = `<div id="${item.id}" class='text-item'>`;
-          contentHtml += createDiv(
-            item.gurmukhi,
-            item.header,
-            constant.GURMUKHI.toLowerCase(),
-            textAlign
-          );
-
-          if (isTransliteration) {
-            contentHtml += createDiv(
-              item.translit,
-              item.header,
-              constant.TRANSLITERATION.toLowerCase(),
-              textAlign
-            );
-          }
-
-          if (isEnglishTranslation) {
-            contentHtml += createDiv(
-              item.englishTranslations,
-              item.header,
-              constant.TRANSLATION.toLowerCase(),
-              textAlign
-            );
-          }
-
-          if (isPunjabiTranslation) {
-            contentHtml += createDiv(
-              item.punjabiTranslations,
-              item.header,
-              constant.TRANSLATION.toLowerCase(),
-              textAlign,
-              constant.GURMUKHI.toLowerCase()
-            );
-          }
-
-          if (isSpanishTranslation) {
-            contentHtml += createDiv(
-              item.spanishTranslations,
-              item.header,
-              constant.TRANSLATION.toLowerCase(),
-              textAlign
-            );
-          }
-
-          contentHtml += `</div>`;
-          return contentHtml;
-        })
-        .join("");
-      const htmlContent = htmlTemplate(
-        backColor,
-        fileUri,
-        fontFace,
-        content,
-        isNightMode,
-        savePosition[shabadID]
-      );
-      return htmlContent;
-    } catch (error) {
-      errorHandler(error);
-      FallBack();
-    }
-  };
-
   const handleMessage = (message) => {
     const env = message.nativeEvent.data;
     if (env === "toggle") {
@@ -228,7 +126,22 @@ function Reader({ navigation, route }) {
           }}
           ref={webViewRef}
           decelerationRate="normal"
-          source={{ html: loadHTML(), baseUrl: "" }}
+          source={{
+            html: loadHTML(
+              shabadID,
+              shabad,
+              isTransliteration,
+              fontSize,
+              fontFace,
+              isEnglishTranslation,
+              isPunjabiTranslation,
+              isSpanishTranslation,
+              isNightMode,
+              isLarivaar,
+              savePosition
+            ),
+            baseUrl: "",
+          }}
           style={[webView, isNightMode && { opacity: viewLoaded ? 1 : 0.1 }, backViewColor]}
           onMessage={(message) => handleMessage(message)}
         />

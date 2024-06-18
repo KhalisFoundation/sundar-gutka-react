@@ -1,6 +1,6 @@
 // useDefaultReminders.js
 import { useDispatch, useSelector } from "react-redux";
-import { defaultReminders } from "../utils/helpers";
+import defaultReminders from "../utils/helpers";
 import { setReminderBanis } from "../../../../../common/actions";
 import { updateReminders } from "../../../../../common/notifications";
 import { trackReminderEvent, constant } from "../../../../../common";

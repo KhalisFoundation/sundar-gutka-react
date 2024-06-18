@@ -5,7 +5,7 @@ import PropTypes from "prop-types";
 import { useDispatch, useSelector } from "react-redux";
 import baseFontSize from "../../helpers";
 import colors from "../../colors";
-import { orderedBani } from "./baniOrderHelper";
+import orderedBani from "./baniOrderHelper";
 import { setBaniList } from "../../actions";
 import { styles } from "../../../Settings/styles";
 
