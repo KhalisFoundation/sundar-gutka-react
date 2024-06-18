@@ -78,4 +78,5 @@ export default {
   ADD_REMINDER: "addReminder",
   RESET_REMINDER: "resetReminderDefault",
   UPDATE_REMINDER: "updateReminder",
+  DEFAULT_FONT_SIZE: 22,
 };

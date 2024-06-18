@@ -2,12 +2,27 @@ const htmlTemplate = (backColor, fontFileUri, fontFace, content) => `<!DOCTYPE h
 <html lang="en">
 <head>
   <meta charset="UTF-8">
-  <meta name='viewport' content='width=device-width, user-scalable=no'>
+  <meta name='viewport' content='width=device-width, initial-scale=1.0, user-scalable=no'>
   <style>
+   *, *::before, *::after {
+            box-sizing: border-box;
+        }
+        html,body{
+          margin: 0;
+            padding: 0;
+            overflow-x: hidden;
+            width: 100%;
+            height: 100%;
+        }
     body {
+      margin: 0;
+            padding: 0;
+            overflow-x: hidden;
+            width: 100%;
+
       background-color: ${backColor};
-      word-break: break-word;
       margin-top:50px;
+      transition: transform 0.2s ease-in-out;
     }
     @font-face {
       font-family: '${fontFace}';
@@ -34,11 +49,16 @@ const htmlTemplate = (backColor, fontFileUri, fontFace, content) => `<!DOCTYPE h
     .right{
       text-align:right
     }
+    .content-item{
+      transition: font-size 0.2s ease-in-out;
+    }
   </style>
 
 </head>
 <body>
+<div class="content-container">
   ${content}
+  </div>
     
 </body>
 </html>
