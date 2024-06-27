@@ -5,6 +5,7 @@ import { errorHandler, FallBack, colors, constant, baseFontSize } from "../../co
 
 export const fontColorForReader = (header, nightMode, text) => {
   const { HEADER_COLOR_1_DARK, HEADER_COLOR_1_LIGHT, WHITE_COLOR, NIGHT_BLACK } = colors;
+  const { GURMUKHI, TRANSLATION, TRANSLITERATION } = constant;
 
   const getHeaderColor1 = () => (nightMode ? HEADER_COLOR_1_DARK : HEADER_COLOR_1_LIGHT);
   const getHeaderColor2 = () => (nightMode ? WHITE_COLOR : NIGHT_BLACK);
@@ -18,9 +19,9 @@ export const fontColorForReader = (header, nightMode, text) => {
   };
 
   const colorMapping = {
-    [constant.GURMUKHI]: gurmukhiMapping,
-    [constant.TRANSLITERATION]: getHeaderColor1(),
-    [constant.TRANSLATION]: defaultColor,
+    [GURMUKHI]: gurmukhiMapping,
+    [TRANSLITERATION]: getHeaderColor1(),
+    [TRANSLATION]: defaultColor,
   };
 
   const color = colorMapping[text];
@@ -31,10 +32,10 @@ export const fontColorForReader = (header, nightMode, text) => {
   return color || null;
 };
 
-export const fontSizeForReader = (SIZE, header, transliteration) => {
-  const size = 0.9;
-  const fontSize = baseFontSize(SIZE, transliteration) * size;
-  switch (header) {
+export const fontSizeForReader = (fontSizeString, headerLevel, hasTransliteration) => {
+  const SCALE_FACTOR = 0.9;
+  const fontSize = baseFontSize(fontSizeString, hasTransliteration) * SCALE_FACTOR;
+  switch (headerLevel) {
     case 6:
       return fontSize * 0.75;
     case 2:
