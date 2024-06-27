@@ -14,7 +14,7 @@ const useFetchShabad = (shabadID) => {
   const isParagraphMode = useSelector((state) => state.isParagraphMode);
   const isVishraam = useSelector((state) => state.isVishraam);
   useEffect(() => {
-    (async () => {
+    const fetchShabad = async () => {
       toggleLoading(true);
       const shabadData = await getShabadFromID(
         shabadID,
@@ -31,7 +31,8 @@ const useFetchShabad = (shabadID) => {
         toggleLoading(false);
         setShabad(shabadData);
       }
-    })();
+    };
+    fetchShabad();
   }, [
     shabadID,
     baniLength,
