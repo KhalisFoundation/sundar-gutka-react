@@ -15,6 +15,7 @@ import { updateReminders, cancelAllReminders, checkPermissions } from "./notific
 import * as actionConstants from "./actions/constant";
 import { FallBack, BaniLengthSelector, BaniList } from "./components";
 import useKeepAwake from "./hooks/keepAwake";
+import baseFontSize from "./helpers";
 
 export {
   colors,
@@ -36,4 +37,5 @@ export {
   BaniLengthSelector,
   useKeepAwake,
   BaniList,
+  baseFontSize,
 };

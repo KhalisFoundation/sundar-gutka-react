@@ -15,11 +15,11 @@ const initDB = async () => {
       name: CONSTANT.DB,
       createFromLocation: 1,
     });
-    console.log("Database open Successfully");
     return database;
   } catch (error) {
     errorHandler(error);
     FallBack();
+    return null;
   }
 };
 

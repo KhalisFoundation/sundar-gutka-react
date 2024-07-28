@@ -1,6 +1,6 @@
 import STRINGS from "../../../../../common/localization";
 
-export const defaultReminders = (baniList) => {
+const defaultReminders = (baniList) => {
   return [
     {
       key: 0,
@@ -36,3 +36,5 @@ export const defaultReminders = (baniList) => {
     },
   ];
 };
+
+export default defaultReminders;

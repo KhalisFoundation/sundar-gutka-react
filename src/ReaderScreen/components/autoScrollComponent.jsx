@@ -9,25 +9,16 @@ import { styles } from "../styles";
 import constant from "../../common/constant";
 import { setAutoScrollSpeed } from "../../common/actions";
 import { trackReaderEvent } from "../../common/analytics";
+import { useAnimationHeadFoot } from "../hooks";
 
 const AutoScrollComponent = React.forwardRef(({ shabadID }, ref) => {
   const [isPaused, togglePaused] = useState(true);
   const autoScrollSpeedObj = useSelector((state) => state.autoScrollSpeedObj);
-  const isHeaderFooter = useSelector((state) => state.isHeaderFooter);
   const [currentSpeed, setCurrentSpeed] = useState(
     autoScrollSpeedObj[shabadID] || constant.DEFAULT_SPEED
   );
-  const [animationPosition] = useState(new Animated.Value(0));
+  const animationPosition = useAnimationHeadFoot();
   const dispatch = useDispatch();
-
-  useEffect(() => {
-    const value = isHeaderFooter ? 0 : 120;
-    Animated.timing(animationPosition, {
-      toValue: value,
-      duration: 500,
-      useNativeDriver: true,
-    }).start();
-  }, [isHeaderFooter]);
 
   useEffect(() => {
     const autoScrollObj = {

@@ -42,16 +42,16 @@ export const styles = StyleSheet.create({
   wrapper: {
     flexDirection: "row",
     alignItems: "center",
-    height: 50,
+    height: 70,
   },
   container: {
     position: "absolute",
-    bottom: 0,
+    bottom: 20,
     left: 0,
     right: 0,
+    paddingTop: 0,
     padding: 20,
     overflow: "hidden",
-
     backgroundColor: colors.READER_FOOTER_COLOR,
   },
   sliderText: {
@@ -76,6 +76,18 @@ export const styles = StyleSheet.create({
     backgroundColor: "transparent",
     zIndex: 1,
   },
+  footerWrapper: {
+    paddingLeft: 20,
+    paddingRight: 20,
+    position: "absolute",
+    bottom: 0,
+    left: 0,
+    right: 0,
+    flexDirection: "row",
+    justifyContent: "space-between",
+    zIndex: 10,
+    height: 60,
+  },
 });
 export const getHeaderStyles = (isNightMode) => ({
   headerTitleStyle: {
@@ -84,6 +96,11 @@ export const getHeaderStyles = (isNightMode) => ({
     fontFamily: constant.GURBANI_AKHAR_TRUE,
     fontSize: 20,
   },
+  footerTitleStyle: {
+    color: colors.WHITE_COLOR,
+    fontFamily: constant.GURBANI_AKHAR_TRUE,
+  },
+
   headerStyle: {
     backgroundColor: !isNightMode
       ? colors.READER_STATUS_BAR_COLOR

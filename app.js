@@ -34,25 +34,27 @@ function App() {
 
     return unsubscribe;
   }, []);
-  useEffect(() =>
-    (function () {
-      const initialNotification = notifee.getInitialNotification();
-      getFcmToken();
-      if (initialNotification) {
-        resetBadgeCount();
-      }
-
-      notifee.onForegroundEvent(({ type, detail }) => {
-        switch (type) {
-          case EventType.PRESS:
-            navigateTo(detail);
-            resetBadgeCount();
-            break;
-          default:
-            resetBadgeCount();
+  useEffect(
+    () =>
+      (() => {
+        const initialNotification = notifee.getInitialNotification();
+        getFcmToken();
+        if (initialNotification) {
+          resetBadgeCount();
         }
-      });
-    })()
+
+        notifee.onForegroundEvent(({ type, detail }) => {
+          switch (type) {
+            case EventType.PRESS:
+              navigateTo(detail);
+              resetBadgeCount();
+              break;
+            default:
+              resetBadgeCount();
+          }
+        });
+      })(),
+    []
   );
   return (
     <ErrorBoundary onError={errorHandler} FallbackComponent={FallBack}>

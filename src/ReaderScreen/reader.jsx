@@ -1,14 +1,14 @@
 import React, { useState, useRef, useEffect } from "react";
 import { useDispatch, useSelector } from "react-redux";
-import { StatusBar, ActivityIndicator, Platform, BackHandler } from "react-native";
+import { StatusBar, ActivityIndicator, BackHandler } from "react-native";
 import { WebView } from "react-native-webview";
 import PropTypes from "prop-types";
-import { SafeAreaProvider, SafeAreaView } from "react-native-safe-area-context";
-import { constant, colors, actions, useScreenAnalytics, errorHandler, FallBack } from "../common";
-import { Header, AutoScrollComponent } from "./components";
+import { SafeAreaView } from "react-native-safe-area-context";
+import { constant, colors, actions, useScreenAnalytics } from "../common";
+import { Header, AutoScrollComponent, Footer } from "./components";
 import { useBookmarks, useFetchShabad } from "./hooks";
 import { styles, nightColors } from "./styles";
-import { fontSizeForReader, fontColorForReader, htmlTemplate, script } from "./utils";
+import { script, loadHTML } from "./utils";
 
 function Reader({ navigation, route }) {
   const webViewRef = useRef(null);
@@ -33,7 +33,7 @@ function Reader({ navigation, route }) {
   const savePosition = useSelector((state) => state.savePosition);
   const isHeaderFooter = useSelector((state) => state.isHeaderFooter);
 
-  const [shabadID] = useState(Number(route.params.params.id));
+  const [shabadID, setShabadID] = useState(Number(route.params.params.id));
   const [isHeader, toggleIsHeader] = useState(true);
   const [viewLoaded, toggleViewLoaded] = useState(false);
   const { title } = route.params.params;
@@ -43,6 +43,10 @@ function Reader({ navigation, route }) {
   const { READER_STATUS_BAR_COLOR } = colors;
   useScreenAnalytics(title);
   useBookmarks(webViewRef, shabad, bookmarkPosition);
+
+  useEffect(() => {
+    setShabadID(Number(route.params.params.id));
+  }, [route.params.params.id]);
 
   useEffect(() => {
     if (headerRef.current && headerRef.current.toggle) {
@@ -70,108 +74,6 @@ function Reader({ navigation, route }) {
   const handleBookmarkPress = () => navigation.navigate(constant.BOOKMARKS, { id: shabadID });
   const handleSettingsPress = () => navigation.navigate(constant.SETTINGS);
 
-  const createDiv = (content, header, type, textAlign, punjabiTranslation = "") => {
-    const fontClass =
-      type === constant.GURMUKHI.toLowerCase() || punjabiTranslation !== ""
-        ? constant.GURMUKHI.toLowerCase()
-        : type;
-    return `
-    <div class="content-item ${fontClass} ${textAlign}" style="font-size: ${fontSizeForReader(
-      fontSize,
-      header,
-      type === constant.TRANSLITERATION.toLowerCase() ||
-        type === constant.TRANSLATION.toLowerCase(),
-      isLarivaar
-    )}px; color: ${fontColorForReader(header, isNightMode, type.toUpperCase())};">
-      ${content}
-    </div>
-  `;
-  };
-
-  const loadHTML = () => {
-    try {
-      const backColor = isNightMode ? colors.NIGHT_BLACK : colors.WHITE_COLOR;
-      const fileUri = Platform.select({
-        ios: `${fontFace}.ttf`,
-        android: `file:///android_asset/fonts/${fontFace}.ttf`,
-      });
-
-      const content = shabad
-        .map((item) => {
-          const textAlignMap = {
-            0: "left",
-            1: "center",
-            2: "center",
-          };
-
-          let textAlign = textAlignMap[item.header];
-          if (textAlign === undefined) {
-            textAlign = "right";
-          }
-          let contentHtml = `<div id="${item.id}" class='text-item'>`;
-          contentHtml += createDiv(
-            item.gurmukhi,
-            item.header,
-            constant.GURMUKHI.toLowerCase(),
-            textAlign
-          );
-
-          if (isTransliteration) {
-            contentHtml += createDiv(
-              item.translit,
-              item.header,
-              constant.TRANSLITERATION.toLowerCase(),
-              textAlign
-            );
-          }
-
-          if (isEnglishTranslation) {
-            contentHtml += createDiv(
-              item.englishTranslations,
-              item.header,
-              constant.TRANSLATION.toLowerCase(),
-              textAlign
-            );
-          }
-
-          if (isPunjabiTranslation) {
-            contentHtml += createDiv(
-              item.punjabiTranslations,
-              item.header,
-              constant.TRANSLATION.toLowerCase(),
-              textAlign,
-              constant.GURMUKHI.toLowerCase()
-            );
-          }
-
-          if (isSpanishTranslation) {
-            contentHtml += createDiv(
-              item.spanishTranslations,
-              item.header,
-              constant.TRANSLATION.toLowerCase(),
-              textAlign
-            );
-          }
-
-          contentHtml += `</div>`;
-          return contentHtml;
-        })
-        .join("");
-      const htmlContent = htmlTemplate(
-        backColor,
-        fileUri,
-        fontFace,
-        content,
-        isNightMode,
-        savePosition[shabadID]
-      );
-      return htmlContent;
-    } catch (error) {
-      errorHandler(error);
-      FallBack();
-    }
-  };
-
   const handleMessage = (message) => {
     const env = message.nativeEvent.data;
     if (env === "toggle") {
@@ -193,49 +95,63 @@ function Reader({ navigation, route }) {
     }
   };
   return (
-    <SafeAreaProvider style={safeAreaViewBack}>
-      <SafeAreaView style={[{ flex: 1 }]}>
-        <StatusBar
-          hidden={isStatusBar}
-          backgroundColor={backgroundColor}
-          barStyle={isNightMode ? "light-content" : "dark-content"}
-        />
+    <SafeAreaView style={[{ flex: 1 }, safeAreaViewBack]}>
+      <StatusBar
+        hidden={isStatusBar}
+        backgroundColor={backgroundColor}
+        barStyle={isNightMode ? "light-content" : "dark-content"}
+      />
 
-        <Header
-          ref={headerRef}
-          navigation={navigation}
-          title={title}
-          handleBackPress={handleBackPress}
-          handleBookmarkPress={handleBookmarkPress}
-          handleSettingsPress={handleSettingsPress}
-        />
-        {isLoading && <ActivityIndicator size="small" color={READER_STATUS_BAR_COLOR} />}
-        <WebView
-          key={`${shabadID}-${JSON.stringify({
-            isParagraphMode,
-            isLarivaar,
-            isLarivaarAssist,
-            isVishraam,
-            vishraamOption,
+      <Header
+        ref={headerRef}
+        navigation={navigation}
+        title={title}
+        handleBackPress={handleBackPress}
+        handleBookmarkPress={handleBookmarkPress}
+        handleSettingsPress={handleSettingsPress}
+      />
+      {isLoading && <ActivityIndicator size="small" color={READER_STATUS_BAR_COLOR} />}
+      <WebView
+        key={`${shabadID}-${JSON.stringify({
+          isParagraphMode,
+          isLarivaar,
+          isLarivaarAssist,
+          isVishraam,
+          vishraamOption,
+          shabad,
+        })}`}
+        originWhitelist={["*"]}
+        injectedJavaScriptBeforeContentLoaded={script(isNightMode, savePosition[shabadID])}
+        onLoadStart={() => {
+          setTimeout(() => {
+            toggleViewLoaded(true);
+          }, 500);
+        }}
+        ref={webViewRef}
+        decelerationRate="normal"
+        source={{
+          html: loadHTML(
+            shabadID,
             shabad,
-          })}`}
-          originWhitelist={["*"]}
-          injectedJavaScriptBeforeContentLoaded={script(isNightMode, savePosition[shabadID])}
-          onLoadStart={() => {
-            setTimeout(() => {
-              toggleViewLoaded(true);
-            }, 500);
-          }}
-          ref={webViewRef}
-          decelerationRate="normal"
-          source={{ html: loadHTML(), baseUrl: "" }}
-          style={[webView, isNightMode && { opacity: viewLoaded ? 1 : 0.1 }, backViewColor]}
-          onMessage={(message) => handleMessage(message)}
-        />
+            isTransliteration,
+            fontSize,
+            fontFace,
+            isEnglishTranslation,
+            isPunjabiTranslation,
+            isSpanishTranslation,
+            isNightMode,
+            isLarivaar,
+            savePosition
+          ),
+          baseUrl: "",
+        }}
+        style={[webView, isNightMode && { opacity: viewLoaded ? 1 : 0.1 }, backViewColor]}
+        onMessage={(message) => handleMessage(message)}
+      />
 
-        {isAutoScroll && <AutoScrollComponent shabadID={shabadID} ref={webViewRef} />}
-      </SafeAreaView>
-    </SafeAreaProvider>
+      {isAutoScroll && <AutoScrollComponent shabadID={shabadID} ref={webViewRef} />}
+      <Footer navigation={navigation} shabadID={shabadID} />
+    </SafeAreaView>
   );
 }
 
