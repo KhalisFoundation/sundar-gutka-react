@@ -93,8 +93,14 @@ function clearScrollTimeout() {
   autoScrollTimeout = null;
 }
 
-function scrollFunc(e) {
+function scrollFunction(e) {
   curPosition = getScrollPercent();
+  
+  if(curPosition>=1.0){
+  window.ReactNativeWebView.postMessage("end-"+curPosition);
+  }
+  
+
   if (window.scrollY == 0) {
     window.ReactNativeWebView.postMessage("show");
   }
@@ -116,7 +122,7 @@ function scrollFunc(e) {
   }
   scrollFunc.y = window.pageYOffset;
 }
-window.onscroll = scrollFunc;
+window.onscroll = scrollFunction;
 
 window.addEventListener("touchstart", function () {
   if (autoScrollSpeed !== 0) {
