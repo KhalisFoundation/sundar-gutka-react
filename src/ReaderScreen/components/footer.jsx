@@ -4,8 +4,9 @@ import { Icon } from "@rneui/themed";
 import { useSelector } from "react-redux";
 import PropTypes from "prop-types";
 import { styles, getHeaderStyles } from "../styles";
-import { colors, constant } from "../../common";
+import { colors } from "../../common";
 import { useAnimationHeadFoot } from "../hooks";
+import { onPress } from "../utils";
 
 function Footer({ navigation, shabadID }) {
   const { navigate } = navigation;
@@ -17,19 +18,6 @@ function Footer({ navigation, shabadID }) {
   const nextBani = currentBaniIndex !== -1 ? baniList[currentBaniIndex + 1] : null;
   const animationPosition = useAnimationHeadFoot();
 
-  function onPress(bani) {
-    if (!bani.folder) {
-      navigate(constant.READER, {
-        key: `Reader-${bani.id}`,
-        params: { id: bani.id, title: bani.gurmukhi },
-      });
-    } else {
-      navigate(constant.FOLDERSCREEN, {
-        key: `Folder-${bani.gurmukhi}`,
-        params: { data: bani.folder, title: bani.gurmukhi },
-      });
-    }
-  }
   return (
     currentBaniIndex !== -1 && (
       <Animated.View
@@ -39,11 +27,11 @@ function Footer({ navigation, shabadID }) {
           { transform: [{ translateY: animationPosition }] },
         ]}
       >
-        {previousBani && (
+        {previousBani ? (
           <Pressable
             style={[styles.pressableView]}
             onPress={() => {
-              onPress(previousBani);
+              onPress(previousBani, navigate);
             }}
           >
             <View style={{ alignItems: "flex-start" }}>
@@ -51,20 +39,22 @@ function Footer({ navigation, shabadID }) {
                 name="arrow-back"
                 size={30}
                 onPress={() => {
-                  onPress(previousBani);
+                  onPress(previousBani, navigate);
                 }}
                 color={colors.WHITE_COLOR}
               />
               <Text style={footerStyle.footerTitleStyle}>{previousBani.gurmukhi}</Text>
             </View>
           </Pressable>
+        ) : (
+          <Text>{}</Text>
         )}
 
         {nextBani && (
           <Pressable
             style={[styles.pressableView]}
             onPress={() => {
-              onPress(nextBani);
+              onPress(nextBani, navigate);
             }}
           >
             <View style={{ alignItems: "flex-end" }}>

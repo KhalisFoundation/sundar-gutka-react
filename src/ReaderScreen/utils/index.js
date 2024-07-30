@@ -2,8 +2,9 @@ import { Platform } from "react-native";
 import htmlTemplate from "./gutkahtml";
 import script from "./gutkaScript";
 import { errorHandler, FallBack, colors, constant, baseFontSize } from "../../common";
+import onPress from "./helper";
 
-export const fontColorForReader = (header, nightMode, text) => {
+const fontColorForReader = (header, nightMode, text) => {
   const { HEADER_COLOR_1_DARK, HEADER_COLOR_1_LIGHT, WHITE_COLOR, NIGHT_BLACK } = colors;
   const { GURMUKHI, TRANSLATION, TRANSLITERATION } = constant;
 
@@ -32,7 +33,7 @@ export const fontColorForReader = (header, nightMode, text) => {
   return color || null;
 };
 
-export const fontSizeForReader = (fontSizeString, headerLevel, hasTransliteration) => {
+const fontSizeForReader = (fontSizeString, headerLevel, hasTransliteration) => {
   const SCALE_FACTOR = 0.9;
   const fontSize = baseFontSize(fontSizeString, hasTransliteration) * SCALE_FACTOR;
   switch (headerLevel) {
@@ -47,7 +48,7 @@ export const fontSizeForReader = (fontSizeString, headerLevel, hasTransliteratio
   }
 };
 
-export const createDiv = (
+const createDiv = (
   content,
   header,
   type,
@@ -73,7 +74,7 @@ export const createDiv = (
   `;
 };
 
-export const loadHTML = (
+const loadHTML = (
   shabadID,
   shabad,
   isTransliteration,
@@ -184,4 +185,12 @@ export const loadHTML = (
     return null;
   }
 };
-export { script, htmlTemplate };
+export {
+  fontColorForReader,
+  fontSizeForReader,
+  script,
+  htmlTemplate,
+  onPress,
+  loadHTML,
+  createDiv,
+};

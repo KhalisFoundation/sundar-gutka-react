@@ -9,11 +9,13 @@ import { Header, AutoScrollComponent, Footer } from "./components";
 import { useBookmarks, useFetchShabad } from "./hooks";
 import { styles, nightColors } from "./styles";
 import { script, loadHTML } from "./utils";
+import BaniTransitionModal from "./components/nextBaniModal";
 
 function Reader({ navigation, route }) {
   const webViewRef = useRef(null);
   const headerRef = useRef(null);
   const { webView } = styles;
+  const [isModalVisible, setModalVisible] = useState(false);
 
   const isNightMode = useSelector((state) => state.isNightMode);
   const bookmarkPosition = useSelector((state) => state.bookmarkPosition);
@@ -92,6 +94,9 @@ function Reader({ navigation, route }) {
       // Handle save event, where event is expected to be "save-<position>"
       const position = env.split("-")[1];
       dispatch(actions.setPosition(position, shabadID));
+    } else if (env.includes("end")) {
+      console.log("end");
+      setModalVisible(true);
     }
   };
   return (
@@ -151,6 +156,13 @@ function Reader({ navigation, route }) {
 
       {isAutoScroll && <AutoScrollComponent shabadID={shabadID} ref={webViewRef} />}
       <Footer navigation={navigation} shabadID={shabadID} />
+      {isModalVisible && (
+        <BaniTransitionModal
+          shabadID={shabadID}
+          navigation={navigation}
+          setModalVisible={setModalVisible}
+        />
+      )}
     </SafeAreaView>
   );
 }

@@ -88,6 +88,50 @@ export const styles = StyleSheet.create({
     zIndex: 10,
     height: 60,
   },
+  centeredView: {
+    flex: 1,
+    justifyContent: "center",
+    alignItems: "center",
+    marginTop: 22,
+  },
+  modalView: {
+    margin: 20,
+    borderRadius: 20,
+    padding: 35,
+    alignItems: "center",
+    shadowColor: "#000",
+    shadowOffset: {
+      width: 0,
+      height: 2,
+    },
+    shadowOpacity: 0.25,
+    shadowRadius: 4,
+    elevation: 5,
+  },
+  modalGurmukhiText: {
+    marginTop: 10,
+    marginBottom: 15,
+    textAlign: "center",
+    fontFamily: constant.GURBANI_AKHAR_TRUE,
+    fontSize: 25,
+  },
+  modalStayText: {
+    textAlign: "center",
+    fontSize: 12,
+  },
+  points: {
+    backgroundColor: "transparent",
+    position: "absolute",
+    top: "50%",
+    left: "50%",
+    marginTop: -10,
+    marginLeft: -7,
+    fontSize: 20,
+  },
+  nextBaniText: {
+    marginTop: 15,
+    fontSize: 12,
+  },
 });
 export const getHeaderStyles = (isNightMode) => ({
   headerTitleStyle: {
@@ -106,4 +150,9 @@ export const getHeaderStyles = (isNightMode) => ({
       ? colors.READER_STATUS_BAR_COLOR
       : colors.READER_STATUS_BAR_COLOR_NIGHT_MODE,
   },
+});
+
+export const getModalStyles = (isNightMode) => ({
+  textStyle: { color: isNightMode ? colors.WHITE_COLOR : colors.READER_FOOTER_COLOR },
+  backColor: { backgroundColor: isNightMode ? colors.NIGHT_BLACK : colors.WHITE_COLOR },
 });
