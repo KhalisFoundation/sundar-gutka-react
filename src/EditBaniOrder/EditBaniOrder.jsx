@@ -10,15 +10,23 @@ import PropTypes from "prop-types";
 import useHeader from "./hooks/useHeader";
 import { activeColor, nightStyles, styles } from "./styles";
 import { setBaniList, setBaniOrder } from "../common/actions";
+import defaultBaniOrder from "../common/defaultBaniOrder";
 
 function EditBaniOrder({ navigation }) {
   const isNightMode = useSelector((state) => state.isNightMode);
   const baniList = useSelector((state) => state.baniList);
-  useHeader(navigation);
-  const [baniListdata, setBaniListData] = useState(
+  const baniOrder = useSelector((state) => state.baniOrder);
+
+  const [baniListData, setBaniListData] = useState(
     baniList.filter((item) => item.id !== undefined)
   );
-  const [orderData, setOrderData] = useState([]);
+  const [folders] = useState(baniList.filter((item) => item.id === undefined));
+  const [folderOrderIds] = useState(baniOrder.baniOrder.filter((item) => item.id === undefined));
+  const [orderData, setOrderData] = useState(
+    baniOrder.baniOrder.filter((item) => item.id !== undefined)
+  );
+  const [isReset, setReset] = useState(false);
+  useHeader(navigation, setReset);
   const { rowItem, text, gestureBackColor } = styles;
   const dispatch = useDispatch();
   const nightColor = nightStyles(isNightMode);
@@ -42,11 +50,40 @@ function EditBaniOrder({ navigation }) {
   );
 
   useEffect(() => {
-    batch(() => {
-      dispatch(setBaniList(baniListdata));
-      dispatch(setBaniOrder({ baniOrder: orderData }));
-    });
-  }, [baniListdata, orderData]);
+    if (isReset) {
+      dispatch(setBaniOrder({ baniOrder: defaultBaniOrder.baniOrder }));
+      const banis = [];
+      if (defaultBaniOrder && defaultBaniOrder.baniOrder.length > 0) {
+        defaultBaniOrder.baniOrder.forEach((element) => {
+          if (element.id) {
+            const baniItem = baniList.find((item) => item.id === element.id);
+            if (baniItem) {
+              banis.push({
+                id: baniItem.id,
+                gurmukhi: baniItem.gurmukhi,
+                translit: baniItem.translit,
+              });
+            }
+          }
+        });
+      }
+
+      setOrderData(defaultBaniOrder.baniOrder.filter((item) => item.id !== undefined));
+      setBaniListData(banis.filter((item) => item.id !== undefined));
+      setReset(false);
+    }
+  }, [isReset]);
+
+  useEffect(() => {
+    if (baniListData.length > 0) {
+      const newData = [...baniListData, ...folders];
+      const newIds = [...orderData, ...folderOrderIds];
+      batch(() => {
+        dispatch(setBaniList(newData));
+        dispatch(setBaniOrder({ baniOrder: newIds }));
+      });
+    }
+  }, [baniListData, orderData]);
 
   const handleDragEnd = ({ data }) => {
     const ids = data.map((item) => {
@@ -58,7 +95,7 @@ function EditBaniOrder({ navigation }) {
   return (
     <GestureHandlerRootView style={gestureBackColor}>
       <DraggableFlatList
-        data={baniListdata}
+        data={baniListData}
         keyExtractor={(item) => item.id}
         renderItem={renderItem}
         onDragEnd={handleDragEnd}

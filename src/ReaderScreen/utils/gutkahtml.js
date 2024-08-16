@@ -35,11 +35,9 @@ const htmlTemplate = (backColor, fontFileUri, fontFace, content) => `<!DOCTYPE h
       text-align:right
     }
   </style>
-
 </head>
 <body>
-  ${content}
-    
+  ${content}  
 </body>
 </html>
 `;

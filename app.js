@@ -1,5 +1,6 @@
 import * as React from "react";
 import { Provider } from "react-redux";
+import { PersistGate } from "reduxjs-toolkit-persist/integration/react";
 import ErrorBoundary from "react-native-error-boundary";
 import notifee, { EventType } from "@notifee/react-native";
 import { useEffect } from "react";
@@ -11,9 +12,9 @@ import constant from "./src/common/constant";
 import * as rootNavigation from "./src/common/rootNavigation";
 import errorHandler from "./src/common/errHandler";
 import FallBack from "./src/common/components/FallbackComponent";
-import { getFcmToken, handleNotification } from "./src/common/firebase";
+import { handleNotification } from "./src/common/firebase";
 
-const { store } = createStore();
+const { store, persistor } = createStore();
 function App() {
   const navigateTo = (incoming) => {
     const { data } = incoming.notification;
@@ -38,7 +39,7 @@ function App() {
     () =>
       (() => {
         const initialNotification = notifee.getInitialNotification();
-        getFcmToken();
+        // getFcmToken();
         if (initialNotification) {
           resetBadgeCount();
         }
@@ -59,7 +60,9 @@ function App() {
   return (
     <ErrorBoundary onError={errorHandler} FallbackComponent={FallBack}>
       <Provider store={store}>
-        <Navigation />
+        <PersistGate loading={null} persistor={persistor}>
+          <Navigation />
+        </PersistGate>
       </Provider>
     </ErrorBoundary>
   );

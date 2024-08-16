@@ -31,13 +31,13 @@ function ListComponent({ navigation }) {
   const { scrollViewNightStyles, backgroundNightStyle } = nightModeStyles(isNightMode);
   const { displayOptionsText, end } = styles;
   const { DISPLAY_OPTIONS, BANI_OPTIONS, OTHER_OPTIONS } = STRINGS;
-
+  const language = useSelector((state) => state.language);
   return (
     <ScrollView>
       <Text style={[displayOptionsText, scrollViewNightStyles]}>{DISPLAY_OPTIONS}</Text>
       <FontSizeComponent />
       <FontFaceComponent />
-      <LanguageComponent />
+      <LanguageComponent language={language} />
       <TransliterationComponent />
       <TranslationComponent />
       <ThemeComponent />
@@ -46,7 +46,7 @@ function ListComponent({ navigation }) {
       <KeepAwake />
       {/* Bani Options */}
       <Text style={[displayOptionsText, scrollViewNightStyles]}>{BANI_OPTIONS}</Text>
-      <EditBaniOrder navigate={navigate} />
+      <EditBaniOrder navigate={navigate} isNightMode={isNightMode} />
       <BaniLengthComponent />
       <LarivaarComponent />
       <ParagraphMode />

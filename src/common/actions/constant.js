@@ -23,11 +23,11 @@ export const FONT_FACES = [
 
 export const LANGUAGES = [
   { key: "DEFAULT", title: `${STRINGS.default}` },
-  { key: "en-US", title: constant.ENGLISH },
+  { key: "en-US", title: constant.ENGLISH_TITLE_CASE },
   { key: "es", title: constant.ESPANOL },
   { key: "fr", title: constant.FRANCAIS },
   { key: "it", title: constant.ITALIANO },
-  { key: "hi", title: constant.HINDI },
+  { key: "hi", title: constant.HINDI_UNICODE },
   { key: "pa", title: constant.PUNJABI },
 ];
 

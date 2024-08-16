@@ -13,25 +13,25 @@ const useFetchShabad = (shabadID) => {
   const isLarivaarAssist = useSelector((state) => state.isLarivaarAssist);
   const isParagraphMode = useSelector((state) => state.isParagraphMode);
   const isVishraam = useSelector((state) => state.isVishraam);
+  const fetchShabad = async () => {
+    toggleLoading(true);
+    const shabadData = await getShabadFromID(
+      shabadID,
+      baniLength,
+      transliterationLanguage,
+      vishraamSource,
+      vishraamOption,
+      isLarivaar,
+      isLarivaarAssist,
+      isParagraphMode,
+      isVishraam
+    );
+    if (shabadData) {
+      toggleLoading(false);
+      setShabad(shabadData);
+    }
+  };
   useEffect(() => {
-    const fetchShabad = async () => {
-      toggleLoading(true);
-      const shabadData = await getShabadFromID(
-        shabadID,
-        baniLength,
-        transliterationLanguage,
-        vishraamSource,
-        vishraamOption,
-        isLarivaar,
-        isLarivaarAssist,
-        isParagraphMode,
-        isVishraam
-      );
-      if (shabadData) {
-        toggleLoading(false);
-        setShabad(shabadData);
-      }
-    };
     fetchShabad();
   }, [
     shabadID,

@@ -5,10 +5,10 @@ import { WebView } from "react-native-webview";
 import PropTypes from "prop-types";
 import { SafeAreaView } from "react-native-safe-area-context";
 import { constant, colors, actions, useScreenAnalytics } from "../common";
-import { Header, AutoScrollComponent, Footer } from "./components";
+import { Header, AutoScrollComponent } from "./components";
 import { useBookmarks, useFetchShabad } from "./hooks";
 import { styles, nightColors } from "./styles";
-import { script, loadHTML } from "./utils";
+import { loadHTML, script } from "./utils";
 
 function Reader({ navigation, route }) {
   const webViewRef = useRef(null);
@@ -36,6 +36,7 @@ function Reader({ navigation, route }) {
   const [shabadID, setShabadID] = useState(Number(route.params.params.id));
   const [isHeader, toggleIsHeader] = useState(true);
   const [viewLoaded, toggleViewLoaded] = useState(false);
+  const [currentPosition, setCurrentPosition] = useState(savePosition[shabadID]);
   const { title } = route.params.params;
   const dispatch = useDispatch();
   const { shabad, isLoading } = useFetchShabad(shabadID);
@@ -48,6 +49,11 @@ function Reader({ navigation, route }) {
     setShabadID(Number(route.params.params.id));
   }, [route.params.params.id]);
 
+  useEffect(() => {
+    if (Number(currentPosition) > 0.9) {
+      setCurrentPosition(0);
+    }
+  }, []);
   useEffect(() => {
     if (headerRef.current && headerRef.current.toggle) {
       headerRef.current.toggle(isHeader);
@@ -121,7 +127,7 @@ function Reader({ navigation, route }) {
           shabad,
         })}`}
         originWhitelist={["*"]}
-        injectedJavaScriptBeforeContentLoaded={script(isNightMode, savePosition[shabadID])}
+        injectedJavaScriptBeforeContentLoaded={script(isNightMode, currentPosition)}
         onLoadStart={() => {
           setTimeout(() => {
             toggleViewLoaded(true);
@@ -140,8 +146,7 @@ function Reader({ navigation, route }) {
             isPunjabiTranslation,
             isSpanishTranslation,
             isNightMode,
-            isLarivaar,
-            savePosition
+            isLarivaar
           ),
           baseUrl: "",
         }}
@@ -150,7 +155,6 @@ function Reader({ navigation, route }) {
       />
 
       {isAutoScroll && <AutoScrollComponent shabadID={shabadID} ref={webViewRef} />}
-      <Footer navigation={navigation} shabadID={shabadID} />
     </SafeAreaView>
   );
 }

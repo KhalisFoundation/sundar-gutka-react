@@ -61,7 +61,6 @@ if (${nightMode}) {
     let fadeEffect = setInterval(function () {
       if (Number(fadeTarget.style.opacity) < 1) {
         fadeTarget.style.opacity = Number(fadeTarget.style.opacity) + 0.1;
-        console.log(fadeTarget.style.opacity);
       } else {
         fadeTarget.style.opacity = 1;
       }
@@ -118,6 +117,23 @@ function scrollFunc(e) {
 }
 window.onscroll = scrollFunc;
 
+function handleTouchEnd(){
+  clearTimeout(holdTimer);
+  if (autoScrollSpeed !== 0 && autoScrollTimeout === null) {
+    setTimeout(function () {
+      window.ReactNativeWebView.postMessage("hide");
+    }, 5000);
+    setAutoScroll();
+  }
+  if (!dragging && !holding) {
+    window.ReactNativeWebView.postMessage("toggle");
+  }
+
+  dragging = false;
+  holding = false;
+}
+
+
 window.addEventListener("touchstart", function () {
   if (autoScrollSpeed !== 0) {
     clearScrollTimeout();
@@ -132,21 +148,7 @@ window.addEventListener("touchmove", function () {
   isManuallyScrolling = true;
   dragging = true;
 });
-window.addEventListener("touchend", function () {
-    clearTimeout(holdTimer);
-  if (autoScrollSpeed !== 0 && autoScrollTimeout === null) {
-    setTimeout(function () {
-      window.ReactNativeWebView.postMessage("hide");
-    }, 5000);
-    setAutoScroll();
-  }
-  if (!dragging && !holding) {
-    window.ReactNativeWebView.postMessage("toggle");
-  }
-
-  dragging = false;
-  holding = false;
-});
+window.addEventListener("touchend", handleTouchEnd);
 
 ${listener}.addEventListener(
   "message",

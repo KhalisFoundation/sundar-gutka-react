@@ -15,13 +15,14 @@ import {
   BaniList,
 } from "../common";
 import defaultBaniOrder from "../common/defaultBaniOrder";
-import { setBaniOrder } from "../common/actions";
+import { setBaniOrder, setLanguage } from "../common/actions";
 
 const HomeScreen = React.memo(({ navigation }) => {
   const { navigate } = navigation;
   const { baniListData } = useBaniList();
   const isNightMode = useSelector((state) => state.isNightMode);
   const isStatusBar = useSelector((state) => state.isStatusBar);
+  const language = useSelector((state) => state.language);
   const theme = useSelector((state) => state.theme);
   const baniOrder = useSelector((state) => state.baniOrder);
   useKeepAwake();
@@ -37,6 +38,9 @@ const HomeScreen = React.memo(({ navigation }) => {
       dispatch(actions.toggleNightMode(colorScheme === "dark"));
     }
   };
+  useEffect(() => {
+    dispatch(setLanguage(language));
+  }, []);
 
   useEffect(() => {
     const subscription = AppState.addEventListener("change", (state) => {
@@ -50,7 +54,7 @@ const HomeScreen = React.memo(({ navigation }) => {
     };
   }, [theme, colorScheme]);
   useEffect(() => {
-    if (isAppOpenFirstTime && !baniOrder.baniOrder) {
+    if (isAppOpenFirstTime && !baniOrder.baniOrder && baniOrder.baniOrder.length === 0) {
       dispatch(setBaniOrder({ baniOrder: defaultBaniOrder.baniOrder }));
     }
   }, [isAppOpenFirstTime, baniLengthSelector]);

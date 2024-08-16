@@ -83,8 +83,7 @@ export const loadHTML = (
   isPunjabiTranslation,
   isSpanishTranslation,
   isNightMode,
-  isLarivaar,
-  savePosition
+  isLarivaar
 ) => {
   try {
     const backColor = isNightMode ? colors.NIGHT_BLACK : colors.WHITE_COLOR;
@@ -169,14 +168,7 @@ export const loadHTML = (
         return contentHtml;
       })
       .join("");
-    const htmlContent = htmlTemplate(
-      backColor,
-      fileUri,
-      fontFace,
-      content,
-      isNightMode,
-      savePosition[shabadID]
-    );
+    const htmlContent = htmlTemplate(backColor, fileUri, fontFace, content);
     return htmlContent;
   } catch (error) {
     errorHandler(error);
