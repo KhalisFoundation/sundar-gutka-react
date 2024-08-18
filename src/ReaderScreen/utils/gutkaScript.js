@@ -25,13 +25,15 @@ window.addEventListener(
   false
 );
 
-(function scrollToPosition() {
-  setTimeout(function () {
-    let scrollY = (document.body.scrollHeight - window.innerHeight) * ${position};
-    window.scrollTo(0, scrollY);
-    curPosition = scrollY;
-  }, 50);
-})();
+window.onload = function() {
+  (function scrollToPosition() {
+    setTimeout(function () {
+      let scrollY = (document.body.scrollHeight - window.innerHeight) * ${position};
+      window.scrollTo(0, scrollY);
+      let curPosition = scrollY;
+    }, 50);
+  })(); 
+}
 
 function getScrollPercent() {
   return window.pageYOffset / (document.body.scrollHeight - window.innerHeight);
@@ -56,7 +58,8 @@ if (${nightMode}) {
   window.addEventListener("load", fadeInEffect(), false);
 
   function fadeInEffect() {
-    let fadeTarget = document.getElementsByTagName("HTML")[0];
+    let fadeTarget = ${listener}.documentElement;
+    console.log("fadeTarget",fadeTarget)
     fadeTarget.style.opacity = 0;
     let fadeEffect = setInterval(function () {
       if (Number(fadeTarget.style.opacity) < 1) {
@@ -156,7 +159,8 @@ ${listener}.addEventListener(
     let message = JSON.parse(event.data);
 
     if (message.hasOwnProperty("Back")) {
-      currentPosition = getScrollPercent();
+      const currentPosition = getScrollPercent();
+      console.log('back is Pressed',currentPosition);
       window.ReactNativeWebView.postMessage("save-" + currentPosition);
     }
 

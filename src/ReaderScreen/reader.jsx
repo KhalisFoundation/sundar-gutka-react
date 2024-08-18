@@ -8,12 +8,18 @@ import { constant, colors, actions, useScreenAnalytics } from "../common";
 import { Header, AutoScrollComponent } from "./components";
 import { useBookmarks, useFetchShabad } from "./hooks";
 import { styles, nightColors } from "./styles";
-import { loadHTML, script } from "./utils";
+import { loadHTML } from "./utils";
 
 function Reader({ navigation, route }) {
   const webViewRef = useRef(null);
   const headerRef = useRef(null);
   const { webView } = styles;
+  const { title } = route.params.params;
+  const [isHeader, toggleIsHeader] = useState(true);
+  const [viewLoaded, toggleViewLoaded] = useState(false);
+  const [shabadID, setShabadID] = useState(Number(route.params.params.id));
+
+  const dispatch = useDispatch();
 
   const isNightMode = useSelector((state) => state.isNightMode);
   const bookmarkPosition = useSelector((state) => state.bookmarkPosition);
@@ -33,13 +39,8 @@ function Reader({ navigation, route }) {
   const savePosition = useSelector((state) => state.savePosition);
   const isHeaderFooter = useSelector((state) => state.isHeaderFooter);
 
-  const [shabadID, setShabadID] = useState(Number(route.params.params.id));
-  const [isHeader, toggleIsHeader] = useState(true);
-  const [viewLoaded, toggleViewLoaded] = useState(false);
-  const [currentPosition, setCurrentPosition] = useState(savePosition[shabadID]);
-  const { title } = route.params.params;
-  const dispatch = useDispatch();
   const { shabad, isLoading } = useFetchShabad(shabadID);
+  const [currentPosition, setCurrentPosition] = useState(savePosition[shabadID] || 0);
   const { backgroundColor, safeAreaViewBack, backViewColor } = nightColors(isNightMode);
   const { READER_STATUS_BAR_COLOR } = colors;
   useScreenAnalytics(title);
@@ -50,7 +51,9 @@ function Reader({ navigation, route }) {
   }, [route.params.params.id]);
 
   useEffect(() => {
-    if (Number(currentPosition) > 0.9) {
+    console.log("savePosition----", savePosition[shabadID]);
+    setCurrentPosition(savePosition[shabadID]);
+    if (Number(savePosition[shabadID]) > 0.9) {
       setCurrentPosition(0);
     }
   }, []);
@@ -66,14 +69,13 @@ function Reader({ navigation, route }) {
       navigation.goBack();
     }, 100);
   };
+  const backAction = () => {
+    handleBackPress();
+    return true; // Return `true` to prevent default behavior
+  };
+
   useEffect(() => {
-    const backAction = () => {
-      handleBackPress();
-      return true; // Return `true` to prevent default behavior
-    };
-
     const backHandler = BackHandler.addEventListener("hardwareBackPress", backAction);
-
     return () => backHandler.remove(); // Clean up
   }, []);
 
@@ -97,6 +99,8 @@ function Reader({ navigation, route }) {
     } else if (env.includes("save")) {
       // Handle save event, where event is expected to be "save-<position>"
       const position = env.split("-")[1];
+      console.log("----- position", position);
+      setCurrentPosition(position);
       dispatch(actions.setPosition(position, shabadID));
     }
   };
@@ -112,7 +116,7 @@ function Reader({ navigation, route }) {
         ref={headerRef}
         navigation={navigation}
         title={title}
-        handleBackPress={handleBackPress}
+        handleBackPress={backAction}
         handleBookmarkPress={handleBookmarkPress}
         handleSettingsPress={handleSettingsPress}
       />
@@ -127,7 +131,6 @@ function Reader({ navigation, route }) {
           shabad,
         })}`}
         originWhitelist={["*"]}
-        injectedJavaScriptBeforeContentLoaded={script(isNightMode, currentPosition)}
         onLoadStart={() => {
           setTimeout(() => {
             toggleViewLoaded(true);
@@ -146,7 +149,8 @@ function Reader({ navigation, route }) {
             isPunjabiTranslation,
             isSpanishTranslation,
             isNightMode,
-            isLarivaar
+            isLarivaar,
+            currentPosition
           ),
           baseUrl: "",
         }}

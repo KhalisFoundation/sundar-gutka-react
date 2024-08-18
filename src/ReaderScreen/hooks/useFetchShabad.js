@@ -13,6 +13,15 @@ const useFetchShabad = (shabadID) => {
   const isLarivaarAssist = useSelector((state) => state.isLarivaarAssist);
   const isParagraphMode = useSelector((state) => state.isParagraphMode);
   const isVishraam = useSelector((state) => state.isVishraam);
+  // const prevBaniLengthRef = useRef(baniLength);
+  // const prevTransliterationLanguageRef = useRef(transliterationLanguage);
+  // const prevVishraamSourceRef = useRef(vishraamSource);
+  // const prevVishraamOptionRef = useRef(vishraamOption);
+  // const prevIsLarivaarRef = useRef(isLarivaar);
+  // const prevIsLarivaarAssistRef = useRef(isLarivaarAssist);
+  // const prevIsParagraphaMode = useRef(isParagraphMode);
+  // const prevIsVishraam = useRef(isVishraam);
+
   const fetchShabad = async () => {
     toggleLoading(true);
     const shabadData = await getShabadFromID(

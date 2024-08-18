@@ -47,7 +47,7 @@ const Header = React.forwardRef(
       navigation.setOptions({
         headerShown: false,
       });
-    });
+    }, []);
     const toggleHeader = (isHeader) => {
       const value = isHeader ? 0 : -120;
       Animated.timing(animationPosition, {
