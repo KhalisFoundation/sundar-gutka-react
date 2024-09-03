@@ -33,7 +33,7 @@ export const createReminder = async (notification, sound) => {
         title: notification.title,
         body: notification.time,
         data: {
-          id: notification.key.toString(),
+          id: notification.id.toString(),
           gurmukhi: notification.gurmukhi,
           translit: String(notification.translit) || "",
         },

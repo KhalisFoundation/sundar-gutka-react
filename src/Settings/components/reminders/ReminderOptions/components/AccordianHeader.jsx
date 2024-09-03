@@ -92,6 +92,14 @@ function AccordianHeader({ section, isActive }) {
         <Divider color={colors.DISABLED_TEXT_COLOR_NIGHT_MODE} />
       </View>
       <DateTimePicker
+        modalPropsIOS={{
+          supportedOrientations: [
+            "portrait",
+            "portrait-upside-down",
+            "landscape-left",
+            "landscape-right",
+          ],
+        }}
         isVisible={isTimePicker}
         onConfirm={(t) => handleTimePicked(t)}
         onCancel={hideDateTimePicker}

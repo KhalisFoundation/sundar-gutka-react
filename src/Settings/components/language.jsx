@@ -2,11 +2,20 @@ import React, { useState } from "react";
 import PropType from "prop-types";
 import STRINGS from "../../common/localization";
 import { setLanguage } from "../../common/actions";
-import { LANGUAGES } from "../../common/actions/constant";
 import { BottomSheetComponent, ListItemComponent } from "./comon";
+import { constant } from "../../common";
 
 function LanguageComponent({ language }) {
   const [isVisible, toggleVisible] = useState(false);
+  const LANGUAGES = [
+    { key: "DEFAULT", title: `${STRINGS.default}` },
+    { key: "en-US", title: constant.ENGLISH_TITLE_CASE },
+    { key: "es", title: constant.ESPANOL },
+    { key: "fr", title: constant.FRANCAIS },
+    { key: "it", title: constant.ITALIANO },
+    { key: "hi", title: constant.HINDI_UNICODE },
+    { key: "pa", title: constant.PUNJABI },
+  ];
 
   return (
     <>

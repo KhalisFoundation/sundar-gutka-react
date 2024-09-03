@@ -59,7 +59,6 @@ if (${nightMode}) {
 
   function fadeInEffect() {
     let fadeTarget = ${listener}.documentElement;
-    console.log("fadeTarget",fadeTarget)
     fadeTarget.style.opacity = 0;
     let fadeEffect = setInterval(function () {
       if (Number(fadeTarget.style.opacity) < 1) {
@@ -160,7 +159,6 @@ ${listener}.addEventListener(
 
     if (message.hasOwnProperty("Back")) {
       const currentPosition = getScrollPercent();
-      console.log('back is Pressed',currentPosition);
       window.ReactNativeWebView.postMessage("save-" + currentPosition);
     }
 

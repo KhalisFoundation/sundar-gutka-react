@@ -3,7 +3,6 @@ import { Appearance } from "react-native";
 import { useDispatch, useSelector } from "react-redux";
 import STRINGS from "../../common/localization";
 import { setTheme, toggleNightMode } from "../../common/actions";
-import { THEMES } from "../../common/actions/constant";
 import { constant } from "../../common";
 import { BottomSheetComponent, ListItemComponent } from "./comon";
 
@@ -12,6 +11,11 @@ function ThemeComponent() {
   const theme = useSelector((state) => state.theme);
   const themeIcon = require("../../../images/bgcoloricon.png");
   const dispatch = useDispatch();
+  const THEMES = [
+    { key: "Default", title: `${STRINGS.default}` },
+    { key: "Light", title: `${STRINGS.light}` },
+    { key: "Dark", title: `${STRINGS.dark}` },
+  ];
 
   useEffect(() => {
     const colorScheme = Appearance.getColorScheme();

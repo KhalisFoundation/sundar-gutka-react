@@ -11,11 +11,13 @@ import useHeader from "./hooks/useHeader";
 import { activeColor, nightStyles, styles } from "./styles";
 import { setBaniList, setBaniOrder } from "../common/actions";
 import defaultBaniOrder from "../common/defaultBaniOrder";
+import { STRINGS } from "../common";
 
 function EditBaniOrder({ navigation }) {
   const isNightMode = useSelector((state) => state.isNightMode);
   const baniList = useSelector((state) => state.baniList);
   const baniOrder = useSelector((state) => state.baniOrder);
+  const language = useSelector((state) => state.language);
 
   const [baniListData, setBaniListData] = useState(
     baniList.filter((item) => item.id !== undefined)
@@ -27,9 +29,14 @@ function EditBaniOrder({ navigation }) {
   );
   const [isReset, setReset] = useState(false);
   useHeader(navigation, setReset);
-  const { rowItem, text, gestureBackColor } = styles;
+  const { rowItem, text } = styles;
   const dispatch = useDispatch();
   const nightColor = nightStyles(isNightMode);
+  useEffect(() => {
+    navigation.setOptions({
+      title: STRINGS.EDIT_BANI_ORDER,
+    });
+  }, [language]);
 
   const renderItem = useCallback(
     ({ item, drag, isActive }) => {
@@ -93,7 +100,7 @@ function EditBaniOrder({ navigation }) {
     setOrderData(ids);
   };
   return (
-    <GestureHandlerRootView style={gestureBackColor}>
+    <GestureHandlerRootView style={nightColor.viewBackColor}>
       <DraggableFlatList
         data={baniListData}
         keyExtractor={(item) => item.id}
@@ -104,6 +111,9 @@ function EditBaniOrder({ navigation }) {
   );
 }
 EditBaniOrder.propTypes = {
-  navigation: PropTypes.shape({ goBack: PropTypes.func.isRequired }).isRequired,
+  navigation: PropTypes.shape({
+    goBack: PropTypes.func.isRequired,
+    setOptions: PropTypes.func.isRequired,
+  }).isRequired,
 };
 export default EditBaniOrder;

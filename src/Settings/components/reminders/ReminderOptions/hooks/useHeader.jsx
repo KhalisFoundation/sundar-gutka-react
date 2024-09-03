@@ -1,6 +1,6 @@
 import React, { useEffect } from "react";
 import { Icon } from "@rneui/themed";
-import { colors, constant } from "../../../../../common";
+import { colors, STRINGS } from "../../../../../common";
 import useDefaultReminders from "./useDefaultReminders";
 
 const useHeader = (baniListData, navigation, selector, setStateData) => {
@@ -37,21 +37,19 @@ const useHeader = (baniListData, navigation, selector, setStateData) => {
     );
   };
   useEffect(() => {
-    if (baniListData.length > 0) {
-      navigation.setOptions({
-        title: constant.REMINDER_OPTIONS,
-        headerTitleStyle: {
-          color: colors.WHITE_COLOR,
-          fontWeight: "normal",
-          fontSize: 18,
-        },
-        headerStyle: {
-          backgroundColor: colors.TOOLBAR_COLOR_ALT2,
-        },
-        headerLeft,
-        headerRight: () => headerRight(baniListData),
-      });
-    }
+    navigation.setOptions({
+      title: STRINGS.set_reminder_options,
+      headerTitleStyle: {
+        color: colors.WHITE_COLOR,
+        fontWeight: "normal",
+        fontSize: 18,
+      },
+      headerStyle: {
+        backgroundColor: colors.TOOLBAR_COLOR_ALT2,
+      },
+      headerLeft,
+      headerRight: () => (baniListData.length > 0 ? headerRight(baniListData) : null),
+    });
   }, [JSON.stringify(baniListData)]);
 };
 

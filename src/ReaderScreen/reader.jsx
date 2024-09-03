@@ -51,7 +51,6 @@ function Reader({ navigation, route }) {
   }, [route.params.params.id]);
 
   useEffect(() => {
-    console.log("savePosition----", savePosition[shabadID]);
     setCurrentPosition(savePosition[shabadID]);
     if (Number(savePosition[shabadID]) > 0.9) {
       setCurrentPosition(0);
@@ -99,7 +98,6 @@ function Reader({ navigation, route }) {
     } else if (env.includes("save")) {
       // Handle save event, where event is expected to be "save-<position>"
       const position = env.split("-")[1];
-      console.log("----- position", position);
       setCurrentPosition(position);
       dispatch(actions.setPosition(position, shabadID));
     }

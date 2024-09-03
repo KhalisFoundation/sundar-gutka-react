@@ -30,7 +30,7 @@ const useBaniList = () => {
     } else {
       setBaniListData(baniList);
     }
-  }, [transliterationLanguage]);
+  }, [transliterationLanguage, baniList]);
   return { baniListData };
 };
 export default useBaniList;

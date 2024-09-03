@@ -1,26 +1,29 @@
-import * as React from "react";
+import React, { useEffect } from "react";
 import { NavigationContainer } from "@react-navigation/native";
 import { createNativeStackNavigator } from "@react-navigation/native-stack";
 import { useSelector } from "react-redux";
 import { Icon } from "@rneui/themed";
+import notifee, { EventType } from "@notifee/react-native";
 import HomeScreen from "../HomeScreen/HomeScreen";
 import Reader from "../ReaderScreen/reader";
 import Settings from "../Settings";
 import AboutScreen from "../AboutScreen";
 import colors from "../common/colors";
-import STRINGS from "../common/localization";
 import EditBaniOrder from "../EditBaniOrder";
 import Bookmarks from "../Bookmarks";
 import ReminderOptions from "../Settings/components/reminders/ReminderOptions";
 import FolderScreen from "../FolderScreen";
 import { SettingsStyle } from "./style";
+import { navigationRef, navigate } from "../common/rootNavigation";
+import { constant } from "../common";
+import { resetBadgeCount } from "../common/notifications";
 
 const Stack = createNativeStackNavigator();
 
 const headerLeft = (navigation, isNightMode) => (
   <Icon
     name="arrow-back"
-    style={{ fontSize: 30 }}
+    size={30}
     onPress={() => navigation.goBack()}
     color={isNightMode ? colors.TOOLBAR_TINT : colors.TOOLBAR_TINT_DARK}
   />
@@ -30,8 +33,37 @@ function Navigation() {
   const settingsStyle = SettingsStyle(isNightMode);
   const { headerTitleStyle, headerStyle } = settingsStyle;
 
+  const navigateTo = (incoming) => {
+    const { data } = incoming.notification;
+    const params = { key: `Reader-${data.id}`, params: { id: data.id, title: data.gurmukhi } };
+    navigate(constant.READER, params);
+  };
+
+  useEffect(
+    () =>
+      (() => {
+        const initialNotification = notifee.getInitialNotification();
+        // getFcmToken();
+        if (initialNotification) {
+          resetBadgeCount();
+        }
+
+        notifee.onForegroundEvent(({ type, detail }) => {
+          switch (type) {
+            case EventType.PRESS:
+              navigateTo(detail);
+              resetBadgeCount();
+              break;
+            default:
+              resetBadgeCount();
+          }
+        });
+      })(),
+    []
+  );
+
   return (
-    <NavigationContainer>
+    <NavigationContainer ref={navigationRef}>
       <Stack.Navigator
         screenOptions={{
           headerShown: true,
@@ -41,9 +73,6 @@ function Navigation() {
         <Stack.Screen
           options={{
             headerShown: false,
-            // title: STRINGS.fateh,
-            // headerTitleStyle: homeHeaderTitle,
-            // headerStyle: homeHeaderStyle,
           }}
           name="Home"
           component={HomeScreen}
@@ -51,7 +80,6 @@ function Navigation() {
         <Stack.Screen name="Reader" component={Reader} />
         <Stack.Screen
           options={({ navigation }) => ({
-            title: STRINGS.settings,
             headerLeft: () => headerLeft(navigation, isNightMode),
             headerTitleStyle,
             headerStyle,

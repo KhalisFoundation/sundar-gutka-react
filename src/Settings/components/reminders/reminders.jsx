@@ -8,7 +8,6 @@ import {
   cancelAllReminders,
   checkPermissions,
   errorHandler,
-  actionConstants,
   actions,
   FallBack,
 } from "../../../common";
@@ -18,11 +17,18 @@ import { getBaniList } from "../../../database/db";
 import useDefaultReminders from "./ReminderOptions/hooks/useDefaultReminders";
 
 function RemindersComponent({ navigation }) {
+  const REMINDER_SOUNDS = [
+    {
+      key: "default",
+      title: STRINGS.default,
+    },
+    { key: "wake_up_jap.mp3", title: STRINGS.wake_up_jap },
+    { key: "waheguru_soul.mp3", title: STRINGS.waheguru_soul },
+  ];
   const isNightMode = useSelector((state) => state.isNightMode);
   const isReminders = useSelector((state) => state.isReminders);
   const reminderSound = useSelector((state) => state.reminderSound);
   const transliterationLanguage = useSelector((state) => state.transliterationLanguage);
-
   const [isReminderSound, toggleReminderSound] = useState(false);
   const dispatch = useDispatch();
   const { navigate } = navigation;
@@ -97,14 +103,14 @@ function RemindersComponent({ navigation }) {
           isAvatar={false}
           title={STRINGS.reminder_sound}
           value={reminderSound}
-          actionConstant={actionConstants.REMINDER_SOUNDS}
+          actionConstant={REMINDER_SOUNDS}
           onPressAction={() => toggleReminderSound(true)}
         />
       )}
       {isReminderSound && (
         <BottomSheetComponent
           isVisible={isReminderSound}
-          actionConstant={actionConstants.REMINDER_SOUNDS}
+          actionConstant={REMINDER_SOUNDS}
           value={reminderSound}
           toggleVisible={toggleReminderSound}
           title={STRINGS.reminder_sound}

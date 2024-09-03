@@ -2,14 +2,18 @@ import React, { useState } from "react";
 import { useSelector } from "react-redux";
 import STRINGS from "../../common/localization";
 import { setFontFace } from "../../common/actions";
-import { FONT_FACES } from "../../common/actions/constant";
 import { BottomSheetComponent, ListItemComponent } from "./comon";
 
 function FontFaceComponent() {
   const [isVisible, toggleVisible] = useState(false);
   const fontFace = useSelector((state) => state.fontFace);
   const fontFaceIcon = require("../../../images/fontfaceicon.png");
-
+  const FONT_FACES = [
+    { key: "AnmolLipiSG", title: `${STRINGS.anmol_lipi}` },
+    { key: "GurbaniAkharTrue", title: `${STRINGS.gurbani_akhar_default}` },
+    { key: "GurbaniAkharHeavyTrue", title: `${STRINGS.gurbani_akhar_heavy}` },
+    { key: "GurbaniAkharThickTrue", title: `${STRINGS.gurbani_akhar_think}` },
+  ];
   return (
     <>
       <ListItemComponent

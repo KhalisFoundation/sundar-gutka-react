@@ -12,7 +12,6 @@ import {
   trackReminderEvent,
 } from "./analytics";
 import { updateReminders, cancelAllReminders, checkPermissions } from "./notifications";
-import * as actionConstants from "./actions/constant";
 import { FallBack, BaniLengthSelector, BaniList } from "./components";
 import useKeepAwake from "./hooks/keepAwake";
 import baseFontSize from "./helpers";
@@ -32,7 +31,6 @@ export {
   updateReminders,
   checkPermissions,
   cancelAllReminders,
-  actionConstants,
   FallBack,
   BaniLengthSelector,
   useKeepAwake,

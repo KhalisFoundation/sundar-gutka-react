@@ -18,15 +18,15 @@ const useFetchBani = (
   const fetchBani = async () => {
     try {
       const data = await getBaniList(transliterationLanguage);
-
       setBaniListData(data);
 
       if (parsedReminderBanis.length > 0) {
-        const existingKeysSet = new Set(parsedReminderBanis.map((bani) => bani.key));
-        const baniOptions = Object.entries(data)
-          .filter(([key]) => !existingKeysSet.has(Number(key)) && key < 100000)
-          .map(([key, bani]) => ({
-            key,
+        const existingKeysSet = parsedReminderBanis.map((bani) => bani.key);
+        const baniOptions = data
+          .filter((object) => !existingKeysSet.includes(object.id))
+          .map((bani) => ({
+            key: bani.id,
+            id: bani.id,
             label: isTransliteration ? bani.translit : bani.gurmukhi,
             gurmukhi: bani.gurmukhi,
             translit: bani.translit,
