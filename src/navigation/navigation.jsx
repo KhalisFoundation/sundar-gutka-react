@@ -49,12 +49,21 @@ function Navigation() {
     () =>
       (() => {
         const initialNotification = notifee.getInitialNotification();
-        // getFcmToken();
         if (initialNotification) {
           resetBadgeCount();
         }
 
         notifee.onForegroundEvent(({ type, detail }) => {
+          switch (type) {
+            case EventType.PRESS:
+              navigateTo(detail);
+              resetBadgeCount();
+              break;
+            default:
+              resetBadgeCount();
+          }
+        });
+        notifee.onBackgroundEvent(({ type, detail }) => {
           switch (type) {
             case EventType.PRESS:
               navigateTo(detail);

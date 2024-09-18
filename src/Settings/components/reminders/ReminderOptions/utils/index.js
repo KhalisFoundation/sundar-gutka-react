@@ -1,11 +1,9 @@
-// useDefaultReminders.js
-import { useDispatch, useSelector } from "react-redux";
+import { updateReminders, constant, trackReminderEvent, STRINGS } from "../../../../../common";
 import { setReminderBanis } from "../../../../../common/actions";
-import { updateReminders } from "../../../../../common/notifications";
-import { trackReminderEvent, constant, STRINGS } from "../../../../../common";
 
-const useDefaultReminders = (setStateData = undefined) => {
-  const defaultReminders = (baniList) => {
+const setDefaultReminders = async (baniListData, dispatch, isReminders, reminderSound) => {
+  const baniList = baniListData;
+  const defaultReminders = () => {
     return [
       {
         key: baniList[0].id,
@@ -45,23 +43,12 @@ const useDefaultReminders = (setStateData = undefined) => {
       },
     ];
   };
-  const dispatch = useDispatch();
+  const data = defaultReminders(baniListData);
 
-  const isReminders = useSelector((state) => state.isReminders);
-  const reminderSound = useSelector((state) => state.reminderSound);
-  const setDefaultReminders = async (baniListData) => {
-    const data = defaultReminders(baniListData);
+  dispatch(setReminderBanis(JSON.stringify(data)));
 
-    dispatch(setReminderBanis(JSON.stringify(data)));
-    if (typeof setStateData === "function") {
-      setStateData(data);
-    }
-
-    await updateReminders(isReminders, reminderSound, JSON.stringify(data));
-    trackReminderEvent(constant.RESET_REMINDER, true);
-  };
-
-  return setDefaultReminders;
+  await updateReminders(isReminders, reminderSound, JSON.stringify(data));
+  trackReminderEvent(constant.RESET_REMINDER, true);
 };
 
-export default useDefaultReminders;
+export default setDefaultReminders;

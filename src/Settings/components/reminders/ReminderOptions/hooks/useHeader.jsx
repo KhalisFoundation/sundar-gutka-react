@@ -1,10 +1,13 @@
 import React, { useEffect } from "react";
 import { Icon } from "@rneui/themed";
+import { useDispatch, useSelector } from "react-redux";
 import { colors, STRINGS } from "../../../../../common";
-import useDefaultReminders from "./useDefaultReminders";
+import setDefaultReminders from "../utils";
 
-const useHeader = (baniListData, navigation, selector, setStateData) => {
-  const setDefaultReminders = useDefaultReminders(setStateData);
+const useHeader = (baniListData, navigation, selector) => {
+  const dispatch = useDispatch();
+  const isReminders = useSelector((state) => state.isReminders);
+  const reminderSound = useSelector((state) => state.reminderSound);
   const headerLeft = () => (
     <Icon
       name="arrow-back"
@@ -22,7 +25,7 @@ const useHeader = (baniListData, navigation, selector, setStateData) => {
           style={{ marginRight: 10 }}
           size={30}
           onPress={() => {
-            setDefaultReminders(baniListData);
+            setDefaultReminders(baniListData, dispatch, isReminders, reminderSound);
           }}
         />
         <Icon

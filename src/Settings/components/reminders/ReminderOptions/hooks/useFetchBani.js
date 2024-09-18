@@ -1,19 +1,17 @@
 import { useEffect } from "react";
-import { useSelector } from "react-redux";
+import { useDispatch, useSelector } from "react-redux";
 import { getBaniList } from "../../../../../database/db";
 import { errorHandler } from "../../../../../common";
 import { FallBack } from "../../../../../common/components";
+import setDefaultReminders from "../utils";
 
-const useFetchBani = (
-  setBaniListData,
-  setReminderBaniData,
-  setStateData,
-  parsedReminderBanis,
-  setDefaultReminders
-) => {
+const useFetchBani = (setBaniListData, setReminderBaniData, setStateData, parsedReminderBanis) => {
   const transliterationLanguage = useSelector((state) => state.transliterationLanguage);
   const reminderBanis = useSelector((state) => state.reminderBanis);
   const isTransliteration = useSelector((state) => state.isTransliteration);
+  const isReminders = useSelector((state) => state.isReminders);
+  const reminderSound = useSelector((state) => state.reminderSound);
+  const dispatch = useDispatch();
 
   const fetchBani = async () => {
     try {
@@ -34,7 +32,7 @@ const useFetchBani = (
         setReminderBaniData(baniOptions);
       }
       if (parsedReminderBanis.length === 0) {
-        await setDefaultReminders(data);
+        await setDefaultReminders(data, dispatch, isReminders, reminderSound);
       } else {
         setStateData(parsedReminderBanis);
       }

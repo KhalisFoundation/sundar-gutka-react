@@ -15,7 +15,7 @@ import {
 } from "../../../../common";
 import { styles, accordianNightColor, optionContainer } from "./styles";
 import { AccordianContent, AccordianHeader } from "./components";
-import { useHeader, useDefaultReminders, useFetchBani } from "./hooks";
+import { useHeader, useFetchBani } from "./hooks";
 
 function ReminderOptions({ navigation }) {
   const isNightMode = useSelector((state) => state.isNightMode);
@@ -32,15 +32,8 @@ function ReminderOptions({ navigation }) {
   const { backgroundColor, color } = optionContainer(isNightMode);
 
   const accNightColor = useMemo(() => accordianNightColor(isNightMode), [isNightMode]);
-  const setDefaultReminders = useDefaultReminders(setStateData);
-  useFetchBani(
-    setBaniListData,
-    setReminderBaniData,
-    setStateData,
-    parsedReminderBanis,
-    setDefaultReminders
-  );
-  useHeader(baniListData, navigation, selector, setStateData, setDefaultReminders);
+  useFetchBani(setBaniListData, setReminderBaniData, setStateData, parsedReminderBanis);
+  useHeader(baniListData, navigation, selector, setStateData);
 
   const updateSections = (sections) => {
     setActiveSections(sections);
