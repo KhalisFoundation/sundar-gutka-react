@@ -45,37 +45,46 @@ function Navigation() {
     navigate(constant.READER, params);
   };
 
-  useEffect(
-    () =>
-      (() => {
-        const initialNotification = notifee.getInitialNotification();
-        if (initialNotification) {
-          resetBadgeCount();
-        }
+  useEffect(() => {
+    async function setupNotifications() {
+      // Correctly handle the initial notification promise
+      const initialNotification = await notifee.getInitialNotification();
+      if (initialNotification) {
+        resetBadgeCount();
+      }
 
-        notifee.onForegroundEvent(({ type, detail }) => {
-          switch (type) {
-            case EventType.PRESS:
-              navigateTo(detail);
-              resetBadgeCount();
-              break;
-            default:
-              resetBadgeCount();
-          }
-        });
-        notifee.onBackgroundEvent(({ type, detail }) => {
-          switch (type) {
-            case EventType.PRESS:
-              navigateTo(detail);
-              resetBadgeCount();
-              break;
-            default:
-              resetBadgeCount();
-          }
-        });
-      })(),
-    []
-  );
+      // Setting up event listeners
+      const unsubscribeForeground = notifee.onForegroundEvent(({ type, detail }) => {
+        switch (type) {
+          case EventType.PRESS:
+            navigateTo(detail);
+            resetBadgeCount();
+            break;
+          default:
+            resetBadgeCount();
+        }
+      });
+
+      const unsubscribeBackground = notifee.onBackgroundEvent(({ type, detail }) => {
+        switch (type) {
+          case EventType.PRESS:
+            navigateTo(detail);
+            resetBadgeCount();
+            break;
+          default:
+            resetBadgeCount();
+        }
+      });
+
+      // Cleanup function to unsubscribe events
+      return () => {
+        unsubscribeForeground();
+        unsubscribeBackground();
+      };
+    }
+
+    setupNotifications();
+  }, []);
 
   return (
     <NavigationContainer ref={navigationRef}>

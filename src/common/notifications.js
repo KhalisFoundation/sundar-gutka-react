@@ -12,12 +12,20 @@ import errorHandler from "./errHandler";
 export const createReminder = async (notification, sound) => {
   const channelName =
     sound !== constant.DEFAULT.toLowerCase() ? sound.split(".")[0] : constant.SOUND.toLowerCase();
-  const androidChannel = { channelId: channelName };
+  const androidChannel = {
+    channelId: channelName,
+    smallIcon: "ic_launcher_foreground",
+    pressAction: {
+      id: "default",
+      launchActivity: "default", // This should match your configured activity
+      mainComponent: "default", // Ensure your activity is correctly referenced
+    },
+  };
 
   const currentTime = moment().valueOf();
   let notificationTime = moment(notification.time, "h:m A").valueOf();
   if (notificationTime < currentTime) {
-    notificationTime = moment(notification.time, "h:m A").add(1, "days");
+    notificationTime = moment(notification.time, "h:m A").add(1, "days").valueOf();
   }
   const trigger = {
     type: TriggerType.TIMESTAMP,
@@ -25,7 +33,6 @@ export const createReminder = async (notification, sound) => {
     repeatFrequency: RepeatFrequency.DAILY,
   };
 
-  console.log(trigger);
   try {
     // Create notification
     await notifee.createTriggerNotification(
@@ -115,7 +122,7 @@ export const checkPermissions = async () => {
   //   await notifee.openAlarmPermissionSettings();
 
   // }
-  console.log("isAllowed", isAllowed);
+
   return isAllowed;
 };
 
