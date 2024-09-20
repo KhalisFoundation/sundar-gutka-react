@@ -1,4 +1,3 @@
-// In babel.config.js or the appropriate file
 module.exports = {
   presets: ["module:metro-react-native-babel-preset"],
   plugins: [
