@@ -7,11 +7,9 @@ import { Pressable, Text, View } from "react-native";
 import { GestureHandlerRootView } from "react-native-gesture-handler";
 import { useSelector, useDispatch, batch } from "react-redux";
 import PropTypes from "prop-types";
-import useHeader from "./hooks/useHeader";
+import { STRINGS, defaultBaniOrder, actions } from "@common";
 import { activeColor, nightStyles, styles } from "./styles";
-import { setBaniList, setBaniOrder } from "../common/actions";
-import defaultBaniOrder from "../common/defaultBaniOrder";
-import { STRINGS } from "../common";
+import useHeader from "./hooks/useHeader";
 
 function EditBaniOrder({ navigation }) {
   const isNightMode = useSelector((state) => state.isNightMode);
@@ -58,7 +56,7 @@ function EditBaniOrder({ navigation }) {
 
   useEffect(() => {
     if (isReset) {
-      dispatch(setBaniOrder({ baniOrder: defaultBaniOrder.baniOrder }));
+      dispatch(actions.setBaniOrder({ baniOrder: defaultBaniOrder.baniOrder }));
       const banis = [];
       if (defaultBaniOrder && defaultBaniOrder.baniOrder.length > 0) {
         defaultBaniOrder.baniOrder.forEach((element) => {
@@ -86,8 +84,8 @@ function EditBaniOrder({ navigation }) {
       const newData = [...baniListData, ...folders];
       const newIds = [...orderData, ...folderOrderIds];
       batch(() => {
-        dispatch(setBaniList(newData));
-        dispatch(setBaniOrder({ baniOrder: newIds }));
+        dispatch(actions.setBaniList(newData));
+        dispatch(actions.setBaniOrder({ baniOrder: newIds }));
       });
     }
   }, [baniListData, orderData]);

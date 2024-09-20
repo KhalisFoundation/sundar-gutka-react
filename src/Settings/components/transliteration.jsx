@@ -1,9 +1,8 @@
 import React, { useState } from "react";
 import { ListItem, Avatar, Switch } from "@rneui/themed";
 import { useDispatch, useSelector } from "react-redux";
-import STRINGS from "../../common/localization";
-import { setTransliteration, toggleTransliteration } from "../../common/actions";
-import colors from "../../common/colors";
+import { STRINGS, colors } from "@common";
+import { setTransliteration, toggleTransliteration } from "@common/actions";
 import { ListItemComponent, BottomSheetComponent } from "./comon";
 import { styles } from "../styles";
 

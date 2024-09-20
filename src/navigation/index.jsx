@@ -5,19 +5,16 @@ import { useSelector } from "react-redux";
 import { Icon } from "@rneui/themed";
 import notifee, { EventType } from "@notifee/react-native";
 import SplashScreen from "react-native-splash-screen";
-import HomeScreen from "../HomeScreen/HomeScreen";
-import Reader from "../ReaderScreen/reader";
+import { constant, colors, navigationRef, navigate, resetBadgeCount } from "@common";
+import HomeScreen from "../HomeScreen";
+import Reader from "../ReaderScreen";
 import Settings from "../Settings";
 import AboutScreen from "../AboutScreen";
-import colors from "../common/colors";
 import EditBaniOrder from "../EditBaniOrder";
 import Bookmarks from "../Bookmarks";
 import ReminderOptions from "../Settings/components/reminders/ReminderOptions";
 import FolderScreen from "../FolderScreen";
 import { SettingsStyle } from "./style";
-import { navigationRef, navigate } from "../common/rootNavigation";
-import { constant } from "../common";
-import { resetBadgeCount } from "../common/notifications";
 
 const Stack = createNativeStackNavigator();
 

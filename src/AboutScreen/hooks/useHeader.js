@@ -1,8 +1,7 @@
 import React, { useEffect } from "react";
 import { Icon } from "@rneui/themed";
-import colors from "../../common/colors";
+import { colors, STRINGS } from "@common";
 import { styles } from "../styles";
-import STRINGS from "../../common/localization";
 
 const useHeader = (navigation) => {
   const { WHITE_COLOR } = colors;

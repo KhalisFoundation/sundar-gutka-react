@@ -10,10 +10,10 @@ import {
   errorHandler,
   actions,
   FallBack,
-} from "../../../common";
+} from "@common";
+import { getBaniList } from "@database";
 import { nightModeStyles, iconNightColor } from "../../styles";
 import { ListItemComponent, BottomSheetComponent } from "../comon";
-import { getBaniList } from "../../../database/db";
 import setDefaultReminders from "./ReminderOptions/utils";
 
 function RemindersComponent({ navigation }) {

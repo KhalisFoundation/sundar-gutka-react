@@ -1,5 +1,5 @@
-import { updateReminders, constant, trackReminderEvent, STRINGS } from "../../../../../common";
-import { setReminderBanis } from "../../../../../common/actions";
+import { updateReminders, constant, trackReminderEvent, STRINGS } from "@common";
+import { setReminderBanis } from "@common/actions";
 
 const setDefaultReminders = async (baniListData, dispatch, isReminders, reminderSound) => {
   const baniList = baniListData;

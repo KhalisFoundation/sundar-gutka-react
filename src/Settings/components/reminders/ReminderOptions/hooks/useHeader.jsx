@@ -1,7 +1,7 @@
 import React, { useEffect } from "react";
 import { Icon } from "@rneui/themed";
 import { useDispatch, useSelector } from "react-redux";
-import { colors, STRINGS } from "../../../../../common";
+import { colors, STRINGS } from "@common";
 import setDefaultReminders from "../utils";
 
 const useHeader = (baniListData, navigation, selector) => {

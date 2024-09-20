@@ -1,7 +1,7 @@
 import { Platform } from "react-native";
+import { errorHandler, FallBack, colors, constant, baseFontSize } from "@common";
 import htmlTemplate from "./gutkahtml";
 import script from "./gutkaScript";
-import { errorHandler, FallBack, colors, constant, baseFontSize } from "../../common";
 
 export const fontColorForReader = (header, nightMode, text) => {
   const { HEADER_COLOR_1_DARK, HEADER_COLOR_1_LIGHT, WHITE_COLOR, NIGHT_BLACK } = colors;

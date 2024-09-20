@@ -1,8 +1,8 @@
 import React, { useState } from "react";
 import { ListItem, Icon, Switch } from "@rneui/themed";
 import { useDispatch, useSelector } from "react-redux";
-import { STRINGS } from "../../common";
-import { setVishraamOption, toggleVishraam, setVishraamSource } from "../../common/actions";
+import { STRINGS } from "@common";
+import { setVishraamOption, toggleVishraam, setVishraamSource } from "@common/actions";
 import { nightModeStyles, iconNightColor } from "../styles";
 import { BottomSheetComponent, ListItemComponent } from "./comon";
 

@@ -1,7 +1,7 @@
 import React, { useState } from "react";
 import { useSelector } from "react-redux";
-import { STRINGS } from "../../common";
-import { setPadched } from "../../common/actions";
+import { STRINGS } from "@common";
+import { setPadched } from "@common/actions";
 import { ListItemComponent, BottomSheetComponent } from "./comon";
 
 function PadchedSettingsComponent() {

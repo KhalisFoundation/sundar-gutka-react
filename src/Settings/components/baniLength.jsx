@@ -1,7 +1,6 @@
 import React, { useState } from "react";
 import { useSelector } from "react-redux";
-import STRINGS from "../../common/localization";
-import { setBaniLength } from "../../common/actions";
+import { STRINGS, actions } from "@common";
 import { ListItemComponent, BottomSheetComponent } from "./comon";
 
 function BaniLengthComponent() {
@@ -31,7 +30,7 @@ function BaniLengthComponent() {
           value={baniLength}
           toggleVisible={toggleVisible}
           title={STRINGS.bani_length}
-          action={setBaniLength}
+          action={actions.setBaniLength}
         />
       )}
     </>

@@ -1,8 +1,7 @@
 import { useEffect } from "react";
 import { useDispatch, useSelector } from "react-redux";
-import { getBaniList } from "../../../../../database/db";
-import { errorHandler } from "../../../../../common";
-import { FallBack } from "../../../../../common/components";
+import { errorHandler, FallBack } from "@common";
+import { getBaniList } from "@database";
 import setDefaultReminders from "../utils";
 
 const useFetchBani = (setBaniListData, setReminderBaniData, setStateData, parsedReminderBanis) => {

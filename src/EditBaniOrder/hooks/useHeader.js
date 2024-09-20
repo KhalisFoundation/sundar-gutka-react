@@ -1,7 +1,6 @@
 import React, { useEffect } from "react";
 import { Icon } from "@rneui/themed";
-import colors from "../../common/colors";
-import constant from "../../common/constant";
+import { colors, constant } from "@common";
 
 const useHeader = (navigation, setReset) => {
   const { WHITE_COLOR, TOOLBAR_COLOR_ALT2, TOOLBAR_TINT } = colors;

@@ -1,9 +1,8 @@
 import React, { useState } from "react";
 import PropType from "prop-types";
-import STRINGS from "../../common/localization";
-import { setLanguage } from "../../common/actions";
+import { setLanguage } from "@common/actions";
+import { constant, STRINGS } from "@common";
 import { BottomSheetComponent, ListItemComponent } from "./comon";
-import { constant } from "../../common";
 
 function LanguageComponent({ language }) {
   const [isVisible, toggleVisible] = useState(false);

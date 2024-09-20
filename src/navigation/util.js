@@ -1,5 +1,5 @@
 import { createNavigationContainerRef } from "@react-navigation/native";
-import { constant } from "../common";
+import { constant } from "@common";
 
 export const navigationRef = createNavigationContainerRef();
 

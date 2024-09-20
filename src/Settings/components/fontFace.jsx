@@ -1,7 +1,7 @@
 import React, { useState } from "react";
 import { useSelector } from "react-redux";
-import STRINGS from "../../common/localization";
-import { setFontFace } from "../../common/actions";
+import STRINGS from "@common/localization";
+import { setFontFace } from "@common/actions";
 import { BottomSheetComponent, ListItemComponent } from "./comon";
 
 function FontFaceComponent() {

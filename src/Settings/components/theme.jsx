@@ -1,9 +1,8 @@
 import React, { useState, useEffect } from "react";
 import { Appearance } from "react-native";
 import { useDispatch, useSelector } from "react-redux";
-import STRINGS from "../../common/localization";
-import { setTheme, toggleNightMode } from "../../common/actions";
-import { constant } from "../../common";
+import { setTheme, toggleNightMode } from "@common/actions";
+import { constant, STRINGS } from "@common";
 import { BottomSheetComponent, ListItemComponent } from "./comon";
 
 function ThemeComponent() {

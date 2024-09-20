@@ -2,9 +2,6 @@ import React, { useEffect, useMemo } from "react";
 import { Appearance, AppState, View, StatusBar } from "react-native";
 import PropTypes from "prop-types";
 import { useDispatch, useSelector } from "react-redux";
-import styles from "./styles";
-import BaniHeader from "./components/BaniHeader";
-import { useAnalytics, useAppFirstTime, useBaniLength, useBaniList } from "./hooks";
 import {
   useScreenAnalytics,
   actions,
@@ -13,8 +10,10 @@ import {
   colors,
   useKeepAwake,
   BaniList,
-} from "../common";
-import { setLanguage } from "../common/actions";
+} from "@common";
+import styles from "./styles";
+import BaniHeader from "./components/BaniHeader";
+import { useAnalytics, useAppFirstTime, useBaniLength, useBaniList } from "./hooks";
 
 const HomeScreen = React.memo(({ navigation }) => {
   const { navigate } = navigation;
@@ -37,7 +36,7 @@ const HomeScreen = React.memo(({ navigation }) => {
     }
   };
   useEffect(() => {
-    dispatch(setLanguage(language));
+    dispatch(actions.setLanguage(language));
   }, []);
 
   useEffect(() => {

@@ -1,4 +1,4 @@
-import colors from "../../common/colors";
+import colors from "@common/colors";
 
 const nightStyles = (isNightMode) => {
   const { NIGHT_BLACK, WHITE_COLOR } = colors;

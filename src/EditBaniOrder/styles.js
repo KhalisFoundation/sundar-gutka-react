@@ -1,6 +1,5 @@
 import { StyleSheet } from "react-native";
-import colors from "../common/colors";
-import { constant } from "../common";
+import { constant, colors } from "@common";
 
 export const styles = StyleSheet.create({
   rowItem: {

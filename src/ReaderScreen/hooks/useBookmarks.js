@@ -1,6 +1,6 @@
 import { useEffect } from "react";
 import { useDispatch } from "react-redux";
-import { setBookmarkPosition } from "../../common/actions";
+import { setBookmarkPosition } from "@common/actions";
 
 const useBookmarks = (webViewRef, shabad, bookmarkPosition) => {
   const dispatch = useDispatch();

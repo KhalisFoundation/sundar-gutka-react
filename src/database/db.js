@@ -1,4 +1,4 @@
-import { constant } from "../common";
+import { constant } from "@common";
 import initDB from "./connect";
 import { createFormattedText, getTranslitText, parseVishraamPositions } from "./utils";
 

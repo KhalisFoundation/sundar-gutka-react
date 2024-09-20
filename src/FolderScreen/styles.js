@@ -1,5 +1,4 @@
-import colors from "../common/colors";
-import constant from "../common/constant";
+import { colors, constant } from "@common/colors";
 
 const getHeaderStyles = () => ({
   headerTitleStyle: {

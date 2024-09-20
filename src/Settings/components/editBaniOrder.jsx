@@ -1,8 +1,8 @@
 import React from "react";
 import { ListItem, Avatar } from "@rneui/themed";
 import PropTypes from "prop-types";
+import { STRINGS } from "@common";
 import { nightModeStyles, nightModeColor } from "../styles/nightModeStyles";
-import STRINGS from "../../common/localization";
 import { styles } from "../styles";
 
 function EditBaniOrder({ navigate, isNightMode }) {

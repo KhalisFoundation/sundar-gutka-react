@@ -1,7 +1,7 @@
 import React, { useEffect } from "react";
 import { Icon } from "@rneui/themed";
 import { useSelector } from "react-redux";
-import colors from "../../common/colors";
+import { colors } from "@common";
 import { styles, getHeaderStyle } from "../styles";
 
 const useHeader = (navigation) => {
