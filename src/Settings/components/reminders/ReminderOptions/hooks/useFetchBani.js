@@ -1,32 +1,29 @@
 import { useEffect } from "react";
-import { useSelector } from "react-redux";
-import { getBaniList } from "../../../../../database/db";
-import { errorHandler } from "../../../../../common";
-import { FallBack } from "../../../../../common/components";
+import { useDispatch, useSelector } from "react-redux";
+import { errorHandler, FallBack } from "@common";
+import { getBaniList } from "@database";
+import setDefaultReminders from "../utils";
 
-const useFetchBani = (
-  setBaniListData,
-  setReminderBaniData,
-  setStateData,
-  parsedReminderBanis,
-  setDefaultReminders
-) => {
+const useFetchBani = (setBaniListData, setReminderBaniData, setStateData, parsedReminderBanis) => {
   const transliterationLanguage = useSelector((state) => state.transliterationLanguage);
   const reminderBanis = useSelector((state) => state.reminderBanis);
   const isTransliteration = useSelector((state) => state.isTransliteration);
+  const isReminders = useSelector((state) => state.isReminders);
+  const reminderSound = useSelector((state) => state.reminderSound);
+  const dispatch = useDispatch();
 
   const fetchBani = async () => {
     try {
       const data = await getBaniList(transliterationLanguage);
-
       setBaniListData(data);
 
       if (parsedReminderBanis.length > 0) {
-        const existingKeysSet = new Set(parsedReminderBanis.map((bani) => bani.key));
-        const baniOptions = Object.entries(data)
-          .filter(([key]) => !existingKeysSet.has(Number(key)) && key < 100000)
-          .map(([key, bani]) => ({
-            key,
+        const existingKeysSet = parsedReminderBanis.map((bani) => bani.key);
+        const baniOptions = data
+          .filter((object) => !existingKeysSet.includes(object.id))
+          .map((bani) => ({
+            key: bani.id,
+            id: bani.id,
             label: isTransliteration ? bani.translit : bani.gurmukhi,
             gurmukhi: bani.gurmukhi,
             translit: bani.translit,
@@ -34,7 +31,7 @@ const useFetchBani = (
         setReminderBaniData(baniOptions);
       }
       if (parsedReminderBanis.length === 0) {
-        await setDefaultReminders(data);
+        await setDefaultReminders(data, dispatch, isReminders, reminderSound);
       } else {
         setStateData(parsedReminderBanis);
       }

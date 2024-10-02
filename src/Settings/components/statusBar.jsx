@@ -1,9 +1,9 @@
 import React from "react";
 import { ListItem, Icon, Switch } from "@rneui/themed";
 import { useSelector, useDispatch } from "react-redux";
-import { toggleStatusBar } from "../../common/actions";
+import { toggleStatusBar } from "@common/actions";
+import STRINGS from "@common/localization";
 import { iconNightColor, nightModeStyles, nightModeColor } from "../styles/nightModeStyles";
-import STRINGS from "../../common/localization";
 
 function StatusBar() {
   const isStatusBar = useSelector((state) => state.isStatusBar);

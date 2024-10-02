@@ -3,10 +3,8 @@ import PropTypes from "prop-types";
 import { View, Text } from "react-native";
 import { Icon } from "@rneui/themed";
 import { useSelector } from "react-redux";
-import constant from "../../common/constant";
+import { constant, STRINGS, colors } from "@common";
 import styles from "../styles";
-import STRINGS from "../../common/localization";
-import colors from "../../common/colors";
 
 function BaniHeader(props) {
   const { navigate } = props;

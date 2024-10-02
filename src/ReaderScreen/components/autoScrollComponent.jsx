@@ -4,11 +4,8 @@ import Slider from "@react-native-community/slider";
 import { useDispatch, useSelector } from "react-redux";
 import { Icon } from "@rneui/themed";
 import PropTypes from "prop-types";
-import colors from "../../common/colors";
+import { colors, constant, actions, trackReaderEvent } from "@common";
 import { styles } from "../styles";
-import constant from "../../common/constant";
-import { setAutoScrollSpeed } from "../../common/actions";
-import { trackReaderEvent } from "../../common/analytics";
 import { useAnimationHeadFoot } from "../hooks";
 
 const AutoScrollComponent = React.forwardRef(({ shabadID }, ref) => {
@@ -31,7 +28,7 @@ const AutoScrollComponent = React.forwardRef(({ shabadID }, ref) => {
   }, [isPaused, currentSpeed]);
 
   const handleSpeed = (value) => {
-    dispatch(setAutoScrollSpeed(value, shabadID));
+    dispatch(actions.setAutoScrollSpeed(value, shabadID));
     if (value === 0) {
       togglePaused(true);
     }

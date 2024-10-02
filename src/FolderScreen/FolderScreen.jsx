@@ -2,11 +2,8 @@ import React from "react";
 import { StatusBar, View } from "react-native";
 import PropTypes from "prop-types";
 import { useSelector } from "react-redux";
-import colors from "../common/colors";
-import BaniList from "../common/components/BaniList/BaniList";
-import constant from "../common/constant";
+import { colors, BaniList, constant, useScreenAnalytics } from "@common";
 import Header from "./header";
-import useScreenAnalytics from "../common/hooks/useScreenAnalytics";
 
 function FolderScreen({ navigation, route }) {
   const { navigate } = navigation;

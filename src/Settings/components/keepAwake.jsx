@@ -1,9 +1,9 @@
 import React from "react";
 import { ListItem, Switch, Avatar } from "@rneui/themed";
 import { useSelector, useDispatch } from "react-redux";
+import { STRINGS } from "@common";
+import { toggleScreenAwake } from "@common/actions";
 import { nightModeStyles, nightModeColor } from "../styles/nightModeStyles";
-import STRINGS from "../../common/localization";
-import { toggleScreenAwake } from "../../common/actions";
 import { styles } from "../styles";
 
 function KeepAwake() {

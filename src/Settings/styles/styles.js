@@ -1,5 +1,5 @@
 import { StyleSheet } from "react-native";
-import colors from "../../common/colors";
+import colors from "@common/colors";
 
 const styles = StyleSheet.create({
   nightBackColor: { backgdroundColor: colors.NIGHT_BLACK },

@@ -1,10 +1,13 @@
 import React, { useEffect } from "react";
 import { Icon } from "@rneui/themed";
-import { colors, constant } from "../../../../../common";
-import useDefaultReminders from "./useDefaultReminders";
+import { useDispatch, useSelector } from "react-redux";
+import { colors, STRINGS } from "@common";
+import setDefaultReminders from "../utils";
 
-const useHeader = (baniListData, navigation, selector, setStateData) => {
-  const setDefaultReminders = useDefaultReminders(setStateData);
+const useHeader = (baniListData, navigation, selector) => {
+  const dispatch = useDispatch();
+  const isReminders = useSelector((state) => state.isReminders);
+  const reminderSound = useSelector((state) => state.reminderSound);
   const headerLeft = () => (
     <Icon
       name="arrow-back"
@@ -22,7 +25,7 @@ const useHeader = (baniListData, navigation, selector, setStateData) => {
           style={{ marginRight: 10 }}
           size={30}
           onPress={() => {
-            setDefaultReminders(baniListData);
+            setDefaultReminders(baniListData, dispatch, isReminders, reminderSound);
           }}
         />
         <Icon
@@ -37,21 +40,19 @@ const useHeader = (baniListData, navigation, selector, setStateData) => {
     );
   };
   useEffect(() => {
-    if (baniListData.length > 0) {
-      navigation.setOptions({
-        title: constant.REMINDER_OPTIONS,
-        headerTitleStyle: {
-          color: colors.WHITE_COLOR,
-          fontWeight: "normal",
-          fontSize: 18,
-        },
-        headerStyle: {
-          backgroundColor: colors.TOOLBAR_COLOR_ALT2,
-        },
-        headerLeft,
-        headerRight: () => headerRight(baniListData),
-      });
-    }
+    navigation.setOptions({
+      title: STRINGS.set_reminder_options,
+      headerTitleStyle: {
+        color: colors.WHITE_COLOR,
+        fontWeight: "normal",
+        fontSize: 18,
+      },
+      headerStyle: {
+        backgroundColor: colors.TOOLBAR_COLOR_ALT2,
+      },
+      headerLeft,
+      headerRight: () => (baniListData.length > 0 ? headerRight(baniListData) : null),
+    });
   }, [JSON.stringify(baniListData)]);
 };
 

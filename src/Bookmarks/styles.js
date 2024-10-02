@@ -1,5 +1,5 @@
 import { StyleSheet } from "react-native";
-import colors from "../common/colors";
+import { colors } from "@common";
 
 export const styles = StyleSheet.create({
   headerTitleStyle: {

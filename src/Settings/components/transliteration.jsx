@@ -1,10 +1,8 @@
 import React, { useState } from "react";
 import { ListItem, Avatar, Switch } from "@rneui/themed";
 import { useDispatch, useSelector } from "react-redux";
-import STRINGS from "../../common/localization";
-import { setTransliteration, toggleTransliteration } from "../../common/actions";
-import { TRANSLITERATION_LANGUAGES } from "../../common/actions/constant";
-import colors from "../../common/colors";
+import { STRINGS, colors } from "@common";
+import { setTransliteration, toggleTransliteration } from "@common/actions";
 import { ListItemComponent, BottomSheetComponent } from "./comon";
 import { styles } from "../styles";
 
@@ -14,7 +12,12 @@ function TransliterationComponent() {
   const transliterationLanguage = useSelector((state) => state.transliterationLanguage);
   const isTransliteration = useSelector((state) => state.isTransliteration);
   const isNightMode = useSelector((state) => state.isNightMode);
-
+  const TRANSLITERATION_LANGUAGES = [
+    { key: "ENGLISH", title: `${STRINGS.english}` },
+    { key: "HINDI", title: STRINGS.hindi },
+    { key: "SHAHMUKHI", title: STRINGS.shahmukhi },
+    { key: "IPA", title: STRINGS.ipa },
+  ];
   const dispatch = useDispatch();
 
   return (
