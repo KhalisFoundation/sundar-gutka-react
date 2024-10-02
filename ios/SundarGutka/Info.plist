@@ -40,7 +40,7 @@
 		</dict>
 	</dict>
 	<key>NSLocationWhenInUseUsageDescription</key>
-	<string/>
+	<string></string>
 	<key>UILaunchStoryboardName</key>
 	<string>LaunchScreen</string>
 	<key>UIRequiredDeviceCapabilities</key>
@@ -71,6 +71,33 @@
 	<key>UIBackgroundModes</key>
 	<array>
 		<string>remote-notification</string>
+	</array>
+	<key>NSPrivacyAccessedAPITypes</key>
+	<array>
+		<dict>
+			<key>API</key>
+			<string>NSUserDefaults</string>
+			<key>NSPrivacyAccessedAPICategoryUserDefaults</key>
+			<string>The app uses user defaults to store your preferences and settings to enhance your user experience.</string>
+		</dict>
+		<dict>
+			<key>API</key>
+			<string>SystemBootTime</string>
+			<key>NSPrivacyAccessedAPICategorySystemBootTime</key>
+			<string>The app uses the system boot time to ensure synchronization with external systems or to check the reliability of system time changes.</string>
+		</dict>
+		<dict>
+			<key>API</key>
+			<string>DiskSpace</string>
+			<key>NSPrivacyAccessedAPICategoryDiskSpace</key>
+			<string>The app checks disk space to ensure there is sufficient storage available to function properly without disrupting user data.</string>
+		</dict>
+		<dict>
+			<key>API</key>
+			<string>FileTimestamp</string>
+			<key>NSPrivacyAccessedAPICategoryFileTimestamp</key>
+			<string>The app accesses file timestamps to verify the integrity and update status of files critical to app functionality, ensuring users always have the most current and secure data.</string>
+		</dict>
 	</array>
 </dict>
 </plist>

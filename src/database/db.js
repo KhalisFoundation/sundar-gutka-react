@@ -1,6 +1,6 @@
-import constant from "../common/constant";
-import { initDB } from "./connect";
-import { getTranslitText } from "./utils/utils";
+import { constant } from "../common";
+import initDB from "./connect";
+import { createFormattedText, getTranslitText, parseVishraamPositions } from "./utils";
 
 export function getBaniList(language) {
   return new Promise((resolve, reject) => {
@@ -37,7 +37,17 @@ export function getBaniList(language) {
   });
 }
 
-export function getShabadFromID(shabadID, length, language) {
+export function getShabadFromID(
+  shabadID,
+  length,
+  language,
+  vishraamSource,
+  vishraamOption,
+  isLarivar,
+  isLarivarAssist,
+  isParagraphMode,
+  isVishraam
+) {
   let baniLength;
   switch (length) {
     case constant.EXTRA_LONG:
@@ -57,10 +67,41 @@ export function getShabadFromID(shabadID, length, language) {
       .then((db) => {
         db.transaction((tx) => {
           tx.executeSql(
-            `SELECT ID, Seq,header, Paragraph, Gurmukhi, Visraam, Transliterations,Translations FROM mv_Banis_Shabad where Bani=${shabadID} AND ${baniLength}=1 AND (MangalPosition IS NULL OR MangalPosition = 'current') ORDER BY Seq ASC;`,
+            `SELECT ID, Seq,header, Paragraph, Gurmukhi, Visraam, Transliterations,Translations FROM mv_Banis_Shabad where Bani=${shabadID} AND ${baniLength}=1 AND (MangalPosition IS NULL OR MangalPosition =  'current')
+             ORDER BY Seq ASC;`,
             [],
             (_tx, results) => {
-              const baniData = results.rows.raw().map((row) => {
+              const len = results.rows.length;
+              const totalResults = [];
+              const paragraphResults = [];
+              let paragraphID;
+              let paragraphHeader;
+              let prevParagraph;
+              let gurmukhi;
+              let transliteration;
+              let englishTranslation;
+              let punjabiTranslation;
+              let spanishTranslation;
+              for (let i = 0; i < len; i += 1) {
+                const row = results.rows.item(i);
+                const { GurmukhiBisram, Visraam, Gurmukhi, Paragraph, ID, header } = row;
+                let { English, Punjabi, Spanish } = row;
+                const gurmukhiLine = Visraam && GurmukhiBisram ? GurmukhiBisram : Gurmukhi;
+                const vishraamPositions = parseVishraamPositions(
+                  JSON.parse(Visraam),
+                  vishraamSource
+                );
+                const curGurmukhi = createFormattedText(
+                  gurmukhiLine.split(" "),
+                  vishraamPositions,
+                  {
+                    isVishraam,
+                    vishraamOption,
+                    isLarivar,
+                    isLarivarAssist,
+                  }
+                );
+
                 const translationJson = JSON.parse(row.Translations);
                 const defaultTranslation = " ";
                 const getTranslation = (lang, field) =>
@@ -69,24 +110,71 @@ export function getShabadFromID(shabadID, length, language) {
                     : translationJson[lang][field];
                 const translit =
                   getTranslitText(row.Transliterations, language) || defaultTranslation;
-                const englishTranslations = getTranslation("en", "bdb");
-                const punjabiTranslations = getTranslation("pu", "bdb");
-                const spanishTranslations = getTranslation("es", "sn");
+                English = getTranslation("en", "bdb");
+                Punjabi = getTranslation("pu", "bdb");
+                Spanish = getTranslation("es", "sn");
 
-                return {
-                  id: row.ID,
-                  seq: row.Seq,
-                  gurmukhi: row.Gurmukhi,
-                  header: row.header,
-                  translit,
-                  englishTranslations,
-                  punjabiTranslations,
-                  spanishTranslations,
-                  paragraph: row.Paragraph,
-                  visramDB: row.Visraam,
-                };
-              });
-              return resolve(baniData);
+                if (isParagraphMode) {
+                  const isParagraphChange = prevParagraph !== Paragraph;
+                  const isLastIteration = i === len - 1;
+
+                  if (isParagraphChange) {
+                    if (i !== 0) {
+                      paragraphResults.push({
+                        id: `${paragraphID}`,
+                        gurmukhi,
+                        translit: transliteration,
+                        englishTranslations: englishTranslation,
+                        punjabiTranslations: punjabiTranslation,
+                        spanishTranslations: spanishTranslation,
+                        header: paragraphHeader,
+                      });
+                    }
+
+                    paragraphID = ID;
+                    paragraphHeader = header;
+                    gurmukhi = curGurmukhi;
+                    transliteration = translit;
+                    englishTranslation = English;
+                    punjabiTranslation = Punjabi;
+                    spanishTranslation = Spanish;
+                    prevParagraph = Paragraph;
+                  } else {
+                    const space = isLarivar ? "" : " ";
+                    gurmukhi += `${space}${curGurmukhi}`;
+                    transliteration += ` ${translit}`;
+                    englishTranslation += ` ${English}`;
+                    punjabiTranslation += ` ${Punjabi}`;
+                    spanishTranslation += ` ${Spanish}`;
+                  }
+
+                  if (isLastIteration) {
+                    paragraphResults.push({
+                      id: `${paragraphID}`,
+                      gurmukhi,
+                      translit: transliteration,
+                      englishTranslations: englishTranslation,
+                      punjabiTranslations: punjabiTranslation,
+                      spanishTranslations: spanishTranslation,
+                      header: paragraphHeader,
+                    });
+                  }
+                } else {
+                  totalResults[i] = {
+                    id: `${ID}`,
+                    gurmukhi: curGurmukhi,
+                    translit,
+                    englishTranslations: English,
+                    punjabiTranslations: Punjabi,
+                    spanishTranslations: Spanish,
+                    header,
+                  };
+                }
+              }
+              if (isParagraphMode) {
+                return resolve(paragraphResults);
+              }
+              return resolve(totalResults);
             }
           );
         });
@@ -131,7 +219,7 @@ export function getBookmarksForID(baniId, length, language) {
     initDB().then((db) => {
       db.transaction((tx) => {
         tx.executeSql(
-          `SELECT ID, BaniShabadID, Seq, Gurmukhi, Transliterations FROM Banis_Bookmarks WHERE Bani = ${baniId} AND BaniShabadID in (SELECT ID from mv_Banis_Shabad where Bani = ${baniId} AND ${baniLength} = 1)` +
+          `SELECT ID, BaniShabadID, Seq, Gurmukhi, Transliterations, TukGurmukhi, TukTransliterations FROM Banis_Bookmarks WHERE Bani = ${baniId} AND BaniShabadID in (SELECT ID from mv_Banis_Shabad where Bani = ${baniId} AND ${baniLength} = 1)` +
             ` ORDER BY Seq ASC;`,
           [],
           (_tx, results) => {
@@ -139,13 +227,16 @@ export function getBookmarksForID(baniId, length, language) {
             const len = results.rows.length;
             for (let i = 0; i < len; i += 1) {
               const row = results.rows.item(i);
-              const { BaniShabadID, Gurmukhi, Transliterations, Seq, ID } = row;
+              const { BaniShabadID, Gurmukhi, Transliterations, TukGurmukhi, TukTransliterations } =
+                row;
               totalResults[i] = {
                 shabadID: BaniShabadID,
                 gurmukhi: Gurmukhi,
+                tukGurmukhi: TukGurmukhi,
                 translit: getTranslitText(Transliterations, language),
-                seq: Seq,
-                id: ID,
+                tukTranslit: TukTransliterations
+                  ? getTranslitText(TukTransliterations, language)
+                  : null,
               };
             }
             return resolve(totalResults);

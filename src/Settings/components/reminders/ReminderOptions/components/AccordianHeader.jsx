@@ -7,15 +7,18 @@ import DateTimePicker from "react-native-modal-datetime-picker";
 import moment from "moment";
 import colors from "../../../../../common/colors";
 import constant from "../../../../../common/constant";
-import styles from "../styles";
+import { styles } from "../styles";
 import { setReminderBanis } from "../../../../../common/actions";
 import { updateReminders } from "../../../../../common/notifications";
 import { trackReminderEvent } from "../../../../../common/analytics";
 
 function AccordianHeader({ section, isActive }) {
-  const { reminderBanis, isNightMode, isTransliteration, isReminders, reminderSound } = useSelector(
-    (state) => state
-  );
+  const reminderBanis = useSelector((state) => state.reminderBanis);
+  const isNightMode = useSelector((state) => state.isNightMode);
+  const isTransliteration = useSelector((state) => state.isTransliteration);
+  const isReminders = useSelector((state) => state.isReminders);
+  const reminderSound = useSelector((state) => state.reminderSound);
+
   const [isTimePicker, toggleTimePicker] = useState(false);
   const dispatch = useDispatch();
   const { enabled, translit, gurmukhi, key, time } = section;

@@ -13,7 +13,7 @@ import EditBaniOrder from "../EditBaniOrder";
 import Bookmarks from "../Bookmarks";
 import ReminderOptions from "../Settings/components/reminders/ReminderOptions";
 import FolderScreen from "../FolderScreen";
-import { styles, SettingsStyle } from "./style";
+import { SettingsStyle } from "./style";
 
 const Stack = createNativeStackNavigator();
 
@@ -26,9 +26,8 @@ const headerLeft = (navigation, isNightMode) => (
   />
 );
 function Navigation() {
-  const { isNightMode } = useSelector((state) => state);
+  const isNightMode = useSelector((state) => state.isNightMode);
   const settingsStyle = SettingsStyle(isNightMode);
-  const { homeHeaderStyle, homeHeaderTitle } = styles;
   const { headerTitleStyle, headerStyle } = settingsStyle;
 
   return (
@@ -41,9 +40,10 @@ function Navigation() {
       >
         <Stack.Screen
           options={{
-            title: STRINGS.fateh,
-            headerTitleStyle: homeHeaderTitle,
-            headerStyle: homeHeaderStyle,
+            headerShown: false,
+            // title: STRINGS.fateh,
+            // headerTitleStyle: homeHeaderTitle,
+            // headerStyle: homeHeaderStyle,
           }}
           name="Home"
           component={HomeScreen}
@@ -51,6 +51,7 @@ function Navigation() {
         <Stack.Screen name="Reader" component={Reader} />
         <Stack.Screen
           options={({ navigation }) => ({
+            title: STRINGS.settings,
             headerLeft: () => headerLeft(navigation, isNightMode),
             headerTitleStyle,
             headerStyle,

@@ -1,7 +1,7 @@
 import colors from "../common/colors";
 import constant from "../common/constant";
 
-const getHeaderStyles = (isNightMode) => ({
+const getHeaderStyles = () => ({
   headerTitleStyle: {
     color: colors.WHITE_COLOR,
     fontWeight: "normal",
@@ -9,9 +9,7 @@ const getHeaderStyles = (isNightMode) => ({
     fontSize: 20,
   },
   headerStyle: {
-    backgroundColor: !isNightMode
-      ? colors.TOOLBAR_COLOR
-      : colors.READER_STATUS_BAR_COLOR_NIGHT_MODE,
+    backgroundColor: colors.TOOLBAR_COLOR,
   },
 });
 export default getHeaderStyles;

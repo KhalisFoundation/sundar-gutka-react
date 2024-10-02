@@ -3,7 +3,7 @@ import { useSelector } from "react-redux";
 import { activateKeepAwake, deactivateKeepAwake } from "@sayem314/react-native-keep-awake";
 
 const useKeepAwake = () => {
-  const { isScreenAwake } = useSelector((state) => state);
+  const isScreenAwake = useSelector((state) => state.isScreenAwake);
   useEffect(() => {
     if (isScreenAwake) {
       activateKeepAwake();

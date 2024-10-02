@@ -6,7 +6,9 @@ import { iconNightColor, nightModeStyles, nightModeColor } from "../styles/night
 import STRINGS from "../../common/localization";
 
 function StatusBar() {
-  const { isStatusBar, isNightMode } = useSelector((state) => state);
+  const isStatusBar = useSelector((state) => state.isStatusBar);
+  const isNightMode = useSelector((state) => state.isNightMode);
+
   const dispatch = useDispatch();
   const iconColor = iconNightColor(isNightMode);
   const { containerNightStyles } = nightModeStyles(isNightMode);

@@ -1,19 +1,16 @@
 import { useEffect } from "react";
-import { useDispatch, useSelector } from "react-redux";
-import { toggleBookmarks } from "../../common/actions";
 
-const useBookmarks = (readerRef, shabad) => {
-  const { bookmarkPosition, bookmarks } = useSelector((state) => state);
-
-  const dispatch = useDispatch();
+const useBookmarks = (webViewRef, shabad, bookmarkPosition) => {
   useEffect(() => {
-    if (bookmarks) {
-      const index = shabad.findIndex((item) => item.id === bookmarkPosition);
-      console.log("Index", index);
-      readerRef.current?.scrollToIndex({ index });
-      dispatch(toggleBookmarks(false));
+    if (
+      webViewRef.current &&
+      webViewRef.current.postMessage &&
+      Number(bookmarkPosition) !== -1 &&
+      shabad.length > 0
+    ) {
+      webViewRef.current.postMessage(JSON.stringify({ bookmark: bookmarkPosition }));
     }
-  }, [bookmarks]);
+  }, [bookmarkPosition, webViewRef.current, shabad]);
 };
 
 export default useBookmarks;

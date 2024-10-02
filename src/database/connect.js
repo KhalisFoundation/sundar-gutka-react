@@ -1,12 +1,13 @@
 import { openDatabase, enablePromise } from "react-native-sqlite-storage";
+import FallBack from "../common/components/FallbackComponent";
 import CONSTANT from "../common/constant";
+import errorHandler from "../common/errHandler";
 
 enablePromise(true);
 let database;
 
-export const initDB = async () => {
+const initDB = async () => {
   if (database) {
-    console.log("Database is already initialised: returning database instance");
     return database;
   }
   try {
@@ -14,10 +15,12 @@ export const initDB = async () => {
       name: CONSTANT.DB,
       createFromLocation: 1,
     });
-    console.log("Database open Successfully");
     return database;
   } catch (error) {
-    console.error("Error in opening database", error);
-    throw error; // This will propagate error to the caller if needed
+    errorHandler(error);
+    FallBack();
+    return null;
   }
 };
+
+export default initDB;

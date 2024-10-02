@@ -7,16 +7,20 @@ import colors from "../../common/colors";
 import { getHeaderStyles, styles } from "../styles/styles";
 
 const Header = React.forwardRef(
-  (
-    { navigation, title, shabadID, handleBackPress, handleBookmarkPress, handleSettingsPress },
-    ref
-  ) => {
-    const { isNightMode, rowHeights } = useSelector((state) => state);
+  ({ navigation, title, handleBackPress, handleBookmarkPress, handleSettingsPress }, ref) => {
+    const isNightMode = useSelector((state) => state.isNightMode);
     const getHeaderStyle = getHeaderStyles(isNightMode);
     const [animationPosition] = useState(new Animated.Value(0));
     const headerLeft = () => {
       return (
-        <Icon name="arrow-back" size={30} onPress={handleBackPress} color={colors.WHITE_COLOR} />
+        <Icon
+          name="arrow-back"
+          size={30}
+          onPress={() => {
+            handleBackPress();
+          }}
+          color={colors.WHITE_COLOR}
+        />
       );
     };
     const headerRight = () => {
@@ -34,7 +38,7 @@ const Header = React.forwardRef(
             name="settings"
             color={colors.TOOLBAR_TINT}
             size={30}
-            onPress={handleSettingsPress}
+            onPress={() => handleSettingsPress()}
           />
         </View>
       );
@@ -48,9 +52,10 @@ const Header = React.forwardRef(
     const toggleHeader = (isHeader) => {
       const value = isHeader ? 0 : -120;
       Animated.timing(animationPosition, {
-        duration: 200,
-        useNativeDriver: true,
         toValue: value,
+        duration: 500,
+        // easing: Easing.ease,
+        useNativeDriver: true,
       }).start();
     };
 

@@ -1,30 +1,49 @@
 import { useState, useEffect } from "react";
-import { useDispatch, useSelector } from "react-redux";
+import { useSelector } from "react-redux";
 import { getShabadFromID } from "../../database/db";
-import { setCacheShabad } from "../../common/actions";
 
 const useFetchShabad = (shabadID) => {
-  const dispatch = useDispatch();
   const [shabad, setShabad] = useState([]);
   const [isLoading, toggleLoading] = useState(false);
-  const { baniLength, cacheShabad, transliterationLanguage } = useSelector((state) => state);
+  const baniLength = useSelector((state) => state.baniLength);
+  const transliterationLanguage = useSelector((state) => state.transliterationLanguage);
+  const vishraamSource = useSelector((state) => state.vishraamSource);
+  const vishraamOption = useSelector((state) => state.vishraamOption);
+  const isLarivaar = useSelector((state) => state.isLarivaar);
+  const isLarivaarAssist = useSelector((state) => state.isLarivaarAssist);
+  const isParagraphMode = useSelector((state) => state.isParagraphMode);
+  const isVishraam = useSelector((state) => state.isVishraam);
   useEffect(() => {
-    (async () => {
-      let data;
-
-      if (cacheShabad[shabadID] && cacheShabad[shabadID].length > 0) {
-        data = cacheShabad[shabadID];
-      } else {
-        toggleLoading(true);
-        data = await getShabadFromID(shabadID, baniLength, transliterationLanguage);
-        if (data) {
-          dispatch(setCacheShabad(data, shabadID));
-        }
+    const fetchShabad = async () => {
+      toggleLoading(true);
+      const shabadData = await getShabadFromID(
+        shabadID,
+        baniLength,
+        transliterationLanguage,
+        vishraamSource,
+        vishraamOption,
+        isLarivaar,
+        isLarivaarAssist,
+        isParagraphMode,
+        isVishraam
+      );
+      if (shabadData) {
         toggleLoading(false);
+        setShabad(shabadData);
       }
-      setShabad(data);
-    })();
-  }, [shabadID]);
+    };
+    fetchShabad();
+  }, [
+    shabadID,
+    baniLength,
+    transliterationLanguage,
+    vishraamSource,
+    vishraamOption,
+    isLarivaar,
+    isLarivaarAssist,
+    isParagraphMode,
+    isVishraam,
+  ]);
 
   return { shabad, isLoading };
 };

@@ -148,7 +148,10 @@ export function setPosition(pos, shabadID) {
   const position = { [shabadID]: pos };
   return { type: actionTypes.SET_SAVE_POSITION, position };
 }
-export function setRowHeights(rowHeights, shabadID) {
-  const baniRowHeights = { [shabadID]: rowHeights };
-  return { type: actionTypes.SET_ROW_HEIGHTS, baniRowHeights };
+
+export function setScrollPosition(position) {
+  return { type: actionTypes.SET_SCROLL_POSITION, position };
+}
+export function toggleHeaderFooter(isHeadFoot) {
+  return { type: actionTypes.TOGGLE_HEADER_FOOTER, isHeadFoot };
 }

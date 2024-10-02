@@ -1,6 +1,6 @@
 import { combineReducers } from "redux";
 import * as actionTypes from "./actions/actionTypes";
-import { fetchDefaultBaniOrder } from "./components/BaniList/baniOrderHelper";
+import defaultBaniOrder from "./defaultBaniOrder";
 import constant from "./constant";
 
 const createReducer =
@@ -83,7 +83,7 @@ const vishraamSource = createReducer(constant.sttm, {
   [actionTypes.SET_VISHRAAM_SOURCE]: (state, action) => action.source,
 });
 
-const isStatistics = createReducer(false, {
+const isStatistics = createReducer(true, {
   [actionTypes.TOGGLE_STATISTICS]: (state, action) => action.value,
 });
 
@@ -117,56 +117,60 @@ const reminderBanis = createReducer(JSON.stringify([]), {
 const reminderSound = createReducer(constant.Default.toLowerCase(), {
   [actionTypes.SET_REMINDER_SOUND]: (state, action) => action.sound,
 });
-function autoScrollSpeedObj(state = {}, action) {
+
+const isHeaderFooter = createReducer(false, {
+  [actionTypes.TOGGLE_HEADER_FOOTER]: (state, action) => action.isHeadFoot,
+});
+const autoScrollSpeedObj = (state = {}, action) => {
   switch (action.type) {
     case actionTypes.SET_AUTO_SCROLL_SPEED:
       return { ...state, ...action.shabadSpeed };
     default:
       return state;
   }
-}
+};
 
-function cacheShabad(state = {}, action) {
+const cacheShabad = (state = {}, action) => {
   switch (action.type) {
     case actionTypes.SET_CACHE_SHABAD:
       return { ...state, ...action.cache };
     default:
       return state;
   }
-}
-function baniOrder(state = fetchDefaultBaniOrder(), action) {
+};
+const baniOrder = (state = defaultBaniOrder, action) => {
   switch (action.type) {
     case actionTypes.SET_BANI_ORDER:
       return action.order;
     default:
       return state;
   }
-}
+};
 
-function baniList(state = [], action) {
+const baniList = (state = [], action) => {
   switch (action.type) {
     case actionTypes.SET_BANI_LIST:
       return action.list;
     default:
       return state;
   }
-}
-function savePosition(state = {}, action) {
+};
+const savePosition = (state = {}, action) => {
   switch (action.type) {
     case actionTypes.SET_SAVE_POSITION:
       return { ...state, ...action.position };
     default:
       return state;
   }
-}
-function rowHeights(state = {}, action) {
+};
+const scrollPosition = (state = 0, action) => {
   switch (action.type) {
-    case actionTypes.SET_ROW_HEIGHTS:
-      return { ...state, ...action.baniRowHeights };
+    case actionTypes.SET_SCROLL_POSITION:
+      return action.position;
     default:
       return state;
   }
-}
+};
 
 const rootReducer = combineReducers({
   isNightMode,
@@ -200,7 +204,7 @@ const rootReducer = combineReducers({
   baniOrder,
   baniList,
   savePosition,
-  rowHeights,
-  bookmarks,
+  scrollPosition,
+  isHeaderFooter,
 });
 export default rootReducer;
