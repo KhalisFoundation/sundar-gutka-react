@@ -112,7 +112,9 @@ const defaultBaniOrder = {
     {
       id: 37,
     },
-
+    {
+      id: 38,
+    },
     {
       gurmukhi: "AMimRq bwxI",
       translit: "amirat baaNee",
@@ -259,9 +261,6 @@ const defaultBaniOrder = {
           id: 89,
         },
         {
-          id: 90,
-        },
-        {
           id: 91,
         },
         {
@@ -340,9 +339,6 @@ const defaultBaniOrder = {
           id: 85,
         },
       ],
-    },
-    {
-      id: 38,
     },
   ],
 };

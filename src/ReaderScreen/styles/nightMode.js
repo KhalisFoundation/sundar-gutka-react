@@ -1,4 +1,4 @@
-import colors from "../../common/colors";
+import { colors } from "@common";
 
 const nightColors = (isNightMode) => {
   let bgColor;

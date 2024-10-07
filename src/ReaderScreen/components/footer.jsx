@@ -3,8 +3,8 @@ import { Animated, Text, Pressable, View } from "react-native";
 import { Icon } from "@rneui/themed";
 import { useSelector } from "react-redux";
 import PropTypes from "prop-types";
+import { colors, constant } from "@common";
 import { styles, getHeaderStyles } from "../styles";
-import { colors, constant } from "../../common";
 import { useAnimationHeadFoot } from "../hooks";
 
 function Footer({ navigation, shabadID }) {

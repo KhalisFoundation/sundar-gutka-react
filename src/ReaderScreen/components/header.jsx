@@ -3,7 +3,7 @@ import { View, Text, Animated } from "react-native";
 import { Icon } from "@rneui/themed";
 import PropTypes from "prop-types";
 import { useSelector } from "react-redux";
-import colors from "../../common/colors";
+import colors from "@common/colors";
 import { getHeaderStyles, styles } from "../styles/styles";
 
 const Header = React.forwardRef(
@@ -11,7 +11,6 @@ const Header = React.forwardRef(
     const isNightMode = useSelector((state) => state.isNightMode);
     const getHeaderStyle = getHeaderStyles(isNightMode);
     const [animationPosition] = useState(new Animated.Value(0));
-
     const headerLeft = () => {
       return (
         <Icon
@@ -33,6 +32,7 @@ const Header = React.forwardRef(
             size={30}
             onPress={handleBookmarkPress}
           />
+
           <Icon
             name="settings"
             color={colors.TOOLBAR_TINT}
@@ -47,7 +47,7 @@ const Header = React.forwardRef(
       navigation.setOptions({
         headerShown: false,
       });
-    });
+    }, []);
     const toggleHeader = (isHeader) => {
       const value = isHeader ? 0 : -120;
       Animated.timing(animationPosition, {
@@ -89,5 +89,6 @@ Header.propTypes = {
   handleBackPress: PropTypes.func.isRequired,
   handleBookmarkPress: PropTypes.func.isRequired,
   handleSettingsPress: PropTypes.func.isRequired,
+  shabadID: PropTypes.number.isRequired,
 };
 export default Header;

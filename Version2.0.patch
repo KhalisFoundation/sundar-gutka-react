@@ -31495,10 +31495,10 @@ index 0000000..9ceb55a
 +import PropTypes from "prop-types";
 +import BaniList from "./components/BaniList";
 +import { getBaniList } from "../database/db";
-+import STRINGS from "../common/localization";
-+import colors from "../common/colors";
++import STRINGS from "@common/localization";
++import colors from "@common/colors";
 +import styles from "./styles";
-+import constant from "../common/constant";
++import constant from "@common/constant";
 +
 +function BaniHeader(props) {
 +  const { navigate } = props;
@@ -31570,7 +31570,7 @@ index 0000000..97f2d67
 +import { StyleSheet, FlatList } from "react-native";
 +import { ListItem } from "@rneui/themed";
 +import PropTypes from "prop-types";
-+import constant from "../../../common/constant";
++import constant from "../../@common/constant";
 +
 +const styles = StyleSheet.create({
 +  text: {
@@ -31637,8 +31637,8 @@ index 0000000..252fbcd
 +++ b/src/HomeScreen/styles.js
 @@ -0,0 +1,19 @@
 +import { StyleSheet } from "react-native";
-+import colors from "../common/colors";
-+import constant from "../common/constant";
++import colors from "@common/colors";
++import constant from "@common/constant";
 +
 +const styles = StyleSheet.create({
 +  container: { flex: 1, marginTop: 0 },
@@ -31674,10 +31674,10 @@ index 0000000..113e87b
 +import { View, Text } from "react-native";
 +import { ListItem, Avatar, Switch, Icon } from "@rneui/themed";
 +import { useSelector, useDispatch } from "react-redux";
-+import { toggleNightMode } from "../common/actions";
-+import STRINGS from "../common/localization";
++import { toggleNightMode } from "@common/actions";
++import STRINGS from "@common/localization";
 +import styles from "./styles";
-+import colors from "../common/colors";
++import colors from "@common/colors";
 +import { FontSizeBottomSheet } from "./utils/actions";
 +
 +function ListComponent() {
@@ -31810,9 +31810,9 @@ index 0000000..66f8f03
 +import { useSelector } from "react-redux";
 +import PropTypes from "prop-types";
 +import { SafeAreaView, StatusBar, View, Text } from "react-native";
-+import STRINGS from "../common/localization";
++import STRINGS from "@common/localization";
 +import ListComponent from "./ListComponents";
-+import colors from "../common/colors";
++import colors from "@common/colors";
 +import styles from "./styles";
 +
 +function HeaderComponent({ backNav }) {
@@ -31869,7 +31869,7 @@ index 0000000..346a5e0
 +++ b/src/Settings/styles.js
 @@ -0,0 +1,17 @@
 +import { StyleSheet } from "react-native";
-+import colors from "../common/colors";
++import colors from "@common/colors";
 +
 +const styles = StyleSheet.create({
 +  iconStyle: { alignSelf: "flex-start" },
@@ -32090,7 +32090,7 @@ index 0000000..3d9fe33
 +++ b/src/database/connect.js
 @@ -0,0 +1,23 @@
 +import { openDatabase, enablePromise } from "react-native-sqlite-storage";
-+import CONSTANT from "../common/constant";
++import CONSTANT from "@common/constant";
 +
 +enablePromise(true);
 +let database;
@@ -32162,7 +32162,7 @@ index 0000000..b231f7f
 --- /dev/null
 +++ b/src/database/utils/utils.js
 @@ -0,0 +1,17 @@
-+import constant from "../../common/constant";
++import constant from "../@common/constant";
 +
 +export const getTranslitText = (translit, language) => {
 +  const json = JSON.parse(translit);

@@ -5,7 +5,7 @@ const FONT_SIZES = {
   [constant.SMALL]: 24,
   [constant.MEDIUM]: 30,
   [constant.LARGE]: 36,
-  [constant.EXTRA_LARGE]: 48,
+  [constant.EXTRA_LARGE]: 42,
 };
 
 const TRANSLITERATION_MULTIPLIER = 1.25;

@@ -1,9 +1,8 @@
 import React from "react";
 import { ListItem, Avatar, Switch } from "@rneui/themed";
 import { useDispatch, useSelector } from "react-redux";
+import { STRINGS, actions } from "@common";
 import { nightModeStyles, nightModeColor } from "../styles/nightModeStyles";
-import STRINGS from "../../common/localization";
-import { toggleStatistics } from "../../common/actions";
 import { styles } from "../styles";
 
 function CollectStatistics() {
@@ -20,7 +19,10 @@ function CollectStatistics() {
       <ListItem.Content>
         <ListItem.Title style={nightColor}>{COLLECT_STATISTICS}</ListItem.Title>
       </ListItem.Content>
-      <Switch value={isStatistics} onValueChange={(value) => dispatch(toggleStatistics(value))} />
+      <Switch
+        value={isStatistics}
+        onValueChange={(value) => dispatch(actions.toggleStatistics(value))}
+      />
     </ListItem>
   );
 }

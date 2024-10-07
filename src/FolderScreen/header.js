@@ -1,9 +1,8 @@
 import React, { useEffect, useCallback } from "react";
 import { Icon } from "@rneui/themed";
 import PropTypes from "prop-types";
-import colors from "../common/colors";
+import { colors, constant } from "@common";
 import getHeaderStyles from "./styles";
-import constant from "../common/constant";
 
 function Header({ navigation, title }) {
   const { headerStyle, headerTitleStyle } = getHeaderStyles();

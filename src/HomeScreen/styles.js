@@ -1,6 +1,5 @@
 import { StyleSheet } from "react-native";
-import colors from "../common/colors";
-import constant from "../common/constant";
+import { colors, constant } from "@common";
 
 const styles = StyleSheet.create({
   container: { flex: 1, marginTop: 0 },

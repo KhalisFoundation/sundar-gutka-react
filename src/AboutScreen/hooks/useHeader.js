@@ -1,6 +1,6 @@
 import React, { useEffect } from "react";
 import { Icon } from "@rneui/themed";
-import colors from "../../common/colors";
+import { colors, STRINGS } from "@common";
 import { styles } from "../styles";
 
 const useHeader = (navigation) => {
@@ -12,6 +12,7 @@ const useHeader = (navigation) => {
   );
   useEffect(() => {
     navigation.setOptions({
+      title: STRINGS.about,
       headerTitleStyle,
       headerStyle,
       headerLeft,

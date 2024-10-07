@@ -1,4 +1,4 @@
-import { constant, colors } from "../../common";
+import { constant, colors } from "@common";
 
 export const getTranslitText = (translit, language) => {
   const json = JSON.parse(translit);

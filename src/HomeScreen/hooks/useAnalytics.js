@@ -1,5 +1,5 @@
 import { useEffect } from "react";
-import { allowTracking } from "../../common/analytics";
+import { allowTracking } from "@common";
 
 const useAnalytics = () => {
   useEffect(() => {

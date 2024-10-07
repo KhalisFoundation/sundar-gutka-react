@@ -1,16 +1,17 @@
 import { useEffect } from "react";
 
-const useBookmarks = (webViewRef, shabad, bookmarkPosition) => {
-  useEffect(() => {
-    if (
-      webViewRef.current &&
-      webViewRef.current.postMessage &&
-      Number(bookmarkPosition) !== -1 &&
-      shabad.length > 0
-    ) {
-      webViewRef.current.postMessage(JSON.stringify({ bookmark: bookmarkPosition }));
+const useBookmarks = (scrollViewRef, shabad, bookmarkPosition, elementPositions) => {
+  const scrollToElement = (id) => {
+    if (scrollViewRef.current) {
+      scrollViewRef.current.scrollTo({
+        y: elementPositions.current[id],
+        animated: true,
+      });
     }
-  }, [bookmarkPosition, webViewRef.current, shabad]);
+  };
+  useEffect(() => {
+    scrollToElement(bookmarkPosition);
+  }, [bookmarkPosition, scrollViewRef.current, shabad]);
 };
 
 export default useBookmarks;

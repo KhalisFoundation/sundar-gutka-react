@@ -1,9 +1,8 @@
 import React, { useState } from "react";
 import { ListItem, Icon, Switch } from "@rneui/themed";
 import { useDispatch, useSelector } from "react-redux";
-import { STRINGS } from "../../common";
-import { setVishraamOption, toggleVishraam, setVishraamSource } from "../../common/actions";
-import { VISHRAAM_OPTIONS, VISHRAAM_SOURCES } from "../../common/actions/constant";
+import { STRINGS } from "@common";
+import { setVishraamOption, toggleVishraam, setVishraamSource } from "@common/actions";
 import { nightModeStyles, iconNightColor } from "../styles";
 import { BottomSheetComponent, ListItemComponent } from "./comon";
 
@@ -18,6 +17,15 @@ function VishraamComponent() {
   const dispatch = useDispatch();
   const { containerNightStyles, textNightStyle } = nightModeStyles(isNightMode);
   const iconColor = iconNightColor(isNightMode);
+  const VISHRAAM_OPTIONS = [
+    { key: "VISHRAAM_COLORED", title: STRINGS.colored_words },
+    { key: "VISHRAAM_GRADIENT", title: STRINGS.gradient_background },
+  ];
+  const VISHRAAM_SOURCES = [
+    { key: "sttm", title: STRINGS.banidb_living_default },
+    { key: "igurbani", title: STRINGS.iGurbani },
+    { key: "sttm2", title: STRINGS.sttm2 },
+  ];
 
   return (
     <>
