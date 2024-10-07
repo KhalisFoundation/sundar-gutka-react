@@ -4,6 +4,7 @@ import { getShabadFromID } from "@database";
 
 const useFetchShabad = (shabadID) => {
   const [shabad, setShabad] = useState([]);
+  const [groupedByParagraph, setGroupedByParagraph] = useState({});
   const [isLoading, toggleLoading] = useState(false);
   const baniLength = useSelector((state) => state.baniLength);
   const transliterationLanguage = useSelector((state) => state.transliterationLanguage);
@@ -38,6 +39,15 @@ const useFetchShabad = (shabadID) => {
     if (shabadData) {
       toggleLoading(false);
       setShabad(shabadData);
+      const byParagraph = shabadData.reduce((acc, entry) => {
+        // Check if the group for this paragraph_no already exists
+        if (!acc[entry.paragraphNum]) {
+          acc[entry.paragraphNum] = []; // If not, create it
+        }
+        acc[entry.paragraphNum].push(entry); // Add the entry to the group
+        return acc;
+      }, {});
+      setGroupedByParagraph(byParagraph);
     }
   };
   useEffect(() => {
@@ -54,7 +64,7 @@ const useFetchShabad = (shabadID) => {
     isVishraam,
   ]);
 
-  return { shabad, isLoading };
+  return { shabad, isLoading, groupedByParagraph };
 };
 
 export default useFetchShabad;

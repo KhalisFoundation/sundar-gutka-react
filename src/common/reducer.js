@@ -102,9 +102,6 @@ const isPunjabiTranslation = createReducer(false, {
 const bookmarkPosition = createReducer(1, {
   [actionTypes.SET_BOOKMARK_POSITION]: (state, action) => action.value,
 });
-const bookmarks = createReducer(false, {
-  [actionTypes.TOGGLE_BOOKMARKS]: (state, action) => action.value,
-});
 
 const isReminders = createReducer(false, {
   [actionTypes.TOGGLE_REMINDERS]: (state, action) => action.value,

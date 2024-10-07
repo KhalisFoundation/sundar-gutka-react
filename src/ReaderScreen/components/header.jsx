@@ -26,14 +26,13 @@ const Header = React.forwardRef(
     const headerRight = () => {
       return (
         <View style={{ flexDirection: "row" }}>
-          {rowHeights[shabadID] && (
-            <Icon
-              name="bookmark"
-              color={colors.TOOLBAR_TINT}
-              size={30}
-              onPress={handleBookmarkPress}
-            />
-          )}
+          <Icon
+            name="bookmark"
+            color={colors.TOOLBAR_TINT}
+            size={30}
+            onPress={handleBookmarkPress}
+          />
+
           <Icon
             name="settings"
             color={colors.TOOLBAR_TINT}

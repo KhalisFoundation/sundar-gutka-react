@@ -168,6 +168,7 @@ export function getShabadFromID(
                     punjabiTranslations: Punjabi,
                     spanishTranslations: Spanish,
                     header,
+                    paragraphNum: Paragraph,
                   };
                 }
               }
