@@ -47,8 +47,8 @@ const Reader = ({ navigation, route }) => {
   useBookmarks(webViewRef, shabad, bookmarkPosition);
 
   useEffect(() => {
-    setShabadID(Number(route.params.params.id));
-  }, [route.params.params.id]);
+    setShabadID(Number(id));
+  }, [id]);
 
   useEffect(() => {
     setCurrentPosition(savePosition[shabadID]);
@@ -102,6 +102,7 @@ const Reader = ({ navigation, route }) => {
       dispatch(actions.setPosition(position, shabadID));
     }
   };
+
   return (
     <SafeAreaView style={[{ flex: 1 }, safeAreaViewBack]}>
       <StatusBar

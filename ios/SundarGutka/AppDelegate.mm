@@ -1,11 +1,14 @@
 #import "AppDelegate.h"
 #import <Firebase.h>
 #import <React/RCTBundleURLProvider.h>
+#import "RNSplashScreen.h"
 
 @implementation AppDelegate
 
 - (BOOL)application:(UIApplication *)application didFinishLaunchingWithOptions:(NSDictionary *)launchOptions
 {
+  [RNSplashScreen show];
+  
   if ([FIRApp defaultApp] == nil) {
     [FIRApp configure];
   }
