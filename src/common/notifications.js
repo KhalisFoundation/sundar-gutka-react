@@ -116,13 +116,6 @@ export const updateReminders = async (remindersOn, sound, remindersList) => {
 export const checkPermissions = async () => {
   const settings = await notifee.requestPermission();
   const isAllowed = settings.authorizationStatus >= AuthorizationStatus.AUTHORIZED;
-  // const notificationSettings = notifee.getNotificationSettings();
-  // if (notificationSettings.android.alarm !== AndroidNotificationSetting.ENABLED) {
-  //   console.log("it's working");
-  //   await notifee.openAlarmPermissionSettings();
-
-  // }
-
   return isAllowed;
 };
 

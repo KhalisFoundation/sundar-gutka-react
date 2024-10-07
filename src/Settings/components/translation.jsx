@@ -9,7 +9,7 @@ import {
 } from "@common/actions";
 import { iconNightColor, styles } from "../styles";
 
-function TranslationComponent() {
+const TranslationComponent = () => {
   const translationAvatar = require("../../../images/englishicon.png");
   const isEnglishTranslation = useSelector((state) => state.isEnglishTranslation);
   const isSpanishTranslation = useSelector((state) => state.isSpanishTranslation);
@@ -101,6 +101,6 @@ function TranslationComponent() {
       </ListItem>
     </ListItem.Accordion>
   );
-}
+};
 
 export default TranslationComponent;

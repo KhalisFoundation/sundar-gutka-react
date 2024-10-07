@@ -10,14 +10,14 @@ import { useBookmarks, useFetchShabad } from "./hooks";
 import { styles, nightColors } from "./styles";
 import { loadHTML } from "./utils";
 
-function Reader({ navigation, route }) {
+const Reader = ({ navigation, route }) => {
   const webViewRef = useRef(null);
   const headerRef = useRef(null);
   const { webView } = styles;
-  const { title } = route.params.params;
+  const { title, id } = route.params.params;
   const [isHeader, toggleIsHeader] = useState(true);
   const [viewLoaded, toggleViewLoaded] = useState(false);
-  const [shabadID, setShabadID] = useState(Number(route.params.params.id));
+  const [shabadID, setShabadID] = useState(Number(id));
 
   const dispatch = useDispatch();
 
@@ -159,7 +159,7 @@ function Reader({ navigation, route }) {
       {isAutoScroll && <AutoScrollComponent shabadID={shabadID} ref={webViewRef} />}
     </SafeAreaView>
   );
-}
+};
 
 Reader.propTypes = {
   navigation: PropTypes.shape().isRequired,

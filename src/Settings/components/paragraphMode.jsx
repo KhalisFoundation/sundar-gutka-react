@@ -5,7 +5,7 @@ import { toggleParagraphMode } from "@common/actions";
 import { STRINGS } from "@common";
 import { iconNightColor, nightModeStyles, nightModeColor } from "../styles/nightModeStyles";
 
-function ParagraphMode() {
+const ParagraphMode = () => {
   const isParagraphMode = useSelector((state) => state.isParagraphMode);
   const isNightMode = useSelector((state) => state.isNightMode);
 
@@ -26,5 +26,5 @@ function ParagraphMode() {
       />
     </ListItem>
   );
-}
+};
 export default ParagraphMode;

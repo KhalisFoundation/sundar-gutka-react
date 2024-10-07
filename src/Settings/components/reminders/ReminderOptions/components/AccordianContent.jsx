@@ -8,7 +8,7 @@ import { setReminderBanis } from "@common/actions";
 import { styles } from "../styles";
 import LabelModal from "../modals/LabelModal";
 
-function AccordianContent({ section, isActive }) {
+const AccordianContent = ({ section, isActive }) => {
   const isNightMode = useSelector((state) => state.isNightMode);
   const [isLabelModal, toggleLabelModal] = useState(false);
   const reminderBanis = useSelector((state) => state.reminderBanis);
@@ -78,7 +78,7 @@ function AccordianContent({ section, isActive }) {
       {isLabelModal && <LabelModal section={section} onHide={hideModal} />}
     </View>
   );
-}
+};
 AccordianContent.propTypes = {
   section: PropTypes.shape({ key: PropTypes.number.isRequired, title: PropTypes.string.isRequired })
     .isRequired,

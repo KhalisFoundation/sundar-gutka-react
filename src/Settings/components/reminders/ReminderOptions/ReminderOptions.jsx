@@ -10,7 +10,7 @@ import { styles, accordianNightColor, optionContainer } from "./styles";
 import { AccordianContent, AccordianHeader } from "./components";
 import { useHeader, useFetchBani } from "./hooks";
 
-function ReminderOptions({ navigation }) {
+const ReminderOptions = ({ navigation }) => {
   const isNightMode = useSelector((state) => state.isNightMode);
   const reminderBanis = useSelector((state) => state.reminderBanis);
   const isReminders = useSelector((state) => state.isReminders);
@@ -87,8 +87,6 @@ function ReminderOptions({ navigation }) {
               "landscape-left",
               "landscape-right",
             ]}
-            // style={{ backgroundColor: "#000" }}
-
             data={reminderBaniData}
             cancelText={STRINGS.cancel}
             optionTextStyle={{ ...styles.modalSelectText, color }}
@@ -105,7 +103,7 @@ function ReminderOptions({ navigation }) {
       </ScrollView>
     </SafeAreaView>
   );
-}
+};
 
 ReminderOptions.propTypes = {
   navigation: PropTypes.shape({

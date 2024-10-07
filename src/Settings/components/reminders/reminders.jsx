@@ -16,7 +16,7 @@ import { nightModeStyles, iconNightColor } from "../../styles";
 import { ListItemComponent, BottomSheetComponent } from "../comon";
 import setDefaultReminders from "./ReminderOptions/utils";
 
-function RemindersComponent({ navigation }) {
+const RemindersComponent = ({ navigation }) => {
   const REMINDER_SOUNDS = [
     {
       key: "default",
@@ -121,7 +121,7 @@ function RemindersComponent({ navigation }) {
       )}
     </>
   );
-}
+};
 
 RemindersComponent.propTypes = {
   navigation: PropTypes.shape({ navigate: PropTypes.func.isRequired }).isRequired,

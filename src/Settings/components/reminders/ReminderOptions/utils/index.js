@@ -3,45 +3,22 @@ import { setReminderBanis } from "@common/actions";
 
 const setDefaultReminders = async (baniListData, dispatch, isReminders, reminderSound) => {
   const baniList = baniListData;
+
   const defaultReminders = () => {
-    return [
-      {
-        key: baniList[0].id,
-        id: baniList[0].id,
-        gurmukhi: baniList[0].gurmukhi,
-        translit: baniList[0].translit,
+    const defaultIndexes = [0, 1, 19, 21];
+    const defaultTimings = ["3:00 AM", "3:30 AM", "6:00 PM", "10:00 PM"];
+    return defaultIndexes.map((index, idx) => {
+      const bani = baniList[index];
+      return {
+        key: bani.id,
+        id: bani.id,
+        gurmukhi: bani.gurmukhi,
+        translit: bani.translit,
         enabled: true,
-        title: `${STRINGS.time_for} ${baniList[0].translit}`,
-        time: "3:00 AM",
-      },
-      {
-        key: baniList[1].id,
-        id: baniList[1].id,
-        gurmukhi: baniList[1].gurmukhi,
-        translit: baniList[1].translit,
-        enabled: true,
-        title: `${STRINGS.time_for} ${baniList[1].translit}`,
-        time: "3:30 AM",
-      },
-      {
-        key: baniList[19].id,
-        id: baniList[19].id,
-        gurmukhi: baniList[19].gurmukhi,
-        translit: baniList[19].translit,
-        enabled: true,
-        title: `${STRINGS.time_for} ${baniList[19].translit}`,
-        time: "6:00 PM",
-      },
-      {
-        key: baniList[21].id,
-        id: baniList[21].id,
-        gurmukhi: baniList[21].gurmukhi,
-        translit: baniList[21].translit,
-        enabled: true,
-        title: `${STRINGS.time_for} ${baniList[21].translit}`,
-        time: "10:00 PM",
-      },
-    ];
+        title: `${STRINGS.time_for} ${bani.translit}`,
+        time: defaultTimings[idx],
+      };
+    });
   };
   const data = defaultReminders(baniListData);
 

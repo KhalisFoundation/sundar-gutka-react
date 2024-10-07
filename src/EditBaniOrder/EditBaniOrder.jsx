@@ -11,7 +11,7 @@ import { STRINGS, defaultBaniOrder, actions } from "@common";
 import { activeColor, nightStyles, styles } from "./styles";
 import useHeader from "./hooks/useHeader";
 
-function EditBaniOrder({ navigation }) {
+const EditBaniOrder = ({ navigation }) => {
   const isNightMode = useSelector((state) => state.isNightMode);
   const baniList = useSelector((state) => state.baniList);
   const baniOrder = useSelector((state) => state.baniOrder);
@@ -55,28 +55,29 @@ function EditBaniOrder({ navigation }) {
   );
 
   useEffect(() => {
-    if (isReset) {
-      dispatch(actions.setBaniOrder({ baniOrder: defaultBaniOrder.baniOrder }));
-      const banis = [];
-      if (defaultBaniOrder && defaultBaniOrder.baniOrder.length > 0) {
-        defaultBaniOrder.baniOrder.forEach((element) => {
-          if (element.id) {
-            const baniItem = baniList.find((item) => item.id === element.id);
-            if (baniItem) {
-              banis.push({
-                id: baniItem.id,
-                gurmukhi: baniItem.gurmukhi,
-                translit: baniItem.translit,
-              });
-            }
-          }
-        });
-      }
-
-      setOrderData(defaultBaniOrder.baniOrder.filter((item) => item.id !== undefined));
-      setBaniListData(banis.filter((item) => item.id !== undefined));
-      setReset(false);
+    if (!isReset) {
+      return;
     }
+    dispatch(actions.setBaniOrder({ baniOrder: defaultBaniOrder.baniOrder }));
+    const banis = [];
+    if (defaultBaniOrder && defaultBaniOrder.baniOrder.length > 0) {
+      defaultBaniOrder.baniOrder.forEach((element) => {
+        if (element.id) {
+          const baniItem = baniList.find((item) => item.id === element.id);
+          if (baniItem) {
+            banis.push({
+              id: baniItem.id,
+              gurmukhi: baniItem.gurmukhi,
+              translit: baniItem.translit,
+            });
+          }
+        }
+      });
+    }
+
+    setOrderData(defaultBaniOrder.baniOrder.filter((item) => item.id !== undefined));
+    setBaniListData(banis.filter((item) => item.id !== undefined));
+    setReset(false);
   }, [isReset]);
 
   useEffect(() => {
@@ -107,7 +108,7 @@ function EditBaniOrder({ navigation }) {
       />
     </GestureHandlerRootView>
   );
-}
+};
 EditBaniOrder.propTypes = {
   navigation: PropTypes.shape({
     goBack: PropTypes.func.isRequired,

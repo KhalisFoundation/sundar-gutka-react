@@ -4,7 +4,7 @@ import { useSelector, useDispatch } from "react-redux";
 import { toggleScreenAwake, toggleAutoScroll, STRINGS } from "@common";
 import { iconNightColor, nightModeStyles, nightModeColor } from "../styles/nightModeStyles";
 
-function AutoScroll() {
+const AutoScroll = () => {
   const isNightMode = useSelector((state) => state.isNightMode);
   const isAutoScroll = useSelector((state) => state.isAutoScroll);
   const dispatch = useDispatch();
@@ -28,5 +28,5 @@ function AutoScroll() {
       />
     </ListItem>
   );
-}
+};
 export default AutoScroll;

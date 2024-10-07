@@ -7,7 +7,7 @@ import { colors, STRINGS, constant, useScreenAnalytics } from "@common";
 import { styles, nightStyles } from "./styles";
 import useHeader from "./hooks/useHeader";
 
-function AboutScreen({ navigation }) {
+const AboutScreen = ({ navigation }) => {
   const isNightMode = useSelector((state) => state.isNightMode);
   const isStatusBar = useSelector((state) => state.isStatusBar);
 
@@ -97,7 +97,7 @@ function AboutScreen({ navigation }) {
       </View>
     </View>
   );
-}
+};
 
 AboutScreen.propTypes = { navigation: PropTypes.shape().isRequired };
 

@@ -5,7 +5,7 @@ import { useSelector } from "react-redux";
 import { colors, BaniList, constant, useScreenAnalytics } from "@common";
 import Header from "./header";
 
-function FolderScreen({ navigation, route }) {
+const FolderScreen = ({ navigation, route }) => {
   const { navigate } = navigation;
   const { data, title } = route.params.params;
   const isNightMode = useSelector((state) => state.isNightMode);
@@ -28,7 +28,7 @@ function FolderScreen({ navigation, route }) {
       <BaniList data={data} isFolderScreen onPress={onPress.bind(this)} />
     </View>
   );
-}
+};
 
 FolderScreen.propTypes = {
   navigation: PropTypes.shape({

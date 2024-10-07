@@ -6,7 +6,7 @@ import { createStore, errorHandler, FallBack } from "@common";
 import Navigation from "./src/navigation";
 
 const { store, persistor } = createStore();
-function App() {
+const App = () => {
   return (
     <ErrorBoundary onError={errorHandler} FallbackComponent={FallBack}>
       <Provider store={store}>
@@ -16,6 +16,6 @@ function App() {
       </Provider>
     </ErrorBoundary>
   );
-}
+};
 
 export default App;

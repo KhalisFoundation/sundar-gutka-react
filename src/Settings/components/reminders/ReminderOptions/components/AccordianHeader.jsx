@@ -9,7 +9,7 @@ import { colors, constant, updateReminders, trackReminderEvent } from "@common";
 import { setReminderBanis } from "@common/actions";
 import { styles } from "../styles";
 
-function AccordianHeader({ section, isActive }) {
+const AccordianHeader = ({ section, isActive }) => {
   const reminderBanis = useSelector((state) => state.reminderBanis);
   const isNightMode = useSelector((state) => state.isNightMode);
   const isTransliteration = useSelector((state) => state.isTransliteration);
@@ -105,7 +105,7 @@ function AccordianHeader({ section, isActive }) {
       />
     </View>
   );
-}
+};
 AccordianHeader.propTypes = {
   section: PropTypes.shape({
     enabled: PropTypes.bool.isRequired,

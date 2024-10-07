@@ -5,7 +5,7 @@ import RNRestart from "react-native-restart";
 import STRINGS from "../../localization";
 import styles from "./styles";
 
-function FallBack() {
+const FallBack = () => {
   const { container, title, text, btnWrap } = styles;
   return (
     <SafeAreaView style={container}>
@@ -20,5 +20,5 @@ function FallBack() {
       </View>
     </SafeAreaView>
   );
-}
+};
 export default FallBack;

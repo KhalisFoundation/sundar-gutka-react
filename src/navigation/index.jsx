@@ -26,7 +26,7 @@ const headerLeft = (navigation, isNightMode) => (
     color={isNightMode ? colors.TOOLBAR_TINT : colors.TOOLBAR_TINT_DARK}
   />
 );
-function Navigation() {
+const Navigation = () => {
   useEffect(() => {
     // Code to run on component mount
     SplashScreen.hide(); // Hide the splash screen once everything is loaded
@@ -116,6 +116,6 @@ function Navigation() {
       </Stack.Navigator>
     </NavigationContainer>
   );
-}
+};
 
 export default Navigation;

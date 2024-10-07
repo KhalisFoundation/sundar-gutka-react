@@ -25,7 +25,7 @@ window.addEventListener(
   false
 );
 
-window.onload = function() {
+window.onload = () => {
   (function scrollToPosition() {
     setTimeout(function () {
       let scrollY = (document.body.scrollHeight - window.innerHeight) * ${position};

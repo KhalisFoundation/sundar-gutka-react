@@ -5,7 +5,7 @@ import { STRINGS, actions } from "@common";
 import { nightModeStyles, nightModeColor } from "../styles/nightModeStyles";
 import { styles } from "../styles";
 
-function CollectStatistics() {
+const CollectStatistics = () => {
   const isNightMode = useSelector((state) => state.isNightMode);
   const isStatistics = useSelector((state) => state.isStatistics);
   const { containerNightStyles } = nightModeStyles(isNightMode);
@@ -25,5 +25,5 @@ function CollectStatistics() {
       />
     </ListItem>
   );
-}
+};
 export default CollectStatistics;

@@ -6,7 +6,7 @@ import { toggleScreenAwake } from "@common/actions";
 import { nightModeStyles, nightModeColor } from "../styles/nightModeStyles";
 import { styles } from "../styles";
 
-function KeepAwake() {
+const KeepAwake = () => {
   const dispatch = useDispatch();
   const isNightMode = useSelector((state) => state.isNightMode);
   const isScreenAwake = useSelector((state) => state.isScreenAwake);
@@ -29,5 +29,5 @@ function KeepAwake() {
       />
     </ListItem>
   );
-}
+};
 export default KeepAwake;

@@ -51,7 +51,7 @@ const HomeScreen = React.memo(({ navigation }) => {
     };
   }, [theme, colorScheme]);
 
-  function onPress(row) {
+  const onPress = (row) => {
     const bani = row.item;
     if (!bani.folder) {
       navigate(constant.READER, {
@@ -64,7 +64,7 @@ const HomeScreen = React.memo(({ navigation }) => {
         params: { data: bani.folder, title: bani.gurmukhi },
       });
     }
-  }
+  };
 
   return (
     <View style={[isNightMode && { backgroundColor: colors.NIGHT_BLACK }, styles.container]}>
