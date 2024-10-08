@@ -60,3 +60,12 @@ export const getVishraamSource = (strings) => [
   { key: "igurbani", title: strings.iGurbani },
   { key: "sttm2", title: strings.sttm2 },
 ];
+
+export const getReminderSound = (strings) => [
+  {
+    key: "default",
+    title: strings.default,
+  },
+  { key: "wake_up_jap.mp3", title: strings.wake_up_jap },
+  { key: "waheguru_soul.mp3", title: strings.waheguru_soul },
+];

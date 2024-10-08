@@ -1,4 +1,4 @@
-import { useEffect } from "react";
+import { useCallback, useEffect } from "react";
 import { useDispatch, useSelector } from "react-redux";
 import { errorHandler, FallBack } from "@common";
 import { getBaniList } from "@database";
@@ -12,7 +12,7 @@ const useFetchBani = (setBaniListData, setReminderBaniData, setStateData, parsed
   const reminderSound = useSelector((state) => state.reminderSound);
   const dispatch = useDispatch();
 
-  const fetchBani = async () => {
+  const fetchBani = useCallback(async () => {
     try {
       const data = await getBaniList(transliterationLanguage);
       setBaniListData(data);
@@ -39,7 +39,7 @@ const useFetchBani = (setBaniListData, setReminderBaniData, setStateData, parsed
       errorHandler(error);
       FallBack();
     }
-  };
+  }, [transliterationLanguage, reminderBanis]);
 
   useEffect(() => {
     (async () => {
