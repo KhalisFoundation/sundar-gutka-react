@@ -1,18 +1,2 @@
-name: "react-native-bundle-size"
-on:
-  pull_request:
-    branches:
-      - dev
-
-jobs:
-  test_something:
-    runs-on: ubuntu-latest
-    steps:
-      - uses: actions/checkout@v2
-      - uses: shwetsolanki/react-native-bundle-size@v1
-        with:
-          token: ${{ secrets.GITHUB_TOKEN }}
-          ios-entry-file: "index.js"
-          android-entry-file: "index.js"
-          include-assets: "true"
-          include-source-maps: "true"
+- name: react-native-bundle-size
+  uses: shwetsolanki/react-native-bundle-size@v1
