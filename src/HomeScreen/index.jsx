@@ -1,4 +1,4 @@
-import React, { useEffect, useMemo } from "react";
+import React, { useEffect } from "react";
 import { Appearance, AppState, View, StatusBar } from "react-native";
 import PropTypes from "prop-types";
 import { useDispatch, useSelector } from "react-redux";
@@ -13,7 +13,7 @@ import {
 } from "@common";
 import styles from "./styles";
 import BaniHeader from "./components/BaniHeader";
-import { useAnalytics, useAppFirstTime, useBaniLength, useBaniList } from "./hooks";
+import { useAppFirstTime, useBaniLength, useBaniList } from "./hooks";
 
 const HomeScreen = React.memo(({ navigation }) => {
   const { navigate } = navigation;
@@ -23,16 +23,15 @@ const HomeScreen = React.memo(({ navigation }) => {
   const language = useSelector((state) => state.language);
   const theme = useSelector((state) => state.theme);
   useKeepAwake();
-  useAnalytics();
   useScreenAnalytics(constant.HOME_SCREEN);
   const isAppOpenFirstTime = useAppFirstTime();
   const { baniLengthSelector } = useBaniLength();
   const dispatch = useDispatch();
 
-  const colorScheme = useMemo(() => Appearance.getColorScheme(), []);
   const updateTheme = () => {
+    const currentColorScheme = Appearance.getColorScheme();
     if (theme === constant.Default) {
-      dispatch(actions.toggleNightMode(colorScheme === "dark"));
+      dispatch(actions.toggleNightMode(currentColorScheme === "dark"));
     }
   };
   useEffect(() => {
@@ -49,7 +48,7 @@ const HomeScreen = React.memo(({ navigation }) => {
     return () => {
       subscription.remove();
     };
-  }, [theme, colorScheme]);
+  }, [theme]);
 
   const onPress = (row) => {
     const bani = row.item;
