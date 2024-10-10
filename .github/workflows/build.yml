@@ -34,3 +34,5 @@ jobs:
         with:
           msg: "Android APK build is complete. You can download the release APK here: [Download APK](https://github.com/${{ github.repository }}/actions/artifacts)"
           check_for_duplicate_msg: false
+      - name: react-native-bundle-size
+        uses: shwetsolanki/react-native-bundle-size@v1
