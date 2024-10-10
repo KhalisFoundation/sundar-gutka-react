@@ -1,5 +1,8 @@
 name: "react-native-bundle-size"
-on: [pull-request]
+on:
+  pull_request:
+    branches:
+      - dev
 
 jobs:
   test_something:
