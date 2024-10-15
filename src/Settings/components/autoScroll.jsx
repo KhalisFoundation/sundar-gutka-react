@@ -1,11 +1,10 @@
 import React from "react";
 import { ListItem, Icon, Switch } from "@rneui/themed";
 import { useSelector, useDispatch } from "react-redux";
+import { toggleScreenAwake, toggleAutoScroll, STRINGS } from "@common";
 import { iconNightColor, nightModeStyles, nightModeColor } from "../styles/nightModeStyles";
-import STRINGS from "../../common/localization";
-import { toggleScreenAwake, toggleAutoScroll } from "../../common/actions";
 
-function AutoScroll() {
+const AutoScroll = () => {
   const isNightMode = useSelector((state) => state.isNightMode);
   const isAutoScroll = useSelector((state) => state.isAutoScroll);
   const dispatch = useDispatch();
@@ -29,5 +28,5 @@ function AutoScroll() {
       />
     </ListItem>
   );
-}
+};
 export default AutoScroll;

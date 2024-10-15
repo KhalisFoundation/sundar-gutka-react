@@ -1,20 +1,19 @@
 import React, { useState } from "react";
 import { ListItem, Avatar, Switch } from "@rneui/themed";
 import { useDispatch, useSelector } from "react-redux";
-import STRINGS from "../../common/localization";
-import { setTransliteration, toggleTransliteration } from "../../common/actions";
-import { TRANSLITERATION_LANGUAGES } from "../../common/actions/constant";
-import colors from "../../common/colors";
+import { STRINGS, colors } from "@common";
+import { setTransliteration, toggleTransliteration } from "@common/actions";
 import { ListItemComponent, BottomSheetComponent } from "./comon";
 import { styles } from "../styles";
+import { getTransliteration } from "./comon/strings";
 
-function TransliterationComponent() {
+const TransliterationComponent = () => {
   const romanizedIcon = require("../../../images/romanizeicon.png");
   const [isVisible, toggleVisible] = useState(false);
   const transliterationLanguage = useSelector((state) => state.transliterationLanguage);
   const isTransliteration = useSelector((state) => state.isTransliteration);
   const isNightMode = useSelector((state) => state.isNightMode);
-
+  const TRANSLITERATION_LANGUAGES = getTransliteration(STRINGS);
   const dispatch = useDispatch();
 
   return (
@@ -58,6 +57,6 @@ function TransliterationComponent() {
       )}
     </>
   );
-}
+};
 
 export default TransliterationComponent;

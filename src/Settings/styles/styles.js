@@ -1,5 +1,5 @@
 import { StyleSheet } from "react-native";
-import colors from "../../common/colors";
+import colors from "@common/colors";
 
 const styles = StyleSheet.create({
   nightBackColor: { backgdroundColor: colors.NIGHT_BLACK },
@@ -21,5 +21,6 @@ const styles = StyleSheet.create({
   },
   end: { padding: 40 },
   avatarStyle: { width: "100%", height: "100%", resizeMode: "contain" },
+  viewWrapper: { width: "90%", marginLeft: "auto", marginRight: "auto", bottom: 0, height: "90%" },
 });
 export default styles;

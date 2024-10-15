@@ -1,15 +1,15 @@
 import React, { useState } from "react";
 import { useSelector } from "react-redux";
-import STRINGS from "../../common/localization";
-import { setFontFace } from "../../common/actions";
-import { FONT_FACES } from "../../common/actions/constant";
+import STRINGS from "@common/localization";
+import { setFontFace } from "@common/actions";
 import { BottomSheetComponent, ListItemComponent } from "./comon";
+import { getFontFaces } from "./comon/strings";
 
-function FontFaceComponent() {
+const FontFaceComponent = () => {
   const [isVisible, toggleVisible] = useState(false);
   const fontFace = useSelector((state) => state.fontFace);
   const fontFaceIcon = require("../../../images/fontfaceicon.png");
-
+  const FONT_FACES = getFontFaces(STRINGS);
   return (
     <>
       <ListItemComponent
@@ -32,6 +32,6 @@ function FontFaceComponent() {
       )}
     </>
   );
-}
+};
 
 export default FontFaceComponent;

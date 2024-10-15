@@ -1,6 +1,7 @@
 export default {
   DB: "gutka_v01.db",
   ENGLISH: "ENGLISH",
+  ENGLISH_TITLE_CASE: "English",
   HINDI: "HINDI",
   SHAHMUKHI: "SHAHMUKHI",
   IPA: "IPA",
@@ -14,7 +15,7 @@ export default {
   LARGE: "LARGE",
   EXTRA_LARGE: "EXTRA_LARGE",
   DEFAULT: "DEFAULT",
-  _HINDI: `हिंदी`,
+  HINDI_UNICODE: `हिंदी`,
   PUNJABI: `ਪੰਜਾਬੀ`,
   FRANCAIS: `Français`,
   ESPANOL: `Español`,

@@ -1,6 +1,6 @@
 import { useState, useEffect } from "react";
 import { useSelector } from "react-redux";
-import { getBookmarksForID } from "../../database/db";
+import { getBookmarksForID } from "@database";
 
 const useBookmarks = (route) => {
   const baniLength = useSelector((state) => state.baniLength);

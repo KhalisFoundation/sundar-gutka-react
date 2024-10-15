@@ -25,13 +25,14 @@ window.addEventListener(
   false
 );
 
-(function scrollToPosition() {
-  setTimeout(function () {
-    let scrollY = (document.body.scrollHeight - window.innerHeight) * ${position};
-    window.scrollTo(0, scrollY);
-    curPosition = scrollY;
-  }, 50);
-})();
+window.onload = () => {
+  const scrollToPosition=()=> {
+      let scrollY = (document.body.scrollHeight - window.innerHeight) * ${position};
+      window.scrollTo(0, scrollY);
+      let curPosition = scrollY;
+  }
+  scrollToPosition(); 
+}
 
 function getScrollPercent() {
   return window.pageYOffset / (document.body.scrollHeight - window.innerHeight);
@@ -56,12 +57,11 @@ if (${nightMode}) {
   window.addEventListener("load", fadeInEffect(), false);
 
   function fadeInEffect() {
-    let fadeTarget = document.getElementsByTagName("HTML")[0];
+    let fadeTarget = ${listener}.documentElement;
     fadeTarget.style.opacity = 0;
     let fadeEffect = setInterval(function () {
       if (Number(fadeTarget.style.opacity) < 1) {
         fadeTarget.style.opacity = Number(fadeTarget.style.opacity) + 0.1;
-        console.log(fadeTarget.style.opacity);
       } else {
         fadeTarget.style.opacity = 1;
       }
@@ -118,6 +118,23 @@ function scrollFunc(e) {
 }
 window.onscroll = scrollFunc;
 
+const handleTouchEnd=()=>{
+  clearTimeout(holdTimer);
+  if (autoScrollSpeed !== 0 && autoScrollTimeout === null) {
+    setTimeout(function () {
+      window.ReactNativeWebView.postMessage("hide");
+    }, 5000);
+    setAutoScroll();
+  }
+  if (!dragging && !holding) {
+    window.ReactNativeWebView.postMessage("toggle");
+  }
+
+  dragging = false;
+  holding = false;
+}
+
+
 window.addEventListener("touchstart", function () {
   if (autoScrollSpeed !== 0) {
     clearScrollTimeout();
@@ -132,21 +149,7 @@ window.addEventListener("touchmove", function () {
   isManuallyScrolling = true;
   dragging = true;
 });
-window.addEventListener("touchend", function () {
-    clearTimeout(holdTimer);
-  if (autoScrollSpeed !== 0 && autoScrollTimeout === null) {
-    setTimeout(function () {
-      window.ReactNativeWebView.postMessage("hide");
-    }, 5000);
-    setAutoScroll();
-  }
-  if (!dragging && !holding) {
-    window.ReactNativeWebView.postMessage("toggle");
-  }
-
-  dragging = false;
-  holding = false;
-});
+window.addEventListener("touchend", handleTouchEnd);
 
 ${listener}.addEventListener(
   "message",
@@ -154,7 +157,7 @@ ${listener}.addEventListener(
     let message = JSON.parse(event.data);
 
     if (message.hasOwnProperty("Back")) {
-      currentPosition = getScrollPercent();
+      const currentPosition = getScrollPercent();
       window.ReactNativeWebView.postMessage("save-" + currentPosition);
     }
 

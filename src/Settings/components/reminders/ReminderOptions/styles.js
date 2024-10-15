@@ -1,6 +1,5 @@
 import { StyleSheet } from "react-native";
-import colors from "../../../../common/colors";
-import constant from "../../../../common/constant";
+import { colors, constant } from "@common";
 
 export const styles = StyleSheet.create({
   viewColumn: { flexDirection: "column" },
@@ -10,7 +9,7 @@ export const styles = StyleSheet.create({
   timeFont: { fontSize: 44 },
   accContentText: { fontSize: 14 },
   accContentWrapper: { flexDirection: "row", alignItems: "center", margin: 5 },
-  modalSelecText: { fontFamily: constant.GURBANI_AKHAR_TRUE, fontSize: 28 },
+  modalSelectText: { fontFamily: constant.GURBANI_AKHAR_TRUE, fontSize: 28 },
   textInput: {
     height: 40,
     borderRadius: 5,
@@ -27,9 +26,17 @@ export const styles = StyleSheet.create({
     alignItems: "center",
     padding: 10,
   },
+  modalBackColor: { backgroundColor: colors.NIGHT_GREY_COLOR },
 });
 
 export const accordianNightColor = (isNightMode) => {
   const color = isNightMode ? colors.NIGHT_BLACK : colors.WHITE_COLOR;
   return color;
+};
+
+export const optionContainer = (isNightMode) => {
+  return {
+    backgroundColor: isNightMode ? colors.NIGHT_GREY_COLOR : colors.WHITE_COLOR,
+    color: isNightMode ? colors.WHITE_COLOR : colors.NIGHT_GREY_COLOR,
+  };
 };

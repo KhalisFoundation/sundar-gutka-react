@@ -2,23 +2,18 @@ import React, { useEffect, useState } from "react";
 import { FlatList, Dimensions, Platform } from "react-native";
 import { ListItem, Avatar } from "@rneui/themed";
 import PropTypes from "prop-types";
-import { useDispatch, useSelector } from "react-redux";
+import { useSelector } from "react-redux";
 import baseFontSize from "../../helpers";
 import colors from "../../colors";
-import orderedBani from "./baniOrderHelper";
-import { setBaniList } from "../../actions";
 import { styles } from "../../../Settings/styles";
 
-function BaniList(props) {
+const BaniList = (props) => {
   const fontSize = useSelector((state) => state.fontSize);
   const fontFace = useSelector((state) => state.fontFace);
   const isTransliteration = useSelector((state) => state.isTransliteration);
   const isNightMode = useSelector((state) => state.isNightMode);
-  const baniOrder = useSelector((state) => state.baniOrder);
-  const { data, onPress, isFolderScreen } = props;
-  const [shabad, setShabad] = useState(data);
+  const { data, onPress } = props;
   const [isPotrait, toggleIsPotrait] = useState(true);
-  const dispatch = useDispatch();
 
   const checkPotrait = () => {
     const dim = Dimensions.get("screen");
@@ -30,15 +25,6 @@ function BaniList(props) {
     });
     return () => subscription.remove();
   }, []);
-  useEffect(() => {
-    if (data.length > 0 && !isFolderScreen && baniOrder.baniOrder) {
-      const orderedData = orderedBani(data, baniOrder);
-      setShabad(orderedData);
-      dispatch(setBaniList(orderedData));
-    } else {
-      setShabad(data);
-    }
-  }, [data, baniOrder]);
   const renderBanis = (row) => {
     return (
       <ListItem
@@ -83,14 +69,13 @@ function BaniList(props) {
   return (
     <FlatList
       style={!isPotrait && Platform.OS === "ios" && { marginLeft: 30 }}
-      data={shabad}
+      data={data}
       renderItem={renderBanis}
       keyExtractor={(item) => item.gurmukhi}
     />
   );
-}
+};
 
-BaniList.defaultProps = { isFolderScreen: false };
 BaniList.propTypes = {
   data: PropTypes.arrayOf(
     PropTypes.shape({
@@ -102,7 +87,6 @@ BaniList.propTypes = {
     })
   ).isRequired,
   onPress: PropTypes.func.isRequired,
-  isFolderScreen: PropTypes.bool,
 };
 
 export default BaniList;

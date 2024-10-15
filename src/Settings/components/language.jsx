@@ -1,13 +1,14 @@
 import React, { useState } from "react";
-import { useSelector } from "react-redux";
-import STRINGS from "../../common/localization";
-import { setLanguage } from "../../common/actions";
-import { LANGUAGES } from "../../common/actions/constant";
+import PropType from "prop-types";
+import { setLanguage } from "@common/actions";
+import { STRINGS } from "@common";
 import { BottomSheetComponent, ListItemComponent } from "./comon";
+import { getLanguages } from "./comon/strings";
 
-function LanguageComponent() {
+const LanguageComponent = ({ language }) => {
   const [isVisible, toggleVisible] = useState(false);
-  const language = useSelector((state) => state.language);
+  const LANGUAGES = getLanguages(STRINGS);
+
   return (
     <>
       <ListItemComponent
@@ -30,6 +31,7 @@ function LanguageComponent() {
       )}
     </>
   );
-}
+};
+LanguageComponent.propTypes = { language: PropType.string.isRequired };
 
 export default LanguageComponent;

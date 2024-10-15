@@ -1,11 +1,10 @@
 import React, { useEffect, useCallback } from "react";
 import { Icon } from "@rneui/themed";
 import PropTypes from "prop-types";
-import colors from "../common/colors";
+import { colors, constant } from "@common";
 import getHeaderStyles from "./styles";
-import constant from "../common/constant";
 
-function Header({ navigation, title }) {
+const Header = ({ navigation, title }) => {
   const { headerStyle, headerTitleStyle } = getHeaderStyles();
   const handleBackPress = useCallback(() => navigation.goBack(), [navigation]);
   const handleSettingsPress = useCallback(
@@ -34,7 +33,7 @@ function Header({ navigation, title }) {
   }, [handleBackPress, handleSettingsPress]);
 
   return null;
-}
+};
 
 Header.propTypes = {
   navigation: PropTypes.shape().isRequired,

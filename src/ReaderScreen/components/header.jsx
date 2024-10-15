@@ -3,7 +3,7 @@ import { View, Text, Animated } from "react-native";
 import { Icon } from "@rneui/themed";
 import PropTypes from "prop-types";
 import { useSelector } from "react-redux";
-import colors from "../../common/colors";
+import colors from "@common/colors";
 import { getHeaderStyles, styles } from "../styles/styles";
 
 const Header = React.forwardRef(
@@ -47,7 +47,7 @@ const Header = React.forwardRef(
       navigation.setOptions({
         headerShown: false,
       });
-    });
+    }, []);
     const toggleHeader = (isHeader) => {
       const value = isHeader ? 0 : -120;
       Animated.timing(animationPosition, {

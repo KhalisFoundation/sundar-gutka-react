@@ -7,7 +7,7 @@ import styles from "./style";
 import colors from "../../colors";
 import { setBaniLength } from "../../actions";
 
-function BaniLengthSelector() {
+const BaniLengthSelector = () => {
   const [modalVissible, toggleModalVissible] = useState(true);
   const baniLengths = [STRINGS.short, STRINGS.medium, STRINGS.long, STRINGS.extra_long];
   const dispatch = useDispatch();
@@ -44,5 +44,5 @@ function BaniLengthSelector() {
       </SafeAreaView>
     </Modal>
   );
-}
+};
 export default BaniLengthSelector;

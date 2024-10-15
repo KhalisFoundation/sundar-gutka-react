@@ -1,11 +1,11 @@
 import React from "react";
 import { ListItem, Avatar, Icon, Switch } from "@rneui/themed";
 import { useDispatch, useSelector } from "react-redux";
-import { STRINGS } from "../../common";
-import { toggleLarivaar, toggleLarivaarAssist } from "../../common/actions";
+import { STRINGS } from "@common";
+import { toggleLarivaar, toggleLarivaarAssist } from "@common/actions";
 import { nightModeStyles, iconNightColor, styles } from "../styles";
 
-function LarivaarComponent() {
+const LarivaarComponent = () => {
   const isNightMode = useSelector((state) => state.isNightMode);
   const isLarivaar = useSelector((state) => state.isLarivaar);
   const isLarivaarAssist = useSelector((state) => state.isLarivaarAssist);
@@ -37,6 +37,6 @@ function LarivaarComponent() {
       )}
     </>
   );
-}
+};
 
 export default LarivaarComponent;

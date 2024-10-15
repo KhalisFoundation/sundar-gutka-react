@@ -1,6 +1,5 @@
 import { StyleSheet } from "react-native";
-import colors from "../common/colors";
-import { constant } from "../common";
+import { constant, colors } from "@common";
 
 export const styles = StyleSheet.create({
   rowItem: {
@@ -15,9 +14,6 @@ export const styles = StyleSheet.create({
     fontSize: 24,
     textAlign: "center",
   },
-  gestureBackColor: {
-    backgroundColor: colors.LABEL_COLORS,
-  },
 });
 
 export const activeColor = (isActive, backColor) => ({
@@ -28,5 +24,6 @@ export const nightStyles = (isNightMode) => {
   return {
     backColor: { backgroundColor: isNightMode ? colors.NIGHT_BLACK : colors.WHITE_COLOR },
     textColor: { color: isNightMode ? colors.WHITE_COLOR : colors.NIGHT_BLACK },
+    viewBackColor: { backgroundColor: isNightMode ? colors.WHITE_COLOR : colors.NIGHT_GREY_COLOR },
   };
 };

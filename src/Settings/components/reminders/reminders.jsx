@@ -8,27 +8,28 @@ import {
   cancelAllReminders,
   checkPermissions,
   errorHandler,
-  actionConstants,
   actions,
   FallBack,
-} from "../../../common";
+} from "@common";
+import { getBaniList } from "@database";
 import { nightModeStyles, iconNightColor } from "../../styles";
 import { ListItemComponent, BottomSheetComponent } from "../comon";
-import { getBaniList } from "../../../database/db";
-import useDefaultReminders from "./ReminderOptions/hooks/useDefaultReminders";
+import setDefaultReminders from "./ReminderOptions/utils";
+import { getReminderSound } from "../comon/strings";
 
-function RemindersComponent({ navigation }) {
+const RemindersComponent = ({ navigation }) => {
+  const REMINDER_SOUNDS = getReminderSound(STRINGS);
   const isNightMode = useSelector((state) => state.isNightMode);
   const isReminders = useSelector((state) => state.isReminders);
   const reminderSound = useSelector((state) => state.reminderSound);
   const transliterationLanguage = useSelector((state) => state.transliterationLanguage);
-
   const [isReminderSound, toggleReminderSound] = useState(false);
+
   const dispatch = useDispatch();
   const { navigate } = navigation;
   const { containerNightStyles, textNightStyle } = nightModeStyles(isNightMode);
   const iconColor = iconNightColor(isNightMode);
-  const setDefaultReminders = useDefaultReminders();
+
   const redirectToSettings = async () => {
     Alert.alert(STRINGS.permissionTitle, STRINGS.premissionDescription, [
       {
@@ -41,27 +42,30 @@ function RemindersComponent({ navigation }) {
       },
     ]);
   };
-  const fetchBanis = async () => {
+  const fetchBanis = async (value) => {
     const data = await getBaniList(transliterationLanguage);
-    setDefaultReminders(data);
+    setDefaultReminders(data, dispatch, value, reminderSound);
   };
 
   const handleReminders = async (value) => {
     try {
-      const isAllowed = await checkPermissions();
+      if (!value) {
+        // disabling All Reminders
+        await cancelAllReminders();
+        dispatch(actions.toggleReminders(value));
+        return;
+      }
 
+      const isAllowed = await checkPermissions();
       if (!isAllowed) {
         dispatch(actions.toggleReminders(false));
         redirectToSettings();
-        cancelAllReminders();
+        await cancelAllReminders();
         return;
       }
+
       dispatch(actions.toggleReminders(value));
-      await fetchBanis();
-      if (!value) {
-        // disabling All Reminders
-        cancelAllReminders();
-      }
+      await fetchBanis(value);
     } catch (error) {
       errorHandler(error);
       FallBack();
@@ -97,14 +101,14 @@ function RemindersComponent({ navigation }) {
           isAvatar={false}
           title={STRINGS.reminder_sound}
           value={reminderSound}
-          actionConstant={actionConstants.REMINDER_SOUNDS}
+          actionConstant={REMINDER_SOUNDS}
           onPressAction={() => toggleReminderSound(true)}
         />
       )}
       {isReminderSound && (
         <BottomSheetComponent
           isVisible={isReminderSound}
-          actionConstant={actionConstants.REMINDER_SOUNDS}
+          actionConstant={REMINDER_SOUNDS}
           value={reminderSound}
           toggleVisible={toggleReminderSound}
           title={STRINGS.reminder_sound}
@@ -113,7 +117,7 @@ function RemindersComponent({ navigation }) {
       )}
     </>
   );
-}
+};
 
 RemindersComponent.propTypes = {
   navigation: PropTypes.shape({ navigate: PropTypes.func.isRequired }).isRequired,

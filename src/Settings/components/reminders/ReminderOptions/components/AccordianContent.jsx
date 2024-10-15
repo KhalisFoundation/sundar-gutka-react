@@ -3,13 +3,12 @@ import { View, TouchableOpacity, Text } from "react-native";
 import { Icon, Divider } from "@rneui/themed";
 import PropTypes from "prop-types";
 import { useDispatch, useSelector } from "react-redux";
-import colors from "../../../../../common/colors";
+import { STRINGS, colors } from "@common";
+import { setReminderBanis } from "@common/actions";
 import { styles } from "../styles";
-import STRINGS from "../../../../../common/localization";
 import LabelModal from "../modals/LabelModal";
-import { setReminderBanis } from "../../../../../common/actions";
 
-function AccordianContent({ section, isActive }) {
+const AccordianContent = ({ section, isActive }) => {
   const isNightMode = useSelector((state) => state.isNightMode);
   const [isLabelModal, toggleLabelModal] = useState(false);
   const reminderBanis = useSelector((state) => state.reminderBanis);
@@ -79,7 +78,7 @@ function AccordianContent({ section, isActive }) {
       {isLabelModal && <LabelModal section={section} onHide={hideModal} />}
     </View>
   );
-}
+};
 AccordianContent.propTypes = {
   section: PropTypes.shape({ key: PropTypes.number.isRequired, title: PropTypes.string.isRequired })
     .isRequired,
