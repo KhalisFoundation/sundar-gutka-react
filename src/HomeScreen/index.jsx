@@ -1,4 +1,4 @@
-import React, { useEffect } from "react";
+import React, { useEffect, useState } from "react";
 import { Appearance, AppState, View, StatusBar } from "react-native";
 import PropTypes from "prop-types";
 import { useDispatch, useSelector } from "react-redux";
@@ -14,10 +14,12 @@ import {
 import styles from "./styles";
 import BaniHeader from "./components/BaniHeader";
 import { useAppFirstTime, useBaniLength, useBaniList } from "./hooks";
+import errorHandler from "../common/errHandler";
 
 const HomeScreen = React.memo(({ navigation }) => {
+  const [error, setError] = useState(null);
   const { navigate } = navigation;
-  const { baniListData } = useBaniList();
+  const { baniListData, fetchBaniList } = useBaniList(setError);
   const isNightMode = useSelector((state) => state.isNightMode);
   const isStatusBar = useSelector((state) => state.isStatusBar);
   const language = useSelector((state) => state.language);
@@ -27,6 +29,11 @@ const HomeScreen = React.memo(({ navigation }) => {
   const isAppOpenFirstTime = useAppFirstTime();
   const { baniLengthSelector } = useBaniLength();
   const dispatch = useDispatch();
+
+  if (error) {
+    errorHandler(error);
+    throw error;
+  }
 
   const updateTheme = () => {
     const currentColorScheme = Appearance.getColorScheme();
@@ -42,6 +49,7 @@ const HomeScreen = React.memo(({ navigation }) => {
     const subscription = AppState.addEventListener("change", (state) => {
       if (state === "active") {
         updateTheme();
+        fetchBaniList();
       }
     });
 

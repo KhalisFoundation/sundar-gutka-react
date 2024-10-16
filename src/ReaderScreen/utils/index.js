@@ -1,5 +1,5 @@
 import { Platform } from "react-native";
-import { errorHandler, FallBack, colors, constant, baseFontSize } from "@common";
+import { colors, constant, baseFontSize, errorHandler } from "@common";
 import htmlTemplate from "./gutkahtml";
 import script from "./gutkaScript";
 
@@ -180,8 +180,7 @@ export const loadHTML = (
     return htmlContent;
   } catch (error) {
     errorHandler(error);
-    FallBack();
-    return null;
+    throw new Error(error);
   }
 };
 export { script, htmlTemplate };
