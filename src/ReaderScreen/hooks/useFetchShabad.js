@@ -2,7 +2,7 @@ import { useState, useEffect, useCallback } from "react";
 import { useSelector } from "react-redux";
 import { getShabadFromID } from "@database";
 
-const useFetchShabad = (shabadID) => {
+const useFetchShabad = (shabadID, setError) => {
   const [shabad, setShabad] = useState([]);
   const [isLoading, toggleLoading] = useState(false);
   const baniLength = useSelector((state) => state.baniLength);
@@ -15,21 +15,27 @@ const useFetchShabad = (shabadID) => {
   const isVishraam = useSelector((state) => state.isVishraam);
 
   const fetchShabad = useCallback(async () => {
-    toggleLoading(true);
-    const shabadData = await getShabadFromID(
-      shabadID,
-      baniLength,
-      transliterationLanguage,
-      vishraamSource,
-      vishraamOption,
-      isLarivaar,
-      isLarivaarAssist,
-      isParagraphMode,
-      isVishraam
-    );
-    if (shabadData) {
-      toggleLoading(false);
-      setShabad(shabadData);
+    try {
+      toggleLoading(true);
+      const shabadData = await getShabadFromID(
+        shabadID,
+        baniLength,
+        transliterationLanguage,
+        vishraamSource,
+        vishraamOption,
+        isLarivaar,
+        isLarivaarAssist,
+        isParagraphMode,
+        isVishraam
+      );
+      if (shabadData) {
+        toggleLoading(false);
+        setShabad(shabadData);
+      } else {
+        setError("Shabad Not found");
+      }
+    } catch (error) {
+      setError(error);
     }
   }, [
     shabadID,
@@ -44,17 +50,7 @@ const useFetchShabad = (shabadID) => {
   ]);
   useEffect(() => {
     fetchShabad();
-  }, [
-    shabadID,
-    baniLength,
-    transliterationLanguage,
-    vishraamSource,
-    vishraamOption,
-    isLarivaar,
-    isLarivaarAssist,
-    isParagraphMode,
-    isVishraam,
-  ]);
+  }, [fetchShabad]);
 
   return { shabad, isLoading };
 };

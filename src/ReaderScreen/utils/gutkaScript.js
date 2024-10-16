@@ -118,21 +118,7 @@ function scrollFunc(e) {
 }
 window.onscroll = scrollFunc;
 
-const handleTouchEnd=()=>{
-  clearTimeout(holdTimer);
-  if (autoScrollSpeed !== 0 && autoScrollTimeout === null) {
-    setTimeout(function () {
-      window.ReactNativeWebView.postMessage("hide");
-    }, 5000);
-    setAutoScroll();
-  }
-  if (!dragging && !holding) {
-    window.ReactNativeWebView.postMessage("toggle");
-  }
 
-  dragging = false;
-  holding = false;
-}
 
 
 window.addEventListener("touchstart", function () {
@@ -141,14 +127,30 @@ window.addEventListener("touchstart", function () {
   }
   dragging = false;
   holding = false;
-  holdTimer = setTimeout(function () {
+  holdTimer = setTimeout(()=> {
     holding = true;
-  }, 125); // Longer than 125 milliseconds is not a tap
+  }, 1000); // Longer than 1 seconds is not a tap
 });
 window.addEventListener("touchmove", function () {
   isManuallyScrolling = true;
   dragging = true;
 });
+const handleTouchEnd = () => {
+
+  clearTimeout(holdTimer);
+  if (autoScrollSpeed !== 0 && autoScrollTimeout === null) {
+    setTimeout(function () {
+      window.ReactNativeWebView.postMessage("hide");
+    }, 5000);
+    setAutoScroll();
+  }
+  if (!dragging && !holding) {
+ 
+    window.ReactNativeWebView.postMessage("toggle");
+  }
+  dragging = false;
+  holding = false;
+}
 window.addEventListener("touchend", handleTouchEnd);
 
 ${listener}.addEventListener(
@@ -163,9 +165,8 @@ ${listener}.addEventListener(
 
     if (message.hasOwnProperty("bookmark")) {
       location.hash = "#" + message.bookmark;
-      
-        window.ReactNativeWebView.postMessage("hide");
-    }
+      window.ReactNativeWebView.postMessage("hide");
+    } 
     if (message.hasOwnProperty("autoScroll")) {
       autoScrollSpeed = message.autoScroll;
       scrollMultiplier = message.scrollMultiplier;

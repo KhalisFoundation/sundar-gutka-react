@@ -1,7 +1,7 @@
 import { useCallback, useEffect } from "react";
 import { useDispatch, useSelector } from "react-redux";
-import { errorHandler, FallBack } from "@common";
 import { getBaniList } from "@database";
+import errorHandler from "@common";
 import setDefaultReminders from "../utils";
 
 const useFetchBani = (setBaniListData, setReminderBaniData, setStateData, parsedReminderBanis) => {
@@ -37,7 +37,7 @@ const useFetchBani = (setBaniListData, setReminderBaniData, setStateData, parsed
       }
     } catch (error) {
       errorHandler(error);
-      FallBack();
+      throw new Error(error);
     }
   }, [transliterationLanguage, reminderBanis]);
 

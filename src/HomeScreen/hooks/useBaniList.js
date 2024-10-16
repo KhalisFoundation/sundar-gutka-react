@@ -1,9 +1,10 @@
 import { useEffect, useState, useRef, useCallback } from "react";
 import { useDispatch, useSelector } from "react-redux";
-import { FallBack, errorHandler, orderedBani, actions } from "@common";
+import { orderedBani, actions } from "@common";
 import { getBaniList } from "@database";
+import errorHandler from "../../common/errHandler";
 
-const useBaniList = () => {
+const useBaniList = (setError) => {
   const baniList = useSelector((state) => state.baniList);
   const baniOrder = useSelector((state) => state.baniOrder);
   const [baniListData, setBaniListData] = useState([]);
@@ -13,24 +14,24 @@ const useBaniList = () => {
 
   const fetchBaniList = useCallback(async () => {
     try {
-      const transliteratedList = await getBaniList(transliterationLanguage);
-      const orderedData = orderedBani(transliteratedList, baniOrder);
-      dispatch(actions.setBaniList(orderedData));
-      setBaniListData(orderedData);
+      if (prevLanguageRef.current !== transliterationLanguage || baniList.length === 0) {
+        const transliteratedList = await getBaniList(transliterationLanguage);
+        const orderedData = orderedBani(transliteratedList, baniOrder);
+        dispatch(actions.setBaniList(orderedData));
+        setBaniListData(orderedData);
+      } else {
+        setBaniListData(baniList);
+      }
     } catch (error) {
       errorHandler(error);
-      FallBack();
+      setError(error);
     }
-  }, [transliterationLanguage, baniOrder]);
+  }, [transliterationLanguage, baniOrder, baniList]);
 
   useEffect(() => {
-    if (prevLanguageRef.current !== transliterationLanguage || baniList.length === 0) {
-      fetchBaniList();
-    } else {
-      setBaniListData(baniList);
-    }
+    fetchBaniList();
     prevLanguageRef.current = transliterationLanguage;
-  }, [transliterationLanguage, baniList]);
-  return { baniListData };
+  }, [transliterationLanguage, fetchBaniList]);
+  return { baniListData, fetchBaniList };
 };
 export default useBaniList;

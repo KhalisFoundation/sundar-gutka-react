@@ -4,7 +4,7 @@ import { StatusBar, ActivityIndicator, BackHandler } from "react-native";
 import { WebView } from "react-native-webview";
 import PropTypes from "prop-types";
 import { SafeAreaView } from "react-native-safe-area-context";
-import { constant, colors, actions, useScreenAnalytics } from "@common";
+import { constant, colors, actions, useScreenAnalytics, errorHandler } from "@common";
 import { Header, AutoScrollComponent } from "./components";
 import { useBookmarks, useFetchShabad } from "./hooks";
 import { styles, nightColors } from "./styles";
@@ -15,6 +15,7 @@ const Reader = ({ navigation, route }) => {
   const headerRef = useRef(null);
   const { webView } = styles;
   const { title, id } = route.params.params;
+  const [error, setError] = useState(null);
   const [isHeader, toggleIsHeader] = useState(true);
   const [viewLoaded, toggleViewLoaded] = useState(false);
   const [shabadID, setShabadID] = useState(Number(id));
@@ -39,10 +40,14 @@ const Reader = ({ navigation, route }) => {
   const savePosition = useSelector((state) => state.savePosition);
   const isHeaderFooter = useSelector((state) => state.isHeaderFooter);
 
-  const { shabad, isLoading } = useFetchShabad(shabadID);
+  const { shabad, isLoading } = useFetchShabad(shabadID, setError);
   const [currentPosition, setCurrentPosition] = useState(savePosition[shabadID] || 0);
   const { backgroundColor, safeAreaViewBack, backViewColor } = nightColors(isNightMode);
   const { READER_STATUS_BAR_COLOR } = colors;
+  if (error) {
+    errorHandler(error);
+    throw error;
+  }
   useScreenAnalytics(title);
   useBookmarks(webViewRef, shabad, bookmarkPosition);
 
