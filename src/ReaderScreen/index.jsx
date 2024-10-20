@@ -1,6 +1,6 @@
 import React, { useState, useRef, useEffect } from "react";
 import { useDispatch, useSelector } from "react-redux";
-import { StatusBar, ActivityIndicator, BackHandler } from "react-native";
+import { StatusBar, ActivityIndicator, BackHandler, AppState } from "react-native";
 import { WebView } from "react-native-webview";
 import PropTypes from "prop-types";
 import { SafeAreaView } from "react-native-safe-area-context";
@@ -40,7 +40,7 @@ const Reader = ({ navigation, route }) => {
   const savePosition = useSelector((state) => state.savePosition);
   const isHeaderFooter = useSelector((state) => state.isHeaderFooter);
 
-  const { shabad, isLoading } = useFetchShabad(shabadID, setError);
+  const { shabad, isLoading, fetchShabad } = useFetchShabad(shabadID, setError);
   const [currentPosition, setCurrentPosition] = useState(savePosition[shabadID] || 0);
   const { backgroundColor, safeAreaViewBack, backViewColor } = nightColors(isNightMode);
   const { READER_STATUS_BAR_COLOR } = colors;
@@ -67,15 +67,32 @@ const Reader = ({ navigation, route }) => {
     }
   }, [isHeader]);
 
+  useEffect(() => {
+    const subscription = AppState.addEventListener("change", (state) => {
+      if (state === "active") {
+        fetchShabad();
+      }
+    });
+
+    return () => {
+      subscription.remove();
+    };
+  }, []);
+
   const handleBackPress = () => {
-    webViewRef.current.postMessage(JSON.stringify({ Back: true }));
-    setTimeout(() => {
+    if (webViewRef.current) {
+      webViewRef.current.postMessage(JSON.stringify({ Back: true }));
+    } else {
+      setError("webViewRef is not available");
+    }
+    if (navigation && navigation.canGoBack()) {
       navigation.goBack();
-    }, 100);
+    } else {
+      setError("Navigation is not available or cannot go back");
+    }
   };
   const backAction = () => {
     handleBackPress();
-    return true; // Return `true` to prevent default behavior
   };
 
   useEffect(() => {
@@ -141,6 +158,11 @@ const Reader = ({ navigation, route }) => {
           }, 500);
         }}
         ref={webViewRef}
+        onError={(syntheticEvent) => {
+          const { nativeEvent } = syntheticEvent;
+          errorHandler(`Reader web View Error ${nativeEvent}`);
+          throw error;
+        }}
         decelerationRate="normal"
         source={{
           html: loadHTML(

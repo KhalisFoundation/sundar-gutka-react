@@ -52,7 +52,7 @@ const useFetchShabad = (shabadID, setError) => {
     fetchShabad();
   }, [fetchShabad]);
 
-  return { shabad, isLoading };
+  return { shabad, isLoading, fetchShabad };
 };
 
 export default useFetchShabad;
