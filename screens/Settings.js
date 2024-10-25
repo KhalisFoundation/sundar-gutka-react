@@ -451,6 +451,29 @@ class Settings extends React.Component {
               color={
                 nightMode ? GLOBAL.COLOR.COMPONENT_COLOR_NIGHT_MODE : GLOBAL.COLOR.COMPONENT_COLOR
               }
+              name="visibility-off"
+              size={30}
+            />
+            <ListItem.Content>
+              <ListItem.Title style={[nightMode && { color: "#fff" }]}>
+                {Strings.hide_status_bar}
+              </ListItem.Title>
+            </ListItem.Content>
+            <Switch 
+              style={switchStyle} 
+              value={statusBar} 
+              onValueChange={toggleStatusBar} 
+            />
+          </ListItem>
+          <ListItem
+            bottomDivider
+            containerStyle={[styles.titleText, nightMode && { backgroundColor: "#464646" }]}
+          >
+            <MaterialIcons
+              style={styles.imageStyle}
+              color={
+                nightMode ? GLOBAL.COLOR.COMPONENT_COLOR_NIGHT_MODE : GLOBAL.COLOR.COMPONENT_COLOR
+              }
               name="eye-off"
               size={30}
             />
@@ -1090,6 +1113,8 @@ Settings.propTypes = {
   setVishraamSource: PropTypes.func.isRequired,
   setReminderSound: PropTypes.func.isRequired,
   vishraamSource: PropTypes.string.isRequired,
+  statusBar: PropTypes.bool.isRequired,
+  toggleStatusBar: PropTypes.func.isRequired,
 };
 function mapStateToProps(state) {
   return {
@@ -1117,6 +1142,7 @@ function mapStateToProps(state) {
     vishraamSource: state.vishraamSource,
     reminders: state.reminders,
     reminderSound: state.reminderSound,
+    statusBar: state.statusBar,
   };
 }
 
