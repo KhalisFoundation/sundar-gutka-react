@@ -46,6 +46,12 @@ export const FONT_SIZES = ["EXTRA_SMALL", "SMALL", "MEDIUM", "LARGE", "EXTRA_LAR
 
 export const LANGUAGES = ["DEFAULT", "en-US", "es", "fr", "it", "hi", "pa"];
 
+export const TOGGLE_STATUS_BAR = 'TOGGLE_STATUS_BAR';
+
+export function toggleStatusBar(hidden) {
+  return { type: TOGGLE_STATUS_BAR, hidden };
+}
+
 export const languageNames = [
   `${Strings.default}`,
   `English`,
