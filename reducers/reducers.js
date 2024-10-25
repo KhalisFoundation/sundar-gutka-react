@@ -321,6 +321,16 @@ function startBani(state = JSON.stringify([]), action) {
       return state
   }
 }
+
+function statusBar(state = true, action) {
+  switch (action.type) {
+    case TOGGLE_STATUS_BAR:
+      return action.hidden;
+    default:
+      return state;
+  }
+}
+
 // Combine all the reducers
 const rootReducer = combineReducers({
   fontSize,
@@ -354,7 +364,8 @@ const rootReducer = combineReducers({
   reminderBanis,
   reminderSound,
   appVersion,
-  startBani
+  startBani,
+  statusBar
 });
 
 export default rootReducer;
