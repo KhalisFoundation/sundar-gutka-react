@@ -10,6 +10,7 @@ import FontFaceComponent from "./components/fontFace";
 import LanguageComponent from "./components/language";
 import TransliterationComponent from "./components/transliteration";
 import ThemeComponent from "./components/theme";
+import HideStatusBar from "./components/statusBar";
 import BaniLengthComponent from "./components/baniLength";
 import LarivaarComponent from "./components/larivaar";
 import PadchedSettingsComponent from "./components/padched";
@@ -59,6 +60,7 @@ const Settings = ({ navigation }) => {
           <TranslationComponent />
           <ThemeComponent />
           <StatusBar />
+          <HideStatusBar />
           <AutoScroll />
           <KeepAwake />
           {/* Bani Options */}
