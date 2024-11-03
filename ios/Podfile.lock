@@ -201,9 +201,9 @@ PODS:
     - GoogleUtilities/MethodSwizzler
   - GoogleUtilities/UserDefaults (7.12.0):
     - GoogleUtilities/Logger
-  - hermes-engine (0.71.8):
-    - hermes-engine/Pre-built (= 0.71.8)
-  - hermes-engine/Pre-built (0.71.8)
+  - hermes-engine (0.71.18):
+    - hermes-engine/Pre-built (= 0.71.18)
+  - hermes-engine/Pre-built (0.71.18)
   - libevent (2.1.12)
   - nanopb (2.30909.1):
     - nanopb/decode (= 2.30909.1)
@@ -478,7 +478,7 @@ PODS:
     - React-Core
   - react-native-sqlite-storage (6.0.1):
     - React-Core
-  - react-native-webview (13.6.4):
+  - react-native-webview (13.12.3):
     - RCT-Folly (= 2021.07.22.00)
     - React-Core
   - React-perflogger (0.71.18)
@@ -857,7 +857,7 @@ EXTERNAL SOURCES:
     :path: "../node_modules/react-native/ReactCommon/yoga"
 
 SPEC CHECKSUMS:
-  boost: 57d2868c099736d80fcd648bf211b4431e51a558
+  boost: 7dcd2de282d72e344012f7d6564d024930a6a440
   CocoaAsyncSocket: 065fd1e645c7abab64f7a6a2007a48038fdc6a99
   DoubleConversion: 5189b271737e1565bdce30deb4a08d647e3f5f54
   FBLazyVector: 5f81939bc6d6bcd3e71bba3744753c2a88991395
@@ -885,7 +885,7 @@ SPEC CHECKSUMS:
   GoogleAppMeasurement: bb3c564c3efb933136af0e94899e0a46167466a8
   GoogleDataTransport: 57c22343ab29bc686febbf7cbb13bad167c2d8fe
   GoogleUtilities: 0759d1a57ebb953965c2dfe0ba4c82e95ccc2e34
-  hermes-engine: 47986d26692ae75ee7a17ab049caee8864f855de
+  hermes-engine: 251dcc3511fc68678e2ee96dd7d175d9489b781e
   libevent: 4049cae6c81cdb3654a443be001fb9bdceff7913
   nanopb: d4d75c12cd1316f4a64e3c6963f879ecd4b5e0d5
   OpenSSL-Universal: ebc357f1e6bc71fa463ccb2fe676756aff50e88c
@@ -911,7 +911,7 @@ SPEC CHECKSUMS:
   react-native-slider: cc89964e1432fa31aa9db7a0fa9b21e26b5d5152
   react-native-splash-screen: 4312f786b13a81b5169ef346d76d33bc0c6dc457
   react-native-sqlite-storage: f6d515e1c446d1e6d026aa5352908a25d4de3261
-  react-native-webview: 107961c73db53d66549c867a3b64eaa20d34c41f
+  react-native-webview: 849250e66239f661c802a879c59e019da8a08736
   React-perflogger: c8849042b03392681ebd5d99a0775dbadfad2c74
   React-RCTActionSheet: 6bd3b502da266d69942e9ce4bc13666f90544620
   React-RCTAnimation: 63fbec04ae279b387ac786898bd5a918b8875f48

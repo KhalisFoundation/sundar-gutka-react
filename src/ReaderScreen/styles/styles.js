@@ -78,6 +78,11 @@ export const styles = StyleSheet.create({
     zIndex: 10,
     height: 60,
   },
+  nightBackground: {
+    backgroundColor: colors.NIGHT_BLACK,
+  },
+  nightText: { color: colors.WHITE_COLOR },
+  dayText: { color: colors.NIGHT_BLACK },
 });
 export const getHeaderStyles = (isNightMode) => ({
   headerTitleStyle: {

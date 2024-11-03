@@ -12,15 +12,15 @@ import { useDispatch, useSelector } from "react-redux";
 import PropTypes from "prop-types";
 import { SafeAreaView } from "react-native-safe-area-context";
 import { constant, colors, actions, useScreenAnalytics } from "@common";
-import { Header } from "./components";
 import { useBookmarks, useFetchShabad } from "./hooks";
 import { styles, nightColors } from "./styles";
+import Header from "./components/header";
 
 const Reader = ({ navigation, route }) => {
   const scrollViewRef = useRef(null);
   const headerRef = useRef(null);
   const elementPositions = useRef({});
-  const { title } = route.params.params;
+  const { title, id } = route.params.params;
   const [isHeader, toggleIsHeader] = useState(true);
   const [shabadID, setShabadID] = useState(Number(route.params.params.id));
   const [contentHeight, setContentHeight] = useState(0);
@@ -36,22 +36,18 @@ const Reader = ({ navigation, route }) => {
   const isAutoScroll = useSelector((state) => state.isAutoScroll);
   const isStatusBar = useSelector((state) => state.isStatusBar);
   const isTransliteration = useSelector((state) => state.isTransliteration);
-  const fontSize = useSelector((state) => state.fontSize);
   const fontFace = useSelector((state) => state.fontFace);
-  const isLarivaar = useSelector((state) => state.isLarivaar);
-  const isLarivaarAssist = useSelector((state) => state.isLarivaarAssist);
+  const fontSize = useSelector((state) => state.fontSize);
   const isEnglishTranslation = useSelector((state) => state.isEnglishTranslation);
   const isPunjabiTranslation = useSelector((state) => state.isPunjabiTranslation);
   const isSpanishTranslation = useSelector((state) => state.isSpanishTranslation);
   const isParagraphMode = useSelector((state) => state.isParagraphMode);
-  const isVishraam = useSelector((state) => state.isVishraam);
-  const vishraamOption = useSelector((state) => state.vishraamOption);
   const savePosition = useSelector((state) => state.savePosition);
   const isHeaderFooter = useSelector((state) => state.isHeaderFooter);
 
   const { shabad, isLoading, groupedByParagraph } = useFetchShabad(shabadID);
   const [currentPosition, setCurrentPosition] = useState(savePosition[shabadID] || 0);
-  const { backgroundColor, safeAreaViewBack, backViewColor } = nightColors(isNightMode);
+  const { backgroundColor, safeAreaViewBack } = nightColors(isNightMode);
   const { READER_STATUS_BAR_COLOR } = colors;
 
   useScreenAnalytics(title);
@@ -169,21 +165,31 @@ const Reader = ({ navigation, route }) => {
       const paragraph = shabad.map((lineObj) => lineObj.line).join(" ");
       return (
         <Text
-          style={[styles.gurmukhiText, { fontFamily: fontFace }, isNightMode && styles.nightText]}
+          style={[
+            styles.gurmukhiText,
+            { fontFamily: fontFace },
+            isNightMode && styles.nightText,
+            styles.dayText,
+          ]}
         >
           {paragraph}
         </Text>
       );
     }
     // Render each line separately
-    return Object.keys(groupedByParagraph).map((id) => {
+    return Object.keys(groupedByParagraph).map((key) => {
       return (
         <Text
-          onLayout={handleLayout(groupedByParagraph[id][0].id)}
-          key={groupedByParagraph[id][0].id}
-          style={[styles.gurmukhiText, { fontFamily: fontFace }, isNightMode && styles.nightText]}
+          onLayout={handleLayout(groupedByParagraph[key][0].id)}
+          key={groupedByParagraph[key][0].id}
+          style={[
+            styles.gurmukhiText,
+            { fontFamily: fontFace },
+            isNightMode && styles.nightText,
+            styles.dayText,
+          ]}
         >
-          {renderLines(id)}
+          {renderLines(key)}
         </Text>
       );
     });
@@ -217,7 +223,6 @@ const Reader = ({ navigation, route }) => {
       />
 
       <Header
-        ref={headerRef}
         navigation={navigation}
         title={title}
         handleBackPress={handleBackPress}
@@ -235,7 +240,6 @@ const Reader = ({ navigation, route }) => {
           scrollEventThrottle={16}
           onContentSizeChange={onContentSizeChange}
           // {...panResponder.panHandlers}
-          style={[isNightMode && styles.nightBackground]}
         >
           {renderShabad()}
         </Animated.ScrollView>
