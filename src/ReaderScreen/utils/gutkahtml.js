@@ -12,6 +12,7 @@ const htmlTemplate = (
 <head>
   <meta charset="UTF-8">
   <meta name='viewport' content='width=device-width, user-scalable=no'>
+  <meta http-equiv="Content-Security-Policy" content="default-src 'self' 'unsafe-inline' 'unsafe-eval';">
   <style>
     body {
       background-color: ${backColor};

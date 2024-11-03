@@ -1,6 +1,6 @@
 import React, { useState, useRef, useEffect } from "react";
 import { useDispatch, useSelector } from "react-redux";
-import { StatusBar, ActivityIndicator, BackHandler, AppState } from "react-native";
+import { StatusBar, ActivityIndicator, BackHandler, AppState, Platform } from "react-native";
 import { WebView } from "react-native-webview";
 import PropTypes from "prop-types";
 import { SafeAreaView } from "react-native-safe-area-context";
@@ -107,6 +107,7 @@ const Reader = ({ navigation, route }) => {
     const env = message.nativeEvent.data;
     if (env === "toggle") {
       // If the event is "toggle", toggle the current state of isHeader
+      console.log("toggle");
       toggleIsHeader((prev) => !prev);
       dispatch(actions.toggleHeaderFooter(!isHeaderFooter));
     } else if (env === "show") {
@@ -160,8 +161,11 @@ const Reader = ({ navigation, route }) => {
         ref={webViewRef}
         onError={(syntheticEvent) => {
           const { nativeEvent } = syntheticEvent;
-          errorHandler(`Reader web View Error ${nativeEvent}`);
-          throw error;
+          setError(`Reader web View Error ${nativeEvent}`);
+        }}
+        onHttpError={(syntheticEvent) => {
+          const { nativeEvent } = syntheticEvent;
+          setError("HTTP error status code:", nativeEvent.statusCode);
         }}
         decelerationRate="normal"
         source={{
@@ -178,7 +182,7 @@ const Reader = ({ navigation, route }) => {
             isLarivaar,
             currentPosition
           ),
-          baseUrl: "",
+          baseUrl: Platform.OS === "ios" ? "./" : "",
         }}
         style={[webView, isNightMode && { opacity: viewLoaded ? 1 : 0.1 }, backViewColor]}
         onMessage={(message) => handleMessage(message)}

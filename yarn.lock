@@ -3347,11 +3347,6 @@ escape-string-regexp@^4.0.0:
   resolved "https://registry.npmjs.org/escape-string-regexp/-/escape-string-regexp-4.0.0.tgz"
   integrity sha512-TtpcNJ3XAzx3Gq8sWRzJaVajRs0uVxA2YAkdb1jm2YkPz4G6egUFAyA3n5vtEIZefPk5Wa4UXbKuS5fKkJWdgA==
 
-escape-string-regexp@2.0.0:
-  version "2.0.0"
-  resolved "https://registry.npmjs.org/escape-string-regexp/-/escape-string-regexp-2.0.0.tgz"
-  integrity sha512-UpzcLCXolUWcNu5HtVMHYdXJjArjsF9C0aNnquZYY4uW/Vu0miy5YoWvbV345HauVvcAUnpRuhMMcqTcGOY2+w==
-
 eslint-config-airbnb-base@^15.0.0:
   version "15.0.0"
   resolved "https://registry.npmjs.org/eslint-config-airbnb-base/-/eslint-config-airbnb-base-15.0.0.tgz"
@@ -6259,10 +6254,10 @@ react-native-draggable-flatlist@^4.0.1:
   dependencies:
     "@babel/preset-typescript" "^7.17.12"
 
-react-native-error-boundary@^1.2.3:
-  version "1.2.4"
-  resolved "https://registry.npmjs.org/react-native-error-boundary/-/react-native-error-boundary-1.2.4.tgz"
-  integrity sha512-PF5xn+3mGKk8uzf9GpOQa1kvxsG3Bs3XMwJZNqqUG//jC1FDp+WRGxg4r2sPG70MveSOQmQNuHnAycCPYQNg6g==
+react-native-error-boundary@^1.2.5:
+  version "1.2.5"
+  resolved "https://registry.npmjs.org/react-native-error-boundary/-/react-native-error-boundary-1.2.5.tgz"
+  integrity sha512-dVnQGFu/f05sRE1hXIzmg/haczQcdNUL1ndJWpWklq/JANOkE7cBV6/dU7Ev6XRJDcRFUYTomftYhH85zcS57Q==
 
 react-native-exception-handler@^2.10.10:
   version "2.10.10"
@@ -6369,12 +6364,12 @@ react-native-vector-icons@^9.2.0, react-native-vector-icons@>7.0.0:
     prop-types "^15.7.2"
     yargs "^16.1.1"
 
-react-native-webview@^13.6.2:
-  version "13.6.4"
-  resolved "https://registry.npmjs.org/react-native-webview/-/react-native-webview-13.6.4.tgz"
-  integrity sha512-AdgmaMBHPcyERTvng9eSGgHX6AleyUlSusWAxngSOSdiYGgHW81T6C5A8j/ImJAF9oZg0bQDxp43Hu56tzENZQ==
+react-native-webview@^13.12.3:
+  version "13.12.3"
+  resolved "https://registry.npmjs.org/react-native-webview/-/react-native-webview-13.12.3.tgz"
+  integrity sha512-Y1I5YyDYyE7NC96RHLhd2nxh7ymLYOYLTefgx5ixxw2OToQK0ow3OJ+o77QcI1Tuevj5PCxwqC/14ceS/7yPJQ==
   dependencies:
-    escape-string-regexp "2.0.0"
+    escape-string-regexp "^4.0.0"
     invariant "2.2.4"
 
 react-native@*, "react-native@^0.0.0-0 || >=0.60 <1.0", react-native@>=0.14.0, react-native@>=0.57.0, react-native@>=0.57.7, react-native@>=0.59, react-native@>=0.64.0, react-native@>=0.65.0, react-native@>=0.8.0, react-native@>0.64, react-native@0.71.18:
