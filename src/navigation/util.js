@@ -3,11 +3,11 @@ import { constant } from "@common";
 
 export const navigationRef = createNavigationContainerRef();
 
-export function navigate(name, params) {
+export const navigate = (name, params) => {
   if (navigationRef.isReady()) {
     navigationRef.navigate(name, params);
   }
-}
+};
 
 export const navigateTo = (incoming) => {
   const { data } = incoming.notification;

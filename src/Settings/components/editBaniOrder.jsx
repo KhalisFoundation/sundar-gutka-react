@@ -5,7 +5,7 @@ import { STRINGS } from "@common";
 import { nightModeStyles, nightModeColor } from "../styles/nightModeStyles";
 import { styles } from "../styles";
 
-function EditBaniOrder({ navigate, isNightMode }) {
+const EditBaniOrder = ({ navigate, isNightMode }) => {
   const { containerNightStyles } = nightModeStyles(isNightMode);
   const nightColor = nightModeColor(isNightMode);
   const { EDIT_BANI_ORDER } = STRINGS;
@@ -23,7 +23,7 @@ function EditBaniOrder({ navigate, isNightMode }) {
       <ListItem.Chevron />
     </ListItem>
   );
-}
+};
 EditBaniOrder.propTypes = {
   navigate: PropTypes.func.isRequired,
   isNightMode: PropTypes.bool.isRequired,

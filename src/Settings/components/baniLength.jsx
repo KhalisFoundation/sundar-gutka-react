@@ -2,17 +2,13 @@ import React, { useState } from "react";
 import { useSelector } from "react-redux";
 import { STRINGS, actions } from "@common";
 import { ListItemComponent, BottomSheetComponent } from "./comon";
+import { getBaniLengths } from "./comon/strings";
 
-function BaniLengthComponent() {
+const BaniLengthComponent = () => {
   const [isVisible, toggleVisible] = useState(false);
   const baniLength = useSelector((state) => state.baniLength);
   const baniLengthIcon = require("../../../images/banilengthicon.png");
-  const BANI_LENGTHS = [
-    { key: "SHORT", title: STRINGS.short },
-    { key: "MEDIUM", title: STRINGS.medium },
-    { key: "LONG", title: STRINGS.long },
-    { key: "EXTRA_LONG", title: STRINGS.extra_long },
-  ];
+  const BANI_LENGTHS = getBaniLengths(STRINGS);
   return (
     <>
       <ListItemComponent
@@ -35,6 +31,6 @@ function BaniLengthComponent() {
       )}
     </>
   );
-}
+};
 
 export default BaniLengthComponent;

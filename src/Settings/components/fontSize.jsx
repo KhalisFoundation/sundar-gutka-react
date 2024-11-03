@@ -3,18 +3,14 @@ import { useSelector } from "react-redux";
 import { STRINGS } from "@common";
 import { setFontSize } from "@common/actions";
 import { BottomSheetComponent, ListItemComponent } from "./comon";
+import { getFontSizes } from "./comon/strings";
 
-function FontSizeComponent() {
+const FontSizeComponent = () => {
   const [isVisible, toggleVisible] = useState(false);
   const fontSize = useSelector((state) => state.fontSize);
   const fontSizeIcon = require("../../../images/fontsizeicon.png");
-  const FONT_SIZES = [
-    { key: "EXTRA_SMALL", title: STRINGS.extra_small },
-    { key: "SMALL", title: STRINGS.small_default },
-    { key: "MEDIUM", title: STRINGS.medium },
-    { key: "LARGE", title: STRINGS.large },
-    { key: "EXTRA_LARGE", title: STRINGS.extra_large },
-  ];
+  const FONT_SIZES = getFontSizes(STRINGS);
+
   return (
     <>
       <ListItemComponent
@@ -37,6 +33,6 @@ function FontSizeComponent() {
       )}
     </>
   );
-}
+};
 
 export default FontSizeComponent;

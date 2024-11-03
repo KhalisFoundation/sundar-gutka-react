@@ -5,19 +5,15 @@ import { STRINGS, colors } from "@common";
 import { setTransliteration, toggleTransliteration } from "@common/actions";
 import { ListItemComponent, BottomSheetComponent } from "./comon";
 import { styles } from "../styles";
+import { getTransliteration } from "./comon/strings";
 
-function TransliterationComponent() {
+const TransliterationComponent = () => {
   const romanizedIcon = require("../../../images/romanizeicon.png");
   const [isVisible, toggleVisible] = useState(false);
   const transliterationLanguage = useSelector((state) => state.transliterationLanguage);
   const isTransliteration = useSelector((state) => state.isTransliteration);
   const isNightMode = useSelector((state) => state.isNightMode);
-  const TRANSLITERATION_LANGUAGES = [
-    { key: "ENGLISH", title: `${STRINGS.english}` },
-    { key: "HINDI", title: STRINGS.hindi },
-    { key: "SHAHMUKHI", title: STRINGS.shahmukhi },
-    { key: "IPA", title: STRINGS.ipa },
-  ];
+  const TRANSLITERATION_LANGUAGES = getTransliteration(STRINGS);
   const dispatch = useDispatch();
 
   return (
@@ -61,6 +57,6 @@ function TransliterationComponent() {
       )}
     </>
   );
-}
+};
 
 export default TransliterationComponent;

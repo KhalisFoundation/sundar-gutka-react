@@ -7,7 +7,7 @@ import baseFontSize from "../../helpers";
 import colors from "../../colors";
 import { styles } from "../../../Settings/styles";
 
-function BaniList(props) {
+const BaniList = (props) => {
   const fontSize = useSelector((state) => state.fontSize);
   const fontFace = useSelector((state) => state.fontFace);
   const isTransliteration = useSelector((state) => state.isTransliteration);
@@ -74,7 +74,7 @@ function BaniList(props) {
       keyExtractor={(item) => item.gurmukhi}
     />
   );
-}
+};
 
 BaniList.propTypes = {
   data: PropTypes.arrayOf(

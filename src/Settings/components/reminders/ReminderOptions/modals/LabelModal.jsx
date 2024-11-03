@@ -6,7 +6,7 @@ import { setReminderBanis } from "@common/actions";
 import { updateReminders, colors, STRINGS } from "@common";
 import { styles } from "../styles";
 
-function LabelModal({ section, onHide }) {
+const LabelModal = ({ section, onHide }) => {
   const { title } = section;
   const [reminderTitle, setReminderTitle] = useState(title);
   const isNightMode = useSelector((state) => state.isNightMode);
@@ -62,7 +62,7 @@ function LabelModal({ section, onHide }) {
       </View>
     </Modal>
   );
-}
+};
 LabelModal.propTypes = {
   section: PropTypes.shape({ key: PropTypes.string.isRequired, title: PropTypes.string.isRequired })
     .isRequired,

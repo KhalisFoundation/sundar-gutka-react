@@ -7,7 +7,7 @@ import useHeader from "./hooks/useHeader";
 import useBookmarks from "./hooks/useBookmarks";
 import { nightMode } from "./styles";
 
-function Bookmarks({ navigation, route }) {
+const Bookmarks = ({ navigation, route }) => {
   useHeader(navigation);
   const { bookmarksData } = useBookmarks(route);
   const isNightMode = useSelector((state) => state.isNightMode);
@@ -15,10 +15,10 @@ function Bookmarks({ navigation, route }) {
   const dispatch = useDispatch();
   useScreenAnalytics(constant.BOOKMARKS);
 
-  function onPress(item) {
+  const onPress = (item) => {
     dispatch(actions.setBookmarkPosition(item.item.shabadID));
     navigation.goBack();
-  }
+  };
 
   return (
     <SafeAreaProvider style={{ backgroundColor }}>
@@ -27,7 +27,7 @@ function Bookmarks({ navigation, route }) {
       </SafeAreaView>
     </SafeAreaProvider>
   );
-}
+};
 Bookmarks.propTypes = {
   navigation: PropTypes.shape().isRequired,
   route: PropTypes.shape().isRequired,

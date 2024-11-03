@@ -5,7 +5,7 @@ import { toggleStatusBar } from "@common/actions";
 import STRINGS from "@common/localization";
 import { iconNightColor, nightModeStyles, nightModeColor } from "../styles/nightModeStyles";
 
-function StatusBar() {
+const StatusBar = () => {
   const isStatusBar = useSelector((state) => state.isStatusBar);
   const isNightMode = useSelector((state) => state.isNightMode);
 
@@ -25,6 +25,6 @@ function StatusBar() {
       <Switch value={isStatusBar} onValueChange={(value) => dispatch(toggleStatusBar(value))} />
     </ListItem>
   );
-}
+};
 
 export default StatusBar;

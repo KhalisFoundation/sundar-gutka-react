@@ -2,7 +2,7 @@ import { constant } from "@common";
 import initDB from "./connect";
 import { createFormattedText, getTranslitText, parseVishraamPositions } from "./utils";
 
-export function getBaniList(language) {
+export const getBaniList = (language) => {
   return new Promise((resolve, reject) => {
     initDB()
       .then((db) => {
@@ -35,9 +35,9 @@ export function getBaniList(language) {
         reject(error);
       });
   });
-}
+};
 
-export function getShabadFromID(
+export const getShabadFromID = (
   shabadID,
   length,
   language,
@@ -47,7 +47,7 @@ export function getShabadFromID(
   isLarivarAssist,
   isParagraphMode,
   isVishraam
-) {
+) => {
   let baniLength;
   switch (length) {
     case constant.EXTRA_LONG:
@@ -185,9 +185,9 @@ export function getShabadFromID(
         reject(error);
       });
   });
-}
+};
 
-export function getBookmarksForID(baniId, length, language) {
+export const getBookmarksForID = (baniId, length, language) => {
   let baniLength;
   const {
     EXTRA_LONG,
@@ -246,4 +246,4 @@ export function getBookmarksForID(baniId, length, language) {
       });
     });
   });
-}
+};

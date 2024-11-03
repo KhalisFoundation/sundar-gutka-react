@@ -16,7 +16,7 @@ import { Header } from "./components";
 import { useBookmarks, useFetchShabad } from "./hooks";
 import { styles, nightColors } from "./styles";
 
-function Reader({ navigation, route }) {
+const Reader = ({ navigation, route }) => {
   const scrollViewRef = useRef(null);
   const headerRef = useRef(null);
   const elementPositions = useRef({});
@@ -58,8 +58,8 @@ function Reader({ navigation, route }) {
   useBookmarks(scrollViewRef, shabad, bookmarkPosition, elementPositions);
 
   useEffect(() => {
-    setShabadID(Number(route.params.params.id));
-  }, [route.params.params.id]);
+    setShabadID(Number(id));
+  }, [id]);
 
   useEffect(() => {
     setCurrentPosition(savePosition[shabadID]);
@@ -242,7 +242,7 @@ function Reader({ navigation, route }) {
       </TouchableWithoutFeedback>
     </SafeAreaView>
   );
-}
+};
 
 Reader.propTypes = {
   navigation: PropTypes.shape().isRequired,

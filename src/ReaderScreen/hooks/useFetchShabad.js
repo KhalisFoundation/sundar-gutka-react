@@ -1,4 +1,4 @@
-import { useState, useEffect } from "react";
+import { useState, useEffect, useCallback } from "react";
 import { useSelector } from "react-redux";
 import { getShabadFromID } from "@database";
 
@@ -14,16 +14,8 @@ const useFetchShabad = (shabadID) => {
   const isLarivaarAssist = useSelector((state) => state.isLarivaarAssist);
   const isParagraphMode = useSelector((state) => state.isParagraphMode);
   const isVishraam = useSelector((state) => state.isVishraam);
-  // const prevBaniLengthRef = useRef(baniLength);
-  // const prevTransliterationLanguageRef = useRef(transliterationLanguage);
-  // const prevVishraamSourceRef = useRef(vishraamSource);
-  // const prevVishraamOptionRef = useRef(vishraamOption);
-  // const prevIsLarivaarRef = useRef(isLarivaar);
-  // const prevIsLarivaarAssistRef = useRef(isLarivaarAssist);
-  // const prevIsParagraphaMode = useRef(isParagraphMode);
-  // const prevIsVishraam = useRef(isVishraam);
 
-  const fetchShabad = async () => {
+  const fetchShabad = useCallback(async () => {
     toggleLoading(true);
     const shabadData = await getShabadFromID(
       shabadID,
@@ -49,7 +41,17 @@ const useFetchShabad = (shabadID) => {
       }, {});
       setGroupedByParagraph(byParagraph);
     }
-  };
+  }, [
+    shabadID,
+    baniLength,
+    transliterationLanguage,
+    vishraamSource,
+    vishraamOption,
+    isLarivaar,
+    isLarivaarAssist,
+    isParagraphMode,
+    isVishraam,
+  ]);
   useEffect(() => {
     fetchShabad();
   }, [

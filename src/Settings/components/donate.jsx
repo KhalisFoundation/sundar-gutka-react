@@ -5,7 +5,7 @@ import { useSelector } from "react-redux";
 import { STRINGS } from "@common";
 import { iconNightColor, nightModeStyles, nightModeColor } from "../styles/nightModeStyles";
 
-function Donate() {
+const Donate = () => {
   const isNightMode = useSelector((state) => state.isNightMode);
   const iconColor = iconNightColor(isNightMode);
   const { containerNightStyles } = nightModeStyles(isNightMode);
@@ -24,5 +24,5 @@ function Donate() {
       <ListItem.Chevron />
     </ListItem>
   );
-}
+};
 export default Donate;

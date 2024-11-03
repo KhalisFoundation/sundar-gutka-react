@@ -6,7 +6,14 @@ import PropTypes from "prop-types";
 import { styles, nightModeStyles } from "../../styles";
 import RenderBottomSheetItem from "./render";
 
-function BottomSheetComponent({ isVisible, actionConstant, value, title, action, toggleVisible }) {
+const BottomSheetComponent = ({
+  isVisible,
+  actionConstant,
+  value,
+  title,
+  action,
+  toggleVisible,
+}) => {
   const isNightMode = useSelector((state) => state.isNightMode);
   const { containerNightStyles, textNightStyle } = nightModeStyles(isNightMode);
   return (
@@ -22,9 +29,7 @@ function BottomSheetComponent({ isVisible, actionConstant, value, title, action,
       isVisible={isVisible}
       onBackdropPress={() => toggleVisible(false)}
     >
-      <View
-        style={{ width: "90%", marginLeft: "auto", marginRight: "auto", bottom: 0, height: "90%" }}
-      >
+      <View style={styles.viewWrapper}>
         <Text style={[styles.bottomSheetTitle, textNightStyle, containerNightStyles]}>{title}</Text>
         <Divider />
         {actionConstant.map((item) => (
@@ -39,7 +44,7 @@ function BottomSheetComponent({ isVisible, actionConstant, value, title, action,
       </View>
     </BottomSheet>
   );
-}
+};
 BottomSheetComponent.propTypes = {
   isVisible: PropTypes.bool.isRequired,
   actionConstant: PropTypes.arrayOf(PropTypes.shape()).isRequired,

@@ -4,17 +4,14 @@ import { useDispatch, useSelector } from "react-redux";
 import { setTheme, toggleNightMode } from "@common/actions";
 import { constant, STRINGS } from "@common";
 import { BottomSheetComponent, ListItemComponent } from "./comon";
+import { getTheme } from "./comon/strings";
 
-function ThemeComponent() {
+const ThemeComponent = () => {
   const [isVisible, toggleVisible] = useState(false);
   const theme = useSelector((state) => state.theme);
   const themeIcon = require("../../../images/bgcoloricon.png");
   const dispatch = useDispatch();
-  const THEMES = [
-    { key: "Default", title: `${STRINGS.default}` },
-    { key: "Light", title: `${STRINGS.light}` },
-    { key: "Dark", title: `${STRINGS.dark}` },
-  ];
+  const THEMES = getTheme(STRINGS);
 
   useEffect(() => {
     const colorScheme = Appearance.getColorScheme();
@@ -53,6 +50,6 @@ function ThemeComponent() {
       )}
     </>
   );
-}
+};
 
 export default ThemeComponent;

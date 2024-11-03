@@ -89,7 +89,11 @@ export const updateReminders = async (remindersOn, sound, remindersList) => {
       name: constant.REMINDERS_WAHEGURU_SOUL,
       sound: constant.WAHEGURU_SOUL,
     },
-    { id: constant.WAKE_UP_JAP, name: constant.REMINDERS_WAKE_UP, sound: constant.WAKE_UP_JAP },
+    {
+      id: constant.WAKE_UP_JAP,
+      name: constant.REMINDERS_WAKE_UP,
+      sound: constant.WAKE_UP_JAP,
+    },
   ];
 
   const channelCreationPromises = channels.map((channel) =>
@@ -116,13 +120,6 @@ export const updateReminders = async (remindersOn, sound, remindersList) => {
 export const checkPermissions = async () => {
   const settings = await notifee.requestPermission();
   const isAllowed = settings.authorizationStatus >= AuthorizationStatus.AUTHORIZED;
-  // const notificationSettings = notifee.getNotificationSettings();
-  // if (notificationSettings.android.alarm !== AndroidNotificationSetting.ENABLED) {
-  //   console.log("it's working");
-  //   await notifee.openAlarmPermissionSettings();
-
-  // }
-
   return isAllowed;
 };
 

@@ -6,7 +6,7 @@ import { useSelector } from "react-redux";
 import { constant, STRINGS, colors } from "@common";
 import styles from "../styles";
 
-function BaniHeader(props) {
+const BaniHeader = (props) => {
   const { navigate } = props;
   const isNightMode = useSelector((state) => state.isNightMode);
   return (
@@ -40,7 +40,7 @@ function BaniHeader(props) {
       </View>
     </View>
   );
-}
+};
 BaniHeader.propTypes = {
   navigate: PropTypes.func.isRequired,
 };

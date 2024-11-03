@@ -25,14 +25,13 @@ window.addEventListener(
   false
 );
 
-window.onload = function() {
-  (function scrollToPosition() {
-    setTimeout(function () {
+window.onload = () => {
+  const scrollToPosition=()=> {
       let scrollY = (document.body.scrollHeight - window.innerHeight) * ${position};
       window.scrollTo(0, scrollY);
       let curPosition = scrollY;
-    }, 50);
-  })(); 
+  }
+  scrollToPosition(); 
 }
 
 function getScrollPercent() {
@@ -119,7 +118,7 @@ function scrollFunc(e) {
 }
 window.onscroll = scrollFunc;
 
-function handleTouchEnd(){
+const handleTouchEnd=()=>{
   clearTimeout(holdTimer);
   if (autoScrollSpeed !== 0 && autoScrollTimeout === null) {
     setTimeout(function () {

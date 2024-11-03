@@ -5,7 +5,7 @@ import PropTypes from "prop-types";
 import { STRINGS } from "@common";
 import { iconNightColor, nightModeStyles, nightModeColor } from "../styles/nightModeStyles";
 
-function About({ navigate }) {
+const About = ({ navigate }) => {
   const isNightMode = useSelector((state) => state.isNightMode);
   const iconColor = iconNightColor(isNightMode);
   const { containerNightStyles } = nightModeStyles(isNightMode);
@@ -20,6 +20,6 @@ function About({ navigate }) {
       <ListItem.Chevron />
     </ListItem>
   );
-}
+};
 About.propTypes = { navigate: PropTypes.func.isRequired };
 export default About;
