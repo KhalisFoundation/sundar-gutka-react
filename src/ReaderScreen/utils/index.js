@@ -74,7 +74,6 @@ export const createDiv = (
 };
 
 export const loadHTML = (
-  shabadID,
   shabad,
   isTransliteration,
   fontSize,

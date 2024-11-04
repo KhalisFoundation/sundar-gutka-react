@@ -8,9 +8,9 @@ import { constant, colors, actions, useScreenAnalytics, errorHandler } from "@co
 import { Header, AutoScrollComponent } from "./components";
 import { useBookmarks, useFetchShabad } from "./hooks";
 import { styles, nightColors } from "./styles";
-import { loadHTML } from "./utils";
+import { loadHTML, script } from "./utils";
 
-const Reader = ({ navigation, route }) => {
+const Reader = React.memo(({ navigation, route }) => {
   const webViewRef = useRef(null);
   const headerRef = useRef(null);
   const { webView } = styles;
@@ -80,16 +80,11 @@ const Reader = ({ navigation, route }) => {
   }, []);
 
   const handleBackPress = () => {
-    if (webViewRef.current) {
-      webViewRef.current.postMessage(JSON.stringify({ Back: true }));
-    } else {
-      setError("webViewRef is not available");
-    }
-    if (navigation && navigation.canGoBack()) {
+    webViewRef.current.postMessage(JSON.stringify({ Back: true }));
+    // set Timeout to delay back function so that it will save the current position
+    setTimeout(() => {
       navigation.goBack();
-    } else {
-      setError("Navigation is not available or cannot go back");
-    }
+    }, 100);
   };
   const backAction = () => {
     handleBackPress();
@@ -107,7 +102,6 @@ const Reader = ({ navigation, route }) => {
     const env = message.nativeEvent.data;
     if (env === "toggle") {
       // If the event is "toggle", toggle the current state of isHeader
-      console.log("toggle");
       toggleIsHeader((prev) => !prev);
       dispatch(actions.toggleHeaderFooter(!isHeaderFooter));
     } else if (env === "show") {
@@ -159,6 +153,7 @@ const Reader = ({ navigation, route }) => {
           }, 500);
         }}
         ref={webViewRef}
+        javaScriptEnabled
         onError={(syntheticEvent) => {
           const { nativeEvent } = syntheticEvent;
           setError(`Reader web View Error ${nativeEvent}`);
@@ -168,9 +163,9 @@ const Reader = ({ navigation, route }) => {
           setError("HTTP error status code:", nativeEvent.statusCode);
         }}
         decelerationRate="normal"
+        injectedJavaScript={script(isNightMode, currentPosition)}
         source={{
           html: loadHTML(
-            shabadID,
             shabad,
             isTransliteration,
             fontSize,
@@ -191,7 +186,7 @@ const Reader = ({ navigation, route }) => {
       {isAutoScroll && <AutoScrollComponent shabadID={shabadID} ref={webViewRef} />}
     </SafeAreaView>
   );
-};
+});
 
 Reader.propTypes = {
   navigation: PropTypes.shape().isRequired,

@@ -1,7 +1,4 @@
-import { Platform } from "react-native";
-
 const script = (nightMode, position) => {
-  const listener = Platform.OS === "android" ? "document" : "window";
   return `
 
 let autoScrollTimeout;
@@ -13,78 +10,6 @@ let holdTimer;
 let curPosition = 0;
 let isScrolling;
 let isManuallyScrolling = false;
-window.addEventListener(
-  "orientationchange",
-  function () {
-    setTimeout(function () {
-      let scrollY = (document.body.scrollHeight - window.innerHeight) * curPosition;
-      window.scrollTo(0, scrollY);
-      curPosition = scrollY;
-    }, 50);
-  },
-  false
-);
-
-window.onload = () => {
-  const scrollToPosition=()=> {
-      let scrollY = (document.body.scrollHeight - window.innerHeight) * ${position};
-      window.scrollTo(0, scrollY);
-      let curPosition = scrollY;
-  }
-  scrollToPosition(); 
-}
-
-function getScrollPercent() {
-  return window.pageYOffset / (document.body.scrollHeight - window.innerHeight);
-}
-
-//  Listen for scroll events
-window.addEventListener(
-  "scroll",
-  function (event) {
-    // Clear our timeout throughout the scroll
-    window.clearTimeout(isScrolling);
-    // Set a timeout to run after scrolling ends
-    isScrolling = setTimeout(function () {
-      isManuallyScrolling = false;
-    }, 66);
-  },
-  false
-);
-
-if (${nightMode}) {
-  //fade event
-  window.addEventListener("load", fadeInEffect(), false);
-
-  function fadeInEffect() {
-    let fadeTarget = ${listener}.documentElement;
-    fadeTarget.style.opacity = 0;
-    let fadeEffect = setInterval(function () {
-      if (Number(fadeTarget.style.opacity) < 1) {
-        fadeTarget.style.opacity = Number(fadeTarget.style.opacity) + 0.1;
-      } else {
-        fadeTarget.style.opacity = 1;
-      }
-    }, 100);
-  }
-}
-function setAutoScroll() {
-  let speed = autoScrollSpeed;
-  if (speed > 0) {
-    if (!isManuallyScrolling) {
-      window.scrollBy({
-        behavior: "auto",
-        left: 0,
-        top: 1,
-      });
-    }
-    autoScrollTimeout = setTimeout(function () {
-      setAutoScroll();
-    }, (200 - speed * 2) / scrollMultiplier);
-  } else {
-    clearScrollTimeout();
-  }
-}
 
 function clearScrollTimeout() {
   if (autoScrollTimeout != null) {
@@ -116,27 +41,42 @@ function scrollFunc(e) {
   }
   scrollFunc.y = window.pageYOffset;
 }
-window.onscroll = scrollFunc;
 
+function getScrollPercent() {
+  return window.pageYOffset / (document.body.scrollHeight - window.innerHeight);
+}
 
+function fadeInEffect() {
+    let fadeTarget = document.documentElement;
+    fadeTarget.style.opacity = 0;
+    let fadeEffect = setInterval(function () {
+      if (Number(fadeTarget.style.opacity) < 1) {
+        fadeTarget.style.opacity = Number(fadeTarget.style.opacity) + 0.1;
+      } else {
+        fadeTarget.style.opacity = 1;
+      }
+    }, 100);
+  }
 
-
-window.addEventListener("touchstart", function () {
-  if (autoScrollSpeed !== 0) {
+function setAutoScroll() {
+  const speed = autoScrollSpeed;
+  if (speed > 0) {
+    if (!isManuallyScrolling) {
+      window.scrollBy({
+        behavior: "auto",
+        left: 0,
+        top: 1,
+      });
+    }
+    autoScrollTimeout = setTimeout(function () {
+      setAutoScroll();
+    }, (200 - speed * 2) / scrollMultiplier);
+  } else {
     clearScrollTimeout();
   }
-  dragging = false;
-  holding = false;
-  holdTimer = setTimeout(()=> {
-    holding = true;
-  }, 1000); // Longer than 1 seconds is not a tap
-});
-window.addEventListener("touchmove", function () {
-  isManuallyScrolling = true;
-  dragging = true;
-});
-const handleTouchEnd = () => {
+}
 
+const handleTouchEnd = () => {
   clearTimeout(holdTimer);
   if (autoScrollSpeed !== 0 && autoScrollTimeout === null) {
     setTimeout(function () {
@@ -151,9 +91,67 @@ const handleTouchEnd = () => {
   dragging = false;
   holding = false;
 }
+const scrollToPosition=()=> {
+  let scrollY = (document.body.scrollHeight - window.innerHeight) * ${position};
+  window.scrollTo(0, scrollY);
+  curPosition = scrollY;
+}
+
+window.addEventListener(
+  "orientationchange",
+  function () {
+    setTimeout(function () {
+      let scrollY = (document.body.scrollHeight - window.innerHeight) * curPosition;
+      window.scrollTo(0, scrollY);
+      curPosition = scrollY;
+    }, 50);
+  },
+  false
+);
+
+window.onload = () => {
+
+  scrollToPosition(); 
+}
+
+
+//  Listen for scroll events
+window.addEventListener(
+  "scroll",
+  function (event) {
+    // Clear our timeout throughout the scroll
+    window.clearTimeout(isScrolling);
+    // Set a timeout to run after scrolling ends
+    isScrolling = setTimeout(function () {
+      isManuallyScrolling = false;
+    }, 66);
+  },
+  false
+);
+
+if (${nightMode}) {
+  //fade event
+  window.addEventListener("load", fadeInEffect(), false);
+}
+window.onscroll = scrollFunc;
+window.addEventListener("touchstart", function () {
+  if (autoScrollSpeed !== 0) {
+    clearScrollTimeout();
+  }
+  dragging = false;
+  holding = false;
+  holdTimer = setTimeout(()=> {
+    holding = true;
+  }, 1000); // Longer than 1 seconds is not a tap
+});
+window.addEventListener("touchmove", function () {
+  isManuallyScrolling = true;
+  dragging = true;
+});
+
 window.addEventListener("touchend", handleTouchEnd);
 
-${listener}.addEventListener(
+window.addEventListener(
   "message",
   function (event) {
     let message = JSON.parse(event.data);
