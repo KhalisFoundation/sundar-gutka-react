@@ -38,6 +38,7 @@ const Reader = ({ navigation, route }) => {
   const isTransliteration = useSelector((state) => state.isTransliteration);
   const fontFace = useSelector((state) => state.fontFace);
   const fontSize = useSelector((state) => state.fontSize);
+  const fontSizes = { EXTRA_SMALL: 14, SMALL: 16, MEDIUM: 20, LARGE: 24, EXTRA_LARGE: 30 };
   const isEnglishTranslation = useSelector((state) => state.isEnglishTranslation);
   const isPunjabiTranslation = useSelector((state) => state.isPunjabiTranslation);
   const isSpanishTranslation = useSelector((state) => state.isSpanishTranslation);
@@ -131,11 +132,11 @@ const Reader = ({ navigation, route }) => {
       }
     };
   }, [isAutoScroll, contentHeight]);
-  const handleLayout = (id) => (event) => {
-    elementPositions.current[id] = event.nativeEvent.layout.y;
+  const handleLayout = (key) => (event) => {
+    elementPositions.current[key] = event.nativeEvent.layout.y;
   };
-  const renderLines = (id) => {
-    return groupedByParagraph[id]
+  const renderLines = (key) => {
+    return groupedByParagraph[key]
       .map((lineObj) => {
         const lineContent = [lineObj.gurmukhi];
         if (isTransliteration && lineObj.translit) {
@@ -150,7 +151,6 @@ const Reader = ({ navigation, route }) => {
         if (isSpanishTranslation && lineObj.spanishTranslation) {
           lineContent.push(lineObj.spanishTranslation);
         }
-
         return lineContent.join("\n");
       })
       .join("\n");
@@ -187,6 +187,21 @@ const Reader = ({ navigation, route }) => {
             { fontFamily: fontFace },
             isNightMode && styles.nightText,
             styles.dayText,
+            {
+              fontSize:
+                groupedByParagraph[key][0].header === 1
+                  ? fontSizes[fontSize] * 1.2
+                  : fontSizes[fontSize],
+              color:
+                groupedByParagraph[key][0].header === 1
+                  ? colors.HEADER_COLOR_1_LIGHT
+                  : colors.NIGHT_BLACK,
+              textAlign:
+                groupedByParagraph[key][0].header === 1 || groupedByParagraph[key][0].header === 2
+                  ? "center"
+                  : "left",
+              margin: 5,
+            },
           ]}
         >
           {renderLines(key)}
@@ -240,6 +255,7 @@ const Reader = ({ navigation, route }) => {
           scrollEventThrottle={16}
           onContentSizeChange={onContentSizeChange}
           // {...panResponder.panHandlers}
+          style={{ paddingTop: 50 }}
         >
           {renderShabad()}
         </Animated.ScrollView>
