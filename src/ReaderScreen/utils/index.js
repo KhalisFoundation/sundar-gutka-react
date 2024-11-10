@@ -65,8 +65,7 @@ export const createDiv = (
     <div class="content-item ${fontClass} ${textAlign}" style="font-size: ${fontSizeForReader(
     fontSize,
     header,
-    type === constant.TRANSLITERATION.toLowerCase() || type === constant.TRANSLATION.toLowerCase(),
-    isLarivaar
+    type === constant.TRANSLITERATION.toLowerCase() || type === constant.TRANSLATION.toLowerCase()
   )}px; color: ${fontColorForReader(header, isNightMode, type.toUpperCase())};">
       ${content}
     </div>

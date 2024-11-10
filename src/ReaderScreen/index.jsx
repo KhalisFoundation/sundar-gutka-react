@@ -1,6 +1,13 @@
 import React, { useState, useRef, useEffect } from "react";
 import { useDispatch, useSelector } from "react-redux";
-import { StatusBar, ActivityIndicator, BackHandler, AppState, Platform } from "react-native";
+import {
+  Appearance,
+  StatusBar,
+  ActivityIndicator,
+  BackHandler,
+  AppState,
+  Platform,
+} from "react-native";
 import { WebView } from "react-native-webview";
 import PropTypes from "prop-types";
 import { SafeAreaView } from "react-native-safe-area-context";
@@ -12,13 +19,11 @@ import { loadHTML, script } from "./utils";
 
 const Reader = React.memo(({ navigation, route }) => {
   const webViewRef = useRef(null);
-  const headerRef = useRef(null);
   const { webView } = styles;
   const { title, id } = route.params.params;
   const [error, setError] = useState(null);
-  const [isHeader, toggleIsHeader] = useState(true);
+  const [isHeader, toggleHeader] = useState(false);
   const [viewLoaded, toggleViewLoaded] = useState(false);
-  const [shabadID, setShabadID] = useState(Number(id));
 
   const dispatch = useDispatch();
 
@@ -39,37 +44,38 @@ const Reader = React.memo(({ navigation, route }) => {
   const vishraamOption = useSelector((state) => state.vishraamOption);
   const savePosition = useSelector((state) => state.savePosition);
   const isHeaderFooter = useSelector((state) => state.isHeaderFooter);
+  const theme = useSelector((state) => state.theme);
 
-  const { shabad, isLoading, fetchShabad } = useFetchShabad(shabadID, setError);
-  const [currentPosition, setCurrentPosition] = useState(savePosition[shabadID] || 0);
+  const { shabad, isLoading, fetchShabad } = useFetchShabad(id, setError);
+  const [currentPosition, setCurrentPosition] = useState(savePosition[id] || 0);
   const { backgroundColor, safeAreaViewBack, backViewColor } = nightColors(isNightMode);
   const { READER_STATUS_BAR_COLOR } = colors;
   if (error) {
     errorHandler(error);
     throw error;
   }
+
+  const updateTheme = () => {
+    const currentColorScheme = Appearance.getColorScheme();
+    if (theme === constant.Default) {
+      dispatch(actions.toggleNightMode(currentColorScheme === "dark"));
+    }
+  };
+
   useScreenAnalytics(title);
   useBookmarks(webViewRef, shabad, bookmarkPosition);
 
   useEffect(() => {
-    setShabadID(Number(id));
-  }, [id]);
-
-  useEffect(() => {
-    setCurrentPosition(savePosition[shabadID]);
-    if (Number(savePosition[shabadID]) > 0.9) {
+    setCurrentPosition(savePosition[id]);
+    if (Number(savePosition[id]) > 0.9) {
       setCurrentPosition(0);
     }
-  }, []);
-  useEffect(() => {
-    if (headerRef.current && headerRef.current.toggle) {
-      headerRef.current.toggle(isHeader);
-    }
-  }, [isHeader]);
+  }, [savePosition, id]);
 
   useEffect(() => {
     const subscription = AppState.addEventListener("change", (state) => {
       if (state === "active") {
+        updateTheme();
         fetchShabad();
       }
     });
@@ -77,14 +83,16 @@ const Reader = React.memo(({ navigation, route }) => {
     return () => {
       subscription.remove();
     };
-  }, []);
+  }, [fetchShabad, updateTheme]);
 
   const handleBackPress = () => {
-    webViewRef.current.postMessage(JSON.stringify({ Back: true }));
-    // set Timeout to delay back function so that it will save the current position
-    setTimeout(() => {
-      navigation.goBack();
-    }, 100);
+    if (webViewRef) {
+      webViewRef.current.postMessage(JSON.stringify({ Back: true }));
+      // set Timeout to delay back function so that it will save the current position
+      setTimeout(() => {
+        navigation.goBack();
+      }, 100);
+    }
   };
   const backAction = () => {
     handleBackPress();
@@ -95,28 +103,28 @@ const Reader = React.memo(({ navigation, route }) => {
     return () => backHandler.remove(); // Clean up
   }, []);
 
-  const handleBookmarkPress = () => navigation.navigate(constant.BOOKMARKS, { id: shabadID });
+  const handleBookmarkPress = () => navigation.navigate(constant.BOOKMARKS, { id });
   const handleSettingsPress = () => navigation.navigate(constant.SETTINGS);
 
   const handleMessage = (message) => {
     const env = message.nativeEvent.data;
     if (env === "toggle") {
       // If the event is "toggle", toggle the current state of isHeader
-      toggleIsHeader((prev) => !prev);
+      toggleHeader((prev) => !prev);
       dispatch(actions.toggleHeaderFooter(!isHeaderFooter));
     } else if (env === "show") {
       // If the event is "show", set isHeader to true
-      toggleIsHeader(true);
+      toggleHeader(true);
       dispatch(actions.toggleHeaderFooter(true));
     } else if (env === "hide") {
       // If the event is "hide", set isHeader to false
-      toggleIsHeader(false);
+      toggleHeader(false);
       dispatch(actions.toggleHeaderFooter(false));
     } else if (env.includes("save")) {
       // Handle save event, where event is expected to be "save-<position>"
       const position = env.split("-")[1];
       setCurrentPosition(position);
-      dispatch(actions.setPosition(position, shabadID));
+      dispatch(actions.setPosition(position, id));
     }
   };
 
@@ -129,16 +137,16 @@ const Reader = React.memo(({ navigation, route }) => {
       />
 
       <Header
-        ref={headerRef}
         navigation={navigation}
         title={title}
         handleBackPress={backAction}
         handleBookmarkPress={handleBookmarkPress}
         handleSettingsPress={handleSettingsPress}
+        isHeader={isHeader}
       />
       {isLoading && <ActivityIndicator size="small" color={READER_STATUS_BAR_COLOR} />}
       <WebView
-        key={`${shabadID}-${JSON.stringify({
+        key={`${id}-${JSON.stringify({
           isParagraphMode,
           isLarivaar,
           isLarivaarAssist,
@@ -183,7 +191,7 @@ const Reader = React.memo(({ navigation, route }) => {
         onMessage={(message) => handleMessage(message)}
       />
 
-      {isAutoScroll && <AutoScrollComponent shabadID={shabadID} ref={webViewRef} />}
+      {isAutoScroll && <AutoScrollComponent shabadID={id} ref={webViewRef} />}
     </SafeAreaView>
   );
 });

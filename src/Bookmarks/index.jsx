@@ -23,7 +23,7 @@ const Bookmarks = ({ navigation, route }) => {
   return (
     <SafeAreaProvider style={{ backgroundColor }}>
       <SafeAreaView style={{ flex: 1 }}>
-        <BaniList data={bookmarksData} onPress={onPress.bind(this)} isFolderScreen />
+        <BaniList data={bookmarksData} onPress={onPress} isFolderScreen />
       </SafeAreaView>
     </SafeAreaProvider>
   );

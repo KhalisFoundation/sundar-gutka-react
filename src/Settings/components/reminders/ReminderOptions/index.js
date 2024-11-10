@@ -28,7 +28,7 @@ const ReminderOptions = ({ navigation }) => {
 
   const accNightColor = useMemo(() => accordianNightColor(isNightMode), [isNightMode]);
   useFetchBani(setBaniListData, setReminderBaniData, setStateData, parsedReminderBanis);
-  useHeader(baniListData, navigation, selector, setStateData);
+  useHeader(baniListData, navigation, selector);
 
   const updateSections = (sections) => {
     setActiveSections(sections);

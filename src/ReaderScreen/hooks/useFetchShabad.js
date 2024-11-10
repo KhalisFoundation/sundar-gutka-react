@@ -4,7 +4,7 @@ import { getShabadFromID } from "@database";
 
 const useFetchShabad = (shabadID, setError) => {
   const [shabad, setShabad] = useState([]);
-  const [isLoading, toggleLoading] = useState(false);
+  const [isLoading, setLoading] = useState(false);
   const baniLength = useSelector((state) => state.baniLength);
   const transliterationLanguage = useSelector((state) => state.transliterationLanguage);
   const vishraamSource = useSelector((state) => state.vishraamSource);
@@ -16,26 +16,29 @@ const useFetchShabad = (shabadID, setError) => {
 
   const fetchShabad = useCallback(async () => {
     try {
-      toggleLoading(true);
-      const shabadData = await getShabadFromID(
-        shabadID,
-        baniLength,
-        transliterationLanguage,
-        vishraamSource,
-        vishraamOption,
-        isLarivaar,
-        isLarivaarAssist,
-        isParagraphMode,
-        isVishraam
-      );
-      if (shabadData) {
-        toggleLoading(false);
-        setShabad(shabadData);
-      } else {
-        setError("Shabad Not found");
+      setLoading(true);
+      if (shabadID) {
+        const shabadData = await getShabadFromID(
+          shabadID,
+          baniLength,
+          transliterationLanguage,
+          vishraamSource,
+          vishraamOption,
+          isLarivaar,
+          isLarivaarAssist,
+          isParagraphMode,
+          isVishraam
+        );
+        if (shabadData) {
+          setShabad(shabadData);
+        } else {
+          setError("Shabad Not found");
+        }
       }
     } catch (error) {
       setError(error);
+    } finally {
+      setLoading(false);
     }
   }, [
     shabadID,

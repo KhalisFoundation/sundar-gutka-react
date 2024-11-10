@@ -60,7 +60,11 @@ const EditBaniOrder = ({ navigation }) => {
     }
     dispatch(actions.setBaniOrder({ baniOrder: defaultBaniOrder.baniOrder }));
     const banis = [];
-    if (defaultBaniOrder && defaultBaniOrder.baniOrder.length > 0) {
+    if (
+      defaultBaniOrder &&
+      Array.isArray(defaultBaniOrder.baniOrder) &&
+      defaultBaniOrder.baniOrder.length > 0
+    ) {
       defaultBaniOrder.baniOrder.forEach((element) => {
         if (element.id) {
           const baniItem = baniList.find((item) => item.id === element.id);
