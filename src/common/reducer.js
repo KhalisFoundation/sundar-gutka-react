@@ -1,4 +1,4 @@
-import { combineReducers } from "redux";
+import { combineReducers } from "@reduxjs/toolkit";
 import * as actionTypes from "./actions/actionTypes";
 import defaultBaniOrder from "./defaultBaniOrder";
 import constant from "./constant";

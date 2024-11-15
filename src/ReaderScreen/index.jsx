@@ -17,16 +17,7 @@ import { useBookmarks, useFetchShabad } from "./hooks";
 import { styles, nightColors } from "./styles";
 import { loadHTML, script } from "./utils";
 
-const Reader = React.memo(({ navigation, route }) => {
-  const webViewRef = useRef(null);
-  const { webView } = styles;
-  const { title, id } = route.params.params;
-  const [error, setError] = useState(null);
-  const [isHeader, toggleHeader] = useState(false);
-  const [viewLoaded, toggleViewLoaded] = useState(false);
-
-  const dispatch = useDispatch();
-
+const Reader = ({ navigation, route }) => {
   const isNightMode = useSelector((state) => state.isNightMode);
   const bookmarkPosition = useSelector((state) => state.bookmarkPosition);
   const isAutoScroll = useSelector((state) => state.isAutoScroll);
@@ -46,10 +37,21 @@ const Reader = React.memo(({ navigation, route }) => {
   const isHeaderFooter = useSelector((state) => state.isHeaderFooter);
   const theme = useSelector((state) => state.theme);
 
-  const { shabad, isLoading, fetchShabad } = useFetchShabad(id, setError);
+  const webViewRef = useRef(null);
+  const { webView } = styles;
+  const { title, id } = route.params.params;
+  const [error, setError] = useState(null);
+  const [isHeader, toggleHeader] = useState(false);
+  const [viewLoaded, toggleViewLoaded] = useState(false);
   const [currentPosition, setCurrentPosition] = useState(savePosition[id] || 0);
+
+  const dispatch = useDispatch();
+
+  const { shabad, isLoading, fetchShabad } = useFetchShabad(id, setError);
+
   const { backgroundColor, safeAreaViewBack, backViewColor } = nightColors(isNightMode);
   const { READER_STATUS_BAR_COLOR } = colors;
+
   if (error) {
     errorHandler(error);
     throw error;
@@ -66,9 +68,11 @@ const Reader = React.memo(({ navigation, route }) => {
   useBookmarks(webViewRef, shabad, bookmarkPosition);
 
   useEffect(() => {
-    setCurrentPosition(savePosition[id]);
-    if (Number(savePosition[id]) > 0.9) {
-      setCurrentPosition(0);
+    if (savePosition && id) {
+      setCurrentPosition(savePosition[id]);
+      if (Number(savePosition[id]) > 0.9) {
+        setCurrentPosition(0);
+      }
     }
   }, [savePosition, id]);
 
@@ -94,6 +98,7 @@ const Reader = React.memo(({ navigation, route }) => {
       }, 100);
     }
   };
+
   const backAction = () => {
     handleBackPress();
   };
@@ -194,7 +199,7 @@ const Reader = React.memo(({ navigation, route }) => {
       {isAutoScroll && <AutoScrollComponent shabadID={id} ref={webViewRef} />}
     </SafeAreaView>
   );
-});
+};
 
 Reader.propTypes = {
   navigation: PropTypes.shape().isRequired,
