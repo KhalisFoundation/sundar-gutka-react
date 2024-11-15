@@ -2,7 +2,7 @@
 
 #import <React/RCTBridge.h>
 #import <React/RCTBundleURLProvider.h>
-#import <React/RCTRootView.h
+#import <React/RCTRootView.h>
 #import <Firebase.h>
 #import "RNSplashScreen.h"
 
@@ -29,13 +29,14 @@ static void InitializeFlipper(UIApplication *application) {
 
 - (BOOL)application:(UIApplication *)application didFinishLaunchingWithOptions:(NSDictionary *)launchOptions
 {
+
+  [FIRApp configure];
   [RNSplashScreen show];
 
-#ifdef FB_SONARKIT_ENABLED
-  InitializeFlipper(application);
-#endif
+  #ifdef FB_SONARKIT_ENABLED
+    InitializeFlipper(application);
+  #endif
   
-  [FIRApp configure];
 
   RCTBridge *bridge = [[RCTBridge alloc] initWithDelegate:self launchOptions:launchOptions];
   RCTRootView *rootView = [[RCTRootView alloc] initWithBridge:bridge
@@ -58,12 +59,12 @@ static void InitializeFlipper(UIApplication *application) {
 
 - (NSURL *)sourceURLForBridge:(RCTBridge *)bridge
 {
-#if DEBUG
+  #if DEBUG
 //  return [[RCTBundleURLProvider sharedSettings] jsBundleURLForBundleRoot:@"index" fallbackResource:nil];
-  return [[RCTBundleURLProvider sharedSettings] jsBundleURLForBundleRoot:@"index"];
-#else
-  return [[NSBundle mainBundle] URLForResource:@"main" withExtension:@"jsbundle"];
-#endif
+    return [[RCTBundleURLProvider sharedSettings] jsBundleURLForBundleRoot:@"index"];
+  #else
+    return [[NSBundle mainBundle] URLForResource:@"main" withExtension:@"jsbundle"];
+  #endif
 }
 
 @end
