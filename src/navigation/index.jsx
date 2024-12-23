@@ -4,7 +4,6 @@ import { createNativeStackNavigator } from "@react-navigation/native-stack";
 import { useSelector } from "react-redux";
 import { Icon } from "@rneui/themed";
 import notifee, { EventType } from "@notifee/react-native";
-import SplashScreen from "react-native-splash-screen";
 import { constant, colors, navigationRef, navigate, resetBadgeCount } from "@common";
 import HomeScreen from "../HomeScreen";
 import Reader from "../ReaderScreen";
@@ -27,11 +26,6 @@ const headerLeft = (navigation, isNightMode) => (
   />
 );
 const Navigation = () => {
-  useEffect(() => {
-    // Code to run on component mount
-    SplashScreen.hide(); // Hide the splash screen once everything is loaded
-  }, []); // The empty array causes this effect to only run on mount
-
   const isNightMode = useSelector((state) => state.isNightMode);
   const settingsStyle = SettingsStyle(isNightMode);
   const { headerTitleStyle, headerStyle } = settingsStyle;

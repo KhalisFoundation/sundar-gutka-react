@@ -21,6 +21,17 @@ const styles = StyleSheet.create({
   },
   end: { padding: 40 },
   avatarStyle: { width: "100%", height: "100%", resizeMode: "contain" },
-  viewWrapper: { width: "90%", marginLeft: "auto", marginRight: "auto", bottom: 0, height: "90%" },
+  viewWrapper: {
+    marginLeft: "auto",
+    marginRight: "auto",
+    bottom: 0,
+  },
+  width_100: {
+    width: "100%",
+  },
+  width_90: {
+    width: "90%",
+  },
+  backdropStyle: { backgroundColor: "rgba(0,0,0,0.6)" },
 });
 export default styles;

@@ -3,7 +3,7 @@ const script = (nightMode, position) => {
 
 let autoScrollTimeout;
 let autoScrollSpeed = 0;
-let scrollMultiplier = 1.0;
+let scrollMultiplier = 1.5;
 let dragging = false;
 let holding = false;
 let holdTimer;
@@ -168,11 +168,6 @@ window.addEventListener(
     if (message.hasOwnProperty("autoScroll")) {
       autoScrollSpeed = message.autoScroll;
       scrollMultiplier = message.scrollMultiplier;
-      if (autoScrollSpeed !== 0) {
-        setTimeout(() => {
-          window.ReactNativeWebView.postMessage("toggle");
-        }, 5000);
-      }
       if (autoScrollTimeout == null) {
         setAutoScroll();
       }

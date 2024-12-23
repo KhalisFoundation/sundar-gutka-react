@@ -1,18 +1,9 @@
 import { configureStore } from "@reduxjs/toolkit";
-import {
-  persistReducer,
-  persistStore,
-  FLUSH,
-  REHYDRATE,
-  PAUSE,
-  PERSIST,
-  PURGE,
-  REGISTER,
-} from "redux-persist";
+import { persistReducer, persistStore } from "redux-persist";
 import AsyncStorage from "@react-native-async-storage/async-storage";
 import reducer from "./reducer"; // Ensure this points to your combined reducers
 
-const persistConfig = { key: "root", storage: AsyncStorage, blacklist: ["navigation"] };
+const persistConfig = { key: "root", storage: AsyncStorage, blacklist: ["navigation", "baniList"] };
 const persistedReducer = persistReducer(persistConfig, reducer);
 
 const configure = () => {
@@ -20,10 +11,8 @@ const configure = () => {
     reducer: persistedReducer,
     middleware: (getDefaultMiddleware) =>
       getDefaultMiddleware({
-        serializableCheck: {
-          // Ignore redux-persist actions
-          ignoredActions: [FLUSH, REHYDRATE, PAUSE, PERSIST, PURGE, REGISTER],
-        },
+        immutableCheck: false,
+        serializableCheck: false,
       }),
   });
   const persistor = persistStore(store);
