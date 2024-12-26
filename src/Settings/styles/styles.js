@@ -15,23 +15,32 @@ const styles = StyleSheet.create({
   },
   settingsView: { backgroundColor: colors.TOOLBAR_COLOR_ALT },
   displayOptionsText: { padding: 7 },
-  bottomSheetTitle: { textAlign: "center", fontSize: 20, padding: 15 },
+  bottomSheetTitle: {
+    textAlign: "center",
+    fontSize: 20,
+    padding: 20,
+  },
   titleInfoStyle: {
     fontSize: 12,
   },
   end: { padding: 40 },
   avatarStyle: { width: "100%", height: "100%", resizeMode: "contain" },
   viewWrapper: {
+    justifyContent: "center",
+    marginTop: "auto",
     marginLeft: "auto",
     marginRight: "auto",
     bottom: 0,
+    borderTopLeftRadius: 20,
+    borderTopRightRadius: 20,
+    overflow: "hidden",
   },
   width_100: {
-    width: "100%",
+    width: "98%",
   },
   width_90: {
-    width: "90%",
+    width: "70%",
   },
-  backdropStyle: { backgroundColor: "rgba(0,0,0,0.6)" },
+  blurViewStyle: { position: "absolute", top: 0, bottom: 0, left: 0, right: 0 },
 });
 export default styles;

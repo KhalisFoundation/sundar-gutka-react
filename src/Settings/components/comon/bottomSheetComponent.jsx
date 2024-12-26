@@ -1,12 +1,12 @@
-import React, { useState, useEffect } from "react";
-import { View, Dimensions } from "react-native";
-import { Text, BottomSheet, Divider } from "@rneui/themed";
-import { useSelector } from "react-redux";
-import PropTypes from "prop-types";
-import { SafeAreaProvider } from "react-native-safe-area-context";
+import React, { useEffect, useState } from "react";
+import { View, Modal, Text, Dimensions, Pressable, StyleSheet } from "react-native";
+import { Divider, Icon, ListItem } from "@rneui/themed";
+import { BlurView } from "@react-native-community/blur";
+import { useDispatch, useSelector } from "react-redux";
 import { constant } from "@common";
-import { styles, nightModeStyles } from "../../styles";
-import RenderBottomSheetItem from "./render";
+import PropTypes from "prop-types";
+import { SafeAreaProvider, SafeAreaView } from "react-native-safe-area-context";
+import { styles, nightModeStyles, nightModeColor } from "../../styles";
 
 const BottomSheetComponent = ({
   isVisible,
@@ -16,8 +16,10 @@ const BottomSheetComponent = ({
   action,
   toggleVisible,
 }) => {
+  const dispatch = useDispatch();
   const isNightMode = useSelector((state) => state.isNightMode);
   const { containerNightStyles, textNightStyle } = nightModeStyles(isNightMode);
+  const nightStyles = nightModeColor(isNightMode);
   const { width, height } = Dimensions.get("window");
 
   const [orientation, setOrientation] = useState(width < height ? "PORTRAIT" : "LANDSCAPE");
@@ -30,42 +32,61 @@ const BottomSheetComponent = ({
       }
     });
   }, []);
+
   return (
     <SafeAreaProvider>
-      <BottomSheet
-        modalProps={{
-          supportedOrientations: [
-            "portrait",
-            "portrait-upside-down",
+      <SafeAreaView>
+        <Modal
+          visible={isVisible}
+          animationType="fade"
+          transparent
+          supportedOrientations={[
+            "landscape",
             "landscape-left",
             "landscape-right",
-          ],
-        }}
-        isVisible={isVisible}
-        backdropStyle={styles.backdropStyle}
-        onBackdropPress={() => toggleVisible(false)}
-      >
-        <View
-          style={[
-            styles.viewWrapper,
-            orientation === constant.LANDSCAPE ? styles.width_90 : styles.width_100,
+            "portrait",
+            "portrait-upside-down",
           ]}
         >
-          <Text style={[styles.bottomSheetTitle, textNightStyle, containerNightStyles]}>
-            {title}
-          </Text>
-          <Divider />
-          {actionConstant.map((item) => (
-            <RenderBottomSheetItem
-              key={item.key}
-              item={item}
-              toggleVisible={toggleVisible}
-              value={value}
-              action={action}
-            />
-          ))}
-        </View>
-      </BottomSheet>
+          <Pressable style={StyleSheet.absoluteFill} onPress={() => toggleVisible(false)}>
+            <BlurView
+              reducedTransparencyFallbackColor="white"
+              style={styles.blurViewStyle}
+              blurType="dark"
+              blurAmount={10}
+            >
+              <View
+                style={[
+                  styles.viewWrapper,
+                  orientation === constant.LANDSCAPE ? styles.width_90 : styles.width_100,
+                ]}
+              >
+                <Text style={[styles.bottomSheetTitle, textNightStyle, containerNightStyles]}>
+                  {title}
+                </Text>
+                <Divider />
+                {actionConstant.map((item) => (
+                  <ListItem
+                    key={item.key}
+                    bottomDivider
+                    containerStyle={containerNightStyles}
+                    onPress={() => {
+                      toggleVisible(false);
+                      dispatch(action(item.key));
+                    }}
+                  >
+                    <ListItem.Content>
+                      <ListItem.Title style={nightStyles}>{item.title}</ListItem.Title>
+                    </ListItem.Content>
+                    {value === item.key && <Icon color={nightStyles.color} name="check" />}
+                  </ListItem>
+                ))}
+                <ListItem bottomDivider containerStyle={containerNightStyles} />
+              </View>
+            </BlurView>
+          </Pressable>
+        </Modal>
+      </SafeAreaView>
     </SafeAreaProvider>
   );
 };
