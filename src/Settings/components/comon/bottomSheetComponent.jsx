@@ -1,5 +1,5 @@
 import React, { useEffect, useState } from "react";
-import { View, Modal, Text, Dimensions, Pressable, StyleSheet } from "react-native";
+import { View, Modal, Text, Dimensions, Pressable, Platform, StyleSheet } from "react-native";
 import { Divider, Icon, ListItem } from "@rneui/themed";
 import { BlurView } from "@react-native-community/blur";
 import { useDispatch, useSelector } from "react-redux";
@@ -32,6 +32,17 @@ const BottomSheetComponent = ({
       }
     });
   }, []);
+  const bottomStyle = [];
+  if (Platform.OS === "ios") {
+    bottomStyle.push(styles.viewWrapper);
+    if (orientation === constant.LANDSCAPE) {
+      bottomStyle.push(styles.width_90);
+    } else {
+      bottomStyle.push(styles.width_100);
+    }
+  } else {
+    bottomStyle.push(styles.androidViewWrapper);
+  }
 
   return (
     <SafeAreaProvider>
@@ -55,12 +66,7 @@ const BottomSheetComponent = ({
               blurType="dark"
               blurAmount={10}
             >
-              <View
-                style={[
-                  styles.viewWrapper,
-                  orientation === constant.LANDSCAPE ? styles.width_90 : styles.width_100,
-                ]}
-              >
+              <View style={bottomStyle}>
                 <Text style={[styles.bottomSheetTitle, textNightStyle, containerNightStyles]}>
                   {title}
                 </Text>
@@ -81,7 +87,9 @@ const BottomSheetComponent = ({
                     {value === item.key && <Icon color={nightStyles.color} name="check" />}
                   </ListItem>
                 ))}
-                <ListItem bottomDivider containerStyle={containerNightStyles} />
+                {Platform.OS === "ios" && (
+                  <ListItem bottomDivider containerStyle={containerNightStyles} />
+                )}
               </View>
             </BlurView>
           </Pressable>

@@ -19,6 +19,8 @@ const styles = StyleSheet.create({
     textAlign: "center",
     fontSize: 20,
     padding: 20,
+    borderTopLeftRadius: 20,
+    borderTopRightRadius: 20,
   },
   titleInfoStyle: {
     fontSize: 12,
@@ -42,5 +44,11 @@ const styles = StyleSheet.create({
     width: "70%",
   },
   blurViewStyle: { position: "absolute", top: 0, bottom: 0, left: 0, right: 0 },
+  androidViewWrapper: {
+    flex: 1,
+    justifyContent: "flex-end",
+    backgroundColor: "transparent",
+    width: "100%",
+  },
 });
 export default styles;
