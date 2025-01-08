@@ -34,7 +34,6 @@ const Reader = ({ navigation, route }) => {
   const isVishraam = useSelector((state) => state.isVishraam);
   const vishraamOption = useSelector((state) => state.vishraamOption);
   const savePosition = useSelector((state) => state.savePosition);
-  const isHeaderFooter = useSelector((state) => state.isHeaderFooter);
   const theme = useSelector((state) => state.theme);
 
   const webViewRef = useRef(null);
@@ -116,15 +115,12 @@ const Reader = ({ navigation, route }) => {
     if (env === "toggle") {
       // If the event is "toggle", toggle the current state of isHeader
       toggleHeader((prev) => !prev);
-      dispatch(actions.toggleHeaderFooter(!isHeaderFooter));
     } else if (env === "show") {
       // If the event is "show", set isHeader to true
       toggleHeader(true);
-      dispatch(actions.toggleHeaderFooter(true));
     } else if (env === "hide") {
       // If the event is "hide", set isHeader to false
       toggleHeader(false);
-      dispatch(actions.toggleHeaderFooter(false));
     } else if (env.includes("save")) {
       // Handle save event, where event is expected to be "save-<position>"
       const position = env.split("-")[1];
@@ -196,7 +192,7 @@ const Reader = ({ navigation, route }) => {
         onMessage={(message) => handleMessage(message)}
       />
 
-      {isAutoScroll && <AutoScrollComponent shabadID={id} ref={webViewRef} />}
+      {isAutoScroll && <AutoScrollComponent shabadID={id} ref={webViewRef} isFooter={isHeader} />}
     </SafeAreaView>
   );
 };

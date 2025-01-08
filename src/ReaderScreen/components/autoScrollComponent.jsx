@@ -7,31 +7,30 @@ import PropTypes from "prop-types";
 import { colors, constant, actions, trackReaderEvent } from "@common";
 import { styles } from "../styles";
 
-const AutoScrollComponent = React.forwardRef(({ shabadID }, ref) => {
+const AutoScrollComponent = React.forwardRef(({ shabadID, isFooter }, ref) => {
   const [isPaused, togglePaused] = useState(true);
   const autoScrollSpeedObj = useSelector((state) => state.autoScrollSpeedObj);
   const [currentSpeed, setCurrentSpeed] = useState(
     autoScrollSpeedObj[shabadID] || constant.DEFAULT_SPEED
   );
-  const isHeaderFooter = useSelector((state) => state.isHeaderFooter);
   const [animationPosition] = useState(new Animated.Value(0));
   const dispatch = useDispatch();
 
   useEffect(() => {
-    const value = isHeaderFooter ? 0 : 130;
+    const value = isFooter ? 0 : 130;
     Animated.timing(animationPosition, {
       toValue: value,
       duration: 500,
       useNativeDriver: true,
     }).start();
-  }, [isHeaderFooter]);
+  }, [isFooter]);
 
   useEffect(() => {
     const autoScrollObj = {
       autoScroll: isPaused ? 0 : currentSpeed,
       scrollMultiplier: 1.0,
     };
-    if (ref.current && ref.current.postMessage) {
+    if (ref && ref.current && ref.current.postMessage) {
       ref.current.postMessage(JSON.stringify(autoScrollObj));
     }
   }, [isPaused, currentSpeed]);
@@ -89,5 +88,6 @@ const AutoScrollComponent = React.forwardRef(({ shabadID }, ref) => {
 });
 AutoScrollComponent.propTypes = {
   shabadID: PropTypes.number.isRequired,
+  isFooter: PropTypes.bool.isRequired,
 };
 export default AutoScrollComponent;
