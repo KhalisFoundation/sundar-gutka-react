@@ -15,7 +15,7 @@ import { constant, colors, actions, useScreenAnalytics, errorHandler } from "@co
 import { Header, AutoScrollComponent } from "./components";
 import { useBookmarks, useFetchShabad } from "./hooks";
 import { styles, nightColors } from "./styles";
-import { loadHTML, script } from "./utils";
+import { loadHTML } from "./utils";
 
 const Reader = ({ navigation, route }) => {
   const isNightMode = useSelector((state) => state.isNightMode);
@@ -159,6 +159,8 @@ const Reader = ({ navigation, route }) => {
           vishraamOption,
           shabad,
         })}`}
+        webviewDebuggingEnabled
+        javaScriptEnabled
         originWhitelist={["*"]}
         onLoadStart={() => {
           setTimeout(() => {
@@ -166,7 +168,6 @@ const Reader = ({ navigation, route }) => {
           }, 500);
         }}
         ref={webViewRef}
-        javaScriptEnabled
         onError={(syntheticEvent) => {
           const { nativeEvent } = syntheticEvent;
           setError(`Reader web View Error ${nativeEvent}`);
@@ -176,7 +177,6 @@ const Reader = ({ navigation, route }) => {
           setError("HTTP error status code:", nativeEvent.statusCode);
         }}
         decelerationRate="normal"
-        injectedJavaScript={script(isNightMode, currentPosition)}
         source={{
           html: loadHTML(
             shabad,

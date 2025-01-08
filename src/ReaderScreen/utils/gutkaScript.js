@@ -1,4 +1,7 @@
+import { Platform } from "react-native";
+
 const script = (nightMode, position) => {
+  const listener = Platform.OS === "android" ? "document" : "window";
   return `
 
 let autoScrollTimeout;
@@ -47,7 +50,7 @@ function getScrollPercent() {
 }
 
 function fadeInEffect() {
-    let fadeTarget = document.documentElement;
+    let fadeTarget = ${listener}.documentElement;
     fadeTarget.style.opacity = 0;
     let fadeEffect = setInterval(function () {
       if (Number(fadeTarget.style.opacity) < 1) {
@@ -85,7 +88,7 @@ const handleTouchEnd = () => {
     setAutoScroll();
   }
   if (!dragging && !holding) {
- 
+  
     window.ReactNativeWebView.postMessage("toggle");
   }
   dragging = false;
@@ -151,7 +154,7 @@ window.addEventListener("touchmove", function () {
 
 window.addEventListener("touchend", handleTouchEnd);
 
-window.addEventListener(
+${listener}.addEventListener(
   "message",
   function (event) {
     let message = JSON.parse(event.data);

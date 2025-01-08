@@ -1,12 +1,11 @@
 import React, { useState, useEffect } from "react";
-import { View, Text, Animated } from "react-native";
+import { View, Text, Animated, Platform } from "react-native";
 import Slider from "@react-native-community/slider";
 import { useDispatch, useSelector } from "react-redux";
 import { Icon } from "@rneui/themed";
 import PropTypes from "prop-types";
 import { colors, constant, actions, trackReaderEvent } from "@common";
 import { styles } from "../styles";
-import { useAnimationHeadFoot } from "../hooks";
 
 const AutoScrollComponent = React.forwardRef(({ shabadID }, ref) => {
   const [isPaused, togglePaused] = useState(true);
@@ -14,8 +13,18 @@ const AutoScrollComponent = React.forwardRef(({ shabadID }, ref) => {
   const [currentSpeed, setCurrentSpeed] = useState(
     autoScrollSpeedObj[shabadID] || constant.DEFAULT_SPEED
   );
-  const animationPosition = useAnimationHeadFoot();
+  const isHeaderFooter = useSelector((state) => state.isHeaderFooter);
+  const [animationPosition] = useState(new Animated.Value(0));
   const dispatch = useDispatch();
+
+  useEffect(() => {
+    const value = isHeaderFooter ? 0 : 130;
+    Animated.timing(animationPosition, {
+      toValue: value,
+      duration: 500,
+      useNativeDriver: true,
+    }).start();
+  }, [isHeaderFooter]);
 
   useEffect(() => {
     const autoScrollObj = {
@@ -40,8 +49,15 @@ const AutoScrollComponent = React.forwardRef(({ shabadID }, ref) => {
     togglePaused(false);
   };
 
+  const bottomSpace = Platform.OS === "ios" ? 10 : 0;
+
   return (
-    <Animated.View style={[styles.container, { transform: [{ translateY: animationPosition }] }]}>
+    <Animated.View
+      style={[
+        styles.container,
+        { transform: [{ translateY: animationPosition }], paddingBottom: bottomSpace },
+      ]}
+    >
       <View style={styles.wrapper}>
         {isPaused && (
           <Icon name="play-arrow" color={colors.TOOLBAR_TINT} size={30} onPress={handlePlay} />

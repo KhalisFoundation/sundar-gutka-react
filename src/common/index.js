@@ -20,7 +20,7 @@ import {
 import { FallBack, BaniLengthSelector, BaniList } from "./components";
 import useKeepAwake from "./hooks/keepAwake";
 import baseFontSize from "./helpers";
-import { navigationRef, navigate } from "./rootNavigation";
+import { navigate, navigateTo, navigationRef } from "./rootNavigation";
 import orderedBani from "./components/BaniList/baniOrderHelper";
 import createStore from "./store";
 
@@ -44,9 +44,10 @@ export {
   useKeepAwake,
   BaniList,
   baseFontSize,
-  navigate,
-  navigationRef,
   resetBadgeCount,
   createStore,
   orderedBani,
+  navigateTo,
+  navigate,
+  navigationRef,
 };
