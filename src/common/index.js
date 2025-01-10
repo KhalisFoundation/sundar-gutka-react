@@ -23,6 +23,7 @@ import baseFontSize from "./helpers";
 import { navigate, navigateTo, navigationRef } from "./rootNavigation";
 import orderedBani from "./components/BaniList/baniOrderHelper";
 import createStore from "./store";
+import defaultBaniOrder from "./defaultBaniOrder";
 
 export {
   colors,
@@ -50,4 +51,5 @@ export {
   navigateTo,
   navigate,
   navigationRef,
+  defaultBaniOrder,
 };

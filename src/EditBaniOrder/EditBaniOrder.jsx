@@ -16,16 +16,18 @@ const EditBaniOrder = ({ navigation }) => {
   const baniList = useSelector((state) => state.baniList);
   const baniOrder = useSelector((state) => state.baniOrder);
   const language = useSelector((state) => state.language);
+  const [isReset, setReset] = useState(false);
 
   const [baniListData, setBaniListData] = useState(
     baniList.filter((item) => item.id !== undefined)
   );
+
   const [folders] = useState(baniList.filter((item) => item.id === undefined));
   const [folderOrderIds] = useState(baniOrder.baniOrder.filter((item) => item.id === undefined));
   const [orderData, setOrderData] = useState(
     baniOrder.baniOrder.filter((item) => item.id !== undefined)
   );
-  const [isReset, setReset] = useState(false);
+
   useHeader(navigation, setReset);
   const { rowItem, text } = styles;
   const dispatch = useDispatch();
