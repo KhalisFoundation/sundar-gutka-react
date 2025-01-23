@@ -25,6 +25,18 @@ const headerLeft = (navigation, isNightMode) => (
   />
 );
 const Navigation = () => {
+  // useEffect(() => {
+  //   async function checkInitialNotification() {
+  //     const initialNotification = await notifee.getInitialNotification();
+  //     if (initialNotification) {
+  //       // Extract data from initialNotification
+  //       const { data } = initialNotification.notification;
+  //       // Then navigate
+  //       navigateTo(data);
+  //     }
+  //   }
+  //   checkInitialNotification();
+  // }, [navigationRef]);
   const isNightMode = useSelector((state) => state.isNightMode);
   const settingsStyle = SettingsStyle(isNightMode);
   const { headerTitleStyle, headerStyle } = settingsStyle;

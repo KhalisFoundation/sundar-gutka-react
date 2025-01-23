@@ -6,6 +6,7 @@ import { useDispatch, useSelector } from "react-redux";
 import { constant } from "@common";
 import PropTypes from "prop-types";
 import { SafeAreaProvider, SafeAreaView } from "react-native-safe-area-context";
+import SoundPlayer from "react-native-sound-player";
 import { styles, nightModeStyles, nightModeColor } from "../../styles";
 
 const BottomSheetComponent = ({
@@ -79,6 +80,10 @@ const BottomSheetComponent = ({
                     onPress={() => {
                       toggleVisible(false);
                       dispatch(action(item.key));
+                      if (item.key.includes(".mp3")) {
+                        const soundTitle = item.key.split(".mp3")[0];
+                        SoundPlayer.playSoundFile(soundTitle, ".mp3");
+                      }
                     }}
                   >
                     <ListItem.Content>

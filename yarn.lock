@@ -6450,6 +6450,11 @@ react-native-size-matters@^0.4.0:
   resolved "https://registry.npmjs.org/react-native-size-matters/-/react-native-size-matters-0.4.2.tgz"
   integrity sha512-DKE3f/sdcozd24oASgkP1iGg+YU3HoajRa5k3a4wkRzpiqREq8SGX12Y5zBgAt/8IivLQoTMYkyQu1/Giuy+zQ==
 
+react-native-sound-player@^0.14.3:
+  version "0.14.3"
+  resolved "https://registry.yarnpkg.com/react-native-sound-player/-/react-native-sound-player-0.14.3.tgz#cc45bc515531e06b3c4f931d5cb3a6afcc591c26"
+  integrity sha512-I5VeG8YuwTTMX6CPkZfNL6lWay6GmR3HzuxXjhhpUKHV5K2XWXKJ+YKJAz6dBnJoNshl4EQOo4ox8bQD6/+zPA==
+
 react-native-sound@^0.11.2:
   version "0.11.2"
   resolved "https://registry.npmjs.org/react-native-sound/-/react-native-sound-0.11.2.tgz"

@@ -88,7 +88,7 @@ const handleTouchEnd = () => {
     setAutoScroll();
   }
   if (!dragging && !holding) {
-  
+
     window.ReactNativeWebView.postMessage("toggle");
   }
   dragging = false;
@@ -113,6 +113,10 @@ window.addEventListener(
 );
 
 window.onload = () => {
+  if (${nightMode}) {
+  //fade event
+fadeInEffect();
+}
 
   scrollToPosition(); 
 }
@@ -132,10 +136,8 @@ window.addEventListener(
   false
 );
 
-if (${nightMode}) {
-  //fade event
-  window.addEventListener("load", fadeInEffect(), false);
-}
+
+
 window.onscroll = scrollFunc;
 window.addEventListener("touchstart", function () {
   if (autoScrollSpeed !== 0) {
