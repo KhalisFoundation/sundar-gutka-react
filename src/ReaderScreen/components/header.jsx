@@ -18,31 +18,28 @@ const Header = ({
   const getHeaderStyle = getHeaderStyles(isNightMode);
   const animationPosition = useRef(new Animated.Value(0)).current;
 
-  const headerLeft = () => {
-    return (
+  const headerLeft = () => (
+    <Icon
+      name="arrow-back"
+      size={30}
+      onPress={() => {
+        handleBackPress();
+      }}
+      color={colors.WHITE_COLOR}
+    />
+  );
+
+  const headerRight = () => (
+    <View style={{ flexDirection: "row" }}>
+      <Icon name="bookmark" color={colors.TOOLBAR_TINT} size={30} onPress={handleBookmarkPress} />
       <Icon
-        name="arrow-back"
+        name="settings"
+        color={colors.TOOLBAR_TINT}
         size={30}
-        onPress={() => {
-          handleBackPress();
-        }}
-        color={colors.WHITE_COLOR}
+        onPress={() => handleSettingsPress()}
       />
-    );
-  };
-  const headerRight = () => {
-    return (
-      <View style={{ flexDirection: "row" }}>
-        <Icon name="bookmark" color={colors.TOOLBAR_TINT} size={30} onPress={handleBookmarkPress} />
-        <Icon
-          name="settings"
-          color={colors.TOOLBAR_TINT}
-          size={30}
-          onPress={() => handleSettingsPress()}
-        />
-      </View>
-    );
-  };
+    </View>
+  );
 
   useEffect(() => {
     navigation.setOptions({
@@ -55,7 +52,6 @@ const Header = ({
     Animated.timing(animationPosition, {
       toValue: value,
       duration: 500,
-      // easing: Easing.ease,
       useNativeDriver: true,
     }).start();
   }, [isHeader, animationPosition]);

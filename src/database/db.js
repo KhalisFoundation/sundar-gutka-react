@@ -79,7 +79,7 @@ export const getShabadFromID = async (
               const len = results.rows.length;
               const totalResults = [];
               const paragraphResults = [];
-              let paragraphID = null;
+              let paragraphId = null;
               let paragraphHeader = null;
               let prevParagraph = null;
               let gurmukhi = "";
@@ -131,7 +131,7 @@ export const getShabadFromID = async (
                   if (isParagraphChange) {
                     if (i !== 0) {
                       paragraphResults.push({
-                        id: `${paragraphID}`,
+                        id: `${paragraphId}`,
                         gurmukhi,
                         translit: transliteration,
                         englishTranslations: englishTranslation,
@@ -141,7 +141,7 @@ export const getShabadFromID = async (
                       });
                     }
 
-                    paragraphID = ID;
+                    paragraphId = ID;
                     paragraphHeader = header;
                     gurmukhi = curGurmukhi;
                     transliteration = translit;
@@ -160,7 +160,7 @@ export const getShabadFromID = async (
 
                   if (isLastIteration) {
                     paragraphResults.push({
-                      id: `${paragraphID}`,
+                      id: `${paragraphId}`,
                       gurmukhi,
                       translit: transliteration,
                       englishTranslations: englishTranslation,

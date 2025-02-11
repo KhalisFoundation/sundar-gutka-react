@@ -62,11 +62,7 @@ const EditBaniOrder = ({ navigation }) => {
     }
     dispatch(actions.setBaniOrder({ baniOrder: defaultBaniOrder.baniOrder }));
     const banis = [];
-    if (
-      defaultBaniOrder &&
-      Array.isArray(defaultBaniOrder.baniOrder) &&
-      defaultBaniOrder.baniOrder.length > 0
-    ) {
+    if (defaultBaniOrder?.baniOrder?.length > 0) {
       defaultBaniOrder.baniOrder.forEach((element) => {
         if (element.id) {
           const baniItem = baniList.find((item) => item.id === element.id);
@@ -79,9 +75,9 @@ const EditBaniOrder = ({ navigation }) => {
           }
         }
       });
+      setOrderData(defaultBaniOrder.baniOrder.filter((item) => item.id !== undefined));
     }
 
-    setOrderData(defaultBaniOrder.baniOrder.filter((item) => item.id !== undefined));
     setBaniListData(banis.filter((item) => item.id !== undefined));
     setReset(false);
   }, [isReset]);
