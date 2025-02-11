@@ -86,7 +86,7 @@ const Reader = ({ navigation, route }) => {
     return () => {
       subscription.remove();
     };
-  }, [fetchShabad, updateTheme]);
+  }, [fetchShabad]);
 
   const handleBackPress = () => {
     if (webViewRef) {
