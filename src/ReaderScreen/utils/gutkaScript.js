@@ -2,6 +2,7 @@ import { Platform } from "react-native";
 
 const script = (nightMode, position) => {
   const listener = Platform.OS === "android" ? "document" : "window";
+  const body = Platform.OS === "android" ? "document.body" : "window.document.body";
   return `
 
 let autoScrollTimeout;
@@ -49,18 +50,20 @@ const getScrollPercent=()=> {
   return window.pageYOffset / (document.body.scrollHeight - window.innerHeight);
 }
 
-const fadeInEffect=()=> {
-    let fadeTarget = ${listener}.documentElement;
-    fadeTarget.style.opacity = 0;
-    let fadeEffect = setInterval(()=> {
-      if (Number(fadeTarget.style.opacity) < 1) {
-        fadeTarget.style.opacity = Number(fadeTarget.style.opacity) + 0.1;
-      } else {
-        fadeTarget.style.opacity = 1;
-      }
-    }, 100);
-  }
-
+const fadeInEffect = () => {
+  let fadeTarget = ${body};
+  fadeTarget.style.opacity = 0;
+  let fadeVal = 0;
+  let fadeEffect = setInterval(() => {
+    if (fadeVal < 1) {
+      fadeVal = Number(fadeVal) + 0.1;
+      fadeTarget.style.opacity = fadeVal;
+    } else {
+      fadeTarget.style.opacity = 1;
+      clearInterval(fadeEffect);
+    }
+  }, 100);
+};
 const setAutoScroll=()=> {
   const speed = autoScrollSpeed;
   if (speed > 0) {
@@ -159,7 +162,7 @@ window.addEventListener("touchend", handleTouchEnd);
 ${listener}.addEventListener(
   "message",
   (event)=> {
-    let message = JSON.parse(event.data);
+    const message = JSON.parse(event.data);
 
     if (message.hasOwnProperty("Back")) {
       const currentPosition = getScrollPercent();

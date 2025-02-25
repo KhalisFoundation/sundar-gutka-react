@@ -21,7 +21,7 @@ import { setBaniOrder } from "../common/actions";
 const HomeScreen = React.memo(({ navigation }) => {
   const [error, setError] = useState(null);
   const { navigate } = navigation;
-  const { baniListData, fetchBaniList } = useBaniList(setError);
+  const { baniListData } = useBaniList(setError);
   const isNightMode = useSelector((state) => state.isNightMode);
   const isStatusBar = useSelector((state) => state.isStatusBar);
   const language = useSelector((state) => state.language);
@@ -59,7 +59,6 @@ const HomeScreen = React.memo(({ navigation }) => {
     const subscription = AppState.addEventListener("change", (state) => {
       if (state === "active") {
         updateTheme();
-        fetchBaniList();
       }
     });
 

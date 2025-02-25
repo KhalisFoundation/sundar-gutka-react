@@ -43,11 +43,10 @@ const Reader = ({ navigation, route }) => {
   const [isHeader, toggleHeader] = useState(false);
   const [viewLoaded, toggleViewLoaded] = useState(false);
   const [currentPosition, setCurrentPosition] = useState(savePosition[id] || 0);
+  const [reloadKey, setReloadKey] = useState(true);
 
   const dispatch = useDispatch();
-
   const { shabad, isLoading, fetchShabad } = useFetchShabad(id, setError);
-
   const { backgroundColor, safeAreaViewBack, backViewColor } = nightColors(isNightMode);
   const { READER_STATUS_BAR_COLOR } = colors;
 
@@ -58,9 +57,7 @@ const Reader = ({ navigation, route }) => {
 
   const updateTheme = () => {
     const currentColorScheme = Appearance.getColorScheme();
-    if (theme === constant.Default) {
-      dispatch(actions.toggleNightMode(currentColorScheme === "dark"));
-    }
+    dispatch(actions.toggleNightMode(currentColorScheme === "dark"));
   };
 
   useScreenAnalytics(title);
@@ -77,9 +74,15 @@ const Reader = ({ navigation, route }) => {
 
   useEffect(() => {
     const subscription = AppState.addEventListener("change", (state) => {
+      webViewRef?.current.postMessage(JSON.stringify({ Back: true }));
+      toggleViewLoaded(false);
+
       if (state === "active") {
-        updateTheme();
-        fetchShabad();
+        /* Reload key reloads the app whenever app comes to foreground */
+        setReloadKey((prev) => !prev);
+        if (theme === constant.Default) {
+          updateTheme();
+        }
       }
     });
 
@@ -94,7 +97,7 @@ const Reader = ({ navigation, route }) => {
       // set Timeout to delay back function so that it will save the current position
       setTimeout(() => {
         navigation.goBack();
-      }, 100);
+      }, 200);
     }
   };
 
@@ -154,6 +157,7 @@ const Reader = ({ navigation, route }) => {
           isVishraam,
           vishraamOption,
           shabad,
+          reloadKey,
         })}`}
         webviewDebuggingEnabled
         javaScriptEnabled
