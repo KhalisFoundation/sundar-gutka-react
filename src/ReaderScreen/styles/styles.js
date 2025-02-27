@@ -2,7 +2,7 @@ import { StyleSheet } from "react-native";
 import { constant, colors } from "@common";
 
 export const styles = StyleSheet.create({
-  gurmukhiText: { fontFamily: constant.GURBANI_AKHAR_TRUE, color: "#fff", fontSize: 20 },
+  gurmukhiText: { fontFamily: constant.GURBANI_AKHAR_TRUE, color: "#fff" },
   translit: {
     fontFamily: constant.Arial,
     padding: 0.2,

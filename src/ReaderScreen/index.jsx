@@ -32,6 +32,8 @@ const Reader = ({ navigation, route }) => {
 
   // Redux selectors
   const isNightMode = useSelector((state) => state.isNightMode);
+  const isLarivaar = useSelector((state) => state.isLarivaar);
+  const isLarivaarAssist = useSelector((state) => state.isLarivaarAssist);
   const bookmarkPosition = useSelector((state) => state.bookmarkPosition);
   const isAutoScroll = useSelector((state) => state.isAutoScroll);
   const isStatusBar = useSelector((state) => state.isStatusBar);
@@ -135,25 +137,50 @@ const Reader = ({ navigation, route }) => {
   const handleLayout = (key) => (event) => {
     elementPositions.current[key] = event.nativeEvent.layout.y;
   };
+
+  const renderGurmukhi = (gurmukhiTuk) => {
+    if (isLarivaar && isLarivaarAssist) {
+      // Map each word to a <Text> component with alternating background color
+
+      return (
+        <>
+          {gurmukhiTuk.split(" ").map((word, index) => {
+            const style = index % 2 !== 0 ? { opacity: 0.6 } : {};
+            return (
+              <Text key={`${word}-${index}`} style={style}>
+                {word}
+              </Text>
+            );
+          })}
+        </>
+      );
+    }
+    // Return the entire text as a single <Text> component if not splitting by word
+    return gurmukhiTuk;
+  };
   const renderLines = (key) => {
-    return groupedByParagraph[key]
-      .map((lineObj) => {
-        const lineContent = [lineObj.gurmukhi];
-        if (isTransliteration && lineObj.translit) {
-          lineContent.push(lineObj.translit);
-        }
-        if (isEnglishTranslation && lineObj.englishTranslation) {
-          lineContent.push(lineObj.englishTranslation);
-        }
-        if (isPunjabiTranslation && lineObj.punjabiTranslation) {
-          lineContent.push(lineObj.englishTranslation);
-        }
-        if (isSpanishTranslation && lineObj.spanishTranslation) {
-          lineContent.push(lineObj.spanishTranslation);
-        }
-        return lineContent.join("\n");
-      })
-      .join("\n");
+    return (
+      <>
+        {groupedByParagraph[key].map((lineObj, index) => (
+          <React.Fragment key={index}>
+            <Text>
+              {renderGurmukhi(lineObj.gurmukhi)}
+              {"\n"}
+            </Text>
+            {isTransliteration && <Text>{lineObj.translit}</Text>}
+            {isEnglishTranslation && lineObj.englishTranslation && (
+              <Text>{lineObj.englishTranslation}</Text>
+            )}
+            {isPunjabiTranslation && lineObj.punjabiTranslation && (
+              <Text>{lineObj.punjabiTranslation}</Text>
+            )}
+            {isSpanishTranslation && lineObj.spanishTranslation && (
+              <Text>{lineObj.spanishTranslation}</Text>
+            )}
+          </React.Fragment>
+        ))}
+      </>
+    );
   };
 
   const renderShabad = () => {
@@ -200,7 +227,7 @@ const Reader = ({ navigation, route }) => {
                 groupedByParagraph[key][0].header === 1 || groupedByParagraph[key][0].header === 2
                   ? "center"
                   : "left",
-              margin: 5,
+              marginLeft: 10,
             },
           ]}
         >

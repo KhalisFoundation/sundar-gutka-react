@@ -478,7 +478,7 @@ PODS:
     - React-Core
   - react-native-sqlite-storage (6.0.1):
     - React-Core
-  - react-native-webview (13.12.3):
+  - react-native-webview (13.6.4):
     - RCT-Folly (= 2021.07.22.00)
     - React-Core
   - React-perflogger (0.71.18)
@@ -911,7 +911,7 @@ SPEC CHECKSUMS:
   react-native-slider: cc89964e1432fa31aa9db7a0fa9b21e26b5d5152
   react-native-splash-screen: 4312f786b13a81b5169ef346d76d33bc0c6dc457
   react-native-sqlite-storage: f6d515e1c446d1e6d026aa5352908a25d4de3261
-  react-native-webview: 849250e66239f661c802a879c59e019da8a08736
+  react-native-webview: 107961c73db53d66549c867a3b64eaa20d34c41f
   React-perflogger: c8849042b03392681ebd5d99a0775dbadfad2c74
   React-RCTActionSheet: 6bd3b502da266d69942e9ce4bc13666f90544620
   React-RCTAnimation: 63fbec04ae279b387ac786898bd5a918b8875f48
