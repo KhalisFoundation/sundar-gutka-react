@@ -99,7 +99,7 @@ const isPunjabiTranslation = createReducer(false, {
   [actionTypes.TOGGLE_PUNJABI_TRANSLATION]: (state, action) => action.value,
 });
 
-const bookmarkPosition = createReducer(0, {
+const bookmarkPosition = createReducer(1, {
   [actionTypes.SET_BOOKMARK_POSITION]: (state, action) => action.value,
 });
 

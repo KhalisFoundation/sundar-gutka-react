@@ -2,9 +2,7 @@ import { StyleSheet } from "react-native";
 import { constant, colors } from "@common";
 
 export const styles = StyleSheet.create({
-  gurmukhiText: {
-    margin: 5,
-  },
+  gurmukhiText: { fontFamily: constant.GURBANI_AKHAR_TRUE, color: "#fff" },
   translit: {
     fontFamily: constant.Arial,
     padding: 0.2,
@@ -44,14 +42,7 @@ export const styles = StyleSheet.create({
     height: 70,
   },
   container: {
-    position: "absolute",
-    bottom: 20,
-    left: 0,
-    right: 0,
-    paddingTop: 0,
-    padding: 20,
-    overflow: "hidden",
-    backgroundColor: colors.READER_FOOTER_COLOR,
+    flex: 1,
   },
   sliderText: {
     color: colors.TOOLBAR_TINT,
@@ -87,6 +78,11 @@ export const styles = StyleSheet.create({
     zIndex: 10,
     height: 60,
   },
+  nightBackground: {
+    backgroundColor: colors.NIGHT_BLACK,
+  },
+  nightText: { color: colors.WHITE_COLOR },
+  dayText: { color: colors.NIGHT_BLACK },
 });
 export const getHeaderStyles = (isNightMode) => ({
   headerTitleStyle: {

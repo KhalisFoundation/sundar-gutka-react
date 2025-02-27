@@ -60,12 +60,14 @@ export const getWordStyle = (
 };
 
 export const createFormattedText = (words, vishraamPositions, options) => {
-  return words
-    .map((word, index) => {
-      const style = getWordStyle(word, index, vishraamPositions, options);
-      return style ? `<span style='${style}'>${word}</span>` : word;
-    })
-    .join(options.isLarivar ? "&#8203;" : " ");
+  return (
+    words
+      // .map((word, index) => {
+      //   const style = getWordStyle(word, index, vishraamPositions, options);
+      //   return style ? `<span style='${style}'>${word}</span>` : word;
+      // })
+      .join(options.isLarivar && !options.isLarivarAssist ? "" : " ")
+  );
 };
 
 export const createParagraphObject = (
