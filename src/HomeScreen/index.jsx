@@ -10,7 +10,7 @@ import {
   colors,
   useKeepAwake,
   BaniList,
-  defaultBaniOrder,
+  validateBaniOrder,
 } from "@common";
 import styles from "./styles";
 import BaniHeader from "./components/BaniHeader";
@@ -33,10 +33,12 @@ const HomeScreen = React.memo(({ navigation }) => {
   const { baniLengthSelector } = useBaniLength();
   const dispatch = useDispatch();
 
-  if (error) {
-    errorHandler(error);
-    throw error;
-  }
+  useEffect(() => {
+    if (error) {
+      errorHandler(error);
+      throw error;
+    }
+  }, [error]);
 
   const updateTheme = () => {
     const currentColorScheme = Appearance.getColorScheme();
@@ -46,12 +48,7 @@ const HomeScreen = React.memo(({ navigation }) => {
   };
   useEffect(() => {
     dispatch(actions.setLanguage(language));
-    const isValidBaniOrder =
-      baniOrder != null && // checks for null or undefined
-      typeof baniOrder === "object" &&
-      Array.isArray(baniOrder.baniOrder) &&
-      baniOrder.baniOrder.length > 0;
-    const order = isValidBaniOrder ? baniOrder : defaultBaniOrder;
+    const order = validateBaniOrder(baniOrder);
     dispatch(setBaniOrder(order));
   }, []);
 

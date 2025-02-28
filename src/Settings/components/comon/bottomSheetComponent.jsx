@@ -36,11 +36,7 @@ const BottomSheetComponent = ({
   const bottomStyle = [];
   if (Platform.OS === "ios") {
     bottomStyle.push(styles.viewWrapper);
-    if (orientation === constant.LANDSCAPE) {
-      bottomStyle.push(styles.width_90);
-    } else {
-      bottomStyle.push(styles.width_100);
-    }
+    bottomStyle.push(orientation === constant.LANDSCAPE ? styles.width_90 : styles.width_100);
   } else {
     bottomStyle.push(styles.androidViewWrapper);
   }

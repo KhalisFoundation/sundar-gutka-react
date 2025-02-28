@@ -19,7 +19,7 @@ import {
 } from "./notifications";
 import { FallBack, BaniLengthSelector, BaniList } from "./components";
 import useKeepAwake from "./hooks/keepAwake";
-import baseFontSize from "./helpers";
+import baseFontSize, { validateBaniOrder } from "./helpers";
 import { navigate, navigateTo, navigationRef } from "./rootNavigation";
 import orderedBani from "./components/BaniList/baniOrderHelper";
 import createStore from "./store";
@@ -52,4 +52,5 @@ export {
   navigate,
   navigationRef,
   defaultBaniOrder,
+  validateBaniOrder,
 };

@@ -1,4 +1,4 @@
-import defaultBaniOrder from "../../defaultBaniOrder";
+import { validateBaniOrder } from "../../helpers";
 
 const findBaniById = (baniList, id) => baniList.find((item) => item.id === id);
 const extractBaniDetails = (baniItem) => {
@@ -9,12 +9,7 @@ const extractBaniDetails = (baniItem) => {
   };
 };
 const orderedBani = (baniList, baniOrder) => {
-  const isValidBaniOrder =
-    baniOrder != null && // checks for null or undefined
-    typeof baniOrder === "object" &&
-    Array.isArray(baniOrder.baniOrder) &&
-    baniOrder.baniOrder.length > 0;
-  const order = isValidBaniOrder ? baniOrder : defaultBaniOrder;
+  const order = validateBaniOrder(baniOrder);
   // Safeguard if `baniOrder` is missing or if `baniOrder.baniOrder` is not an array
   if (!order?.baniOrder?.length) {
     return [];
