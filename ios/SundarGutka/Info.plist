@@ -41,34 +41,6 @@
 	</dict>
 	<key>NSLocationWhenInUseUsageDescription</key>
 	<string></string>
-	<key>UIAppFonts</key>
-	<array>
-		<string>AntDesign.ttf</string>
-		<string>Entypo.ttf</string>
-		<string>EvilIcons.ttf</string>
-		<string>Feather.ttf</string>
-		<string>FontAwesome.ttf</string>
-		<string>FontAwesome5_Brands.ttf</string>
-		<string>FontAwesome5_Regular.ttf</string>
-		<string>FontAwesome5_Solid.ttf</string>
-		<string>Fontisto.ttf</string>
-		<string>Foundation.ttf</string>
-		<string>Ionicons.ttf</string>
-		<string>MaterialCommunityIcons.ttf</string>
-		<string>MaterialIcons.ttf</string>
-		<string>Octicons.ttf</string>
-		<string>SimpleLineIcons.ttf</string>
-		<string>Zocial.ttf</string>
-		<string>AnmolLipiSG.ttf</string>
-		<string>Arial.ttf</string>
-		<string>GurbaniAkharHeavyTrue.ttf</string>
-		<string>GurbaniAkharTrue.ttf</string>
-		<string>GurbaniAkharThickTrue.ttf</string>
-	</array>
-	<key>UIBackgroundModes</key>
-	<array>
-		<string>remote-notification</string>
-	</array>
 	<key>UILaunchStoryboardName</key>
 	<string>LaunchScreen</string>
 	<key>UIRequiredDeviceCapabilities</key>
@@ -85,5 +57,47 @@
 	</array>
 	<key>UIViewControllerBasedStatusBarAppearance</key>
 	<false/>
+	<key>UIAppFonts</key>
+	<array>
+		<string>AnmolLipiSG.ttf</string>
+		<string>Arial.ttf</string>
+		<string>GurbaniAkharHeavyTrue.ttf</string>
+		<string>GurbaniAkharThickTrue.ttf</string>
+		<string>GurbaniAkharTrue.ttf</string>
+		<string>MaterialIcons.ttf</string>
+		<string>MaterialCommunityIcons.ttf</string>
+		<string>Ionicons.ttf</string>
+	</array>
+	<key>UIBackgroundModes</key>
+	<array>
+		<string>remote-notification</string>
+	</array>
+	<key>NSPrivacyAccessedAPITypes</key>
+	<array>
+		<dict>
+			<key>API</key>
+			<string>NSUserDefaults</string>
+			<key>NSPrivacyAccessedAPICategoryUserDefaults</key>
+			<string>The app uses user defaults to store your preferences and settings to enhance your user experience.</string>
+		</dict>
+		<dict>
+			<key>API</key>
+			<string>SystemBootTime</string>
+			<key>NSPrivacyAccessedAPICategorySystemBootTime</key>
+			<string>The app uses the system boot time to ensure synchronization with external systems or to check the reliability of system time changes.</string>
+		</dict>
+		<dict>
+			<key>API</key>
+			<string>DiskSpace</string>
+			<key>NSPrivacyAccessedAPICategoryDiskSpace</key>
+			<string>The app checks disk space to ensure there is sufficient storage available to function properly without disrupting user data.</string>
+		</dict>
+		<dict>
+			<key>API</key>
+			<string>FileTimestamp</string>
+			<key>NSPrivacyAccessedAPICategoryFileTimestamp</key>
+			<string>The app accesses file timestamps to verify the integrity and update status of files critical to app functionality, ensuring users always have the most current and secure data.</string>
+		</dict>
+	</array>
 </dict>
 </plist>
