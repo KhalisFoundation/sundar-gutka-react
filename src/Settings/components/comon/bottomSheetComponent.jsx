@@ -1,10 +1,13 @@
-import React from "react";
-import { View } from "react-native";
-import { Text, BottomSheet, Divider } from "@rneui/themed";
-import { useSelector } from "react-redux";
+import React, { useEffect, useState } from "react";
+import { View, Modal, Text, Dimensions, Pressable, Platform, StyleSheet } from "react-native";
+import { Divider, Icon, ListItem } from "@rneui/themed";
+import { BlurView } from "@react-native-community/blur";
+import { useDispatch, useSelector } from "react-redux";
+import { constant } from "@common";
 import PropTypes from "prop-types";
-import { styles, nightModeStyles } from "../../styles";
-import RenderBottomSheetItem from "./render";
+import { SafeAreaProvider, SafeAreaView } from "react-native-safe-area-context";
+import SoundPlayer from "react-native-sound-player";
+import { styles, nightModeStyles, nightModeColor } from "../../styles";
 
 const BottomSheetComponent = ({
   isVisible,
@@ -14,35 +17,86 @@ const BottomSheetComponent = ({
   action,
   toggleVisible,
 }) => {
+  const dispatch = useDispatch();
   const isNightMode = useSelector((state) => state.isNightMode);
   const { containerNightStyles, textNightStyle } = nightModeStyles(isNightMode);
+  const nightStyles = nightModeColor(isNightMode);
+  const { width, height } = Dimensions.get("window");
+
+  const [orientation, setOrientation] = useState(width < height ? "PORTRAIT" : "LANDSCAPE");
+  useEffect(() => {
+    Dimensions.addEventListener("change", ({ window: { widthDimension, heightDimenstion } }) => {
+      if (widthDimension < heightDimenstion) {
+        setOrientation(constant.PORTRAIT);
+      } else {
+        setOrientation(constant.LANDSCAPE);
+      }
+    });
+  }, []);
+  const bottomStyle = [];
+  if (Platform.OS === "ios") {
+    bottomStyle.push(styles.viewWrapper);
+    bottomStyle.push(orientation === constant.LANDSCAPE ? styles.width_90 : styles.width_100);
+  } else {
+    bottomStyle.push(styles.androidViewWrapper);
+  }
+
   return (
-    <BottomSheet
-      modalProps={{
-        supportedOrientations: [
-          "portrait",
-          "portrait-upside-down",
-          "landscape-left",
-          "landscape-right",
-        ],
-      }}
-      isVisible={isVisible}
-      onBackdropPress={() => toggleVisible(false)}
-    >
-      <View style={styles.viewWrapper}>
-        <Text style={[styles.bottomSheetTitle, textNightStyle, containerNightStyles]}>{title}</Text>
-        <Divider />
-        {actionConstant.map((item) => (
-          <RenderBottomSheetItem
-            key={item.key}
-            item={item}
-            toggleVisible={toggleVisible}
-            value={value}
-            action={action}
-          />
-        ))}
-      </View>
-    </BottomSheet>
+    <SafeAreaProvider>
+      <SafeAreaView>
+        <Modal
+          visible={isVisible}
+          animationType="fade"
+          transparent
+          supportedOrientations={[
+            "landscape",
+            "landscape-left",
+            "landscape-right",
+            "portrait",
+            "portrait-upside-down",
+          ]}
+        >
+          <Pressable style={StyleSheet.absoluteFill} onPress={() => toggleVisible(false)}>
+            <BlurView
+              reducedTransparencyFallbackColor="white"
+              style={styles.blurViewStyle}
+              blurType="dark"
+              blurAmount={10}
+            >
+              <View style={bottomStyle}>
+                <Text style={[styles.bottomSheetTitle, textNightStyle, containerNightStyles]}>
+                  {title}
+                </Text>
+                <Divider />
+                {actionConstant.map((item) => (
+                  <ListItem
+                    key={item.key}
+                    bottomDivider
+                    containerStyle={containerNightStyles}
+                    onPress={() => {
+                      toggleVisible(false);
+                      dispatch(action(item.key));
+                      if (item.key.includes(".mp3")) {
+                        const soundTitle = item.key.split(".mp3")[0];
+                        SoundPlayer.playSoundFile(soundTitle, ".mp3");
+                      }
+                    }}
+                  >
+                    <ListItem.Content>
+                      <ListItem.Title style={nightStyles}>{item.title}</ListItem.Title>
+                    </ListItem.Content>
+                    {value === item.key && <Icon color={nightStyles.color} name="check" />}
+                  </ListItem>
+                ))}
+                {Platform.OS === "ios" && (
+                  <ListItem bottomDivider containerStyle={containerNightStyles} />
+                )}
+              </View>
+            </BlurView>
+          </Pressable>
+        </Modal>
+      </SafeAreaView>
+    </SafeAreaProvider>
   );
 };
 BottomSheetComponent.propTypes = {

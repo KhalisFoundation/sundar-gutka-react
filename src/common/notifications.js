@@ -3,9 +3,9 @@ import notifee, {
   RepeatFrequency,
   AndroidImportance,
   AuthorizationStatus,
+  // AndroidNotificationSetting,
 } from "@notifee/react-native";
 import moment from "moment";
-import FallBack from "./components/FallbackComponent";
 import constant from "./constant";
 import errorHandler from "./errHandler";
 
@@ -53,9 +53,8 @@ export const createReminder = async (notification, sound) => {
       trigger
     );
   } catch (error) {
-    console.log(error);
     errorHandler(error);
-    FallBack();
+    throw new Error(error);
   }
 };
 export const resetBadgeCount = async () => {

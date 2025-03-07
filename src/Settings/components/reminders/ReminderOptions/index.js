@@ -15,7 +15,9 @@ const ReminderOptions = ({ navigation }) => {
   const reminderBanis = useSelector((state) => state.reminderBanis);
   const isReminders = useSelector((state) => state.isReminders);
   const reminderSound = useSelector((state) => state.reminderSound);
+  const isTransliteration = useSelector((state) => state.isTransliteration);
   const parsedReminderBanis = useMemo(() => JSON.parse(reminderBanis), [reminderBanis]);
+  const fontFamily = { fontFamily: !isTransliteration ? constant.GURBANI_AKHAR_TRUE : null };
 
   const [stateData, setStateData] = useState([]);
   const [activeSections, setActiveSections] = useState([]);
@@ -28,7 +30,7 @@ const ReminderOptions = ({ navigation }) => {
 
   const accNightColor = useMemo(() => accordianNightColor(isNightMode), [isNightMode]);
   useFetchBani(setBaniListData, setReminderBaniData, setStateData, parsedReminderBanis);
-  useHeader(baniListData, navigation, selector, setStateData);
+  useHeader(baniListData, navigation, selector);
 
   const updateSections = (sections) => {
     setActiveSections(sections);
@@ -91,7 +93,7 @@ const ReminderOptions = ({ navigation }) => {
             ]}
             data={reminderBaniData}
             cancelText={STRINGS.cancel}
-            optionTextStyle={{ ...styles.modalSelectText, color }}
+            optionTextStyle={{ ...styles.modalSelectText, color, ...fontFamily }}
             onChange={(option) => {
               createReminder(option);
             }}

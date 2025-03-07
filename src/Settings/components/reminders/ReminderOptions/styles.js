@@ -1,5 +1,5 @@
 import { StyleSheet } from "react-native";
-import { colors, constant } from "@common";
+import { colors } from "@common";
 
 export const styles = StyleSheet.create({
   viewColumn: { flexDirection: "column" },
@@ -9,7 +9,7 @@ export const styles = StyleSheet.create({
   timeFont: { fontSize: 44 },
   accContentText: { fontSize: 14 },
   accContentWrapper: { flexDirection: "row", alignItems: "center", margin: 5 },
-  modalSelectText: { fontFamily: constant.GURBANI_AKHAR_TRUE, fontSize: 28 },
+  modalSelectText: { fontSize: 28 },
   textInput: {
     height: 40,
     borderRadius: 5,
