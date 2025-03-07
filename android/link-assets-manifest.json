@@ -1,0 +1,25 @@
+{
+  "migIndex": 1,
+  "data": [
+    {
+      "path": "assets/fonts/AnmolLipiSG.ttf",
+      "sha1": "625810cad17898cdf27347c54875a31b0516c776"
+    },
+    {
+      "path": "assets/fonts/Arial.ttf",
+      "sha1": "49f0ee6148e6b674a60450d86faaddbb97d798f3"
+    },
+    {
+      "path": "assets/fonts/GurbaniAkharHeavyTrue.ttf",
+      "sha1": "5896164bba1b0f17705c040ff1e5c6ebfa636bc5"
+    },
+    {
+      "path": "assets/fonts/GurbaniAkharThickTrue.ttf",
+      "sha1": "af10d65680d927bab9766226e81b6822df267e95"
+    },
+    {
+      "path": "assets/fonts/GurbaniAkharTrue.ttf",
+      "sha1": "892d20389a5686b4f84b21d9f0709f2fbe6fb173"
+    }
+  ]
+}
