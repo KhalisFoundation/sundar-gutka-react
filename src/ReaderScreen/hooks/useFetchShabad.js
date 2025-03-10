@@ -1,6 +1,7 @@
 import { useState, useEffect, useCallback } from "react";
 import { useSelector } from "react-redux";
 import { getShabadFromID } from "@database";
+import { errorHandler } from "@common";
 
 const useFetchShabad = (shabadID) => {
   const [shabad, setShabad] = useState([]);
@@ -15,21 +16,37 @@ const useFetchShabad = (shabadID) => {
   const isVishraam = useSelector((state) => state.isVishraam);
 
   const fetchShabad = useCallback(async () => {
-    toggleLoading(true);
-    const shabadData = await getShabadFromID(
-      shabadID,
-      baniLength,
-      transliterationLanguage,
-      vishraamSource,
-      vishraamOption,
-      isLarivaar,
-      isLarivaarAssist,
-      isParagraphMode,
-      isVishraam
-    );
-    if (shabadData) {
-      toggleLoading(false);
-      setShabad(shabadData);
+    try {
+      toggleLoading(true);
+      const shabadData = await getShabadFromID(
+        shabadID,
+        baniLength,
+        transliterationLanguage,
+        vishraamSource,
+        vishraamOption,
+        isLarivaar,
+        isLarivaarAssist,
+        isParagraphMode,
+        isVishraam
+      );
+      if (shabadData) {
+        toggleLoading(false);
+        setShabad(shabadData);
+      }
+    } catch (error) {
+      errorHandler(error, {
+        context: "Fetching shabad data",
+        location: "src/ReaderScreen/hooks/useFetchShabad.js",
+        functionName: "fetchShabad",
+        shabadID,
+        baniLength,
+        transliterationLanguage,
+        vishraamOption,
+        isLarivaar,
+        isLarivaarAssist,
+        isParagraphMode,
+        isVishraam,
+      });
     }
   }, [
     shabadID,

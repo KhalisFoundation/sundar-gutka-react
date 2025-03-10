@@ -18,7 +18,14 @@ const useBaniList = () => {
       dispatch(actions.setBaniList(orderedData));
       setBaniListData(orderedData);
     } catch (error) {
-      errorHandler(error);
+      errorHandler(error, {
+        context: "Fetching bani list",
+        location: "src/HomeScreen/hooks/useBaniList.js",
+        functionName: "fetchBaniList",
+        transliterationLanguage,
+        baniOrder,
+        baniList,
+      });
       FallBack();
     }
   }, [transliterationLanguage, baniOrder]);

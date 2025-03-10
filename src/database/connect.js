@@ -5,17 +5,22 @@ enablePromise(true);
 let database;
 
 const initDB = async () => {
-  if (database) {
-    return database;
-  }
   try {
+    if (database) {
+      return database;
+    }
     database = await openDatabase({
       name: constant.DB,
       createFromLocation: 1,
     });
     return database;
   } catch (error) {
-    errorHandler(error);
+    errorHandler(error, {
+      context: "Opening database error",
+      name: constant.DB,
+      functionName: "initDB",
+      location: "src/database/connect.js",
+    });
     FallBack();
     return null;
   }
