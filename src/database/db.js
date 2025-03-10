@@ -1,4 +1,4 @@
-import { constant } from "@common";
+import { constant, errorHandler } from "@common";
 import initDB from "./connect";
 import { createFormattedText, getTranslitText, parseVishraamPositions } from "./utils";
 
@@ -32,6 +32,12 @@ export const getBaniList = (language) => {
         });
       })
       .catch((error) => {
+        errorHandler(error, {
+          context: "Fetching Bani list",
+          functionName: "getBaniList",
+          location: "src/database/db.js",
+          language,
+        });
         reject(error);
       });
   });
@@ -180,7 +186,20 @@ export const getShabadFromID = (
         });
       })
       .catch((error) => {
-        console.log(error);
+        errorHandler(error, {
+          context: "Fetching shabad data",
+          functionName: "getShabadFromID",
+          location: "src/database/db.js",
+          shabadID,
+          length,
+          language,
+          vishraamSource,
+          vishraamOption,
+          isLarivar,
+          isLarivarAssist,
+          isParagraphMode,
+          isVishraam,
+        });
         reject(error);
       });
   });
@@ -215,34 +234,51 @@ export const getBookmarksForID = (baniId, length, language) => {
       baniLength = EXISTS_MEDIUM;
   }
 
-  return new Promise((resolve) => {
-    initDB().then((db) => {
-      db.transaction((tx) => {
-        tx.executeSql(
-          `SELECT ID, BaniShabadID, Seq, Gurmukhi, Transliterations, TukGurmukhi, TukTransliterations FROM Banis_Bookmarks WHERE Bani = ${baniId} AND BaniShabadID in (SELECT ID from mv_Banis_Shabad where Bani = ${baniId} AND ${baniLength} = 1)` +
-            ` ORDER BY Seq ASC;`,
-          [],
-          (_tx, results) => {
-            const totalResults = new Array(results.rows.length);
-            const len = results.rows.length;
-            for (let i = 0; i < len; i += 1) {
-              const row = results.rows.item(i);
-              const { BaniShabadID, Gurmukhi, Transliterations, TukGurmukhi, TukTransliterations } =
-                row;
-              totalResults[i] = {
-                shabadID: BaniShabadID,
-                gurmukhi: Gurmukhi,
-                tukGurmukhi: TukGurmukhi,
-                translit: getTranslitText(Transliterations, language),
-                tukTranslit: TukTransliterations
-                  ? getTranslitText(TukTransliterations, language)
-                  : null,
-              };
+  return new Promise((resolve, reject) => {
+    initDB()
+      .then((db) => {
+        db.transaction((tx) => {
+          tx.executeSql(
+            `SELECT ID, BaniShabadID, Seq, Gurmukhi, Transliterations, TukGurmukhi, TukTransliterations FROM Banis_Bookmarks WHERE Bani = ${baniId} AND BaniShabadID in (SELECT ID from mv_Banis_Shabad where Bani = ${baniId} AND ${baniLength} = 1)` +
+              ` ORDER BY Seq ASC;`,
+            [],
+            (_tx, results) => {
+              const totalResults = new Array(results.rows.length);
+              const len = results.rows.length;
+              for (let i = 0; i < len; i += 1) {
+                const row = results.rows.item(i);
+                const {
+                  BaniShabadID,
+                  Gurmukhi,
+                  Transliterations,
+                  TukGurmukhi,
+                  TukTransliterations,
+                } = row;
+                totalResults[i] = {
+                  shabadID: BaniShabadID,
+                  gurmukhi: Gurmukhi,
+                  tukGurmukhi: TukGurmukhi,
+                  translit: getTranslitText(Transliterations, language),
+                  tukTranslit: TukTransliterations
+                    ? getTranslitText(TukTransliterations, language)
+                    : null,
+                };
+              }
+              return resolve(totalResults);
             }
-            return resolve(totalResults);
-          }
-        );
+          );
+        });
+      })
+      .catch((error) => {
+        errorHandler(error, {
+          context: "Fetching bookmarks data",
+          functionName: "getBookmarksForID",
+          location: "src/database/db.js",
+          baniId,
+          length,
+          language,
+        });
+        reject(error);
       });
-    });
   });
 };
