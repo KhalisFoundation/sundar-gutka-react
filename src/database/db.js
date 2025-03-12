@@ -1,4 +1,4 @@
-import { constant, errorHandler } from "@common";
+import { constant, logError, logMessage } from "@common";
 import initDB from "./connect";
 import { createFormattedText, getTranslitText, parseVishraamPositions } from "./utils";
 
@@ -32,12 +32,8 @@ export const getBaniList = (language) => {
         });
       })
       .catch((error) => {
-        errorHandler(error, {
-          context: "Fetching Bani list",
-          functionName: "getBaniList",
-          location: "src/database/db.js",
-          language,
-        });
+        logMessage("Fetching Bani list error");
+        logError(error);
         reject(error);
       });
   });
@@ -186,20 +182,8 @@ export const getShabadFromID = (
         });
       })
       .catch((error) => {
-        errorHandler(error, {
-          context: "Fetching shabad data",
-          functionName: "getShabadFromID",
-          location: "src/database/db.js",
-          shabadID,
-          length,
-          language,
-          vishraamSource,
-          vishraamOption,
-          isLarivar,
-          isLarivarAssist,
-          isParagraphMode,
-          isVishraam,
-        });
+        logMessage("Fetching shabad data error");
+        logError(error);
         reject(error);
       });
   });
@@ -270,14 +254,8 @@ export const getBookmarksForID = (baniId, length, language) => {
         });
       })
       .catch((error) => {
-        errorHandler(error, {
-          context: "Fetching bookmarks data",
-          functionName: "getBookmarksForID",
-          location: "src/database/db.js",
-          baniId,
-          length,
-          language,
-        });
+        logError(error);
+        logMessage("Fetching bookmarks data error");
         reject(error);
       });
   });

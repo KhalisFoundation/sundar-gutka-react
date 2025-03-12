@@ -7,7 +7,8 @@ import {
   STRINGS,
   cancelAllReminders,
   checkPermissions,
-  errorHandler,
+  logError,
+  logMessage,
   actions,
   FallBack,
 } from "@common";
@@ -67,7 +68,8 @@ const RemindersComponent = ({ navigation }) => {
       dispatch(actions.toggleReminders(value));
       await fetchBanis(value);
     } catch (error) {
-      errorHandler(error);
+      logError(error);
+      logMessage("handleReminders: Failed to fetch banis");
       FallBack();
     }
   };

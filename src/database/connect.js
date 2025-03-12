@@ -1,5 +1,5 @@
 import { openDatabase, enablePromise } from "react-native-sqlite-storage";
-import { FallBack, constant, errorHandler } from "@common";
+import { FallBack, constant, logError, logMessage } from "@common";
 
 enablePromise(true);
 let database;
@@ -15,12 +15,8 @@ const initDB = async () => {
     });
     return database;
   } catch (error) {
-    errorHandler(error, {
-      context: "Opening database error",
-      name: constant.DB,
-      functionName: "initDB",
-      location: "src/database/connect.js",
-    });
+    logMessage("Opening database error");
+    logError(error);
     FallBack();
     return null;
   }

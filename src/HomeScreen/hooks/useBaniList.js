@@ -1,6 +1,6 @@
 import { useEffect, useState, useRef, useCallback } from "react";
 import { useDispatch, useSelector } from "react-redux";
-import { FallBack, errorHandler, orderedBani, actions } from "@common";
+import { FallBack, logError, orderedBani, actions, logMessage } from "@common";
 import { getBaniList } from "@database";
 
 const useBaniList = () => {
@@ -12,20 +12,14 @@ const useBaniList = () => {
   const dispatch = useDispatch();
 
   const fetchBaniList = useCallback(async () => {
+    logMessage("Fetching bani list");
     try {
       const transliteratedList = await getBaniList(transliterationLanguage);
       const orderedData = orderedBani(transliteratedList, baniOrder);
       dispatch(actions.setBaniList(orderedData));
       setBaniListData(orderedData);
     } catch (error) {
-      errorHandler(error, {
-        context: "Fetching bani list",
-        location: "src/HomeScreen/hooks/useBaniList.js",
-        functionName: "fetchBaniList",
-        transliterationLanguage,
-        baniOrder,
-        baniList,
-      });
+      logError(error);
       FallBack();
     }
   }, [transliterationLanguage, baniOrder]);

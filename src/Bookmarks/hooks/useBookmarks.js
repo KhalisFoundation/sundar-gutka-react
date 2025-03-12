@@ -1,7 +1,7 @@
 import { useState, useEffect } from "react";
 import { useSelector } from "react-redux";
 import { getBookmarksForID } from "@database";
-import { errorHandler } from "@common";
+import { logError, logMessage } from "@common";
 
 const useBookmarks = (route) => {
   const baniLength = useSelector((state) => state.baniLength);
@@ -17,13 +17,8 @@ const useBookmarks = (route) => {
         );
         setBookmarksData(bookmarks);
       } catch (error) {
-        errorHandler(error, {
-          context: "Fetching bookmarks data",
-          location: "src/Bookmarks/hooks/useBookmarks.js",
-          id: route.params.id,
-          baniLength,
-          transliterationLanguage,
-        });
+        logError(error);
+        logMessage("useBookmarks: Failed to fetch bookmarks");
       }
     })();
   }, []);

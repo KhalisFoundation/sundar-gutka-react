@@ -4,13 +4,14 @@ import { StatusBar, ActivityIndicator, BackHandler } from "react-native";
 import { WebView } from "react-native-webview";
 import PropTypes from "prop-types";
 import { SafeAreaView } from "react-native-safe-area-context";
-import { constant, colors, actions, useScreenAnalytics } from "@common";
+import { constant, colors, actions, useScreenAnalytics, logMessage } from "@common";
 import { Header, AutoScrollComponent } from "./components";
 import { useBookmarks, useFetchShabad } from "./hooks";
 import { styles, nightColors } from "./styles";
 import { loadHTML } from "./utils";
 
 const Reader = ({ navigation, route }) => {
+  logMessage(constant.READER);
   const webViewRef = useRef(null);
   const headerRef = useRef(null);
   const { webView } = styles;
