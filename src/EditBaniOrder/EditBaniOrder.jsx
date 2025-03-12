@@ -7,11 +7,12 @@ import { Pressable, Text, View } from "react-native";
 import { GestureHandlerRootView } from "react-native-gesture-handler";
 import { useSelector, useDispatch, batch } from "react-redux";
 import PropTypes from "prop-types";
-import { STRINGS, defaultBaniOrder, actions } from "@common";
+import { STRINGS, defaultBaniOrder, actions, constant, logMessage } from "@common";
 import { activeColor, nightStyles, styles } from "./styles";
 import useHeader from "./hooks/useHeader";
 
 const EditBaniOrder = ({ navigation }) => {
+  logMessage(constant.EDIT_BANI_ORDER);
   const isNightMode = useSelector((state) => state.isNightMode);
   const baniList = useSelector((state) => state.baniList);
   const baniOrder = useSelector((state) => state.baniOrder);

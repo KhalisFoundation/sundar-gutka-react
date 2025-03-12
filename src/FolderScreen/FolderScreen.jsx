@@ -2,10 +2,11 @@ import React from "react";
 import { StatusBar, View } from "react-native";
 import PropTypes from "prop-types";
 import { useSelector } from "react-redux";
-import { colors, BaniList, constant, useScreenAnalytics } from "@common";
+import { colors, BaniList, constant, useScreenAnalytics, logMessage } from "@common";
 import Header from "./header";
 
 const FolderScreen = ({ navigation, route }) => {
+  logMessage(constant.FOLDERSCREEN);
   const { navigate } = navigation;
   const { data, title } = route.params.params;
   const isNightMode = useSelector((state) => state.isNightMode);

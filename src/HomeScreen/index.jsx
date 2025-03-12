@@ -10,12 +10,14 @@ import {
   colors,
   useKeepAwake,
   BaniList,
+  logMessage,
 } from "@common";
 import styles from "./styles";
 import BaniHeader from "./components/BaniHeader";
 import { useAppFirstTime, useBaniLength, useBaniList } from "./hooks";
 
 const HomeScreen = React.memo(({ navigation }) => {
+  logMessage(constant.HOME_SCREEN);
   const { navigate } = navigation;
   const { baniListData } = useBaniList();
   const isNightMode = useSelector((state) => state.isNightMode);

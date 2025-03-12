@@ -2,12 +2,13 @@ import React from "react";
 import { SafeAreaProvider, SafeAreaView } from "react-native-safe-area-context";
 import { useDispatch, useSelector } from "react-redux";
 import PropTypes from "prop-types";
-import { BaniList, actions, useScreenAnalytics, constant } from "@common";
+import { BaniList, actions, useScreenAnalytics, constant, logMessage } from "@common";
 import useHeader from "./hooks/useHeader";
 import useBookmarks from "./hooks/useBookmarks";
 import { nightMode } from "./styles";
 
 const Bookmarks = ({ navigation, route }) => {
+  logMessage(constant.BOOKMARKS);
   useHeader(navigation);
   const { bookmarksData } = useBookmarks(route);
   const isNightMode = useSelector((state) => state.isNightMode);
