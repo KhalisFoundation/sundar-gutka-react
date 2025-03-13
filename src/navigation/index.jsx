@@ -6,6 +6,7 @@ import { Icon } from "@rneui/themed";
 import notifee, { EventType } from "@notifee/react-native";
 import SplashScreen from "react-native-splash-screen";
 import { constant, colors, navigationRef, navigate, resetBadgeCount } from "@common";
+import perf from "@react-native-firebase/perf";
 import HomeScreen from "../HomeScreen";
 import Reader from "../ReaderScreen";
 import Settings from "../Settings";
@@ -27,6 +28,7 @@ const headerLeft = (navigation, isNightMode) => (
   />
 );
 const Navigation = () => {
+  const trace = React.useRef(null);
   useEffect(() => {
     // Code to run on component mount
     SplashScreen.hide(); // Hide the splash screen once everything is loaded
@@ -83,8 +85,26 @@ const Navigation = () => {
     setupNotifications();
   }, []);
 
+  const handlingStateChange = async (state) => {
+    if (trace.current) {
+      trace.current.putMetric("endTime", Date.now()); // Record the end time before stopping (example)
+      await trace.current.stop();
+      trace.current = null;
+    }
+
+    const currentRouteName = state.routes[state.index].name;
+    trace.current = await perf().startTrace(`${currentRouteName}_LoadTime`);
+    trace.current.putAttribute("screenName", currentRouteName);
+    trace.current.putMetric("initTime", Date.now());
+  };
+
   return (
-    <NavigationContainer ref={navigationRef}>
+    <NavigationContainer
+      ref={navigationRef}
+      onStateChange={(state) => {
+        handlingStateChange(state);
+      }}
+    >
       <Stack.Navigator
         screenOptions={{
           headerShown: true,
