@@ -24,20 +24,18 @@ const orderedBani = (baniList, baniOrder) => {
           return baniItem ? extractBaniDetails(baniItem) : null;
         }
 
-        // Otherwise, we're dealing with a folder. Map over each item in `element.folder`
-        const folder =
-          element.folder
-            ?.map((item) => {
-              const bani = findBaniById(baniList, item.id);
-              return bani ? extractBaniDetails(bani) : null;
-            })
-            .filter(Boolean) || [];
+        if (!element.folder) return null;
 
-        return {
-          gurmukhi: element.gurmukhi,
-          translit: element.translit,
-          folder,
-        };
+        // Otherwise, we're dealing with a folder. Map over each item in `element.folder`
+        const folder = element.folder.reduce((acc, item) => {
+          const bani = findBaniById(baniList, item.id);
+          if (bani) acc.push(extractBaniDetails(bani));
+          return acc;
+        }, []);
+
+        return folder.length
+          ? { gurmukhi: element.gurmukhi, translit: element.translit, folder }
+          : null;
       })
       // Filter out any nulls in case an ID did not match
       .filter(Boolean)

@@ -44,6 +44,7 @@ const Reader = ({ navigation, route }) => {
   const [viewLoaded, toggleViewLoaded] = useState(false);
   const [currentPosition, setCurrentPosition] = useState(savePosition[id] || 0);
   const [reloadKey, setReloadKey] = useState(true);
+  const [shouldNavigateBack, setShouldNavigateBack] = useState(false);
 
   const dispatch = useDispatch();
   const { shabad, isLoading, fetchShabad } = useFetchShabad(id, setError);
@@ -95,9 +96,7 @@ const Reader = ({ navigation, route }) => {
     if (webViewRef) {
       webViewRef.current.postMessage(JSON.stringify({ Back: true }));
       // set Timeout to delay back function so that it will save the current position
-      setTimeout(() => {
-        navigation.goBack();
-      }, 200);
+      setShouldNavigateBack(true);
     }
   };
 
@@ -129,6 +128,10 @@ const Reader = ({ navigation, route }) => {
       const position = env.split("-")[1];
       setCurrentPosition(position);
       dispatch(actions.setPosition(position, id));
+      if (shouldNavigateBack) {
+        navigation.goBack();
+        setShouldNavigateBack(false);
+      }
     }
   };
 

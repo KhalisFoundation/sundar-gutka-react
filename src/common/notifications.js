@@ -3,7 +3,6 @@ import notifee, {
   RepeatFrequency,
   AndroidImportance,
   AuthorizationStatus,
-  // AndroidNotificationSetting,
 } from "@notifee/react-native";
 import moment from "moment";
 import constant from "./constant";
