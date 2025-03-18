@@ -51,7 +51,7 @@ const useHeader = (baniListData, navigation, selector) => {
         backgroundColor: colors.TOOLBAR_COLOR_ALT2,
       },
       headerLeft,
-      headerRight: () => (baniListData.length > 0 ? headerRight(baniListData) : null),
+      headerRight: () => (baniListData.length > 0 ? headerRight() : null),
     });
   }, [JSON.stringify(baniListData)]);
 };

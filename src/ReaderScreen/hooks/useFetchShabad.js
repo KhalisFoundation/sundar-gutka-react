@@ -2,9 +2,9 @@ import { useState, useEffect, useCallback } from "react";
 import { useSelector } from "react-redux";
 import { getShabadFromID } from "@database";
 
-const useFetchShabad = (shabadID) => {
+const useFetchShabad = (shabadID, setError) => {
   const [shabad, setShabad] = useState([]);
-  const [isLoading, toggleLoading] = useState(false);
+  const [isLoading, setLoading] = useState(false);
   const baniLength = useSelector((state) => state.baniLength);
   const transliterationLanguage = useSelector((state) => state.transliterationLanguage);
   const vishraamSource = useSelector((state) => state.vishraamSource);
@@ -15,21 +15,30 @@ const useFetchShabad = (shabadID) => {
   const isVishraam = useSelector((state) => state.isVishraam);
 
   const fetchShabad = useCallback(async () => {
-    toggleLoading(true);
-    const shabadData = await getShabadFromID(
-      shabadID,
-      baniLength,
-      transliterationLanguage,
-      vishraamSource,
-      vishraamOption,
-      isLarivaar,
-      isLarivaarAssist,
-      isParagraphMode,
-      isVishraam
-    );
-    if (shabadData) {
-      toggleLoading(false);
-      setShabad(shabadData);
+    try {
+      setLoading(true);
+      if (shabadID) {
+        const shabadData = await getShabadFromID(
+          shabadID,
+          baniLength,
+          transliterationLanguage,
+          vishraamSource,
+          vishraamOption,
+          isLarivaar,
+          isLarivaarAssist,
+          isParagraphMode,
+          isVishraam
+        );
+        if (shabadData) {
+          setShabad(shabadData);
+        } else {
+          setError("Shabad Not found");
+        }
+      }
+    } catch (error) {
+      setError(error);
+    } finally {
+      setLoading(false);
     }
   }, [
     shabadID,
@@ -44,19 +53,9 @@ const useFetchShabad = (shabadID) => {
   ]);
   useEffect(() => {
     fetchShabad();
-  }, [
-    shabadID,
-    baniLength,
-    transliterationLanguage,
-    vishraamSource,
-    vishraamOption,
-    isLarivaar,
-    isLarivaarAssist,
-    isParagraphMode,
-    isVishraam,
-  ]);
+  }, [fetchShabad]);
 
-  return { shabad, isLoading };
+  return { shabad, isLoading, fetchShabad };
 };
 
 export default useFetchShabad;

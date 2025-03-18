@@ -1,4 +1,4 @@
-import React, { useEffect, useState } from "react";
+import React, { useCallback, useEffect, useState } from "react";
 import { FlatList, Dimensions, Platform } from "react-native";
 import { ListItem, Avatar } from "@rneui/themed";
 import PropTypes from "prop-types";
@@ -7,12 +7,11 @@ import baseFontSize from "../../helpers";
 import colors from "../../colors";
 import { styles } from "../../../Settings/styles";
 
-const BaniList = (props) => {
+const BaniList = React.memo(({ data, onPress }) => {
   const fontSize = useSelector((state) => state.fontSize);
   const fontFace = useSelector((state) => state.fontFace);
   const isTransliteration = useSelector((state) => state.isTransliteration);
   const isNightMode = useSelector((state) => state.isNightMode);
-  const { data, onPress } = props;
   const [isPotrait, toggleIsPotrait] = useState(true);
 
   const checkPotrait = () => {
@@ -25,46 +24,51 @@ const BaniList = (props) => {
     });
     return () => subscription.remove();
   }, []);
-  const renderBanis = (row) => {
-    return (
-      <ListItem
-        bottomDivider
-        containerStyle={{ backgroundColor: isNightMode ? colors.NIGHT_BLACK : colors.WHITE_COLOR }}
-        onPress={() => onPress(row)}
-      >
-        {row.item.folder && (
-          <Avatar
-            source={require("../../../../images/foldericon.png")}
-            avatarStyle={styles.avatarStyle}
-          />
-        )}
-        <ListItem.Content>
-          <ListItem.Title
-            style={[
-              isNightMode && { color: colors.WHITE_COLOR },
-              {
-                fontSize: baseFontSize(fontSize, isTransliteration),
-                fontFamily: !isTransliteration ? fontFace : null,
-              },
-            ]}
-          >
-            {isTransliteration ? row.item.translit : row.item.gurmukhi}
-          </ListItem.Title>
-          {row.item.tukGurmukhi && (
-            <ListItem.Subtitle
+  const renderBanis = useCallback(
+    (row) => {
+      return (
+        <ListItem
+          bottomDivider
+          containerStyle={{
+            backgroundColor: isNightMode ? colors.NIGHT_BLACK : colors.WHITE_COLOR,
+          }}
+          onPress={() => onPress(row)}
+        >
+          {row.item.folder && (
+            <Avatar
+              source={require("../../../../images/foldericon.png")}
+              avatarStyle={styles.avatarStyle}
+            />
+          )}
+          <ListItem.Content>
+            <ListItem.Title
               style={[
-                isNightMode && { color: "#ecf0f1" },
-                { fontFamily: !isTransliteration ? fontFace : null },
-                { fontSize: 17 },
+                isNightMode && { color: colors.WHITE_COLOR },
+                {
+                  fontSize: baseFontSize(fontSize, isTransliteration),
+                  fontFamily: !isTransliteration ? fontFace : null,
+                },
               ]}
             >
-              {isTransliteration ? row.item.tukTranslit : row.item.tukGurmukhi}
-            </ListItem.Subtitle>
-          )}
-        </ListItem.Content>
-      </ListItem>
-    );
-  };
+              {isTransliteration ? row.item.translit : row.item.gurmukhi}
+            </ListItem.Title>
+            {row.item.tukGurmukhi && (
+              <ListItem.Subtitle
+                style={[
+                  isNightMode && { color: "#ecf0f1" },
+                  { fontFamily: !isTransliteration ? fontFace : null },
+                  { fontSize: 17 },
+                ]}
+              >
+                {isTransliteration ? row.item.tukTranslit : row.item.tukGurmukhi}
+              </ListItem.Subtitle>
+            )}
+          </ListItem.Content>
+        </ListItem>
+      );
+    },
+    [isNightMode, fontSize, fontFace, isTransliteration]
+  );
 
   return (
     <FlatList
@@ -74,7 +78,7 @@ const BaniList = (props) => {
       keyExtractor={(item) => item.gurmukhi}
     />
   );
-};
+});
 
 BaniList.propTypes = {
   data: PropTypes.arrayOf(

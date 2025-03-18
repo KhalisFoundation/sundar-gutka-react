@@ -1,7 +1,8 @@
 import React from "react";
 import { ListItem, Icon, Switch } from "@rneui/themed";
 import { useSelector, useDispatch } from "react-redux";
-import { toggleScreenAwake, toggleAutoScroll, STRINGS } from "@common";
+import { STRINGS } from "@common";
+import { toggleScreenAwake, toggleAutoScroll } from "@common/actions";
 import { iconNightColor, nightModeStyles, nightModeColor } from "../styles/nightModeStyles";
 
 const AutoScroll = () => {

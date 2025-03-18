@@ -79,4 +79,6 @@ export default {
   ADD_REMINDER: "addReminder",
   RESET_REMINDER: "resetReminderDefault",
   UPDATE_REMINDER: "updateReminder",
+  PORTRAIT: "PORTRAIT",
+  LANDSCAPE: "LANDSCAPE",
 };
