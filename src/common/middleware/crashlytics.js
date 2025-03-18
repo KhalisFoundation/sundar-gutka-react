@@ -2,7 +2,8 @@ import { setCustomKey } from "../crashlytics";
 
 // Helper function to safely stringify values
 const safeStringify = (value) => {
-  if (value === null || value === undefined) {
+  // null or undefined
+  if (value == null) {
     return "";
   }
   if (typeof value === "boolean" || typeof value === "number") {
@@ -11,7 +12,8 @@ const safeStringify = (value) => {
   if (typeof value === "string") {
     return value;
   }
-  if (Array.isArray(value) || typeof value === "object") {
+  // array or object
+  if (typeof value === "object") {
     return JSON.stringify(value);
   }
   return String(value);

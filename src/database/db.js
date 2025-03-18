@@ -227,27 +227,19 @@ export const getBookmarksForID = (baniId, length, language) => {
               ` ORDER BY Seq ASC;`,
             [],
             (_tx, results) => {
-              const totalResults = new Array(results.rows.length);
-              const len = results.rows.length;
-              for (let i = 0; i < len; i += 1) {
+              const totalResults = Array.from({ length: results.rows.length }, (_, i) => {
                 const row = results.rows.item(i);
-                const {
-                  BaniShabadID,
-                  Gurmukhi,
-                  Transliterations,
-                  TukGurmukhi,
-                  TukTransliterations,
-                } = row;
-                totalResults[i] = {
-                  shabadID: BaniShabadID,
-                  gurmukhi: Gurmukhi,
-                  tukGurmukhi: TukGurmukhi,
-                  translit: getTranslitText(Transliterations, language),
-                  tukTranslit: TukTransliterations
-                    ? getTranslitText(TukTransliterations, language)
+
+                return {
+                  shabadID: row.BaniShabadID,
+                  gurmukhi: row.Gurmukhi,
+                  tukGurmukhi: row.TukGurmukhi,
+                  translit: getTranslitText(row.Transliterations, language),
+                  tukTranslit: row.TukTransliterations
+                    ? getTranslitText(row.TukTransliterations, language)
                     : null,
                 };
-              }
+              });
               return resolve(totalResults);
             }
           );
