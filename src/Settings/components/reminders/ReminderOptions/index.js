@@ -5,12 +5,21 @@ import Accordion from "react-native-collapsible/Accordion";
 import PropTypes from "prop-types";
 import ModalSelector from "react-native-modal-selector";
 import moment from "moment";
-import { colors, constant, STRINGS, actions, trackReminderEvent, updateReminders } from "@common";
+import {
+  colors,
+  constant,
+  STRINGS,
+  actions,
+  trackReminderEvent,
+  updateReminders,
+  logMessage,
+} from "@common";
 import { styles, accordianNightColor, optionContainer } from "./styles";
 import { AccordianContent, AccordianHeader } from "./components";
 import { useHeader, useFetchBani } from "./hooks";
 
 const ReminderOptions = ({ navigation }) => {
+  logMessage(constant.REMINDER_OPTIONS);
   const isNightMode = useSelector((state) => state.isNightMode);
   const reminderBanis = useSelector((state) => state.reminderBanis);
   const isReminders = useSelector((state) => state.isReminders);

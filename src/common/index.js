@@ -3,7 +3,7 @@ import colors from "./colors";
 import * as actions from "./actions";
 import STRINGS from "./localization";
 import useScreenAnalytics from "./hooks/useScreenAnalytics";
-import errorHandler from "./errHandler";
+import { logError, initializeCrashlytics, setCustomKey, logMessage } from "./crashlytics";
 import {
   allowTracking,
   trackScreenView,
@@ -30,7 +30,9 @@ export {
   actions,
   useScreenAnalytics,
   STRINGS,
-  errorHandler,
+  logError,
+  logMessage,
+  initializeCrashlytics,
   allowTracking,
   trackReaderEvent,
   trackScreenView,
@@ -49,4 +51,5 @@ export {
   resetBadgeCount,
   createStore,
   orderedBani,
+  setCustomKey,
 };

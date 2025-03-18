@@ -7,7 +7,7 @@ import notifee, {
 import moment from "moment";
 import FallBack from "./components/FallbackComponent";
 import constant from "./constant";
-import errorHandler from "./errHandler";
+import { logError, logMessage } from "./crashlytics";
 
 export const createReminder = async (notification, sound) => {
   const channelName =
@@ -53,8 +53,8 @@ export const createReminder = async (notification, sound) => {
       trigger
     );
   } catch (error) {
-    console.log(error);
-    errorHandler(error);
+    logError(error);
+    logMessage("createReminder: Failed to create reminder");
     FallBack();
   }
 };

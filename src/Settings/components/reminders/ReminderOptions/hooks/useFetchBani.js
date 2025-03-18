@@ -1,6 +1,6 @@
 import { useCallback, useEffect } from "react";
 import { useDispatch, useSelector } from "react-redux";
-import { errorHandler, FallBack } from "@common";
+import { logError, FallBack, logMessage } from "@common";
 import { getBaniList } from "@database";
 import setDefaultReminders from "../utils";
 
@@ -36,7 +36,8 @@ const useFetchBani = (setBaniListData, setReminderBaniData, setStateData, parsed
         setStateData(parsedReminderBanis);
       }
     } catch (error) {
-      errorHandler(error);
+      logError(error);
+      logMessage("fetchBani: Failed to fetch bani list");
       FallBack();
     }
   }, [transliterationLanguage, reminderBanis]);
