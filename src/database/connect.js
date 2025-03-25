@@ -1,24 +1,34 @@
 import { openDatabase, enablePromise } from "react-native-sqlite-storage";
-import { FallBack, constant, errorHandler } from "@common";
+import { constant, errorHandler } from "@common";
 
 enablePromise(true);
-let database;
+let databaseInstance = null;
+let initializingPromise = null;
 
 const initDB = async () => {
-  if (database) {
-    return database;
+  if (databaseInstance) {
+    return databaseInstance;
   }
-  try {
-    database = await openDatabase({
-      name: constant.DB,
-      createFromLocation: 1,
+
+  if (initializingPromise) {
+    return initializingPromise;
+  }
+  initializingPromise = openDatabase({
+    name: constant.DB,
+    createFromLocation: 1,
+  })
+    .then((db) => {
+      databaseInstance = db;
+      initializingPromise = null; // Reset the initializing promise
+      return db;
+    })
+    .catch((error) => {
+      errorHandler(error);
+      initializingPromise = null; // Allow retry on next call
+      throw error; // Rethrow the original error
     });
-    return database;
-  } catch (error) {
-    errorHandler(error);
-    FallBack();
-    return null;
-  }
+
+  return initializingPromise;
 };
 
 export default initDB;

@@ -1,7 +1,7 @@
-import React, { useState } from "react";
+import React, { useState, useEffect } from "react";
 import { ListItem, Avatar, Switch } from "@rneui/themed";
 import { useDispatch, useSelector } from "react-redux";
-import { STRINGS, colors } from "@common";
+import { STRINGS, colors, constant } from "@common";
 import { setTransliteration, toggleTransliteration } from "@common/actions";
 import { ListItemComponent, BottomSheetComponent } from "./comon";
 import { styles } from "../styles";
@@ -15,6 +15,13 @@ const TransliterationComponent = () => {
   const isNightMode = useSelector((state) => state.isNightMode);
   const TRANSLITERATION_LANGUAGES = getTransliteration(STRINGS);
   const dispatch = useDispatch();
+
+  // Set default transliteration to English
+  useEffect(() => {
+    if (!isTransliteration) {
+      dispatch(setTransliteration(constant.ENGLISH));
+    }
+  }, [isTransliteration]);
 
   return (
     <>

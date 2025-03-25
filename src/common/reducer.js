@@ -1,4 +1,4 @@
-import { combineReducers } from "redux";
+import { combineReducers } from "@reduxjs/toolkit";
 import * as actionTypes from "./actions/actionTypes";
 import defaultBaniOrder from "./defaultBaniOrder";
 import constant from "./constant";
@@ -43,7 +43,7 @@ const isStatusBar = createReducer(false, {
   [actionTypes.TOGGLE_STATUS_BAR]: (state, action) => action.value,
 });
 
-const isScreenAwake = createReducer(false, {
+const isScreenAwake = createReducer(true, {
   [actionTypes.TOGGLE_SCREEN_AWAKE]: (state, action) => action.value,
 });
 
@@ -127,14 +127,6 @@ const autoScrollSpeedObj = (state = {}, action) => {
   }
 };
 
-const cacheShabad = (state = {}, action) => {
-  switch (action.type) {
-    case actionTypes.SET_CACHE_SHABAD:
-      return { ...state, ...action.cache };
-    default:
-      return state;
-  }
-};
 const baniOrder = (state = defaultBaniOrder, action) => {
   switch (action.type) {
     case actionTypes.SET_BANI_ORDER:
@@ -197,7 +189,6 @@ const rootReducer = combineReducers({
   reminderBanis,
   reminderSound,
   autoScrollSpeedObj,
-  cacheShabad,
   baniOrder,
   baniList,
   savePosition,

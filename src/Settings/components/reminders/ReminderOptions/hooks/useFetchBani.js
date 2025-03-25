@@ -1,7 +1,7 @@
 import { useCallback, useEffect } from "react";
 import { useDispatch, useSelector } from "react-redux";
-import { errorHandler, FallBack } from "@common";
 import { getBaniList } from "@database";
+import errorHandler from "@common";
 import setDefaultReminders from "../utils";
 
 const useFetchBani = (setBaniListData, setReminderBaniData, setStateData, parsedReminderBanis) => {
@@ -16,37 +16,41 @@ const useFetchBani = (setBaniListData, setReminderBaniData, setStateData, parsed
     try {
       const data = await getBaniList(transliterationLanguage);
       setBaniListData(data);
-
+      const existingKeysSet = parsedReminderBanis.map((bani) => bani.key);
+      const baniOptions = data
+        // Filter out keys for which a reminder has not been created. Ensure that the baniList ID is less than 1000, as we do not manage any bani with IDs greater than 1000.
+        .filter((object) => !existingKeysSet.includes(object.id) && object.id < 1001)
+        .map((bani) => ({
+          key: bani.id,
+          id: bani.id,
+          label: isTransliteration ? bani.translit : bani.gurmukhi,
+          gurmukhi: bani.gurmukhi,
+          translit: bani.translit,
+        }));
+      // setting reminder data for modal Selector to create new reminder
+      setReminderBaniData(baniOptions);
       if (parsedReminderBanis.length > 0) {
-        const existingKeysSet = parsedReminderBanis.map((bani) => bani.key);
-        const baniOptions = data
-          .filter((object) => !existingKeysSet.includes(object.id))
-          .map((bani) => ({
-            key: bani.id,
-            id: bani.id,
+        // setting reminder data for accordian or reminder data selected by user
+        setStateData(
+          parsedReminderBanis.map((bani) => ({
+            ...bani,
+            translit: data.find((key) => key.id === bani.id).translit,
             label: isTransliteration ? bani.translit : bani.gurmukhi,
-            gurmukhi: bani.gurmukhi,
-            translit: bani.translit,
-          }));
-        setReminderBaniData(baniOptions);
-      }
-      if (parsedReminderBanis.length === 0) {
-        await setDefaultReminders(data, dispatch, isReminders, reminderSound);
+          }))
+        );
       } else {
-        setStateData(parsedReminderBanis);
+        await setDefaultReminders(data, dispatch, isReminders, reminderSound);
       }
     } catch (error) {
       errorHandler(error);
-      FallBack();
+      throw new Error(error);
     }
-  }, [transliterationLanguage, reminderBanis]);
+  }, [transliterationLanguage, reminderBanis, isTransliteration]);
 
   useEffect(() => {
-    (async () => {
-      if (transliterationLanguage) {
-        await fetchBani();
-      }
-    })();
+    if (transliterationLanguage) {
+      fetchBani();
+    }
   }, [transliterationLanguage, reminderBanis]);
 };
 export default useFetchBani;

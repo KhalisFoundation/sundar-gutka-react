@@ -3,14 +3,7 @@ import { Alert, Linking } from "react-native";
 import { ListItem, Icon, Switch } from "@rneui/themed";
 import { useSelector, useDispatch } from "react-redux";
 import PropTypes from "prop-types";
-import {
-  STRINGS,
-  cancelAllReminders,
-  checkPermissions,
-  errorHandler,
-  actions,
-  FallBack,
-} from "@common";
+import { STRINGS, cancelAllReminders, checkPermissions, actions, errorHandler } from "@common";
 import { getBaniList } from "@database";
 import { nightModeStyles, iconNightColor } from "../../styles";
 import { ListItemComponent, BottomSheetComponent } from "../comon";
@@ -68,7 +61,7 @@ const RemindersComponent = ({ navigation }) => {
       await fetchBanis(value);
     } catch (error) {
       errorHandler(error);
-      FallBack();
+      throw new Error(error);
     }
   };
 

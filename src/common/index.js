@@ -19,10 +19,11 @@ import {
 } from "./notifications";
 import { FallBack, BaniLengthSelector, BaniList } from "./components";
 import useKeepAwake from "./hooks/keepAwake";
-import baseFontSize from "./helpers";
-import { navigationRef, navigate } from "./rootNavigation";
+import baseFontSize, { validateBaniOrder } from "./helpers";
+import { navigate, navigateTo, navigationRef } from "./rootNavigation";
 import orderedBani from "./components/BaniList/baniOrderHelper";
 import createStore from "./store";
+import defaultBaniOrder from "./defaultBaniOrder";
 
 export {
   colors,
@@ -44,9 +45,12 @@ export {
   useKeepAwake,
   BaniList,
   baseFontSize,
-  navigate,
-  navigationRef,
   resetBadgeCount,
   createStore,
   orderedBani,
+  navigateTo,
+  navigate,
+  navigationRef,
+  defaultBaniOrder,
+  validateBaniOrder,
 };
