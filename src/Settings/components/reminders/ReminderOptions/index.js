@@ -1,6 +1,6 @@
 import React, { useState, useRef, useMemo } from "react";
 import { useDispatch, useSelector } from "react-redux";
-import { View, StatusBar, ScrollView, SafeAreaView } from "react-native";
+import { View, StatusBar, ScrollView } from "react-native";
 import Accordion from "react-native-collapsible/Accordion";
 import PropTypes from "prop-types";
 import ModalSelector from "react-native-modal-selector";
@@ -59,7 +59,7 @@ const ReminderOptions = ({ navigation }) => {
   };
 
   return (
-    <SafeAreaView
+    <View
       style={[
         isNightMode && { backgroundColor: colors.INACTIVE_VIEW_COLOR_NIGHT_MODE },
         styles.flexView,
@@ -103,7 +103,7 @@ const ReminderOptions = ({ navigation }) => {
           />
         </View>
       </ScrollView>
-    </SafeAreaView>
+    </View>
   );
 };
 

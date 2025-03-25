@@ -3082,8 +3082,6 @@ index 5f82487..67d887b 100644
  
  buildscript {
      ext {
--        buildToolsVersion = "30.0.2"
-+        buildToolsVersion = "33.0.0"
          minSdkVersion = 21
 -        compileSdkVersion = 31
 -        targetSdkVersion = 31

@@ -1,7 +1,7 @@
 import React, { useEffect } from "react";
 import { useSelector } from "react-redux";
 import PropTypes from "prop-types";
-import { SafeAreaView, StatusBar, ScrollView, Text } from "react-native";
+import { StatusBar, ScrollView, Text, View } from "react-native";
 import { SafeAreaProvider } from "react-native-safe-area-context";
 import { STRINGS, colors, useScreenAnalytics, constant } from "@common";
 import { nightModeStyles } from "./styles/nightModeStyles";
@@ -43,7 +43,7 @@ const Settings = ({ navigation }) => {
 
   return (
     <SafeAreaProvider>
-      <SafeAreaView style={scrollViewNightStyles}>
+      <View style={scrollViewNightStyles}>
         <StatusBar
           hidden={isStatusBar}
           barStyle={isNightMode ? "light-content" : "dark-content"}
@@ -79,7 +79,7 @@ const Settings = ({ navigation }) => {
           <About navigate={navigate} />
           <Text style={[end, backgroundNightStyle]} />
         </ScrollView>
-      </SafeAreaView>
+      </View>
     </SafeAreaProvider>
   );
 };

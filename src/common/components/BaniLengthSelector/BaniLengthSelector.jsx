@@ -1,5 +1,5 @@
 import React, { useState } from "react";
-import { View, Text, Modal, SafeAreaView, Pressable, Alert } from "react-native";
+import { View, Text, Modal, Pressable, Alert } from "react-native";
 import { Icon } from "@rneui/themed";
 import { useDispatch } from "react-redux";
 import STRINGS from "../../localization";
@@ -24,7 +24,7 @@ const BaniLengthSelector = () => {
   };
   return (
     <Modal animationType="fade" visible={modalVissible}>
-      <SafeAreaView style={styles.wrapper}>
+      <View style={styles.wrapper}>
         <View style={styles.viewWrapper}>
           <Text style={styles.heading}>{STRINGS.khalsa_sundar_gutka}</Text>
           <Text style={styles.baniLengthMessage}>{STRINGS.bani_length_message_1}</Text>
@@ -41,7 +41,7 @@ const BaniLengthSelector = () => {
             <Text style={styles.moreInfo}>{STRINGS.click_more_info}</Text>
           </Pressable>
         </View>
-      </SafeAreaView>
+      </View>
     </Modal>
   );
 };
