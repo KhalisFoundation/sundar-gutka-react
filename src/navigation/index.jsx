@@ -4,6 +4,7 @@ import { createNativeStackNavigator } from "@react-navigation/native-stack";
 import { useSelector } from "react-redux";
 import { Icon } from "@rneui/themed";
 import { colors, navigationRef } from "@common";
+import perf from "@react-native-firebase/perf";
 import HomeScreen from "../HomeScreen";
 import Reader from "../ReaderScreen";
 import Settings from "../Settings";
@@ -25,12 +26,31 @@ const headerLeft = (navigation, isNightMode) => (
   />
 );
 const Navigation = () => {
+  const trace = React.useRef(null);
   const isNightMode = useSelector((state) => state.isNightMode);
   const settingsStyle = SettingsStyle(isNightMode);
   const { headerTitleStyle, headerStyle } = settingsStyle;
 
+  const handlingStateChange = async (state) => {
+    if (trace.current) {
+      trace.current.putMetric("endTime", Date.now()); // Record the end time before stopping (example)
+      await trace.current.stop();
+      trace.current = null;
+    }
+
+    const currentRouteName = state.routes[state.index].name;
+    trace.current = await perf().startTrace(`${currentRouteName}_LoadTime`);
+    trace.current.putAttribute("screenName", currentRouteName);
+    trace.current.putMetric("initTime", Date.now());
+  };
+
   return (
-    <NavigationContainer ref={navigationRef}>
+    <NavigationContainer
+      ref={navigationRef}
+      onStateChange={(state) => {
+        handlingStateChange(state);
+      }}
+    >
       <Stack.Navigator
         screenOptions={{
           headerShown: true,
