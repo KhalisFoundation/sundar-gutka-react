@@ -5,15 +5,15 @@
     "kind": "Directory"
   },
   "applicationId": "com.WahegurooNetwork.SundarGutka",
-  "variantName": "release",
+  "variantName": "debug",
   "elements": [
     {
       "type": "SINGLE",
       "filters": [],
       "attributes": [],
-      "versionCode": 156,
+      "versionCode": 151,
       "versionName": "5.8.1",
-      "outputFile": "app-release.apk"
+      "outputFile": "app-debug.apk"
     }
   ],
   "elementType": "File"

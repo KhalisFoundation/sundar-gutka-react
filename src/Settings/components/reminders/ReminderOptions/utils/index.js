@@ -20,7 +20,7 @@ const setDefaultReminders = async (baniListData, dispatch, isReminders, reminder
       };
     });
   };
-  const data = defaultReminders(baniListData);
+  const data = defaultReminders();
 
   dispatch(setReminderBanis(JSON.stringify(data)));
 

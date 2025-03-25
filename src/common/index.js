@@ -3,7 +3,7 @@ import colors from "./colors";
 import * as actions from "./actions";
 import STRINGS from "./localization";
 import useScreenAnalytics from "./hooks/useScreenAnalytics";
-import errorHandler from "./errHandler";
+import { logError, initializeCrashlytics, setCustomKey, logMessage } from "./crashlytics";
 import {
   allowTracking,
   trackScreenView,
@@ -19,9 +19,10 @@ import {
 } from "./notifications";
 import { FallBack, BaniLengthSelector, BaniList } from "./components";
 import useKeepAwake from "./hooks/keepAwake";
-import baseFontSize from "./helpers";
-import { navigationRef, navigate } from "./rootNavigation";
+import baseFontSize, { validateBaniOrder } from "./helpers";
+import { navigate, navigateTo, navigationRef } from "./rootNavigation";
 import orderedBani from "./components/BaniList/baniOrderHelper";
+import defaultBaniOrder from "./defaultBaniOrder";
 import createStore from "./store";
 
 export {
@@ -30,7 +31,9 @@ export {
   actions,
   useScreenAnalytics,
   STRINGS,
-  errorHandler,
+  logError,
+  logMessage,
+  initializeCrashlytics,
   allowTracking,
   trackReaderEvent,
   trackScreenView,
@@ -44,9 +47,13 @@ export {
   useKeepAwake,
   BaniList,
   baseFontSize,
-  navigate,
-  navigationRef,
   resetBadgeCount,
   createStore,
   orderedBani,
+  setCustomKey,
+  navigateTo,
+  navigate,
+  navigationRef,
+  defaultBaniOrder,
+  validateBaniOrder,
 };
