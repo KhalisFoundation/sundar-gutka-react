@@ -1,10 +1,9 @@
 import { useEffect, useState, useRef, useCallback } from "react";
 import { useDispatch, useSelector } from "react-redux";
-import { orderedBani, actions } from "@common";
+import { logError, orderedBani, actions, logMessage, FallBack } from "@common";
 import { getBaniList } from "@database";
-import errorHandler from "../../common/errHandler";
 
-const useBaniList = (setError) => {
+const useBaniList = () => {
   const baniList = useSelector((state) => state.baniList);
   const baniOrder = useSelector((state) => state.baniOrder);
   const [baniListData, setBaniListData] = useState([]);
@@ -13,6 +12,7 @@ const useBaniList = (setError) => {
   const dispatch = useDispatch();
 
   const fetchBaniList = useCallback(async () => {
+    logMessage("Fetching bani list");
     try {
       if (prevLanguageRef.current !== transliterationLanguage || baniList.length === 0) {
         const transliteratedList = await getBaniList(transliterationLanguage);
@@ -23,8 +23,8 @@ const useBaniList = (setError) => {
         setBaniListData(baniList);
       }
     } catch (error) {
-      errorHandler(error);
-      setError(error);
+      logError(error);
+      FallBack();
     }
   }, [transliterationLanguage, baniOrder, baniList]);
 

@@ -1,8 +1,9 @@
 import { useState, useEffect, useCallback } from "react";
 import { useSelector } from "react-redux";
 import { getShabadFromID } from "@database";
+import { logError, logMessage } from "@common";
 
-const useFetchShabad = (shabadID, setError) => {
+const useFetchShabad = (shabadID) => {
   const [shabad, setShabad] = useState([]);
   const [isLoading, setLoading] = useState(false);
   const baniLength = useSelector((state) => state.baniLength);
@@ -32,11 +33,12 @@ const useFetchShabad = (shabadID, setError) => {
         if (shabadData) {
           setShabad(shabadData);
         } else {
-          setError("Shabad Not found");
+          logMessage("useFetchShabad: Shabad Not Found");
         }
       }
     } catch (error) {
-      setError(error);
+      logError(error);
+      logMessage("useFetchShabad: Fetching shabad data error");
     } finally {
       setLoading(false);
     }

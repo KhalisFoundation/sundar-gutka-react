@@ -6,7 +6,8 @@ import notifee, {
 } from "@notifee/react-native";
 import moment from "moment";
 import constant from "./constant";
-import errorHandler from "./errHandler";
+import { logError, logMessage } from "./crashlytics";
+import { FallBack } from "./components";
 
 export const createReminder = async (notification, sound) => {
   const channelName =
@@ -52,8 +53,9 @@ export const createReminder = async (notification, sound) => {
       trigger
     );
   } catch (error) {
-    errorHandler(error);
-    throw new Error(error);
+    logError(error);
+    logMessage("createReminder: Failed to create reminder");
+    FallBack();
   }
 };
 export const resetBadgeCount = async () => {

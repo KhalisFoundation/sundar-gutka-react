@@ -11,13 +11,14 @@ import {
 import { WebView } from "react-native-webview";
 import PropTypes from "prop-types";
 import { SafeAreaView } from "react-native-safe-area-context";
-import { constant, colors, actions, useScreenAnalytics, errorHandler } from "@common";
+import { constant, colors, actions, useScreenAnalytics, logMessage, logError } from "@common";
 import { Header, AutoScrollComponent } from "./components";
 import { useBookmarks, useFetchShabad } from "./hooks";
 import { styles, nightColors } from "./styles";
 import { loadHTML } from "./utils";
 
 const Reader = ({ navigation, route }) => {
+  logMessage(constant.READER);
   const isNightMode = useSelector((state) => state.isNightMode);
   const bookmarkPosition = useSelector((state) => state.bookmarkPosition);
   const isAutoScroll = useSelector((state) => state.isAutoScroll);
@@ -39,7 +40,6 @@ const Reader = ({ navigation, route }) => {
   const webViewRef = useRef(null);
   const { webView } = styles;
   const { title, id } = route.params.params;
-  const [error, setError] = useState(null);
   const [isHeader, toggleHeader] = useState(false);
   const [viewLoaded, toggleViewLoaded] = useState(false);
   const [currentPosition, setCurrentPosition] = useState(savePosition[id] || 0);
@@ -47,14 +47,9 @@ const Reader = ({ navigation, route }) => {
   const [shouldNavigateBack, setShouldNavigateBack] = useState(false);
 
   const dispatch = useDispatch();
-  const { shabad, isLoading, fetchShabad } = useFetchShabad(id, setError);
+  const { shabad, isLoading, fetchShabad } = useFetchShabad(id);
   const { backgroundColor, safeAreaViewBack, backViewColor } = nightColors(isNightMode);
   const { READER_STATUS_BAR_COLOR } = colors;
-
-  if (error) {
-    errorHandler(error);
-    throw error;
-  }
 
   const updateTheme = () => {
     const currentColorScheme = Appearance.getColorScheme();
@@ -173,11 +168,11 @@ const Reader = ({ navigation, route }) => {
         ref={webViewRef}
         onError={(syntheticEvent) => {
           const { nativeEvent } = syntheticEvent;
-          setError(`Reader web View Error ${nativeEvent}`);
+          logError(`Reader web View Error ${nativeEvent}`);
         }}
         onHttpError={(syntheticEvent) => {
           const { nativeEvent } = syntheticEvent;
-          setError("HTTP error status code:", nativeEvent.statusCode);
+          logError("HTTP error status code:", nativeEvent.statusCode);
         }}
         decelerationRate="normal"
         source={{

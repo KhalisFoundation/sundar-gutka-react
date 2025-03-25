@@ -5,7 +5,14 @@ import ErrorBoundary from "react-native-error-boundary";
 import notifee, { EventType } from "@notifee/react-native";
 import crashlytics from "@react-native-firebase/crashlytics";
 import SplashScreen from "react-native-splash-screen";
-import { createStore, errorHandler, FallBack, resetBadgeCount, navigateTo } from "@common";
+import {
+  createStore,
+  logError,
+  initializeCrashlytics,
+  FallBack,
+  resetBadgeCount,
+  navigateTo,
+} from "@common";
 import Navigation from "./src/navigation";
 import { allowTracking } from "./src/common/analytics";
 
@@ -22,6 +29,7 @@ const App = () => {
   useEffect(() => {
     enableCrashlytics();
     allowTracking();
+    initializeCrashlytics();
   }, []);
 
   useEffect(() => {
@@ -34,7 +42,7 @@ const App = () => {
   }, []);
 
   return (
-    <ErrorBoundary onError={errorHandler} FallbackComponent={FallBack}>
+    <ErrorBoundary onError={logError} FallbackComponent={FallBack}>
       <Provider store={store}>
         <PersistGate loading={null} persistor={persistor}>
           <Navigation />

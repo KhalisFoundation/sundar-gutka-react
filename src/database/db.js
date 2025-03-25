@@ -1,4 +1,4 @@
-import { constant } from "@common";
+import { constant, logError, logMessage } from "@common";
 import initDB from "./connect";
 import { createFormattedText, getTranslitText, parseVishraamPositions } from "./utils";
 
@@ -33,6 +33,8 @@ export const getBaniList = (language) => {
         });
       })
       .catch((error) => {
+        logMessage("Fetching Bani list error");
+        logError(error);
         reject(error);
         throw error;
       });
@@ -183,13 +185,15 @@ export const getShabadFromID = async (
               }
               resolve(isParagraphMode ? paragraphResults : totalResults);
             } catch (error) {
-              console.error("Error processing results:", error);
+              logMessage("Error processing results:");
+              logError(error);
               reject(error);
               throw error;
             }
           },
           (txError) => {
-            console.error("SQL Error:", txError);
+            logMessage("SQL Error:");
+            logError(txError);
             reject(txError);
             throw txError;
           }
@@ -197,7 +201,8 @@ export const getShabadFromID = async (
       });
     });
   } catch (dbError) {
-    console.error("Database Initialization Error:", dbError);
+    logMessage("Database Initialization Error:");
+    logError(dbError);
     throw dbError;
   }
 };
@@ -231,34 +236,37 @@ export const getBookmarksForID = (baniId, length, language) => {
       baniLength = EXISTS_MEDIUM;
   }
 
-  return new Promise((resolve) => {
-    initDB().then((db) => {
-      db.transaction((tx) => {
-        tx.executeSql(
-          `SELECT ID, BaniShabadID, Seq, Gurmukhi, Transliterations, TukGurmukhi, TukTransliterations FROM Banis_Bookmarks WHERE Bani = ${baniId} AND BaniShabadID in (SELECT ID from mv_Banis_Shabad where Bani = ${baniId} AND ${baniLength} = 1)` +
-            ` ORDER BY Seq ASC;`,
-          [],
-          (_tx, results) => {
-            const totalResults = new Array(results.rows.length);
-            const len = results.rows.length;
-            for (let i = 0; i < len; i += 1) {
-              const row = results.rows.item(i);
-              const { BaniShabadID, Gurmukhi, Transliterations, TukGurmukhi, TukTransliterations } =
-                row;
-              totalResults[i] = {
-                shabadID: BaniShabadID,
-                gurmukhi: Gurmukhi,
-                tukGurmukhi: TukGurmukhi,
-                translit: getTranslitText(Transliterations, language),
-                tukTranslit: TukTransliterations
-                  ? getTranslitText(TukTransliterations, language)
-                  : null,
-              };
+  return new Promise((resolve, reject) => {
+    initDB()
+      .then((db) => {
+        db.transaction((tx) => {
+          tx.executeSql(
+            `SELECT ID, BaniShabadID, Seq, Gurmukhi, Transliterations, TukGurmukhi, TukTransliterations FROM Banis_Bookmarks WHERE Bani = ${baniId} AND BaniShabadID in (SELECT ID from mv_Banis_Shabad where Bani = ${baniId} AND ${baniLength} = 1)` +
+              ` ORDER BY Seq ASC;`,
+            [],
+            (_tx, results) => {
+              const totalResults = Array.from({ length: results.rows.length }, (_, i) => {
+                const row = results.rows.item(i);
+
+                return {
+                  shabadID: row.BaniShabadID,
+                  gurmukhi: row.Gurmukhi,
+                  tukGurmukhi: row.TukGurmukhi,
+                  translit: getTranslitText(row.Transliterations, language),
+                  tukTranslit: row.TukTransliterations
+                    ? getTranslitText(row.TukTransliterations, language)
+                    : null,
+                };
+              });
+              return resolve(totalResults);
             }
-            return resolve(totalResults);
-          }
-        );
+          );
+        });
+      })
+      .catch((error) => {
+        logError(error);
+        logMessage("Fetching bookmarks data error");
+        reject(error);
       });
-    });
   });
 };

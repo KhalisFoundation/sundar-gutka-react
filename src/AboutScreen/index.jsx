@@ -3,11 +3,12 @@ import { Linking, Image, StatusBar, View, Text, TouchableHighlight } from "react
 import PropTypes from "prop-types";
 import { useSelector } from "react-redux";
 import { getVersion, getBuildNumber } from "react-native-device-info";
-import { colors, STRINGS, constant, useScreenAnalytics } from "@common";
+import { colors, STRINGS, constant, useScreenAnalytics, logMessage } from "@common";
 import { styles, nightStyles } from "./styles";
 import useHeader from "./hooks/useHeader";
 
 const AboutScreen = ({ navigation }) => {
+  logMessage(constant.ABOUT_SCREEN);
   const isNightMode = useSelector((state) => state.isNightMode);
   const isStatusBar = useSelector((state) => state.isStatusBar);
 

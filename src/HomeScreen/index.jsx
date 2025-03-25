@@ -1,4 +1,4 @@
-import React, { useEffect, useState } from "react";
+import React, { useEffect } from "react";
 import { Appearance, AppState, View, StatusBar } from "react-native";
 import PropTypes from "prop-types";
 import { useDispatch, useSelector } from "react-redux";
@@ -10,18 +10,18 @@ import {
   colors,
   useKeepAwake,
   BaniList,
+  logMessage,
   validateBaniOrder,
 } from "@common";
 import styles from "./styles";
 import BaniHeader from "./components/BaniHeader";
 import { useBaniLength, useBaniList } from "./hooks";
-import errorHandler from "../common/errHandler";
 import { setBaniOrder } from "../common/actions";
 
 const HomeScreen = React.memo(({ navigation }) => {
-  const [error, setError] = useState(null);
+  logMessage(constant.HOME_SCREEN);
   const { navigate } = navigation;
-  const { baniListData } = useBaniList(setError);
+  const { baniListData } = useBaniList();
   const isNightMode = useSelector((state) => state.isNightMode);
   const isStatusBar = useSelector((state) => state.isStatusBar);
   const language = useSelector((state) => state.language);
@@ -32,13 +32,6 @@ const HomeScreen = React.memo(({ navigation }) => {
   useScreenAnalytics(constant.HOME_SCREEN);
   const { baniLengthSelector } = useBaniLength();
   const dispatch = useDispatch();
-
-  useEffect(() => {
-    if (error) {
-      errorHandler(error);
-      throw error;
-    }
-  }, [error]);
 
   const updateTheme = () => {
     const currentColorScheme = Appearance.getColorScheme();

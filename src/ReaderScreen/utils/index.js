@@ -1,5 +1,5 @@
 import { Platform } from "react-native";
-import { colors, constant, baseFontSize, errorHandler } from "@common";
+import { colors, constant, baseFontSize, logError, logMessage } from "@common";
 import htmlTemplate from "./gutkahtml";
 import script from "./gutkaScript";
 
@@ -177,7 +177,8 @@ export const loadHTML = (
     );
     return htmlContent;
   } catch (error) {
-    errorHandler(error);
+    logError(error);
+    logMessage("loadHTML: Failed to load HTML");
     throw new Error(error);
   }
 };
