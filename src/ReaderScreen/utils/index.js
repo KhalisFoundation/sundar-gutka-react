@@ -1,5 +1,5 @@
 import { Platform } from "react-native";
-import { logError, FallBack, colors, constant, baseFontSize, logMessage } from "@common";
+import { colors, constant, baseFontSize, logError, logMessage } from "@common";
 import htmlTemplate from "./gutkahtml";
 import script from "./gutkaScript";
 
@@ -65,8 +65,7 @@ export const createDiv = (
     <div class="content-item ${fontClass} ${textAlign}" style="font-size: ${fontSizeForReader(
     fontSize,
     header,
-    type === constant.TRANSLITERATION.toLowerCase() || type === constant.TRANSLATION.toLowerCase(),
-    isLarivaar
+    type === constant.TRANSLITERATION.toLowerCase() || type === constant.TRANSLATION.toLowerCase()
   )}px; color: ${fontColorForReader(header, isNightMode, type.toUpperCase())};">
       ${content}
     </div>
@@ -74,7 +73,6 @@ export const createDiv = (
 };
 
 export const loadHTML = (
-  shabadID,
   shabad,
   isTransliteration,
   fontSize,
@@ -181,8 +179,7 @@ export const loadHTML = (
   } catch (error) {
     logError(error);
     logMessage("loadHTML: Failed to load HTML");
-    FallBack();
-    return null;
+    throw new Error(error);
   }
 };
 export { script, htmlTemplate };

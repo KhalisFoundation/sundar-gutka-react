@@ -127,13 +127,8 @@ export const setAutoScrollSpeed = (speed, shabad) => {
   const value = { [shabad]: speed };
   return { type: actionTypes.SET_AUTO_SCROLL_SPEED, value };
 };
-export const setCacheShabad = (shabad, shabadID) => {
-  const value = { [shabadID]: shabad };
-  return { type: actionTypes.SET_CACHE_SHABAD, value };
-};
-
-export const setBaniOrder = (value) => {
-  return { type: actionTypes.SET_BANI_ORDER, value };
+export const setBaniOrder = (order) => {
+  return { type: actionTypes.SET_BANI_ORDER, order };
 };
 
 export const setBaniList = (value) => {

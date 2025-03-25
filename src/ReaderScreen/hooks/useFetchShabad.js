@@ -5,7 +5,7 @@ import { logError, logMessage } from "@common";
 
 const useFetchShabad = (shabadID) => {
   const [shabad, setShabad] = useState([]);
-  const [isLoading, toggleLoading] = useState(false);
+  const [isLoading, setLoading] = useState(false);
   const baniLength = useSelector((state) => state.baniLength);
   const transliterationLanguage = useSelector((state) => state.transliterationLanguage);
   const vishraamSource = useSelector((state) => state.vishraamSource);
@@ -17,25 +17,30 @@ const useFetchShabad = (shabadID) => {
 
   const fetchShabad = useCallback(async () => {
     try {
-      toggleLoading(true);
-      const shabadData = await getShabadFromID(
-        shabadID,
-        baniLength,
-        transliterationLanguage,
-        vishraamSource,
-        vishraamOption,
-        isLarivaar,
-        isLarivaarAssist,
-        isParagraphMode,
-        isVishraam
-      );
-      if (shabadData) {
-        toggleLoading(false);
-        setShabad(shabadData);
+      setLoading(true);
+      if (shabadID) {
+        const shabadData = await getShabadFromID(
+          shabadID,
+          baniLength,
+          transliterationLanguage,
+          vishraamSource,
+          vishraamOption,
+          isLarivaar,
+          isLarivaarAssist,
+          isParagraphMode,
+          isVishraam
+        );
+        if (shabadData) {
+          setShabad(shabadData);
+        } else {
+          logMessage("useFetchShabad: Shabad Not Found");
+        }
       }
     } catch (error) {
       logError(error);
       logMessage("useFetchShabad: Fetching shabad data error");
+    } finally {
+      setLoading(false);
     }
   }, [
     shabadID,
@@ -50,19 +55,9 @@ const useFetchShabad = (shabadID) => {
   ]);
   useEffect(() => {
     fetchShabad();
-  }, [
-    shabadID,
-    baniLength,
-    transliterationLanguage,
-    vishraamSource,
-    vishraamOption,
-    isLarivaar,
-    isLarivaarAssist,
-    isParagraphMode,
-    isVishraam,
-  ]);
+  }, [fetchShabad]);
 
-  return { shabad, isLoading };
+  return { shabad, isLoading, fetchShabad };
 };
 
 export default useFetchShabad;

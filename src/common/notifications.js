@@ -5,9 +5,9 @@ import notifee, {
   AuthorizationStatus,
 } from "@notifee/react-native";
 import moment from "moment";
-import FallBack from "./components/FallbackComponent";
 import constant from "./constant";
 import { logError, logMessage } from "./crashlytics";
+import { FallBack } from "./components";
 
 export const createReminder = async (notification, sound) => {
   const channelName =

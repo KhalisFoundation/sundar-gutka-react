@@ -26,7 +26,7 @@ const FolderScreen = ({ navigation, route }) => {
     >
       <StatusBar barStyle="light-content" backgroundColor={colors.TOOLBAR_COLOR} />
       <Header navigation={navigation} title={title} />
-      <BaniList data={data} isFolderScreen onPress={onPress.bind(this)} />
+      <BaniList data={data} isFolderScreen onPress={onPress} />
     </View>
   );
 };
