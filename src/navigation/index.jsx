@@ -1,11 +1,10 @@
-import React, { useEffect } from "react";
+import React from "react";
 import { NavigationContainer } from "@react-navigation/native";
 import { createNativeStackNavigator } from "@react-navigation/native-stack";
 import { useSelector } from "react-redux";
 import { Icon } from "@rneui/themed";
-import notifee, { EventType } from "@notifee/react-native";
-import SplashScreen from "react-native-splash-screen";
-import { constant, colors, navigationRef, navigate, resetBadgeCount } from "@common";
+import { colors, navigationRef } from "@common";
+import perf from "@react-native-firebase/perf";
 import HomeScreen from "../HomeScreen";
 import Reader from "../ReaderScreen";
 import Settings from "../Settings";
@@ -27,64 +26,31 @@ const headerLeft = (navigation, isNightMode) => (
   />
 );
 const Navigation = () => {
-  useEffect(() => {
-    // Code to run on component mount
-    SplashScreen.hide(); // Hide the splash screen once everything is loaded
-  }, []); // The empty array causes this effect to only run on mount
-
+  const trace = React.useRef(null);
   const isNightMode = useSelector((state) => state.isNightMode);
   const settingsStyle = SettingsStyle(isNightMode);
   const { headerTitleStyle, headerStyle } = settingsStyle;
 
-  const navigateTo = (incoming) => {
-    const { data } = incoming.notification;
-    const params = { key: `Reader-${data.id}`, params: { id: data.id, title: data.gurmukhi } };
-    navigate(constant.READER, params);
-  };
-
-  useEffect(() => {
-    async function setupNotifications() {
-      // Correctly handle the initial notification promise
-      const initialNotification = await notifee.getInitialNotification();
-      if (initialNotification) {
-        resetBadgeCount();
-      }
-
-      // Setting up event listeners
-      const unsubscribeForeground = notifee.onForegroundEvent(({ type, detail }) => {
-        switch (type) {
-          case EventType.PRESS:
-            navigateTo(detail);
-            resetBadgeCount();
-            break;
-          default:
-            resetBadgeCount();
-        }
-      });
-
-      const unsubscribeBackground = notifee.onBackgroundEvent(({ type, detail }) => {
-        switch (type) {
-          case EventType.PRESS:
-            navigateTo(detail);
-            resetBadgeCount();
-            break;
-          default:
-            resetBadgeCount();
-        }
-      });
-
-      // Cleanup function to unsubscribe events
-      return () => {
-        unsubscribeForeground();
-        unsubscribeBackground();
-      };
+  const handlingStateChange = async (state) => {
+    if (trace.current) {
+      trace.current.putMetric("endTime", Date.now()); // Record the end time before stopping (example)
+      await trace.current.stop();
+      trace.current = null;
     }
 
-    setupNotifications();
-  }, []);
+    const currentRouteName = state.routes[state.index].name;
+    trace.current = await perf().startTrace(`${currentRouteName}_LoadTime`);
+    trace.current.putAttribute("screenName", currentRouteName);
+    trace.current.putMetric("initTime", Date.now());
+  };
 
   return (
-    <NavigationContainer ref={navigationRef}>
+    <NavigationContainer
+      ref={navigationRef}
+      onStateChange={(state) => {
+        handlingStateChange(state);
+      }}
+    >
       <Stack.Navigator
         screenOptions={{
           headerShown: true,

@@ -1,5 +1,5 @@
-import React, { useState } from "react";
-import { View, Text, Modal, Pressable, Alert } from "react-native";
+import React from "react";
+import { View, Text, SafeAreaView, Pressable, Alert } from "react-native";
 import { Icon } from "@rneui/themed";
 import { useDispatch } from "react-redux";
 import STRINGS from "../../localization";
@@ -8,13 +8,11 @@ import colors from "../../colors";
 import { setBaniLength } from "../../actions";
 
 const BaniLengthSelector = () => {
-  const [modalVissible, toggleModalVissible] = useState(true);
   const baniLengths = [STRINGS.short, STRINGS.medium, STRINGS.long, STRINGS.extra_long];
   const dispatch = useDispatch();
 
   const handleOnpress = (length) => {
     dispatch(setBaniLength(length.toUpperCase()));
-    toggleModalVissible(false);
   };
   const baniLengthInfo = () => {
     Alert.alert(
@@ -23,26 +21,24 @@ const BaniLengthSelector = () => {
     );
   };
   return (
-    <Modal animationType="fade" visible={modalVissible}>
-      <View style={styles.wrapper}>
-        <View style={styles.viewWrapper}>
-          <Text style={styles.heading}>{STRINGS.khalsa_sundar_gutka}</Text>
-          <Text style={styles.baniLengthMessage}>{STRINGS.bani_length_message_1}</Text>
-          <Text style={styles.baniLengthMessage}>{STRINGS.bani_length_message_2}</Text>
-          <Text style={styles.textPreferrence}>{STRINGS.choose_your_preference}</Text>
-          {baniLengths.map((buttonText) => (
-            <Pressable key={buttonText} onPress={() => handleOnpress(buttonText)}>
-              <Text style={styles.button}>{buttonText}</Text>
-            </Pressable>
-          ))}
-          <Pressable style={styles.helpWrapper} onPress={baniLengthInfo}>
-            <Icon color={colors.TOOLBAR_COLOR_ALT} name="info" size={30} />
-            <Text style={styles.helpText}>{STRINGS.need_help_deciding}</Text>
-            <Text style={styles.moreInfo}>{STRINGS.click_more_info}</Text>
+    <SafeAreaView style={styles.wrapper}>
+      <View style={styles.viewWrapper}>
+        <Text style={styles.heading}>{STRINGS.khalsa_sundar_gutka}</Text>
+        <Text style={styles.baniLengthMessage}>{STRINGS.bani_length_message_1}</Text>
+        <Text style={styles.baniLengthMessage}>{STRINGS.bani_length_message_2}</Text>
+        <Text style={styles.textPreferrence}>{STRINGS.choose_your_preference}</Text>
+        {baniLengths.map((buttonText) => (
+          <Pressable key={buttonText} onPress={() => handleOnpress(buttonText)}>
+            <Text style={styles.button}>{buttonText}</Text>
           </Pressable>
-        </View>
+        ))}
+        <Pressable style={styles.helpWrapper} onPress={baniLengthInfo}>
+          <Icon color={colors.TOOLBAR_COLOR_ALT} name="info" size={30} />
+          <Text style={styles.helpText}>{STRINGS.need_help_deciding}</Text>
+          <Text style={styles.moreInfo}>{STRINGS.click_more_info}</Text>
+        </Pressable>
       </View>
-    </Modal>
+    </SafeAreaView>
   );
 };
 export default BaniLengthSelector;

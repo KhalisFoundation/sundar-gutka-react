@@ -1,4 +1,4 @@
-import { constant } from "@common";
+import { constant, logError, logMessage } from "@common";
 import initDB from "./connect";
 import { createFormattedText, getTranslitText, parseVishraamPositions } from "./utils";
 
@@ -27,17 +27,21 @@ export const getBaniList = (language) => {
             },
             (error) => {
               reject(error);
+              throw error;
             }
           );
         });
       })
       .catch((error) => {
+        logMessage("Fetching Bani list error");
+        logError(error);
         reject(error);
+        throw error;
       });
   });
 };
 
-export const getShabadFromID = (
+export const getShabadFromID = async (
   shabadID,
   length,
   language,
@@ -62,30 +66,42 @@ export const getShabadFromID = (
     default:
       baniLength = constant.EXISTS_MEDIUM;
   }
-  return new Promise((resolve, reject) => {
-    initDB()
-      .then((db) => {
-        db.transaction((tx) => {
-          tx.executeSql(
-            `SELECT ID, Seq,header, Paragraph, Gurmukhi, Visraam, Transliterations,Translations FROM mv_Banis_Shabad where Bani=${shabadID} AND ${baniLength}=1 AND (MangalPosition IS NULL OR MangalPosition =  'current')
-             ORDER BY Seq ASC;`,
-            [],
-            (_tx, results) => {
+  try {
+    const db = await initDB();
+    return new Promise((resolve, reject) => {
+      db.transaction((tx) => {
+        tx.executeSql(
+          `SELECT ID, Seq, header, Paragraph, Gurmukhi, Visraam, Transliterations, Translations 
+           FROM mv_Banis_Shabad 
+           WHERE Bani = ? AND ${baniLength} = 1 AND (MangalPosition IS NULL OR MangalPosition = 'current')
+           ORDER BY Seq ASC;`,
+          [shabadID],
+          (_tx, results) => {
+            try {
               const len = results.rows.length;
               const totalResults = [];
               const paragraphResults = [];
-              let paragraphID;
-              let paragraphHeader;
-              let prevParagraph;
-              let gurmukhi;
-              let transliteration;
-              let englishTranslation;
-              let punjabiTranslation;
-              let spanishTranslation;
+              let paragraphId = null;
+              let paragraphHeader = null;
+              let prevParagraph = null;
+              let gurmukhi = "";
+              let transliteration = "";
+              let englishTranslation = "";
+              let punjabiTranslation = "";
+              let spanishTranslation = "";
+
               for (let i = 0; i < len; i += 1) {
                 const row = results.rows.item(i);
-                const { GurmukhiBisram, Visraam, Gurmukhi, Paragraph, ID, header } = row;
-                let { English, Punjabi, Spanish } = row;
+                const {
+                  ID,
+                  GurmukhiBisram,
+                  Visraam,
+                  Gurmukhi,
+                  Paragraph,
+                  header,
+                  Transliterations,
+                  Translations,
+                } = row;
                 const gurmukhiLine = Visraam && GurmukhiBisram ? GurmukhiBisram : Gurmukhi;
                 const vishraamPositions = parseVishraamPositions(
                   JSON.parse(Visraam),
@@ -102,17 +118,13 @@ export const getShabadFromID = (
                   }
                 );
 
-                const translationJson = JSON.parse(row.Translations);
-                const defaultTranslation = " ";
+                const translationJson = JSON.parse(Translations) || {};
                 const getTranslation = (lang, field) =>
-                  translationJson == null || translationJson[lang][field] == null
-                    ? defaultTranslation
-                    : translationJson[lang][field];
-                const translit =
-                  getTranslitText(row.Transliterations, language) || defaultTranslation;
-                English = getTranslation("en", "bdb");
-                Punjabi = getTranslation("pu", "bdb");
-                Spanish = getTranslation("es", "sn");
+                  (translationJson[lang] && translationJson[lang][field]) || " ";
+                const translit = getTranslitText(Transliterations, language) || " ";
+                const English = getTranslation("en", "bdb");
+                const Punjabi = getTranslation("pu", "bdb");
+                const Spanish = getTranslation("es", "sn");
 
                 if (isParagraphMode) {
                   const isParagraphChange = prevParagraph !== Paragraph;
@@ -121,7 +133,7 @@ export const getShabadFromID = (
                   if (isParagraphChange) {
                     if (i !== 0) {
                       paragraphResults.push({
-                        id: `${paragraphID}`,
+                        id: `${paragraphId}`,
                         gurmukhi,
                         translit: transliteration,
                         englishTranslations: englishTranslation,
@@ -131,7 +143,7 @@ export const getShabadFromID = (
                       });
                     }
 
-                    paragraphID = ID;
+                    paragraphId = ID;
                     paragraphHeader = header;
                     gurmukhi = curGurmukhi;
                     transliteration = translit;
@@ -150,7 +162,7 @@ export const getShabadFromID = (
 
                   if (isLastIteration) {
                     paragraphResults.push({
-                      id: `${paragraphID}`,
+                      id: `${paragraphId}`,
                       gurmukhi,
                       translit: transliteration,
                       englishTranslations: englishTranslation,
@@ -160,7 +172,7 @@ export const getShabadFromID = (
                     });
                   }
                 } else {
-                  totalResults[i] = {
+                  totalResults.push({
                     id: `${ID}`,
                     gurmukhi: curGurmukhi,
                     translit,
@@ -168,22 +180,31 @@ export const getShabadFromID = (
                     punjabiTranslations: Punjabi,
                     spanishTranslations: Spanish,
                     header,
-                  };
+                  });
                 }
               }
-              if (isParagraphMode) {
-                return resolve(paragraphResults);
-              }
-              return resolve(totalResults);
+              resolve(isParagraphMode ? paragraphResults : totalResults);
+            } catch (error) {
+              logMessage("Error processing results:");
+              logError(error);
+              reject(error);
+              throw error;
             }
-          );
-        });
-      })
-      .catch((error) => {
-        console.log(error);
-        reject(error);
+          },
+          (txError) => {
+            logMessage("SQL Error:");
+            logError(txError);
+            reject(txError);
+            throw txError;
+          }
+        );
       });
-  });
+    });
+  } catch (dbError) {
+    logMessage("Database Initialization Error:");
+    logError(dbError);
+    throw dbError;
+  }
 };
 
 export const getBookmarksForID = (baniId, length, language) => {
@@ -215,34 +236,37 @@ export const getBookmarksForID = (baniId, length, language) => {
       baniLength = EXISTS_MEDIUM;
   }
 
-  return new Promise((resolve) => {
-    initDB().then((db) => {
-      db.transaction((tx) => {
-        tx.executeSql(
-          `SELECT ID, BaniShabadID, Seq, Gurmukhi, Transliterations, TukGurmukhi, TukTransliterations FROM Banis_Bookmarks WHERE Bani = ${baniId} AND BaniShabadID in (SELECT ID from mv_Banis_Shabad where Bani = ${baniId} AND ${baniLength} = 1)` +
-            ` ORDER BY Seq ASC;`,
-          [],
-          (_tx, results) => {
-            const totalResults = new Array(results.rows.length);
-            const len = results.rows.length;
-            for (let i = 0; i < len; i += 1) {
-              const row = results.rows.item(i);
-              const { BaniShabadID, Gurmukhi, Transliterations, TukGurmukhi, TukTransliterations } =
-                row;
-              totalResults[i] = {
-                shabadID: BaniShabadID,
-                gurmukhi: Gurmukhi,
-                tukGurmukhi: TukGurmukhi,
-                translit: getTranslitText(Transliterations, language),
-                tukTranslit: TukTransliterations
-                  ? getTranslitText(TukTransliterations, language)
-                  : null,
-              };
+  return new Promise((resolve, reject) => {
+    initDB()
+      .then((db) => {
+        db.transaction((tx) => {
+          tx.executeSql(
+            `SELECT ID, BaniShabadID, Seq, Gurmukhi, Transliterations, TukGurmukhi, TukTransliterations FROM Banis_Bookmarks WHERE Bani = ${baniId} AND BaniShabadID in (SELECT ID from mv_Banis_Shabad where Bani = ${baniId} AND ${baniLength} = 1)` +
+              ` ORDER BY Seq ASC;`,
+            [],
+            (_tx, results) => {
+              const totalResults = Array.from({ length: results.rows.length }, (_, i) => {
+                const row = results.rows.item(i);
+
+                return {
+                  shabadID: row.BaniShabadID,
+                  gurmukhi: row.Gurmukhi,
+                  tukGurmukhi: row.TukGurmukhi,
+                  translit: getTranslitText(row.Transliterations, language),
+                  tukTranslit: row.TukTransliterations
+                    ? getTranslitText(row.TukTransliterations, language)
+                    : null,
+                };
+              });
+              return resolve(totalResults);
             }
-            return resolve(totalResults);
-          }
-        );
+          );
+        });
+      })
+      .catch((error) => {
+        logError(error);
+        logMessage("Fetching bookmarks data error");
+        reject(error);
       });
-    });
   });
 };

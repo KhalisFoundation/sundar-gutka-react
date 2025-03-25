@@ -10,21 +10,26 @@ import {
   colors,
   useKeepAwake,
   BaniList,
+  logMessage,
+  validateBaniOrder,
 } from "@common";
 import styles from "./styles";
 import BaniHeader from "./components/BaniHeader";
-import { useAppFirstTime, useBaniLength, useBaniList } from "./hooks";
+import { useBaniLength, useBaniList } from "./hooks";
+import { setBaniOrder } from "../common/actions";
 
 const HomeScreen = React.memo(({ navigation }) => {
+  logMessage(constant.HOME_SCREEN);
   const { navigate } = navigation;
   const { baniListData } = useBaniList();
   const isNightMode = useSelector((state) => state.isNightMode);
   const isStatusBar = useSelector((state) => state.isStatusBar);
   const language = useSelector((state) => state.language);
   const theme = useSelector((state) => state.theme);
+  const baniOrder = useSelector((state) => state.baniOrder);
+
   useKeepAwake();
   useScreenAnalytics(constant.HOME_SCREEN);
-  const isAppOpenFirstTime = useAppFirstTime();
   const { baniLengthSelector } = useBaniLength();
   const dispatch = useDispatch();
 
@@ -36,6 +41,8 @@ const HomeScreen = React.memo(({ navigation }) => {
   };
   useEffect(() => {
     dispatch(actions.setLanguage(language));
+    const order = validateBaniOrder(baniOrder);
+    dispatch(setBaniOrder(order));
   }, []);
 
   useEffect(() => {
@@ -65,7 +72,9 @@ const HomeScreen = React.memo(({ navigation }) => {
     }
   };
 
-  return (
+  return baniLengthSelector ? (
+    <BaniLengthSelector />
+  ) : (
     <View style={[isNightMode && { backgroundColor: colors.NIGHT_BLACK }, styles.container]}>
       <StatusBar
         hidden={isStatusBar}
@@ -73,8 +82,7 @@ const HomeScreen = React.memo(({ navigation }) => {
         backgroundColor={colors.TOOLBAR_COLOR}
       />
       <BaniHeader navigate={navigate} />
-      {(isAppOpenFirstTime || baniLengthSelector) && <BaniLengthSelector />}
-      <BaniList data={baniListData} onPress={onPress.bind(this)} />
+      <BaniList data={baniListData} onPress={onPress} />
     </View>
   );
 });

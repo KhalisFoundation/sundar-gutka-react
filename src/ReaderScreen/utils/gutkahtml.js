@@ -20,7 +20,7 @@ const htmlTemplate = (
     }
     @font-face {
       font-family: '${fontFace}';
-      src: local('${fontFace}'), url('${fontFileUri}'), format('truetype');
+      src: url('${fontFileUri}') format('truetype'),local('${fontFace}');
     }
 
     .gurmukhi {

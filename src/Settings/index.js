@@ -3,7 +3,7 @@ import { useSelector } from "react-redux";
 import PropTypes from "prop-types";
 import { StatusBar, ScrollView, Text, View } from "react-native";
 import { SafeAreaProvider } from "react-native-safe-area-context";
-import { STRINGS, colors, useScreenAnalytics, constant } from "@common";
+import { STRINGS, colors, useScreenAnalytics, constant, logMessage } from "@common";
 import { nightModeStyles } from "./styles/nightModeStyles";
 import FontSizeComponent from "./components/fontSize";
 import FontFaceComponent from "./components/fontFace";
@@ -27,6 +27,7 @@ import styles from "./styles/styles";
 import About from "./components/about";
 
 const Settings = ({ navigation }) => {
+  logMessage(constant.SETTINGS);
   useScreenAnalytics(constant.SETTINGS);
   const isNightMode = useSelector((state) => state.isNightMode);
   const isStatusBar = useSelector((state) => state.isStatusBar);
