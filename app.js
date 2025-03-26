@@ -11,6 +11,7 @@ import {
   FallBack,
   resetBadgeCount,
   navigateTo,
+  initializePerformanceMonitoring,
 } from "@common";
 import Navigation from "./src/navigation";
 import { allowTracking } from "./src/common/firebase/analytics";
@@ -23,6 +24,7 @@ const App = () => {
   }, []); // The empty array causes this effect to only run on mount
 
   useEffect(() => {
+    initializePerformanceMonitoring();
     allowTracking();
     initializeCrashlytics();
   }, []);
