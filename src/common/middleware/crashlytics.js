@@ -1,4 +1,4 @@
-import { setCustomKey } from "../crashlytics";
+import { setCustomKey } from "../firebase/crashlytics";
 
 // Helper function to safely stringify values
 const safeStringify = (value) => {

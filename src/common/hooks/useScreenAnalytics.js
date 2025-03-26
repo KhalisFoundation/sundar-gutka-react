@@ -1,5 +1,5 @@
 import { useEffect } from "react";
-import { trackScreenView } from "../analytics";
+import { trackScreenView } from "../firebase/analytics";
 
 const useScreenAnalytics = (screenName, screenClass) => {
   useEffect(() => {

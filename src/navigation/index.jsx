@@ -3,8 +3,7 @@ import { NavigationContainer } from "@react-navigation/native";
 import { createNativeStackNavigator } from "@react-navigation/native-stack";
 import { useSelector } from "react-redux";
 import { Icon } from "@rneui/themed";
-import { colors, navigationRef } from "@common";
-import perf from "@react-native-firebase/perf";
+import { colors, navigationRef, stopTrace, resetTrace, startPerformanceTrace } from "@common";
 import HomeScreen from "../HomeScreen";
 import Reader from "../ReaderScreen";
 import Settings from "../Settings";
@@ -33,15 +32,11 @@ const Navigation = () => {
 
   const handlingStateChange = async (state) => {
     if (trace.current) {
-      trace.current.putMetric("endTime", Date.now()); // Record the end time before stopping (example)
-      await trace.current.stop();
-      trace.current = null;
+      await stopTrace(trace.current);
+      trace.current = resetTrace();
     }
-
     const currentRouteName = state.routes[state.index].name;
-    trace.current = await perf().startTrace(`${currentRouteName}_LoadTime`);
-    trace.current.putAttribute("screenName", currentRouteName);
-    trace.current.putMetric("initTime", Date.now());
+    trace.current = await startPerformanceTrace(currentRouteName);
   };
 
   return (

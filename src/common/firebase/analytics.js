@@ -1,20 +1,29 @@
-import analytics, { firebase } from "@react-native-firebase/analytics";
+import {
+  getAppInstanceId,
+  logScreenView,
+  logEvent,
+  getAnalytics,
+  setAnalyticsCollectionEnabled,
+} from "@react-native-firebase/analytics";
+import { getApp } from "@react-native-firebase/app";
 
+const app = getApp();
+const analytics = getAnalytics(app);
 const trackEvent = (category, action, label) => {
-  firebase.analytics().logEvent(category, {
+  logEvent(analytics, category, {
     [action]: label,
   });
 };
 
 const allowTracking = async () => {
-  const appInstanceId = await analytics().getAppInstanceId();
+  const appInstanceId = await getAppInstanceId(analytics);
   if (!appInstanceId) {
-    await firebase.analytics().setAnalyticsCollectionEnabled(true);
+    await setAnalyticsCollectionEnabled(analytics, true);
   }
 };
 
 const trackScreenView = (screenName, screenClass = screenName) => {
-  firebase.analytics().logScreenView({
+  logScreenView(analytics, {
     screen_name: screenName,
     screen_class: screenClass.replace(/\s+/g, ""),
   });

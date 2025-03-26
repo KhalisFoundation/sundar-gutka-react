@@ -6,7 +6,7 @@ import notifee, {
 } from "@notifee/react-native";
 import moment from "moment";
 import constant from "./constant";
-import { logError, logMessage } from "./crashlytics";
+import { logError, logMessage } from "./firebase/crashlytics";
 import { FallBack } from "./components";
 
 export const createReminder = async (notification, sound) => {

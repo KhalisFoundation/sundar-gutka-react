@@ -3,14 +3,20 @@ import colors from "./colors";
 import * as actions from "./actions";
 import STRINGS from "./localization";
 import useScreenAnalytics from "./hooks/useScreenAnalytics";
-import { logError, initializeCrashlytics, setCustomKey, logMessage } from "./crashlytics";
+import { logError, initializeCrashlytics, setCustomKey, logMessage } from "./firebase/crashlytics";
 import {
   allowTracking,
   trackScreenView,
   trackReaderEvent,
   trackSettingEvent,
   trackReminderEvent,
-} from "./analytics";
+} from "./firebase/analytics";
+import {
+  initializePerformanceMonitoring,
+  startPerformanceTrace,
+  stopTrace,
+  resetTrace,
+} from "./firebase/performance";
 import {
   updateReminders,
   cancelAllReminders,
@@ -56,4 +62,8 @@ export {
   navigationRef,
   defaultBaniOrder,
   validateBaniOrder,
+  initializePerformanceMonitoring,
+  startPerformanceTrace,
+  stopTrace,
+  resetTrace,
 };
