@@ -4,9 +4,14 @@ import { SafeAreaView } from "react-native-safe-area-context";
 import RNRestart from "react-native-restart";
 import STRINGS from "../../localization";
 import styles from "./styles";
+import useScreenAnalytics from "../../hooks/useScreenAnalytics";
+import constant from "../../constant";
+import { logMessage } from "../../firebase/crashlytics";
 
 const FallBack = () => {
+  logMessage(constant.FALLBACK);
   const { container, title, text, btnWrap } = styles;
+  useScreenAnalytics(constant.FALLBACK);
   return (
     <SafeAreaView style={container}>
       <Text style={title}>{STRINGS.errorTitle}</Text>

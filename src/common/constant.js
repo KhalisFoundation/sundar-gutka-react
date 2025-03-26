@@ -53,6 +53,7 @@ export default {
   FOLDERSCREEN: "FolderScreen",
   HOME_SCREEN: "Home Screen",
   ABOUT_SCREEN: "About Screen",
+  FALLBACK_SCREEN: "Fallback Screen",
   BOOKMARKS: "Bookmarks",
   FONT_SIZE: "fontSize",
   FONT_FACE: "fontFace",
