@@ -1,6 +1,5 @@
 import { combineReducers } from "@reduxjs/toolkit";
 import * as actionTypes from "./actions/actionTypes";
-import defaultBaniOrder from "./defaultBaniOrder";
 import constant from "./constant";
 
 const createReducer =
@@ -127,7 +126,7 @@ const autoScrollSpeedObj = (state = {}, action) => {
   }
 };
 
-const baniOrder = (state = defaultBaniOrder, action) => {
+const baniOrder = (state = null, action) => {
   switch (action.type) {
     case actionTypes.SET_BANI_ORDER:
       return action.value;
