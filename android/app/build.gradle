@@ -1,9 +1,10 @@
 apply plugin: "com.android.application"
+apply plugin: "com.google.firebase.firebase-perf"
 apply plugin: "org.jetbrains.kotlin.android"
 apply plugin: "com.facebook.react"
-apply plugin: 'com.google.gms.google-services'
-apply plugin: 'com.google.firebase.crashlytics'
-apply plugin: 'com.google.firebase.firebase-perf'
+apply plugin: "com.google.gms.google-services"
+apply plugin: "com.google.firebase.crashlytics"
+
 
 /**
  * This is the configuration block to customize your React Native Android app.
@@ -85,7 +86,7 @@ android {
         applicationId "com.WahegurooNetwork.SundarGutka"
         minSdkVersion rootProject.ext.minSdkVersion
         targetSdkVersion rootProject.ext.targetSdkVersion
-        versionCode 156
+        versionCode 157
         versionName "5.8.1"
     }
     
