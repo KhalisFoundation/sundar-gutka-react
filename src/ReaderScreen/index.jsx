@@ -174,7 +174,7 @@ const Reader = ({ navigation, route }) => {
           const { nativeEvent } = syntheticEvent;
           logError("HTTP error status code:", nativeEvent.statusCode);
         }}
-        decelerationRate="normal"
+        decelerationRate={0.99}
         source={{
           html: loadHTML(
             shabad,

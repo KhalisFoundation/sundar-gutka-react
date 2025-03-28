@@ -1,7 +1,7 @@
 import React, { useEffect } from "react";
 import { useSelector } from "react-redux";
 import PropTypes from "prop-types";
-import { SafeAreaView, StatusBar, ScrollView, Text } from "react-native";
+import { StatusBar, ScrollView, Text, SafeAreaView } from "react-native";
 import { SafeAreaProvider } from "react-native-safe-area-context";
 import { STRINGS, colors, useScreenAnalytics, constant, logMessage } from "@common";
 import { nightModeStyles } from "./styles/nightModeStyles";

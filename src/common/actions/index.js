@@ -1,6 +1,6 @@
 import * as actionTypes from "./actionTypes";
 import STRINGS from "../localization";
-import { trackSettingEvent } from "../analytics";
+import { trackSettingEvent } from "../firebase/analytics";
 import constant from "../constant";
 
 export const toggleNightMode = (value) => {
@@ -127,8 +127,8 @@ export const setAutoScrollSpeed = (speed, shabad) => {
   const value = { [shabad]: speed };
   return { type: actionTypes.SET_AUTO_SCROLL_SPEED, value };
 };
-export const setBaniOrder = (order) => {
-  return { type: actionTypes.SET_BANI_ORDER, order };
+export const setBaniOrder = (value) => {
+  return { type: actionTypes.SET_BANI_ORDER, value };
 };
 
 export const setBaniList = (value) => {
