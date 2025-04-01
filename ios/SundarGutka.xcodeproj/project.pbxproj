@@ -493,7 +493,7 @@
 				CODE_SIGN_ENTITLEMENTS = SundarGutka/SundarGutka.entitlements;
 				CODE_SIGN_IDENTITY = "Apple Development";
 				CODE_SIGN_STYLE = Automatic;
-				CURRENT_PROJECT_VERSION = 28;
+				CURRENT_PROJECT_VERSION = 30;
 				DEVELOPMENT_TEAM = B3W82WVBU9;
 				ENABLE_BITCODE = NO;
 				INFOPLIST_FILE = SundarGutka/Info.plist;
@@ -531,7 +531,7 @@
 				CODE_SIGN_ENTITLEMENTS = SundarGutka/SundarGutka.entitlements;
 				CODE_SIGN_IDENTITY = "Apple Development";
 				CODE_SIGN_STYLE = Automatic;
-				CURRENT_PROJECT_VERSION = 28;
+				CURRENT_PROJECT_VERSION = 30;
 				DEVELOPMENT_TEAM = B3W82WVBU9;
 				INFOPLIST_FILE = SundarGutka/Info.plist;
 				LD_RUNPATH_SEARCH_PATHS = (

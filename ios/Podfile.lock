@@ -23,6 +23,11 @@ PODS:
     - FirebasePerformance (~> 11.10.0)
   - FirebaseABTesting (11.10.0):
     - FirebaseCore (~> 11.10.0)
+  - Firebase/Performance (11.10.0):
+    - Firebase/CoreOnly
+    - FirebasePerformance (~> 11.10.0)
+  - FirebaseABTesting (11.10.0):
+    - FirebaseCore (~> 11.10.0)
   - FirebaseAnalytics (11.10.0):
     - FirebaseAnalytics/AdIdSupport (= 11.10.0)
     - FirebaseCore (~> 11.10.0)
@@ -90,6 +95,24 @@ PODS:
     - FirebaseSharedSwift (~> 11.0)
     - GoogleUtilities/Environment (~> 8.0)
     - "GoogleUtilities/NSData+zlib (~> 8.0)"
+  - FirebasePerformance (11.10.0):
+    - FirebaseCore (~> 11.10.0)
+    - FirebaseInstallations (~> 11.0)
+    - FirebaseRemoteConfig (~> 11.0)
+    - FirebaseSessions (~> 11.0)
+    - GoogleDataTransport (~> 10.0)
+    - GoogleUtilities/Environment (~> 8.0)
+    - GoogleUtilities/MethodSwizzler (~> 8.0)
+    - GoogleUtilities/UserDefaults (~> 8.0)
+    - nanopb (~> 3.30910.0)
+  - FirebaseRemoteConfig (11.10.0):
+    - FirebaseABTesting (~> 11.0)
+    - FirebaseCore (~> 11.10.0)
+    - FirebaseInstallations (~> 11.0)
+    - FirebaseRemoteConfigInterop (~> 11.0)
+    - FirebaseSharedSwift (~> 11.0)
+    - GoogleUtilities/Environment (~> 8.0)
+    - "GoogleUtilities/NSData+zlib (~> 8.0)"
   - FirebaseRemoteConfigInterop (11.10.0)
   - FirebaseSessions (11.10.0):
     - FirebaseCore (~> 11.10.0)
@@ -100,7 +123,7 @@ PODS:
     - GoogleUtilities/UserDefaults (~> 8.0)
     - nanopb (~> 3.30910.0)
     - PromisesSwift (~> 2.1)
-  - FirebaseSharedSwift (11.12.0)
+  - FirebaseSharedSwift (11.10.0)
   - fmt (11.0.2)
   - glog (0.3.5)
   - GoogleAppMeasurement (11.10.0):
@@ -1429,6 +1452,27 @@ PODS:
     - ReactCommon/turbomodule/bridging
     - ReactCommon/turbomodule/core
     - Yoga
+  - react-native-blur (4.4.1):
+    - DoubleConversion
+    - glog
+    - hermes-engine
+    - RCT-Folly (= 2024.11.18.00)
+    - RCTRequired
+    - RCTTypeSafety
+    - React-Core
+    - React-debug
+    - React-Fabric
+    - React-featureflags
+    - React-graphics
+    - React-ImageManager
+    - React-NativeModulesApple
+    - React-RCTFabric
+    - React-rendererdebug
+    - React-utils
+    - ReactCodegen
+    - ReactCommon/turbomodule/bridging
+    - ReactCommon/turbomodule/core
+    - Yoga
   - react-native-keep-awake (1.3.0):
     - RCT-Folly
     - RCTRequired
@@ -1929,8 +1973,6 @@ PODS:
     - Firebase/Performance (= 11.10.0)
     - React-Core
     - RNFBApp
-  - RNFS (2.20.0):
-    - React-Core
   - RNGestureHandler (2.24.0):
     - DoubleConversion
     - glog
@@ -2077,6 +2119,7 @@ PODS:
     - ReactCommon/turbomodule/core
     - Yoga
   - RNScreens (4.9.2):
+  - RNScreens (4.9.2):
     - DoubleConversion
     - glog
     - hermes-engine
@@ -2098,7 +2141,9 @@ PODS:
     - ReactCommon/turbomodule/bridging
     - ReactCommon/turbomodule/core
     - RNScreens/common (= 4.9.2)
+    - RNScreens/common (= 4.9.2)
     - Yoga
+  - RNScreens/common (4.9.2):
   - RNScreens/common (4.9.2):
     - DoubleConversion
     - glog
@@ -2128,49 +2173,6 @@ PODS:
     - React-Core
   - RNSoundPlayer (0.14.5):
     - React-Core
-  - RNSVG (15.11.2):
-    - DoubleConversion
-    - glog
-    - hermes-engine
-    - RCT-Folly (= 2024.11.18.00)
-    - RCTRequired
-    - RCTTypeSafety
-    - React-Core
-    - React-debug
-    - React-Fabric
-    - React-featureflags
-    - React-graphics
-    - React-ImageManager
-    - React-NativeModulesApple
-    - React-RCTFabric
-    - React-rendererdebug
-    - React-utils
-    - ReactCodegen
-    - ReactCommon/turbomodule/bridging
-    - ReactCommon/turbomodule/core
-    - RNSVG/common (= 15.11.2)
-    - Yoga
-  - RNSVG/common (15.11.2):
-    - DoubleConversion
-    - glog
-    - hermes-engine
-    - RCT-Folly (= 2024.11.18.00)
-    - RCTRequired
-    - RCTTypeSafety
-    - React-Core
-    - React-debug
-    - React-Fabric
-    - React-featureflags
-    - React-graphics
-    - React-ImageManager
-    - React-NativeModulesApple
-    - React-RCTFabric
-    - React-rendererdebug
-    - React-utils
-    - ReactCodegen
-    - ReactCommon/turbomodule/bridging
-    - ReactCommon/turbomodule/core
-    - Yoga
   - RNVectorIcons (10.2.0):
     - DoubleConversion
     - glog
@@ -2205,6 +2207,7 @@ DEPENDENCIES:
   - FirebaseCore
   - FirebaseCoreExtension
   - FirebaseInstallations
+  - FirebaseRemoteConfig
   - FirebaseRemoteConfig
   - fmt (from `../node_modules/react-native/third-party-podspecs/fmt.podspec`)
   - glog (from `../node_modules/react-native/third-party-podspecs/glog.podspec`)
@@ -2244,6 +2247,7 @@ DEPENDENCIES:
   - React-logger (from `../node_modules/react-native/ReactCommon/logger`)
   - React-Mapbuffer (from `../node_modules/react-native/ReactCommon`)
   - React-microtasksnativemodule (from `../node_modules/react-native/ReactCommon/react/nativemodule/microtasks`)
+  - "react-native-blur (from `../node_modules/@react-native-community/blur`)"
   - "react-native-blur (from `../node_modules/@react-native-community/blur`)"
   - "react-native-keep-awake (from `../node_modules/@sayem314/react-native-keep-awake`)"
   - react-native-restart (from `../node_modules/react-native-restart`)
@@ -2314,8 +2318,11 @@ SPEC REPOS:
     - FirebaseMessaging
     - FirebasePerformance
     - FirebaseRemoteConfig
+    - FirebasePerformance
+    - FirebaseRemoteConfig
     - FirebaseRemoteConfigInterop
     - FirebaseSessions
+    - FirebaseSharedSwift
     - FirebaseSharedSwift
     - GoogleAppMeasurement
     - GoogleDataTransport
@@ -2402,6 +2409,8 @@ EXTERNAL SOURCES:
     :path: "../node_modules/react-native/ReactCommon"
   React-microtasksnativemodule:
     :path: "../node_modules/react-native/ReactCommon/react/nativemodule/microtasks"
+  react-native-blur:
+    :path: "../node_modules/@react-native-community/blur"
   react-native-blur:
     :path: "../node_modules/@react-native-community/blur"
   react-native-keep-awake:
@@ -2522,6 +2531,7 @@ SPEC CHECKSUMS:
   FBLazyVector: bba368dacede4c9dec7a58c9be5a2d3e9ea30cc7
   Firebase: 1fe1c0a7d9aaea32efe01fbea5f0ebd8d70e53a2
   FirebaseABTesting: dfc10eb6cc08fe3b391ac9e5aa40396d43ea6675
+  FirebaseABTesting: dfc10eb6cc08fe3b391ac9e5aa40396d43ea6675
   FirebaseAnalytics: 4e42333f02cf78ed93703a5c36f36dd518aebdef
   FirebaseCore: 8344daef5e2661eb004b177488d6f9f0f24251b7
   FirebaseCoreExtension: 6f357679327f3614e995dc7cf3f2d600bdc774ac
@@ -2531,9 +2541,11 @@ SPEC CHECKSUMS:
   FirebaseMessaging: 2b9f56aa4ed286e1f0ce2ee1d413aabb8f9f5cb9
   FirebasePerformance: f0bd14be05aaa1136cbb1c9aaaf87d213d0e6fbf
   FirebaseRemoteConfig: 10695bc0ce3b103e3706a5578c43f2a9f69d5aaa
+  FirebasePerformance: f0bd14be05aaa1136cbb1c9aaaf87d213d0e6fbf
+  FirebaseRemoteConfig: 10695bc0ce3b103e3706a5578c43f2a9f69d5aaa
   FirebaseRemoteConfigInterop: 7c9a9c65eff32cbb0f7bf8d18140612ad57dfcc6
   FirebaseSessions: 9b3b30947b97a15370e0902ee7a90f50ef60ead6
-  FirebaseSharedSwift: d2475748a2d2a36242ed13baa34b2acda846c925
+  FirebaseSharedSwift: 1baacae75939499b5def867cbe34129464536a38
   fmt: a40bb5bd0294ea969aaaba240a927bd33d878cdd
   glog: eb93e2f488219332457c3c4eafd2738ddc7e80b8
   GoogleAppMeasurement: 36684bfb3ee034e2b42b4321eb19da3a1b81e65d
@@ -2574,6 +2586,7 @@ SPEC CHECKSUMS:
   React-logger: 88de26ac2b4ae3ebf55108f4be299f967151d0ec
   React-Mapbuffer: b6619632c9800e300a9dcfb5139009416cec6392
   React-microtasksnativemodule: e99c1d7791f5e8d5be370b78e02433e64d2391d8
+  react-native-blur: b37343d4df1af48a17444156b674b26d5aec2425
   react-native-blur: b37343d4df1af48a17444156b674b26d5aec2425
   react-native-keep-awake: 951bc65f46a6d0ff9e5671e9b71552c10241d22a
   react-native-restart: 7595693413fe3ca15893702f2c8306c62a708162
@@ -2620,18 +2633,18 @@ SPEC CHECKSUMS:
   RNFBCrashlytics: d82046674aa458862c3f494c8e94ac234dd83ad5
   RNFBMessaging: c3e3bbce29243b5addc50cae3096568cfcd574b8
   RNFBPerf: f83f9da2ea58a59e187c88951bcfe49a4a740b89
-  RNFS: 4ac0f0ea233904cb798630b3c077808c06931688
   RNGestureHandler: 9b05fab9a0b48fe48c968de7dbb9ca38a2b4f7ab
   RNNotifee: 4a6ee5c7deaf00e005050052d73ee6315dff7ec9
   RNReanimated: ff71ce0443c71c8a77501ace7b9738ede83cfa55
   RNScreens: 9a887b38fbb9c207f0d4e9694037c91e4fd6b248
+  RNScreens: 9a887b38fbb9c207f0d4e9694037c91e4fd6b248
   RNSound: 6c156f925295bdc83e8e422e7d8b38d33bc71852
   RNSoundPlayer: 95b72e12a6990e4fabfd71b1c7fac579f9e60e75
-  RNSVG: 8588ee1ca9b2e6fd2c99466e35b3db0e9f81bb40
   RNVectorIcons: 14a0c42f16a26bcc3e79a19bc1c5718284b1d469
   SocketRocket: d4aabe649be1e368d1318fdf28a022d714d65748
   Yoga: dea3cbe52f93ef8f722493a505c1add295fe7fba
 
+PODFILE CHECKSUM: ac408e57b16f48b21c82b666848f532d9ef92f63
 PODFILE CHECKSUM: ac408e57b16f48b21c82b666848f532d9ef92f63
 
 COCOAPODS: 1.15.2
