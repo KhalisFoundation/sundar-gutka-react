@@ -146,3 +146,11 @@ export const setScrollPosition = (value) => {
 export const toggleHeaderFooter = (value) => {
   return { type: actionTypes.TOGGLE_HEADER_FOOTER, value };
 };
+
+export const setDatabaseMD5Hash = (value) => {
+  return { type: actionTypes.SET_DATABASE_MD5_HASH, value };
+};
+
+export const toggleDatbaseUpdateAvailable = (value) => {
+  return { type: actionTypes.TOGGLE_DATBASE_UPDATE_AVAILABLE, value };
+};

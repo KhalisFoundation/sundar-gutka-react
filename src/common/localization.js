@@ -123,6 +123,7 @@ const STRINGS = new LocalizedStrings({
     permissionTitle: "Notification Permission Required",
     premissionDescription: "To receive Bani Reminder notification, please enable them in settings.",
     openSettings: "Open Settings",
+    databaseUpdate: "Database Update",
   },
   hi: {
     about: "हमारे बारे",
@@ -245,6 +246,7 @@ const STRINGS = new LocalizedStrings({
     premissionDescription:
       "बानी रिमाइंडर अधिसूचना प्राप्त करने के लिए, कृपया उन्हें सेटिंग्स में सक्षम करें।",
     openSettings: "खुली सेटिंग",
+    databaseUpdate: "डेटाबेस अद्यतन",
   },
   pa: {
     about: "ਸਾਡੇ ਬਾਰੇ",
@@ -367,6 +369,7 @@ const STRINGS = new LocalizedStrings({
     premissionDescription:
       "ਬਾਣੀ ਰੀਮਾਈਂਡਰ ਸੂਚਨਾ ਪ੍ਰਾਪਤ ਕਰਨ ਲਈ, ਕਿਰਪਾ ਕਰਕੇ ਉਹਨਾਂ ਨੂੰ ਸੈਟਿੰਗਾਂ ਵਿੱਚ ਸਮਰੱਥ ਕਰੋ।",
     openSettings: "ਸੈਟਿੰਗਾਂ ਖੋਲ੍ਹੋ",
+    databaseUpdate: "ਡਾਟਾਬੇਸ ਅੱਪਡੇਟ",
   },
   fr: {
     about: "Infos",
@@ -493,6 +496,7 @@ const STRINGS = new LocalizedStrings({
     premissionDescription:
       "Pour recevoir une notification de rappel Bani, veuillez les activer dans les paramètres.",
     openSettings: "Ouvrir les paramètres",
+    databaseUpdate: "Mise à jour de la base de données",
   },
   it: {
     about: "Info",
@@ -617,6 +621,7 @@ const STRINGS = new LocalizedStrings({
     premissionDescription:
       "Per ricevere la notifica Promemoria Bani, abilitali nelle impostazioni.",
     openSettings: "Apri Impostazioni",
+    databaseUpdate: "Aggiornamento della banca dati",
   },
   es: {
     about: "Sobre Nosotros",
@@ -742,6 +747,7 @@ const STRINGS = new LocalizedStrings({
     premissionDescription:
       "Para recibir notificaciones de Bani Reminder, habilítelas en la configuración.",
     openSettings: "Configuración abierta",
+    databaseUpdate: "Actualización de base de datos",
   },
 });
 

@@ -82,4 +82,5 @@ export default {
   UPDATE_REMINDER: "updateReminder",
   PORTRAIT: "PORTRAIT",
   LANDSCAPE: "LANDSCAPE",
+  DATABASE_UPDATE_SCREEN: "DatabaseUpdate",
 };
