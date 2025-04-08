@@ -1,6 +1,7 @@
 import React, { useState, useRef, useMemo } from "react";
 import { useDispatch, useSelector } from "react-redux";
-import { View, StatusBar, ScrollView, SafeAreaView } from "react-native";
+import { View, StatusBar, ScrollView } from "react-native";
+import { SafeAreaProvider, SafeAreaView } from "react-native-safe-area-context";
 import Accordion from "react-native-collapsible/Accordion";
 import PropTypes from "prop-types";
 import ModalSelector from "react-native-modal-selector";
@@ -70,51 +71,53 @@ const ReminderOptions = ({ navigation }) => {
   };
 
   return (
-    <SafeAreaView
-      style={[
-        isNightMode && { backgroundColor: colors.INACTIVE_VIEW_COLOR_NIGHT_MODE },
-        styles.flexView,
-      ]}
-    >
-      <ScrollView>
-        <View>
-          <StatusBar backgroundColor={colors.TOOLBAR_COLOR_ALT2} barStyle="light-content" />
-          {stateData.length > 0 && (
-            <Accordion
-              activeSections={activeSections}
-              sections={stateData}
-              underlayColor={accNightColor}
-              renderHeader={(section, index, isActive) => (
-                <AccordianHeader section={section} isActive={isActive} />
-              )}
-              renderContent={(section, index, isActive) => (
-                <AccordianContent section={section} isActive={isActive} />
-              )}
-              onChange={updateSections}
+    <SafeAreaProvider>
+      <SafeAreaView
+        style={[
+          isNightMode && { backgroundColor: colors.INACTIVE_VIEW_COLOR_NIGHT_MODE },
+          styles.flexView,
+        ]}
+      >
+        <ScrollView>
+          <View>
+            <StatusBar backgroundColor={colors.TOOLBAR_COLOR_ALT2} barStyle="light-content" />
+            {stateData.length > 0 && (
+              <Accordion
+                activeSections={activeSections}
+                sections={stateData}
+                underlayColor={accNightColor}
+                renderHeader={(section, index, isActive) => (
+                  <AccordianHeader section={section} isActive={isActive} />
+                )}
+                renderContent={(section, index, isActive) => (
+                  <AccordianContent section={section} isActive={isActive} />
+                )}
+                onChange={updateSections}
+              />
+            )}
+            <ModalSelector
+              supportedOrientations={[
+                "portrait",
+                "portrait-upside-down",
+                "landscape-left",
+                "landscape-right",
+              ]}
+              data={reminderBaniData}
+              cancelText={STRINGS.cancel}
+              optionTextStyle={{ ...styles.modalSelectText, color, ...fontFamily }}
+              onChange={(option) => {
+                createReminder(option);
+              }}
+              customSelector={<View />}
+              ref={selector}
+              cancelTextStyle={{ color }}
+              cancelStyle={{ backgroundColor }}
+              optionContainerStyle={{ backgroundColor }}
             />
-          )}
-          <ModalSelector
-            supportedOrientations={[
-              "portrait",
-              "portrait-upside-down",
-              "landscape-left",
-              "landscape-right",
-            ]}
-            data={reminderBaniData}
-            cancelText={STRINGS.cancel}
-            optionTextStyle={{ ...styles.modalSelectText, color, ...fontFamily }}
-            onChange={(option) => {
-              createReminder(option);
-            }}
-            customSelector={<View />}
-            ref={selector}
-            cancelTextStyle={{ color }}
-            cancelStyle={{ backgroundColor }}
-            optionContainerStyle={{ backgroundColor }}
-          />
-        </View>
-      </ScrollView>
-    </SafeAreaView>
+          </View>
+        </ScrollView>
+      </SafeAreaView>
+    </SafeAreaProvider>
   );
 };
 

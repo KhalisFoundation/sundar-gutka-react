@@ -10,7 +10,7 @@ import {
 } from "react-native";
 import { WebView } from "react-native-webview";
 import PropTypes from "prop-types";
-import { SafeAreaView } from "react-native-safe-area-context";
+import { SafeAreaProvider, SafeAreaView } from "react-native-safe-area-context";
 import { constant, colors, actions, useScreenAnalytics, logMessage, logError } from "@common";
 import { Header, AutoScrollComponent } from "./components";
 import { useBookmarks, useFetchShabad } from "./hooks";
@@ -131,71 +131,73 @@ const Reader = ({ navigation, route }) => {
   };
 
   return (
-    <SafeAreaView style={[{ flex: 1 }, safeAreaViewBack]}>
-      <StatusBar
-        hidden={isStatusBar}
-        backgroundColor={backgroundColor}
-        barStyle={isNightMode ? "light-content" : "dark-content"}
-      />
+    <SafeAreaProvider>
+      <SafeAreaView style={[{ flex: 1 }, safeAreaViewBack]}>
+        <StatusBar
+          hidden={isStatusBar}
+          backgroundColor={backgroundColor}
+          barStyle={isNightMode ? "light-content" : "dark-content"}
+        />
 
-      <Header
-        navigation={navigation}
-        title={title}
-        handleBackPress={backAction}
-        handleBookmarkPress={handleBookmarkPress}
-        handleSettingsPress={handleSettingsPress}
-        isHeader={isHeader}
-      />
-      {isLoading && <ActivityIndicator size="small" color={READER_STATUS_BAR_COLOR} />}
-      <WebView
-        key={`${id}-${JSON.stringify({
-          isParagraphMode,
-          isLarivaar,
-          isLarivaarAssist,
-          isVishraam,
-          vishraamOption,
-          shabad,
-          reloadKey,
-        })}`}
-        webviewDebuggingEnabled
-        javaScriptEnabled
-        originWhitelist={["*"]}
-        onLoadStart={() => {
-          setTimeout(() => {
-            toggleViewLoaded(true);
-          }, 500);
-        }}
-        ref={webViewRef}
-        onError={(syntheticEvent) => {
-          const { nativeEvent } = syntheticEvent;
-          logError(`Reader web View Error ${nativeEvent}`);
-        }}
-        onHttpError={(syntheticEvent) => {
-          const { nativeEvent } = syntheticEvent;
-          logError("HTTP error status code:", nativeEvent.statusCode);
-        }}
-        decelerationRate={0.99}
-        source={{
-          html: loadHTML(
-            shabad,
-            isTransliteration,
-            fontSize,
-            fontFace,
-            isEnglishTranslation,
-            isPunjabiTranslation,
-            isSpanishTranslation,
-            isNightMode,
+        <Header
+          navigation={navigation}
+          title={title}
+          handleBackPress={backAction}
+          handleBookmarkPress={handleBookmarkPress}
+          handleSettingsPress={handleSettingsPress}
+          isHeader={isHeader}
+        />
+        {isLoading && <ActivityIndicator size="small" color={READER_STATUS_BAR_COLOR} />}
+        <WebView
+          key={`${id}-${JSON.stringify({
+            isParagraphMode,
             isLarivaar,
-            currentPosition
-          ),
-          baseUrl: Platform.OS === "ios" ? "./" : "",
-        }}
-        style={[webView, isNightMode && { opacity: viewLoaded ? 1 : 0.1 }, backViewColor]}
-        onMessage={(message) => handleMessage(message)}
-      />
+            isLarivaarAssist,
+            isVishraam,
+            vishraamOption,
+            shabad,
+            reloadKey,
+          })}`}
+          webviewDebuggingEnabled
+          javaScriptEnabled
+          originWhitelist={["*"]}
+          onLoadStart={() => {
+            setTimeout(() => {
+              toggleViewLoaded(true);
+            }, 500);
+          }}
+          ref={webViewRef}
+          onError={(syntheticEvent) => {
+            const { nativeEvent } = syntheticEvent;
+            logError(`Reader web View Error ${nativeEvent}`);
+          }}
+          onHttpError={(syntheticEvent) => {
+            const { nativeEvent } = syntheticEvent;
+            logError("HTTP error status code:", nativeEvent.statusCode);
+          }}
+          decelerationRate={0.99}
+          source={{
+            html: loadHTML(
+              shabad,
+              isTransliteration,
+              fontSize,
+              fontFace,
+              isEnglishTranslation,
+              isPunjabiTranslation,
+              isSpanishTranslation,
+              isNightMode,
+              isLarivaar,
+              currentPosition
+            ),
+            baseUrl: Platform.OS === "ios" ? "./" : "",
+          }}
+          style={[webView, isNightMode && { opacity: viewLoaded ? 1 : 0.1 }, backViewColor]}
+          onMessage={(message) => handleMessage(message)}
+        />
 
-      {isAutoScroll && <AutoScrollComponent shabadID={id} ref={webViewRef} isFooter={isHeader} />}
-    </SafeAreaView>
+        {isAutoScroll && <AutoScrollComponent shabadID={id} ref={webViewRef} isFooter={isHeader} />}
+      </SafeAreaView>
+    </SafeAreaProvider>
   );
 };
 
