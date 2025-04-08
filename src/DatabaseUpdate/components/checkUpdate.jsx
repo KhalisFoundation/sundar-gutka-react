@@ -1,23 +1,8 @@
 import React, { useEffect, useRef, useState } from "react";
-import { Animated, Text, StyleSheet, View, Easing } from "react-native"; // Importing SVG components
+import { Animated, Text, View, Easing } from "react-native";
 import { Icon, ListItem } from "@rneui/themed";
-
-const styles = StyleSheet.create({
-  container: {
-    flex: 1,
-    justifyContent: "center",
-    alignItems: "center",
-    backgroundColor: "#fff",
-  },
-  header: {
-    fontSize: 20,
-    marginBottom: 5,
-  },
-  status: {
-    marginTop: 20,
-    fontSize: 18,
-  },
-});
+import { constant } from "@common";
+import { checkUpdateStyles as styles } from "./styles";
 
 const CheckUpdatesAnimation = () => {
   const rotateAnim = useRef(new Animated.Value(0)).current;
@@ -67,10 +52,10 @@ const CheckUpdatesAnimation = () => {
   });
 
   return (
-    <View style={{ marginBottom: 10 }}>
+    <View style={styles.mainWrapper}>
       <ListItem>
         <ListItem.Title style={styles.header}>
-          <Text>Check for Updates</Text>
+          <Text>{constant.CHECK_UPDATE}</Text>
         </ListItem.Title>
         <ListItem.Content>
           <Animated.View style={{ transform: [{ rotate: rotateInterpolate }] }}>

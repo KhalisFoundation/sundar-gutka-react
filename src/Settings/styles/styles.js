@@ -50,5 +50,15 @@ const styles = StyleSheet.create({
     backgroundColor: "transparent",
     width: "100%",
   },
+  databaseUpdateBannerWrapper: {
+    fles: 1,
+    flexDirection: "row",
+    backgroundColor: "#007AFF",
+    justifyContent: "center",
+    alignItems: "center",
+    padding: 5,
+  },
+  baniDbImage: { width: 20, height: 20, marginRight: 10 },
+  updateText: { color: "#fff", fontSize: 16 },
 });
 export default styles;

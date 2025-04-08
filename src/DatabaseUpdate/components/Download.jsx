@@ -1,22 +1,12 @@
 import React, { useEffect, useRef, useState } from "react";
-import { Animated, Easing, StyleSheet, View, Text, Button } from "react-native";
+import { Animated, Easing, View, Text, Button } from "react-native";
 import Svg, { Circle } from "react-native-svg";
+import { constant } from "@common";
+import { downloadStyles as styles } from "./styles";
 
 const AnimatedCircle = Animated.createAnimatedComponent(Circle);
-const styles = StyleSheet.create({
-  container: {
-    alignItems: "center",
-    justifyContent: "center",
-    padding: 20,
-  },
-  text: {
-    marginTop: 20,
-    fontSize: 24,
-    fontWeight: "bold",
-  },
-});
 
-const DownloadAnimation = () => {
+const DownloadComponent = () => {
   const [progress, setProgress] = useState(0);
   const [downloading, setDownloading] = useState(false);
   const progressAnim = useRef(new Animated.Value(0)).current;
@@ -52,6 +42,11 @@ const DownloadAnimation = () => {
 
   return (
     <View style={styles.container}>
+      <View style={{ flex: 1, flexDirection: "row" }}>
+        <Text>{constant.NEW_VERSION_AVAILABLE}</Text>
+      </View>
+
+      {/* SVG Circle for progress */}
       <Svg width={120} height={120} viewBox="0 0 120 120">
         {/* Background circle */}
         <Circle cx="60" cy="60" r={radius} stroke="#e6e6e6" strokeWidth={strokeWidth} fill="none" />
@@ -60,7 +55,7 @@ const DownloadAnimation = () => {
           cx="60"
           cy="60"
           r={radius}
-          stroke="blue"
+          stroke="#3498db"
           strokeWidth={strokeWidth}
           fill="none"
           strokeDasharray={circumference}
@@ -71,10 +66,10 @@ const DownloadAnimation = () => {
           strokeLinecap="round"
         />
       </Svg>
-      <Text style={styles.text}>{progress}%</Text>
       <Button title="Start Download" onPress={startDownload} disabled={downloading} />
+      <Text style={styles.text}>{progress}%</Text>
     </View>
   );
 };
 
-export default DownloadAnimation;
+export default DownloadComponent;

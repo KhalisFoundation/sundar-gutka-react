@@ -25,6 +25,7 @@ import CollectStatistics from "./components/collectStatistics";
 import Donate from "./components/donate";
 import styles from "./styles/styles";
 import ListItemWithIcon from "./components/comon/ListitemWithIcon";
+import DatabaseUpdateBanner from "./components/databaseUpdate";
 
 const Settings = ({ navigation }) => {
   logMessage(constant.SETTINGS);
@@ -53,6 +54,7 @@ const Settings = ({ navigation }) => {
             !isNightMode ? colors.TOOLBAR_COLOR_ALT : colors.TOOLBAR_COLOR_ALT_NIGHT_MODE
           }
         />
+        <DatabaseUpdateBanner navigate={navigate} />
         <ScrollView>
           <Text style={[displayOptionsText, scrollViewNightStyles]}>{DISPLAY_OPTIONS}</Text>
           <FontSizeComponent />
