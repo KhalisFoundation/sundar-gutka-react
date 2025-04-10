@@ -1,4 +1,13 @@
-const htmlTemplate = (backColor, fontFileUri, fontFace, content) => `<!DOCTYPE html>
+import script from "./gutkaScript";
+
+const htmlTemplate = (
+  backColor,
+  fontFileUri,
+  fontFace,
+  content,
+  isNightMode,
+  savePosition
+) => `<!DOCTYPE html>
 <html lang="en">
 <head>
   <meta charset="UTF-8">
@@ -11,7 +20,7 @@ const htmlTemplate = (backColor, fontFileUri, fontFace, content) => `<!DOCTYPE h
     }
     @font-face {
       font-family: '${fontFace}';
-      src: local('${fontFace}'), url('${fontFileUri}'), format('truetype');
+      src: url('${fontFileUri}') format('truetype'),local('${fontFace}');
     }
 
     .gurmukhi {
@@ -35,11 +44,10 @@ const htmlTemplate = (backColor, fontFileUri, fontFace, content) => `<!DOCTYPE h
       text-align:right
     }
   </style>
-
+  <script>${script(isNightMode, savePosition)}</script>
 </head>
 <body>
-  ${content}
-    
+  ${content}  
 </body>
 </html>
 `;

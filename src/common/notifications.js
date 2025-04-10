@@ -1,39 +1,46 @@
 import notifee, {
   TriggerType,
   RepeatFrequency,
-  EventType,
   AndroidImportance,
   AuthorizationStatus,
 } from "@notifee/react-native";
 import moment from "moment";
-import FallBack from "./components/FallbackComponent";
 import constant from "./constant";
-import errorHandler from "./errHandler";
+import { logError, logMessage } from "./firebase/crashlytics";
+import { FallBack } from "./components";
 
 export const createReminder = async (notification, sound) => {
+  const channelName =
+    sound !== constant.DEFAULT.toLowerCase() ? sound.split(".")[0] : constant.SOUND.toLowerCase();
+  const androidChannel = {
+    channelId: channelName,
+    smallIcon: "ic_launcher_foreground",
+    pressAction: {
+      id: "default",
+      launchActivity: "default", // This should match your configured activity
+      mainComponent: "default", // Ensure your activity is correctly referenced
+    },
+  };
+
+  const currentTime = moment().valueOf();
+  let notificationTime = moment(notification.time, "h:m A").valueOf();
+  if (notificationTime < currentTime) {
+    notificationTime = moment(notification.time, "h:m A").add(1, "days").valueOf();
+  }
+  const trigger = {
+    type: TriggerType.TIMESTAMP,
+    timestamp: notificationTime,
+    repeatFrequency: RepeatFrequency.DAILY,
+  };
+
   try {
-    const channelName =
-      sound !== constant.DEFAULT.toLowerCase() ? sound.split(".")[0] : constant.SOUND.toLowerCase();
-    const androidChannel = { channelId: channelName.toString() };
-
-    const currentTime = moment().valueOf();
-    let notificationTime = moment(notification.time, "h:mm A").valueOf();
-    if (notificationTime < currentTime) {
-      notificationTime = moment(notification.time, "h:m A").add(1, "days");
-    }
-    const trigger = {
-      type: TriggerType.TIMESTAMP,
-      timestamp: Number(notificationTime),
-      repeatFrequency: RepeatFrequency.DAILY,
-    };
-
     // Create notification
     await notifee.createTriggerNotification(
       {
         title: notification.title,
         body: notification.time,
         data: {
-          id: notification.key.toString(),
+          id: notification.id.toString(),
           gurmukhi: notification.gurmukhi,
           translit: String(notification.translit) || "",
         },
@@ -46,58 +53,67 @@ export const createReminder = async (notification, sound) => {
       trigger
     );
   } catch (error) {
-    errorHandler(error);
+    logError(error);
+    logMessage("createReminder: Failed to create reminder");
     FallBack();
   }
 };
-export const resetBadgeCount = () => {
-  notifee.setBadgeCount(0);
+export const resetBadgeCount = async () => {
+  await notifee.setBadgeCount(0);
 };
 
-export const getScheduleNotifications = () => {
-  notifee.getTriggerNotificationIds();
+export const getScheduleNotifications = async () => {
+  await notifee.getTriggerNotificationIds();
 };
 
-export const removeAllDeliveredNotifications = () => {
+export const removeAllDeliveredNotifications = async () => {
   resetBadgeCount();
-  notifee.cancelDisplayedNotification();
+  await notifee.cancelDisplayedNotification();
 };
 
-export const cancelAllReminders = () => {
+export const cancelAllReminders = async () => {
   resetBadgeCount();
-  notifee.cancelAllNotifications();
+  await notifee.cancelAllNotifications();
 };
 
 export const updateReminders = async (remindersOn, sound, remindersList) => {
-  cancelAllReminders();
-  await notifee.createChannel({
-    id: constant.SOUND,
-    name: constant.REMINDERS_DEFAULT,
-    sound: constant.DEFAULT.toLowerCase(),
-    description: constant.ALERT_DESCRIPTION,
-    importance: AndroidImportance.HIGH,
-  });
-  await notifee.createChannel({
-    id: constant.WAHEGURU_SOUL,
-    name: constant.REMINDERS_WAHEGURU_SOUL,
-    sound: constant.WAHEGURU_SOUL,
-    description: constant.ALERT_DESCRIPTION,
-    importance: AndroidImportance.HIGH,
-  });
-  await notifee.createChannel({
-    id: constant.WAKE_UP_JAP,
-    name: constant.REMINDERS_WAKE_UP,
-    sound: constant.WAKE_UP_JAP,
-    description: constant.ALERT_DESCRIPTION,
-    importance: AndroidImportance.HIGH,
-  });
+  await cancelAllReminders();
+  const channels = [
+    {
+      id: constant.SOUND,
+      name: constant.REMINDERS_DEFAULT,
+      sound: constant.DEFAULT.toLowerCase(),
+    },
+    {
+      id: constant.WAHEGURU_SOUL,
+      name: constant.REMINDERS_WAHEGURU_SOUL,
+      sound: constant.WAHEGURU_SOUL,
+    },
+    {
+      id: constant.WAKE_UP_JAP,
+      name: constant.REMINDERS_WAKE_UP,
+      sound: constant.WAKE_UP_JAP,
+    },
+  ];
+
+  const channelCreationPromises = channels.map((channel) =>
+    notifee.createChannel({
+      id: channel.id,
+      name: channel.name,
+      sound: channel.sound,
+      description: constant.ALERT_DESCRIPTION,
+      importance: AndroidImportance.HIGH,
+    })
+  );
+
+  await Promise.all(channelCreationPromises);
+
   if (remindersOn) {
     const array = JSON.parse(remindersList);
-    for (let i = 0; i < array.length; i += 1) {
-      if (array[i].enabled) {
-        createReminder(array[i], sound);
-      }
-    }
+    const reminders = array.filter((item) => item.enabled); // Filter only enabled reminders
+    const reminderPromises = reminders.map((reminder) => createReminder(reminder, sound));
+
+    await Promise.all(reminderPromises);
   }
 };
 
@@ -107,26 +123,10 @@ export const checkPermissions = async () => {
   return isAllowed;
 };
 
-export const listenReminders = async () => {
-  notifee.onForegroundEvent(({ type }) => {
-    switch (type) {
-      case EventType.DISMISSED:
-        this.resetBadgeCount();
-        break;
-      case EventType.PRESS:
-        this.resetBadgeCount();
-        break;
-      default:
-        break;
-    }
-  });
-
-  notifee.onBackgroundEvent(async ({ type, detail }) => {
-    const { pressAction } = detail;
-
-    // Check if the user pressed the "Mark as read" action
-    if (type === EventType.ACTION_PRESS && pressAction.id === constant.MARK_AS_READ) {
-      this.resetBadgeCount();
-    }
+export const displayNotification = async () => {
+  await notifee.displayNotification({
+    title: "Test Notification",
+    body: "This is a test notification.",
+    android: { channelId: constant.SOUND, smallIcon: "background_splash" },
   });
 };

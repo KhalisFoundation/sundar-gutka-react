@@ -1,13 +1,13 @@
 import React, { useState } from "react";
 import { ListItem, Icon, Switch } from "@rneui/themed";
 import { useDispatch, useSelector } from "react-redux";
-import { STRINGS } from "../../common";
-import { setVishraamOption, toggleVishraam, setVishraamSource } from "../../common/actions";
-import { VISHRAAM_OPTIONS, VISHRAAM_SOURCES } from "../../common/actions/constant";
+import { STRINGS } from "@common";
+import { setVishraamOption, toggleVishraam, setVishraamSource } from "@common/actions";
 import { nightModeStyles, iconNightColor } from "../styles";
 import { BottomSheetComponent, ListItemComponent } from "./comon";
+import { getVishraamSource, getVishraamOption } from "./comon/strings";
 
-function VishraamComponent() {
+const VishraamComponent = () => {
   const [isVishraamOptionVisible, toggleVishraamOptionVisible] = useState(false);
   const [isVishraamSourceVisible, toggleVishraamSourceVisible] = useState(false);
   const isVishraam = useSelector((state) => state.isVishraam);
@@ -18,6 +18,8 @@ function VishraamComponent() {
   const dispatch = useDispatch();
   const { containerNightStyles, textNightStyle } = nightModeStyles(isNightMode);
   const iconColor = iconNightColor(isNightMode);
+  const VISHRAAM_OPTIONS = getVishraamOption(STRINGS);
+  const VISHRAAM_SOURCES = getVishraamSource(STRINGS);
 
   return (
     <>
@@ -74,5 +76,5 @@ function VishraamComponent() {
       )}
     </>
   );
-}
+};
 export default VishraamComponent;

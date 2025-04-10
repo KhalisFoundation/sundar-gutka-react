@@ -1,6 +1,6 @@
 import * as actionTypes from "./actionTypes";
 import STRINGS from "../localization";
-import { trackSettingEvent } from "../analytics";
+import { trackSettingEvent } from "../firebase/analytics";
 import constant from "../constant";
 
 export const toggleNightMode = (value) => {
@@ -8,146 +8,141 @@ export const toggleNightMode = (value) => {
   return { type: actionTypes.TOGGLE_NIGHT_MODE, value };
 };
 
-export function setFontSize(size) {
-  trackSettingEvent(constant.FONT_SIZE, size);
-  return { type: actionTypes.SET_FONT_SIZE, size };
-}
-export function setFontFace(font) {
-  trackSettingEvent(constant.FONT_FACE, font);
-  return { type: actionTypes.SET_FONT_FACE, font };
-}
+export const setFontSize = (value) => {
+  trackSettingEvent(constant.FONT_SIZE, value);
+  return { type: actionTypes.SET_FONT_SIZE, value };
+};
+export const setFontFace = (value) => {
+  trackSettingEvent(constant.FONT_FACE, value);
+  return { type: actionTypes.SET_FONT_FACE, value };
+};
 
-export function setLanguage(language) {
-  trackSettingEvent(constant.LANGUAGE, language);
-  STRINGS.setLanguage(language);
-  return { type: actionTypes.SET_LANGUAGE, language };
-}
-export function toggleTransliteration(value) {
+export const setLanguage = (value) => {
+  trackSettingEvent(constant.LANGUAGE, value);
+  STRINGS.setLanguage(value);
+  return { type: actionTypes.SET_LANGUAGE, value };
+};
+export const toggleTransliteration = (value) => {
   trackSettingEvent(constant.TRANSLITERATION, value);
   return { type: actionTypes.TOGGLE_TRANSLITERATION, value };
-}
-export function setTransliteration(language) {
-  trackSettingEvent(constant.TRANSLITERATION, language);
-  return { type: actionTypes.SET_TRANSLITERATION, language };
-}
-export function setTheme(theme) {
-  trackSettingEvent(constant.THEME, theme);
-  return { type: actionTypes.SET_THEME, theme };
-}
+};
+export const setTransliteration = (value) => {
+  trackSettingEvent(constant.TRANSLITERATION, value);
+  return { type: actionTypes.SET_TRANSLITERATION, value };
+};
+export const setTheme = (value) => {
+  trackSettingEvent(constant.THEME, value);
+  return { type: actionTypes.SET_THEME, value };
+};
 
-export function toggleAutoScroll(value) {
+export const toggleAutoScroll = (value) => {
   trackSettingEvent(constant.AUTO_SCROLL, value);
   return { type: actionTypes.TOGGLE_AUTO_SCROLL, value };
-}
+};
 
-export function toggleStatusBar(value) {
+export const toggleStatusBar = (value) => {
   trackSettingEvent(constant.STATUS_BAR, value);
   return { type: actionTypes.TOGGLE_STATUS_BAR, value };
-}
-export function toggleScreenAwake(value) {
+};
+export const toggleScreenAwake = (value) => {
   trackSettingEvent(constant.KEEP_AWAKE, value);
   return { type: actionTypes.TOGGLE_SCREEN_AWAKE, value };
-}
+};
 
-export function setBaniLength(length) {
-  trackSettingEvent(constant.BANI_LENGTH, length);
-  return { type: actionTypes.SET_BANI_LENGTH, length };
-}
-export function toggleLarivaar(value) {
+export const setBaniLength = (value) => {
+  trackSettingEvent(constant.BANI_LENGTH, value);
+  return { type: actionTypes.SET_BANI_LENGTH, value };
+};
+export const toggleLarivaar = (value) => {
   trackSettingEvent(constant.LARIVAAR, value);
   return { type: actionTypes.TOGGLE_LARIVAAR, value };
-}
+};
 
-export function toggleLarivaarAssist(value) {
+export const toggleLarivaarAssist = (value) => {
   trackSettingEvent(constant.LARIVAAR_ASSIST, value);
   return { type: actionTypes.TOGGLE_LARIVAAR_ASSIST, value };
-}
+};
 
-export function toggleParagraphMode(value) {
+export const toggleParagraphMode = (value) => {
   trackSettingEvent(constant.PARAGRAPH, value);
   return { type: actionTypes.TOGGLE_PARAGRAPH_MODE, value };
-}
+};
 
-export function setPadched(setting) {
-  trackSettingEvent(constant.PADCHED, setting);
-  return { type: actionTypes.SET_PADCHHED, setting };
-}
+export const setPadched = (value) => {
+  trackSettingEvent(constant.PADCHED, value);
+  return { type: actionTypes.SET_PADCHHED, value };
+};
 
-export function toggleVishraam(value) {
+export const toggleVishraam = (value) => {
   trackSettingEvent(constant.VISHRAAM, value);
   return { type: actionTypes.TOGGLE_VISHRAAM, value };
-}
+};
 
-export function setVishraamOption(option) {
-  trackSettingEvent(constant.VISHRAAM_OPTION, option);
-  return { type: actionTypes.SET_VISHRAAM_OPTION, option };
-}
+export const setVishraamOption = (value) => {
+  trackSettingEvent(constant.VISHRAAM_OPTION, value);
+  return { type: actionTypes.SET_VISHRAAM_OPTION, value };
+};
 
-export function setVishraamSource(source) {
-  trackSettingEvent(constant.VISHRAAM_SOURCE, source);
-  return { type: actionTypes.SET_VISHRAAM_SOURCE, source };
-}
+export const setVishraamSource = (value) => {
+  trackSettingEvent(constant.VISHRAAM_SOURCE, value);
+  return { type: actionTypes.SET_VISHRAAM_SOURCE, value };
+};
 
-export function toggleStatistics(value) {
+export const toggleStatistics = (value) => {
   trackSettingEvent(constant.STATISTICS, value);
   return { type: actionTypes.TOGGLE_STATISTICS, value };
-}
+};
 
-export function toggleEnglishTranslation(value) {
+export const toggleEnglishTranslation = (value) => {
   trackSettingEvent(constant.ENGLISH, value);
   return { type: actionTypes.TOGGLE_ENGLISH_TRANSLATION, value };
-}
+};
 
-export function togglePunjabiTranslation(value) {
+export const togglePunjabiTranslation = (value) => {
   trackSettingEvent(constant.PUNJABI, value);
   return { type: actionTypes.TOGGLE_PUNJABI_TRANSLATION, value };
-}
-export function toggleSpanishTranslation(value) {
+};
+export const toggleSpanishTranslation = (value) => {
   trackSettingEvent(constant.SPANISH, value);
   return { type: actionTypes.TOGGLE_SPANISH_TRANSLATION, value };
-}
-export function setBookmarkPosition(value) {
+};
+export const setBookmarkPosition = (value) => {
   trackSettingEvent(constant.BOOKMARKS, value);
   return { type: actionTypes.SET_BOOKMARK_POSITION, value };
-}
-export function toggleReminders(value) {
+};
+export const toggleReminders = (value) => {
   trackSettingEvent(constant.REMINDERS, value);
   return { type: actionTypes.TOGGLE_REMINDERS, value };
-}
+};
 
-export function setReminderBanis(list) {
-  return { type: actionTypes.SET_REMINDER_BANIS, list };
-}
-export function setReminderSound(sound) {
-  trackSettingEvent(constant.REMINDER_SOUND, sound);
-  return { type: actionTypes.SET_REMINDER_SOUND, sound };
-}
+export const setReminderBanis = (value) => {
+  return { type: actionTypes.SET_REMINDER_BANIS, value };
+};
+export const setReminderSound = (value) => {
+  trackSettingEvent(constant.REMINDER_SOUND, value);
+  return { type: actionTypes.SET_REMINDER_SOUND, value };
+};
 
-export function setAutoScrollSpeed(speed, shabad) {
-  const shabadSpeed = { [shabad]: speed };
-  return { type: actionTypes.SET_AUTO_SCROLL_SPEED, shabadSpeed };
-}
-export function setCacheShabad(shabad, shabadID) {
-  const cache = { [shabadID]: shabad };
-  return { type: actionTypes.SET_CACHE_SHABAD, cache };
-}
+export const setAutoScrollSpeed = (speed, shabad) => {
+  const value = { [shabad]: speed };
+  return { type: actionTypes.SET_AUTO_SCROLL_SPEED, value };
+};
+export const setBaniOrder = (value) => {
+  return { type: actionTypes.SET_BANI_ORDER, value };
+};
 
-export function setBaniOrder(order) {
-  return { type: actionTypes.SET_BANI_ORDER, order };
-}
+export const setBaniList = (value) => {
+  return { type: actionTypes.SET_BANI_LIST, value };
+};
 
-export function setBaniList(list) {
-  return { type: actionTypes.SET_BANI_LIST, list };
-}
+export const setPosition = (pos, shabadID) => {
+  const value = { [shabadID]: pos };
+  return { type: actionTypes.SET_SAVE_POSITION, value };
+};
 
-export function setPosition(pos, shabadID) {
-  const position = { [shabadID]: pos };
-  return { type: actionTypes.SET_SAVE_POSITION, position };
-}
-
-export function setScrollPosition(position) {
-  return { type: actionTypes.SET_SCROLL_POSITION, position };
-}
-export function toggleHeaderFooter(isHeadFoot) {
-  return { type: actionTypes.TOGGLE_HEADER_FOOTER, isHeadFoot };
-}
+export const setScrollPosition = (value) => {
+  return { type: actionTypes.SET_SCROLL_POSITION, value };
+};
+export const toggleHeaderFooter = (value) => {
+  return { type: actionTypes.TOGGLE_HEADER_FOOTER, value };
+};

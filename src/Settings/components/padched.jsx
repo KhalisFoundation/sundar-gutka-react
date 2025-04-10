@@ -1,14 +1,15 @@
 import React, { useState } from "react";
 import { useSelector } from "react-redux";
-import { STRINGS } from "../../common";
-import { setPadched } from "../../common/actions";
-import { PADCHED_SETTINGS } from "../../common/actions/constant";
+import { STRINGS } from "@common";
+import { setPadched } from "@common/actions";
 import { ListItemComponent, BottomSheetComponent } from "./comon";
+import { getPadched } from "./comon/strings";
 
-function PadchedSettingsComponent() {
+const PadchedSettingsComponent = () => {
   const [isVisible, toggleVisible] = useState(false);
   const padched = useSelector((state) => state.padched);
   const padchedIcon = require("../../../images/larivaaricon.png");
+  const PADCHED_SETTINGS = getPadched(STRINGS);
   return (
     <>
       <ListItemComponent
@@ -31,6 +32,6 @@ function PadchedSettingsComponent() {
       )}
     </>
   );
-}
+};
 
 export default PadchedSettingsComponent;

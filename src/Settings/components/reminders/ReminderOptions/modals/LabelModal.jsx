@@ -2,13 +2,11 @@ import React, { useState } from "react";
 import { Modal, Text, TextInput, View, TouchableOpacity } from "react-native";
 import { useDispatch, useSelector } from "react-redux";
 import PropTypes from "prop-types";
-import colors from "../../../../../common/colors";
-import STRINGS from "../../../../../common/localization";
+import { setReminderBanis } from "@common/actions";
+import { updateReminders, colors, STRINGS } from "@common";
 import { styles } from "../styles";
-import { setReminderBanis } from "../../../../../common/actions";
-import { updateReminders } from "../../../../../common/notifications";
 
-function LabelModal({ section, onHide }) {
+const LabelModal = ({ section, onHide }) => {
   const { title } = section;
   const [reminderTitle, setReminderTitle] = useState(title);
   const isNightMode = useSelector((state) => state.isNightMode);
@@ -64,9 +62,9 @@ function LabelModal({ section, onHide }) {
       </View>
     </Modal>
   );
-}
+};
 LabelModal.propTypes = {
-  section: PropTypes.shape({ key: PropTypes.string.isRequired, title: PropTypes.string.isRequired })
+  section: PropTypes.shape({ key: PropTypes.number.isRequired, title: PropTypes.string.isRequired })
     .isRequired,
   onHide: PropTypes.func.isRequired,
 };

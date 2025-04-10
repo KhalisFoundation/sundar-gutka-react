@@ -1,68 +1,52 @@
-import * as React from "react";
+import React, { useEffect } from "react";
 import { Provider } from "react-redux";
+import { PersistGate } from "redux-persist/integration/react";
 import ErrorBoundary from "react-native-error-boundary";
 import notifee, { EventType } from "@notifee/react-native";
-import { useEffect } from "react";
-import messaging from "@react-native-firebase/messaging";
-import Navigation from "./src/navigation/navigation";
-import createStore from "./src/common/store";
-import { resetBadgeCount } from "./src/common/notifications";
-import constant from "./src/common/constant";
-import * as rootNavigation from "./src/common/rootNavigation";
-import errorHandler from "./src/common/errHandler";
-import FallBack from "./src/common/components/FallbackComponent";
-import { getFcmToken, handleNotification } from "./src/common/firebase";
+import SplashScreen from "react-native-splash-screen";
+import {
+  createStore,
+  logError,
+  initializeCrashlytics,
+  FallBack,
+  resetBadgeCount,
+  navigateTo,
+  initializePerformanceMonitoring,
+} from "@common";
+import Navigation from "./src/navigation";
+import { allowTracking } from "./src/common/firebase/analytics";
 
-const { store } = createStore();
-function App() {
-  const navigateTo = (incoming) => {
-    const { data } = incoming.notification;
-    const params = { key: `Reader-${data.id}`, params: { item: data } };
-    rootNavigation.navigate(constant.READER, params);
-  };
+const { store, persistor } = createStore();
+const App = () => {
+  useEffect(() => {
+    // Code to run on component mount
+    SplashScreen.hide(); // Hide the splash screen once everything is loaded
+  }, []); // The empty array causes this effect to only run on mount
 
   useEffect(() => {
-    const unsubscribe = messaging().onMessage(async (remoteMessage) => {
-      const { title, body } = remoteMessage.notification;
-      handleNotification(title, body);
-    });
-
-    messaging().setBackgroundMessageHandler(async (remoteMessage) => {
-      const { title, body } = remoteMessage.notification;
-      handleNotification(title, body);
-    });
-
-    return unsubscribe;
+    initializePerformanceMonitoring();
+    allowTracking();
+    initializeCrashlytics();
   }, []);
-  useEffect(
-    () =>
-      (() => {
-        const initialNotification = notifee.getInitialNotification();
-        getFcmToken();
-        if (initialNotification) {
-          resetBadgeCount();
-        }
 
-        notifee.onForegroundEvent(({ type, detail }) => {
-          switch (type) {
-            case EventType.PRESS:
-              navigateTo(detail);
-              resetBadgeCount();
-              break;
-            default:
-              resetBadgeCount();
-          }
-        });
-      })(),
-    []
-  );
+  useEffect(() => {
+    return notifee.onForegroundEvent(({ type, detail }) => {
+      resetBadgeCount();
+      if (type === EventType.PRESS) {
+        navigateTo(detail);
+      }
+    });
+  }, []);
+
   return (
-    <ErrorBoundary onError={errorHandler} FallbackComponent={FallBack}>
+    <ErrorBoundary onError={logError} FallbackComponent={FallBack}>
       <Provider store={store}>
-        <Navigation />
+        <PersistGate loading={null} persistor={persistor}>
+          <Navigation />
+        </PersistGate>
       </Provider>
     </ErrorBoundary>
   );
-}
+};
 
 export default App;

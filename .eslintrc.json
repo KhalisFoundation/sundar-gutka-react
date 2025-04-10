@@ -9,6 +9,10 @@
     "default-param-last": "off",
     "import/no-extraneous-dependencies": "off",
     "prefer-destructuring": ["error", { "object": true, "array": false }],
+    "react/function-component-definition": [
+      1,
+      { "namedComponents": "arrow-function", "unnamedComponents": "arrow-function" }
+    ],
     "react/jsx-filename-extension": [
       1,
       {

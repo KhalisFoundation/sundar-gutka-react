@@ -1,13 +1,11 @@
 import React from "react";
 import { ListItem, Avatar } from "@rneui/themed";
-import { useSelector } from "react-redux";
 import PropTypes from "prop-types";
+import { STRINGS } from "@common";
 import { nightModeStyles, nightModeColor } from "../styles/nightModeStyles";
-import STRINGS from "../../common/localization";
 import { styles } from "../styles";
 
-function EditBaniOrder({ navigate }) {
-  const isNightMode = useSelector((state) => state.isNightMode);
+const EditBaniOrder = ({ navigate, isNightMode }) => {
   const { containerNightStyles } = nightModeStyles(isNightMode);
   const nightColor = nightModeColor(isNightMode);
   const { EDIT_BANI_ORDER } = STRINGS;
@@ -25,6 +23,9 @@ function EditBaniOrder({ navigate }) {
       <ListItem.Chevron />
     </ListItem>
   );
-}
-EditBaniOrder.propTypes = { navigate: PropTypes.func.isRequired };
+};
+EditBaniOrder.propTypes = {
+  navigate: PropTypes.func.isRequired,
+  isNightMode: PropTypes.bool.isRequired,
+};
 export default EditBaniOrder;

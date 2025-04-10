@@ -1,11 +1,11 @@
 import React from "react";
 import { ListItem, Icon, Switch } from "@rneui/themed";
 import { useSelector, useDispatch } from "react-redux";
-import { toggleStatusBar } from "../../common/actions";
+import { toggleStatusBar } from "@common/actions";
+import STRINGS from "@common/localization";
 import { iconNightColor, nightModeStyles, nightModeColor } from "../styles/nightModeStyles";
-import STRINGS from "../../common/localization";
 
-function StatusBar() {
+const StatusBar = () => {
   const isStatusBar = useSelector((state) => state.isStatusBar);
   const isNightMode = useSelector((state) => state.isNightMode);
 
@@ -25,6 +25,6 @@ function StatusBar() {
       <Switch value={isStatusBar} onValueChange={(value) => dispatch(toggleStatusBar(value))} />
     </ListItem>
   );
-}
+};
 
 export default StatusBar;

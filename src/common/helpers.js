@@ -1,4 +1,5 @@
 import constant from "./constant";
+import defaultBaniOrder from "./defaultBaniOrder";
 
 const FONT_SIZES = {
   [constant.EXTRA_SMALL]: 18,
@@ -17,6 +18,11 @@ const baseFontSize = (size, isTransliteration) => {
   }
 
   return fontSize;
+};
+export const validateBaniOrder = (baniOrder) => {
+  const isValidBaniOrder = baniOrder?.baniOrder?.length > 0;
+  const order = isValidBaniOrder ? baniOrder : defaultBaniOrder;
+  return order;
 };
 
 export default baseFontSize;

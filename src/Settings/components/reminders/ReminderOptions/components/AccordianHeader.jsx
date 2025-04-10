@@ -5,14 +5,11 @@ import PropTypes from "prop-types";
 import { useDispatch, useSelector } from "react-redux";
 import DateTimePicker from "react-native-modal-datetime-picker";
 import moment from "moment";
-import colors from "../../../../../common/colors";
-import constant from "../../../../../common/constant";
+import { colors, constant, updateReminders, trackReminderEvent } from "@common";
+import { setReminderBanis } from "@common/actions";
 import { styles } from "../styles";
-import { setReminderBanis } from "../../../../../common/actions";
-import { updateReminders } from "../../../../../common/notifications";
-import { trackReminderEvent } from "../../../../../common/analytics";
 
-function AccordianHeader({ section, isActive }) {
+const AccordianHeader = ({ section, isActive }) => {
   const reminderBanis = useSelector((state) => state.reminderBanis);
   const isNightMode = useSelector((state) => state.isNightMode);
   const isTransliteration = useSelector((state) => state.isTransliteration);
@@ -92,6 +89,14 @@ function AccordianHeader({ section, isActive }) {
         <Divider color={colors.DISABLED_TEXT_COLOR_NIGHT_MODE} />
       </View>
       <DateTimePicker
+        modalPropsIOS={{
+          supportedOrientations: [
+            "portrait",
+            "portrait-upside-down",
+            "landscape-left",
+            "landscape-right",
+          ],
+        }}
         isVisible={isTimePicker}
         onConfirm={(t) => handleTimePicked(t)}
         onCancel={hideDateTimePicker}
@@ -100,7 +105,7 @@ function AccordianHeader({ section, isActive }) {
       />
     </View>
   );
-}
+};
 AccordianHeader.propTypes = {
   section: PropTypes.shape({
     enabled: PropTypes.bool.isRequired,

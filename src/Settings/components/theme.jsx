@@ -1,17 +1,17 @@
 import React, { useState, useEffect } from "react";
 import { Appearance } from "react-native";
 import { useDispatch, useSelector } from "react-redux";
-import STRINGS from "../../common/localization";
-import { setTheme, toggleNightMode } from "../../common/actions";
-import { THEMES } from "../../common/actions/constant";
-import { constant } from "../../common";
+import { setTheme, toggleNightMode } from "@common/actions";
+import { constant, STRINGS } from "@common";
 import { BottomSheetComponent, ListItemComponent } from "./comon";
+import { getTheme } from "./comon/strings";
 
-function ThemeComponent() {
+const ThemeComponent = () => {
   const [isVisible, toggleVisible] = useState(false);
   const theme = useSelector((state) => state.theme);
   const themeIcon = require("../../../images/bgcoloricon.png");
   const dispatch = useDispatch();
+  const THEMES = getTheme(STRINGS);
 
   useEffect(() => {
     const colorScheme = Appearance.getColorScheme();
@@ -50,6 +50,6 @@ function ThemeComponent() {
       )}
     </>
   );
-}
+};
 
 export default ThemeComponent;

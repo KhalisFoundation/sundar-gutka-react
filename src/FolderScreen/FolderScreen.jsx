@@ -2,13 +2,11 @@ import React from "react";
 import { StatusBar, View } from "react-native";
 import PropTypes from "prop-types";
 import { useSelector } from "react-redux";
-import colors from "../common/colors";
-import BaniList from "../common/components/BaniList/BaniList";
-import constant from "../common/constant";
+import { colors, BaniList, constant, useScreenAnalytics, logMessage } from "@common";
 import Header from "./header";
-import useScreenAnalytics from "../common/hooks/useScreenAnalytics";
 
-function FolderScreen({ navigation, route }) {
+const FolderScreen = ({ navigation, route }) => {
+  logMessage(constant.FOLDERSCREEN);
   const { navigate } = navigation;
   const { data, title } = route.params.params;
   const isNightMode = useSelector((state) => state.isNightMode);
@@ -28,10 +26,10 @@ function FolderScreen({ navigation, route }) {
     >
       <StatusBar barStyle="light-content" backgroundColor={colors.TOOLBAR_COLOR} />
       <Header navigation={navigation} title={title} />
-      <BaniList data={data} isFolderScreen onPress={onPress.bind(this)} />
+      <BaniList data={data} isFolderScreen onPress={onPress} />
     </View>
   );
-}
+};
 
 FolderScreen.propTypes = {
   navigation: PropTypes.shape({

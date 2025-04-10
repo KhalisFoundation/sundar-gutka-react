@@ -1,9 +1,10 @@
 import { configureStore } from "@reduxjs/toolkit";
-import { persistReducer, persistStore } from "reduxjs-toolkit-persist";
+import { persistReducer, persistStore } from "redux-persist";
 import AsyncStorage from "@react-native-async-storage/async-storage";
 import reducer from "./reducer";
+import crashlyticsMiddleware from "./middleware/crashlytics";
 
-const persistConfig = { key: "root", storage: AsyncStorage, backlist: ["navigation"] };
+const persistConfig = { key: "root", storage: AsyncStorage, blacklist: ["navigation", "baniList"] };
 const persistedReducer = persistReducer(persistConfig, reducer);
 
 const configure = () => {
@@ -13,7 +14,7 @@ const configure = () => {
       getDefaultMiddleware({
         immutableCheck: false,
         serializableCheck: false,
-      }),
+      }).concat(crashlyticsMiddleware),
   });
   const persistor = persistStore(store);
   return { store, persistor };

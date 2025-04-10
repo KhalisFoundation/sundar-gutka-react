@@ -1,6 +1,7 @@
 export default {
   DB: "gutka_v01.db",
   ENGLISH: "ENGLISH",
+  ENGLISH_TITLE_CASE: "English",
   HINDI: "HINDI",
   SHAHMUKHI: "SHAHMUKHI",
   IPA: "IPA",
@@ -14,7 +15,7 @@ export default {
   LARGE: "LARGE",
   EXTRA_LARGE: "EXTRA_LARGE",
   DEFAULT: "DEFAULT",
-  _HINDI: `हिंदी`,
+  HINDI_UNICODE: `हिंदी`,
   PUNJABI: `ਪੰਜਾਬੀ`,
   FRANCAIS: `Français`,
   ESPANOL: `Español`,
@@ -52,6 +53,7 @@ export default {
   FOLDERSCREEN: "FolderScreen",
   HOME_SCREEN: "Home Screen",
   ABOUT_SCREEN: "About Screen",
+  FALLBACK_SCREEN: "Fallback Screen",
   BOOKMARKS: "Bookmarks",
   FONT_SIZE: "fontSize",
   FONT_FACE: "fontFace",
@@ -78,4 +80,6 @@ export default {
   ADD_REMINDER: "addReminder",
   RESET_REMINDER: "resetReminderDefault",
   UPDATE_REMINDER: "updateReminder",
+  PORTRAIT: "PORTRAIT",
+  LANDSCAPE: "LANDSCAPE",
 };

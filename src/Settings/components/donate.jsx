@@ -2,10 +2,10 @@ import React from "react";
 import { Linking } from "react-native";
 import { ListItem, Icon } from "@rneui/themed";
 import { useSelector } from "react-redux";
+import { STRINGS } from "@common";
 import { iconNightColor, nightModeStyles, nightModeColor } from "../styles/nightModeStyles";
-import STRINGS from "../../common/localization";
 
-function Donate() {
+const Donate = () => {
   const isNightMode = useSelector((state) => state.isNightMode);
   const iconColor = iconNightColor(isNightMode);
   const { containerNightStyles } = nightModeStyles(isNightMode);
@@ -24,5 +24,5 @@ function Donate() {
       <ListItem.Chevron />
     </ListItem>
   );
-}
+};
 export default Donate;

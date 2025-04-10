@@ -1,37 +1,42 @@
 import React, { useState, useEffect } from "react";
-import { View, Text, Animated } from "react-native";
+import { View, Text, Animated, Platform } from "react-native";
 import Slider from "@react-native-community/slider";
 import { useDispatch, useSelector } from "react-redux";
 import { Icon } from "@rneui/themed";
 import PropTypes from "prop-types";
-import colors from "../../common/colors";
+import { colors, constant, actions, trackReaderEvent } from "@common";
 import { styles } from "../styles";
-import constant from "../../common/constant";
-import { setAutoScrollSpeed } from "../../common/actions";
-import { trackReaderEvent } from "../../common/analytics";
-import { useAnimationHeadFoot } from "../hooks";
 
-const AutoScrollComponent = React.forwardRef(({ shabadID }, ref) => {
+const AutoScrollComponent = React.forwardRef(({ shabadID, isFooter }, ref) => {
   const [isPaused, togglePaused] = useState(true);
   const autoScrollSpeedObj = useSelector((state) => state.autoScrollSpeedObj);
   const [currentSpeed, setCurrentSpeed] = useState(
     autoScrollSpeedObj[shabadID] || constant.DEFAULT_SPEED
   );
-  const animationPosition = useAnimationHeadFoot();
+  const [animationPosition] = useState(new Animated.Value(0));
   const dispatch = useDispatch();
+
+  useEffect(() => {
+    const value = isFooter ? 0 : 130;
+    Animated.timing(animationPosition, {
+      toValue: value,
+      duration: 500,
+      useNativeDriver: true,
+    }).start();
+  }, [isFooter]);
 
   useEffect(() => {
     const autoScrollObj = {
       autoScroll: isPaused ? 0 : currentSpeed,
       scrollMultiplier: 1.0,
     };
-    if (ref.current && ref.current.postMessage) {
+    if (ref && ref.current && ref.current.postMessage) {
       ref.current.postMessage(JSON.stringify(autoScrollObj));
     }
   }, [isPaused, currentSpeed]);
 
   const handleSpeed = (value) => {
-    dispatch(setAutoScrollSpeed(value, shabadID));
+    dispatch(actions.setAutoScrollSpeed(value, shabadID));
     if (value === 0) {
       togglePaused(true);
     }
@@ -43,8 +48,15 @@ const AutoScrollComponent = React.forwardRef(({ shabadID }, ref) => {
     togglePaused(false);
   };
 
+  const bottomSpace = Platform.OS === "ios" ? 10 : 0;
+
   return (
-    <Animated.View style={[styles.container, { transform: [{ translateY: animationPosition }] }]}>
+    <Animated.View
+      style={[
+        styles.container,
+        { transform: [{ translateY: animationPosition }], paddingBottom: bottomSpace },
+      ]}
+    >
       <View style={styles.wrapper}>
         {isPaused && (
           <Icon name="play-arrow" color={colors.TOOLBAR_TINT} size={30} onPress={handlePlay} />
@@ -76,5 +88,6 @@ const AutoScrollComponent = React.forwardRef(({ shabadID }, ref) => {
 });
 AutoScrollComponent.propTypes = {
   shabadID: PropTypes.number.isRequired,
+  isFooter: PropTypes.bool.isRequired,
 };
 export default AutoScrollComponent;

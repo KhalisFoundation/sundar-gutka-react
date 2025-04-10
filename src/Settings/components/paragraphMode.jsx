@@ -1,11 +1,11 @@
 import React from "react";
 import { ListItem, Icon, Switch } from "@rneui/themed";
 import { useSelector, useDispatch } from "react-redux";
-import { toggleParagraphMode } from "../../common/actions";
+import { toggleParagraphMode } from "@common/actions";
+import { STRINGS } from "@common";
 import { iconNightColor, nightModeStyles, nightModeColor } from "../styles/nightModeStyles";
-import STRINGS from "../../common/localization";
 
-function ParagraphMode() {
+const ParagraphMode = () => {
   const isParagraphMode = useSelector((state) => state.isParagraphMode);
   const isNightMode = useSelector((state) => state.isNightMode);
 
@@ -26,5 +26,5 @@ function ParagraphMode() {
       />
     </ListItem>
   );
-}
+};
 export default ParagraphMode;

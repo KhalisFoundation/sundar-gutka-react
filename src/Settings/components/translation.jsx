@@ -1,16 +1,15 @@
 import React, { useState } from "react";
 import { ListItem, Avatar, Switch } from "@rneui/themed";
 import { useSelector, useDispatch } from "react-redux";
-import colors from "../../common/colors";
-import STRINGS from "../../common/localization";
+import { colors, STRINGS } from "@common";
 import {
   toggleEnglishTranslation,
   togglePunjabiTranslation,
   toggleSpanishTranslation,
-} from "../../common/actions";
+} from "@common/actions";
 import { iconNightColor, styles } from "../styles";
 
-function TranslationComponent() {
+const TranslationComponent = () => {
   const translationAvatar = require("../../../images/englishicon.png");
   const isEnglishTranslation = useSelector((state) => state.isEnglishTranslation);
   const isSpanishTranslation = useSelector((state) => state.isSpanishTranslation);
@@ -102,6 +101,6 @@ function TranslationComponent() {
       </ListItem>
     </ListItem.Accordion>
   );
-}
+};
 
 export default TranslationComponent;
