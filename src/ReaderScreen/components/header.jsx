@@ -15,6 +15,7 @@ const Header = ({
   isHeader,
 }) => {
   const isNightMode = useSelector((state) => state.isNightMode);
+  const isDatabaseUpdateAvailable = useSelector((state) => state.isDatabaseUpdateAvaliable);
   const getHeaderStyle = getHeaderStyles(isNightMode);
   const animationPosition = useRef(new Animated.Value(0)).current;
 
@@ -33,7 +34,7 @@ const Header = ({
     <View style={{ flexDirection: "row" }}>
       <Icon name="bookmark" color={colors.TOOLBAR_TINT} size={30} onPress={handleBookmarkPress} />
       <Icon
-        name="settings"
+        name={isDatabaseUpdateAvailable ? "settings-suggest" : "settings"}
         color={colors.TOOLBAR_TINT}
         size={30}
         onPress={() => handleSettingsPress()}

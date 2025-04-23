@@ -37,6 +37,7 @@
     "react-native-draggable-flatlist": "^4.0.1",
     "react-native-error-boundary": "^2.0.0",
     "react-native-exception-handler": "^2.10.10",
+    "react-native-fs": "^2.20.0",
     "react-native-gesture-handler": "^2.15.0",
     "react-native-localization": "^2.3.1",
     "react-native-modal-datetime-picker": "^18.0.0",

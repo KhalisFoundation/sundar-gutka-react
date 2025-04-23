@@ -32,6 +32,8 @@ const Settings = ({ navigation }) => {
   useScreenAnalytics(constant.SETTINGS);
   const isNightMode = useSelector((state) => state.isNightMode);
   const isStatusBar = useSelector((state) => state.isStatusBar);
+  const isDatabaseUpdateAvaliable = useSelector((state) => state.isDatabaseUpdateAvaliable);
+
   const { navigate } = navigation;
   const { scrollViewNightStyles, backgroundNightStyle } = nightModeStyles(isNightMode);
   const { displayOptionsText, end } = styles;
@@ -54,7 +56,7 @@ const Settings = ({ navigation }) => {
             !isNightMode ? colors.TOOLBAR_COLOR_ALT : colors.TOOLBAR_COLOR_ALT_NIGHT_MODE
           }
         />
-        <DatabaseUpdateBanner navigate={navigate} />
+        {isDatabaseUpdateAvaliable && <DatabaseUpdateBanner navigate={navigate} />}
         <ScrollView>
           <Text style={[displayOptionsText, scrollViewNightStyles]}>{DISPLAY_OPTIONS}</Text>
           <FontSizeComponent />

@@ -1,5 +1,5 @@
 import { StyleSheet } from "react-native";
-import colors from "@common/colors";
+import { colors } from "@common";
 
 const styles = StyleSheet.create({
   nightBackColor: { backgdroundColor: colors.NIGHT_BLACK },
@@ -53,12 +53,12 @@ const styles = StyleSheet.create({
   databaseUpdateBannerWrapper: {
     fles: 1,
     flexDirection: "row",
-    backgroundColor: "#007AFF",
+    backgroundColor: colors.HEADER_COLOR_1_LIGHT,
     justifyContent: "center",
     alignItems: "center",
     padding: 5,
   },
   baniDbImage: { width: 20, height: 20, marginRight: 10 },
-  updateText: { color: "#fff", fontSize: 16 },
+  updateText: { color: "#fff", fontSize: 14 },
 });
 export default styles;

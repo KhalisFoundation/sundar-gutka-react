@@ -151,6 +151,6 @@ export const setDatabaseMD5Hash = (value) => {
   return { type: actionTypes.SET_DATABASE_MD5_HASH, value };
 };
 
-export const toggleDatbaseUpdateAvailable = (value) => {
-  return { type: actionTypes.TOGGLE_DATBASE_UPDATE_AVAILABLE, value };
+export const toggleDatabaseUpdateAvailable = (value) => {
+  return { type: actionTypes.TOGGLE_DATABASE_UPDATE_AVAILABLE, value };
 };

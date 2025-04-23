@@ -1,12 +1,23 @@
-import React from "react";
+import React, { useEffect } from "react";
 import { View, Image, Linking, TouchableHighlight } from "react-native";
-import { constant } from "@common";
+import { constant, updateDatabaseIfNeeded } from "@common";
 import CheckUpdatesAnimation from "./components/checkUpdate";
 import BaniDBAbout from "./components/baniDBAbout";
 import styles from "./styles";
 
 const BaniDBIntroScreen = () => {
   const baniDBLogoFull = require("../../images/banidb-logo-full.png");
+  useEffect(() => {
+    const checkForUpdates = async () => {
+      try {
+        await updateDatabaseIfNeeded();
+      } catch (error) {
+        console.error("Error checking for updates:", error);
+      }
+    };
+
+    checkForUpdates();
+  }, []);
 
   return (
     <View style={styles.mainWrapper}>

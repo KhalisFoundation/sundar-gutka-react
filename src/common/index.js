@@ -30,6 +30,7 @@ import { navigate, navigateTo, navigationRef } from "./rootNavigation";
 import orderedBani from "./components/BaniList/baniOrderHelper";
 import defaultBaniOrder from "./defaultBaniOrder";
 import createStore from "./store";
+import { checkForBaniDBUpdate, ensureDbExists } from "./baniDbValidate";
 
 export {
   colors,
@@ -66,4 +67,6 @@ export {
   startPerformanceTrace,
   stopTrace,
   resetTrace,
+  checkForBaniDBUpdate,
+  ensureDbExists,
 };

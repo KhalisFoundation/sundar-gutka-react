@@ -118,10 +118,6 @@ const isHeaderFooter = createReducer(false, {
   [actionTypes.TOGGLE_HEADER_FOOTER]: (state, action) => action.value,
 });
 
-const databaseMD5Hash = createReducer(null, {
-  [actionTypes.SET_DATABASE_MD5_HASH]: (state, action) => action.value,
-});
-
 const isDatabaseUpdateAvaliable = createReducer(false, {
   [actionTypes.TOGGLE_DATBASE_UPDATE_AVAILABLE]: (state, action) => action.value,
 });
@@ -202,7 +198,6 @@ const rootReducer = combineReducers({
   savePosition,
   scrollPosition,
   isHeaderFooter,
-  databaseMD5Hash,
   isDatabaseUpdateAvaliable,
 });
 export default rootReducer;
