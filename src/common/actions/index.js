@@ -147,10 +147,6 @@ export const toggleHeaderFooter = (value) => {
   return { type: actionTypes.TOGGLE_HEADER_FOOTER, value };
 };
 
-export const setDatabaseMD5Hash = (value) => {
-  return { type: actionTypes.SET_DATABASE_MD5_HASH, value };
-};
-
 export const toggleDatabaseUpdateAvailable = (value) => {
   return { type: actionTypes.TOGGLE_DATABASE_UPDATE_AVAILABLE, value };
 };

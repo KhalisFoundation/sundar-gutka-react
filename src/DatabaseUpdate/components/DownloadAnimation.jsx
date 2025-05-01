@@ -48,7 +48,9 @@ const DownloadAnimation = ({ progress, progressAnim }) => {
 
 DownloadAnimation.propTypes = {
   progress: PropTypes.number.isRequired,
-  progressAnim: PropTypes.shape.isRequired,
+  progressAnim: PropTypes.shape({
+    interpolate: PropTypes.func.isRequired,
+  }).isRequired,
 };
 
 export default DownloadAnimation;
