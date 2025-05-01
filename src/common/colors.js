@@ -49,4 +49,5 @@ export default {
   HEADER_COLOR_1_DARK: "#77baff",
   HEADER_COLOR_1_LIGHT: "#0066ff",
   HEADER_COLOR_2_LIGHT: "#727272",
+  BANIDB_LIGHT: "#eaa040",
 };

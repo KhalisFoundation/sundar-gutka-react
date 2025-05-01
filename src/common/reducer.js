@@ -118,8 +118,8 @@ const isHeaderFooter = createReducer(false, {
   [actionTypes.TOGGLE_HEADER_FOOTER]: (state, action) => action.value,
 });
 
-const isDatabaseUpdateAvaliable = createReducer(false, {
-  [actionTypes.TOGGLE_DATBASE_UPDATE_AVAILABLE]: (state, action) => action.value,
+const isDatabaseUpdateAvailable = createReducer(false, {
+  [actionTypes.TOGGLE_DATABASE_UPDATE_AVAILABLE]: (state, action) => action.value,
 });
 
 const autoScrollSpeedObj = (state = {}, action) => {
@@ -198,6 +198,6 @@ const rootReducer = combineReducers({
   savePosition,
   scrollPosition,
   isHeaderFooter,
-  isDatabaseUpdateAvaliable,
+  isDatabaseUpdateAvailable,
 });
 export default rootReducer;

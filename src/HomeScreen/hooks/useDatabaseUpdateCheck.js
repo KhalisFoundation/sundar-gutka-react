@@ -2,7 +2,7 @@ import { useEffect } from "react";
 import { useDispatch } from "react-redux";
 import { actions, checkForBaniDBUpdate } from "@common";
 
-const useDatbaseUpdateCheck = () => {
+const useDatabaseUpdateCheck = () => {
   const dispatch = useDispatch();
   const dbCheck = async () => {
     const isUpdateAvailable = await checkForBaniDBUpdate();
@@ -14,4 +14,4 @@ const useDatbaseUpdateCheck = () => {
   }, []);
 };
 
-export default useDatbaseUpdateCheck;
+export default useDatabaseUpdateCheck;

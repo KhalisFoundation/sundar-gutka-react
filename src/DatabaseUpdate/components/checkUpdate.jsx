@@ -1,13 +1,17 @@
 import React, { useEffect, useRef, useState } from "react";
 import { Animated, Text, View, Easing } from "react-native";
 import { Icon, ListItem } from "@rneui/themed";
-import { constant } from "@common";
-import { checkUpdateStyles as styles } from "./styles";
+import { STRINGS } from "@common";
+import PropTypes from "prop-types";
+import { useSelector } from "react-redux";
+import { checkUpdateStyles as styles, darkMode } from "./styles";
 
-const CheckUpdatesAnimation = () => {
+const CheckUpdatesAnimation = ({ isLoading, isUpdateAvailable }) => {
+  const isNightMode = useSelector((state) => state.isNightMode);
   const rotateAnim = useRef(new Animated.Value(0)).current;
   const [checking, setChecking] = useState(false);
   const animationRef = useRef(null);
+  const { darkModeContainer, darkModeText } = darkMode(isNightMode);
 
   useEffect(() => {
     if (checking) {
@@ -52,19 +56,37 @@ const CheckUpdatesAnimation = () => {
   });
 
   return (
-    <View style={styles.mainWrapper}>
-      <ListItem>
-        <ListItem.Title style={styles.header}>
-          <Text>{constant.CHECK_UPDATE}</Text>
-        </ListItem.Title>
-        <ListItem.Content>
-          <Animated.View style={{ transform: [{ rotate: rotateInterpolate }] }}>
-            <Icon name="refresh" type="material" size={35} color="black" />
-          </Animated.View>
-        </ListItem.Content>
-      </ListItem>
+    <View style={[styles.mainWrapper, darkModeContainer]}>
+      {isLoading && (
+        <ListItem containerStyle={darkModeContainer}>
+          <ListItem.Title style={styles.header}>
+            <Text style={darkModeText}>{STRINGS.checkForUpdate}</Text>
+          </ListItem.Title>
+          <ListItem.Content>
+            <Animated.View style={{ transform: [{ rotate: rotateInterpolate }] }}>
+              <Icon
+                name="refresh"
+                type="material"
+                size={35}
+                color={isNightMode ? "white" : "black"}
+              />
+            </Animated.View>
+          </ListItem.Content>
+        </ListItem>
+      )}
+      {!isUpdateAvailable && !isLoading && (
+        <ListItem containerStyle={darkModeContainer}>
+          <ListItem.Title style={[styles.header, darkModeContainer]}>
+            <Text style={darkModeText}>{STRINGS.upToDate}</Text>
+          </ListItem.Title>
+        </ListItem>
+      )}
     </View>
   );
+};
+CheckUpdatesAnimation.propTypes = {
+  isLoading: PropTypes.bool.isRequired,
+  isUpdateAvailable: PropTypes.bool.isRequired,
 };
 
 export default CheckUpdatesAnimation;

@@ -1,5 +1,5 @@
 import useBaniLength from "./useBaniLength";
 import useBaniList from "./useBaniList";
-import useDatbaseUpdateCheck from "./useDatabaseUpdateCheck";
+import useDatabaseUpdateCheck from "./useDatabaseUpdateCheck";
 
-export { useBaniLength, useBaniList, useDatbaseUpdateCheck };
+export { useBaniLength, useBaniList, useDatabaseUpdateCheck };

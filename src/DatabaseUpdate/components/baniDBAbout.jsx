@@ -1,31 +1,35 @@
 import React from "react";
 import { Text, View, ScrollView, Linking } from "react-native";
-import { baniDBAboutStyles as styles } from "./styles";
+import { STRINGS } from "@common";
+import { useSelector } from "react-redux";
+import { baniDBAboutStyles as styles, darkMode } from "./styles";
 
 const BaniDBAbout = () => {
+  const isNightMode = useSelector((state) => state.isNightMode);
   const highlights = [
-    "World&apos;s Most Accurate Gurbani Database: Over 43,000 corrections and counting.",
-    " Meticulously Checked: Data from Sri Guru Granth Sahib Ji has undergone numerous reviews.",
-    "Unique Standardization: Focuses on accurate lagamatras (spelling) and padh chhedh (wordseparation).",
-    "Distinct From SGPC Publications: The only database standardized independently from SGPC&apos;s Gurbani pothis.",
+    STRINGS.baniDBHighlight1,
+    STRINGS.baniDBHighlight2,
+    STRINGS.baniDBHighlight3,
+    STRINGS.baniDBHighlight4,
   ];
+  const { darkModeContainer, darkModeText } = darkMode(isNightMode);
+
   return (
-    <ScrollView contentContainerStyle={styles.container}>
+    <ScrollView contentContainerStyle={[styles.container, darkModeContainer]}>
       {highlights.map((highlight) => (
         <View key={highlight} style={styles.listItem}>
-          <Text style={styles.bulletPoint}>•</Text>
-          <Text style={styles.listText}>{highlight}</Text>
+          <Text style={[styles.bulletPoint, darkModeText]}>•</Text>
+          <Text style={[styles.listText, darkModeText]}>{highlight}</Text>
         </View>
       ))}
-      <Text style={styles.text}>
-        Found a mistake in Gurbani? Have a better translation? Become a contributor to BaniDB!
-        Visit:{" "}
+      <Text style={darkModeText}>
+        {STRINGS.baniDBMistakeText}{" "}
         <Text onPress={() => Linking.openURL("https://tinyurl.com/banidb-signup")}>
-          BaniDB-signup{" "}
+          {STRINGS.baniDBSignUp}
         </Text>
-        for instructions.
       </Text>
     </ScrollView>
   );
 };
+
 export default BaniDBAbout;

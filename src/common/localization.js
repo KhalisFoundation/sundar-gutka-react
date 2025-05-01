@@ -124,6 +124,24 @@ const STRINGS = new LocalizedStrings({
     premissionDescription: "To receive Bani Reminder notification, please enable them in settings.",
     openSettings: "Open Settings",
     databaseUpdate: "Database Update",
+    downloadSuccessful: "Download Successful!",
+    downloadFailed: "Download Failed! Try Again",
+    startDownload: "Start Download",
+    newVersionAvailable: "New Version Available",
+    baniDBHighlight1:
+      "World's Most Accurate Gurbani Database: Over 43,000 corrections and counting.",
+    baniDBHighlight2:
+      "Meticulously Checked: Data from Sri Guru Granth Sahib Ji has undergone numerous reviews.",
+    baniDBHighlight3:
+      "Unique Standardization: Focuses on accurate lagamatras (spelling) and padh chhedh (wordseparation).",
+    baniDBHighlight4:
+      "Distinct From SGPC Publications: The only database standardized independently from SGPC's Gurbani pothis.",
+    baniDBMistakeText:
+      "Found a mistake in Gurbani? Have a better translation? Become a contributor to BaniDB! Visit:",
+    baniDBSignUp: "BaniDB-signup",
+    checkForUpdate: "Checking for BaniDB updates...",
+    upToDate: "Your BaniDB is up to date.",
+    baniDBBannerText: "A new BaniDB update is available. Tap to update now.",
   },
   hi: {
     about: "हमारे बारे",
@@ -247,7 +265,25 @@ const STRINGS = new LocalizedStrings({
       "बानी रिमाइंडर अधिसूचना प्राप्त करने के लिए, कृपया उन्हें सेटिंग्स में सक्षम करें।",
     openSettings: "खुली सेटिंग",
     databaseUpdate: "डेटाबेस अद्यतन",
+    downloadSuccessful: "डाउनलोड सफल",
+    downloadFailed: "डाउनलोड विफल! पुनः प्रयास करें",
+    startDownload: "डाउनलोड शुरू करें",
+    newVersionAvailable: "नया संस्करण उपलब्ध है",
+    baniDBHighlight1: "विश्व का सबसे सटीक गुरबाणी डेटाबेस: 43,000 से अधिक सुधार और गिनती जारी है।",
+    baniDBHighlight2:
+      "सावधानीपूर्वक जाँच की गई: श्री गुरु ग्रंथ साहिब जी के डेटा की कई बार समीक्षा की गई है।",
+    baniDBHighlight3:
+      "अद्वितीय मानकीकरण: सटीक लगमात्र (वर्तनी) और पद छेद (शब्द पृथक्करण) पर ध्यान केंद्रित करता है",
+    baniDBHighlight4:
+      "एसजीपीसी प्रकाशनों से अलग: एसजीपीसी की गुरबानी पोथियों से स्वतंत्र रूप से मानकीकृत एकमात्र डेटाबेस।",
+    baniDBMistakeText:
+      "गुरबानी में कोई गलती मिली? क्या आपके पास बेहतर अनुवाद है? BaniDB में योगदानकर्ता बनें! यहाँ जाएँ:",
+    baniDBSignUp: "BaniDB साइनअप",
+    checkForUpdate: "BaniDB अद्यतन की जाँच की जा रही है...",
+    upToDate: "आपका BaniDB अद्यतित है।",
+    baniDBBannerText: "नया BaniDB अपडेट उपलब्ध है। अभी अपडेट करने के लिए टैप करें।",
   },
+
   pa: {
     about: "ਸਾਡੇ ਬਾਰੇ",
     ABOUT_WELCOME: "ਅਸੀਂ ਤੁਹਾਡੀਆਂ ਟਿੱਪਣੀਆਂ ਅਤੇ ਸੁਝਾਵਾਂ ਨੂੰ ਖਿੜੇ ਮੱਥੇ ਪ੍ਰਵਾਨ ਕਰਦੇ ਆ।",
@@ -370,6 +406,22 @@ const STRINGS = new LocalizedStrings({
       "ਬਾਣੀ ਰੀਮਾਈਂਡਰ ਸੂਚਨਾ ਪ੍ਰਾਪਤ ਕਰਨ ਲਈ, ਕਿਰਪਾ ਕਰਕੇ ਉਹਨਾਂ ਨੂੰ ਸੈਟਿੰਗਾਂ ਵਿੱਚ ਸਮਰੱਥ ਕਰੋ।",
     openSettings: "ਸੈਟਿੰਗਾਂ ਖੋਲ੍ਹੋ",
     databaseUpdate: "ਡਾਟਾਬੇਸ ਅੱਪਡੇਟ",
+    downloadFailed: "ਡਾਊਨਲੋਡ ਅਸਫਲ ਰਿਹਾ! ਦੁਬਾਰਾ ਕੋਸ਼ਿਸ਼ ਕਰੋ",
+    downloadSuccessful: "ਡਾਊਨਲੋਡ ਸਫਲ",
+    startDownload: "ਡਾਊਨਲੋਡ ਸ਼ੁਰੂ ਕਰੋ",
+    newVersionAvailable: "ਨਵਾਂ ਸੰਸਕਰਣ ਉਪਲਬਧ ਹੈ",
+    baniDBHighlight1: "ਦੁਨੀਆ ਦਾ ਸਭ ਤੋਂ ਸਟੀਕ ਗੁਰਬਾਣੀ ਡੇਟਾਬੇਸ: 43,000 ਤੋਂ ਵੱਧ ਸੁਧਾਰ ਅਤੇ ਗਿਣਤੀ।",
+    baniDBHighlight2:
+      "ਬਾਰੀਕੀ ਨਾਲ ਜਾਂਚਿਆ ਗਿਆ: ਸ੍ਰੀ ਗੁਰੂ ਗ੍ਰੰਥ ਸਾਹਿਬ ਜੀ ਦੇ ਡੇਟਾ ਦੀ ਕਈ ਸਮੀਖਿਆਵਾਂ ਹੋਈਆਂ ਹਨ।",
+    baniDBHighlight3: "ਵਿਲੱਖਣ ਮਾਨਕੀਕਰਨ: ਸਟੀਕ ਲਗਮਾਤਰ (ਸਪੈਲਿੰਗ) ਅਤੇ ਪਧ ਛੇਧ (ਸ਼ਬਦ ਵੰਡ) 'ਤੇ ਕੇਂਦ੍ਰਿਤ।",
+    baniDBHighlight4:
+      "ਐਸਜੀਪੀਸੀ ਪ੍ਰਕਾਸ਼ਨਾਂ ਤੋਂ ਵੱਖਰਾ: ਐਸਜੀਪੀਸੀ ਦੀਆਂ ਗੁਰਬਾਣੀ ਪੋਥੀਆਂ ਤੋਂ ਸੁਤੰਤਰ ਤੌਰ 'ਤੇ ਮਿਆਰੀ ਬਣਾਇਆ ਗਿਆ ਇੱਕੋ ਇੱਕ ਡੇਟਾਬੇਸ।",
+    baniDBMistakeText:
+      "ਗੁਰਬਾਣੀ ਵਿੱਚ ਕੋਈ ਗਲਤੀ ਮਿਲੀ? ਕੀ ਤੁਹਾਡੇ ਕੋਲ ਇੱਕ ਬਿਹਤਰ ਅਨੁਵਾਦ ਹੈ? BaniDB ਦੇ ਯੋਗਦਾਨੀ ਬਣੋ! ਇੱਥੇ ਜਾਓ:",
+    baniDBSignUp: "BaniDB-ਸਾਈਨਅੱਪ",
+    checkForUpdate: "BaniDB ਅੱਪਡੇਟਾਂ ਦੀ ਜਾਂਚ ਕੀਤੀ ਜਾ ਰਹੀ ਹੈ...",
+    upToDate: "ਤੁਹਾਡਾ BaniDB ਅੱਪ ਟੂ ਡੇਟ ਹੈ।",
+    baniDBBannerText: "ਇੱਕ ਨਵਾਂ BaniDB ਅੱਪਡੇਟ ਉਪਲਬਧ ਹੈ। ਹੁਣੇ ਅੱਪਡੇਟ ਕਰਨ ਲਈ ਟੈਪ ਕਰੋ।",
   },
   fr: {
     about: "Infos",
@@ -497,6 +549,25 @@ const STRINGS = new LocalizedStrings({
       "Pour recevoir une notification de rappel Bani, veuillez les activer dans les paramètres.",
     openSettings: "Ouvrir les paramètres",
     databaseUpdate: "Mise à jour de la base de données",
+    newVersionAvailable: "Nouvelle version disponible",
+    startDownload: "Commencer le téléchargement",
+    downloadSuccessful: "Téléchargement réussi",
+    downloadFailed: "Échec du téléchargement ! Réessayer",
+    baniDBHighlight1:
+      "La base de données Gurbani la plus précise au monde : plus de 43 000 corrections et ce n'est pas fini.",
+    baniDBHighlight2:
+      "Méticuleusement vérifié : les données de Sri Guru Granth Sahib Ji ont fait l’objet de nombreux examens.",
+    baniDBHighlight3:
+      "Normalisation unique : se concentre sur la précision des lagamatras (orthographe) et des padh chhedh (séparation des mots)",
+    baniDBHighlight4:
+      "Distinct des publications SGPC : la seule base de données standardisée indépendamment des pothis Gurbani du SGPC.",
+    baniDBMistakeText:
+      "Vous avez trouvé une erreur en gurbani ? Vous souhaitez une meilleure traduction ? Devenez contributeur à BaniDB ! Visitez :",
+    baniDBSignUp: "Inscription à BaniDB",
+    checkForUpdate: "Vérification des mises à jour de BaniDB...",
+    upToDate: "Votre BaniDB est à jour.",
+    baniDBBannerText:
+      "Une nouvelle mise à jour de BaniDB est disponible. Appuyez pour mettre à jour maintenant.",
   },
   it: {
     about: "Info",
@@ -622,6 +693,24 @@ const STRINGS = new LocalizedStrings({
       "Per ricevere la notifica Promemoria Bani, abilitali nelle impostazioni.",
     openSettings: "Apri Impostazioni",
     databaseUpdate: "Aggiornamento della banca dati",
+    downloadFailed: "Download non riuscito! Riprova",
+    downloadSuccessful: "Download riuscito",
+    startDownload: "Avvia il download",
+    newVersionAvailable: "Nuova versione disponibile",
+    baniDBHighlight1:
+      "Il database Gurbani più accurato al mondo: oltre 43.000 correzioni e il numero continua a crescere.",
+    baniDBHighlight2:
+      "Controllati meticolosamente: i dati di Sri Guru Granth Sahib Ji sono stati sottoposti a numerose revisioni.",
+    baniDBHighlight3:
+      "Standardizzazione unica: si concentra su lagamatras (ortografia) e padh chhedh (separazione delle parole) accurati",
+    baniDBHighlight4:
+      "Distinto dalle pubblicazioni SGPC: l'unico database standardizzato indipendentemente dai Gurbani pothis di SGPC.",
+    baniDBMistakeText:
+      "Hai trovato un errore in Gurbani? Hai bisogno di una traduzione migliore? Diventa un collaboratore di BaniDB! Visita:",
+    baniDBSignUp: "Iscrizione a BaniDB",
+    checkForUpdate: "Controllo degli aggiornamenti di BaniDB...",
+    upToDate: "Il tuo BaniDB è aggiornato.",
+    baniDBBannerText: "È disponibile un nuovo aggiornamento di BaniDB. Tocca per aggiornare ora.",
   },
   es: {
     about: "Sobre Nosotros",
@@ -748,6 +837,24 @@ const STRINGS = new LocalizedStrings({
       "Para recibir notificaciones de Bani Reminder, habilítelas en la configuración.",
     openSettings: "Configuración abierta",
     databaseUpdate: "Actualización de base de datos",
+    downloadFailed: "¡Descarga fallida! Inténtalo de nuevo.",
+    downloadSuccessful: "Descargar Exitosa",
+    startDownload: "Iniciar descarga",
+    newVersionAvailable: "Nueva versión disponible",
+    baniDBHighlight1:
+      "La base de datos de Gurbani más precisa del mundo: más de 43.000 correcciones y contando.",
+    baniDBHighlight2:
+      "Comprobado meticulosamente: los datos de Sri Guru Granth Sahib Ji han sido sometidos a numerosas revisiones.",
+    baniDBHighlight3:
+      "Estandarización única: se centra en la precisión de lagamatras (ortografía) y padh chhedh (separación de palabras).",
+    baniDBHighlight4:
+      "A diferencia de las publicaciones del SGPC: es la única base de datos estandarizada independientemente de los Gurbani pothis del SGPC.",
+    baniDBMistakeText:
+      "¿Encontraste un error en el gurbani? ¿Tienes una mejor traducción? ¡Contribuye a BaniDB! Visita:",
+    baniDBSignUp: "Registro en BaniDB",
+    checkForUpdate: "Comprobando actualizaciones de BaniDB...",
+    upToDate: "Su BaniDB está actualizado.",
+    baniDBBannerText: "Hay una nueva actualización de BaniDB disponible. Pulsa para actualizar.",
   },
 });
 

@@ -1,5 +1,5 @@
 export default {
-  DB: "gutka_v01.db",
+  DB: "gutka_v01",
   ENGLISH: "ENGLISH",
   ENGLISH_TITLE_CASE: "English",
   HINDI: "HINDI",
@@ -82,8 +82,4 @@ export default {
   UPDATE_REMINDER: "updateReminder",
   PORTRAIT: "PORTRAIT",
   LANDSCAPE: "LANDSCAPE",
-  DATABASE_UPDATE_SCREEN: "DatabaseUpdate",
-  BANIDB_BANNER_TEXT: "BaniDB update is available. Click to update",
-  CHECK_UPDATE: "Check for Updates",
-  NEW_VERSION_AVAILABLE: "New version available",
 };

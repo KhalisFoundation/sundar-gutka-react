@@ -30,7 +30,15 @@ import { navigate, navigateTo, navigationRef } from "./rootNavigation";
 import orderedBani from "./components/BaniList/baniOrderHelper";
 import defaultBaniOrder from "./defaultBaniOrder";
 import createStore from "./store";
-import { checkForBaniDBUpdate, ensureDbExists } from "./baniDbValidate";
+import {
+  ensureDbExists,
+  checkForBaniDBUpdate,
+  REMOTE_DB_URL,
+  writeRemoteMD5Hash,
+  LOCAL_DB_PATH,
+  listDocumentDirectory,
+  revertMD5Hash,
+} from "./rnfs";
 
 export {
   colors,
@@ -67,6 +75,11 @@ export {
   startPerformanceTrace,
   stopTrace,
   resetTrace,
-  checkForBaniDBUpdate,
   ensureDbExists,
+  checkForBaniDBUpdate,
+  REMOTE_DB_URL,
+  writeRemoteMD5Hash,
+  LOCAL_DB_PATH,
+  listDocumentDirectory,
+  revertMD5Hash,
 };

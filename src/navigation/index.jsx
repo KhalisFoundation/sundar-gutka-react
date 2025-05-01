@@ -13,7 +13,7 @@ import Bookmarks from "../Bookmarks";
 import ReminderOptions from "../Settings/components/reminders/ReminderOptions";
 import FolderScreen from "../FolderScreen";
 import { SettingsStyle } from "./style";
-import DatabaseUpdate from "../DatabaseUpdate";
+import DatabaseUpdateScreen from "../DatabaseUpdate";
 
 const Stack = createNativeStackNavigator();
 
@@ -75,7 +75,7 @@ const Navigation = () => {
         <Stack.Screen name="EditBaniOrder" component={EditBaniOrder} />
         <Stack.Screen name="Bookmarks" component={Bookmarks} />
         <Stack.Screen name="ReminderOptions" component={ReminderOptions} />
-        <Stack.Screen name="DatabaseUpdate" component={DatabaseUpdate} />
+        <Stack.Screen name="DatabaseUpdate" component={DatabaseUpdateScreen} />
       </Stack.Navigator>
     </NavigationContainer>
   );

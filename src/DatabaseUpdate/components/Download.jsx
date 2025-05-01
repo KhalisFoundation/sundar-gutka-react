@@ -1,73 +1,123 @@
 import React, { useEffect, useRef, useState } from "react";
-import { Animated, Easing, View, Text, Button } from "react-native";
-import Svg, { Circle } from "react-native-svg";
-import { constant } from "@common";
-import { downloadStyles as styles } from "./styles";
-
-const AnimatedCircle = Animated.createAnimatedComponent(Circle);
+import { Animated, View, Text, TouchableOpacity, ActivityIndicator } from "react-native";
+import { downloadFile, exists, unlink, moveFile } from "react-native-fs";
+import {
+  logMessage,
+  logError,
+  STRINGS,
+  colors,
+  actions,
+  checkForBaniDBUpdate,
+  LOCAL_DB_PATH,
+  writeRemoteMD5Hash,
+  REMOTE_DB_URL,
+  getCurrentDBMD5Hash,
+} from "@common";
+import { useDispatch, useSelector } from "react-redux";
+import initDB, { closeDatabase } from "../../database/connect";
+import styles from "../styles";
+import { darkMode } from "./styles";
+import DownloadAnimation from "./DownloadAnimation";
+import { revertMD5Hash } from "../../common/rnfs";
 
 const DownloadComponent = () => {
   const [progress, setProgress] = useState(0);
   const [downloading, setDownloading] = useState(false);
+  const [downloadSuccess, setDownloadSuccess] = useState(null);
   const progressAnim = useRef(new Animated.Value(0)).current;
-  const radius = 50;
-  const strokeWidth = 10;
-  const circumference = 2 * Math.PI * radius;
+  const isNightMode = useSelector((state) => state.isNightMode);
+  const { darkModeContainer, darkModeText } = darkMode(isNightMode);
+  const dispatch = useDispatch();
 
-  // Listener to update progress text from animated value
+  // keep text % in sync with the animated value
   useEffect(() => {
-    const listenerId = progressAnim.addListener(({ value }) => {
+    const id = progressAnim.addListener(({ value }) => {
       setProgress(Math.floor(value));
     });
-    return () => {
-      progressAnim.removeListener(listenerId);
-    };
+    return () => progressAnim.removeListener(id);
   }, [progressAnim]);
 
-  const startDownload = () => {
-    // Reset the animated value and progress state
-    progressAnim.setValue(0);
-    setProgress(0);
-    setDownloading(true);
+  const startDownload = async () => {
+    const currentMD5Hash = await getCurrentDBMD5Hash();
+    try {
+      // 1️⃣ Check if an update is really needed
+      const needs = await checkForBaniDBUpdate();
+      if (!needs) {
+        logMessage("No update needed.");
+        return;
+      }
 
-    Animated.timing(progressAnim, {
-      toValue: 100,
-      duration: 5000, // 5 seconds duration
-      easing: Easing.linear,
-      useNativeDriver: false, // Must be false for non-layout properties like strokeDashoffset
-    }).start(() => {
+      setDownloading(true);
+      progressAnim.setValue(0);
+      setProgress(0);
+
+      const tmpPath = `${LOCAL_DB_PATH}.download`;
+      logMessage("Downloading new DB…");
+
+      // 2️⃣ Kick off the RNFS download with a progress callback
+      await downloadFile({
+        fromUrl: REMOTE_DB_URL,
+        toFile: tmpPath,
+        progressDivider: 1,
+        begin: () => {
+          console.log("Download started");
+        },
+        progress: ({ contentLength, bytesWritten }) => {
+          const percent = Math.floor((bytesWritten / contentLength) * 100);
+          progressAnim.setValue(percent);
+        },
+      }).promise;
+
+      // 3️⃣ Close any open connection
+      await closeDatabase();
+
+      // 4️⃣ Swap files on disk
+      if (await exists(LOCAL_DB_PATH)) {
+        await unlink(LOCAL_DB_PATH);
+      }
+
+      await moveFile(tmpPath, LOCAL_DB_PATH);
+      await writeRemoteMD5Hash();
+      logMessage("Database updated on disk. Re-initializing…");
+      await initDB();
+      logMessage("Database is now up to date!");
+      setDownloadSuccess(true);
+      dispatch(actions.toggleDatabaseUpdateAvailable(false));
+    } catch (err) {
+      await unlink(`${LOCAL_DB_PATH}.download`);
+      await revertMD5Hash(currentMD5Hash);
+      logError(`updateDatabaseIfNeeded error: ${err.message}`);
+      setDownloadSuccess(false);
+    } finally {
       setDownloading(false);
-    });
+    }
   };
 
   return (
-    <View style={styles.container}>
-      <View style={{ flex: 1, flexDirection: "row" }}>
-        <Text>{constant.NEW_VERSION_AVAILABLE}</Text>
-      </View>
-
-      {/* SVG Circle for progress */}
-      <Svg width={120} height={120} viewBox="0 0 120 120">
-        {/* Background circle */}
-        <Circle cx="60" cy="60" r={radius} stroke="#e6e6e6" strokeWidth={strokeWidth} fill="none" />
-        {/* Animated progress circle */}
-        <AnimatedCircle
-          cx="60"
-          cy="60"
-          r={radius}
-          stroke="#3498db"
-          strokeWidth={strokeWidth}
-          fill="none"
-          strokeDasharray={circumference}
-          strokeDashoffset={progressAnim.interpolate({
-            inputRange: [0, 100],
-            outputRange: [circumference, 0],
-          })}
-          strokeLinecap="round"
-        />
-      </Svg>
-      <Button title="Start Download" onPress={startDownload} disabled={downloading} />
-      <Text style={styles.text}>{progress}%</Text>
+    <View style={[styles.container, darkModeContainer]}>
+      {downloadSuccess && (
+        <Text style={[styles.label, darkModeText]}>{STRINGS.downloadSuccessful}</Text>
+      )}
+      {downloadSuccess === false && (
+        <Text style={[styles.label, darkModeText]}>{STRINGS.downloadFailed}</Text>
+      )}
+      {downloading && <DownloadAnimation progress={progress} progressAnim={progressAnim} />}
+      {!downloadSuccess && (
+        <View style={styles.row}>
+          <Text style={[styles.label, darkModeText]}>{STRINGS.newVersionAvailable}</Text>
+          <TouchableOpacity
+            style={[styles.button, downloading && styles.buttonDisabled]}
+            onPress={startDownload}
+            disabled={downloading}
+          >
+            {downloading ? (
+              <ActivityIndicator color={colors.WHITE_COLOR} />
+            ) : (
+              <Text style={[styles.buttonText, darkModeText]}>{STRINGS.startDownload}</Text>
+            )}
+          </TouchableOpacity>
+        </View>
+      )}
     </View>
   );
 };

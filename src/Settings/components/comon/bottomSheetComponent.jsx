@@ -62,37 +62,36 @@ const BottomSheetComponent = ({
               style={styles.blurViewStyle}
               blurType="dark"
               blurAmount={10}
-            >
-              <View style={bottomStyle}>
-                <Text style={[styles.bottomSheetTitle, textNightStyle, containerNightStyles]}>
-                  {title}
-                </Text>
-                <Divider />
-                {actionConstant.map((item) => (
-                  <ListItem
-                    key={item.key}
-                    bottomDivider
-                    containerStyle={containerNightStyles}
-                    onPress={() => {
-                      toggleVisible(false);
-                      dispatch(action(item.key));
-                      if (item.key.includes(".mp3")) {
-                        const soundTitle = item.key.split(".mp3")[0];
-                        SoundPlayer.playSoundFile(soundTitle, ".mp3");
-                      }
-                    }}
-                  >
-                    <ListItem.Content>
-                      <ListItem.Title style={nightStyles}>{item.title}</ListItem.Title>
-                    </ListItem.Content>
-                    {value === item.key && <Icon color={nightStyles.color} name="check" />}
-                  </ListItem>
-                ))}
-                {Platform.OS === "ios" && (
-                  <ListItem bottomDivider containerStyle={containerNightStyles} />
-                )}
-              </View>
-            </BlurView>
+            />
+            <View style={bottomStyle}>
+              <Text style={[styles.bottomSheetTitle, textNightStyle, containerNightStyles]}>
+                {title}
+              </Text>
+              <Divider />
+              {actionConstant.map((item) => (
+                <ListItem
+                  key={item.key}
+                  bottomDivider
+                  containerStyle={containerNightStyles}
+                  onPress={() => {
+                    toggleVisible(false);
+                    dispatch(action(item.key));
+                    if (item.key.includes(".mp3")) {
+                      const soundTitle = item.key.split(".mp3")[0];
+                      SoundPlayer.playSoundFile(soundTitle, ".mp3");
+                    }
+                  }}
+                >
+                  <ListItem.Content>
+                    <ListItem.Title style={nightStyles}>{item.title}</ListItem.Title>
+                  </ListItem.Content>
+                  {value === item.key && <Icon color={nightStyles.color} name="check" />}
+                </ListItem>
+              ))}
+              {Platform.OS === "ios" && (
+                <ListItem bottomDivider containerStyle={containerNightStyles} />
+              )}
+            </View>
           </Pressable>
         </Modal>
       </SafeAreaView>
