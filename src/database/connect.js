@@ -32,7 +32,15 @@ const initDB = async () => {
     .catch((err) => {
       logMessage("Opening database error");
       logError(err);
-      FallBack();
+      openDatabase({ name: constant.DB, createFromLocation: 1 })
+        .then((db) => {
+          databaseInstance.value = db;
+        })
+        .catch((error) => {
+          logError("Error opening fallback database", error);
+          logError(error);
+          FallBack();
+        });
       initializingPromise = null;
       throw err;
     });

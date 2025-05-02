@@ -38,6 +38,7 @@ import {
   LOCAL_DB_PATH,
   listDocumentDirectory,
   revertMD5Hash,
+  getCurrentDBMD5Hash,
 } from "./rnfs";
 
 export {
@@ -82,4 +83,5 @@ export {
   LOCAL_DB_PATH,
   listDocumentDirectory,
   revertMD5Hash,
+  getCurrentDBMD5Hash,
 };

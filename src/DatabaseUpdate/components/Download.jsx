@@ -1,5 +1,5 @@
 import React, { useEffect, useRef, useState } from "react";
-import { Animated, View, Text, TouchableOpacity, ActivityIndicator } from "react-native";
+import { Animated, View, Text, ActivityIndicator, Pressable } from "react-native";
 import { downloadFile, exists, unlink, moveFile } from "react-native-fs";
 import {
   logMessage,
@@ -105,7 +105,7 @@ const DownloadComponent = () => {
       {!downloadSuccess && (
         <View style={styles.row}>
           <Text style={[styles.label, darkModeText]}>{STRINGS.newVersionAvailable}</Text>
-          <TouchableOpacity
+          <Pressable
             style={[styles.button, downloading && styles.buttonDisabled]}
             onPress={startDownload}
             disabled={downloading}
@@ -115,7 +115,7 @@ const DownloadComponent = () => {
             ) : (
               <Text style={[styles.buttonText, darkModeText]}>{STRINGS.startDownload}</Text>
             )}
-          </TouchableOpacity>
+          </Pressable>
         </View>
       )}
     </View>
