@@ -1,13 +1,152 @@
-before_all do
-  ensure_git_branch
-  ensure_git_status_clean
-  git_pull
+xcodeproj = File.absolute_path('../ios/SundarGutka.xcodeproj')
+xcworkspace = File.absolute_path('../ios/SundarGutka.xcworkspace')
+github_match_url = "https://github.com/KhalisFoundation/certificate-manager"
+android_commit_message = "[ci skip] Version Bump: #{ENV['VERSION_NAME']} (#{ENV['VERSION_CODE']})"
+ios_commit_message = "[ci skip] Version Bump: #{ENV['VERSION_NUMBER']} (#{ENV['BUILD_NUMBER']})"
+plist_file_path = "../ios/SundarGutka/Info.plist"
+adhoc_provision_file = "match AdHoc com.WahegurooNetwork.SundarGutka"
+appstore_provision_file = "match AppStore com.WahegurooNetwork.SundarGutka"
+ios_app_scheme = "Sundar Gutka"
+apple_username = "amitojsingh95@gmail.com"
+code_signing_identity = "Apple Distribution: Amitoj Singh (BACMN2C379)"
+
+platform :android do 
+  desc "Android Production Build and Deploy to Play Store Beta"
+  lane :beta do 
+    increment_version_code(version_code: ENV['VERSION_CODE'].to_i, gradle_file_path: File.absolute_path('../android/app/build.gradle'))
+    increment_version_name(version_name: ENV['VERSION_NAME'], gradle_file_path: File.absolute_path('../android/app/build.gradle'))
+    gradle(task: 'clean', project_dir: File.absolute_path('../android'))
+    gradle(
+      task: 'bundle',
+      build_type: 'Release',
+      project_dir: File.absolute_path('../android'),
+      properties: {
+        "android.injected.signing.store.file" => ENV['ANDROID_KEYSTORE_FILE'],
+        "android.injected.signing.store.password" => ENV['ANDROID_KEYSTORE_PASSWORD'],
+        "android.injected.signing.key.alias" => ENV['ANDROID_KEYSTORE_ALIAS'],
+        "android.injected.signing.key.password" => ENV['ANDROID_KEYSTORE_PASSWORD']
+      }
+    )
+    upload_to_play_store(
+      track: 'beta',
+      aab: File.absolute_path('../android/app/build/outputs/bundle/release/app-release.aab'),
+      release_status: 'draft',
+      package_name: ENV['BUNDLE_ID'],
+      json_key: File.absolute_path('../playstore-service-account.json')
+    )
+    git_commit(
+      path: [File.absolute_path('../android/app/build.gradle')],
+      message: android_commit_message
+    )
+    push_to_git_remote
+  end
 end
- 
-platform :ios do
-   # iOS Lanes
+
+def delete_temp_keychain(name)
+  delete_keychain(
+    name: name
+  ) if File.exist? File.expand_path("~/Library/Keychains/#{name}-db")
 end
- 
-platform :android do
-  # Android Lanes
+
+def create_temp_keychain(name, password)
+create_keychain(
+  name: name,
+  password: password,
+  unlock: false,
+  timeout: 0
+)
+end
+
+def ensure_temp_keychain(name, password)
+  delete_temp_keychain(name)
+  create_temp_keychain(name, password)
+end
+
+platform :ios do 
+  desc "iOS Build and Deploy to Test Flight"
+  lane :testflight do
+    xcodes(
+      version: "14.2",
+      select_for_current_build_only: true
+    )
+
+    keychain_name = "temp_keychain_username"
+    keychain_password = "temp_keychain_password"
+    ensure_temp_keychain(keychain_name, keychain_password)
+
+    increment_build_number(
+      xcodeproj: xcodeproj,
+      build_number: ENV['BUILD_NUMBER']
+    )
+    increment_version_number(
+      xcodeproj: xcodeproj,
+      version_number: ENV['VERSION_NUMBER']
+    )
+
+    cocoapods(
+      clean_install: true,
+      podfile: File.absolute_path('../ios/Podfile')
+    )
+
+    api_key = app_store_connect_api_key(
+      key_id: ENV['APPLE_API_KEY_ID'],
+      issuer_id: ENV['APPLE_ISSUER_ID'],
+      key_filepath: File.absolute_path("../AppleApiKey.p8"),
+      duration: 1200,
+      in_house: false
+    )
+
+    sync_code_signing(
+      type: "appstore",
+      team_id: ENV['APPLE_TEAM_ID'],
+      app_identifier: ENV['BUNDLE_ID'],
+      git_basic_authorization: Base64.strict_encode64(ENV['GIT_PERSONAL_ACCESS_TOKEN']),
+      keychain_name: keychain_name,
+      keychain_password: keychain_password,
+      git_url: github_match_url,
+      api_key: api_key
+    )
+    update_project_provisioning(
+      xcodeproj: xcodeproj,
+      target_filter: ios_app_scheme,
+      profile: ENV["sigh_#{ENV['BUNDLE_ID']}_appstore_profile-path"],
+      build_configuration: "Release"
+    )
+    update_project_team(
+      path: xcodeproj,
+      teamid: ENV['APPLE_TEAM_ID']
+    )
+    build_app(
+      export_team_id: ENV['APPLE_TEAM_ID'],
+      configuration: "Release",
+      workspace: xcworkspace,
+      scheme: ios_app_scheme,
+      export_method: "app-store",
+      export_options: {
+        provisioningProfiles: {  
+          ENV['BUNDLE_ID'] => appstore_provision_file
+        }
+      }
+    )
+
+    upload_to_testflight(
+      apple_id: ENV['APPLE_APP_ID'],
+      app_identifier: ENV['BUNDLE_ID'],
+      skip_waiting_for_build_processing: true,
+      skip_submission: true,
+      distribute_external: false,
+      notify_external_testers: false
+    )
+
+    version = get_version_number(xcodeproj: xcodeproj)
+    build = get_build_number(xcodeproj: xcodeproj)
+    clean_build_artifacts
+    git_commit(
+      path: [File.absolute_path(plist_file_path)],
+      message: ios_commit_message
+    )
+    push_to_git_remote
+
+    delete_temp_keychain(keychain_name)
+  end
 end

@@ -1,0 +1,99 @@
+name: Play Store - Production Build - Beta Track
+
+# Manual deployment
+on:
+  workflow_dispatch:
+    inputs:
+      version_name:
+        description: Version Name
+        required: true
+        default: "1.2.3"
+      version_code:
+        description: Version Code
+        required: true
+        default: "10"
+
+jobs:
+  beta-build:
+    name: android-beta-build-play-store
+    runs-on: ubuntu-latest
+    strategy:
+      matrix:
+        node-version: [18.x]
+    steps:
+      # Setup Node
+      - uses: actions/setup-node@v1
+        with:
+          node-version: ${{ matrix.node-version }}
+
+      # Echo selected version code and name
+      - name: Print Version Code and Name
+        run: |
+          echo "VERSION NAME: ${{ github.event.inputs.version_name }}"
+          echo "VERSION CODE: ${{ github.event.inputs.version_code }}"
+      # Checkout the Repository
+      - name: Checkout Git Repository
+        uses: actions/checkout@v3
+
+      # Setup Caching for our Gradle Builds (I have trimmed 5 minutes off of my 12 minutes builds by using this)
+      - name: Cache Gradle Wrapper
+        uses: actions/cache@v2
+        with:
+          path: ~/.gradle/wrapper
+          key: ${{ runner.os }}-gradle-wrapper-${{ hashFiles('gradle/wrapper/gradle-wrapper.properties') }}
+
+      # More Gradle Caching
+      - name: Cache Gradle Dependencies
+        uses: actions/cache@v2
+        with:
+          path: ~/.gradle/caches
+          key: ${{ runner.os }}-gradle-caches-${{ hashFiles('gradle/wrapper/gradle-wrapper.properties') }}
+          restore-keys: |
+            ${{ runner.os }}-gradle-caches-
+
+      # Setup our Production Keystore file
+      - name: Setup Keystore File
+        run: echo "${{secrets.ANDROID_KEYSTORE_FILE}}" | base64 -d > "${{ github.workspace }}/production.keystore"
+
+      # Setup our Play Store Service Account file
+      - name: Setup Service Account Credential Files
+        run: echo "${{secrets.PLAYSTORE_SERVICE_ACCOUNT_JSON}}" > "${{ github.workspace }}/playstore-service-account.json"
+
+      # Install NPM Packages
+      - name: Install npm Dependencies
+        run: npm install
+
+      # Setup Ruby while Caching Gems
+      - name: Install Ruby
+        uses: ruby/setup-ruby@v1
+        with:
+          ruby-version: 3.0.2
+          bundler-cache: true
+
+      # Install fastlane
+      - name: Install Fastlane
+        run: gem install fastlane
+
+      # Setup Fastlane Plugins
+      - name: Add Fastlane Plugins
+        run: |
+          fastlane add_plugin increment_version_code
+          fastlane add_plugin increment_version_name
+      # Setup GitHub name and email for the Auto-Versioning Commit
+      - name: Setup Git Config
+        run: |
+          git config user.name "GitHub Actions Bot"
+          git config user.email "<>"
+      # Finally, build and release (calls the android beta lane in our fastfile)
+      - name: Build and Upload to Play Store
+        uses: maierj/fastlane-action@v3.0.0
+        with:
+          lane: "android beta"
+          bundler-cache: true
+        env:
+          ANDROID_KEYSTORE_FILE: "${{ github.workspace }}/production.keystore"
+          ANDROID_KEYSTORE_PASSWORD: ${{ secrets.ANDROID_KEYSTORE_PASSWORD }}
+          ANDROID_KEYSTORE_ALIAS: ${{ secrets.ANDROID_KEYSTORE_ALIAS }}
+          VERSION_CODE: ${{ github.event.inputs.version_code }}
+          VERSION_NAME: ${{ github.event.inputs.version_name }}
+          BUNDLE_ID: ${{ secrets.BUNDLE_ID }}
