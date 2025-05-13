@@ -8,21 +8,23 @@ export const getBaniList = (language) => {
       .then((db) => {
         db.transaction((tx) => {
           tx.executeSql(
-            "SELECT ID, Gurmukhi, Transliterations FROM Banis",
+            "SELECT ID, Gurmukhi, Token, Transliterations FROM Banis",
             [],
             (_tx, results) => {
               const { rows } = results;
               const count = rows.length;
               const totalResults = [];
               for (let i = 0; i < count; i += 1) {
-                const { ID, Gurmukhi, Transliterations } = rows.item(i);
+                const { ID, Gurmukhi, Transliterations, Token } = rows.item(i);
 
                 totalResults.push({
                   id: ID,
                   gurmukhi: Gurmukhi,
+                  token: Token,
                   translit: getTranslitText(Transliterations, language),
                 });
               }
+              console.log("Bani List", totalResults);
               resolve(totalResults);
             },
             (error) => {

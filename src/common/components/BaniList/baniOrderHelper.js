@@ -6,6 +6,7 @@ const extractBaniDetails = (baniItem) => {
     id: baniItem.id,
     gurmukhi: baniItem.gurmukhi,
     translit: baniItem.translit,
+    token: baniItem.token,
   };
 };
 const orderedBani = (baniList, baniOrder) => {

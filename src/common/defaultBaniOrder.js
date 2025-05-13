@@ -247,6 +247,7 @@ const defaultBaniOrder = {
     {
       gurmukhi: "22 vwrW",
       translit: "22 varaa(n)",
+      token:"22vwrW"
       folder: [
         {
           id: 86,

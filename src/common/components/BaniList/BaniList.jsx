@@ -8,6 +8,7 @@ import colors from "../../colors";
 import { styles } from "../../../Settings/styles";
 
 const BaniList = React.memo(({ data, onPress }) => {
+  console.log("rendering BaniList", data);
   const fontSize = useSelector((state) => state.fontSize);
   const fontFace = useSelector((state) => state.fontFace);
   const isTransliteration = useSelector((state) => state.isTransliteration);
@@ -75,7 +76,7 @@ const BaniList = React.memo(({ data, onPress }) => {
       style={!isPotrait && Platform.OS === "ios" && { marginLeft: 30 }}
       data={data}
       renderItem={renderBanis}
-      keyExtractor={(item) => item.gurmukhi}
+      keyExtractor={(item) => item.token}
     />
   );
 });
