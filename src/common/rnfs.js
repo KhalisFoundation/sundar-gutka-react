@@ -16,9 +16,8 @@ const BUNDLED_DB_PATH = `${MainBundlePath}/www/${constant.DB}.db`;
 const BUNDLED_MD5_PATH = `${MainBundlePath}/www/${constant.DB}.md5`;
 export const LOCAL_DB_PATH = `${DocumentDirectoryPath}/${constant.DB}.db`;
 const LOCAL_MD5_PATH = `${DocumentDirectoryPath}/${constant.DB}.md5`;
-const REMOTE_BASE_URL = "https://banidb.blob.core.windows.net/database";
-const REMOTE_MD5_URL = `${REMOTE_BASE_URL}/${constant.DB}.md5`;
-export const REMOTE_DB_URL = `${REMOTE_BASE_URL}/${constant.DB}.db`;
+const REMOTE_MD5_URL = `${constant.REMOTE_DB_URL}/${constant.DB}.md5`;
+export const REMOTE_DB_URL = `${constant.REMOTE_DB_URL}/${constant.DB}.db`;
 
 export const listDocumentDirectory = async () => {
   try {

@@ -1,4 +1,4 @@
-import React from "react";
+import React, { useMemo } from "react";
 import PropTypes from "prop-types";
 import { ListItem, Icon } from "@rneui/themed";
 import { useSelector } from "react-redux";
@@ -6,9 +6,9 @@ import { iconNightColor, nightModeStyles, nightModeColor } from "../../styles/ni
 
 const ListItemWithIcon = ({ iconName, title, navigate, navigationTarget }) => {
   const isNightMode = useSelector((state) => state.isNightMode);
-  const iconColor = iconNightColor(isNightMode);
-  const { containerNightStyles } = nightModeStyles(isNightMode);
-  const nightColor = nightModeColor(isNightMode);
+  const iconColor = useMemo(() => iconNightColor(isNightMode), [isNightMode]);
+  const { containerNightStyles } = useMemo(() => nightModeStyles(isNightMode), [isNightMode]);
+  const nightColor = useMemo(() => nightModeColor(isNightMode), [isNightMode]);
 
   return (
     <ListItem

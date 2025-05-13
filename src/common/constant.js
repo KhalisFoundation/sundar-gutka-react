@@ -82,4 +82,5 @@ export default {
   UPDATE_REMINDER: "updateReminder",
   PORTRAIT: "PORTRAIT",
   LANDSCAPE: "LANDSCAPE",
+  REMOTE_DB_URL: "https://banidb.blob.core.windows.net/database",
 };
