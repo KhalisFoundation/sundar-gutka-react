@@ -59,6 +59,6 @@ const styles = StyleSheet.create({
     padding: 5,
   },
   baniDbImage: { width: 20, height: 20, marginRight: 10 },
-  updateText: { color: "#fff", fontSize: 14 },
+  updateText: { color: colors.WHITE_TEXT, fontSize: 14 },
 });
 export default styles;

@@ -1,4 +1,4 @@
-import React, { useEffect, useRef, useState } from "react";
+import React, { useEffect, useRef, useState, useMemo } from "react";
 import { Animated, Text, View, Easing } from "react-native";
 import { Icon, ListItem } from "@rneui/themed";
 import { STRINGS } from "@common";
@@ -11,7 +11,7 @@ const CheckUpdatesAnimation = ({ isLoading, isUpdateAvailable }) => {
   const rotateAnim = useRef(new Animated.Value(0)).current;
   const [checking, setChecking] = useState(false);
   const animationRef = useRef(null);
-  const { darkModeContainer, darkModeText } = darkMode(isNightMode);
+  const { darkModeContainer, darkModeText } = useMemo(() => darkMode(isNightMode), [isNightMode]);
 
   useEffect(() => {
     if (checking) {
@@ -42,9 +42,10 @@ const CheckUpdatesAnimation = ({ isLoading, isUpdateAvailable }) => {
   const handleCheckUpdates = () => {
     setChecking(true);
     // Simulate an update check with a timeout of 3 seconds
-    setTimeout(() => {
+    const timeoutId = setTimeout(() => {
       setChecking(false);
     }, 3000);
+    return () => clearTimeout(timeoutId);
   };
   useEffect(() => {
     handleCheckUpdates();

@@ -72,7 +72,7 @@ export const fetchRemoteMD5Hash = async () => {
   try {
     const response = await fetch(REMOTE_MD5_URL);
     if (!response.ok) {
-      throw new Error(`Failed to fetch remote MD5 hash: ${response.statusText}`);
+      throw new Error(`Failed to fetch remote MD5 hash: ${response.status} ${response.statusText}`);
     }
     const remoteHash = await response.text();
     return remoteHash.trim();

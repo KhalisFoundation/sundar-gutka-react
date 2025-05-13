@@ -2,6 +2,7 @@ import React from "react";
 import PropTypes from "prop-types";
 import { Text, View, Animated } from "react-native";
 import Svg, { Circle, G } from "react-native-svg";
+import { colors } from "@common";
 import styles from "../styles";
 import { darkMode } from "./styles";
 
@@ -21,7 +22,7 @@ const DownloadAnimation = ({ progress, progressAnim }) => {
             cx="60"
             cy="60"
             r={radius}
-            stroke="#e6e6e6"
+            stroke={colors.ANIMATION_STROKE_LIGHT}
             strokeWidth={strokeWidth}
             fill="none"
           />
@@ -29,7 +30,7 @@ const DownloadAnimation = ({ progress, progressAnim }) => {
             cx="60"
             cy="60"
             r={radius}
-            stroke="#007AFF"
+            stroke={colors.ANIMATION_STROKE_ACTIVE}
             strokeWidth={strokeWidth}
             fill="none"
             strokeDasharray={circumference}

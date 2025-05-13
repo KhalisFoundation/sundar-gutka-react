@@ -4,8 +4,9 @@ import { Image, Pressable, Text, View } from "react-native";
 import { STRINGS } from "@common";
 import { styles } from "../styles";
 
+const baniDbLogo = require("../../../images/banidblogo.png");
+
 const DatabaseUpdateBanner = ({ navigate }) => {
-  const baniDbLogo = require("../../../images/banidblogo.png");
   return (
     <Pressable onPress={() => navigate("DatabaseUpdate")}>
       <View style={styles.databaseUpdateBannerWrapper}>

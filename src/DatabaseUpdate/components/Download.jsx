@@ -1,17 +1,16 @@
-import React, { useEffect, useRef, useState } from "react";
-import { Animated, View, Text, ActivityIndicator, Pressable } from "react-native";
+import React, { useEffect, useRef, useState, useMemo } from "react";
+import { Text, Animated, View } from "react-native";
 import { downloadFile, exists, unlink, moveFile } from "react-native-fs";
 import {
   logMessage,
   logError,
-  STRINGS,
-  colors,
   actions,
   checkForBaniDBUpdate,
   LOCAL_DB_PATH,
   writeRemoteMD5Hash,
   REMOTE_DB_URL,
   getCurrentDBMD5Hash,
+  STRINGS,
 } from "@common";
 import { useDispatch, useSelector } from "react-redux";
 import initDB, { closeDatabase } from "../../database/connect";
@@ -19,6 +18,7 @@ import styles from "../styles";
 import { darkMode } from "./styles";
 import DownloadAnimation from "./DownloadAnimation";
 import { revertMD5Hash } from "../../common/rnfs";
+import DownloadControls from "./DownloadControls";
 
 const DownloadComponent = () => {
   const [progress, setProgress] = useState(0);
@@ -26,7 +26,7 @@ const DownloadComponent = () => {
   const [downloadSuccess, setDownloadSuccess] = useState(null);
   const progressAnim = useRef(new Animated.Value(0)).current;
   const isNightMode = useSelector((state) => state.isNightMode);
-  const { darkModeContainer, darkModeText } = darkMode(isNightMode);
+  const { darkModeContainer, darkModeText } = useMemo(() => darkMode(isNightMode), [isNightMode]);
   const dispatch = useDispatch();
 
   // keep text % in sync with the animated value
@@ -38,6 +38,9 @@ const DownloadComponent = () => {
   }, [progressAnim]);
 
   const startDownload = async () => {
+    if (downloading) {
+      return;
+    }
     const currentMD5Hash = await getCurrentDBMD5Hash();
     try {
       // 1️⃣ Check if an update is really needed
@@ -60,7 +63,7 @@ const DownloadComponent = () => {
         toFile: tmpPath,
         progressDivider: 1,
         begin: () => {
-          console.log("Download started");
+          setDownloadSuccess(null);
         },
         progress: ({ contentLength, bytesWritten }) => {
           const percent = Math.floor((bytesWritten / contentLength) * 100);
@@ -95,28 +98,20 @@ const DownloadComponent = () => {
 
   return (
     <View style={[styles.container, darkModeContainer]}>
-      {downloadSuccess && (
-        <Text style={[styles.label, darkModeText]}>{STRINGS.downloadSuccessful}</Text>
+      {downloadSuccess !== null && (
+        <Text style={[styles.label, darkModeText]}>
+          {downloadSuccess ? STRINGS.downloadSuccessful : STRINGS.downloadFailed}
+        </Text>
       )}
-      {downloadSuccess === false && (
-        <Text style={[styles.label, darkModeText]}>{STRINGS.downloadFailed}</Text>
-      )}
-      {downloading && <DownloadAnimation progress={progress} progressAnim={progressAnim} />}
       {!downloadSuccess && (
-        <View style={styles.row}>
-          <Text style={[styles.label, darkModeText]}>{STRINGS.newVersionAvailable}</Text>
-          <Pressable
-            style={[styles.button, downloading && styles.buttonDisabled]}
-            onPress={startDownload}
-            disabled={downloading}
-          >
-            {downloading ? (
-              <ActivityIndicator color={colors.WHITE_COLOR} />
-            ) : (
-              <Text style={[styles.buttonText, darkModeText]}>{STRINGS.startDownload}</Text>
-            )}
-          </Pressable>
-        </View>
+        <>
+          {downloading && <DownloadAnimation progress={progress} progressAnim={progressAnim} />}
+          <DownloadControls
+            downloading={downloading}
+            onStartDownload={startDownload}
+            darkModeText={darkModeText}
+          />
+        </>
       )}
     </View>
   );

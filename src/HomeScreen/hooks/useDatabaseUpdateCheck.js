@@ -1,16 +1,21 @@
-import { useEffect } from "react";
+import { useEffect, useCallback } from "react";
 import { useDispatch } from "react-redux";
-import { actions, checkForBaniDBUpdate } from "@common";
+import { actions, checkForBaniDBUpdate, logError } from "@common";
 
 const useDatabaseUpdateCheck = () => {
   const dispatch = useDispatch();
-  const dbCheck = async () => {
-    const isUpdateAvailable = await checkForBaniDBUpdate();
-    dispatch(actions.toggleDatabaseUpdateAvailable(isUpdateAvailable));
-  };
+  const checkForUpdates = useCallback(async () => {
+    try {
+      const isUpdateAvailable = await checkForBaniDBUpdate();
+      dispatch(actions.toggleDatabaseUpdateAvailable(isUpdateAvailable));
+    } catch (error) {
+      logError("useDatabaseUpdateCheck", error);
+      dispatch(actions.toggleDatabaseUpdateAvailable(false));
+    }
+  }, []);
 
   useEffect(() => {
-    dbCheck();
+    checkForUpdates();
   }, []);
 };
 

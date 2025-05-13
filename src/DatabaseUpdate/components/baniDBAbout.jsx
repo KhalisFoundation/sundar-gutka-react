@@ -1,18 +1,22 @@
-import React from "react";
-import { Text, View, ScrollView, Linking } from "react-native";
+import React, { useMemo } from "react";
+import { Text, View, ScrollView, Linking, Pressable } from "react-native";
 import { STRINGS } from "@common";
 import { useSelector } from "react-redux";
 import { baniDBAboutStyles as styles, darkMode } from "./styles";
 
 const BaniDBAbout = () => {
   const isNightMode = useSelector((state) => state.isNightMode);
-  const highlights = [
-    STRINGS.baniDBHighlight1,
-    STRINGS.baniDBHighlight2,
-    STRINGS.baniDBHighlight3,
-    STRINGS.baniDBHighlight4,
-  ];
-  const { darkModeContainer, darkModeText } = darkMode(isNightMode);
+  const highlights = useMemo(
+    () => [
+      STRINGS.baniDBHighlight1,
+      STRINGS.baniDBHighlight2,
+      STRINGS.baniDBHighlight3,
+      STRINGS.baniDBHighlight4,
+    ],
+    []
+  );
+
+  const { darkModeContainer, darkModeText } = useMemo(() => darkMode(isNightMode), [isNightMode]);
 
   return (
     <ScrollView contentContainerStyle={[styles.container, darkModeContainer]}>
@@ -24,9 +28,9 @@ const BaniDBAbout = () => {
       ))}
       <Text style={darkModeText}>
         {STRINGS.baniDBMistakeText}{" "}
-        <Text onPress={() => Linking.openURL("https://tinyurl.com/banidb-signup")}>
-          {STRINGS.baniDBSignUp}
-        </Text>
+        <Pressable onPress={() => Linking.openURL("https://tinyurl.com/banidb-signup")}>
+          <Text>{STRINGS.baniDBSignUp}</Text>
+        </Pressable>
       </Text>
     </ScrollView>
   );
