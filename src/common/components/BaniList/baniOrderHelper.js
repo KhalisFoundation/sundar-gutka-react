@@ -35,7 +35,7 @@ const orderedBani = (baniList, baniOrder) => {
         }, []);
 
         return folder.length
-          ? { gurmukhi: element.gurmukhi, translit: element.translit, folder }
+          ? { gurmukhi: element.gurmukhi, token: element.token, translit: element.translit, folder }
           : null;
       })
       // Filter out any nulls in case an ID did not match
