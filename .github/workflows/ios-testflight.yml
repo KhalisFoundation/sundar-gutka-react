@@ -1,74 +1,102 @@
 name: App Store - Production Build - TestFlight
 
-# Manual deployment
 on:
   workflow_dispatch:
     inputs:
       version_number:
-        description: Version Number
+        description: "Version Number (e.g. 1.2.3)"
         required: true
         default: "1.2.3"
       build_number:
-        description: Build Number
+        description: "Build Number"
         required: true
         default: "10"
+      environment:
+        description: "Deployment Environment"
+        type: choice
+        options:
+          - production
+          - staging
+        required: true
+        default: "production"
 
 jobs:
   testFlight-build:
-    name: ios-testflight-build
-    runs-on: macos-latest
+    name: iOS TestFlight Build
+    runs-on: macos-13 # Specifically using macos-13 for better Xcode support
+    timeout-minutes: 60 # Add timeout to prevent hanging builds
+
     strategy:
       matrix:
         node-version: [18.x]
+      fail-fast: true # Stop all jobs if one fails
+
     steps:
-      # Setup Node
-      - uses: actions/setup-node@v1
+      - name: Checkout Repository
+        uses: actions/checkout@v4
+        with:
+          fetch-depth: 0 # Fetch all history for proper versioning
+
+      - name: Setup Node.js
+        uses: actions/setup-node@v3
         with:
           node-version: ${{ matrix.node-version }}
+          cache: "npm"
 
-      # Setup XCode
-      - name: Install Xcodes and latest stable Xcode
+      - name: Setup Xcode
+        uses: maxim-lobanov/setup-xcode@v1
+        with:
+          xcode-version: "15.2"
+
+      - name: Print Build Information
         run: |
-          brew install xcodesorg/made/xcodes
-          xcodes install 16.3
+          echo "Build Number: ${{ github.event.inputs.build_number }}"
+          echo "Version Number: ${{ github.event.inputs.version_number }}"
+          echo "Environment: ${{ github.event.inputs.environment }}"
+          xcodebuild -version
 
-      # Echo selected build and version numbers
-      - name: Print Build and Version Numbers
+      - name: Install Dependencies
         run: |
-          echo "BUILD NUMBER: ${{ github.event.inputs.build_number }}"
-          echo "VERSION NUMBER: ${{ github.event.inputs.version_number }}"
-      # Checkout the Repository
-      - name: Checkout to git repository
-        uses: actions/checkout@v2
+          npm ci
+          pod install --repo-update --project-directory=ios
 
-      # Install NPM Packages
-      - name: Install dependencies
-        run: npm install
-
-      - name: Install Fastlane
+      - name: Setup Ruby and Fastlane
         uses: ruby/setup-ruby@v1
         with:
-          ruby-version: 3.0.2
+          ruby-version: "3.2"
           bundler-cache: true
 
-      # Add Fastlane plugins
-      - name: Add Fastlane Plugins
-        run: gem install fastlane
+      - name: Install Fastlane
+        run: |
+          gem install bundler
+          bundle install
 
-      # Setup GitHub name and email for the Auto-Versioning Commit
       - name: Setup Git Config
         run: |
-          git config user.name "GitHub Actions Bot"
-          git config user.email "<>"
-      # Setup our App Store Service Account file
-      - name: Setup Service Account Credential Files
-        run: echo "${{ secrets.APPLE_API_KEY_FILE }}" > "${{ github.workspace }}/AppleApiKey.p8"
+          git config user.name "GitHub Actions"
+          git config user.email "github-actions[bot]@users.noreply.github.com"
 
-      - name: Build and Upload to App Store
+      - name: Setup Keychain
+        env:
+          KEYCHAIN_NAME: ${{ github.run_id }}_keychain
+          KEYCHAIN_PASSWORD: ${{ github.run_id }}_password
+        run: |
+          security create-keychain -p "$KEYCHAIN_PASSWORD" "$KEYCHAIN_NAME"
+          security default-keychain -s "$KEYCHAIN_NAME"
+          security unlock-keychain -p "$KEYCHAIN_PASSWORD" "$KEYCHAIN_NAME"
+          security set-keychain-settings -t 3600 -l "$KEYCHAIN_NAME"
+
+      - name: Setup Provisioning Profile
+        run: |
+          mkdir -p ~/Library/MobileDevice/Provisioning\ Profiles
+          echo "${{ secrets.APPLE_API_KEY_FILE }}" > AppleApiKey.p8
+
+      - name: Build and Upload to TestFlight
         uses: maierj/fastlane-action@v3.0.0
         with:
           lane: "ios testflight"
-          bundler-cache: true
+          subdirectory: "ios"
+          bundle-install-path: "vendor/bundle"
         env:
           APPLE_API_KEY_ID: ${{ secrets.APPLE_API_KEY_ID }}
           APPLE_ISSUER_ID: ${{ secrets.APPLE_ISSUER_ID }}
@@ -79,3 +107,18 @@ jobs:
           VERSION_NUMBER: ${{ github.event.inputs.version_number }}
           APPLE_TEAM_ID: ${{ secrets.APPLE_TEAM_ID }}
           MATCH_PASSWORD: ${{ secrets.MATCH_PASSWORD }}
+          ENVIRONMENT: ${{ github.event.inputs.environment }}
+          CI: true
+
+      - name: Cleanup Keychain
+        if: always()
+        env:
+          KEYCHAIN_NAME: ${{ github.run_id }}_keychain
+        run: |
+          security delete-keychain "$KEYCHAIN_NAME"
+
+      - name: Cleanup Credentials
+        if: always()
+        run: |
+          rm -f AppleApiKey.p8
+          rm -rf ~/Library/MobileDevice/Provisioning\ Profiles/*
