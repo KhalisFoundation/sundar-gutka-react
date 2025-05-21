@@ -47,12 +47,12 @@ const AutoScrollComponent = ({ shabadID, isFooter, webViewRef }) => {
       scrollMultiplier: 1.0,
     };
 
-    try {
-      if (webViewRef?.current?.postMessage) {
+    if (webViewRef?.current?.postMessage) {
+      try {
         webViewRef.current.postMessage(JSON.stringify(autoScrollObj));
+      } catch (error) {
+        logError("Error sending auto-scroll message:", error);
       }
-    } catch (error) {
-      logError("Error sending auto-scroll message:", error);
     }
   }, [isPaused, currentSpeed, webViewRef]);
 

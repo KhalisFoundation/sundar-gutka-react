@@ -104,7 +104,7 @@ const Reader = ({ navigation, route }) => {
       webViewRef.current.postMessage(JSON.stringify({ Back: true }));
       setShouldNavigateBack(true);
     }
-  }, [webViewRef.current]);
+  }, []);
 
   useEffect(() => {
     const backHandler = BackHandler.addEventListener("hardwareBackPress", handleBackPress);
