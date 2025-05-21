@@ -1,36 +1,58 @@
+import { Platform } from "react-native";
 import { openDatabase, enablePromise } from "react-native-sqlite-storage";
-import { FallBack, constant, logError, logMessage } from "@common";
+import { FallBack, constant, logError, logMessage, ensureDbExists, LOCAL_DB_PATH } from "@common";
 
+// Enable promise-based APIs
 enablePromise(true);
-let databaseInstance = null;
+
+// Singletons
+const databaseInstance = { value: null };
 let initializingPromise = null;
 
 const initDB = async () => {
-  if (databaseInstance) {
-    return databaseInstance;
-  }
+  await ensureDbExists();
 
+  if (databaseInstance.value) {
+    return databaseInstance.value;
+  }
   if (initializingPromise) {
     return initializingPromise;
   }
+
   initializingPromise = openDatabase({
-    name: constant.DB,
+    name: Platform.OS === "android" ? LOCAL_DB_PATH : `${constant.DB}.db`,
+    location: "Documents",
     createFromLocation: 1,
   })
     .then((db) => {
-      databaseInstance = db;
-      initializingPromise = null; // Reset the initializing promise
+      databaseInstance.value = db;
+      initializingPromise = null;
       return db;
     })
-    .catch((error) => {
+    .catch((err) => {
       logMessage("Opening database error");
-      logError(error);
-      FallBack();
-      initializingPromise = null; // Allow retry on next call
-      throw error; // Rethrow the original error
+      logError(err);
+      openDatabase({ name: constant.DB, createFromLocation: 1 })
+        .then((db) => {
+          databaseInstance.value = db;
+        })
+        .catch((error) => {
+          logError("Error opening fallback database", error);
+          logError(error);
+          FallBack();
+        });
+      initializingPromise = null;
+      throw err;
     });
 
   return initializingPromise;
+};
+
+export const closeDatabase = async () => {
+  if (databaseInstance.value) {
+    await databaseInstance.value.close();
+    databaseInstance.value = null;
+  }
 };
 
 export default initDB;

@@ -1,4 +1,4 @@
-import React from "react";
+import React, { useMemo } from "react";
 import { ListItem, Avatar, Icon } from "@rneui/themed";
 import PropTypes from "prop-types";
 import { useSelector } from "react-redux";
@@ -6,8 +6,11 @@ import { styles, nightModeStyles, iconNightColor } from "../../styles";
 
 const ListItemComponent = ({ icon, title, value, isAvatar, actionConstant, onPressAction }) => {
   const isNightMode = useSelector((state) => state.isNightMode);
-  const { containerNightStyles, textNightStyle, textNightGrey } = nightModeStyles(isNightMode);
-  const iconColor = iconNightColor(isNightMode);
+  const { containerNightStyles, textNightStyle, textNightGrey } = useMemo(
+    () => nightModeStyles(isNightMode),
+    [isNightMode]
+  );
+  const iconColor = useMemo(() => iconNightColor(isNightMode), [isNightMode]);
   return (
     <ListItem bottomDivider containerStyle={containerNightStyles} onPress={onPressAction}>
       {isAvatar && <Avatar source={Number(icon)} avatarStyle={styles.avatarStyle} />}

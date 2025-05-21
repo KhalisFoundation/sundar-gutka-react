@@ -146,3 +146,7 @@ export const setScrollPosition = (value) => {
 export const toggleHeaderFooter = (value) => {
   return { type: actionTypes.TOGGLE_HEADER_FOOTER, value };
 };
+
+export const toggleDatabaseUpdateAvailable = (value) => {
+  return { type: actionTypes.TOGGLE_DATABASE_UPDATE_AVAILABLE, value };
+};

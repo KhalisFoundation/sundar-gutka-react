@@ -24,18 +24,22 @@ import ParagraphMode from "./components/paragraphMode";
 import CollectStatistics from "./components/collectStatistics";
 import Donate from "./components/donate";
 import styles from "./styles/styles";
-import About from "./components/about";
+import ListItemWithIcon from "./components/comon/ListitemWithIcon";
+import DatabaseUpdateBanner from "./components/databaseUpdate";
 
 const Settings = ({ navigation }) => {
   logMessage(constant.SETTINGS);
   useScreenAnalytics(constant.SETTINGS);
   const isNightMode = useSelector((state) => state.isNightMode);
   const isStatusBar = useSelector((state) => state.isStatusBar);
+  const isDatabaseUpdateAvailable = useSelector((state) => state.isDatabaseUpdateAvailable);
+
   const { navigate } = navigation;
   const { scrollViewNightStyles, backgroundNightStyle } = nightModeStyles(isNightMode);
   const { displayOptionsText, end } = styles;
   const { DISPLAY_OPTIONS, BANI_OPTIONS, OTHER_OPTIONS } = STRINGS;
   const language = useSelector((state) => state.language);
+  const { about, databaseUpdate } = STRINGS;
   useEffect(() => {
     navigation.setOptions({
       title: STRINGS.settings,
@@ -52,6 +56,7 @@ const Settings = ({ navigation }) => {
             !isNightMode ? colors.TOOLBAR_COLOR_ALT : colors.TOOLBAR_COLOR_ALT_NIGHT_MODE
           }
         />
+        {isDatabaseUpdateAvailable && <DatabaseUpdateBanner navigate={navigate} />}
         <ScrollView>
           <Text style={[displayOptionsText, scrollViewNightStyles]}>{DISPLAY_OPTIONS}</Text>
           <FontSizeComponent />
@@ -73,11 +78,21 @@ const Settings = ({ navigation }) => {
           <PadchedSettingsComponent />
           <VishraamComponent />
           <RemindersComponent navigation={navigation} />
-
           <Text style={[displayOptionsText, scrollViewNightStyles]}>{OTHER_OPTIONS}</Text>
           <CollectStatistics />
           <Donate />
-          <About navigate={navigate} />
+          <ListItemWithIcon
+            iconName="info"
+            title={about}
+            navigate={navigate}
+            navigationTarget="About"
+          />
+          <ListItemWithIcon
+            iconName="update"
+            title={databaseUpdate}
+            navigate={navigate}
+            navigationTarget="DatabaseUpdate"
+          />
           <Text style={[end, backgroundNightStyle]} />
         </ScrollView>
       </SafeAreaView>

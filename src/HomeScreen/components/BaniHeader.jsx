@@ -9,6 +9,7 @@ import styles from "../styles";
 const BaniHeader = (props) => {
   const { navigate } = props;
   const isNightMode = useSelector((state) => state.isNightMode);
+  const isDatabaseUpdateAvailable = useSelector((state) => state.isDatabaseUpdateAvaliable);
   return (
     <View
       style={{
@@ -29,7 +30,7 @@ const BaniHeader = (props) => {
       </View>
       <View style={styles.settingIcon}>
         <Icon
-          name="settings"
+          name={isDatabaseUpdateAvailable ? "settings-suggest" : "settings"}
           type="material"
           size={35}
           color={colors.TOOLBAR_TINT}

@@ -1,5 +1,5 @@
 export default {
-  DB: "gutka_v01.db",
+  DB: "gutka_v01",
   ENGLISH: "ENGLISH",
   ENGLISH_TITLE_CASE: "English",
   HINDI: "HINDI",
@@ -82,4 +82,5 @@ export default {
   UPDATE_REMINDER: "updateReminder",
   PORTRAIT: "PORTRAIT",
   LANDSCAPE: "LANDSCAPE",
+  REMOTE_DB_URL: "https://banidb.blob.core.windows.net/database",
 };

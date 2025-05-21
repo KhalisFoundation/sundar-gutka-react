@@ -1,5 +1,6 @@
 import React from "react";
-import { View, Text, SafeAreaView, Pressable, Alert } from "react-native";
+import { View, Text, Pressable, Alert } from "react-native";
+import { SafeAreaProvider, SafeAreaView } from "react-native-safe-area-context";
 import { Icon } from "@rneui/themed";
 import { useDispatch } from "react-redux";
 import STRINGS from "../../localization";
@@ -21,24 +22,26 @@ const BaniLengthSelector = () => {
     );
   };
   return (
-    <SafeAreaView style={styles.wrapper}>
-      <View style={styles.viewWrapper}>
-        <Text style={styles.heading}>{STRINGS.khalsa_sundar_gutka}</Text>
-        <Text style={styles.baniLengthMessage}>{STRINGS.bani_length_message_1}</Text>
-        <Text style={styles.baniLengthMessage}>{STRINGS.bani_length_message_2}</Text>
-        <Text style={styles.textPreferrence}>{STRINGS.choose_your_preference}</Text>
-        {baniLengths.map((buttonText) => (
-          <Pressable key={buttonText} onPress={() => handleOnpress(buttonText)}>
-            <Text style={styles.button}>{buttonText}</Text>
+    <SafeAreaProvider>
+      <SafeAreaView style={styles.wrapper}>
+        <View style={styles.viewWrapper}>
+          <Text style={styles.heading}>{STRINGS.khalsa_sundar_gutka}</Text>
+          <Text style={styles.baniLengthMessage}>{STRINGS.bani_length_message_1}</Text>
+          <Text style={styles.baniLengthMessage}>{STRINGS.bani_length_message_2}</Text>
+          <Text style={styles.textPreferrence}>{STRINGS.choose_your_preference}</Text>
+          {baniLengths.map((buttonText) => (
+            <Pressable key={buttonText} onPress={() => handleOnpress(buttonText)}>
+              <Text style={styles.button}>{buttonText}</Text>
+            </Pressable>
+          ))}
+          <Pressable style={styles.helpWrapper} onPress={baniLengthInfo}>
+            <Icon color={colors.TOOLBAR_COLOR_ALT} name="info" size={30} />
+            <Text style={styles.helpText}>{STRINGS.need_help_deciding}</Text>
+            <Text style={styles.moreInfo}>{STRINGS.click_more_info}</Text>
           </Pressable>
-        ))}
-        <Pressable style={styles.helpWrapper} onPress={baniLengthInfo}>
-          <Icon color={colors.TOOLBAR_COLOR_ALT} name="info" size={30} />
-          <Text style={styles.helpText}>{STRINGS.need_help_deciding}</Text>
-          <Text style={styles.moreInfo}>{STRINGS.click_more_info}</Text>
-        </Pressable>
-      </View>
-    </SafeAreaView>
+        </View>
+      </SafeAreaView>
+    </SafeAreaProvider>
   );
 };
 export default BaniLengthSelector;

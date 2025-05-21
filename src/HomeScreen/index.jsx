@@ -15,7 +15,7 @@ import {
 } from "@common";
 import styles from "./styles";
 import BaniHeader from "./components/BaniHeader";
-import { useBaniLength, useBaniList } from "./hooks";
+import { useBaniLength, useBaniList, useDatabaseUpdateCheck } from "./hooks";
 import { setBaniOrder } from "../common/actions";
 
 const HomeScreen = React.memo(({ navigation }) => {
@@ -27,6 +27,7 @@ const HomeScreen = React.memo(({ navigation }) => {
   const language = useSelector((state) => state.language);
   const theme = useSelector((state) => state.theme);
   const baniOrder = useSelector((state) => state.baniOrder);
+  useDatabaseUpdateCheck();
 
   useKeepAwake();
   useScreenAnalytics(constant.HOME_SCREEN);
@@ -39,6 +40,7 @@ const HomeScreen = React.memo(({ navigation }) => {
       dispatch(actions.toggleNightMode(currentColorScheme === "dark"));
     }
   };
+
   useEffect(() => {
     dispatch(actions.setLanguage(language));
     const order = validateBaniOrder(baniOrder);

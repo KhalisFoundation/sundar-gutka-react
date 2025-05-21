@@ -10,7 +10,7 @@ import {
 } from "react-native";
 import { WebView } from "react-native-webview";
 import PropTypes from "prop-types";
-import { SafeAreaView } from "react-native-safe-area-context";
+import { SafeAreaProvider, SafeAreaView } from "react-native-safe-area-context";
 import { constant, colors, actions, useScreenAnalytics, logMessage, logError } from "@common";
 import { Header, AutoScrollComponent } from "./components";
 import { useBookmarks, useFetchShabad } from "./hooks";
@@ -158,55 +158,57 @@ const Reader = ({ navigation, route }) => {
   }, []);
 
   return (
-    <SafeAreaView style={[{ flex: 1 }, safeAreaViewBack]}>
-      <StatusBar
-        hidden={isStatusBar}
-        backgroundColor={backgroundColor}
-        barStyle={isNightMode ? "light-content" : "dark-content"}
-      />
+    <SafeAreaProvider>
+      <SafeAreaView style={[{ flex: 1 }, safeAreaViewBack]}>
+        <StatusBar
+          hidden={isStatusBar}
+          backgroundColor={backgroundColor}
+          barStyle={isNightMode ? "light-content" : "dark-content"}
+        />
 
-      <Header
-        navigation={navigation}
-        title={title}
-        handleBackPress={handleBackPress}
-        handleBookmarkPress={handleBookmarkPress}
-        handleSettingsPress={handleSettingsPress}
-        isHeader={isHeader}
-      />
-      {isLoading && <ActivityIndicator size="small" color={READER_STATUS_BAR_COLOR} />}
-      <WebView
-        key={webViewKey}
-        webviewDebuggingEnabled
-        javaScriptEnabled
-        originWhitelist={["*"]}
-        onLoadStart={handleLoadStart}
-        ref={webViewRef}
-        onError={handleError}
-        onHttpError={handleHttpError}
-        decelerationRate={0.99}
-        source={{
-          html: loadHTML(
-            shabad,
-            isTransliteration,
-            fontSize,
-            fontFace,
-            isEnglishTranslation,
-            isPunjabiTranslation,
-            isSpanishTranslation,
-            isNightMode,
-            isLarivaar,
-            currentPosition
-          ),
-          baseUrl: Platform.OS === "ios" ? "./" : "",
-        }}
-        style={[webView, isNightMode && { opacity: viewLoaded ? 1 : 0.1 }, backViewColor]}
-        onMessage={handleMessage}
-      />
+        <Header
+          navigation={navigation}
+          title={title}
+          handleBackPress={handleBackPress}
+          handleBookmarkPress={handleBookmarkPress}
+          handleSettingsPress={handleSettingsPress}
+          isHeader={isHeader}
+        />
+        {isLoading && <ActivityIndicator size="small" color={READER_STATUS_BAR_COLOR} />}
+        <WebView
+          key={webViewKey}
+          webviewDebuggingEnabled
+          javaScriptEnabled
+          originWhitelist={["*"]}
+          onLoadStart={handleLoadStart}
+          ref={webViewRef}
+          onError={handleError}
+          onHttpError={handleHttpError}
+          decelerationRate={0.99}
+          source={{
+            html: loadHTML(
+              shabad,
+              isTransliteration,
+              fontSize,
+              fontFace,
+              isEnglishTranslation,
+              isPunjabiTranslation,
+              isSpanishTranslation,
+              isNightMode,
+              isLarivaar,
+              currentPosition
+            ),
+            baseUrl: Platform.OS === "ios" ? "./" : "",
+          }}
+          style={[webView, isNightMode && { opacity: viewLoaded ? 1 : 0.1 }, backViewColor]}
+          onMessage={handleMessage}
+        />
 
-      {isAutoScroll && (
-        <AutoScrollComponent shabadID={id} webViewRef={webViewRef} isFooter={isHeader} />
-      )}
-    </SafeAreaView>
+        {isAutoScroll && (
+          <AutoScrollComponent shabadID={id} webViewRef={webViewRef} isFooter={isHeader} />
+        )}
+      </SafeAreaView>
+    </SafeAreaProvider>
   );
 };
 
