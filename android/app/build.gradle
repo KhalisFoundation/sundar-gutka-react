@@ -77,17 +77,20 @@ def enableProguardInReleaseBuilds = false
 def jscFlavor = 'io.github.react-native-community:jsc-android:2026004.+'
 
 android {
-    ndkVersion rootProject.ext.ndkVersion
-    buildToolsVersion rootProject.ext.buildToolsVersion
+    ndkVersion = rootProject.ext.ndkVersion
+    buildToolsVersion = rootProject.ext.buildToolsVersion
 
-    compileSdk rootProject.ext.compileSdkVersion
+    compileSdk = rootProject.ext.compileSdkVersion
 
     defaultConfig {
-        applicationId "com.WahegurooNetwork.SundarGutka"
-        minSdkVersion rootProject.ext.minSdkVersion
-        targetSdkVersion rootProject.ext.targetSdkVersion
-        versionCode 157
-        versionName "5.8.1"
+        applicationId = "com.WahegurooNetwork.SundarGutka"
+        minSdkVersion = rootProject.ext.minSdkVersion
+        targetSdkVersion = rootProject.ext.targetSdkVersion
+        versionCode = 158
+        versionName = "5.8.1"
+         ndk {
+            abiFilters "armeabi-v7a", "arm64-v8a", "x86", "x86_64" // Add x86 and x86_64
+        }
     }
     
     signingConfigs {
@@ -115,8 +118,6 @@ android {
 }
 dependencies {
     // The version of react-native is set by the React Native Gradle Plugin
-    implementation("com.facebook.react:react-native:0.78.0")
-    implementation("com.facebook.react:react-android")
     implementation project(':react-native-splash-screen')
     implementation platform('com.google.firebase:firebase-bom:32.6.0')
     implementation 'com.google.firebase:firebase-analytics'
