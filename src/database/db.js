@@ -119,9 +119,12 @@ export const getShabadFromID = async (
                 );
 
                 const translationJson = JSON.parse(Translations) || {};
-                const getTranslation = (lang, field) =>
-                  (translationJson[lang] && translationJson[lang][field]) || " ";
-                const translit = getTranslitText(Transliterations, language) || " ";
+                const getTranslation = (lang, field) => {
+                  return (translationJson[lang] && translationJson[lang][field]) || " ";
+                };
+                const translit = Transliterations
+                  ? getTranslitText(Transliterations, language) || " "
+                  : "";
                 const English = getTranslation("en", "bdb");
                 const Punjabi = getTranslation("pu", "bdb");
                 const Spanish = getTranslation("es", "sn");

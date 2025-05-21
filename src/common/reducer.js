@@ -117,6 +117,11 @@ const reminderSound = createReducer(constant.Default.toLowerCase(), {
 const isHeaderFooter = createReducer(false, {
   [actionTypes.TOGGLE_HEADER_FOOTER]: (state, action) => action.value,
 });
+
+const isDatabaseUpdateAvailable = createReducer(false, {
+  [actionTypes.TOGGLE_DATABASE_UPDATE_AVAILABLE]: (state, action) => action.value,
+});
+
 const autoScrollSpeedObj = (state = {}, action) => {
   switch (action.type) {
     case actionTypes.SET_AUTO_SCROLL_SPEED:
@@ -193,5 +198,6 @@ const rootReducer = combineReducers({
   savePosition,
   scrollPosition,
   isHeaderFooter,
+  isDatabaseUpdateAvailable,
 });
 export default rootReducer;
