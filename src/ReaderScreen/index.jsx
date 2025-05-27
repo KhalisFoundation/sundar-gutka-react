@@ -104,6 +104,7 @@ const Reader = ({ navigation, route }) => {
       webViewRef.current.postMessage(JSON.stringify({ Back: true }));
       setShouldNavigateBack(true);
     }
+    return true;
   }, []);
 
   useEffect(() => {
