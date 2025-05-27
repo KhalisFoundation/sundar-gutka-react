@@ -105,6 +105,7 @@ const Reader = ({ navigation, route }) => {
       setShouldNavigateBack(true);
     }
     return true;
+    // webViewRef is a ref object and is stable across renders, so it does not need to be included in the dependency array.
   }, []);
 
   useEffect(() => {
