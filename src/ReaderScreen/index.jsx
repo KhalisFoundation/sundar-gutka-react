@@ -43,7 +43,6 @@ const Reader = ({ navigation, route }) => {
   const [isHeader, toggleHeader] = useState(false);
   const [viewLoaded, toggleViewLoaded] = useState(false);
   const [currentPosition, setCurrentPosition] = useState(savePosition[id] || 0);
-  const [reloadKey, setReloadKey] = useState(true);
   const [shouldNavigateBack, setShouldNavigateBack] = useState(false);
 
   const dispatch = useDispatch();
@@ -53,8 +52,8 @@ const Reader = ({ navigation, route }) => {
 
   // Memoize WebView key to prevent unnecessary remounts
   const webViewKey = useMemo(() => {
-    return `${id}-${isParagraphMode}-${isLarivaar}-${isLarivaarAssist}-${isVishraam}-${vishraamOption}-${reloadKey}`;
-  }, [id, isParagraphMode, isLarivaar, isLarivaarAssist, isVishraam, vishraamOption, reloadKey]);
+    return `${id}-${isParagraphMode}-${isLarivaar}-${isLarivaarAssist}-${isVishraam}-${vishraamOption}`;
+  }, [id, isParagraphMode, isLarivaar, isLarivaarAssist, isVishraam, vishraamOption]);
 
   const updateTheme = useCallback(() => {
     const currentColorScheme = Appearance.getColorScheme();
@@ -83,10 +82,8 @@ const Reader = ({ navigation, route }) => {
       if (webViewRef?.current) {
         webViewRef.current.postMessage(JSON.stringify({ Back: true }));
       }
-      toggleViewLoaded(false);
 
       if (state === "active") {
-        setReloadKey((prev) => !prev);
         if (theme === constant.Default) {
           updateTheme();
         }
@@ -186,7 +183,11 @@ const Reader = ({ navigation, route }) => {
           ref={webViewRef}
           onError={handleError}
           onHttpError={handleHttpError}
-          decelerationRate={0.99}
+          decelerationRate="normal"
+          scrollEnabled
+          bounces={false}
+          overScrollMode="never"
+          nestedScrollEnabled
           source={{
             html: loadHTML(
               shabad,
