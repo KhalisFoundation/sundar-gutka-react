@@ -1,4 +1,4 @@
-import React, { useState, useRef, useEffect } from "react";
+import React, { useState, useRef, useEffect, useCallback, useMemo } from "react";
 import { useDispatch, useSelector } from "react-redux";
 import {
   Appearance,
@@ -43,39 +43,47 @@ const Reader = ({ navigation, route }) => {
   const [isHeader, toggleHeader] = useState(false);
   const [viewLoaded, toggleViewLoaded] = useState(false);
   const [currentPosition, setCurrentPosition] = useState(savePosition[id] || 0);
-  const [reloadKey, setReloadKey] = useState(true);
   const [shouldNavigateBack, setShouldNavigateBack] = useState(false);
 
   const dispatch = useDispatch();
-  const { shabad, isLoading, fetchShabad } = useFetchShabad(id);
+  const { shabad, isLoading } = useFetchShabad(id);
   const { backgroundColor, safeAreaViewBack, backViewColor } = nightColors(isNightMode);
   const { READER_STATUS_BAR_COLOR } = colors;
 
-  const updateTheme = () => {
+  // Memoize WebView key to prevent unnecessary remounts
+  const webViewKey = useMemo(() => {
+    return `${id}-${isParagraphMode}-${isLarivaar}-${isLarivaarAssist}-${isVishraam}-${vishraamOption}`;
+  }, [id, isParagraphMode, isLarivaar, isLarivaarAssist, isVishraam, vishraamOption]);
+
+  const updateTheme = useCallback(() => {
     const currentColorScheme = Appearance.getColorScheme();
     dispatch(actions.toggleNightMode(currentColorScheme === "dark"));
-  };
+  }, [dispatch]);
 
   useScreenAnalytics(title);
   useBookmarks(webViewRef, shabad, bookmarkPosition);
 
   useEffect(() => {
     if (savePosition && id) {
-      setCurrentPosition(savePosition[id]);
-      if (Number(savePosition[id]) > 0.9) {
+      const position = savePosition[id];
+      if (position > 0.9) {
         setCurrentPosition(0);
+      } else {
+        setCurrentPosition(position);
       }
     }
   }, [savePosition, id]);
 
   useEffect(() => {
+    let isMounted = true;
     const subscription = AppState.addEventListener("change", (state) => {
-      webViewRef?.current.postMessage(JSON.stringify({ Back: true }));
-      toggleViewLoaded(false);
+      if (!isMounted) return;
+
+      if (webViewRef?.current) {
+        webViewRef.current.postMessage(JSON.stringify({ Back: true }));
+      }
 
       if (state === "active") {
-        /* Reload key reloads the app whenever app comes to foreground */
-        setReloadKey((prev) => !prev);
         if (theme === constant.Default) {
           updateTheme();
         }
@@ -83,52 +91,70 @@ const Reader = ({ navigation, route }) => {
     });
 
     return () => {
+      isMounted = false;
       subscription.remove();
     };
-  }, [fetchShabad]);
+  }, [theme, updateTheme]);
 
-  const handleBackPress = () => {
-    if (webViewRef) {
+  const handleBackPress = useCallback(() => {
+    if (webViewRef?.current) {
       webViewRef.current.postMessage(JSON.stringify({ Back: true }));
-      // set Timeout to delay back function so that it will save the current position
       setShouldNavigateBack(true);
     }
-  };
-
-  const backAction = () => {
-    handleBackPress();
-  };
-
-  useEffect(() => {
-    const backHandler = BackHandler.addEventListener("hardwareBackPress", backAction);
-    return () => backHandler.remove(); // Clean up
+    return true;
+    // webViewRef is a ref object and is stable across renders, so it does not need to be included in the dependency array.
   }, []);
 
-  const handleBookmarkPress = () => navigation.navigate(constant.BOOKMARKS, { id });
-  const handleSettingsPress = () => navigation.navigate(constant.SETTINGS);
+  useEffect(() => {
+    const backHandler = BackHandler.addEventListener("hardwareBackPress", handleBackPress);
+    return () => backHandler.remove();
+  }, [handleBackPress]);
 
-  const handleMessage = (message) => {
-    const env = message.nativeEvent.data;
-    if (env === "toggle") {
-      // If the event is "toggle", toggle the current state of isHeader
-      toggleHeader((prev) => !prev);
-    } else if (env === "show") {
-      // If the event is "show", set isHeader to true
-      toggleHeader(true);
-    } else if (env === "hide") {
-      // If the event is "hide", set isHeader to false
-      toggleHeader(false);
-    } else if (env.includes("save")) {
-      // Handle save event, where event is expected to be "save-<position>"
-      const position = env.split("-")[1];
-      setCurrentPosition(position);
-      dispatch(actions.setPosition(position, id));
-      if (shouldNavigateBack) {
-        navigation.goBack();
-        setShouldNavigateBack(false);
+  const handleBookmarkPress = useCallback(() => {
+    navigation.navigate(constant.BOOKMARKS, { id });
+  }, [navigation, id]);
+
+  const handleSettingsPress = useCallback(() => {
+    navigation.navigate(constant.SETTINGS);
+  }, [navigation]);
+
+  const handleMessage = useCallback(
+    (message) => {
+      const env = message.nativeEvent.data;
+      if (env === "toggle") {
+        toggleHeader((prev) => !prev);
+      } else if (env === "show") {
+        toggleHeader(true);
+      } else if (env === "hide") {
+        toggleHeader(false);
+      } else if (env.includes("save")) {
+        const position = env.split("-")[1];
+        setCurrentPosition(position);
+        dispatch(actions.setPosition(position, id));
+        if (shouldNavigateBack) {
+          navigation.goBack();
+          setShouldNavigateBack(false);
+        }
       }
-    }
-  };
+    },
+    [dispatch, id, navigation, shouldNavigateBack]
+  );
+
+  const handleLoadStart = useCallback(() => {
+    setTimeout(() => {
+      toggleViewLoaded(true);
+    }, 500);
+  }, []);
+
+  const handleError = useCallback((syntheticEvent) => {
+    const { nativeEvent } = syntheticEvent;
+    logError(`Reader web View Error ${nativeEvent}`);
+  }, []);
+
+  const handleHttpError = useCallback((syntheticEvent) => {
+    const { nativeEvent } = syntheticEvent;
+    logError("HTTP error status code:", nativeEvent.statusCode);
+  }, []);
 
   return (
     <SafeAreaProvider>
@@ -142,40 +168,26 @@ const Reader = ({ navigation, route }) => {
         <Header
           navigation={navigation}
           title={title}
-          handleBackPress={backAction}
+          handleBackPress={handleBackPress}
           handleBookmarkPress={handleBookmarkPress}
           handleSettingsPress={handleSettingsPress}
           isHeader={isHeader}
         />
         {isLoading && <ActivityIndicator size="small" color={READER_STATUS_BAR_COLOR} />}
         <WebView
-          key={`${id}-${JSON.stringify({
-            isParagraphMode,
-            isLarivaar,
-            isLarivaarAssist,
-            isVishraam,
-            vishraamOption,
-            shabad,
-            reloadKey,
-          })}`}
+          key={webViewKey}
           webviewDebuggingEnabled
           javaScriptEnabled
           originWhitelist={["*"]}
-          onLoadStart={() => {
-            setTimeout(() => {
-              toggleViewLoaded(true);
-            }, 500);
-          }}
+          onLoadStart={handleLoadStart}
           ref={webViewRef}
-          onError={(syntheticEvent) => {
-            const { nativeEvent } = syntheticEvent;
-            logError(`Reader web View Error ${nativeEvent}`);
-          }}
-          onHttpError={(syntheticEvent) => {
-            const { nativeEvent } = syntheticEvent;
-            logError("HTTP error status code:", nativeEvent.statusCode);
-          }}
-          decelerationRate={0.99}
+          onError={handleError}
+          onHttpError={handleHttpError}
+          decelerationRate="normal"
+          scrollEnabled
+          bounces={false}
+          overScrollMode="never"
+          nestedScrollEnabled
           source={{
             html: loadHTML(
               shabad,
@@ -192,10 +204,12 @@ const Reader = ({ navigation, route }) => {
             baseUrl: Platform.OS === "ios" ? "./" : "",
           }}
           style={[webView, isNightMode && { opacity: viewLoaded ? 1 : 0.1 }, backViewColor]}
-          onMessage={(message) => handleMessage(message)}
+          onMessage={handleMessage}
         />
 
-        {isAutoScroll && <AutoScrollComponent shabadID={id} ref={webViewRef} isFooter={isHeader} />}
+        {isAutoScroll && (
+          <AutoScrollComponent shabadID={id} webViewRef={webViewRef} isFooter={isHeader} />
+        )}
       </SafeAreaView>
     </SafeAreaProvider>
   );
@@ -206,4 +220,4 @@ Reader.propTypes = {
   route: PropTypes.shape().isRequired,
 };
 
-export default Reader;
+export default React.memo(Reader);
