@@ -3,6 +3,7 @@
  */
 
 import { AppRegistry } from "react-native";
+import TrackPlayer from "react-native-track-player";
 import notifee, { EventType } from "@notifee/react-native";
 import App from "./app";
 import { resetBadgeCount } from "./src/common/notifications";
@@ -15,5 +16,7 @@ notifee.onBackgroundEvent(async ({ type, detail }) => {
     navigateTo(detail);
   }
 });
+// Register TrackPlayer service
+TrackPlayer.registerPlaybackService(() => require("./src/services/TrackPlayerService"));
 
 AppRegistry.registerComponent(appName, () => App);

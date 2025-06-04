@@ -16,12 +16,14 @@ import { Header, AutoScrollComponent } from "./components";
 import { useBookmarks, useFetchShabad } from "./hooks";
 import { styles, nightColors } from "./styles";
 import { loadHTML } from "./utils";
+import AudioPlayer from "../components/AudioPlayer";
 
 const Reader = ({ navigation, route }) => {
   logMessage(constant.READER);
   const isNightMode = useSelector((state) => state.isNightMode);
   const bookmarkPosition = useSelector((state) => state.bookmarkPosition);
   const isAutoScroll = useSelector((state) => state.isAutoScroll);
+  const isAudio = useSelector((state) => state.isAudio);
   const isStatusBar = useSelector((state) => state.isStatusBar);
   const isTransliteration = useSelector((state) => state.isTransliteration);
   const fontSize = useSelector((state) => state.fontSize);
@@ -194,6 +196,14 @@ const Reader = ({ navigation, route }) => {
           style={[webView, isNightMode && { opacity: viewLoaded ? 1 : 0.1 }, backViewColor]}
           onMessage={(message) => handleMessage(message)}
         />
+
+        {isAudio && (
+          <AudioPlayer
+            title={title}
+            artist="Gurbani Recitation"
+            audioUrl="https://github.com/amitojsingh/SG_audio/raw/7698994cf201092d435142857e2ceb83e4ead125/01%20Japuji.mp3"
+          />
+        )}
 
         {isAutoScroll && <AutoScrollComponent shabadID={id} ref={webViewRef} isFooter={isHeader} />}
       </SafeAreaView>

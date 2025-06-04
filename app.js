@@ -13,6 +13,7 @@ import {
   navigateTo,
   initializePerformanceMonitoring,
 } from "@common";
+import { TrackPlayerSetup } from "./src/utils/TrackPlayerUtils";
 import Navigation from "./src/navigation";
 import { allowTracking } from "./src/common/firebase/analytics";
 
@@ -27,6 +28,7 @@ const App = () => {
     initializePerformanceMonitoring();
     allowTracking();
     initializeCrashlytics();
+    TrackPlayerSetup();
   }, []);
 
   useEffect(() => {

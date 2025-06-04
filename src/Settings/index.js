@@ -18,6 +18,7 @@ import VishraamComponent from "./components/vishraam";
 import TranslationComponent from "./components/translation";
 import RemindersComponent from "./components/reminders/reminders";
 import AutoScroll from "./components/autoScroll";
+import Audio from "./components/audio";
 import KeepAwake from "./components/keepAwake";
 import EditBaniOrder from "./components/editBaniOrder";
 import ParagraphMode from "./components/paragraphMode";
@@ -68,6 +69,7 @@ const Settings = ({ navigation }) => {
           <StatusBar />
           <HideStatusBar />
           <AutoScroll />
+          <Audio />
           <KeepAwake />
           {/* Bani Options */}
           <Text style={[displayOptionsText, scrollViewNightStyles]}>{BANI_OPTIONS}</Text>
