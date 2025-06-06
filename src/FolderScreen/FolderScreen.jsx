@@ -1,8 +1,15 @@
 import React from "react";
-import { StatusBar, View } from "react-native";
+import { View } from "react-native";
 import PropTypes from "prop-types";
 import { useSelector } from "react-redux";
-import { colors, BaniList, constant, useScreenAnalytics, logMessage } from "@common";
+import {
+  colors,
+  BaniList,
+  constant,
+  useScreenAnalytics,
+  logMessage,
+  StatusBarComponent,
+} from "@common";
 import Header from "./header";
 
 const FolderScreen = ({ navigation, route }) => {
@@ -24,7 +31,11 @@ const FolderScreen = ({ navigation, route }) => {
     <View
       style={{ flex: 1, backgroundColor: isNightMode ? colors.NIGHT_BLACK : colors.WHITE_COLOR }}
     >
-      <StatusBar barStyle="light-content" backgroundColor={colors.TOOLBAR_COLOR} />
+      <StatusBarComponent
+        backgroundColor={
+          isNightMode ? colors.READER_STATUS_BAR_COLOR_NIGHT_MODE : colors.TOOLBAR_COLOR
+        }
+      />
       <Header navigation={navigation} title={title} />
       <BaniList data={data} isFolderScreen onPress={onPress} />
     </View>

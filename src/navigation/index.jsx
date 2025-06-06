@@ -72,7 +72,11 @@ const Navigation = () => {
         />
         <Stack.Screen name="About" component={AboutScreen} />
         <Stack.Screen name="FolderScreen" component={FolderScreen} />
-        <Stack.Screen name="EditBaniOrder" component={EditBaniOrder} />
+        <Stack.Screen
+          options={{ headerShown: false }}
+          name="EditBaniOrder"
+          component={EditBaniOrder}
+        />
         <Stack.Screen name="Bookmarks" component={Bookmarks} />
         <Stack.Screen name="ReminderOptions" component={ReminderOptions} />
         <Stack.Screen name="DatabaseUpdate" component={DatabaseUpdateScreen} />

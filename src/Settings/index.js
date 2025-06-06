@@ -3,7 +3,14 @@ import { useSelector } from "react-redux";
 import PropTypes from "prop-types";
 import { StatusBar, ScrollView, Text, SafeAreaView } from "react-native";
 import { SafeAreaProvider } from "react-native-safe-area-context";
-import { STRINGS, colors, useScreenAnalytics, constant, logMessage } from "@common";
+import {
+  STRINGS,
+  colors,
+  useScreenAnalytics,
+  constant,
+  logMessage,
+  StatusBarComponent,
+} from "@common";
 import { nightModeStyles } from "./styles/nightModeStyles";
 import FontSizeComponent from "./components/fontSize";
 import FontFaceComponent from "./components/fontFace";
@@ -31,7 +38,6 @@ const Settings = ({ navigation }) => {
   logMessage(constant.SETTINGS);
   useScreenAnalytics(constant.SETTINGS);
   const isNightMode = useSelector((state) => state.isNightMode);
-  const isStatusBar = useSelector((state) => state.isStatusBar);
   const isDatabaseUpdateAvailable = useSelector((state) => state.isDatabaseUpdateAvailable);
 
   const { navigate } = navigation;
@@ -49,13 +55,12 @@ const Settings = ({ navigation }) => {
   return (
     <SafeAreaProvider>
       <SafeAreaView style={scrollViewNightStyles}>
-        <StatusBar
-          hidden={isStatusBar}
-          barStyle={isNightMode ? "light-content" : "dark-content"}
+        <StatusBarComponent
           backgroundColor={
             !isNightMode ? colors.TOOLBAR_COLOR_ALT : colors.TOOLBAR_COLOR_ALT_NIGHT_MODE
           }
         />
+
         {isDatabaseUpdateAvailable && <DatabaseUpdateBanner navigate={navigate} />}
         <ScrollView>
           <Text style={[displayOptionsText, scrollViewNightStyles]}>{DISPLAY_OPTIONS}</Text>

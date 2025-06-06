@@ -1,17 +1,11 @@
 import React, { useState, useRef, useEffect, useCallback, useMemo } from "react";
 import { useDispatch, useSelector } from "react-redux";
-import {
-  Appearance,
-  StatusBar,
-  ActivityIndicator,
-  BackHandler,
-  AppState,
-  Platform,
-} from "react-native";
+import { Appearance, ActivityIndicator, BackHandler, AppState, Platform } from "react-native";
 import { WebView } from "react-native-webview";
 import PropTypes from "prop-types";
 import { SafeAreaProvider, SafeAreaView } from "react-native-safe-area-context";
 import { constant, colors, actions, useScreenAnalytics, logMessage, logError } from "@common";
+import StatusBarComponent from "@common/components/StatusBar";
 import { Header, AutoScrollComponent } from "./components";
 import { useBookmarks, useFetchShabad } from "./hooks";
 import { styles, nightColors } from "./styles";
@@ -22,7 +16,6 @@ const Reader = ({ navigation, route }) => {
   const isNightMode = useSelector((state) => state.isNightMode);
   const bookmarkPosition = useSelector((state) => state.bookmarkPosition);
   const isAutoScroll = useSelector((state) => state.isAutoScroll);
-  const isStatusBar = useSelector((state) => state.isStatusBar);
   const isTransliteration = useSelector((state) => state.isTransliteration);
   const fontSize = useSelector((state) => state.fontSize);
   const fontFace = useSelector((state) => state.fontFace);
@@ -159,12 +152,7 @@ const Reader = ({ navigation, route }) => {
   return (
     <SafeAreaProvider>
       <SafeAreaView style={[{ flex: 1 }, safeAreaViewBack]}>
-        <StatusBar
-          hidden={isStatusBar}
-          backgroundColor={backgroundColor}
-          barStyle={isNightMode ? "light-content" : "dark-content"}
-        />
-
+        <StatusBarComponent backgroundColor={backgroundColor} />
         <Header
           navigation={navigation}
           title={title}
@@ -183,7 +171,7 @@ const Reader = ({ navigation, route }) => {
           ref={webViewRef}
           onError={handleError}
           onHttpError={handleHttpError}
-          decelerationRate="normal"
+          decelerationRate={0.998}
           scrollEnabled
           bounces={false}
           overScrollMode="never"

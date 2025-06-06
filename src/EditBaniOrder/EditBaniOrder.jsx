@@ -7,16 +7,15 @@ import { Pressable, Text, View } from "react-native";
 import { GestureHandlerRootView } from "react-native-gesture-handler";
 import { useSelector, useDispatch, batch } from "react-redux";
 import PropTypes from "prop-types";
-import { STRINGS, defaultBaniOrder, actions, constant, logMessage } from "@common";
+import { defaultBaniOrder, actions, constant, logMessage } from "@common";
 import { activeColor, nightStyles, styles } from "./styles";
-import useHeader from "./hooks/useHeader";
+import Header from "./components/Header";
 
 const EditBaniOrder = ({ navigation }) => {
   logMessage(constant.EDIT_BANI_ORDER);
   const isNightMode = useSelector((state) => state.isNightMode);
   const baniList = useSelector((state) => state.baniList);
   const baniOrder = useSelector((state) => state.baniOrder);
-  const language = useSelector((state) => state.language);
   const [isReset, setReset] = useState(false);
 
   const [baniListData, setBaniListData] = useState(
@@ -29,15 +28,9 @@ const EditBaniOrder = ({ navigation }) => {
     baniOrder.baniOrder.filter((item) => item.id !== undefined)
   );
 
-  useHeader(navigation, setReset);
   const { rowItem, text } = styles;
   const dispatch = useDispatch();
   const nightColor = nightStyles(isNightMode);
-  useEffect(() => {
-    navigation.setOptions({
-      title: STRINGS.EDIT_BANI_ORDER,
-    });
-  }, [language]);
 
   const renderItem = useCallback(
     ({ item, drag, isActive }) => {
@@ -102,14 +95,17 @@ const EditBaniOrder = ({ navigation }) => {
     setOrderData(ids);
   };
   return (
-    <GestureHandlerRootView style={nightColor.viewBackColor}>
-      <DraggableFlatList
-        data={baniListData}
-        keyExtractor={(item) => item.id}
-        renderItem={renderItem}
-        onDragEnd={handleDragEnd}
-      />
-    </GestureHandlerRootView>
+    <>
+      <Header navigation={navigation} setReset={setReset} />
+      <GestureHandlerRootView style={nightColor.viewBackColor}>
+        <DraggableFlatList
+          data={baniListData}
+          keyExtractor={(item) => item.id}
+          renderItem={renderItem}
+          onDragEnd={handleDragEnd}
+        />
+      </GestureHandlerRootView>
+    </>
   );
 };
 EditBaniOrder.propTypes = {
