@@ -1,5 +1,5 @@
 import React from "react";
-import { View, Text } from "react-native";
+import { View, Text, useCallback } from "react-native";
 import { Icon } from "@rneui/themed";
 import { useSelector } from "react-redux";
 import PropTypes from "prop-types";
@@ -17,26 +17,32 @@ const Header = ({ navigation, setReset }) => {
     textColor: isNightMode ? WHITE_COLOR : NIGHT_BLACK,
   };
 
-  const headerLeft = () => (
-    <Icon
-      name="arrow-back"
-      size={30}
-      onPress={() => goBack()}
-      color={headerStyles.textColor}
-      accessibilityLabel="Go back"
-      accessibilityRole="button"
-    />
+  const headerLeft = useCallback(
+    () => (
+      <Icon
+        name="arrow-back"
+        size={30}
+        onPress={() => goBack()}
+        color={headerStyles.textColor}
+        accessibilityLabel="Go back"
+        accessibilityRole="button"
+      />
+    ),
+    [headerStyles.textColor]
   );
 
-  const headerRight = () => (
-    <Icon
-      name="refresh"
-      size={30}
-      onPress={() => setReset(true)}
-      color={headerStyles.textColor}
-      accessibilityLabel="Reset bani order"
-      accessibilityRole="button"
-    />
+  const headerRight = useCallback(
+    () => (
+      <Icon
+        name="refresh"
+        size={30}
+        onPress={() => setReset(true)}
+        color={headerStyles.textColor}
+        accessibilityLabel="Reset bani order"
+        accessibilityRole="button"
+      />
+    ),
+    [headerStyles.textColor]
   );
 
   return (
