@@ -7,7 +7,14 @@ import { Pressable, Text, View } from "react-native";
 import { GestureHandlerRootView } from "react-native-gesture-handler";
 import { useSelector, useDispatch, batch } from "react-redux";
 import PropTypes from "prop-types";
-import { defaultBaniOrder, actions, constant, logMessage } from "@common";
+import {
+  defaultBaniOrder,
+  actions,
+  constant,
+  logMessage,
+  SafeArea,
+  StatusBarComponent,
+} from "@common";
 import { activeColor, nightStyles, styles } from "./styles";
 import Header from "./components/Header";
 
@@ -30,7 +37,7 @@ const EditBaniOrder = ({ navigation }) => {
 
   const { rowItem, text } = styles;
   const dispatch = useDispatch();
-  const nightColor = nightStyles(isNightMode);
+  const { headerStyles, backColor, textColor } = nightStyles(isNightMode);
 
   const renderItem = useCallback(
     ({ item, drag, isActive }) => {
@@ -39,15 +46,15 @@ const EditBaniOrder = ({ navigation }) => {
         <ShadowDecorator>
           <ScaleDecorator>
             <Pressable activeOpacity={1} onLongPress={drag} disabled={isActive} style={activeStyle}>
-              <View key={item.id} style={[rowItem, nightColor.backColor]}>
-                <Text style={[nightColor.textColor, text]}>{item.gurmukhi}</Text>
+              <View key={item.id} style={[rowItem, backColor]}>
+                <Text style={[textColor, text]}>{item.gurmukhi}</Text>
               </View>
             </Pressable>
           </ScaleDecorator>
         </ShadowDecorator>
       );
     },
-    [rowItem, nightColor, text]
+    [rowItem, text, backColor, textColor]
   );
 
   useEffect(() => {
@@ -95,9 +102,12 @@ const EditBaniOrder = ({ navigation }) => {
     setOrderData(ids);
   };
   return (
-    <>
+    <SafeArea backgroundColor={headerStyles.backgroundColor}>
+      <StatusBarComponent backgroundColor={headerStyles.backgroundColor} />
       <Header navigation={navigation} setReset={setReset} />
-      <GestureHandlerRootView style={nightColor.viewBackColor}>
+      <GestureHandlerRootView
+        style={[styles.gestureHandlerRootView, { backgroundColor: headerStyles.textColor }]}
+      >
         <DraggableFlatList
           data={baniListData}
           keyExtractor={(item) => item.id}
@@ -105,7 +115,7 @@ const EditBaniOrder = ({ navigation }) => {
           onDragEnd={handleDragEnd}
         />
       </GestureHandlerRootView>
-    </>
+    </SafeArea>
   );
 };
 EditBaniOrder.propTypes = {

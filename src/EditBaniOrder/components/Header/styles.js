@@ -5,16 +5,8 @@ const styles = StyleSheet.create({
     flexDirection: "row",
     justifyContent: "space-between",
     alignItems: "center",
-    height: 56,
-    paddingHorizontal: 16,
-    elevation: 4, // Add shadow for Android
-    shadowColor: "#000", // Add shadow for iOS
-    shadowOffset: {
-      width: 0,
-      height: 2,
-    },
-    shadowOpacity: 0.25,
-    shadowRadius: 3.84,
+    height: 86,
+    padding: 10,
   },
   leftContainer: {
     flex: 1,
