@@ -28,7 +28,7 @@ const Header = ({ navigation, setReset }) => {
         accessibilityRole="button"
       />
     ),
-    [headerStyles.textColor]
+    [goBack, headerStyles.textColor]
   );
 
   const headerRight = useCallback(
@@ -42,7 +42,7 @@ const Header = ({ navigation, setReset }) => {
         accessibilityRole="button"
       />
     ),
-    [headerStyles.textColor]
+    [setReset, headerStyles.textColor]
   );
 
   return (
