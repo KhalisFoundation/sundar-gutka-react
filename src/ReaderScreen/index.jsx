@@ -3,8 +3,15 @@ import { useDispatch, useSelector } from "react-redux";
 import { Appearance, ActivityIndicator, BackHandler, AppState, Platform } from "react-native";
 import { WebView } from "react-native-webview";
 import PropTypes from "prop-types";
-import { SafeAreaProvider, SafeAreaView } from "react-native-safe-area-context";
-import { constant, colors, actions, useScreenAnalytics, logMessage, logError } from "@common";
+import {
+  constant,
+  colors,
+  actions,
+  useScreenAnalytics,
+  logMessage,
+  logError,
+  SafeArea,
+} from "@common";
 import StatusBarComponent from "@common/components/StatusBar";
 import { Header, AutoScrollComponent } from "./components";
 import { useBookmarks, useFetchShabad } from "./hooks";
@@ -150,56 +157,54 @@ const Reader = ({ navigation, route }) => {
   }, []);
 
   return (
-    <SafeAreaProvider>
-      <SafeAreaView style={[{ flex: 1 }, safeAreaViewBack]}>
-        <StatusBarComponent backgroundColor={backgroundColor} />
-        <Header
-          navigation={navigation}
-          title={title}
-          handleBackPress={handleBackPress}
-          handleBookmarkPress={handleBookmarkPress}
-          handleSettingsPress={handleSettingsPress}
-          isHeader={isHeader}
-        />
-        {isLoading && <ActivityIndicator size="small" color={READER_STATUS_BAR_COLOR} />}
-        <WebView
-          key={webViewKey}
-          webviewDebuggingEnabled
-          javaScriptEnabled
-          originWhitelist={["*"]}
-          onLoadStart={handleLoadStart}
-          ref={webViewRef}
-          onError={handleError}
-          onHttpError={handleHttpError}
-          decelerationRate={0.998}
-          scrollEnabled
-          bounces={false}
-          overScrollMode="never"
-          nestedScrollEnabled
-          source={{
-            html: loadHTML(
-              shabad,
-              isTransliteration,
-              fontSize,
-              fontFace,
-              isEnglishTranslation,
-              isPunjabiTranslation,
-              isSpanishTranslation,
-              isNightMode,
-              isLarivaar,
-              currentPosition
-            ),
-            baseUrl: Platform.OS === "ios" ? "./" : "",
-          }}
-          style={[webView, isNightMode && { opacity: viewLoaded ? 1 : 0.1 }, backViewColor]}
-          onMessage={handleMessage}
-        />
+    <SafeArea backgroundColor={safeAreaViewBack.backgroundColor}>
+      <StatusBarComponent backgroundColor={backgroundColor} />
+      <Header
+        navigation={navigation}
+        title={title}
+        handleBackPress={handleBackPress}
+        handleBookmarkPress={handleBookmarkPress}
+        handleSettingsPress={handleSettingsPress}
+        isHeader={isHeader}
+      />
+      {isLoading && <ActivityIndicator size="small" color={READER_STATUS_BAR_COLOR} />}
+      <WebView
+        key={webViewKey}
+        webviewDebuggingEnabled
+        javaScriptEnabled
+        originWhitelist={["*"]}
+        onLoadStart={handleLoadStart}
+        ref={webViewRef}
+        onError={handleError}
+        onHttpError={handleHttpError}
+        decelerationRate={0.998}
+        scrollEnabled
+        bounces={false}
+        overScrollMode="never"
+        nestedScrollEnabled
+        source={{
+          html: loadHTML(
+            shabad,
+            isTransliteration,
+            fontSize,
+            fontFace,
+            isEnglishTranslation,
+            isPunjabiTranslation,
+            isSpanishTranslation,
+            isNightMode,
+            isLarivaar,
+            currentPosition
+          ),
+          baseUrl: Platform.OS === "ios" ? "./" : "",
+        }}
+        style={[webView, isNightMode && { opacity: viewLoaded ? 1 : 0.1 }, backViewColor]}
+        onMessage={handleMessage}
+      />
 
-        {isAutoScroll && (
-          <AutoScrollComponent shabadID={id} webViewRef={webViewRef} isFooter={isHeader} />
-        )}
-      </SafeAreaView>
-    </SafeAreaProvider>
+      {isAutoScroll && (
+        <AutoScrollComponent shabadID={id} webViewRef={webViewRef} isFooter={isHeader} />
+      )}
+    </SafeArea>
   );
 };
 

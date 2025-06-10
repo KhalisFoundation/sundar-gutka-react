@@ -7,6 +7,7 @@ import {
   checkForBaniDBUpdate,
   logError,
   StatusBarComponent,
+  SafeArea,
   colors,
 } from "@common";
 import PropTypes from "prop-types";
@@ -46,7 +47,7 @@ const DatabaseUpdateScreen = ({ navigation }) => {
   }, []);
 
   return (
-    <>
+    <SafeArea backgroundColor={colors.BANIDB_LIGHT}>
       <StatusBarComponent backgroundColor={colors.BANIDB_LIGHT} />
       <View style={[styles.mainWrapper, darkModeContainer]}>
         <CheckUpdatesAnimation isLoading={isLoading} isUpdateAvailable={isUpdateAvailable} />
@@ -59,7 +60,7 @@ const DatabaseUpdateScreen = ({ navigation }) => {
         </Pressable>
         <BaniDBAbout />
       </View>
-    </>
+    </SafeArea>
   );
 };
 

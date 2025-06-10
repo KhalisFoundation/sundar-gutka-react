@@ -13,6 +13,7 @@ import {
   logMessage,
   validateBaniOrder,
   StatusBarComponent,
+  SafeArea,
 } from "@common";
 import styles from "./styles";
 import BaniHeader from "./components/BaniHeader";
@@ -77,15 +78,21 @@ const HomeScreen = React.memo(({ navigation }) => {
   return baniLengthSelector ? (
     <BaniLengthSelector />
   ) : (
-    <View style={[isNightMode && { backgroundColor: colors.NIGHT_BLACK }, styles.container]}>
-      <StatusBarComponent
-        backgroundColor={
-          isNightMode ? colors.READER_STATUS_BAR_COLOR_NIGHT_MODE : colors.TOOLBAR_COLOR
-        }
-      />
-      <BaniHeader navigate={navigate} />
-      <BaniList data={baniListData} onPress={onPress} />
-    </View>
+    <SafeArea
+      backgroundColor={
+        isNightMode ? colors.READER_STATUS_BAR_COLOR_NIGHT_MODE : colors.TOOLBAR_COLOR
+      }
+    >
+      <View style={[isNightMode && { backgroundColor: colors.NIGHT_BLACK }, styles.container]}>
+        <StatusBarComponent
+          backgroundColor={
+            isNightMode ? colors.READER_STATUS_BAR_COLOR_NIGHT_MODE : colors.TOOLBAR_COLOR
+          }
+        />
+        <BaniHeader navigate={navigate} />
+        <BaniList data={baniListData} onPress={onPress} />
+      </View>
+    </SafeArea>
   );
 });
 

@@ -9,6 +9,7 @@ import {
   useScreenAnalytics,
   logMessage,
   StatusBarComponent,
+  SafeArea,
 } from "@common";
 import Header from "./header";
 
@@ -28,17 +29,23 @@ const FolderScreen = ({ navigation, route }) => {
     });
   };
   return (
-    <View
-      style={{ flex: 1, backgroundColor: isNightMode ? colors.NIGHT_BLACK : colors.WHITE_COLOR }}
+    <SafeArea
+      backgroundColor={
+        isNightMode ? colors.READER_STATUS_BAR_COLOR_NIGHT_MODE : colors.TOOLBAR_COLOR
+      }
     >
-      <StatusBarComponent
-        backgroundColor={
-          isNightMode ? colors.READER_STATUS_BAR_COLOR_NIGHT_MODE : colors.TOOLBAR_COLOR
-        }
-      />
-      <Header navigation={navigation} title={title} />
-      <BaniList data={data} isFolderScreen onPress={onPress} />
-    </View>
+      <View
+        style={{ flex: 1, backgroundColor: isNightMode ? colors.NIGHT_BLACK : colors.WHITE_COLOR }}
+      >
+        <StatusBarComponent
+          backgroundColor={
+            isNightMode ? colors.READER_STATUS_BAR_COLOR_NIGHT_MODE : colors.TOOLBAR_COLOR
+          }
+        />
+        <Header navigation={navigation} title={title} />
+        <BaniList data={data} isFolderScreen onPress={onPress} />
+      </View>
+    </SafeArea>
   );
 };
 

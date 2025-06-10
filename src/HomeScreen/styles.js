@@ -14,7 +14,7 @@ const styles = StyleSheet.create({
   titleContainer: { textAlign: "center", margin: 5 },
   settingIcon: { position: "absolute", bottom: 10, right: 5 },
   headerFatehStyle: { fontSize: 22, color: colors.TOOLBAR_TINT },
-  fatehContainer: { marginTop: 50, marginLeft: "auto", marginRight: "auto" },
+  fatehContainer: { marginTop: 20, marginLeft: "auto", marginRight: "auto" },
 });
 
 export default styles;

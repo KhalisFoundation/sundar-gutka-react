@@ -1,5 +1,4 @@
 import React from "react";
-import { SafeAreaProvider, SafeAreaView } from "react-native-safe-area-context";
 import { useDispatch, useSelector } from "react-redux";
 import PropTypes from "prop-types";
 import {
@@ -9,6 +8,7 @@ import {
   constant,
   logMessage,
   StatusBarComponent,
+  SafeArea,
 } from "@common";
 import useHeader from "./hooks/useHeader";
 import useBookmarks from "./hooks/useBookmarks";
@@ -29,12 +29,10 @@ const Bookmarks = ({ navigation, route }) => {
   };
 
   return (
-    <SafeAreaProvider style={{ backgroundColor }}>
-      <SafeAreaView style={{ flex: 1 }}>
-        <StatusBarComponent backgroundColor={getHeaderStyle(isNightMode).backgroundColor} />
-        <BaniList data={bookmarksData} onPress={onPress} isFolderScreen />
-      </SafeAreaView>
-    </SafeAreaProvider>
+    <SafeArea backgroundColor={backgroundColor}>
+      <StatusBarComponent backgroundColor={getHeaderStyle(isNightMode).backgroundColor} />
+      <BaniList data={bookmarksData} onPress={onPress} isFolderScreen />
+    </SafeArea>
   );
 };
 Bookmarks.propTypes = {
