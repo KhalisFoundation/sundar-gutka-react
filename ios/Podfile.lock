@@ -1552,6 +1552,9 @@ PODS:
     - React-Core
   - react-native-sqlite-storage (6.0.1):
     - React-Core
+  - react-native-track-player (4.1.1):
+    - React-Core
+    - SwiftAudioEx (= 1.1.0)
   - react-native-webview (13.13.5):
     - DoubleConversion
     - glog
@@ -2193,6 +2196,7 @@ PODS:
     - ReactCommon/turbomodule/core
     - Yoga
   - SocketRocket (0.7.1)
+  - SwiftAudioEx (1.1.0)
   - Yoga (0.0.0)
 
 DEPENDENCIES:
@@ -2251,6 +2255,7 @@ DEPENDENCIES:
   - "react-native-slider (from `../node_modules/@react-native-community/slider`)"
   - react-native-splash-screen (from `../node_modules/react-native-splash-screen`)
   - react-native-sqlite-storage (from `../node_modules/react-native-sqlite-storage`)
+  - react-native-track-player (from `../node_modules/react-native-track-player`)
   - react-native-webview (from `../node_modules/react-native-webview`)
   - React-NativeModulesApple (from `../node_modules/react-native/ReactCommon/react/nativemodule/core/platform/ios`)
   - React-perflogger (from `../node_modules/react-native/ReactCommon/reactperflogger`)
@@ -2325,6 +2330,7 @@ SPEC REPOS:
     - PromisesSwift
     - React-Codegen
     - SocketRocket
+    - SwiftAudioEx
 
 EXTERNAL SOURCES:
   boost:
@@ -2416,6 +2422,8 @@ EXTERNAL SOURCES:
     :path: "../node_modules/react-native-splash-screen"
   react-native-sqlite-storage:
     :path: "../node_modules/react-native-sqlite-storage"
+  react-native-track-player:
+    :path: "../node_modules/react-native-track-player"
   react-native-webview:
     :path: "../node_modules/react-native-webview"
   React-NativeModulesApple:
@@ -2578,9 +2586,10 @@ SPEC CHECKSUMS:
   react-native-keep-awake: 5fb94de503761b67af1bec52f83e18d66e9abaf3
   react-native-restart: 7595693413fe3ca15893702f2c8306c62a708162
   react-native-safe-area-context: 9b169299f9dc95f1d7fe1dd266fde53bd899cd0c
-  react-native-slider: 27263d134d55db948a4706f1e47d0ec88fb354dd
+  react-native-slider: e7f302c8d3296ddb49c642473f77f8f98809d53b
   react-native-splash-screen: 4312f786b13a81b5169ef346d76d33bc0c6dc457
   react-native-sqlite-storage: f6d515e1c446d1e6d026aa5352908a25d4de3261
+  react-native-track-player: 82ef1756ffeea61140fea17519ecd6d64ec3cf3e
   react-native-webview: ca20dfd45204cc81f0b21e70d1e5a349daecfb81
   React-NativeModulesApple: 79a4404ac301b40bec3b367879c5e9a9ce81683c
   React-perflogger: 0ea25c109dba33d47dec36b2634bf7ea67c1a555
@@ -2630,6 +2639,7 @@ SPEC CHECKSUMS:
   RNSVG: 8588ee1ca9b2e6fd2c99466e35b3db0e9f81bb40
   RNVectorIcons: 14a0c42f16a26bcc3e79a19bc1c5718284b1d469
   SocketRocket: d4aabe649be1e368d1318fdf28a022d714d65748
+  SwiftAudioEx: f6aa653770f3a0d3851edaf8d834a30aee4a7646
   Yoga: 66a9a23a82dd4081b393babe509967097759b3d6
 
 PODFILE CHECKSUM: ac408e57b16f48b21c82b666848f532d9ef92f63

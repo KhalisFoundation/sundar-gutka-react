@@ -50,6 +50,10 @@ const isAutoScroll = createReducer(false, {
   [actionTypes.TOGGLE_AUTO_SCROLL]: (state, action) => action.value,
 });
 
+const isAudio = createReducer(false, {
+  [actionTypes.TOGGLE_AUDIO]: (state, action) => action.value,
+});
+
 const baniLength = createReducer("", {
   [actionTypes.SET_BANI_LENGTH]: (state, action) => action.value,
 });
@@ -174,6 +178,7 @@ const rootReducer = combineReducers({
   isTransliteration,
   theme,
   isAutoScroll,
+  isAudio,
   isScreenAwake,
   isStatusBar,
   baniLength,

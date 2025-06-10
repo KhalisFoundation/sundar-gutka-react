@@ -40,6 +40,11 @@ export const toggleAutoScroll = (value) => {
   return { type: actionTypes.TOGGLE_AUTO_SCROLL, value };
 };
 
+export const toggleAudio = (value) => {
+  trackSettingEvent(constant.AUDIO, value);
+  return { type: actionTypes.TOGGLE_AUDIO, value };
+};
+
 export const toggleStatusBar = (value) => {
   trackSettingEvent(constant.STATUS_BAR, value);
   return { type: actionTypes.TOGGLE_STATUS_BAR, value };

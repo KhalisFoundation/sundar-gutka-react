@@ -71,6 +71,7 @@ export default {
   STATUS_BAR: "statusBar",
   PARAGRAPH: "paragraph",
   AUTO_SCROLL: "autoScroll",
+  AUDIO: "audio",
   VISHRAAM: "vishraam",
   VISHRAAM_OPTION: "vishraamOption",
   VISHRAAM_SOURCE: "vishraamSource",
