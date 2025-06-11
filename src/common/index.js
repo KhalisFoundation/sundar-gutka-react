@@ -40,6 +40,7 @@ import {
   revertMD5Hash,
   getCurrentDBMD5Hash,
 } from "./rnfs";
+import AudioPlayer from "./components/AudioPlayer";
 
 export {
   colors,
@@ -84,4 +85,5 @@ export {
   listDocumentDirectory,
   revertMD5Hash,
   getCurrentDBMD5Hash,
+  AudioPlayer,
 };

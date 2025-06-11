@@ -13,7 +13,7 @@ import {
   navigateTo,
   initializePerformanceMonitoring,
 } from "@common";
-import { TrackPlayerSetup } from "./src/utils/TrackPlayerUtils";
+import { TrackPlayerSetup } from "./src/common/TrackPlayerUtils";
 import Navigation from "./src/navigation";
 import { allowTracking } from "./src/common/firebase/analytics";
 

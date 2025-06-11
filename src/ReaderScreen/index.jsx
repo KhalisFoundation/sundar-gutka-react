@@ -11,12 +11,19 @@ import {
 import { WebView } from "react-native-webview";
 import PropTypes from "prop-types";
 import { SafeAreaProvider, SafeAreaView } from "react-native-safe-area-context";
-import { constant, colors, actions, useScreenAnalytics, logMessage, logError } from "@common";
+import {
+  constant,
+  colors,
+  actions,
+  useScreenAnalytics,
+  logMessage,
+  logError,
+  AudioPlayer,
+} from "@common";
 import { Header, AutoScrollComponent } from "./components";
 import { useBookmarks, useFetchShabad } from "./hooks";
 import { styles, nightColors } from "./styles";
 import { loadHTML } from "./utils";
-import AudioPlayer from "../components/AudioPlayer";
 
 const Reader = ({ navigation, route }) => {
   logMessage(constant.READER);
