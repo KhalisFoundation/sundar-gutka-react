@@ -7,6 +7,8 @@ import baseFontSize from "../../helpers";
 import colors from "../../colors";
 import { styles } from "../../../Settings/styles";
 
+const folderIcon = require("../../../../images/foldericon.png");
+
 const BaniList = React.memo(({ data, onPress }) => {
   const fontSize = useSelector((state) => state.fontSize);
   const fontFace = useSelector((state) => state.fontFace);
@@ -28,18 +30,15 @@ const BaniList = React.memo(({ data, onPress }) => {
     (row) => {
       return (
         <ListItem
+          key={row.item.token.toString()}
           bottomDivider
           containerStyle={{
             backgroundColor: isNightMode ? colors.NIGHT_BLACK : colors.WHITE_COLOR,
           }}
           onPress={() => onPress(row)}
+          pad={16}
         >
-          {row.item.folder && (
-            <Avatar
-              source={require("../../../../images/foldericon.png")}
-              avatarStyle={styles.avatarStyle}
-            />
-          )}
+          {row.item.folder && <Avatar source={folderIcon} avatarStyle={styles.avatarStyle} />}
           <ListItem.Content>
             <ListItem.Title
               style={[
@@ -75,7 +74,7 @@ const BaniList = React.memo(({ data, onPress }) => {
       style={!isPotrait && Platform.OS === "ios" && { marginLeft: 30 }}
       data={data}
       renderItem={renderBanis}
-      keyExtractor={(item) => item.gurmukhi}
+      keyExtractor={(item) => item.token}
     />
   );
 });

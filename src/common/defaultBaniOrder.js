@@ -118,6 +118,7 @@ const defaultBaniOrder = {
     {
       gurmukhi: "AMimRq bwxI",
       translit: "amirat baaNee",
+      token: "AMimRqbwxI",
       folder: [
         {
           id: 39,
@@ -169,6 +170,7 @@ const defaultBaniOrder = {
     {
       gurmukhi: "Bgq bwxI",
       translit: "bhagat baaNee",
+      token: "BgqbwxI",
       folder: [
         {
           id: 55,
@@ -247,6 +249,7 @@ const defaultBaniOrder = {
     {
       gurmukhi: "22 vwrW",
       translit: "22 varaa(n)",
+      token: "22vwrW",
       folder: [
         {
           id: 86,
@@ -319,6 +322,7 @@ const defaultBaniOrder = {
     {
       gurmukhi: "sv`Xy",
       translit: "sava'ye",
+      token: "svXy",
       folder: [
         {
           id: 79,
