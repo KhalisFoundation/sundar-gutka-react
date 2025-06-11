@@ -14,6 +14,9 @@ export const styles = StyleSheet.create({
     fontSize: 24,
     textAlign: "center",
   },
+  gestureHandlerRootView: {
+    flex: 1,
+  },
 });
 
 export const activeColor = (isActive, backColor) => ({
@@ -25,5 +28,9 @@ export const nightStyles = (isNightMode) => {
     backColor: { backgroundColor: isNightMode ? colors.NIGHT_BLACK : colors.WHITE_COLOR },
     textColor: { color: isNightMode ? colors.WHITE_COLOR : colors.NIGHT_BLACK },
     viewBackColor: { backgroundColor: isNightMode ? colors.WHITE_COLOR : colors.NIGHT_GREY_COLOR },
+    headerStyles: {
+      backgroundColor: isNightMode ? colors.TOOLBAR_COLOR_ALT2 : colors.TOOLBAR_COLOR_ALT,
+      textColor: isNightMode ? colors.WHITE_COLOR : colors.NIGHT_BLACK,
+    },
   };
 };

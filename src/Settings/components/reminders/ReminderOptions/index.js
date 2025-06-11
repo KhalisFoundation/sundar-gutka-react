@@ -1,6 +1,6 @@
 import React, { useState, useRef, useMemo } from "react";
 import { useDispatch, useSelector } from "react-redux";
-import { View, StatusBar, ScrollView } from "react-native";
+import { View, ScrollView } from "react-native";
 import { SafeAreaProvider, SafeAreaView } from "react-native-safe-area-context";
 import Accordion from "react-native-collapsible/Accordion";
 import PropTypes from "prop-types";
@@ -14,6 +14,7 @@ import {
   trackReminderEvent,
   updateReminders,
   logMessage,
+  StatusBarComponent,
 } from "@common";
 import { styles, accordianNightColor, optionContainer } from "./styles";
 import { AccordianContent, AccordianHeader } from "./components";
@@ -80,7 +81,7 @@ const ReminderOptions = ({ navigation }) => {
       >
         <ScrollView>
           <View>
-            <StatusBar backgroundColor={colors.TOOLBAR_COLOR_ALT2} barStyle="light-content" />
+            <StatusBarComponent backgroundColor={colors.TOOLBAR_COLOR_ALT2} />
             {stateData.length > 0 && (
               <Accordion
                 activeSections={activeSections}

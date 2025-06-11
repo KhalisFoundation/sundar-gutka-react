@@ -1,6 +1,15 @@
 import React, { useEffect, useState, useMemo } from "react";
 import { View, Image, Linking, Text, Pressable } from "react-native";
-import { constant, logMessage, actions, checkForBaniDBUpdate, logError } from "@common";
+import {
+  constant,
+  logMessage,
+  actions,
+  checkForBaniDBUpdate,
+  logError,
+  StatusBarComponent,
+  SafeArea,
+  colors,
+} from "@common";
 import PropTypes from "prop-types";
 import { useDispatch, useSelector } from "react-redux";
 import CheckUpdatesAnimation from "./components/checkUpdate";
@@ -38,17 +47,20 @@ const DatabaseUpdateScreen = ({ navigation }) => {
   }, []);
 
   return (
-    <View style={[styles.mainWrapper, darkModeContainer]}>
-      <CheckUpdatesAnimation isLoading={isLoading} isUpdateAvailable={isUpdateAvailable} />
-      {!isLoading && isUpdateAvailable && <DownloadComponent />}
-      <Pressable onPress={() => Linking.openURL(constant.BANI_DB_URL)}>
-        <View style={styles.baniDBContainer}>
-          <Image source={baniDBLogoFull} style={styles.baniDBImage} />
-          <Text style={[styles.baniDBText, darkModeText]}>BaniDB</Text>
-        </View>
-      </Pressable>
-      <BaniDBAbout />
-    </View>
+    <SafeArea backgroundColor={colors.BANIDB_LIGHT}>
+      <StatusBarComponent backgroundColor={colors.BANIDB_LIGHT} />
+      <View style={[styles.mainWrapper, darkModeContainer]}>
+        <CheckUpdatesAnimation isLoading={isLoading} isUpdateAvailable={isUpdateAvailable} />
+        {!isLoading && isUpdateAvailable && <DownloadComponent />}
+        <Pressable onPress={() => Linking.openURL(constant.BANI_DB_URL)}>
+          <View style={styles.baniDBContainer}>
+            <Image source={baniDBLogoFull} style={styles.baniDBImage} />
+            <Text style={[styles.baniDBText, darkModeText]}>BaniDB</Text>
+          </View>
+        </Pressable>
+        <BaniDBAbout />
+      </View>
+    </SafeArea>
   );
 };
 

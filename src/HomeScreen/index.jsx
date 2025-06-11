@@ -1,5 +1,5 @@
 import React, { useEffect } from "react";
-import { Appearance, AppState, View, StatusBar } from "react-native";
+import { Appearance, AppState, View } from "react-native";
 import PropTypes from "prop-types";
 import { useDispatch, useSelector } from "react-redux";
 import {
@@ -12,6 +12,8 @@ import {
   BaniList,
   logMessage,
   validateBaniOrder,
+  StatusBarComponent,
+  SafeArea,
 } from "@common";
 import styles from "./styles";
 import BaniHeader from "./components/BaniHeader";
@@ -23,7 +25,6 @@ const HomeScreen = React.memo(({ navigation }) => {
   const { navigate } = navigation;
   const { baniListData } = useBaniList();
   const isNightMode = useSelector((state) => state.isNightMode);
-  const isStatusBar = useSelector((state) => state.isStatusBar);
   const language = useSelector((state) => state.language);
   const theme = useSelector((state) => state.theme);
   const baniOrder = useSelector((state) => state.baniOrder);
@@ -77,15 +78,21 @@ const HomeScreen = React.memo(({ navigation }) => {
   return baniLengthSelector ? (
     <BaniLengthSelector />
   ) : (
-    <View style={[isNightMode && { backgroundColor: colors.NIGHT_BLACK }, styles.container]}>
-      <StatusBar
-        hidden={isStatusBar}
-        barStyle="light-content"
-        backgroundColor={colors.TOOLBAR_COLOR}
-      />
-      <BaniHeader navigate={navigate} />
-      <BaniList data={baniListData} onPress={onPress} />
-    </View>
+    <SafeArea
+      backgroundColor={
+        isNightMode ? colors.READER_STATUS_BAR_COLOR_NIGHT_MODE : colors.TOOLBAR_COLOR
+      }
+    >
+      <View style={[isNightMode && { backgroundColor: colors.NIGHT_BLACK }, styles.container]}>
+        <StatusBarComponent
+          backgroundColor={
+            isNightMode ? colors.READER_STATUS_BAR_COLOR_NIGHT_MODE : colors.TOOLBAR_COLOR
+          }
+        />
+        <BaniHeader navigate={navigate} />
+        <BaniList data={baniListData} onPress={onPress} />
+      </View>
+    </SafeArea>
   );
 });
 

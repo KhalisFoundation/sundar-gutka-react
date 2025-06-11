@@ -40,6 +40,8 @@ import {
   revertMD5Hash,
   getCurrentDBMD5Hash,
 } from "./rnfs";
+import StatusBarComponent from "./components/StatusBar";
+import SafeArea from "./components/SafeArea";
 
 export {
   colors,
@@ -84,4 +86,6 @@ export {
   listDocumentDirectory,
   revertMD5Hash,
   getCurrentDBMD5Hash,
+  StatusBarComponent,
+  SafeArea,
 };
