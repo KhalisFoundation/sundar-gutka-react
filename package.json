@@ -7,7 +7,9 @@
     "ios": "eslint . && react-native run-ios",
     "lint": "eslint .",
     "start": "eslint . && react-native start",
-    "test": "jest"
+    "test": "jest",
+    "ios:beta": "fastlane ios beta",
+    "android:beta": "fastlane android beta"
   },
   "dependencies": {
     "@eslint/eslintrc": "^3.3.0",
