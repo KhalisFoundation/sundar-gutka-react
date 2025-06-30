@@ -1,5 +1,5 @@
-import useAppFirstTime from "./useAppFirstTime";
 import useBaniLength from "./useBaniLength";
 import useBaniList from "./useBaniList";
+import useDatabaseUpdateCheck from "./useDatabaseUpdateCheck";
 
-export { useAppFirstTime, useBaniLength, useBaniList };
+export { useBaniLength, useBaniList, useDatabaseUpdateCheck };

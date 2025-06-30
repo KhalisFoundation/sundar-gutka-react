@@ -3,14 +3,20 @@ import colors from "./colors";
 import * as actions from "./actions";
 import STRINGS from "./localization";
 import useScreenAnalytics from "./hooks/useScreenAnalytics";
-import errorHandler from "./errHandler";
+import { logError, initializeCrashlytics, setCustomKey, logMessage } from "./firebase/crashlytics";
 import {
   allowTracking,
   trackScreenView,
   trackReaderEvent,
   trackSettingEvent,
   trackReminderEvent,
-} from "./analytics";
+} from "./firebase/analytics";
+import {
+  initializePerformanceMonitoring,
+  startPerformanceTrace,
+  stopTrace,
+  resetTrace,
+} from "./firebase/performance";
 import {
   updateReminders,
   cancelAllReminders,
@@ -19,10 +25,23 @@ import {
 } from "./notifications";
 import { FallBack, BaniLengthSelector, BaniList } from "./components";
 import useKeepAwake from "./hooks/keepAwake";
-import baseFontSize from "./helpers";
-import { navigationRef, navigate } from "./rootNavigation";
+import baseFontSize, { validateBaniOrder } from "./helpers";
+import { navigate, navigateTo, navigationRef } from "./rootNavigation";
 import orderedBani from "./components/BaniList/baniOrderHelper";
+import defaultBaniOrder from "./defaultBaniOrder";
 import createStore from "./store";
+import {
+  ensureDbExists,
+  checkForBaniDBUpdate,
+  REMOTE_DB_URL,
+  writeRemoteMD5Hash,
+  LOCAL_DB_PATH,
+  listDocumentDirectory,
+  revertMD5Hash,
+  getCurrentDBMD5Hash,
+} from "./rnfs";
+import StatusBarComponent from "./components/StatusBar";
+import SafeArea from "./components/SafeArea";
 
 export {
   colors,
@@ -30,7 +49,9 @@ export {
   actions,
   useScreenAnalytics,
   STRINGS,
-  errorHandler,
+  logError,
+  logMessage,
+  initializeCrashlytics,
   allowTracking,
   trackReaderEvent,
   trackScreenView,
@@ -44,9 +65,27 @@ export {
   useKeepAwake,
   BaniList,
   baseFontSize,
-  navigate,
-  navigationRef,
   resetBadgeCount,
   createStore,
   orderedBani,
+  setCustomKey,
+  navigateTo,
+  navigate,
+  navigationRef,
+  defaultBaniOrder,
+  validateBaniOrder,
+  initializePerformanceMonitoring,
+  startPerformanceTrace,
+  stopTrace,
+  resetTrace,
+  ensureDbExists,
+  checkForBaniDBUpdate,
+  REMOTE_DB_URL,
+  writeRemoteMD5Hash,
+  LOCAL_DB_PATH,
+  listDocumentDirectory,
+  revertMD5Hash,
+  getCurrentDBMD5Hash,
+  StatusBarComponent,
+  SafeArea,
 };

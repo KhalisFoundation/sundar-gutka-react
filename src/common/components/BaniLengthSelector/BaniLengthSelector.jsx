@@ -1,5 +1,6 @@
-import React, { useState } from "react";
-import { View, Text, Modal, SafeAreaView, Pressable, Alert } from "react-native";
+import React from "react";
+import { View, Text, Pressable, Alert } from "react-native";
+import { SafeAreaProvider, SafeAreaView } from "react-native-safe-area-context";
 import { Icon } from "@rneui/themed";
 import { useDispatch } from "react-redux";
 import STRINGS from "../../localization";
@@ -8,13 +9,11 @@ import colors from "../../colors";
 import { setBaniLength } from "../../actions";
 
 const BaniLengthSelector = () => {
-  const [modalVissible, toggleModalVissible] = useState(true);
   const baniLengths = [STRINGS.short, STRINGS.medium, STRINGS.long, STRINGS.extra_long];
   const dispatch = useDispatch();
 
   const handleOnpress = (length) => {
     dispatch(setBaniLength(length.toUpperCase()));
-    toggleModalVissible(false);
   };
   const baniLengthInfo = () => {
     Alert.alert(
@@ -23,7 +22,7 @@ const BaniLengthSelector = () => {
     );
   };
   return (
-    <Modal animationType="fade" visible={modalVissible}>
+    <SafeAreaProvider>
       <SafeAreaView style={styles.wrapper}>
         <View style={styles.viewWrapper}>
           <Text style={styles.heading}>{STRINGS.khalsa_sundar_gutka}</Text>
@@ -42,7 +41,7 @@ const BaniLengthSelector = () => {
           </Pressable>
         </View>
       </SafeAreaView>
-    </Modal>
+    </SafeAreaProvider>
   );
 };
 export default BaniLengthSelector;

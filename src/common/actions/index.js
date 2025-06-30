@@ -1,6 +1,6 @@
 import * as actionTypes from "./actionTypes";
 import STRINGS from "../localization";
-import { trackSettingEvent } from "../analytics";
+import { trackSettingEvent } from "../firebase/analytics";
 import constant from "../constant";
 
 export const toggleNightMode = (value) => {
@@ -8,31 +8,31 @@ export const toggleNightMode = (value) => {
   return { type: actionTypes.TOGGLE_NIGHT_MODE, value };
 };
 
-export const setFontSize = (size) => {
-  trackSettingEvent(constant.FONT_SIZE, size);
-  return { type: actionTypes.SET_FONT_SIZE, size };
+export const setFontSize = (value) => {
+  trackSettingEvent(constant.FONT_SIZE, value);
+  return { type: actionTypes.SET_FONT_SIZE, value };
 };
-export const setFontFace = (font) => {
-  trackSettingEvent(constant.FONT_FACE, font);
-  return { type: actionTypes.SET_FONT_FACE, font };
+export const setFontFace = (value) => {
+  trackSettingEvent(constant.FONT_FACE, value);
+  return { type: actionTypes.SET_FONT_FACE, value };
 };
 
-export const setLanguage = (language) => {
-  trackSettingEvent(constant.LANGUAGE, language);
-  STRINGS.setLanguage(language);
-  return { type: actionTypes.SET_LANGUAGE, language };
+export const setLanguage = (value) => {
+  trackSettingEvent(constant.LANGUAGE, value);
+  STRINGS.setLanguage(value);
+  return { type: actionTypes.SET_LANGUAGE, value };
 };
 export const toggleTransliteration = (value) => {
   trackSettingEvent(constant.TRANSLITERATION, value);
   return { type: actionTypes.TOGGLE_TRANSLITERATION, value };
 };
-export const setTransliteration = (language) => {
-  trackSettingEvent(constant.TRANSLITERATION, language);
-  return { type: actionTypes.SET_TRANSLITERATION, language };
+export const setTransliteration = (value) => {
+  trackSettingEvent(constant.TRANSLITERATION, value);
+  return { type: actionTypes.SET_TRANSLITERATION, value };
 };
-export const setTheme = (theme) => {
-  trackSettingEvent(constant.THEME, theme);
-  return { type: actionTypes.SET_THEME, theme };
+export const setTheme = (value) => {
+  trackSettingEvent(constant.THEME, value);
+  return { type: actionTypes.SET_THEME, value };
 };
 
 export const toggleAutoScroll = (value) => {
@@ -49,9 +49,9 @@ export const toggleScreenAwake = (value) => {
   return { type: actionTypes.TOGGLE_SCREEN_AWAKE, value };
 };
 
-export const setBaniLength = (length) => {
-  trackSettingEvent(constant.BANI_LENGTH, length);
-  return { type: actionTypes.SET_BANI_LENGTH, length };
+export const setBaniLength = (value) => {
+  trackSettingEvent(constant.BANI_LENGTH, value);
+  return { type: actionTypes.SET_BANI_LENGTH, value };
 };
 export const toggleLarivaar = (value) => {
   trackSettingEvent(constant.LARIVAAR, value);
@@ -68,9 +68,9 @@ export const toggleParagraphMode = (value) => {
   return { type: actionTypes.TOGGLE_PARAGRAPH_MODE, value };
 };
 
-export const setPadched = (setting) => {
-  trackSettingEvent(constant.PADCHED, setting);
-  return { type: actionTypes.SET_PADCHHED, setting };
+export const setPadched = (value) => {
+  trackSettingEvent(constant.PADCHED, value);
+  return { type: actionTypes.SET_PADCHHED, value };
 };
 
 export const toggleVishraam = (value) => {
@@ -78,14 +78,14 @@ export const toggleVishraam = (value) => {
   return { type: actionTypes.TOGGLE_VISHRAAM, value };
 };
 
-export const setVishraamOption = (option) => {
-  trackSettingEvent(constant.VISHRAAM_OPTION, option);
-  return { type: actionTypes.SET_VISHRAAM_OPTION, option };
+export const setVishraamOption = (value) => {
+  trackSettingEvent(constant.VISHRAAM_OPTION, value);
+  return { type: actionTypes.SET_VISHRAAM_OPTION, value };
 };
 
-export const setVishraamSource = (source) => {
-  trackSettingEvent(constant.VISHRAAM_SOURCE, source);
-  return { type: actionTypes.SET_VISHRAAM_SOURCE, source };
+export const setVishraamSource = (value) => {
+  trackSettingEvent(constant.VISHRAAM_SOURCE, value);
+  return { type: actionTypes.SET_VISHRAAM_SOURCE, value };
 };
 
 export const toggleStatistics = (value) => {
@@ -115,39 +115,38 @@ export const toggleReminders = (value) => {
   return { type: actionTypes.TOGGLE_REMINDERS, value };
 };
 
-export const setReminderBanis = (list) => {
-  return { type: actionTypes.SET_REMINDER_BANIS, list };
+export const setReminderBanis = (value) => {
+  return { type: actionTypes.SET_REMINDER_BANIS, value };
 };
-export const setReminderSound = (sound) => {
-  trackSettingEvent(constant.REMINDER_SOUND, sound);
-  return { type: actionTypes.SET_REMINDER_SOUND, sound };
+export const setReminderSound = (value) => {
+  trackSettingEvent(constant.REMINDER_SOUND, value);
+  return { type: actionTypes.SET_REMINDER_SOUND, value };
 };
 
 export const setAutoScrollSpeed = (speed, shabad) => {
-  const shabadSpeed = { [shabad]: speed };
-  return { type: actionTypes.SET_AUTO_SCROLL_SPEED, shabadSpeed };
+  const value = { [shabad]: speed };
+  return { type: actionTypes.SET_AUTO_SCROLL_SPEED, value };
 };
-export const setCacheShabad = (shabad, shabadID) => {
-  const cache = { [shabadID]: shabad };
-  return { type: actionTypes.SET_CACHE_SHABAD, cache };
-};
-
-export const setBaniOrder = (order) => {
-  return { type: actionTypes.SET_BANI_ORDER, order };
+export const setBaniOrder = (value) => {
+  return { type: actionTypes.SET_BANI_ORDER, value };
 };
 
-export const setBaniList = (list) => {
-  return { type: actionTypes.SET_BANI_LIST, list };
+export const setBaniList = (value) => {
+  return { type: actionTypes.SET_BANI_LIST, value };
 };
 
 export const setPosition = (pos, shabadID) => {
-  const position = { [shabadID]: pos };
-  return { type: actionTypes.SET_SAVE_POSITION, position };
+  const value = { [shabadID]: pos };
+  return { type: actionTypes.SET_SAVE_POSITION, value };
 };
 
-export const setScrollPosition = (position) => {
-  return { type: actionTypes.SET_SCROLL_POSITION, position };
+export const setScrollPosition = (value) => {
+  return { type: actionTypes.SET_SCROLL_POSITION, value };
 };
-export const toggleHeaderFooter = (isHeadFoot) => {
-  return { type: actionTypes.TOGGLE_HEADER_FOOTER, isHeadFoot };
+export const toggleHeaderFooter = (value) => {
+  return { type: actionTypes.TOGGLE_HEADER_FOOTER, value };
+};
+
+export const toggleDatabaseUpdateAvailable = (value) => {
+  return { type: actionTypes.TOGGLE_DATABASE_UPDATE_AVAILABLE, value };
 };
