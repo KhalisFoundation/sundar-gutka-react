@@ -7,34 +7,37 @@ import { Pressable, Text, View } from "react-native";
 import { GestureHandlerRootView } from "react-native-gesture-handler";
 import { useSelector, useDispatch, batch } from "react-redux";
 import PropTypes from "prop-types";
-import { STRINGS, defaultBaniOrder, actions } from "@common";
+import {
+  defaultBaniOrder,
+  actions,
+  constant,
+  logMessage,
+  SafeArea,
+  StatusBarComponent,
+} from "@common";
 import { activeColor, nightStyles, styles } from "./styles";
-import useHeader from "./hooks/useHeader";
+import Header from "./components/Header";
 
 const EditBaniOrder = ({ navigation }) => {
+  logMessage(constant.EDIT_BANI_ORDER);
   const isNightMode = useSelector((state) => state.isNightMode);
   const baniList = useSelector((state) => state.baniList);
   const baniOrder = useSelector((state) => state.baniOrder);
-  const language = useSelector((state) => state.language);
+  const [isReset, setReset] = useState(false);
 
   const [baniListData, setBaniListData] = useState(
     baniList.filter((item) => item.id !== undefined)
   );
+
   const [folders] = useState(baniList.filter((item) => item.id === undefined));
   const [folderOrderIds] = useState(baniOrder.baniOrder.filter((item) => item.id === undefined));
   const [orderData, setOrderData] = useState(
     baniOrder.baniOrder.filter((item) => item.id !== undefined)
   );
-  const [isReset, setReset] = useState(false);
-  useHeader(navigation, setReset);
+
   const { rowItem, text } = styles;
   const dispatch = useDispatch();
-  const nightColor = nightStyles(isNightMode);
-  useEffect(() => {
-    navigation.setOptions({
-      title: STRINGS.EDIT_BANI_ORDER,
-    });
-  }, [language]);
+  const { headerStyles, backColor, textColor } = nightStyles(isNightMode);
 
   const renderItem = useCallback(
     ({ item, drag, isActive }) => {
@@ -43,15 +46,15 @@ const EditBaniOrder = ({ navigation }) => {
         <ShadowDecorator>
           <ScaleDecorator>
             <Pressable activeOpacity={1} onLongPress={drag} disabled={isActive} style={activeStyle}>
-              <View key={item.id} style={[rowItem, nightColor.backColor]}>
-                <Text style={[nightColor.textColor, text]}>{item.gurmukhi}</Text>
+              <View key={item.id} style={[rowItem, backColor]}>
+                <Text style={[textColor, text]}>{item.gurmukhi}</Text>
               </View>
             </Pressable>
           </ScaleDecorator>
         </ShadowDecorator>
       );
     },
-    [rowItem, nightColor, text]
+    [rowItem, text, backColor, textColor]
   );
 
   useEffect(() => {
@@ -60,7 +63,7 @@ const EditBaniOrder = ({ navigation }) => {
     }
     dispatch(actions.setBaniOrder({ baniOrder: defaultBaniOrder.baniOrder }));
     const banis = [];
-    if (defaultBaniOrder && defaultBaniOrder.baniOrder.length > 0) {
+    if (defaultBaniOrder?.baniOrder?.length > 0) {
       defaultBaniOrder.baniOrder.forEach((element) => {
         if (element.id) {
           const baniItem = baniList.find((item) => item.id === element.id);
@@ -73,9 +76,9 @@ const EditBaniOrder = ({ navigation }) => {
           }
         }
       });
+      setOrderData(defaultBaniOrder.baniOrder.filter((item) => item.id !== undefined));
     }
 
-    setOrderData(defaultBaniOrder.baniOrder.filter((item) => item.id !== undefined));
     setBaniListData(banis.filter((item) => item.id !== undefined));
     setReset(false);
   }, [isReset]);
@@ -99,14 +102,20 @@ const EditBaniOrder = ({ navigation }) => {
     setOrderData(ids);
   };
   return (
-    <GestureHandlerRootView style={nightColor.viewBackColor}>
-      <DraggableFlatList
-        data={baniListData}
-        keyExtractor={(item) => item.id}
-        renderItem={renderItem}
-        onDragEnd={handleDragEnd}
-      />
-    </GestureHandlerRootView>
+    <SafeArea backgroundColor={headerStyles.backgroundColor}>
+      <StatusBarComponent backgroundColor={headerStyles.backgroundColor} />
+      <Header navigation={navigation} setReset={setReset} />
+      <GestureHandlerRootView
+        style={[styles.gestureHandlerRootView, { backgroundColor: headerStyles.textColor }]}
+      >
+        <DraggableFlatList
+          data={baniListData}
+          keyExtractor={(item) => item.id}
+          renderItem={renderItem}
+          onDragEnd={handleDragEnd}
+        />
+      </GestureHandlerRootView>
+    </SafeArea>
   );
 };
 EditBaniOrder.propTypes = {

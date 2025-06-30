@@ -7,8 +7,5 @@ const getHeaderStyles = () => ({
     fontFamily: constant.GURBANI_AKHAR_TRUE,
     fontSize: 20,
   },
-  headerStyle: {
-    backgroundColor: colors.TOOLBAR_COLOR,
-  },
 });
 export default getHeaderStyles;

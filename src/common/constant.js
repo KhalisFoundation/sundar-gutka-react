@@ -1,5 +1,5 @@
 export default {
-  DB: "gutka_v01.db",
+  DB: "gutka_v01",
   ENGLISH: "ENGLISH",
   ENGLISH_TITLE_CASE: "English",
   HINDI: "HINDI",
@@ -53,6 +53,7 @@ export default {
   FOLDERSCREEN: "FolderScreen",
   HOME_SCREEN: "Home Screen",
   ABOUT_SCREEN: "About Screen",
+  FALLBACK_SCREEN: "Fallback Screen",
   BOOKMARKS: "Bookmarks",
   FONT_SIZE: "fontSize",
   FONT_FACE: "fontFace",
@@ -79,4 +80,7 @@ export default {
   ADD_REMINDER: "addReminder",
   RESET_REMINDER: "resetReminderDefault",
   UPDATE_REMINDER: "updateReminder",
+  PORTRAIT: "PORTRAIT",
+  LANDSCAPE: "LANDSCAPE",
+  REMOTE_DB_URL: "https://banidb.blob.core.windows.net/database",
 };

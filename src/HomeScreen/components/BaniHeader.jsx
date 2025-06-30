@@ -9,6 +9,7 @@ import styles from "../styles";
 const BaniHeader = (props) => {
   const { navigate } = props;
   const isNightMode = useSelector((state) => state.isNightMode);
+  const isDatabaseUpdateAvailable = useSelector((state) => state.isDatabaseUpdateAvaliable);
   return (
     <View
       style={{
@@ -18,7 +19,10 @@ const BaniHeader = (props) => {
       }}
     >
       <View style={styles.fatehContainer}>
-        <Text style={styles.headerFatehStyle}>{STRINGS.fateh}</Text>
+        <Text style={styles.headerFatehStyle}>
+          <Text style={styles.ikongkar}>{"<>"} </Text>
+          {STRINGS.fateh}
+        </Text>
       </View>
       <View>
         <Text style={styles.titleContainer}>
@@ -29,7 +33,7 @@ const BaniHeader = (props) => {
       </View>
       <View style={styles.settingIcon}>
         <Icon
-          name="settings"
+          name={isDatabaseUpdateAvailable ? "settings-suggest" : "settings"}
           type="material"
           size={35}
           color={colors.TOOLBAR_TINT}
