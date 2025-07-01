@@ -1,3 +1,4 @@
+import { Platform, PermissionsAndroid } from "react-native";
 import notifee, {
   TriggerType,
   RepeatFrequency,
@@ -8,6 +9,23 @@ import moment from "moment";
 import constant from "./constant";
 import { logError, logMessage } from "./firebase/crashlytics";
 import { FallBack } from "./components";
+
+// Utility function to check if BROADCAST_CLOSE_SYSTEM_DIALOGS permission is available
+const checkBroadcastPermission = async () => {
+  if (Platform.OS === "android") {
+    try {
+      // This will throw an exception if the permission is not available
+      const broadcastPermissionCheck = await PermissionsAndroid.check(
+        PermissionsAndroid.PERMISSIONS.BROADCAST_CLOSE_SYSTEM_DIALOGS
+      );
+      return broadcastPermissionCheck;
+    } catch (error) {
+      // Permission not available on this device/API level
+      return false;
+    }
+  }
+  return true; // Not applicable on iOS
+};
 
 export const createReminder = async (notification, sound) => {
   const channelName =
@@ -118,8 +136,17 @@ export const updateReminders = async (remindersOn, sound, remindersList) => {
 };
 
 export const checkPermissions = async () => {
+  // Check if broadcast permission is available (for older Android versions)
+  const hasBroadcastPermission = await checkBroadcastPermission();
+
   const settings = await notifee.requestPermission();
   const isAllowed = settings.authorizationStatus >= AuthorizationStatus.AUTHORIZED;
+
+  // Return false if we don't have broadcast permission on Android
+  if (Platform.OS === "android" && !hasBroadcastPermission) {
+    logMessage("checkPermissions: BROADCAST_CLOSE_SYSTEM_DIALOGS permission not available");
+  }
+
   return isAllowed;
 };
 
