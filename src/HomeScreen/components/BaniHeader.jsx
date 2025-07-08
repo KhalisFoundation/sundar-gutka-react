@@ -19,7 +19,10 @@ const BaniHeader = (props) => {
       }}
     >
       <View style={styles.fatehContainer}>
-        <Text style={styles.headerFatehStyle}>{STRINGS.fateh}</Text>
+        <Text style={styles.headerFatehStyle}>
+          <Text style={styles.ikongkar}>{"<>"} </Text>
+          {STRINGS.fateh}
+        </Text>
       </View>
       <View>
         <Text style={styles.titleContainer}>
