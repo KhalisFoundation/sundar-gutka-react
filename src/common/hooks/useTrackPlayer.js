@@ -57,9 +57,6 @@ const useTrackPlayer = () => {
 
   useEffect(() => {
     if (!isInitialized) return;
-
-    console.log(playbackState);
-    console.log(State.Playing);
     setIsPlaying(playbackState?.state === State.Playing);
   }, [playbackState, isInitialized]);
 
@@ -139,6 +136,7 @@ const useTrackPlayer = () => {
     addAndPlayTrack,
     seekTo,
     isAudioEnabled: isAudio && isInitialized,
+    isInitialized,
   };
 };
 

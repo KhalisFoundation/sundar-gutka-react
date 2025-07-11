@@ -11,16 +11,8 @@ import {
 import { WebView } from "react-native-webview";
 import PropTypes from "prop-types";
 import { SafeAreaProvider, SafeAreaView } from "react-native-safe-area-context";
-import {
-  constant,
-  colors,
-  actions,
-  useScreenAnalytics,
-  logMessage,
-  logError,
-  AudioPlayer,
-} from "@common";
-import { Header, AutoScrollComponent } from "./components";
+import { constant, colors, actions, useScreenAnalytics, logMessage, logError } from "@common";
+import { Header, AutoScrollComponent, AudioPlayer } from "./components";
 import { useBookmarks, useFetchShabad } from "./hooks";
 import { styles, nightColors } from "./styles";
 import { loadHTML } from "./utils";
@@ -216,13 +208,7 @@ const Reader = ({ navigation, route }) => {
           onMessage={handleMessage}
         />
 
-        {isAudio && (
-          <AudioPlayer
-            title={title}
-            artist="Gurbani Recitation"
-            audioUrl="https://github.com/amitojsingh/SG_audio/raw/7698994cf201092d435142857e2ceb83e4ead125/01%20Japuji.mp3"
-          />
-        )}
+        {isAudio && <AudioPlayer baniID={id} title={title} />}
 
         {isAutoScroll && (
           <AutoScrollComponent shabadID={id} webViewRef={webViewRef} isFooter={isHeader} />

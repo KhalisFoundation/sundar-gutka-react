@@ -1,0 +1,185 @@
+import { StyleSheet } from "react-native";
+
+const styles = StyleSheet.create({
+  container: {
+    backgroundColor: "#fff",
+    padding: 20,
+    borderRadius: 10,
+    margin: 10,
+    shadowColor: "#000",
+    shadowOffset: {
+      width: 0,
+      height: 2,
+    },
+    shadowOpacity: 0.25,
+    shadowRadius: 3.84,
+    elevation: 5,
+  },
+  trackInfo: {
+    alignItems: "center",
+    marginBottom: 20,
+  },
+  trackTitle: {
+    fontSize: 16,
+    fontWeight: "bold",
+    color: "#333",
+    textAlign: "center",
+    marginBottom: 5,
+  },
+  title: {
+    fontSize: 18,
+    fontWeight: "bold",
+    color: "#333",
+    textAlign: "center",
+  },
+  artist: {
+    fontSize: 14,
+    color: "#666",
+    marginTop: 5,
+  },
+  progressContainer: {
+    flexDirection: "row",
+    alignItems: "center",
+    marginBottom: 20,
+  },
+  slider: {
+    flex: 1,
+    marginHorizontal: 10,
+  },
+  timeText: {
+    fontSize: 12,
+    color: "#666",
+    minWidth: 40,
+    textAlign: "center",
+  },
+  controls: {
+    flexDirection: "row",
+    justifyContent: "center",
+    alignItems: "center",
+  },
+  controlButton: {
+    padding: 10,
+    marginHorizontal: 20,
+  },
+  playButton: {
+    backgroundColor: "#1976d2",
+    borderRadius: 35,
+    width: 70,
+    height: 70,
+    justifyContent: "center",
+    alignItems: "center",
+  },
+  disabledButton: {
+    backgroundColor: "#ccc",
+    borderRadius: 35,
+    width: 70,
+    height: 70,
+    justifyContent: "center",
+    alignItems: "center",
+  },
+  disabledPlayButton: {
+    backgroundColor: "#ccc",
+    borderRadius: 35,
+    width: 70,
+    height: 70,
+    justifyContent: "center",
+    alignItems: "center",
+  },
+  disabledText: {
+    color: "#999",
+    textAlign: "center",
+    fontStyle: "italic",
+    marginBottom: 10,
+  },
+  debugContainer: {
+    marginTop: 10,
+    padding: 10,
+    backgroundColor: "#f0f0f0",
+    borderRadius: 5,
+  },
+  debugText: {
+    fontSize: 12,
+    color: "#666",
+    marginBottom: 2,
+  },
+  artistNameContainer: {
+    flexDirection: "row",
+    alignItems: "center",
+    justifyContent: "center",
+    marginVertical: 5,
+  },
+  artistName: {
+    fontSize: 16,
+    fontWeight: "bold",
+    color: "#1976d2",
+    marginRight: 5,
+  },
+  modalOverlay: {
+    flex: 1,
+    backgroundColor: "rgba(0, 0, 0, 0.5)",
+    justifyContent: "center",
+    alignItems: "center",
+  },
+  modalContent: {
+    backgroundColor: "#fff",
+    borderRadius: 10,
+    padding: 20,
+    margin: 20,
+    maxHeight: "80%",
+    width: "90%",
+  },
+  modalHeader: {
+    flexDirection: "row",
+    justifyContent: "space-between",
+    alignItems: "center",
+    marginBottom: 20,
+    borderBottomWidth: 1,
+    borderBottomColor: "#eee",
+    paddingBottom: 10,
+  },
+  modalTitle: {
+    fontSize: 18,
+    fontWeight: "bold",
+    color: "#333",
+  },
+  closeButton: {
+    padding: 5,
+  },
+  trackList: {
+    maxHeight: 400,
+  },
+  trackItem: {
+    padding: 15,
+    borderBottomWidth: 1,
+    borderBottomColor: "#eee",
+    backgroundColor: "#fff",
+  },
+  selectedTrackItem: {
+    backgroundColor: "#f0f8ff",
+    borderLeftWidth: 3,
+    borderLeftColor: "#1976d2",
+  },
+  trackItemContent: {
+    flexDirection: "row",
+    justifyContent: "space-between",
+    alignItems: "center",
+  },
+  trackItemTitle: {
+    fontSize: 16,
+    fontWeight: "500",
+    color: "#333",
+    flex: 1,
+  },
+  trackItemQuality: {
+    fontSize: 12,
+    color: "#666",
+    marginRight: 10,
+  },
+  noTracksText: {
+    textAlign: "center",
+    color: "#999",
+    fontStyle: "italic",
+    padding: 20,
+  },
+});
+export default styles;

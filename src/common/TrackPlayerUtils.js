@@ -1,28 +1,12 @@
-import TrackPlayer, { Capability, RepeatMode } from "react-native-track-player";
+import TrackPlayer, { RepeatMode } from "react-native-track-player";
 
 export const TrackPlayerSetup = async () => {
   try {
     // Setup the player
     await TrackPlayer.setupPlayer({
       // Optional: customize player options
-      waitForBuffer: true,
-      maxCacheSize: 1024,
-    });
-
-    // Update options
-    await TrackPlayer.updateOptions({
-      // Media controls capabilities
-      capabilities: [
-        Capability.Play,
-        Capability.Pause,
-        Capability.SkipToNext,
-        Capability.SkipToPrevious,
-        Capability.Stop,
-        Capability.SeekTo,
-      ],
-
-      // Capabilities that will show up when the notification is in the compact form on Android
-      compactCapabilities: [Capability.Play, Capability.Pause, Capability.SkipToNext],
+      // waitForBuffer: true,
+      // maxCacheSize: 1024,
     });
 
     // Set repeat mode

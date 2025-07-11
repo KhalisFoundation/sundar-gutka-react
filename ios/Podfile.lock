@@ -2586,7 +2586,7 @@ SPEC CHECKSUMS:
   react-native-keep-awake: 5fb94de503761b67af1bec52f83e18d66e9abaf3
   react-native-restart: 7595693413fe3ca15893702f2c8306c62a708162
   react-native-safe-area-context: 9b169299f9dc95f1d7fe1dd266fde53bd899cd0c
-  react-native-slider: e7f302c8d3296ddb49c642473f77f8f98809d53b
+  react-native-slider: 27263d134d55db948a4706f1e47d0ec88fb354dd
   react-native-splash-screen: 4312f786b13a81b5169ef346d76d33bc0c6dc457
   react-native-sqlite-storage: f6d515e1c446d1e6d026aa5352908a25d4de3261
   react-native-track-player: 82ef1756ffeea61140fea17519ecd6d64ec3cf3e
