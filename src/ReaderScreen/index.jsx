@@ -44,6 +44,9 @@ const Reader = ({ navigation, route }) => {
   const [viewLoaded, toggleViewLoaded] = useState(false);
   const [currentPosition, setCurrentPosition] = useState(savePosition[id] || 0);
   const [shouldNavigateBack, setShouldNavigateBack] = useState(false);
+  const [dakeKey, setDateKey] = useState(Date.now().toString());
+  const [needsReload, setNeedsReload] = useState(false);
+  const lastActivityTimestamp = useRef(Date.now());
 
   const dispatch = useDispatch();
   const { shabad, isLoading } = useFetchShabad(id);
@@ -52,8 +55,38 @@ const Reader = ({ navigation, route }) => {
 
   // Memoize WebView key to prevent unnecessary remounts
   const webViewKey = useMemo(() => {
-    return `${id}-${isParagraphMode}-${isLarivaar}-${isLarivaarAssist}-${isVishraam}-${vishraamOption}`;
-  }, [id, isParagraphMode, isLarivaar, isLarivaarAssist, isVishraam, vishraamOption]);
+    return `${id}-${isParagraphMode}-${isLarivaar}-${isLarivaarAssist}-${isVishraam}-${vishraamOption}-${dakeKey}`;
+  }, [id, isParagraphMode, isLarivaar, isLarivaarAssist, isVishraam, vishraamOption, dakeKey]);
+
+  // Memoize WebView source to prevent unnecessary remounts
+  const webViewSource = useMemo(() => {
+    return {
+      html: loadHTML(
+        shabad,
+        isTransliteration,
+        fontSize,
+        fontFace,
+        isEnglishTranslation,
+        isPunjabiTranslation,
+        isSpanishTranslation,
+        isNightMode,
+        isLarivaar,
+        currentPosition
+      ),
+      baseUrl: Platform.OS === "ios" ? "./" : "",
+    };
+  }, [
+    shabad,
+    isTransliteration,
+    fontSize,
+    fontFace,
+    isEnglishTranslation,
+    isPunjabiTranslation,
+    isSpanishTranslation,
+    isNightMode,
+    isLarivaar,
+    currentPosition,
+  ]);
 
   const updateTheme = useCallback(() => {
     const currentColorScheme = Appearance.getColorScheme();
@@ -62,6 +95,64 @@ const Reader = ({ navigation, route }) => {
 
   useScreenAnalytics(title);
   useBookmarks(webViewRef, shabad, bookmarkPosition);
+
+  // Force reload WebView if it's been inactive for a while
+  const checkWebViewHealth = useCallback(() => {
+    const now = Date.now();
+    const timeSinceLastActivity = now - lastActivityTimestamp.current;
+
+    // If it's been more than 30 minutes since last activity
+    if (timeSinceLastActivity > 30 * 60 * 1000) {
+      setNeedsReload(true);
+      lastActivityTimestamp.current = now;
+    }
+  }, []);
+
+  // Handle app state changes
+  useEffect(() => {
+    let isMounted = true;
+    const subscription = AppState.addEventListener("change", (state) => {
+      if (!isMounted) return;
+
+      if (state === "active") {
+        // App came to foreground
+        checkWebViewHealth();
+
+        if (needsReload) {
+          // Reload WebView if needed
+          setDateKey(Date.now().toString());
+          setNeedsReload(false);
+        }
+
+        if (theme === constant.Default) {
+          updateTheme();
+        }
+      } else if (state === "background") {
+        // App went to background
+        if (webViewRef?.current) {
+          // Save position before going to background
+          webViewRef.current.postMessage(JSON.stringify({ savePosition: true }));
+        }
+      }
+    });
+
+    return () => {
+      isMounted = false;
+      subscription.remove();
+    };
+  }, [theme, updateTheme, needsReload, checkWebViewHealth]);
+
+  // Set up a timer to periodically check WebView health
+  useEffect(() => {
+    const healthCheckInterval = setInterval(() => {
+      if (webViewRef.current) {
+        webViewRef.current.postMessage(JSON.stringify({ ping: true }));
+      }
+      checkWebViewHealth();
+    }, 5 * 60 * 1000); // Check every 5 minutes
+
+    return () => clearInterval(healthCheckInterval);
+  }, [checkWebViewHealth]);
 
   useEffect(() => {
     if (savePosition && id) {
@@ -74,35 +165,12 @@ const Reader = ({ navigation, route }) => {
     }
   }, [savePosition, id]);
 
-  useEffect(() => {
-    let isMounted = true;
-    const subscription = AppState.addEventListener("change", (state) => {
-      if (!isMounted) return;
-
-      if (webViewRef?.current) {
-        webViewRef.current.postMessage(JSON.stringify({ Back: true }));
-      }
-
-      if (state === "active") {
-        if (theme === constant.Default) {
-          updateTheme();
-        }
-      }
-    });
-
-    return () => {
-      isMounted = false;
-      subscription.remove();
-    };
-  }, [theme, updateTheme]);
-
   const handleBackPress = useCallback(() => {
     if (webViewRef?.current) {
       webViewRef.current.postMessage(JSON.stringify({ Back: true }));
       setShouldNavigateBack(true);
     }
     return true;
-    // webViewRef is a ref object and is stable across renders, so it does not need to be included in the dependency array.
   }, []);
 
   useEffect(() => {
@@ -120,15 +188,25 @@ const Reader = ({ navigation, route }) => {
 
   const handleMessage = useCallback(
     (message) => {
-      const env = message.nativeEvent.data;
-      if (env === "toggle") {
+      // Update last activity timestamp
+      lastActivityTimestamp.current = Date.now();
+
+      const { data } = message.nativeEvent;
+
+      // Handle heartbeat messages
+      if (data === "heartbeat" || data === "visible" || data === "ping") {
+        return;
+      }
+
+      // Handle UI toggle messages
+      if (data === "toggle") {
         toggleHeader((prev) => !prev);
-      } else if (env === "show") {
+      } else if (data === "show") {
         toggleHeader(true);
-      } else if (env === "hide") {
+      } else if (data === "hide") {
         toggleHeader(false);
-      } else if (env.includes("save")) {
-        const position = env.split("-")[1];
+      } else if (data.includes("save")) {
+        const position = data.split("-")[1];
         setCurrentPosition(position);
         dispatch(actions.setPosition(position, id));
         if (shouldNavigateBack) {
@@ -143,17 +221,39 @@ const Reader = ({ navigation, route }) => {
   const handleLoadStart = useCallback(() => {
     setTimeout(() => {
       toggleViewLoaded(true);
-    }, 500);
+    }, 100);
   }, []);
 
   const handleError = useCallback((syntheticEvent) => {
     const { nativeEvent } = syntheticEvent;
     logError(`Reader web View Error ${nativeEvent}`);
+    setNeedsReload(true);
   }, []);
 
   const handleHttpError = useCallback((syntheticEvent) => {
     const { nativeEvent } = syntheticEvent;
     logError("HTTP error status code:", nativeEvent.statusCode);
+    setNeedsReload(true);
+  }, []);
+
+  const handleLoadEnd = useCallback(() => {
+    lastActivityTimestamp.current = Date.now();
+    setNeedsReload(false);
+
+    // Set initial position after load
+    if (currentPosition > 0 && webViewRef.current) {
+      webViewRef.current.postMessage(
+        JSON.stringify({
+          setPosition: currentPosition,
+        })
+      );
+    }
+  }, [currentPosition]);
+
+  const reloadWebView = useCallback(() => {
+    if (webViewRef.current) {
+      setDateKey(Date.now().toString());
+    }
   }, []);
 
   return (
@@ -174,6 +274,7 @@ const Reader = ({ navigation, route }) => {
         javaScriptEnabled
         originWhitelist={["*"]}
         onLoadStart={handleLoadStart}
+        onLoadEnd={handleLoadEnd}
         ref={webViewRef}
         onError={handleError}
         onHttpError={handleHttpError}
@@ -182,21 +283,9 @@ const Reader = ({ navigation, route }) => {
         bounces={false}
         overScrollMode="never"
         nestedScrollEnabled
-        source={{
-          html: loadHTML(
-            shabad,
-            isTransliteration,
-            fontSize,
-            fontFace,
-            isEnglishTranslation,
-            isPunjabiTranslation,
-            isSpanishTranslation,
-            isNightMode,
-            isLarivaar,
-            currentPosition
-          ),
-          baseUrl: Platform.OS === "ios" ? "./" : "",
-        }}
+        onContentProcessDidTerminate={reloadWebView}
+        source={webViewSource}
+        backgroundColor={isNightMode ? colors.NIGHT_BLACK : colors.WHITE_COLOR}
         style={[webView, isNightMode && { opacity: viewLoaded ? 1 : 0.1 }, backViewColor]}
         onMessage={handleMessage}
       />
