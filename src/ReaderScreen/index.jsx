@@ -168,14 +168,7 @@ const Reader = ({ navigation, route }) => {
   const handleMessage = useCallback(
     (message) => {
       // Update last activity timestamp
-
       const { data } = message.nativeEvent;
-
-      // Handle heartbeat messages
-      if (data === "heartbeat" || data === "visible" || data === "ping") {
-        return;
-      }
-
       // Handle UI toggle messages
       if (data === "toggle") {
         toggleHeader((prev) => !prev);

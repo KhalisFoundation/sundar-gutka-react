@@ -165,9 +165,6 @@ ${listener}.addEventListener(
   (event)=> {
     const message = JSON.parse(event.data);
 
-    if (message.hasOwnProperty("ping")) {
-      window.ReactNativeWebView.postMessage("visible");
-    }
     if (message.hasOwnProperty("Back")) {
       const currentPosition = getScrollPercent();
       window.ReactNativeWebView.postMessage("save-" + currentPosition);
