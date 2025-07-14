@@ -15,26 +15,6 @@ let curPosition = 0;
 let isScrolling;
 let isManuallyScrolling = false;
 
-(function() {
-  // Keep WebView active
-  setInterval(function() {
-    window.ReactNativeWebView.postMessage('heartbeat');
-  }, 30000);
-  
-  // Handle visibility changes
-  document.addEventListener('visibilitychange', function() {
-    if (document.visibilityState === 'visible') {
-      window.ReactNativeWebView.postMessage('visible');
-    }
-  });
-  
-  // Prevent WebView from going to sleep
-  function keepAlive() {
-    window.setTimeout(keepAlive, 30000);
-  }
-  keepAlive();
-})();
-
 const clearScrollTimeout=()=> {
   if (autoScrollTimeout != null) {
     clearTimeout(autoScrollTimeout);
@@ -44,6 +24,7 @@ const clearScrollTimeout=()=> {
 
 const scrollFunc=(e)=> {
   curPosition = getScrollPercent();
+  window.ReactNativeWebView.postMessage("scroll-" + curPosition);
   if (window.scrollY == 0) {
     window.ReactNativeWebView.postMessage("show");
   }

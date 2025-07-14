@@ -1,4 +1,4 @@
-import React from "react";
+import React, { useMemo } from "react";
 import { StatusBar, Platform, View } from "react-native";
 import { useSelector } from "react-redux";
 import PropTypes from "prop-types";
@@ -7,12 +7,15 @@ const StatusBarComponent = ({ backgroundColor }) => {
   const isStatusBar = useSelector((state) => state.isStatusBar);
   const isNightMode = useSelector((state) => state.isNightMode);
 
+  // 1 – Compute once per render, not inside JSX
+  const barStyle = useMemo(() => (isNightMode ? "light-content" : "dark-content"), [isNightMode]);
+
   if (Platform.OS === "ios") {
     return (
       <View style={{ backgroundColor }}>
         <StatusBar
           hidden={isStatusBar}
-          barStyle={isNightMode ? "light-content" : "dark-content"}
+          barStyle={barStyle}
           backgroundColor="transparent"
           translucent
         />
@@ -20,13 +23,7 @@ const StatusBarComponent = ({ backgroundColor }) => {
     );
   }
 
-  return (
-    <StatusBar
-      hidden={isStatusBar}
-      backgroundColor={backgroundColor}
-      barStyle={isNightMode ? "light-content" : "dark-content"}
-    />
-  );
+  return <StatusBar hidden={isStatusBar} barStyle={barStyle} backgroundColor={backgroundColor} />;
 };
 StatusBarComponent.propTypes = {
   backgroundColor: PropTypes.string.isRequired,

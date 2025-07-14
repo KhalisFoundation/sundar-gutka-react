@@ -44,19 +44,33 @@ const Reader = ({ navigation, route }) => {
   const [viewLoaded, toggleViewLoaded] = useState(false);
   const [currentPosition, setCurrentPosition] = useState(savePosition[id] || 0);
   const [shouldNavigateBack, setShouldNavigateBack] = useState(false);
-  const [dakeKey, setDateKey] = useState(Date.now().toString());
-  const [needsReload, setNeedsReload] = useState(false);
-  const lastActivityTimestamp = useRef(Date.now());
+  const [dateKey, setDateKey] = useState(Date.now().toString());
+  const positionPointer = useRef(0);
 
   const dispatch = useDispatch();
   const { shabad, isLoading } = useFetchShabad(id);
   const { backgroundColor, safeAreaViewBack, backViewColor } = nightColors(isNightMode);
   const { READER_STATUS_BAR_COLOR } = colors;
 
+  // Save scroll position when leaving screen or app goes to background
+  const saveScrollPosition = useCallback(() => {
+    if (positionPointer.current > 0) {
+      dispatch(actions.setPosition(parseFloat(positionPointer.current), id));
+    }
+  }, [dispatch, id]);
+
+  // Cleanup on unmount
+  useEffect(() => {
+    return () => {
+      // Save position when component unmounts
+      saveScrollPosition();
+    };
+  }, [saveScrollPosition]);
+
   // Memoize WebView key to prevent unnecessary remounts
   const webViewKey = useMemo(() => {
-    return `${id}-${isParagraphMode}-${isLarivaar}-${isLarivaarAssist}-${isVishraam}-${vishraamOption}-${dakeKey}`;
-  }, [id, isParagraphMode, isLarivaar, isLarivaarAssist, isVishraam, vishraamOption, dakeKey]);
+    return `${id}-${isParagraphMode}-${isLarivaar}-${isLarivaarAssist}-${isVishraam}-${vishraamOption}-${dateKey}`;
+  }, [id, isParagraphMode, isLarivaar, isLarivaarAssist, isVishraam, vishraamOption, dateKey]);
 
   // Memoize WebView source to prevent unnecessary remounts
   const webViewSource = useMemo(() => {
@@ -96,18 +110,6 @@ const Reader = ({ navigation, route }) => {
   useScreenAnalytics(title);
   useBookmarks(webViewRef, shabad, bookmarkPosition);
 
-  // Force reload WebView if it's been inactive for a while
-  const checkWebViewHealth = useCallback(() => {
-    const now = Date.now();
-    const timeSinceLastActivity = now - lastActivityTimestamp.current;
-
-    // If it's been more than 30 minutes since last activity
-    if (timeSinceLastActivity > 30 * 60 * 1000) {
-      setNeedsReload(true);
-      lastActivityTimestamp.current = now;
-    }
-  }, []);
-
   // Handle app state changes
   useEffect(() => {
     let isMounted = true;
@@ -116,23 +118,12 @@ const Reader = ({ navigation, route }) => {
 
       if (state === "active") {
         // App came to foreground
-        checkWebViewHealth();
-
-        if (needsReload) {
-          // Reload WebView if needed
-          setDateKey(Date.now().toString());
-          setNeedsReload(false);
-        }
-
         if (theme === constant.Default) {
           updateTheme();
         }
       } else if (state === "background") {
-        // App went to background
-        if (webViewRef?.current) {
-          // Save position before going to background
-          webViewRef.current.postMessage(JSON.stringify({ savePosition: true }));
-        }
+        // App went to background - save scroll position
+        saveScrollPosition();
       }
     });
 
@@ -140,19 +131,7 @@ const Reader = ({ navigation, route }) => {
       isMounted = false;
       subscription.remove();
     };
-  }, [theme, updateTheme, needsReload, checkWebViewHealth]);
-
-  // Set up a timer to periodically check WebView health
-  useEffect(() => {
-    const healthCheckInterval = setInterval(() => {
-      if (webViewRef.current) {
-        webViewRef.current.postMessage(JSON.stringify({ ping: true }));
-      }
-      checkWebViewHealth();
-    }, 5 * 60 * 1000); // Check every 5 minutes
-
-    return () => clearInterval(healthCheckInterval);
-  }, [checkWebViewHealth]);
+  }, [theme, updateTheme, saveScrollPosition]);
 
   useEffect(() => {
     if (savePosition && id) {
@@ -189,7 +168,6 @@ const Reader = ({ navigation, route }) => {
   const handleMessage = useCallback(
     (message) => {
       // Update last activity timestamp
-      lastActivityTimestamp.current = Date.now();
 
       const { data } = message.nativeEvent;
 
@@ -213,6 +191,9 @@ const Reader = ({ navigation, route }) => {
           navigation.goBack();
           setShouldNavigateBack(false);
         }
+      } else if (data.includes("scroll-")) {
+        const position = data.split("-")[1];
+        positionPointer.current = position;
       }
     },
     [dispatch, id, navigation, shouldNavigateBack]
@@ -227,19 +208,14 @@ const Reader = ({ navigation, route }) => {
   const handleError = useCallback((syntheticEvent) => {
     const { nativeEvent } = syntheticEvent;
     logError(`Reader web View Error ${nativeEvent}`);
-    setNeedsReload(true);
   }, []);
 
   const handleHttpError = useCallback((syntheticEvent) => {
     const { nativeEvent } = syntheticEvent;
     logError("HTTP error status code:", nativeEvent.statusCode);
-    setNeedsReload(true);
   }, []);
 
   const handleLoadEnd = useCallback(() => {
-    lastActivityTimestamp.current = Date.now();
-    setNeedsReload(false);
-
     // Set initial position after load
     if (currentPosition > 0 && webViewRef.current) {
       webViewRef.current.postMessage(
