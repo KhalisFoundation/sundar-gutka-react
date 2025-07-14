@@ -208,17 +208,6 @@ const Reader = ({ navigation, route }) => {
     logError("HTTP error status code:", nativeEvent.statusCode);
   }, []);
 
-  const handleLoadEnd = useCallback(() => {
-    // Set initial position after load
-    if (currentPosition > 0 && webViewRef.current) {
-      webViewRef.current.postMessage(
-        JSON.stringify({
-          setPosition: currentPosition,
-        })
-      );
-    }
-  }, [currentPosition]);
-
   const reloadWebView = useCallback(() => {
     if (webViewRef.current) {
       setDateKey(Date.now().toString());
@@ -243,7 +232,6 @@ const Reader = ({ navigation, route }) => {
         javaScriptEnabled
         originWhitelist={["*"]}
         onLoadStart={handleLoadStart}
-        onLoadEnd={handleLoadEnd}
         ref={webViewRef}
         onError={handleError}
         onHttpError={handleHttpError}
