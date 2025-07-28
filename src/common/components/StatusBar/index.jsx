@@ -1,4 +1,4 @@
-import React, { useMemo } from "react";
+import React from "react";
 import { StatusBar, Platform, View } from "react-native";
 import { useSelector } from "react-redux";
 import PropTypes from "prop-types";
@@ -7,8 +7,7 @@ const StatusBarComponent = ({ backgroundColor }) => {
   const isStatusBar = useSelector((state) => state.isStatusBar);
   const isNightMode = useSelector((state) => state.isNightMode);
 
-  // 1 – Compute once per render, not inside JSX
-  const barStyle = useMemo(() => (isNightMode ? "light-content" : "dark-content"), [isNightMode]);
+  const barStyle = isNightMode ? "light-content" : "dark-content";
 
   if (Platform.OS === "ios") {
     return (
