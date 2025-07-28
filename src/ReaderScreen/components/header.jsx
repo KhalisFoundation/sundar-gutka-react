@@ -6,14 +6,7 @@ import { useSelector } from "react-redux";
 import colors from "@common/colors";
 import { getHeaderStyles, styles } from "../styles/styles";
 
-const Header = ({
-  navigation,
-  title,
-  handleBackPress,
-  handleBookmarkPress,
-  handleSettingsPress,
-  isHeader,
-}) => {
+const Header = ({ title, handleBackPress, handleBookmarkPress, handleSettingsPress, isHeader }) => {
   const isNightMode = useSelector((state) => state.isNightMode);
   const isDatabaseUpdateAvailable = useSelector((state) => state.isDatabaseUpdateAvaliable);
   const getHeaderStyle = getHeaderStyles(isNightMode);
@@ -41,12 +34,6 @@ const Header = ({
       />
     </View>
   );
-
-  useEffect(() => {
-    navigation.setOptions({
-      headerShown: false,
-    });
-  }, [navigation]);
 
   useEffect(() => {
     const value = isHeader ? 0 : -120;
@@ -78,7 +65,6 @@ const Header = ({
 };
 
 Header.propTypes = {
-  navigation: PropTypes.shape().isRequired,
   title: PropTypes.string.isRequired,
   handleBackPress: PropTypes.func.isRequired,
   handleBookmarkPress: PropTypes.func.isRequired,

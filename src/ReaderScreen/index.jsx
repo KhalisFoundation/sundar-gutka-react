@@ -218,7 +218,6 @@ const Reader = ({ navigation, route }) => {
     <SafeArea backgroundColor={safeAreaViewBack.backgroundColor}>
       <StatusBarComponent backgroundColor={backgroundColor} />
       <Header
-        navigation={navigation}
         title={title}
         handleBackPress={handleBackPress}
         handleBookmarkPress={handleBookmarkPress}
