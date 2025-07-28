@@ -493,7 +493,7 @@
 				CODE_SIGN_ENTITLEMENTS = SundarGutka/SundarGutka.entitlements;
 				CODE_SIGN_IDENTITY = "Apple Development";
 				CODE_SIGN_STYLE = Automatic;
-				CURRENT_PROJECT_VERSION = 30;
+				CURRENT_PROJECT_VERSION = 31;
 				DEFINES_MODULE = YES;
 				DEVELOPMENT_TEAM = B3W82WVBU9;
 				ENABLE_BITCODE = NO;
@@ -532,7 +532,7 @@
 				CODE_SIGN_ENTITLEMENTS = SundarGutka/SundarGutka.entitlements;
 				CODE_SIGN_IDENTITY = "Apple Development";
 				CODE_SIGN_STYLE = Automatic;
-				CURRENT_PROJECT_VERSION = 30;
+				CURRENT_PROJECT_VERSION = 31;
 				DEFINES_MODULE = YES;
 				DEVELOPMENT_TEAM = B3W82WVBU9;
 				INFOPLIST_FILE = SundarGutka/Info.plist;

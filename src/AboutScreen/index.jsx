@@ -1,16 +1,23 @@
 import React from "react";
-import { Linking, Image, StatusBar, View, Text, TouchableHighlight } from "react-native";
+import { Linking, Image, View, Text, TouchableHighlight } from "react-native";
 import PropTypes from "prop-types";
 import { useSelector } from "react-redux";
 import { getVersion, getBuildNumber } from "react-native-device-info";
-import { colors, STRINGS, constant, useScreenAnalytics, logMessage } from "@common";
+import {
+  colors,
+  STRINGS,
+  constant,
+  useScreenAnalytics,
+  logMessage,
+  StatusBarComponent,
+  SafeArea,
+} from "@common";
 import { styles, nightStyles } from "./styles";
 import useHeader from "./hooks/useHeader";
 
 const AboutScreen = ({ navigation }) => {
   logMessage(constant.ABOUT_SCREEN);
   const isNightMode = useSelector((state) => state.isNightMode);
-  const isStatusBar = useSelector((state) => state.isStatusBar);
 
   useScreenAnalytics(constant.ABOUT_SCREEN);
   useHeader(navigation);
@@ -36,67 +43,65 @@ const AboutScreen = ({ navigation }) => {
   const baniDBLogo = require("../../images/banidblogo.png");
 
   return (
-    <View
-      style={[
-        {
-          flex: 1,
-          backgroundColor,
-        },
-      ]}
-    >
-      <StatusBar
-        hidden={isStatusBar}
-        backgroundColor={TOOLBAR_COLOR_ALT2}
-        barStyle="light-content"
-      />
-      <View style={margin10}>
-        <Text style={[isNightMode && nightMode, SGTitle]}>{SUNDAR_GUTKA}</Text>
-        <Text style={[margin, isNightMode && nightMode]}>{CREATED_BY}:</Text>
-        <TouchableHighlight
-          underlayColor={underlayColor.color}
-          onPress={() => Linking.openURL(KHALIS_FOUNDATION_URL)}
-        >
-          <Image source={isNightMode ? khalislogo150white : khalislogo150} />
-        </TouchableHighlight>
-        <Text style={[isNightMode && nightMode, margin]}>{ABOUT_WELCOME}</Text>
+    <SafeArea backgroundColor={backgroundColor}>
+      <View
+        style={[
+          {
+            flex: 1,
+            backgroundColor,
+          },
+        ]}
+      >
+        <StatusBarComponent backgroundColor={TOOLBAR_COLOR_ALT2} />
+        <View style={margin10}>
+          <Text style={[isNightMode && nightMode, SGTitle]}>{SUNDAR_GUTKA}</Text>
+          <Text style={[margin, isNightMode && nightMode]}>{CREATED_BY}:</Text>
+          <TouchableHighlight
+            underlayColor={underlayColor.color}
+            onPress={() => Linking.openURL(KHALIS_FOUNDATION_URL)}
+          >
+            <Image source={isNightMode ? khalislogo150white : khalislogo150} />
+          </TouchableHighlight>
+          <Text style={[isNightMode && nightMode, margin]}>{ABOUT_WELCOME}</Text>
 
-        <View style={margin}>
-          <Text style={[isNightMode && nightMode]}>{ABOUT_HELP}</Text>
-          <Text style={underlayColor} onPress={() => Linking.openURL(KHALIS_FOUNDATION_URL)}>
-            {KHALIS_FOUNDATION_URL}
-          </Text>
-        </View>
-
-        <Text style={[isNightMode && nightMode, margin]}>{ABOUT_RESPECT}</Text>
-        <Text style={[isNightMode && nightMode, margin]}>
-          {ABOUT_SG}{" "}
-          <Text style={underlayColor} onPress={() => Linking.openURL(constant.BANI_DB_URL)}>
-            {BANI_DB}
-          </Text>
-          <Text> {ABOUT_OPEN_SOURCE}</Text>
-        </Text>
-
-        <TouchableHighlight
-          style={margin}
-          underlayColor={underlayColor.color}
-          onPress={() => Linking.openURL(constant.BANI_DB_URL)}
-        >
-          <Image source={baniDBLogo} />
-        </TouchableHighlight>
-        <Text style={[isNightMode && nightMode, margin]}>{ABOUT_PARDON}</Text>
-
-        <View style={singleLine}>
-          <View style={leftContainer}>
-            <Text style={[margin, isNightMode && nightMode]}>
-              &copy; {new Date().getFullYear()} {KHALIS_FOUNDATION}
+          <View style={margin}>
+            <Text style={[isNightMode && nightMode]}>{ABOUT_HELP}</Text>
+            <Text style={underlayColor} onPress={() => Linking.openURL(KHALIS_FOUNDATION_URL)}>
+              {KHALIS_FOUNDATION_URL}
             </Text>
           </View>
-          <Text style={[margin, isNightMode && nightMode]}>
-            {APP_VERSION}: {getVersion()} ({getBuildNumber()})
+
+          <Text style={[isNightMode && nightMode, margin]}>{ABOUT_RESPECT}</Text>
+          <Text style={[isNightMode && nightMode, margin]}>
+            {ABOUT_SG}{" "}
+            <Text style={underlayColor} onPress={() => Linking.openURL(constant.BANI_DB_URL)}>
+              {BANI_DB}
+            </Text>
+            <Text> {ABOUT_OPEN_SOURCE}</Text>
           </Text>
+
+          <TouchableHighlight
+            style={margin}
+            underlayColor={underlayColor.color}
+            onPress={() => Linking.openURL(constant.BANI_DB_URL)}
+          >
+            <Image source={baniDBLogo} />
+          </TouchableHighlight>
+          <Text style={[isNightMode && nightMode, margin]}>{ABOUT_PARDON}</Text>
+
+          <View style={singleLine}>
+            <View style={leftContainer}>
+              <Text style={[margin, isNightMode && nightMode]}>
+                &copy; {new Date().getFullYear()} {KHALIS_FOUNDATION}
+              </Text>
+            </View>
+            <Text style={[margin, isNightMode && nightMode]}>
+              {APP_VERSION}: {getVersion()} ({getBuildNumber()})
+            </Text>
+          </View>
         </View>
       </View>
-    </View>
+    </SafeArea>
   );
 };
 

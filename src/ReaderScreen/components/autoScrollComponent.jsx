@@ -89,46 +89,48 @@ const AutoScrollComponent = ({ shabadID, isFooter, webViewRef }) => {
   const bottomSpace = Platform.OS === "ios" ? 10 : 0;
 
   return (
-    <Animated.View
-      style={[
-        styles.container,
-        { transform: [{ translateY: animationPosition }], paddingBottom: bottomSpace },
-      ]}
-    >
-      <View style={styles.wrapper}>
-        {isPaused ? (
-          <Icon
-            name="play-arrow"
-            color={colors.TOOLBAR_TINT}
-            size={30}
-            onPress={handlePlay}
-            accessibilityLabel="Play auto-scroll"
+    <View>
+      <Animated.View
+        style={[
+          styles.container,
+          { transform: [{ translateY: animationPosition }], paddingBottom: bottomSpace },
+        ]}
+      >
+        <View style={styles.wrapper}>
+          {isPaused ? (
+            <Icon
+              name="play-arrow"
+              color={colors.TOOLBAR_TINT}
+              size={30}
+              onPress={handlePlay}
+              accessibilityLabel="Play auto-scroll"
+            />
+          ) : (
+            <Icon
+              name="pause"
+              color={colors.TOOLBAR_TINT}
+              size={30}
+              onPress={handlePause}
+              accessibilityLabel="Pause auto-scroll"
+            />
+          )}
+          <Slider
+            style={styles.slider}
+            minimumTrackTintColor={colors.SLIDER_TRACK_MIN_TINT}
+            maximumTrackTintColor={colors.SLIDER_TRACK_MAX_TINT}
+            thumbTintColor={colors.WHITE_COLOR}
+            minimumValue={1}
+            maximumValue={100}
+            step={1}
+            value={currentSpeed}
+            onValueChange={handleValueChange}
+            onSlidingComplete={handleSlidingComplete}
+            accessibilityLabel="Auto-scroll speed"
           />
-        ) : (
-          <Icon
-            name="pause"
-            color={colors.TOOLBAR_TINT}
-            size={30}
-            onPress={handlePause}
-            accessibilityLabel="Pause auto-scroll"
-          />
-        )}
-        <Slider
-          style={styles.slider}
-          minimumTrackTintColor={colors.SLIDER_TRACK_MIN_TINT}
-          maximumTrackTintColor={colors.SLIDER_TRACK_MAX_TINT}
-          thumbTintColor={colors.WHITE_COLOR}
-          minimumValue={1}
-          maximumValue={100}
-          step={1}
-          value={currentSpeed}
-          onValueChange={handleValueChange}
-          onSlidingComplete={handleSlidingComplete}
-          accessibilityLabel="Auto-scroll speed"
-        />
-        <Text style={styles.sliderText}>{currentSpeed}</Text>
-      </View>
-    </Animated.View>
+          <Text style={styles.sliderText}>{currentSpeed}</Text>
+        </View>
+      </Animated.View>
+    </View>
   );
 };
 

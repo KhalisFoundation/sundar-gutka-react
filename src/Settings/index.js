@@ -1,9 +1,16 @@
 import React, { useEffect } from "react";
 import { useSelector } from "react-redux";
 import PropTypes from "prop-types";
-import { StatusBar, ScrollView, Text, SafeAreaView } from "react-native";
-import { SafeAreaProvider } from "react-native-safe-area-context";
-import { STRINGS, colors, useScreenAnalytics, constant, logMessage } from "@common";
+import { StatusBar, ScrollView, Text } from "react-native";
+import {
+  STRINGS,
+  colors,
+  useScreenAnalytics,
+  constant,
+  logMessage,
+  StatusBarComponent,
+  SafeArea,
+} from "@common";
 import { nightModeStyles } from "./styles/nightModeStyles";
 import FontSizeComponent from "./components/fontSize";
 import FontFaceComponent from "./components/fontFace";
@@ -32,7 +39,6 @@ const Settings = ({ navigation }) => {
   logMessage(constant.SETTINGS);
   useScreenAnalytics(constant.SETTINGS);
   const isNightMode = useSelector((state) => state.isNightMode);
-  const isStatusBar = useSelector((state) => state.isStatusBar);
   const isDatabaseUpdateAvailable = useSelector((state) => state.isDatabaseUpdateAvailable);
 
   const { navigate } = navigation;
@@ -48,57 +54,54 @@ const Settings = ({ navigation }) => {
   }, [language]);
 
   return (
-    <SafeAreaProvider>
-      <SafeAreaView style={scrollViewNightStyles}>
-        <StatusBar
-          hidden={isStatusBar}
-          barStyle={isNightMode ? "light-content" : "dark-content"}
-          backgroundColor={
-            !isNightMode ? colors.TOOLBAR_COLOR_ALT : colors.TOOLBAR_COLOR_ALT_NIGHT_MODE
-          }
+    <SafeArea backgroundColor={isNightMode ? colors.NIGHT_BLACK : colors.WHITE_COLOR}>
+      <StatusBarComponent
+        backgroundColor={
+          !isNightMode ? colors.TOOLBAR_COLOR_ALT : colors.TOOLBAR_COLOR_ALT_NIGHT_MODE
+        }
+      />
+
+      {isDatabaseUpdateAvailable && <DatabaseUpdateBanner navigate={navigate} />}
+      <ScrollView>
+        <Text style={[displayOptionsText, scrollViewNightStyles]}>{DISPLAY_OPTIONS}</Text>
+        <FontSizeComponent />
+        <FontFaceComponent />
+        <LanguageComponent language={language} />
+        <TransliterationComponent />
+        <TranslationComponent />
+        <ThemeComponent />
+        <StatusBar />
+        <HideStatusBar />
+        <AutoScroll />
+        <Audio />
+        <KeepAwake />
+        {/* Bani Options */}
+        <Text style={[displayOptionsText, scrollViewNightStyles]}>{BANI_OPTIONS}</Text>
+        <EditBaniOrder navigate={navigate} isNightMode={isNightMode} />
+        <BaniLengthComponent />
+        <LarivaarComponent />
+        <ParagraphMode />
+        <PadchedSettingsComponent />
+        <VishraamComponent />
+        <RemindersComponent navigation={navigation} />
+        <Text style={[displayOptionsText, scrollViewNightStyles]}>{OTHER_OPTIONS}</Text>
+        <CollectStatistics />
+        <Donate />
+        <ListItemWithIcon
+          iconName="info"
+          title={about}
+          navigate={navigate}
+          navigationTarget="About"
         />
-        {isDatabaseUpdateAvailable && <DatabaseUpdateBanner navigate={navigate} />}
-        <ScrollView>
-          <Text style={[displayOptionsText, scrollViewNightStyles]}>{DISPLAY_OPTIONS}</Text>
-          <FontSizeComponent />
-          <FontFaceComponent />
-          <LanguageComponent language={language} />
-          <TransliterationComponent />
-          <TranslationComponent />
-          <ThemeComponent />
-          <StatusBar />
-          <HideStatusBar />
-          <AutoScroll />
-          <Audio />
-          <KeepAwake />
-          {/* Bani Options */}
-          <Text style={[displayOptionsText, scrollViewNightStyles]}>{BANI_OPTIONS}</Text>
-          <EditBaniOrder navigate={navigate} isNightMode={isNightMode} />
-          <BaniLengthComponent />
-          <LarivaarComponent />
-          <ParagraphMode />
-          <PadchedSettingsComponent />
-          <VishraamComponent />
-          <RemindersComponent navigation={navigation} />
-          <Text style={[displayOptionsText, scrollViewNightStyles]}>{OTHER_OPTIONS}</Text>
-          <CollectStatistics />
-          <Donate />
-          <ListItemWithIcon
-            iconName="info"
-            title={about}
-            navigate={navigate}
-            navigationTarget="About"
-          />
-          <ListItemWithIcon
-            iconName="update"
-            title={databaseUpdate}
-            navigate={navigate}
-            navigationTarget="DatabaseUpdate"
-          />
-          <Text style={[end, backgroundNightStyle]} />
-        </ScrollView>
-      </SafeAreaView>
-    </SafeAreaProvider>
+        <ListItemWithIcon
+          iconName="update"
+          title={databaseUpdate}
+          navigate={navigate}
+          navigationTarget="DatabaseUpdate"
+        />
+        <Text style={[end, backgroundNightStyle]} />
+      </ScrollView>
+    </SafeArea>
   );
 };
 
