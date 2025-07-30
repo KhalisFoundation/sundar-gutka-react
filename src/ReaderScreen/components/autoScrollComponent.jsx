@@ -37,8 +37,13 @@ const AutoScrollComponent = ({ shabadID, isFooter, webViewRef }) => {
       duration: 500,
       useNativeDriver: true,
     });
-    animationRef.current.start();
-  }, [isFooter]);
+    animationRef.current.start((finished) => {
+      if (!finished) {
+        // If animation was interrupted, force the final value
+        animationPosition.setValue(value);
+      }
+    });
+  }, [isFooter, animationPosition]);
 
   // Handle auto-scroll state changes
   useEffect(() => {
