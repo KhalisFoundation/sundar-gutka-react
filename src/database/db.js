@@ -50,7 +50,8 @@ export const getShabadFromID = async (
   isLarivar,
   isLarivarAssist,
   isParagraphMode,
-  isVishraam
+  isVishraam,
+  padcched
 ) => {
   let baniLength;
   switch (length) {
@@ -107,16 +108,12 @@ export const getShabadFromID = async (
                   JSON.parse(Visraam),
                   vishraamSource
                 );
-                const curGurmukhi = createFormattedText(
-                  gurmukhiLine.split(" "),
-                  vishraamPositions,
-                  {
-                    isVishraam,
-                    vishraamOption,
-                    isLarivar,
-                    isLarivarAssist,
-                  }
-                );
+                let curGurmukhi = createFormattedText(gurmukhiLine.split(" "), vishraamPositions, {
+                  isVishraam,
+                  vishraamOption,
+                  isLarivar,
+                  isLarivarAssist,
+                });
 
                 const translationJson = JSON.parse(Translations) || {};
                 const getTranslation = (lang, field) => {
@@ -128,6 +125,19 @@ export const getShabadFromID = async (
                 const English = getTranslation("en", "bdb");
                 const Punjabi = getTranslation("pu", "bdb");
                 const Spanish = getTranslation("es", "sn");
+
+                // Padched settings for Chopayi Sahib and Rehraas Sahib
+                if (
+                  (shabadID === constant.CHOPAYI_SAHIB_ID ||
+                    shabadID === constant.REHRAAS_SAHIB_ID) &&
+                  padcched === constant.MAST_SABH_MAST
+                ) {
+                  const replaced = curGurmukhi.replace(
+                    /smwpqm squ suBm squ/g,
+                    "smwpq msqu suB msqu"
+                  );
+                  curGurmukhi = replaced;
+                }
 
                 if (isParagraphMode) {
                   const isParagraphChange = prevParagraph !== Paragraph;
