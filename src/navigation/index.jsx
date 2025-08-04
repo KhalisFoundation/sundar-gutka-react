@@ -60,7 +60,7 @@ const Navigation = () => {
           name="Home"
           component={HomeScreen}
         />
-        <Stack.Screen name="Reader" component={Reader} />
+        <Stack.Screen name="Reader" component={Reader} options={{ headerShown: false }} />
         <Stack.Screen
           options={({ navigation }) => ({
             headerLeft: () => headerLeft(navigation, isNightMode),
