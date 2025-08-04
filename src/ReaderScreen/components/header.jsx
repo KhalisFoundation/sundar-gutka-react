@@ -37,11 +37,38 @@ const Header = ({ title, handleBackPress, handleBookmarkPress, handleSettingsPre
 
   useEffect(() => {
     const value = isHeader ? 0 : -120;
-    Animated.timing(animationPosition, {
+
+    // Stop any existing animation first
+    animationPosition.stopAnimation();
+
+    const animation = Animated.timing(animationPosition, {
       toValue: value,
       duration: 500,
       useNativeDriver: true,
-    }).start();
+    });
+
+    animation.start((finished) => {
+      if (!finished) {
+        // If animation was interrupted, force the final value
+        animationPosition.setValue(value);
+      }
+    });
+
+    // Cleanup function
+    return () => {
+      animation.stop();
+    };
+  }, [isHeader, animationPosition]);
+
+  // Add animation reset as fallback for stuck states
+  useEffect(() => {
+    const resetTimer = setTimeout(() => {
+      // Force position if animation seems stuck
+      const targetValue = isHeader ? 0 : -120;
+      animationPosition.setValue(targetValue);
+    }, 1000);
+
+    return () => clearTimeout(resetTimer);
   }, [isHeader, animationPosition]);
 
   return (
@@ -52,8 +79,9 @@ const Header = ({ title, handleBackPress, handleBookmarkPress, handleSettingsPre
           transform: [{ translateY: animationPosition }],
         },
       ]}
+      pointerEvents="box-none" // Ensure touch events pass through
     >
-      <View style={getHeaderStyle.headerStyle}>
+      <View style={getHeaderStyle.headerStyle} pointerEvents="auto">
         <View style={styles.headerWrapper}>
           {headerLeft()}
           <Text style={getHeaderStyle.headerTitleStyle}>{title}</Text>

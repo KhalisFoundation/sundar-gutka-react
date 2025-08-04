@@ -37,8 +37,13 @@ const AutoScrollComponent = ({ shabadID, isFooter, webViewRef }) => {
       duration: 500,
       useNativeDriver: true,
     });
-    animationRef.current.start();
-  }, [isFooter]);
+    animationRef.current.start((finished) => {
+      if (!finished) {
+        // If animation was interrupted, force the final value
+        animationPosition.setValue(value);
+      }
+    });
+  }, [isFooter, animationPosition]);
 
   // Handle auto-scroll state changes
   useEffect(() => {
@@ -65,6 +70,28 @@ const AutoScrollComponent = ({ shabadID, isFooter, webViewRef }) => {
     },
     [dispatch, shabadID]
   );
+
+  // Add animation reset function to fix stuck states
+  const resetAnimation = useCallback(() => {
+    if (animationRef.current) {
+      animationRef.current.stop();
+    }
+    // Force animation to complete state
+    const targetValue = isFooter ? 0 : 130;
+    animationPosition.setValue(targetValue);
+  }, [animationPosition, isFooter]);
+
+  // Reset animation if it gets stuck (fallback)
+  useEffect(() => {
+    const resetTimer = setTimeout(() => {
+      // If animation seems stuck, reset it
+      if (animationRef.current) {
+        resetAnimation();
+      }
+    }, 1000); // Reset after 1 second if still animating
+
+    return () => clearTimeout(resetTimer);
+  }, [isFooter, resetAnimation]);
 
   const handlePause = useCallback(() => {
     togglePaused(true);
@@ -95,8 +122,9 @@ const AutoScrollComponent = ({ shabadID, isFooter, webViewRef }) => {
           styles.container,
           { transform: [{ translateY: animationPosition }], paddingBottom: bottomSpace },
         ]}
+        pointerEvents="box-none" // Ensure touch events pass through
       >
-        <View style={styles.wrapper}>
+        <View style={styles.wrapper} pointerEvents="auto">
           {isPaused ? (
             <Icon
               name="play-arrow"
