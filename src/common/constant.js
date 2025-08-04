@@ -41,6 +41,7 @@ export default {
   sttm: "sttm",
   VISHRAAM_COLORED: "VISHRAAM_COLORED",
   VISHRAAM_GRADIENT: "VISHRAAM_GRADIENT",
+  MAST_SABH_MAST: "MAST_SABH_MAST",
   DEFAULT_SPEED: 50,
   MARK_AS_READ: "mark-as-read",
   SOUND: "sound",
@@ -83,4 +84,7 @@ export default {
   PORTRAIT: "PORTRAIT",
   LANDSCAPE: "LANDSCAPE",
   REMOTE_DB_URL: "https://banidb.blob.core.windows.net/database",
+  CHOPAYI_SAHIB_ID: 9,
+  REHRAAS_SAHIB_ID: 21,
+  MAST_SABH_MAST_TUKK: "smwpq msqu suB msqu",
 };
