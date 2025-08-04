@@ -86,4 +86,5 @@ export default {
   REMOTE_DB_URL: "https://banidb.blob.core.windows.net/database",
   CHOPAYI_SAHIB_ID: 9,
   REHRAAS_SAHIB_ID: 21,
+  MAST_SABH_MAST_TUKK: "smwpq msqu suB msqu",
 };

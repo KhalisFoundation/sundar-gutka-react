@@ -134,7 +134,7 @@ export const getShabadFromID = async (
                 ) {
                   const replaced = curGurmukhi.replace(
                     /smwpqm squ suBm squ/g,
-                    "smwpq msqu suB msqu"
+                    constant.MAST_SABH_MAST_TUKK
                   );
                   curGurmukhi = replaced;
                 }
