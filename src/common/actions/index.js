@@ -45,6 +45,21 @@ export const toggleAudio = (value) => {
   return { type: actionTypes.TOGGLE_AUDIO, value };
 };
 
+export const toggleAudioAutoPlay = (value) => {
+  trackSettingEvent(constant.AUDIO_AUTO_PLAY, value);
+  return { type: actionTypes.TOGGLE_AUDIO_AUTO_PLAY, value };
+};
+
+export const toggleAudioSyncScroll = (value) => {
+  trackSettingEvent(constant.AUDIO_SYNC_SCROLL, value);
+  return { type: actionTypes.TOGGLE_AUDIO_SYNC_SCROLL, value };
+};
+
+export const setDefaultAudio = (value) => {
+  trackSettingEvent(constant.DEFAULT_AUDIO, value);
+  return { type: actionTypes.SET_DEFAULT_AUDIO, value };
+};
+
 export const toggleStatusBar = (value) => {
   trackSettingEvent(constant.STATUS_BAR, value);
   return { type: actionTypes.TOGGLE_STATUS_BAR, value };
@@ -154,4 +169,33 @@ export const toggleHeaderFooter = (value) => {
 
 export const toggleDatabaseUpdateAvailable = (value) => {
   return { type: actionTypes.TOGGLE_DATABASE_UPDATE_AVAILABLE, value };
+};
+
+// Manifest actions
+export const setAudioManifest = (baniId, tracks) => {
+  return {
+    type: actionTypes.SET_AUDIO_MANIFEST,
+    payload: { baniId, tracks },
+  };
+};
+
+export const updateAudioManifest = (baniId, tracks) => {
+  return {
+    type: actionTypes.UPDATE_AUDIO_MANIFEST,
+    payload: { baniId, tracks },
+  };
+};
+
+export const clearAudioManifest = (baniId) => {
+  return {
+    type: actionTypes.CLEAR_AUDIO_MANIFEST,
+    payload: { baniId },
+  };
+};
+
+export const deleteManifestTrack = (baniId, trackId) => {
+  return {
+    type: actionTypes.DELETE_MANIFEST_TRACK,
+    payload: { baniId, trackId },
+  };
 };

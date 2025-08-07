@@ -247,7 +247,7 @@ const Reader = ({ navigation, route }) => {
         style={[webView, isNightMode && { opacity: viewLoaded ? 1 : 0.1 }, backViewColor]}
         onMessage={handleMessage}
       />
-      {isAudio && <AudioPlayer baniID={id} title={title} />}
+      {isAudio && <AudioPlayer baniID={id} title={title} shouldNavigateBack={shouldNavigateBack} />}
       {isAutoScroll && (
         <AutoScrollComponent shabadID={id} webViewRef={webViewRef} isFooter={isHeader} />
       )}

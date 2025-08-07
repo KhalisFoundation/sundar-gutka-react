@@ -18,9 +18,23 @@ export const TrackPlayerSetup = async () => {
 
 export const addTrack = async (track) => {
   try {
+    // Validate track object
+    if (!track.url) {
+      throw new Error("Track URL is missing or empty");
+    }
+    if (!track.id) {
+      console.warn("Track ID is missing");
+    }
+
     await TrackPlayer.add(track);
+
+    // Get queue to verify track was added
+    const queue = await TrackPlayer.getQueue();
   } catch (error) {
-    console.error("Error adding track:", error);
+    console.error("❌ Error adding track to TrackPlayer:", error);
+    console.error("Error details:", error.message);
+    console.error("Error code:", error.code);
+    throw error; // Re-throw to handle upstream
   }
 };
 

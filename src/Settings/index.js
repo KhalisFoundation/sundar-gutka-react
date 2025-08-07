@@ -73,8 +73,8 @@ const Settings = ({ navigation }) => {
         <StatusBar />
         <HideStatusBar />
         <AutoScroll />
-        <Audio />
         <KeepAwake />
+        <Audio />
         {/* Bani Options */}
         <Text style={[displayOptionsText, scrollViewNightStyles]}>{BANI_OPTIONS}</Text>
         <EditBaniOrder navigate={navigate} isNightMode={isNightMode} />

@@ -181,5 +181,45 @@ const styles = StyleSheet.create({
     fontStyle: "italic",
     padding: 20,
   },
+  // Download styles
+  downloadContainer: {
+    marginVertical: 10,
+    alignItems: "center",
+  },
+  downloadButton: {
+    flexDirection: "row",
+    alignItems: "center",
+    backgroundColor: "#f8f9fa",
+    paddingHorizontal: 16,
+    paddingVertical: 8,
+    borderRadius: 20,
+    borderWidth: 1,
+    borderColor: "#dee2e6",
+  },
+  downloadButtonText: {
+    fontSize: 14,
+    fontWeight: "500",
+    marginLeft: 6,
+  },
+  downloadedContainer: {
+    flexDirection: "row",
+    alignItems: "center",
+    backgroundColor: "#d4edda",
+    paddingHorizontal: 16,
+    paddingVertical: 8,
+    borderRadius: 20,
+    borderWidth: 1,
+    borderColor: "#c3e6cb",
+  },
+  downloadedText: {
+    fontSize: 14,
+    fontWeight: "500",
+    color: "#155724",
+    marginLeft: 6,
+    marginRight: 8,
+  },
+  deleteButton: {
+    padding: 4,
+  },
 });
 export default styles;

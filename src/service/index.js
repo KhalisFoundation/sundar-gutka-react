@@ -1,3 +1,3 @@
-import fetchManifest from "./audioApi";
+import { fetchArtists, fetchManifest } from "./audioApi";
 
-export default fetchManifest;
+export { fetchArtists, fetchManifest };

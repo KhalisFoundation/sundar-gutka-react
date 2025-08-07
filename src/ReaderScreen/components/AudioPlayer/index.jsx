@@ -1,13 +1,35 @@
 import React, { useState, useEffect } from "react";
-import { View, Text, TouchableOpacity, Modal, ScrollView } from "react-native";
+import { View, Text, TouchableOpacity } from "react-native";
 import { Icon } from "@rneui/themed";
 import Slider from "@react-native-community/slider";
 import PropTypes from "prop-types";
-import fetchManifest from "@service";
-import useTrackPlayer from "../../../common/hooks/useTrackPlayer";
+import { exists } from "react-native-fs";
+import { useAudioManifest, useDownloadManager, useTrackPlayer } from "./hooks";
+import { TrackSelector, DownloadControls } from "./components";
+import { formatUrlForTrackPlayer, isLocalFile } from "./utils/urlHelper";
 import styles from "./style";
 
-const AudioPlayer = ({ baniID }) => {
+const AudioPlayer = ({ baniID, title, shouldNavigateBack }) => {
+  const [showTrackModal, setShowTrackModal] = useState(false);
+
+  // Custom hooks
+  const {
+    tracks,
+    currentPlaying,
+    setCurrentPlaying,
+    isLoading: manifestLoading,
+    addTrackToManifest,
+    removeTrackFromManifest,
+    isTrackDownloaded,
+  } = useAudioManifest(baniID);
+
+  const { isDownloading, isDownloaded, handleDownload, handleDeleteDownload } = useDownloadManager(
+    currentPlaying,
+    addTrackToManifest,
+    removeTrackFromManifest,
+    isTrackDownloaded
+  );
+
   const {
     isPlaying,
     progress,
@@ -18,122 +40,54 @@ const AudioPlayer = ({ baniID }) => {
     isAudioEnabled,
     isInitialized,
   } = useTrackPlayer();
-  const [tracks, setTracks] = useState(null);
-  const [currentPlaying, setCurrentPlaying] = useState(null);
-  const [isLoading, setIsLoading] = useState(false);
-  const [showTrackModal, setShowTrackModal] = useState(false);
-
-  const fetchAudioManifest = async () => {
-    try {
-      // if (tracks !== null) {
-      //   return;
-      // }
-      const manifest = await fetchManifest(baniID);
-      console.log("Manifest received:", manifest);
-
-      const mappedData = manifest.data.map((item) => {
-        return {
-          id: item.artist_id,
-          audioBaseUrl: `${item.base_audio_url}${baniID}.mp3`,
-          qualityLevel: parseInt(item.quality_levels, 10),
-          displayName: item.displayName,
-        };
-      });
-
-      console.log("Mapped data:", mappedData);
-      setTracks(mappedData);
-
-      setCurrentPlaying(mappedData[0]);
-    } catch (error) {
-      console.error("Error fetching manifest:", error);
-    }
-  };
 
   useEffect(() => {
-    if (baniID) {
-      console.log("fetching audio manifest for baniID:", baniID);
-      fetchAudioManifest();
+    if (shouldNavigateBack) {
+      stop();
     }
-  }, [baniID]);
-
-  // Debug effect to log state changes
-  useEffect(() => {
-    console.log("AudioPlayer state:", {
-      isPlaying,
-      isAudioEnabled,
-      isInitialized,
-      currentPlaying: currentPlaying
-        ? {
-            id: currentPlaying.id,
-            displayName: currentPlaying.displayName,
-            audioBaseUrl: currentPlaying.audioBaseUrl,
-          }
-        : null,
-      tracksCount: tracks ? tracks.length : 0,
-      progress: {
-        position: progress.position,
-        duration: progress.duration,
-        buffered: progress.buffered,
-      },
-    });
-  }, [isPlaying, isAudioEnabled, isInitialized, currentPlaying, tracks, progress]);
+  }, [shouldNavigateBack]);
 
   const handlePlayPause = async () => {
-    // Check if TrackPlayer is initialized
-    if (!isInitialized) {
-      console.log("TrackPlayer not initialized yet");
-      return;
-    }
-
-    if (!isAudioEnabled) {
-      console.log("Audio is disabled");
-      return;
-    }
-
-    if (!currentPlaying) {
-      console.log("No track selected");
+    if (!isInitialized || !isAudioEnabled || !currentPlaying) {
       return;
     }
 
     try {
-      setIsLoading(true);
-
       if (isPlaying) {
-        console.log("Pausing audio");
         await pause();
       } else {
-        console.log("Playing audio:", currentPlaying.audioBaseUrl);
-        console.log("Track details:", {
-          id: baniID,
-          url: currentPlaying.audioBaseUrl,
-          title: currentPlaying.displayName,
-          artist: currentPlaying.displayName,
-        });
+        // Check if local file exists
+        if (isLocalFile(currentPlaying.audioUrl)) {
+          const cleanPath = currentPlaying.audioUrl.replace("file://", "");
+          const fileExists = await exists(cleanPath);
 
-        // Add track if not playing
+          if (!fileExists) {
+            console.error("❌ LOCAL FILE DOES NOT EXIST:", cleanPath);
+            // You could fallback to remote URL here if needed
+          } else {
+            console.log("✅ Local file exists, proceeding with playback");
+          }
+        }
+
+        const formattedUrl = formatUrlForTrackPlayer(currentPlaying.audioUrl);
+
         const track = {
-          id: baniID,
-          url: currentPlaying.audioBaseUrl,
+          id: currentPlaying.id,
+          url: formattedUrl,
           title: currentPlaying.displayName,
           artist: currentPlaying.displayName,
-          duration: 0, // Will be updated by the player
+          duration: 0,
         };
 
-        console.log("Adding track to player:", track);
         await addAndPlayTrack(track);
-        console.log("Track added and play command sent");
       }
     } catch (error) {
       console.error("Error in handlePlayPause:", error);
-    } finally {
-      setIsLoading(false);
     }
   };
 
   const handleSeek = async (value) => {
-    if (!isAudioEnabled || !isInitialized) {
-      return;
-    }
+    if (!isAudioEnabled || !isInitialized) return;
     try {
       await seekTo(value);
     } catch (error) {
@@ -142,9 +96,7 @@ const AudioPlayer = ({ baniID }) => {
   };
 
   const handleStop = async () => {
-    if (!isAudioEnabled || !isInitialized) {
-      return;
-    }
+    if (!isAudioEnabled || !isInitialized) return;
     try {
       await stop();
     } catch (error) {
@@ -154,8 +106,6 @@ const AudioPlayer = ({ baniID }) => {
 
   const handleTrackSelect = async (selectedTrack) => {
     try {
-      setIsLoading(true);
-
       // Stop current playback
       await stop();
 
@@ -167,21 +117,20 @@ const AudioPlayer = ({ baniID }) => {
 
       // Auto-play the new track if audio is enabled
       if (isAudioEnabled) {
+        const formattedUrl = formatUrlForTrackPlayer(selectedTrack.audioUrl);
+
         const track = {
-          id: selectedTrack.artistID,
-          url: selectedTrack.audioBaseUrl,
+          id: selectedTrack.id,
+          url: formattedUrl,
           title: selectedTrack.displayName,
           artist: selectedTrack.displayName,
           duration: 0,
         };
 
-        console.log("Switching to track:", track);
         await addAndPlayTrack(track);
       }
     } catch (error) {
       console.error("Error switching track:", error);
-    } finally {
-      setIsLoading(false);
     }
   };
 
@@ -200,15 +149,21 @@ const AudioPlayer = ({ baniID }) => {
     );
   }
 
+  if (!tracks || tracks.length === 0) {
+    return null;
+  }
+
   return (
     <View style={styles.container}>
       <View style={styles.trackInfo}>
+        <Text style={styles.artistName}>{title}</Text>
         {currentPlaying && (
           <TouchableOpacity
             onPress={() => setShowTrackModal(true)}
             style={styles.artistNameContainer}
           >
             <Text style={styles.artistName}>{currentPlaying.displayName}</Text>
+
             <Icon name="expand-more" size={16} color="#666" />
           </TouchableOpacity>
         )}
@@ -230,16 +185,26 @@ const AudioPlayer = ({ baniID }) => {
           minimumTrackTintColor={isAudioEnabled ? "#1976d2" : "#ccc"}
           maximumTrackTintColor="#d3d3d3"
           thumbTintColor={isAudioEnabled ? "#1976d2" : "#ccc"}
-          disabled={!isAudioEnabled || isLoading}
+          disabled={!isAudioEnabled || manifestLoading}
         />
         <Text style={styles.timeText}>{formatTime(progress.duration)}</Text>
       </View>
+
+      {/* Download Controls */}
+      <DownloadControls
+        currentPlaying={currentPlaying}
+        isDownloaded={isDownloaded}
+        isDownloading={isDownloading}
+        isAudioEnabled={isAudioEnabled}
+        onDownload={handleDownload}
+        onDelete={handleDeleteDownload}
+      />
 
       <View style={styles.controls}>
         <TouchableOpacity
           onPress={handleStop}
           style={styles.controlButton}
-          disabled={!isAudioEnabled || isLoading}
+          disabled={!isAudioEnabled || manifestLoading}
         >
           <Icon name="stop" size={30} color={isAudioEnabled ? "#000" : "#ccc"} />
         </TouchableOpacity>
@@ -248,9 +213,9 @@ const AudioPlayer = ({ baniID }) => {
           onPress={handlePlayPause}
           style={[
             isAudioEnabled ? styles.playButton : styles.disabledButton,
-            { opacity: isLoading ? 0.5 : 0.7 },
+            { opacity: manifestLoading ? 0.5 : 0.7 },
           ]}
-          disabled={!isAudioEnabled || isLoading}
+          disabled={!isAudioEnabled || manifestLoading}
         >
           <Icon
             name={isPlaying ? "pause" : "play-arrow"}
@@ -259,61 +224,31 @@ const AudioPlayer = ({ baniID }) => {
           />
         </TouchableOpacity>
 
-        <TouchableOpacity style={styles.controlButton} disabled={!isAudioEnabled || isLoading}>
+        <TouchableOpacity
+          style={styles.controlButton}
+          disabled={!isAudioEnabled || manifestLoading}
+        >
           <Icon name="skip-next" size={30} color={isAudioEnabled ? "#000" : "#ccc"} />
         </TouchableOpacity>
       </View>
 
       {/* Track Selection Modal */}
-      <Modal
+      <TrackSelector
         visible={showTrackModal}
-        animationType="slide"
-        transparent
-        onRequestClose={() => setShowTrackModal(false)}
-      >
-        <View style={styles.modalOverlay}>
-          <View style={styles.modalContent}>
-            <View style={styles.modalHeader}>
-              <Text style={styles.modalTitle}>Select Track</Text>
-              <TouchableOpacity onPress={() => setShowTrackModal(false)} style={styles.closeButton}>
-                <Icon name="close" size={24} color="#666" />
-              </TouchableOpacity>
-            </View>
-
-            <ScrollView style={styles.trackList}>
-              {tracks && tracks.length > 0 ? (
-                tracks.map((track) => (
-                  <TouchableOpacity
-                    key={track.id}
-                    style={[
-                      styles.trackItem,
-                      currentPlaying?.id === track.id && styles.selectedTrackItem,
-                    ]}
-                    onPress={() => handleTrackSelect(track)}
-                    disabled={isLoading}
-                  >
-                    <View style={styles.trackItemContent}>
-                      <Text style={styles.trackItemTitle}>{track.displayName}</Text>
-                      <Text style={styles.trackItemQuality}>Quality: {track.qualityLevel}</Text>
-                      {currentPlaying?.id === track.id && (
-                        <Icon name="check-circle" size={20} color="#1976d2" />
-                      )}
-                    </View>
-                  </TouchableOpacity>
-                ))
-              ) : (
-                <Text style={styles.noTracksText}>No tracks available</Text>
-              )}
-            </ScrollView>
-          </View>
-        </View>
-      </Modal>
+        onClose={() => setShowTrackModal(false)}
+        tracks={tracks}
+        currentPlaying={currentPlaying}
+        onTrackSelect={handleTrackSelect}
+        isLoading={manifestLoading}
+      />
     </View>
   );
 };
 
 AudioPlayer.propTypes = {
   baniID: PropTypes.string.isRequired,
+  title: PropTypes.string.isRequired,
+  shouldNavigateBack: PropTypes.bool.isRequired,
 };
 
 export default AudioPlayer;

@@ -6,7 +6,7 @@ import TrackPlayer, {
   State,
   AppKilledPlaybackBehavior,
 } from "react-native-track-player";
-import { addTrack, playTrack, pauseTrack, stopTrack, resetPlayer } from "../TrackPlayerUtils";
+import { addTrack, playTrack, pauseTrack, stopTrack, resetPlayer } from "@common/TrackPlayerUtils";
 
 const useTrackPlayer = () => {
   const [isInitialized, setIsInitialized] = useState(false);
@@ -25,6 +25,8 @@ const useTrackPlayer = () => {
           await TrackPlayer.setupPlayer({
             waitForBuffer: true,
             maxCacheSize: 1024,
+            iosCategory: "playback",
+            alwaysPauseOnInterruption: true,
           });
           await TrackPlayer.updateOptions({
             android: {
