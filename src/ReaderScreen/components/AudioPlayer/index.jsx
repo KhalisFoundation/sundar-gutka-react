@@ -1,5 +1,6 @@
 import React, { useState, useEffect } from "react";
 import { View, Text, TouchableOpacity } from "react-native";
+import { useSelector } from "react-redux";
 import { Icon } from "@rneui/themed";
 import Slider from "@react-native-community/slider";
 import PropTypes from "prop-types";
@@ -11,6 +12,7 @@ import styles from "./style";
 
 const AudioPlayer = ({ baniID, title, shouldNavigateBack }) => {
   const [showTrackModal, setShowTrackModal] = useState(false);
+  const isAudioAutoPlay = useSelector((state) => state.isAudioAutoPlay);
 
   // Custom hooks
   const {
@@ -46,7 +48,6 @@ const AudioPlayer = ({ baniID, title, shouldNavigateBack }) => {
       stop();
     }
   }, [shouldNavigateBack]);
-
   const handlePlayPause = async () => {
     if (!isInitialized || !isAudioEnabled || !currentPlaying) {
       return;
@@ -85,6 +86,12 @@ const AudioPlayer = ({ baniID, title, shouldNavigateBack }) => {
       console.error("Error in handlePlayPause:", error);
     }
   };
+
+  useEffect(() => {
+    if (isAudioAutoPlay && currentPlaying) {
+      handlePlayPause();
+    }
+  }, [isAudioAutoPlay, currentPlaying]);
 
   const handleSeek = async (value) => {
     if (!isAudioEnabled || !isInitialized) return;
