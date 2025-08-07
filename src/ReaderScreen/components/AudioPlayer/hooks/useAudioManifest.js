@@ -8,6 +8,7 @@ const useAudioManifest = (baniID) => {
   const [tracks, setTracks] = useState([]);
   const [currentPlaying, setCurrentPlaying] = useState(null);
   const [isLoading, setIsLoading] = useState(false);
+  const defaultAudio = useSelector((state) => state.defaultAudio);
 
   const dispatch = useDispatch();
   const audioManifest = useSelector((state) => state.audioManifest);
@@ -77,7 +78,21 @@ const useAudioManifest = (baniID) => {
 
       if (mappedData && mappedData.length > 0) {
         setTracks(mappedData);
-        setCurrentPlaying(mappedData[0]);
+
+        // Set current playing based on default audio setting
+        if (defaultAudio && defaultAudio !== "") {
+          // Find track with matching artist ID
+          const defaultTrack = mappedData.find(
+            (track) => track.artistID.toString() === defaultAudio
+          );
+          if (defaultTrack) {
+            setCurrentPlaying(defaultTrack);
+          } else {
+            setCurrentPlaying(mappedData[0]);
+          }
+        } else {
+          setCurrentPlaying(mappedData[0]);
+        }
       }
     } catch (error) {
       console.error("Error fetching manifest:", error);
