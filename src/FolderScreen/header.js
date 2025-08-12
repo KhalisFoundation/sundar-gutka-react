@@ -29,9 +29,7 @@ const Header = ({ navigation, title }) => {
       title,
       headerTitleStyle,
       headerStyle: {
-        backgroundColor: isNightMode
-          ? colors.READER_STATUS_BAR_COLOR_NIGHT_MODE
-          : colors.TOOLBAR_COLOR,
+        backgroundColor: isNightMode ? colors.READER_STATUS_BAR_COLOR_NIGHT_MODE : colors.primary,
       },
       headerLeft,
       headerRight,

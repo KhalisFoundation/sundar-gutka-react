@@ -1,22 +1,23 @@
 import React, { useEffect } from "react";
 import { Icon } from "@rneui/themed";
-import { useSelector } from "react-redux";
-import { colors } from "@common";
-import { styles, getHeaderStyle } from "../styles";
+import useThemedStyles from "@common/hooks/useThemedStyles";
+import createStyles from "../styles";
 
 const useHeader = (navigation) => {
-  const { WHITE_COLOR } = colors;
-  const isNightMode = useSelector((state) => state.isNightMode);
-  const { headerTitleStyle } = styles;
-  const headerStyle = getHeaderStyle(isNightMode);
+  const styles = useThemedStyles(createStyles);
   const headerLeft = () => (
-    <Icon name="arrow-back" size={30} onPress={() => navigation.goBack()} color={WHITE_COLOR} />
+    <Icon
+      name="arrow-back"
+      size={30}
+      onPress={() => navigation.goBack()}
+      color={styles.headerTitleStyle.color}
+    />
   );
 
   useEffect(() => {
     navigation.setOptions({
-      headerTitleStyle,
-      headerStyle,
+      headerTitleStyle: styles.headerTitleStyle,
+      headerStyle: styles.headerStyle,
       headerLeft,
     });
   }, []);

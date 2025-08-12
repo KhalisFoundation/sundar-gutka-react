@@ -3,7 +3,7 @@ import { colors } from "@common";
 
 export const styles = StyleSheet.create({
   homeHeaderTitle: { fontSize: 18, color: colors.WHITE_COLOR, fontWeight: "normal" },
-  homeHeaderStyle: { backgroundColor: colors.TOOLBAR_COLOR },
+  homeHeaderStyle: { backgroundColor: colors.primary },
 });
 
 export const SettingsStyle = (isNightMode) => ({

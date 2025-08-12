@@ -7,15 +7,13 @@ import { constant, STRINGS, colors } from "@common";
 import styles from "../styles";
 
 const BaniHeader = (props) => {
-  const { navigate } = props;
-  const isNightMode = useSelector((state) => state.isNightMode);
+  const { navigate, theme } = props;
+
   const isDatabaseUpdateAvailable = useSelector((state) => state.isDatabaseUpdateAvaliable);
   return (
     <View
       style={{
-        backgroundColor: isNightMode
-          ? colors.READER_STATUS_BAR_COLOR_NIGHT_MODE
-          : colors.TOOLBAR_COLOR,
+        backgroundColor: theme.colors.primary,
       }}
     >
       <View style={styles.fatehContainer}>
@@ -47,5 +45,10 @@ const BaniHeader = (props) => {
 };
 BaniHeader.propTypes = {
   navigate: PropTypes.func.isRequired,
+  theme: PropTypes.shape({
+    colors: PropTypes.shape({
+      primary: PropTypes.string.isRequired,
+    }).isRequired,
+  }).isRequired,
 };
 export default BaniHeader;

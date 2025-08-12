@@ -14,7 +14,7 @@ const styles = StyleSheet.create({
   },
   wrapper: {
     flex: 1,
-    backgroundColor: colors.TOOLBAR_COLOR,
+    backgroundColor: colors.primary,
   },
   baniLengthMessage: {
     marginTop: 15,
@@ -29,7 +29,7 @@ const styles = StyleSheet.create({
   },
   button: {
     backgroundColor: colors.WHITE_COLOR,
-    color: colors.TOOLBAR_COLOR,
+    color: colors.primary,
     padding: 15,
     marginTop: 15,
     fontSize: 24,

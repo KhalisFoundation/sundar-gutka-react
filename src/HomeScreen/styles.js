@@ -3,7 +3,7 @@ import { colors, constant } from "@common";
 
 const styles = StyleSheet.create({
   container: { flex: 1, marginTop: 0 },
-  header: { backgroundColor: colors.TOOLBAR_COLOR },
+  header: { backgroundColor: colors.primary },
   fateh: { color: colors.TOOLBAR_TINT, fontSize: 18, textAlign: "center", margin: 5 },
   headerDesign: {
     fontSize: 32,
