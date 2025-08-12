@@ -1,5 +1,5 @@
 import React, { useEffect } from "react";
-import { Appearance, AppState, View } from "react-native";
+import { View } from "react-native";
 import PropTypes from "prop-types";
 import { useDispatch, useSelector } from "react-redux";
 import {
@@ -7,7 +7,6 @@ import {
   actions,
   BaniLengthSelector,
   constant,
-  colors,
   useKeepAwake,
   BaniList,
   logMessage,
@@ -15,6 +14,7 @@ import {
   StatusBarComponent,
   SafeArea,
 } from "@common";
+import useTheme from "@common/context";
 import styles from "./styles";
 import BaniHeader from "./components/BaniHeader";
 import { useBaniLength, useBaniList, useDatabaseUpdateCheck } from "./hooks";
@@ -22,11 +22,10 @@ import { setBaniOrder } from "../common/actions";
 
 const HomeScreen = React.memo(({ navigation }) => {
   logMessage(constant.HOME_SCREEN);
+  const { theme } = useTheme();
   const { navigate } = navigation;
   const { baniListData } = useBaniList();
-  const isNightMode = useSelector((state) => state.isNightMode);
   const language = useSelector((state) => state.language);
-  const theme = useSelector((state) => state.theme);
   const baniOrder = useSelector((state) => state.baniOrder);
   useDatabaseUpdateCheck();
 
@@ -35,30 +34,12 @@ const HomeScreen = React.memo(({ navigation }) => {
   const { baniLengthSelector } = useBaniLength();
   const dispatch = useDispatch();
 
-  const updateTheme = () => {
-    const currentColorScheme = Appearance.getColorScheme();
-    if (theme === constant.Default) {
-      dispatch(actions.toggleNightMode(currentColorScheme === "dark"));
-    }
-  };
-
+  console.log("theme", theme.colors.primary);
   useEffect(() => {
     dispatch(actions.setLanguage(language));
     const order = validateBaniOrder(baniOrder);
     dispatch(setBaniOrder(order));
   }, []);
-
-  useEffect(() => {
-    const subscription = AppState.addEventListener("change", (state) => {
-      if (state === "active") {
-        updateTheme();
-      }
-    });
-
-    return () => {
-      subscription.remove();
-    };
-  }, [theme]);
 
   const onPress = (row) => {
     const bani = row.item;
@@ -78,19 +59,11 @@ const HomeScreen = React.memo(({ navigation }) => {
   return baniLengthSelector ? (
     <BaniLengthSelector />
   ) : (
-    <SafeArea
-      backgroundColor={
-        isNightMode ? colors.READER_STATUS_BAR_COLOR_NIGHT_MODE : colors.TOOLBAR_COLOR
-      }
-    >
-      <View style={[isNightMode && { backgroundColor: colors.NIGHT_BLACK }, styles.container]}>
-        <StatusBarComponent
-          backgroundColor={
-            isNightMode ? colors.READER_STATUS_BAR_COLOR_NIGHT_MODE : colors.TOOLBAR_COLOR
-          }
-        />
-        <BaniHeader navigate={navigate} />
-        <BaniList data={baniListData} onPress={onPress} />
+    <SafeArea backgroundColor={theme.colors.primary}>
+      <View style={[{ backgroundColor: theme.colors.surface }, styles.container]}>
+        <StatusBarComponent backgroundColor={theme.colors.primary} />
+        <BaniHeader navigate={navigate} theme={theme} />
+        <BaniList theme={theme} data={baniListData} onPress={onPress} />
       </View>
     </SafeArea>
   );

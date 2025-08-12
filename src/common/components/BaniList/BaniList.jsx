@@ -4,14 +4,12 @@ import { ListItem, Avatar } from "@rneui/themed";
 import PropTypes from "prop-types";
 import { useSelector } from "react-redux";
 import baseFontSize from "../../helpers";
-import colors from "../../colors";
 import { styles } from "../../../Settings/styles";
 
-const BaniList = React.memo(({ data, onPress }) => {
+const BaniList = React.memo(({ data, onPress, theme }) => {
   const fontSize = useSelector((state) => state.fontSize);
   const fontFace = useSelector((state) => state.fontFace);
   const isTransliteration = useSelector((state) => state.isTransliteration);
-  const isNightMode = useSelector((state) => state.isNightMode);
   const [isPotrait, toggleIsPotrait] = useState(true);
 
   const checkPotrait = () => {
@@ -30,7 +28,7 @@ const BaniList = React.memo(({ data, onPress }) => {
         <ListItem
           bottomDivider
           containerStyle={{
-            backgroundColor: isNightMode ? colors.NIGHT_BLACK : colors.WHITE_COLOR,
+            backgroundColor: theme.colors.surface,
           }}
           onPress={() => onPress(row)}
         >
@@ -43,7 +41,7 @@ const BaniList = React.memo(({ data, onPress }) => {
           <ListItem.Content>
             <ListItem.Title
               style={[
-                isNightMode && { color: colors.WHITE_COLOR },
+                { color: theme.colors.primaryText },
                 {
                   fontSize: baseFontSize(fontSize, isTransliteration),
                   fontFamily: !isTransliteration ? fontFace : null,
@@ -55,7 +53,7 @@ const BaniList = React.memo(({ data, onPress }) => {
             {row.item.tukGurmukhi && (
               <ListItem.Subtitle
                 style={[
-                  isNightMode && { color: "#ecf0f1" },
+                  { color: theme.colors.primaryText },
                   { fontFamily: !isTransliteration ? fontFace : null },
                   { fontSize: 17 },
                 ]}
@@ -67,7 +65,7 @@ const BaniList = React.memo(({ data, onPress }) => {
         </ListItem>
       );
     },
-    [isNightMode, fontSize, fontFace, isTransliteration]
+    [theme, fontSize, fontFace, isTransliteration]
   );
 
   return (
@@ -91,6 +89,12 @@ BaniList.propTypes = {
     })
   ).isRequired,
   onPress: PropTypes.func.isRequired,
+  theme: PropTypes.shape({
+    colors: PropTypes.shape({
+      surface: PropTypes.string.isRequired,
+      primaryText: PropTypes.string.isRequired,
+    }).isRequired,
+  }).isRequired,
 };
 
 export default BaniList;

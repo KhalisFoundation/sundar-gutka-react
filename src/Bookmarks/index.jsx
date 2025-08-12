@@ -1,5 +1,5 @@
 import React from "react";
-import { useDispatch, useSelector } from "react-redux";
+import { useDispatch } from "react-redux";
 import PropTypes from "prop-types";
 import {
   BaniList,
@@ -10,16 +10,18 @@ import {
   StatusBarComponent,
   SafeArea,
 } from "@common";
+import useThemedStyles from "@common/hooks/useThemedStyles";
+import useTheme from "@common/context";
 import useHeader from "./hooks/useHeader";
 import useBookmarks from "./hooks/useBookmarks";
-import { nightMode, getHeaderStyle } from "./styles";
+import createStyles from "./styles";
 
 const Bookmarks = ({ navigation, route }) => {
   logMessage(constant.BOOKMARKS);
   useHeader(navigation);
+  const styles = useThemedStyles(createStyles);
+  const { theme } = useTheme();
   const { bookmarksData } = useBookmarks(route);
-  const isNightMode = useSelector((state) => state.isNightMode);
-  const { backgroundColor } = nightMode(isNightMode);
   const dispatch = useDispatch();
   useScreenAnalytics(constant.BOOKMARKS);
 
@@ -29,8 +31,8 @@ const Bookmarks = ({ navigation, route }) => {
   };
 
   return (
-    <SafeArea backgroundColor={backgroundColor}>
-      <StatusBarComponent backgroundColor={getHeaderStyle(isNightMode).backgroundColor} />
+    <SafeArea backgroundColor={theme.colors.surface}>
+      <StatusBarComponent backgroundColor={styles.headerStyle.backgroundColor} />
       <BaniList data={bookmarksData} onPress={onPress} isFolderScreen />
     </SafeArea>
   );

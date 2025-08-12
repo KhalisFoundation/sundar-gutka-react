@@ -30,17 +30,13 @@ const FolderScreen = ({ navigation, route }) => {
   };
   return (
     <SafeArea
-      backgroundColor={
-        isNightMode ? colors.READER_STATUS_BAR_COLOR_NIGHT_MODE : colors.TOOLBAR_COLOR
-      }
+      backgroundColor={isNightMode ? colors.READER_STATUS_BAR_COLOR_NIGHT_MODE : colors.primary}
     >
       <View
         style={{ flex: 1, backgroundColor: isNightMode ? colors.NIGHT_BLACK : colors.WHITE_COLOR }}
       >
         <StatusBarComponent
-          backgroundColor={
-            isNightMode ? colors.READER_STATUS_BAR_COLOR_NIGHT_MODE : colors.TOOLBAR_COLOR
-          }
+          backgroundColor={isNightMode ? colors.READER_STATUS_BAR_COLOR_NIGHT_MODE : colors.primary}
         />
         <Header navigation={navigation} title={title} />
         <BaniList data={data} isFolderScreen onPress={onPress} />

@@ -1,10 +1,8 @@
 import React from "react";
 import { Linking, Image, View, Text, TouchableHighlight } from "react-native";
 import PropTypes from "prop-types";
-import { useSelector } from "react-redux";
 import { getVersion, getBuildNumber } from "react-native-device-info";
 import {
-  colors,
   STRINGS,
   constant,
   useScreenAnalytics,
@@ -12,18 +10,19 @@ import {
   StatusBarComponent,
   SafeArea,
 } from "@common";
-import { styles, nightStyles } from "./styles";
+import useThemedStyles from "@common/hooks/useThemedStyles";
+import useTheme from "@common/context";
 import useHeader from "./hooks/useHeader";
+import createStyles from "./styles";
 
 const AboutScreen = ({ navigation }) => {
+  const styles = useThemedStyles(createStyles);
+  const { theme } = useTheme();
   logMessage(constant.ABOUT_SCREEN);
-  const isNightMode = useSelector((state) => state.isNightMode);
 
   useScreenAnalytics(constant.ABOUT_SCREEN);
   useHeader(navigation);
-  const { backgroundColor } = nightStyles(isNightMode);
-  const { TOOLBAR_COLOR_ALT2 } = colors;
-  const { nightMode, SGTitle, margin10, margin, singleLine, leftContainer, underlayColor } = styles;
+  // Legacy styles for backward compatibility
   const {
     CREATED_BY,
     SUNDAR_GUTKA,
@@ -38,64 +37,50 @@ const AboutScreen = ({ navigation }) => {
     KHALIS_FOUNDATION,
   } = STRINGS;
   const { KHALIS_FOUNDATION_URL } = constant;
-  const khalislogo150 = require("../../images/khalislogo150.png");
-  const khalislogo150white = require("../../images/khalislogo150white.png");
-  const baniDBLogo = require("../../images/banidblogo.png");
 
   return (
-    <SafeArea backgroundColor={backgroundColor}>
-      <View
-        style={[
-          {
-            flex: 1,
-            backgroundColor,
-          },
-        ]}
-      >
-        <StatusBarComponent backgroundColor={TOOLBAR_COLOR_ALT2} />
-        <View style={margin10}>
-          <Text style={[isNightMode && nightMode, SGTitle]}>{SUNDAR_GUTKA}</Text>
-          <Text style={[margin, isNightMode && nightMode]}>{CREATED_BY}:</Text>
-          <TouchableHighlight
-            underlayColor={underlayColor.color}
-            onPress={() => Linking.openURL(KHALIS_FOUNDATION_URL)}
-          >
-            <Image source={isNightMode ? khalislogo150white : khalislogo150} />
+    <SafeArea backgroundColor={theme.colors.surface}>
+      <View style={styles.mainWrapper}>
+        <StatusBarComponent backgroundColor={styles.headerStyle.backgroundColor} />
+        <View style={styles.wrapper}>
+          <Text style={styles.titleText}>{SUNDAR_GUTKA}</Text>
+          <Text style={styles.createdByText}>{CREATED_BY}:</Text>
+          <TouchableHighlight onPress={() => Linking.openURL(KHALIS_FOUNDATION_URL)}>
+            <Image source={theme.images.khalisLogo} />
           </TouchableHighlight>
-          <Text style={[isNightMode && nightMode, margin]}>{ABOUT_WELCOME}</Text>
+          <Text style={styles.welcomeText}>{ABOUT_WELCOME}</Text>
 
-          <View style={margin}>
-            <Text style={[isNightMode && nightMode]}>{ABOUT_HELP}</Text>
-            <Text style={underlayColor} onPress={() => Linking.openURL(KHALIS_FOUNDATION_URL)}>
+          <View style={styles.margin}>
+            <Text style={styles.helpText}>{ABOUT_HELP}</Text>
+            <Text style={styles.linkText} onPress={() => Linking.openURL(KHALIS_FOUNDATION_URL)}>
               {KHALIS_FOUNDATION_URL}
             </Text>
           </View>
 
-          <Text style={[isNightMode && nightMode, margin]}>{ABOUT_RESPECT}</Text>
-          <Text style={[isNightMode && nightMode, margin]}>
+          <Text style={styles.respectText}>{ABOUT_RESPECT}</Text>
+          <Text style={styles.sgText}>
             {ABOUT_SG}{" "}
-            <Text style={underlayColor} onPress={() => Linking.openURL(constant.BANI_DB_URL)}>
+            <Text style={styles.linkText} onPress={() => Linking.openURL(constant.BANI_DB_URL)}>
               {BANI_DB}
             </Text>
             <Text> {ABOUT_OPEN_SOURCE}</Text>
           </Text>
 
           <TouchableHighlight
-            style={margin}
-            underlayColor={underlayColor.color}
+            style={styles.margin}
             onPress={() => Linking.openURL(constant.BANI_DB_URL)}
           >
-            <Image source={baniDBLogo} />
+            <Image source={theme.images.baniDBLogo} style={styles.logo} />
           </TouchableHighlight>
-          <Text style={[isNightMode && nightMode, margin]}>{ABOUT_PARDON}</Text>
+          <Text style={styles.pardonText}>{ABOUT_PARDON}</Text>
 
-          <View style={singleLine}>
-            <View style={leftContainer}>
-              <Text style={[margin, isNightMode && nightMode]}>
+          <View style={styles.singleLine}>
+            <View style={styles.leftContainer}>
+              <Text style={styles.footerText}>
                 &copy; {new Date().getFullYear()} {KHALIS_FOUNDATION}
               </Text>
             </View>
-            <Text style={[margin, isNightMode && nightMode]}>
+            <Text style={styles.footerText}>
               {APP_VERSION}: {getVersion()} ({getBuildNumber()})
             </Text>
           </View>

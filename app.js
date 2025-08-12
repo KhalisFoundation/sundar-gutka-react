@@ -14,6 +14,7 @@ import {
   navigateTo,
   initializePerformanceMonitoring,
 } from "@common";
+import ThemeProvider from "./src/common/context/ThemeProvider";
 import { allowTracking } from "./src/common/firebase/analytics";
 import { TrackPlayerSetup } from "./src/common/TrackPlayerUtils";
 import Navigation from "./src/navigation";
@@ -45,8 +46,10 @@ const App = () => {
     <ErrorBoundary onError={logError} FallbackComponent={FallBack}>
       <Provider store={store}>
         <PersistGate loading={null} persistor={persistor}>
-          <Navigation />
-          <Toast />
+          <ThemeProvider>
+            <Navigation />
+            <Toast />
+          </ThemeProvider>
         </PersistGate>
       </Provider>
     </ErrorBoundary>
