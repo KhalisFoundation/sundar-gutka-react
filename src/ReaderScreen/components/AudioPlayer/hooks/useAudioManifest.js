@@ -26,10 +26,13 @@ const useAudioManifest = (baniID) => {
         // Map API manifest data to our format
         mappedData = manifest.data.map((item) => {
           return {
-            id: item.ID,
+            id: item.track_id,
+            track_id: item.track_id,
             artistID: item.artist_id,
-            audioUrl: `${item.base_audio_url}${baniID}.mp3`,
-            displayName: item.displayName,
+            audioUrl: item.track_url,
+            displayName: item.artist_name,
+            trackLengthSec: item.track_length_seconds,
+            trackSizeMB: item.track_size_mb,
           };
         });
       }

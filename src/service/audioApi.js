@@ -42,13 +42,11 @@ const mapArtistData = (artist) => ({
   title: artist.display_name,
   artist_id: artist.artist_id,
   display_name: artist.display_name,
-  version_hash: artist.version_hash,
-  base_audio_url: artist.base_audio_url,
-  quality_levels: artist.quality_levels,
+  description: artist.description,
 });
 
 export const fetchManifest = async (baniId) => {
-  const data = await makeApiRequest(`/media/bani/${baniId}/manifest`);
+  const data = await makeApiRequest(`/banis/${baniId}`);
 
   if (!data || data.data.length === 0) {
     return null;
@@ -58,7 +56,7 @@ export const fetchManifest = async (baniId) => {
 };
 
 export const fetchArtists = async () => {
-  const data = await makeApiRequest("/media/artists");
+  const data = await makeApiRequest("/artists");
 
   if (data?.status === "success" && data.data) {
     return data.data.map(mapArtistData);

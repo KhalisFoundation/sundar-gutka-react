@@ -33,7 +33,6 @@ const Audio = () => {
       try {
         setIsLoadingArtists(true);
         const options = await fetchArtists();
-        console.log("options", options);
         setDefaultAudioOptions(options);
       } catch (error) {
         console.error("Error fetching artists:", error);

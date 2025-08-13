@@ -29,7 +29,7 @@ export const addTrack = async (track) => {
     await TrackPlayer.add(track);
 
     // Get queue to verify track was added
-    const queue = await TrackPlayer.getQueue();
+    // const queue = await TrackPlayer.getQueue();
   } catch (error) {
     console.error("❌ Error adding track to TrackPlayer:", error);
     console.error("Error details:", error.message);
