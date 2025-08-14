@@ -6,7 +6,7 @@ import { navigationRef, stopTrace, resetTrace, startPerformanceTrace } from "@co
 import useTheme from "@common/context";
 import useThemedStyles from "@common/hooks/useThemedStyles";
 import HomeScreen from "../HomeScreen";
-import Reader from "../ReaderScreen";
+import ReaderScreen from "../ReaderScreen";
 import Settings from "../Settings";
 import AboutScreen from "../AboutScreen";
 import EditBaniOrder from "../EditBaniOrder";
@@ -26,6 +26,7 @@ const headerLeft = (navigation, theme) => (
     color={theme.colors.primaryText}
   />
 );
+
 const Navigation = () => {
   const trace = React.useRef(null);
   const { theme } = useTheme();
@@ -60,7 +61,7 @@ const Navigation = () => {
           name="Home"
           component={HomeScreen}
         />
-        <Stack.Screen name="Reader" component={Reader} options={{ headerShown: false }} />
+        <Stack.Screen name="Reader" component={ReaderScreen} options={{ headerShown: false }} />
         <Stack.Screen
           options={({ navigation }) => ({
             headerLeft: () => headerLeft(navigation, theme),

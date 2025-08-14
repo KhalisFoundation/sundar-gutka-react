@@ -1,19 +1,18 @@
 import React, { useEffect } from "react";
-import { Icon } from "@rneui/themed";
-import useThemedStyles from "@common/hooks/useThemedStyles";
+import { Pressable } from "react-native";
 import useTheme from "@common/context";
+import useThemedStyles from "@common/hooks/useThemedStyles";
+import { BackArrowIcon } from "@common/icons";
 import createStyles from "../styles";
 
 const useHeader = (navigation) => {
   const { theme } = useTheme();
   const styles = useThemedStyles(createStyles);
+
   const headerLeft = () => (
-    <Icon
-      name="arrow-back"
-      size={30}
-      onPress={() => navigation.goBack()}
-      color={theme.colors.primaryText}
-    />
+    <Pressable onPress={() => navigation.goBack()}>
+      <BackArrowIcon size={24} color={theme.colors.primaryText} />
+    </Pressable>
   );
 
   useEffect(() => {

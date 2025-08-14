@@ -1,44 +1,26 @@
 import React, { useEffect, useRef } from "react";
-import { View, Text, Animated } from "react-native";
-import { useSelector } from "react-redux";
-import { Icon } from "@rneui/themed";
+import { View, Text, Animated, Pressable } from "react-native";
 import PropTypes from "prop-types";
 import useTheme from "@common/context";
 import useThemedStyles from "@common/hooks/useThemedStyles";
+import { BackArrowIcon } from "@common/icons";
 import createStyles from "../styles";
 
-const Header = ({ title, handleBackPress, handleBookmarkPress, handleSettingsPress, isHeader }) => {
+const Header = ({ title, handleBackPress, isHeader }) => {
   const { theme } = useTheme();
-  const isDatabaseUpdateAvailable = useSelector((state) => state.isDatabaseUpdateAvaliable);
   const styles = useThemedStyles(createStyles);
+
   const animationPosition = useRef(new Animated.Value(0)).current;
 
   const headerLeft = () => (
-    <Icon
-      name="arrow-back"
-      size={30}
+    <Pressable
+      style={{ padding: 10 }}
       onPress={() => {
         handleBackPress();
       }}
-      color={theme.staticColors.WHITE_COLOR}
-    />
-  );
-
-  const headerRight = () => (
-    <View style={{ flexDirection: "row" }}>
-      <Icon
-        name="bookmark"
-        color={theme.staticColors.WHITE_COLOR}
-        size={30}
-        onPress={handleBookmarkPress}
-      />
-      <Icon
-        name={isDatabaseUpdateAvailable ? "settings-suggest" : "settings"}
-        color={theme.staticColors.WHITE_COLOR}
-        size={30}
-        onPress={() => handleSettingsPress()}
-      />
-    </View>
+    >
+      <BackArrowIcon size={24} color={theme.colors.primaryText} />
+    </Pressable>
   );
 
   useEffect(() => {
@@ -89,9 +71,10 @@ const Header = ({ title, handleBackPress, handleBookmarkPress, handleSettingsPre
     >
       <View style={styles.headerStyle} pointerEvents="auto">
         <View style={styles.headerWrapper}>
-          {headerLeft()}
-          <Text style={styles.headerTitleStyle}>{title}</Text>
-          {headerRight()}
+          <View style={{ width: "20%" }}>{headerLeft()}</View>
+          <View style={{ width: "60%" }}>
+            <Text style={styles.headerTitleStyle}>{title}</Text>
+          </View>
         </View>
       </View>
     </Animated.View>
@@ -101,8 +84,6 @@ const Header = ({ title, handleBackPress, handleBookmarkPress, handleSettingsPre
 Header.propTypes = {
   title: PropTypes.string.isRequired,
   handleBackPress: PropTypes.func.isRequired,
-  handleBookmarkPress: PropTypes.func.isRequired,
-  handleSettingsPress: PropTypes.func.isRequired,
   isHeader: PropTypes.bool.isRequired,
 };
 export default Header;

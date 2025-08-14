@@ -8,3 +8,8 @@ export { default as ArrowRightIcon } from "./ArrowRightIcon";
 export { default as CircleIcon } from "./CircleIcon";
 export { default as ChevronRight } from "./ChevronRight";
 export { default as PauseIcon } from "./PauseIcon";
+export { default as HomeIcon } from "./HomeIcon";
+export { default as MusicIcon } from "./MusicIcon";
+export { default as BookmarkIcon } from "./BookmarkIcon";
+export { default as SettingsIcon } from "./SettingsIcon";
+export { default as BackArrowIcon } from "./BackArrowIcon";

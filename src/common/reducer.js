@@ -23,7 +23,7 @@ const transliterationLanguage = createReducer(constant.ENGLISH, {
   [actionTypes.SET_TRANSLITERATION]: (state, action) => action.value,
 });
 
-const fontFace = createReducer(constant.GURBANI_AKHAR_TRUE, {
+const fontFace = createReducer(constant.BALOO_PAAJI, {
   [actionTypes.SET_FONT_FACE]: (state, action) => action.value,
 });
 const language = createReducer(constant.Default.toUpperCase(), {

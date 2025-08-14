@@ -3,9 +3,11 @@ import { ActivityIndicator, BackHandler, AppState, Platform, Animated } from "re
 import { WebView } from "react-native-webview";
 import { useDispatch, useSelector } from "react-redux";
 import PropTypes from "prop-types";
+import { BottomNavigation } from "@common/components";
 import StatusBarComponent from "@common/components/StatusBar";
 import useTheme from "@common/context";
 import useThemedStyles from "@common/hooks/useThemedStyles";
+import { HomeIcon, BookmarkIcon, SettingsIcon } from "@common/icons";
 import { constant, actions, useScreenAnalytics, logMessage, logError, SafeArea } from "@common";
 import { Header, AutoScrollComponent, AudioPlayer } from "./components";
 import { useBookmarks, useFetchShabad, useFooterAnimation } from "./hooks";
@@ -199,6 +201,20 @@ const Reader = ({ navigation, route }) => {
     }
   }, []);
 
+  const navigationItems = [
+    { key: "Home", icon: HomeIcon, handlePress: () => navigation.navigate("Home") },
+    {
+      key: "Bookmarks",
+      icon: BookmarkIcon,
+      handlePress: () => handleBookmarkPress(),
+    },
+    {
+      key: "Settings",
+      icon: SettingsIcon,
+      handlePress: () => handleSettingsPress(),
+    },
+  ];
+
   return (
     <SafeArea backgroundColor={theme.colors.surface}>
       <StatusBarComponent backgroundColor={theme.colors.primary} />
@@ -252,6 +268,8 @@ const Reader = ({ navigation, route }) => {
       >
         {isAutoScroll && <AutoScrollComponent shabadID={id} webViewRef={webViewRef} />}
       </Animated.View>
+
+      <BottomNavigation currentRoute="Reader" navigationItems={navigationItems} />
     </SafeArea>
   );
 };
