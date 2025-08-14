@@ -10,6 +10,18 @@
       "sha1": "49f0ee6148e6b674a60450d86faaddbb97d798f3"
     },
     {
+      "path": "assets/fonts/BalooPaaji2-Bold.ttf",
+      "sha1": "82ea2c94773e628e1cb5f30d1f38491721bdfd48"
+    },
+    {
+      "path": "assets/fonts/BalooPaaji2-Medium.ttf",
+      "sha1": "a22c507ccc8889af543b567da239e024664d4bfd"
+    },
+    {
+      "path": "assets/fonts/BalooPaaji2-Regular.ttf",
+      "sha1": "cf9d69a8c9fb66b439f85d052b87aed39baeb944"
+    },
+    {
       "path": "assets/fonts/GurbaniAkharHeavyTrue.ttf",
       "sha1": "5896164bba1b0f17705c040ff1e5c6ebfa636bc5"
     },

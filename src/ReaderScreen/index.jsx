@@ -13,6 +13,8 @@ import {
   SafeArea,
 } from "@common";
 import StatusBarComponent from "@common/components/StatusBar";
+import { BottomNavigation } from "@common/components";
+import { HomeIcon, BookmarkIcon, SettingsIcon } from "@common/icons";
 import { Header, AutoScrollComponent } from "./components";
 import { useBookmarks, useFetchShabad } from "./hooks";
 import { styles, nightColors } from "./styles";
@@ -214,16 +216,24 @@ const Reader = ({ navigation, route }) => {
     }
   }, []);
 
+  const navigationItems = [
+    { key: "Home", icon: HomeIcon, handlePress: () => navigation.navigate("Home") },
+    {
+      key: "Bookmarks",
+      icon: BookmarkIcon,
+      handlePress: () => handleBookmarkPress(),
+    },
+    {
+      key: "Settings",
+      icon: SettingsIcon,
+      handlePress: () => handleSettingsPress(),
+    },
+  ];
+
   return (
     <SafeArea backgroundColor={safeAreaViewBack.backgroundColor}>
       <StatusBarComponent backgroundColor={backgroundColor} />
-      <Header
-        title={title}
-        handleBackPress={handleBackPress}
-        handleBookmarkPress={handleBookmarkPress}
-        handleSettingsPress={handleSettingsPress}
-        isHeader={isHeader}
-      />
+      <Header title={title} handleBackPress={handleBackPress} isHeader={isHeader} />
       {isLoading && <ActivityIndicator size="small" color={READER_STATUS_BAR_COLOR} />}
       <WebView
         key={webViewKey}
@@ -249,6 +259,8 @@ const Reader = ({ navigation, route }) => {
       {isAutoScroll && (
         <AutoScrollComponent shabadID={id} webViewRef={webViewRef} isFooter={isHeader} />
       )}
+
+      <BottomNavigation currentRoute="Reader" navigationItems={navigationItems} />
     </SafeArea>
   );
 };

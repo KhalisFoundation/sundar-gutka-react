@@ -13,7 +13,7 @@ export const fontColorForReader = (header, nightMode, text) => {
   const defaultColor = getHeaderColor2();
   const gurmukhiMapping = {
     1: getHeaderColor1(),
-    2: defaultColor,
+    2: getHeaderColor1(),
     6: defaultColor,
     default: defaultColor,
   };
@@ -95,8 +95,8 @@ export const loadHTML = (
       .map((item) => {
         const textAlignMap = {
           0: "left",
-          1: "center",
-          2: "center",
+          1: "left",
+          2: "left",
         };
 
         let textAlign = textAlignMap[item.header];

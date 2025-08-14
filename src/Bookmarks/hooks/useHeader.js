@@ -1,16 +1,18 @@
 import React, { useEffect } from "react";
-import { Icon } from "@rneui/themed";
+import { Pressable } from "react-native";
 import { useSelector } from "react-redux";
 import { colors } from "@common";
+import { BackArrowIcon } from "@common/icons";
 import { styles, getHeaderStyle } from "../styles";
 
 const useHeader = (navigation) => {
-  const { WHITE_COLOR } = colors;
   const isNightMode = useSelector((state) => state.isNightMode);
   const { headerTitleStyle } = styles;
   const headerStyle = getHeaderStyle(isNightMode);
   const headerLeft = () => (
-    <Icon name="arrow-back" size={30} onPress={() => navigation.goBack()} color={WHITE_COLOR} />
+    <Pressable onPress={() => navigation.goBack()}>
+      <BackArrowIcon size={24} color={colors.READER_HEADER_COLOR} />
+    </Pressable>
   );
 
   useEffect(() => {

@@ -1,18 +1,19 @@
 import { StyleSheet } from "react-native";
-import { colors } from "@common";
+import { colors, constant } from "@common";
 
 export const styles = StyleSheet.create({
   headerTitleStyle: {
-    color: colors.WHITE_COLOR,
+    color: colors.READER_HEADER_COLOR,
     fontWeight: "normal",
     fontSize: 20,
+    fontFamily: constant.BALOO_PAAJI_Medium,
   },
 });
 
 export const getHeaderStyle = (isNightMode) => ({
-  backgroundColor: !isNightMode ? colors.TOOLBAR_COLOR_ALT : colors.TOOLBAR_COLOR_ALT_NIGHT_MODE,
+  backgroundColor: !isNightMode ? colors.WHITE : colors.BLACK,
 });
 
 export const nightMode = (isNightMode) => ({
-  backgroundColor: isNightMode ? colors.NIGHT_BLACK : colors.WHITE_COLOR,
+  backgroundColor: isNightMode ? colors.BLACK : colors.WHITE,
 });

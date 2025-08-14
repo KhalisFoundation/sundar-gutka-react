@@ -5,7 +5,7 @@ import constant from "../../constant";
 const styles = StyleSheet.create({
   heading: {
     color: colors.TOOLBAR_TINT,
-    fontFamily: constant.GURBANI_AKHAR_THICK_TRUE,
+    fontFamily: constant.BALOO_PAAJI_Medium,
     textAlign: "center",
     fontSize: 52,
   },
