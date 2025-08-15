@@ -1,10 +1,13 @@
 import { StyleSheet } from "react-native";
 
 const styles = StyleSheet.create({
+  blurOverlay: {
+    // flex: 1,
+    // justifyContent: "center",
+    // alignItems: "center",
+  },
   container: {
-    backgroundColor: "#fff",
-    padding: 20,
-    borderRadius: 10,
+    borderRadius: 25,
     margin: 10,
     shadowColor: "#000",
     shadowOffset: {
@@ -42,10 +45,7 @@ const styles = StyleSheet.create({
     alignItems: "center",
     marginBottom: 20,
   },
-  slider: {
-    flex: 1,
-    marginHorizontal: 10,
-  },
+
   timeText: {
     fontSize: 12,
     color: "#666",

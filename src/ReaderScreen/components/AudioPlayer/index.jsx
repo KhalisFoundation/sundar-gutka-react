@@ -1,17 +1,16 @@
 import React, { useState, useEffect } from "react";
-import { View, Text, TouchableOpacity } from "react-native";
+import { View, Text } from "react-native";
 import { useSelector } from "react-redux";
-import { Icon } from "@rneui/themed";
-import Slider from "@react-native-community/slider";
 import PropTypes from "prop-types";
 import { exists } from "react-native-fs";
+import { BlurView } from "@react-native-community/blur";
 import { useAudioManifest, useDownloadManager, useTrackPlayer } from "./hooks";
-import { TrackSelector, DownloadControls } from "./components";
+import { TrackSelector, DownloadControls, AudioTrackDialog, AudioControlBar } from "./components";
 import { formatUrlForTrackPlayer, isLocalFile } from "./utils/urlHelper";
 import styles from "./style";
 
 const AudioPlayer = ({ baniID, title, shouldNavigateBack }) => {
-  const [showTrackModal, setShowTrackModal] = useState(false);
+  const [showTrackModal, setShowTrackModal] = useState(true);
   const isAudioAutoPlay = useSelector((state) => state.isAudioAutoPlay);
 
   // Custom hooks
@@ -41,6 +40,7 @@ const AudioPlayer = ({ baniID, title, shouldNavigateBack }) => {
     seekTo,
     isAudioEnabled,
     isInitialized,
+    setIsPlaying,
   } = useTrackPlayer();
 
   useEffect(() => {
@@ -48,6 +48,7 @@ const AudioPlayer = ({ baniID, title, shouldNavigateBack }) => {
       stop();
     }
   }, [shouldNavigateBack]);
+
   const handlePlayPause = async () => {
     if (!isInitialized || !isAudioEnabled || !currentPlaying) {
       return;
@@ -122,6 +123,7 @@ const AudioPlayer = ({ baniID, title, shouldNavigateBack }) => {
       // Close the modal
       setShowTrackModal(false);
 
+      console.log("selectedTrack", selectedTrack);
       // Auto-play the new track if audio is enabled
       if (isAudioEnabled) {
         const formattedUrl = formatUrlForTrackPlayer(selectedTrack.audioUrl);
@@ -141,12 +143,6 @@ const AudioPlayer = ({ baniID, title, shouldNavigateBack }) => {
     }
   };
 
-  const formatTime = (seconds) => {
-    const mins = Math.floor(seconds / 60);
-    const secs = Math.floor(seconds % 60);
-    return `${mins}:${secs.toString().padStart(2, "0")}`;
-  };
-
   // Don't render if TrackPlayer is not initialized
   if (!isInitialized) {
     return (
@@ -161,94 +157,125 @@ const AudioPlayer = ({ baniID, title, shouldNavigateBack }) => {
   }
 
   return (
-    <View style={styles.container}>
-      <View style={styles.trackInfo}>
-        <Text style={styles.artistName}>{title}</Text>
-        {currentPlaying && (
-          <TouchableOpacity
-            onPress={() => setShowTrackModal(true)}
-            style={styles.artistNameContainer}
-          >
-            <Text style={styles.artistName}>{currentPlaying.displayName}</Text>
-
-            <Icon name="expand-more" size={16} color="#666" />
-          </TouchableOpacity>
-        )}
-        {!isAudioEnabled && (
-          <Text style={styles.disabledText}>
-            Audio is disabled. Enable it in Settings to play audio.
-          </Text>
-        )}
-      </View>
-
-      <View style={styles.progressContainer}>
-        <Text style={styles.timeText}>{formatTime(progress.position)}</Text>
-        <Slider
-          style={styles.slider}
-          minimumValue={0}
-          maximumValue={progress.duration}
-          value={progress.position}
-          onSlidingComplete={handleSeek}
-          minimumTrackTintColor={isAudioEnabled ? "#1976d2" : "#ccc"}
-          maximumTrackTintColor="#d3d3d3"
-          thumbTintColor={isAudioEnabled ? "#1976d2" : "#ccc"}
-          disabled={!isAudioEnabled || manifestLoading}
+    <>
+      <BlurView
+        style={styles.blurOverlay}
+        blurType="light"
+        blurAmount={10}
+        reducedTransparencyFallbackColor="rgba(255, 255, 255,0.9)"
+      />
+      {showTrackModal ? (
+        <AudioTrackDialog handleTrackSelect={handleTrackSelect} title={title} tracks={tracks} />
+      ) : (
+        <AudioControlBar
+          isPlaying={isPlaying}
+          currentPlaying={currentPlaying}
+          handlePlayPause={handlePlayPause}
+          progress={progress}
+          setShowTrackModal={setShowTrackModal}
+          handleSeek={handleSeek}
+          isAudioEnabled={isAudioEnabled}
         />
-        <Text style={styles.timeText}>{formatTime(progress.duration)}</Text>
-      </View>
+      )}
 
-      {/* Download Controls */}
-      <DownloadControls
-        currentPlaying={currentPlaying}
-        isDownloaded={isDownloaded}
-        isDownloading={isDownloading}
-        isAudioEnabled={isAudioEnabled}
-        onDownload={handleDownload}
-        onDelete={handleDeleteDownload}
-      />
+      {/* <View style={styles.container}>
+        <AudioTrackDialog
+          onPlay={handleTrackSelect}
+          title={title}
+          tracks={tracks.map((track) => ({
+            id: track.id,
+            name: track.displayName,
+            selected: currentPlaying?.id === track.id,
+          }))}
+        />
+      </View> */}
+      {/* <View style={styles.container}>
+        <View style={styles.trackInfo}>
+          <Text style={styles.artistName}>{title}</Text>
+          {currentPlaying && (
+            <TouchableOpacity
+              onPress={() => setShowTrackModal(true)}
+              style={styles.artistNameContainer}
+            >
+              <Text style={styles.artistName}>{currentPlaying.displayName}</Text>
 
-      <View style={styles.controls}>
-        <TouchableOpacity
-          onPress={handleStop}
-          style={styles.controlButton}
-          disabled={!isAudioEnabled || manifestLoading}
-        >
-          <Icon name="stop" size={30} color={isAudioEnabled ? "#000" : "#ccc"} />
-        </TouchableOpacity>
+              <Icon name="expand-more" size={16} color="#666" />
+            </TouchableOpacity>
+          )}
+          {!isAudioEnabled && (
+            <Text style={styles.disabledText}>
+              Audio is disabled. Enable it in Settings to play audio.
+            </Text>
+          )}
+        </View>
 
-        <TouchableOpacity
-          onPress={handlePlayPause}
-          style={[
-            isAudioEnabled ? styles.playButton : styles.disabledButton,
-            { opacity: manifestLoading ? 0.5 : 0.7 },
-          ]}
-          disabled={!isAudioEnabled || manifestLoading}
-        >
-          <Icon
-            name={isPlaying ? "pause" : "play-arrow"}
-            size={40}
-            color={isAudioEnabled ? "#000" : "#ccc"}
+        <View style={styles.progressContainer}>
+          <Text style={styles.timeText}>{formatTime(progress.position)}</Text>
+          <Slider
+            style={styles.slider}
+            minimumValue={0}
+            maximumValue={progress.duration}
+            value={progress.position}
+            onSlidingComplete={handleSeek}
+            minimumTrackTintColor={isAudioEnabled ? "#1976d2" : "#ccc"}
+            maximumTrackTintColor="#d3d3d3"
+            thumbTintColor={isAudioEnabled ? "#1976d2" : "#ccc"}
+            disabled={!isAudioEnabled || manifestLoading}
           />
-        </TouchableOpacity>
+          <Text style={styles.timeText}>{formatTime(progress.duration)}</Text>
+        </View>
 
-        <TouchableOpacity
-          style={styles.controlButton}
-          disabled={!isAudioEnabled || manifestLoading}
-        >
-          <Icon name="skip-next" size={30} color={isAudioEnabled ? "#000" : "#ccc"} />
-        </TouchableOpacity>
-      </View>
+        <DownloadControls
+          currentPlaying={currentPlaying}
+          isDownloaded={isDownloaded}
+          isDownloading={isDownloading}
+          isAudioEnabled={isAudioEnabled}
+          onDownload={handleDownload}
+          onDelete={handleDeleteDownload}
+        />
 
-      {/* Track Selection Modal */}
-      <TrackSelector
-        visible={showTrackModal}
-        onClose={() => setShowTrackModal(false)}
-        tracks={tracks}
-        currentPlaying={currentPlaying}
-        onTrackSelect={handleTrackSelect}
-        isLoading={manifestLoading}
-      />
-    </View>
+        <View style={styles.controls}>
+          <TouchableOpacity
+            onPress={handleStop}
+            style={styles.controlButton}
+            disabled={!isAudioEnabled || manifestLoading}
+          >
+            <Icon name="stop" size={30} color={isAudioEnabled ? "#000" : "#ccc"} />
+          </TouchableOpacity>
+
+          <TouchableOpacity
+            style={[
+              isAudioEnabled ? styles.playButton : styles.disabledButton,
+              { opacity: manifestLoading ? 0.5 : 0.7 },
+            ]}
+            onPress={handlePlayPause}
+            disabled={!isAudioEnabled || manifestLoading}
+          >
+            <Icon
+              name={isPlaying ? "pause" : "play-arrow"}
+              size={40}
+              color={isAudioEnabled ? "#000" : "#ccc"}
+            />
+          </TouchableOpacity>
+
+          <TouchableOpacity
+            style={styles.controlButton}
+            disabled={!isAudioEnabled || manifestLoading}
+          >
+            <Icon name="skip-next" size={30} color={isAudioEnabled ? "#000" : "#ccc"} />
+          </TouchableOpacity>
+        </View>
+
+        <TrackSelector
+          visible={showTrackModal}
+          onClose={() => setShowTrackModal(false)}
+          tracks={tracks}
+          currentPlaying={currentPlaying}
+          onTrackSelect={handleTrackSelect}
+          isLoading={manifestLoading}
+        />
+      </View> */}
+    </>
   );
 };
 

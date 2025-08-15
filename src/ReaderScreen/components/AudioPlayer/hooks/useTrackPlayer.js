@@ -139,6 +139,7 @@ const useTrackPlayer = () => {
     seekTo,
     isAudioEnabled: isAudio && isInitialized,
     isInitialized,
+    setIsPlaying,
   };
 };
 
