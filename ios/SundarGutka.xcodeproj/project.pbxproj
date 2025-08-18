@@ -22,6 +22,7 @@
 		DF8412F6597D54178D51F9AF /* libPods-SundarGutka.a in Frameworks */ = {isa = PBXBuildFile; fileRef = 682F7438823B6ACC3130EAA3 /* libPods-SundarGutka.a */; };
 		F00557B100F7FA7802293CBE /* PrivacyInfo.xcprivacy in Resources */ = {isa = PBXBuildFile; fileRef = B5622B2E177976AE33F51A68 /* PrivacyInfo.xcprivacy */; };
 		FE704EC35D2847DFBE7DC00D /* AnmolLipiSG.ttf in Resources */ = {isa = PBXBuildFile; fileRef = C973C1C9E6ED468AA759E427 /* AnmolLipiSG.ttf */; };
+		DDCCCD811CC94D8183D264BE /* BalooPaaji2-VariableFont_wght.ttf in Resources */ = {isa = PBXBuildFile; fileRef = A3E04E5CA009488785C52FD2 /* BalooPaaji2-VariableFont_wght.ttf */; };
 /* End PBXBuildFile section */
 
 /* Begin PBXContainerItemProxy section */
@@ -58,6 +59,7 @@
 		EE7F4DFD2B295D683D69A048 /* Pods-SundarGutka.debug.xcconfig */ = {isa = PBXFileReference; includeInIndex = 1; lastKnownFileType = text.xcconfig; name = "Pods-SundarGutka.debug.xcconfig"; path = "Target Support Files/Pods-SundarGutka/Pods-SundarGutka.debug.xcconfig"; sourceTree = "<group>"; };
 		F0108D977CB44123AA2BFBDD /* GurbaniAkharHeavyTrue.ttf */ = {isa = PBXFileReference; explicitFileType = undefined; fileEncoding = 9; includeInIndex = 0; lastKnownFileType = unknown; name = GurbaniAkharHeavyTrue.ttf; path = ../assets/fonts/GurbaniAkharHeavyTrue.ttf; sourceTree = "<group>"; };
 		FAE2F7F86FB14C858E603117 /* GurbaniAkharTrue.ttf */ = {isa = PBXFileReference; explicitFileType = undefined; fileEncoding = 9; includeInIndex = 0; lastKnownFileType = unknown; name = GurbaniAkharTrue.ttf; path = ../assets/fonts/GurbaniAkharTrue.ttf; sourceTree = "<group>"; };
+		A3E04E5CA009488785C52FD2 /* BalooPaaji2-VariableFont_wght.ttf */ = {isa = PBXFileReference; name = "BalooPaaji2-VariableFont_wght.ttf"; path = "../assets/fonts/BalooPaaji2-VariableFont_wght.ttf"; sourceTree = "<group>"; fileEncoding = undefined; lastKnownFileType = unknown; explicitFileType = undefined; includeInIndex = 0; };
 /* End PBXFileReference section */
 
 /* Begin PBXFrameworksBuildPhase section */
@@ -171,6 +173,7 @@
 				F0108D977CB44123AA2BFBDD /* GurbaniAkharHeavyTrue.ttf */,
 				E7AC85B7FC2644A28E4F8C2C /* GurbaniAkharThickTrue.ttf */,
 				FAE2F7F86FB14C858E603117 /* GurbaniAkharTrue.ttf */,
+				A3E04E5CA009488785C52FD2 /* BalooPaaji2-VariableFont_wght.ttf */,
 			);
 			name = Resources;
 			sourceTree = "<group>";
@@ -280,6 +283,7 @@
 				0A969EA195AE44A784B59F55 /* GurbaniAkharThickTrue.ttf in Resources */,
 				711185CC02C64148849936C6 /* GurbaniAkharTrue.ttf in Resources */,
 				F00557B100F7FA7802293CBE /* PrivacyInfo.xcprivacy in Resources */,
+				DDCCCD811CC94D8183D264BE /* BalooPaaji2-VariableFont_wght.ttf in Resources */,
 			);
 			runOnlyForDeploymentPostprocessing = 0;
 		};

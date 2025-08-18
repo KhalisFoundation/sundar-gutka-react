@@ -1,6 +1,13 @@
 import React, { useState, useRef, useEffect, useCallback, useMemo } from "react";
 import { useDispatch, useSelector } from "react-redux";
-import { Appearance, ActivityIndicator, BackHandler, AppState, Platform } from "react-native";
+import {
+  Appearance,
+  ActivityIndicator,
+  BackHandler,
+  AppState,
+  Platform,
+  Animated,
+} from "react-native";
 import { WebView } from "react-native-webview";
 import PropTypes from "prop-types";
 import {
@@ -14,7 +21,7 @@ import {
 } from "@common";
 import StatusBarComponent from "@common/components/StatusBar";
 import { Header, AutoScrollComponent, AudioPlayer } from "./components";
-import { useBookmarks, useFetchShabad } from "./hooks";
+import { useBookmarks, useFetchShabad, useFooterAnimation } from "./hooks";
 import { styles, nightColors } from "./styles";
 import { loadHTML } from "./utils";
 
@@ -52,6 +59,8 @@ const Reader = ({ navigation, route }) => {
   const { shabad, isLoading } = useFetchShabad(id);
   const { backgroundColor, safeAreaViewBack, backViewColor } = nightColors(isNightMode);
   const { READER_STATUS_BAR_COLOR } = colors;
+
+  const { animationPosition } = useFooterAnimation(isHeader);
 
   // Save scroll position when leaving screen or app goes to background
   const saveScrollPosition = useCallback(() => {
@@ -247,10 +256,12 @@ const Reader = ({ navigation, route }) => {
         style={[webView, isNightMode && { opacity: viewLoaded ? 1 : 0.1 }, backViewColor]}
         onMessage={handleMessage}
       />
-      {isAudio && <AudioPlayer baniID={id} title={title} shouldNavigateBack={shouldNavigateBack} />}
-      {isAutoScroll && (
-        <AutoScrollComponent shabadID={id} webViewRef={webViewRef} isFooter={isHeader} />
-      )}
+      <Animated.View style={[{ transform: [{ translateY: animationPosition }] }]}>
+        {isAudio && (
+          <AudioPlayer baniID={id} title={title} shouldNavigateBack={shouldNavigateBack} />
+        )}
+        {isAutoScroll && <AutoScrollComponent shabadID={id} webViewRef={webViewRef} />}
+      </Animated.View>
     </SafeArea>
   );
 };

@@ -6,5 +6,24 @@
   "prettier.semi": true,
   "javascript.format.semicolons": "insert",
   "prettier.printWidth": 100,
-  "cSpell.words": ["Pressable"]
+  "cSpell.words": ["Pressable"],
+  "react-native-ide.jsxRuntime": "automatic",
+  "react-native-ide.reactVersion": "19.0.0",
+  "react-native-ide.reactNativeVersion": "0.78.0",
+  "typescript.preferences.includePackageJsonAutoImports": "on",
+  "javascript.preferences.includePackageJsonAutoImports": "on",
+  "react-native-ide.enableTypeScript": true,
+  "react-native-ide.enableJavaScript": true,
+  "react-native-ide.enableJSX": true,
+  "react-native-ide.moduleResolution": "node",
+  "react-native-ide.allowSyntheticDefaultImports": true,
+  "react-native-ide.esModuleInterop": true,
+  "react-native-ide.enableRenderer": false,
+  "react-native-ide.enableFabric": false,
+  "react-native-ide.enableNewArchitecture": false,
+  "react-native-ide.compatibilityMode": true,
+  "react-native-ide.moduleMapping": {
+    "__RNIDE_lib__/JSXRuntime/react-native-78-79/react-jsx-dev-runtime.development.js": "react/jsx-dev-runtime",
+    "__RNIDE_lib__/rn-renderer/react-native-78-79/ReactFabric-dev.js": "react-native/Libraries/Renderer/implementations/ReactFabric-dev.js"
+  }
 }

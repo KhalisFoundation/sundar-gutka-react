@@ -1,33 +1,34 @@
 import React from "react";
-import Svg, { Path, Circle } from "react-native-svg";
+import Svg, { Path, Circle, Line, G } from "react-native-svg";
 import PropTypes from "prop-types";
+import { colors } from "@common";
 
-const MusicNoteIcon = ({ size = 24, color = "#1A2B4C", isActive = false }) => {
-  const iconColor = isActive ? color : color;
+export const MusicIcon = ({ size = 28, color = colors.READER_HEADER_COLOR, strokeWidth = 1.5 }) => (
+  <Svg width={size} height={size} viewBox="0 0 24 24" fill="none">
+    {/* outer ring */}
+    <Circle cx={12} cy={12} r={10.5} stroke={color} strokeWidth={strokeWidth} />
+    {/* note */}
+    <G
+      stroke={color}
+      strokeWidth={strokeWidth}
+      strokeLinecap="round"
+      strokeLinejoin="round"
+      fill="none"
+    >
+      {/* head */}
+      <Circle cx={8.8} cy={15.2} r={2} />
+      {/* stem */}
+      <Line x1={10.8} y1={15.2} x2={10.8} y2={9} />
+      {/* beam / top bar slightly angled to the right */}
+      <Path d="M10.8 9 L16.5 7.8 V12.2" />
+    </G>
+  </Svg>
+);
 
-  return (
-    <Svg width={size} height={size} viewBox="0 0 24 24" fill="none">
-      <Circle cx="12" cy="12" r="12" fill={iconColor} />
-      <Path
-        d="M16 4.5V14.5C16 16.433 14.433 18 12.5 18C10.567 18 9 16.433 9 14.5C9 12.567 10.567 11 12.5 11C13.233 11 13.9 11.233 14.4 11.6V6.5L10 7.5V17.5C10 19.433 8.433 21 6.5 21C4.567 21 3 19.433 3 17.5C3 15.567 4.567 14 6.5 14C7.233 14 7.9 14.233 8.4 14.6V9.5L16 7.5V4.5Z"
-        fill="white"
-        stroke="white"
-        strokeWidth="0.5"
-      />
-    </Svg>
-  );
+MusicIcon.propTypes = {
+  size: PropTypes.number.isRequired,
+  color: PropTypes.string.isRequired,
+  strokeWidth: PropTypes.number.isRequired,
 };
 
-MusicNoteIcon.propTypes = {
-  size: PropTypes.number,
-  color: PropTypes.string,
-  isActive: PropTypes.bool,
-};
-
-MusicNoteIcon.defaultProps = {
-  size: 24,
-  color: "#1A2B4C",
-  isActive: false,
-};
-
-export default MusicNoteIcon;
+export default MusicIcon;

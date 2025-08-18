@@ -1,59 +1,40 @@
 import React from "react";
-import Svg, { Path, Circle } from "react-native-svg";
+import Svg, { Path } from "react-native-svg";
 import PropTypes from "prop-types";
+import { colors } from "@common";
 
-const ExpandCollapseIcon = ({ size = 24, color = "#1A2B4C", isActive = false }) => {
-  const iconColor = isActive ? color : color;
+export const ResizeIcon = ({ size = 28, color = colors.READER_HEADER_COLOR, strokeWidth = 2 }) => (
+  <Svg width={size} height={size} viewBox="0 0 24 24" fill="none">
+    <Path
+      d="M6 18 L10 14 M6 14 H10 M10 18 V14"
+      stroke={color}
+      strokeWidth={strokeWidth}
+      strokeLinecap="round"
+      strokeLinejoin="round"
+      vectorEffect="non-scaling-stroke"
+    />
+    {/* Top-right arrow (points ↙) */}
+    <Path
+      d="M18 6 L14 10 M18 10 H14 M14 6 V10"
+      stroke={color}
+      strokeWidth={strokeWidth}
+      strokeLinecap="round"
+      strokeLinejoin="round"
+      vectorEffect="non-scaling-stroke"
+    />
+  </Svg>
+);
 
-  return (
-    <Svg width={size} height={size} viewBox="0 0 24 24" fill="none">
-      <Circle cx="12" cy="12" r="12" fill={iconColor} />
-      {/* Top-left arrow pointing inwards */}
-      <Path
-        d="M8 8L10 10L8 12"
-        stroke="white"
-        strokeWidth="2"
-        strokeLinecap="round"
-        strokeLinejoin="round"
-      />
-      {/* Top-right arrow pointing outwards */}
-      <Path
-        d="M16 8L14 10L16 12"
-        stroke="white"
-        strokeWidth="2"
-        strokeLinecap="round"
-        strokeLinejoin="round"
-      />
-      {/* Bottom-left arrow pointing outwards */}
-      <Path
-        d="M8 16L10 14L8 12"
-        stroke="white"
-        strokeWidth="2"
-        strokeLinecap="round"
-        strokeLinejoin="round"
-      />
-      {/* Bottom-right arrow pointing inwards */}
-      <Path
-        d="M16 16L14 14L16 12"
-        stroke="white"
-        strokeWidth="2"
-        strokeLinecap="round"
-        strokeLinejoin="round"
-      />
-    </Svg>
-  );
-};
-
-ExpandCollapseIcon.propTypes = {
+ResizeIcon.propTypes = {
   size: PropTypes.number,
   color: PropTypes.string,
-  isActive: PropTypes.bool,
+  strokeWidth: PropTypes.number,
 };
 
-ExpandCollapseIcon.defaultProps = {
-  size: 24,
-  color: "#1A2B4C",
-  isActive: false,
+ResizeIcon.defaultProps = {
+  size: 28,
+  color: colors.READER_HEADER_COLOR,
+  strokeWidth: 2,
 };
 
-export default ExpandCollapseIcon;
+export default ResizeIcon;

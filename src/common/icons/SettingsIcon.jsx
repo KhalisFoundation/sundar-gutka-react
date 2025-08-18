@@ -1,35 +1,45 @@
 import React from "react";
 import Svg, { Path, Circle } from "react-native-svg";
 import PropTypes from "prop-types";
+import { colors } from "@common";
 
-const SettingsIcon = ({ size = 24, color = "#1A2B4C", isActive = false }) => {
-  const iconColor = isActive ? color : color;
+export const SettingsIcon = ({
+  size = 28,
+  color = colors.READER_HEADER_COLOR,
+  strokeWidth = 2,
+}) => {
+  // 8-lobed “cog” outline + inner ring
+  const s = size;
+  const cx = s / 2;
+  const cy = s / 2;
+  const R = s * 0.4; // outer radius
+  const r = s * 0.33; // inner radius for lobes
+  const steps = 16; // alternating outer/inner points
+
+  // Build a rounded star-like path to mimic scalloped gear
+  const pts = [];
+  for (let i = 0; i < steps; i++) {
+    const ang = (i / steps) * Math.PI * 2;
+    const rad = i % 2 === 0 ? R : r;
+    pts.push({ x: cx + rad * Math.cos(ang), y: cy + rad * Math.sin(ang) });
+  }
+  const d = `M ${pts[0].x} ${pts[0].y} ${pts
+    .slice(1)
+    .map((p) => `L ${p.x} ${p.y}`)
+    .join(" ")} Z`;
 
   return (
-    <Svg width={size} height={size} viewBox="0 0 24 24" fill="none">
-      <Circle cx="12" cy="12" r="12" fill={iconColor} />
-      <Path
-        d="M12 15C13.6569 15 15 13.6569 15 12C15 10.3431 13.6569 9 12 9C10.3431 9 9 10.3431 9 12C9 13.6569 10.3431 15 12 15Z"
-        fill="white"
-      />
-      <Path
-        d="M19.4 15C19.1277 14.6172 18.8791 14.2158 18.6562 13.7985C18.7109 13.6338 18.7383 13.4609 18.7383 13.2832C18.7383 13.1055 18.7109 12.9326 18.6562 12.7676C18.8791 12.3503 19.1277 11.9489 19.4 11.5664L17.6367 10.4336C17.3645 10.0511 17.1159 9.64966 16.893 9.23242C16.8383 9.06738 16.7656 8.91016 16.6777 8.76562C16.5898 8.62109 16.4873 8.49023 16.373 8.37695C16.2588 8.26367 16.1338 8.16895 16.001 8.0957C15.8682 8.02246 15.7285 7.97119 15.5859 7.94336C15.4434 7.91553 15.2993 7.91113 15.1562 7.93018L13.2 7.5C13.0569 7.47917 12.9115 7.47917 12.7684 7.5L10.8125 7.93018C10.6694 7.91113 10.5253 7.91553 10.3828 7.94336C10.2402 7.97119 10.1006 8.02246 9.96777 8.0957C9.83496 8.16895 9.71002 8.26367 9.5957 8.37695C9.48138 8.49023 9.37891 8.62109 9.29102 8.76562C9.20312 8.91016 9.13047 9.06738 9.07578 9.23242C8.85286 9.64966 8.60425 10.0511 8.33203 10.4336L6.56875 11.5664C6.84102 11.9489 7.08964 12.3503 7.3125 12.7676C7.25781 12.9326 7.23047 13.1055 7.23047 13.2832C7.23047 13.4609 7.25781 13.6338 7.3125 13.7985C7.08964 14.2158 6.84102 14.6172 6.56875 15L8.33203 16.1336C8.60425 16.5161 8.85286 16.9176 9.07578 17.3348C9.13047 17.4999 9.20312 17.6571 9.29102 17.8016C9.37891 17.9461 9.48138 18.077 9.5957 18.1903C9.71002 18.3036 9.83496 18.3983 9.96777 18.4716C10.1006 18.5448 10.2402 18.5961 10.3828 18.624C10.5253 18.6518 10.6694 18.6562 10.8125 18.6367L12.7684 18.0664C12.9115 18.0872 13.0569 18.0872 13.2 18.0664L15.1562 18.6367C15.2993 18.6562 15.4434 18.6518 15.5859 18.624C15.7285 18.5961 15.8682 18.5448 16.001 18.4716C16.1338 18.3983 16.2588 18.3036 16.373 18.1903C16.4873 18.077 16.5898 17.9461 16.6777 17.8016C16.7656 17.6571 16.8383 17.4999 16.893 17.3348C17.1159 16.9176 17.3645 16.5161 17.6367 16.1336L19.4 15Z"
-        fill="white"
-      />
+    <Svg width={s} height={s} viewBox={`0 0 ${s} ${s}`} fill="none">
+      <Path d={d} stroke={color} strokeWidth={strokeWidth} strokeLinejoin="round" />
+      <Circle cx={cx} cy={cy} r={s * 0.09} stroke={color} strokeWidth={strokeWidth} fill="none" />
     </Svg>
   );
 };
 
 SettingsIcon.propTypes = {
-  size: PropTypes.number,
-  color: PropTypes.string,
-  isActive: PropTypes.bool,
-};
-
-SettingsIcon.defaultProps = {
-  size: 24,
-  color: "#1A2B4C",
-  isActive: false,
+  size: PropTypes.number.isRequired,
+  color: PropTypes.string.isRequired,
+  strokeWidth: PropTypes.number.isRequired,
 };
 
 export default SettingsIcon;

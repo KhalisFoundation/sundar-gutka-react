@@ -2,6 +2,7 @@
   "extends": ["airbnb", "prettier", "plugin:prettier/recommended", "eslint-config-prettier"],
   "parser": "@babel/eslint-parser",
   "rules": {
+    "react-native/no-unused-styles": 2,
     "curly": "warn",
     "import/no-unresolved": "off",
     "global-require": 0,
@@ -27,5 +28,5 @@
       }
     ]
   },
-  "plugins": ["prettier"]
+  "plugins": ["prettier", "react-native"]
 }
