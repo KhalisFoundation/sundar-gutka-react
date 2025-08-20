@@ -29,6 +29,9 @@ const BaniList = React.memo(({ data, onPress }) => {
   const isUnicode = fontFace === constant.BALOO_PAAJI;
 
   const getBaniTuk = (row) => {
+    if (!row) {
+      return "";
+    }
     if (isTransliteration) {
       return row.item.translit;
     }
@@ -72,7 +75,7 @@ const BaniList = React.memo(({ data, onPress }) => {
             {row.item.tukGurmukhi && (
               <ListItem.Subtitle
                 style={[
-                  isNightMode && { color: "#ecf0f1" },
+                  isNightMode && { color: colors.WHITE_COLOR },
                   { fontFamily: !isTransliteration ? fontFace : null },
                   { fontSize: 17 },
                 ]}
