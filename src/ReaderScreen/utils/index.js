@@ -104,7 +104,7 @@ export const loadHTML = (
         }
         let contentHtml = `<div id="${index + 1}" class='text-item'>`;
         contentHtml += createDiv(
-          item.gurmukhi,
+          fontFace === constant.BALOO_PAAJI ? item.gurmukhiUni : item.gurmukhi,
           item.header,
           constant.GURMUKHI.toLowerCase(),
           textAlign,
@@ -146,7 +146,8 @@ export const loadHTML = (
             fontSize,
             theme,
             isLarivaar,
-            constant.GURMUKHI.toLowerCase()
+            constant.GURMUKHI.toLowerCase(),
+            constant.GURBANI_AKHAR_TRUE
           );
         }
 

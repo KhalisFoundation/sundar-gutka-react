@@ -13,9 +13,7 @@ export const getFontFaces = (strings) => [
   { key: "GurbaniAkharTrue", title: strings.gurbani_akhar_default },
   { key: "GurbaniAkharHeavyTrue", title: strings.gurbani_akhar_heavy },
   { key: "GurbaniAkharThickTrue", title: strings.gurbani_akhar_think },
-  { key: "BalooPaaji2-Regular", title: strings.baloo_paaji },
-  { key: "BalooPaaji2-Bold", title: strings.baloo_paaji_thick },
-  { key: "BalooPaaji2-Medium", title: strings.baloo_paaji_medium },
+  { key: "BalooPaaji2", title: strings.baloo_paaji },
 ];
 
 export const getBaniLengths = (strings) => [

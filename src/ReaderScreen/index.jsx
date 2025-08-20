@@ -3,12 +3,19 @@ import { ActivityIndicator, BackHandler, AppState, Platform, Animated } from "re
 import { WebView } from "react-native-webview";
 import { useDispatch, useSelector } from "react-redux";
 import PropTypes from "prop-types";
-import { BottomNavigation } from "@common/components";
 import StatusBarComponent from "@common/components/StatusBar";
 import useTheme from "@common/context";
 import useThemedStyles from "@common/hooks/useThemedStyles";
 import { HomeIcon, BookmarkIcon, SettingsIcon } from "@common/icons";
-import { constant, actions, useScreenAnalytics, logMessage, logError, SafeArea } from "@common";
+import {
+  BottomNavigation,
+  constant,
+  actions,
+  useScreenAnalytics,
+  logMessage,
+  logError,
+  SafeArea,
+} from "@common";
 import { Header, AutoScrollComponent, AudioPlayer } from "./components";
 import { useBookmarks, useFetchShabad, useFooterAnimation } from "./hooks";
 import createStyles from "./styles";
@@ -36,7 +43,7 @@ const Reader = ({ navigation, route }) => {
 
   const webViewRef = useRef(null);
   const { webView } = styles;
-  const { title, id } = route.params.params;
+  const { title, id, titleUni } = route.params.params;
   const [isHeader, toggleHeader] = useState(true);
   const [viewLoaded, toggleViewLoaded] = useState(false);
   const [currentPosition, setCurrentPosition] = useState(savePosition[id] || 0);
@@ -216,13 +223,11 @@ const Reader = ({ navigation, route }) => {
   ];
 
   return (
-    <SafeArea backgroundColor={theme.colors.surface}>
+    <SafeArea backgroundColor={theme.colors.surface} topPadding>
       <StatusBarComponent backgroundColor={theme.colors.primary} />
       <Header
-        title={title}
+        title={fontFace === constant.BALOO_PAAJI ? titleUni : title}
         handleBackPress={handleBackPress}
-        handleBookmarkPress={handleBookmarkPress}
-        handleSettingsPress={handleSettingsPress}
         isHeader={isHeader}
       />
       {isLoading && <ActivityIndicator size="small" color={theme.colors.primary} />}

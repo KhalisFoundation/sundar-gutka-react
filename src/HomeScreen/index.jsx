@@ -1,7 +1,9 @@
 import React, { useEffect } from "react";
 import { View } from "react-native";
-import PropTypes from "prop-types";
 import { useDispatch, useSelector } from "react-redux";
+import PropTypes from "prop-types";
+import useTheme from "@common/context";
+import useThemedStyles from "@common/hooks/useThemedStyles";
 import {
   useScreenAnalytics,
   actions,
@@ -14,12 +16,10 @@ import {
   StatusBarComponent,
   SafeArea,
 } from "@common";
-import useTheme from "@common/context";
-import useThemedStyles from "@common/hooks/useThemedStyles";
-import createStyles from "./styles";
+import { setBaniOrder } from "../common/actions";
 import BaniHeader from "./components/BaniHeader";
 import { useBaniLength, useBaniList, useDatabaseUpdateCheck } from "./hooks";
-import { setBaniOrder } from "../common/actions";
+import createStyles from "./styles";
 
 const HomeScreen = React.memo(({ navigation }) => {
   logMessage(constant.HOME_SCREEN);
@@ -47,12 +47,20 @@ const HomeScreen = React.memo(({ navigation }) => {
     if (!bani.folder) {
       navigate(constant.READER, {
         key: `Reader-${bani.id}`,
-        params: { id: bani.id, title: bani.gurmukhi },
+        params: {
+          id: bani.id,
+          title: bani.gurmukhi,
+          titleUni: bani.gurmukhiUni,
+        },
       });
     } else {
       navigate(constant.FOLDERSCREEN, {
         key: `Folder-${bani.gurmukhi}`,
-        params: { data: bani.folder, title: bani.gurmukhi },
+        params: {
+          data: bani.folder,
+          title: bani.gurmukhi,
+          titleUni: bani.gurmukhiUni,
+        },
       });
     }
   };
