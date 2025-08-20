@@ -7,6 +7,7 @@ import baseFontSize from "../../helpers";
 import colors from "../../colors";
 import constant from "../../constant";
 import { styles } from "../../../Settings/styles";
+import { convertToUnicode } from "../../utils";
 
 const BaniList = React.memo(({ data, onPress }) => {
   const fontSize = useSelector((state) => state.fontSize);
@@ -32,10 +33,14 @@ const BaniList = React.memo(({ data, onPress }) => {
       return row.item.translit;
     }
     if (isUnicode) {
-      return row.item.gurmukhiUni;
+      if (row?.item?.gurmukhiUni) {
+        return row.item.gurmukhiUni;
+      }
+      return convertToUnicode(row.item.gurmukhi);
     }
     return row.item.gurmukhi;
   };
+
   const renderBanis = useCallback(
     (row) => {
       return (
@@ -72,7 +77,7 @@ const BaniList = React.memo(({ data, onPress }) => {
                   { fontSize: 17 },
                 ]}
               >
-                {isTransliteration ? row.item.tukTranslit : row.item.tukGurmukhi}
+                {getBaniTuk(row)}
               </ListItem.Subtitle>
             )}
           </ListItem.Content>

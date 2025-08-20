@@ -89,3 +89,5 @@ export {
   StatusBarComponent,
   SafeArea,
 };
+
+export { convertToUnicode } from "./utils";

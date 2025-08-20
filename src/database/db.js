@@ -159,8 +159,8 @@ export const getShabadFromID = async (
                   padcched === constant.MAST_SABH_MAST
                 ) {
                   const replaced = curGurmukhiUni.replace(
-                    /smwpqm squ suBm squ/g,
-                    constant.MAST_SABH_MAST_TUKK
+                    /ਸਮਾਪਤਮ ਸਤੁ ਸੁਭਮ ਸਤੁ/g,
+                    constant.MAST_SABH_MAST_TUKK_UNI
                   );
                   curGurmukhiUni = replaced;
                 }
