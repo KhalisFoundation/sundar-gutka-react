@@ -7,7 +7,7 @@ import PropTypes from "prop-types";
 import constant from "@common/constant";
 import useTheme from "@common/context";
 import useThemedStyles from "@common/hooks/useThemedStyles";
-import { baseFontSize } from "@common";
+import { convertToUnicode, baseFontSize } from "@common";
 
 const BaniList = React.memo(({ data, onPress }) => {
   const { theme } = useTheme();
@@ -34,10 +34,14 @@ const BaniList = React.memo(({ data, onPress }) => {
       return row.item.translit;
     }
     if (isUnicode) {
-      return row.item.gurmukhiUni;
+      if (row?.item?.gurmukhiUni) {
+        return row.item.gurmukhiUni;
+      }
+      return convertToUnicode(row.item.gurmukhi);
     }
     return row.item.gurmukhi;
   };
+
   const renderBanis = useCallback(
     (row) => {
       return (
@@ -74,7 +78,7 @@ const BaniList = React.memo(({ data, onPress }) => {
                   { fontSize: 17 },
                 ]}
               >
-                {isTransliteration ? row.item.tukTranslit : row.item.tukGurmukhi}
+                {getBaniTuk(row)}
               </ListItem.Subtitle>
             )}
           </ListItem.Content>

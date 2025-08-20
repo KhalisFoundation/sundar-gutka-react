@@ -2,10 +2,11 @@ import React from "react";
 import { View } from "react-native";
 import PropTypes from "prop-types";
 import { useSafeAreaInsets } from "react-native-safe-area-context";
+import { constant } from "@common";
 
 const SafeArea = ({ children, backgroundColor, topPadding = false }) => {
   const insets = useSafeAreaInsets();
-  const bottomPadding = insets.bottom <= 35 ? 0 : insets.bottom;
+  const bottomPadding = insets.bottom <= constant.MINIMUM_BOTTOM_PADDING ? 0 : insets.bottom;
   const top = topPadding ? insets.top : 0;
 
   return (
