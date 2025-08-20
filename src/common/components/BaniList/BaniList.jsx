@@ -29,7 +29,7 @@ const BaniList = React.memo(({ data, onPress }) => {
   const isUnicode = fontFace === constant.BALOO_PAAJI;
 
   const getBaniTuk = (row) => {
-    if (!row) {
+    if (!row || !row.item) {
       return "";
     }
     if (isTransliteration) {
