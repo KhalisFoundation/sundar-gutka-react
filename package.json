@@ -39,6 +39,7 @@
     "react-native-exception-handler": "^2.10.10",
     "react-native-fs": "^2.20.0",
     "react-native-gesture-handler": "^2.25.0",
+    "react-native-linear-gradient": "^2.8.3",
     "react-native-localization": "^2.3.1",
     "react-native-modal-datetime-picker": "^18.0.0",
     "react-native-modal-selector": "^2.1.2",

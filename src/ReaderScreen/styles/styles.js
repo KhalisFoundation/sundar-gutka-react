@@ -66,6 +66,9 @@ export const styles = StyleSheet.create({
     flexDirection: "row",
     alignItems: "center",
     justifyContent: "space-between",
+    width: "95%",
+    marginLeft: "auto",
+    marginRight: "auto",
   },
   animatedView: {
     position: "absolute",
@@ -75,9 +78,6 @@ export const styles = StyleSheet.create({
     overflow: "hidden",
     backgroundColor: "transparent",
     zIndex: 1000, // Higher z-index to ensure visibility
-    borderRadius: 10,
-    borderBottomWidth: 1,
-    borderBottomColor: colors.READER_HEADER_COLOR,
   },
   footerWrapper: {
     paddingLeft: 20,
@@ -94,20 +94,16 @@ export const styles = StyleSheet.create({
 });
 export const getHeaderStyles = (isNightMode) => ({
   headerTitleStyle: {
-    color: colors.READER_HEADER_COLOR,
-    fontWeight: "normal",
-    fontFamily: constant.BALOO_PAAJI_Medium,
+    color: isNightMode ? colors.WHITE_COLOR : colors.READER_HEADER_COLOR,
     fontSize: 20,
     zIndex: 1,
   },
   footerTitleStyle: {
     color: colors.WHITE_COLOR,
-    fontFamily: constant.BALOO_PAAJI,
+    fontFamily: constant.GURBANI_AKHAR_TRUE,
   },
 
   headerStyle: {
     backgroundColor: !isNightMode ? colors.WHITE_COLOR : colors.NIGHT_BLACK,
-    height: 90, // Ensure header has proper height
-    paddingTop: 40,
   },
 });

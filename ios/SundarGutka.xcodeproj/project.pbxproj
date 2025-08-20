@@ -11,19 +11,17 @@
 		0A969EA195AE44A784B59F55 /* GurbaniAkharThickTrue.ttf in Resources */ = {isa = PBXBuildFile; fileRef = E7AC85B7FC2644A28E4F8C2C /* GurbaniAkharThickTrue.ttf */; };
 		13B07FBF1A68108700A75B9A /* Images.xcassets in Resources */ = {isa = PBXBuildFile; fileRef = 13B07FB51A68108700A75B9A /* Images.xcassets */; };
 		16CFCFEA88304281997FBC21 /* GurbaniAkharHeavyTrue.ttf in Resources */ = {isa = PBXBuildFile; fileRef = F0108D977CB44123AA2BFBDD /* GurbaniAkharHeavyTrue.ttf */; };
-		19779999EDFD495599B3AE4C /* BalooPaaji2-Medium.ttf in Resources */ = {isa = PBXBuildFile; fileRef = 29C3F31360CF430387E38EB2 /* BalooPaaji2-Medium.ttf */; };
-		652C95D74FC545F7A8DE7376 /* BalooPaaji2-Regular.ttf in Resources */ = {isa = PBXBuildFile; fileRef = C8A9868003A14D7DB3B1CA91 /* BalooPaaji2-Regular.ttf */; };
 		711185CC02C64148849936C6 /* GurbaniAkharTrue.ttf in Resources */ = {isa = PBXBuildFile; fileRef = FAE2F7F86FB14C858E603117 /* GurbaniAkharTrue.ttf */; };
 		7805EE342D930CA0008726B1 /* AppDelegate.swift in Sources */ = {isa = PBXBuildFile; fileRef = 7805EE332D930CA0008726B1 /* AppDelegate.swift */; };
 		81AB9BB82411601600AC10FF /* LaunchScreen.storyboard in Resources */ = {isa = PBXBuildFile; fileRef = 81AB9BB72411601600AC10FF /* LaunchScreen.storyboard */; };
 		9F26F74437CA410C9CED2877 /* Arial.ttf in Resources */ = {isa = PBXBuildFile; fileRef = 28D38692B74A4A1DAC2F2D3C /* Arial.ttf */; };
 		A469D6732B637179001A107B /* GoogleService-Info.plist in Resources */ = {isa = PBXBuildFile; fileRef = A469D6722B637179001A107B /* GoogleService-Info.plist */; };
 		A469D6752B637193001A107B /* www in Resources */ = {isa = PBXBuildFile; fileRef = A469D6742B637193001A107B /* www */; };
-		D1F29A1D416E48C7874A6E30 /* BalooPaaji2-Bold.ttf in Resources */ = {isa = PBXBuildFile; fileRef = EF8F184F611A4872B59942CD /* BalooPaaji2-Bold.ttf */; };
 		DA119E1D2A5F0D7200FD0E10 /* waheguru_soul.mp3 in Resources */ = {isa = PBXBuildFile; fileRef = DA119E1B2A5F0D7200FD0E10 /* waheguru_soul.mp3 */; };
 		DA119E1E2A5F0D7200FD0E10 /* wake_up_jap.mp3 in Resources */ = {isa = PBXBuildFile; fileRef = DA119E1C2A5F0D7200FD0E10 /* wake_up_jap.mp3 */; };
 		DF8412F6597D54178D51F9AF /* libPods-SundarGutka.a in Frameworks */ = {isa = PBXBuildFile; fileRef = 682F7438823B6ACC3130EAA3 /* libPods-SundarGutka.a */; };
 		F00557B100F7FA7802293CBE /* PrivacyInfo.xcprivacy in Resources */ = {isa = PBXBuildFile; fileRef = B5622B2E177976AE33F51A68 /* PrivacyInfo.xcprivacy */; };
+		F8F868107FF84886A2F7664B /* BalooPaaji2-VariableFont_wght.ttf in Resources */ = {isa = PBXBuildFile; fileRef = AAF86A1C791D42E9B96E724E /* BalooPaaji2-VariableFont_wght.ttf */; };
 		FE704EC35D2847DFBE7DC00D /* AnmolLipiSG.ttf in Resources */ = {isa = PBXBuildFile; fileRef = C973C1C9E6ED468AA759E427 /* AnmolLipiSG.ttf */; };
 /* End PBXBuildFile section */
 
@@ -45,7 +43,6 @@
 		13B07FB51A68108700A75B9A /* Images.xcassets */ = {isa = PBXFileReference; lastKnownFileType = folder.assetcatalog; name = Images.xcassets; path = SundarGutka/Images.xcassets; sourceTree = "<group>"; };
 		13B07FB61A68108700A75B9A /* Info.plist */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = text.plist.xml; name = Info.plist; path = SundarGutka/Info.plist; sourceTree = "<group>"; };
 		28D38692B74A4A1DAC2F2D3C /* Arial.ttf */ = {isa = PBXFileReference; explicitFileType = undefined; fileEncoding = 9; includeInIndex = 0; lastKnownFileType = unknown; name = Arial.ttf; path = ../assets/fonts/Arial.ttf; sourceTree = "<group>"; };
-		29C3F31360CF430387E38EB2 /* BalooPaaji2-Medium.ttf */ = {isa = PBXFileReference; explicitFileType = undefined; fileEncoding = undefined; includeInIndex = 0; lastKnownFileType = unknown; name = "BalooPaaji2-Medium.ttf"; path = "../assets/fonts/BalooPaaji2-Medium.ttf"; sourceTree = "<group>"; };
 		682F7438823B6ACC3130EAA3 /* libPods-SundarGutka.a */ = {isa = PBXFileReference; explicitFileType = archive.ar; includeInIndex = 0; path = "libPods-SundarGutka.a"; sourceTree = BUILT_PRODUCTS_DIR; };
 		7805EE332D930CA0008726B1 /* AppDelegate.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = AppDelegate.swift; sourceTree = "<group>"; };
 		787CCE4A2CB49B1B00633E99 /* AdSupport.framework */ = {isa = PBXFileReference; lastKnownFileType = wrapper.framework; name = AdSupport.framework; path = Platforms/MacOSX.platform/Developer/SDKs/MacOSX15.0.sdk/System/Library/Frameworks/AdSupport.framework; sourceTree = DEVELOPER_DIR; };
@@ -53,15 +50,14 @@
 		8917CE6BBDDE4A87D431C3B3 /* Pods-SundarGutka.release.xcconfig */ = {isa = PBXFileReference; includeInIndex = 1; lastKnownFileType = text.xcconfig; name = "Pods-SundarGutka.release.xcconfig"; path = "Target Support Files/Pods-SundarGutka/Pods-SundarGutka.release.xcconfig"; sourceTree = "<group>"; };
 		A469D6722B637179001A107B /* GoogleService-Info.plist */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = text.plist.xml; path = "GoogleService-Info.plist"; sourceTree = "<group>"; };
 		A469D6742B637193001A107B /* www */ = {isa = PBXFileReference; lastKnownFileType = folder; path = www; sourceTree = "<group>"; };
+		AAF86A1C791D42E9B96E724E /* BalooPaaji2-VariableFont_wght.ttf */ = {isa = PBXFileReference; explicitFileType = undefined; fileEncoding = undefined; includeInIndex = 0; lastKnownFileType = unknown; name = "BalooPaaji2-VariableFont_wght.ttf"; path = "../assets/fonts/BalooPaaji2-VariableFont_wght.ttf"; sourceTree = "<group>"; };
 		B5622B2E177976AE33F51A68 /* PrivacyInfo.xcprivacy */ = {isa = PBXFileReference; includeInIndex = 1; lastKnownFileType = text.xml; name = PrivacyInfo.xcprivacy; path = SundarGutka/PrivacyInfo.xcprivacy; sourceTree = "<group>"; };
-		C8A9868003A14D7DB3B1CA91 /* BalooPaaji2-Regular.ttf */ = {isa = PBXFileReference; explicitFileType = undefined; fileEncoding = undefined; includeInIndex = 0; lastKnownFileType = unknown; name = "BalooPaaji2-Regular.ttf"; path = "../assets/fonts/BalooPaaji2-Regular.ttf"; sourceTree = "<group>"; };
 		C973C1C9E6ED468AA759E427 /* AnmolLipiSG.ttf */ = {isa = PBXFileReference; explicitFileType = undefined; fileEncoding = 9; includeInIndex = 0; lastKnownFileType = unknown; name = AnmolLipiSG.ttf; path = ../assets/fonts/AnmolLipiSG.ttf; sourceTree = "<group>"; };
 		DA119E1B2A5F0D7200FD0E10 /* waheguru_soul.mp3 */ = {isa = PBXFileReference; lastKnownFileType = audio.mp3; path = waheguru_soul.mp3; sourceTree = "<group>"; };
 		DA119E1C2A5F0D7200FD0E10 /* wake_up_jap.mp3 */ = {isa = PBXFileReference; lastKnownFileType = audio.mp3; path = wake_up_jap.mp3; sourceTree = "<group>"; };
 		E7AC85B7FC2644A28E4F8C2C /* GurbaniAkharThickTrue.ttf */ = {isa = PBXFileReference; explicitFileType = undefined; fileEncoding = 9; includeInIndex = 0; lastKnownFileType = unknown; name = GurbaniAkharThickTrue.ttf; path = ../assets/fonts/GurbaniAkharThickTrue.ttf; sourceTree = "<group>"; };
 		ED297162215061F000B7C4FE /* JavaScriptCore.framework */ = {isa = PBXFileReference; lastKnownFileType = wrapper.framework; name = JavaScriptCore.framework; path = System/Library/Frameworks/JavaScriptCore.framework; sourceTree = SDKROOT; };
 		EE7F4DFD2B295D683D69A048 /* Pods-SundarGutka.debug.xcconfig */ = {isa = PBXFileReference; includeInIndex = 1; lastKnownFileType = text.xcconfig; name = "Pods-SundarGutka.debug.xcconfig"; path = "Target Support Files/Pods-SundarGutka/Pods-SundarGutka.debug.xcconfig"; sourceTree = "<group>"; };
-		EF8F184F611A4872B59942CD /* BalooPaaji2-Bold.ttf */ = {isa = PBXFileReference; explicitFileType = undefined; fileEncoding = undefined; includeInIndex = 0; lastKnownFileType = unknown; name = "BalooPaaji2-Bold.ttf"; path = "../assets/fonts/BalooPaaji2-Bold.ttf"; sourceTree = "<group>"; };
 		F0108D977CB44123AA2BFBDD /* GurbaniAkharHeavyTrue.ttf */ = {isa = PBXFileReference; explicitFileType = undefined; fileEncoding = 9; includeInIndex = 0; lastKnownFileType = unknown; name = GurbaniAkharHeavyTrue.ttf; path = ../assets/fonts/GurbaniAkharHeavyTrue.ttf; sourceTree = "<group>"; };
 		FAE2F7F86FB14C858E603117 /* GurbaniAkharTrue.ttf */ = {isa = PBXFileReference; explicitFileType = undefined; fileEncoding = 9; includeInIndex = 0; lastKnownFileType = unknown; name = GurbaniAkharTrue.ttf; path = ../assets/fonts/GurbaniAkharTrue.ttf; sourceTree = "<group>"; };
 /* End PBXFileReference section */
@@ -177,9 +173,7 @@
 				F0108D977CB44123AA2BFBDD /* GurbaniAkharHeavyTrue.ttf */,
 				E7AC85B7FC2644A28E4F8C2C /* GurbaniAkharThickTrue.ttf */,
 				FAE2F7F86FB14C858E603117 /* GurbaniAkharTrue.ttf */,
-				EF8F184F611A4872B59942CD /* BalooPaaji2-Bold.ttf */,
-				29C3F31360CF430387E38EB2 /* BalooPaaji2-Medium.ttf */,
-				C8A9868003A14D7DB3B1CA91 /* BalooPaaji2-Regular.ttf */,
+				AAF86A1C791D42E9B96E724E /* BalooPaaji2-VariableFont_wght.ttf */,
 			);
 			name = Resources;
 			sourceTree = "<group>";
@@ -289,9 +283,7 @@
 				0A969EA195AE44A784B59F55 /* GurbaniAkharThickTrue.ttf in Resources */,
 				711185CC02C64148849936C6 /* GurbaniAkharTrue.ttf in Resources */,
 				F00557B100F7FA7802293CBE /* PrivacyInfo.xcprivacy in Resources */,
-				D1F29A1D416E48C7874A6E30 /* BalooPaaji2-Bold.ttf in Resources */,
-				19779999EDFD495599B3AE4C /* BalooPaaji2-Medium.ttf in Resources */,
-				652C95D74FC545F7A8DE7376 /* BalooPaaji2-Regular.ttf in Resources */,
+				F8F868107FF84886A2F7664B /* BalooPaaji2-VariableFont_wght.ttf in Resources */,
 			);
 			runOnlyForDeploymentPostprocessing = 0;
 		};

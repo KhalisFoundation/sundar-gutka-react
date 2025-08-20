@@ -5,6 +5,7 @@ import PropTypes from "prop-types";
 import { useSelector } from "react-redux";
 import baseFontSize from "../../helpers";
 import colors from "../../colors";
+import constant from "../../constant";
 import { styles } from "../../../Settings/styles";
 
 const BaniList = React.memo(({ data, onPress }) => {
@@ -24,6 +25,17 @@ const BaniList = React.memo(({ data, onPress }) => {
     });
     return () => subscription.remove();
   }, []);
+  const isUnicode = fontFace === constant.BALOO_PAAJI;
+
+  const getBaniTuk = (row) => {
+    if (isTransliteration) {
+      return row.item.translit;
+    }
+    if (isUnicode) {
+      return row.item.gurmukhiUni;
+    }
+    return row.item.gurmukhi;
+  };
   const renderBanis = useCallback(
     (row) => {
       return (
@@ -50,7 +62,7 @@ const BaniList = React.memo(({ data, onPress }) => {
                 },
               ]}
             >
-              {isTransliteration ? row.item.translit : row.item.gurmukhi}
+              {getBaniTuk(row)}
             </ListItem.Title>
             {row.item.tukGurmukhi && (
               <ListItem.Subtitle

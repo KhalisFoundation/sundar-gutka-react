@@ -13,8 +13,8 @@ import {
   SafeArea,
 } from "@common";
 import StatusBarComponent from "@common/components/StatusBar";
-import { BottomNavigation } from "@common/components";
 import { HomeIcon, BookmarkIcon, SettingsIcon } from "@common/icons";
+import BottomNavigation from "./components/BottomNavigation";
 import { Header, AutoScrollComponent } from "./components";
 import { useBookmarks, useFetchShabad } from "./hooks";
 import { styles, nightColors } from "./styles";
@@ -41,7 +41,7 @@ const Reader = ({ navigation, route }) => {
 
   const webViewRef = useRef(null);
   const { webView } = styles;
-  const { title, id } = route.params.params;
+  const { title, id, titleUni } = route.params.params;
   const [isHeader, toggleHeader] = useState(true);
   const [viewLoaded, toggleViewLoaded] = useState(false);
   const [currentPosition, setCurrentPosition] = useState(savePosition[id] || 0);
@@ -231,9 +231,13 @@ const Reader = ({ navigation, route }) => {
   ];
 
   return (
-    <SafeArea backgroundColor={safeAreaViewBack.backgroundColor}>
+    <SafeArea backgroundColor={safeAreaViewBack.backgroundColor} topPadding>
       <StatusBarComponent backgroundColor={backgroundColor} />
-      <Header title={title} handleBackPress={handleBackPress} isHeader={isHeader} />
+      <Header
+        title={fontFace === constant.BALOO_PAAJI ? titleUni : title}
+        handleBackPress={handleBackPress}
+        isHeader={isHeader}
+      />
       {isLoading && <ActivityIndicator size="small" color={READER_STATUS_BAR_COLOR} />}
       <WebView
         key={webViewKey}
@@ -259,7 +263,6 @@ const Reader = ({ navigation, route }) => {
       {isAutoScroll && (
         <AutoScrollComponent shabadID={id} webViewRef={webViewRef} isFooter={isHeader} />
       )}
-
       <BottomNavigation currentRoute="Reader" navigationItems={navigationItems} />
     </SafeArea>
   );

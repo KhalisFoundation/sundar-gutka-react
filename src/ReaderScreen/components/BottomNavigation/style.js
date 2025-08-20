@@ -17,6 +17,7 @@ const styles = StyleSheet.create({
     borderBottomStartRadius: 20,
     paddingHorizontal: 20,
     gap: 25,
+    backgroundColor: colors.READER_HEADER_COLOR,
   },
   iconContainer: {
     flexBasis: 50,

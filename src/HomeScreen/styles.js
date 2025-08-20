@@ -15,7 +15,6 @@ const styles = StyleSheet.create({
   settingIcon: { position: "absolute", bottom: 10, right: 5 },
   headerFatehStyle: { color: colors.TOOLBAR_TINT, fontSize: 22 },
   fatehContainer: {
-    marginTop: 20,
     marginLeft: "auto",
     marginRight: "auto",
   },

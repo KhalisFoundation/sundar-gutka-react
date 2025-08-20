@@ -1,15 +1,22 @@
 import React, { useEffect, useRef } from "react";
-import { View, Text, Animated, Pressable } from "react-native";
+import { View, Text, Animated, Pressable, StyleSheet } from "react-native";
 import PropTypes from "prop-types";
 import { useSelector } from "react-redux";
+import LinearGradient from "react-native-linear-gradient";
 import colors from "@common/colors";
 import { BackArrowIcon } from "@common/icons";
+import { useSafeAreaInsets } from "react-native-safe-area-context";
 import { getHeaderStyles, styles } from "../styles/styles";
 
 const Header = ({ title, handleBackPress, isHeader }) => {
   const isNightMode = useSelector((state) => state.isNightMode);
   const getHeaderStyle = getHeaderStyles(isNightMode);
   const animationPosition = useRef(new Animated.Value(0)).current;
+  const fontFace = useSelector((state) => state.fontFace);
+  const insets = useSafeAreaInsets();
+
+  const MID = "rgba(17,57,121,1)"; // #113979
+  const EDGE = "rgba(17,57,121,0)";
 
   const headerLeft = () => (
     <Pressable
@@ -18,12 +25,15 @@ const Header = ({ title, handleBackPress, isHeader }) => {
         handleBackPress();
       }}
     >
-      <BackArrowIcon size={24} color={colors.READER_HEADER_COLOR} />
+      <BackArrowIcon
+        size={30}
+        color={isNightMode ? colors.WHITE_COLOR : colors.READER_HEADER_COLOR}
+      />
     </Pressable>
   );
 
   useEffect(() => {
-    const value = isHeader ? 0 : -120;
+    const value = isHeader ? insets.top : -120;
 
     // Stop any existing animation first
     animationPosition.stopAnimation();
@@ -51,7 +61,7 @@ const Header = ({ title, handleBackPress, isHeader }) => {
   useEffect(() => {
     const resetTimer = setTimeout(() => {
       // Force position if animation seems stuck
-      const targetValue = isHeader ? 0 : -120;
+      const targetValue = isHeader ? insets.top : -120;
       animationPosition.setValue(targetValue);
     }, 1000);
 
@@ -72,10 +82,28 @@ const Header = ({ title, handleBackPress, isHeader }) => {
         <View style={styles.headerWrapper}>
           <View style={{ width: "20%" }}>{headerLeft()}</View>
           <View style={{ width: "60%" }}>
-            <Text style={getHeaderStyle.headerTitleStyle}>{title}</Text>
+            <Text
+              style={[
+                getHeaderStyle.headerTitleStyle,
+                { fontFamily: fontFace, fontWeight: "bold" },
+              ]}
+            >
+              {title}
+            </Text>
           </View>
         </View>
       </View>
+      <LinearGradient
+        colors={[EDGE, MID, MID, EDGE]}
+        locations={[0, 0.48, 0.52, 1]}
+        start={{ x: 0, y: 0 }}
+        end={{ x: 1, y: 0 }}
+        style={{
+          width: "100%",
+          height: StyleSheet.hairlineWidth,
+          pointerEvents: "none",
+        }}
+      />
     </Animated.View>
   );
 };

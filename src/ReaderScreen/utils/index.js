@@ -4,10 +4,10 @@ import htmlTemplate from "./gutkahtml";
 import script from "./gutkaScript";
 
 export const fontColorForReader = (header, nightMode, text) => {
-  const { HEADER_COLOR_1_DARK, HEADER_COLOR_1_LIGHT, WHITE_COLOR, NIGHT_BLACK } = colors;
+  const { HEADER_COLOR_1_LIGHT, WHITE_COLOR, NIGHT_BLACK } = colors;
   const { GURMUKHI, TRANSLATION, TRANSLITERATION } = constant;
 
-  const getHeaderColor1 = () => (nightMode ? HEADER_COLOR_1_DARK : HEADER_COLOR_1_LIGHT);
+  const getHeaderColor1 = () => (nightMode ? WHITE_COLOR : HEADER_COLOR_1_LIGHT);
   const getHeaderColor2 = () => (nightMode ? WHITE_COLOR : NIGHT_BLACK);
 
   const defaultColor = getHeaderColor2();
@@ -55,7 +55,8 @@ export const createDiv = (
   fontSize,
   isNightMode,
   isLarivaar,
-  punjabiTranslation = ""
+  punjabiTranslation = "",
+  fontFace = null
 ) => {
   const fontClass =
     type === constant.GURMUKHI.toLowerCase() || punjabiTranslation !== ""
@@ -66,7 +67,11 @@ export const createDiv = (
     fontSize,
     header,
     type === constant.TRANSLITERATION.toLowerCase() || type === constant.TRANSLATION.toLowerCase()
-  )}px; color: ${fontColorForReader(header, isNightMode, type.toUpperCase())};">
+  )}px;font-family: ${fontFace}; color: ${fontColorForReader(
+    header,
+    isNightMode,
+    type.toUpperCase()
+  )};">
       ${content}
     </div>
   `;
@@ -90,6 +95,10 @@ export const loadHTML = (
       ios: `${fontFace}.ttf`,
       android: `file:///android_asset/fonts/${fontFace}.ttf`,
     });
+    const defaultFontFaceURI = Platform.select({
+      ios: `${constant.GURBANI_AKHAR_TRUE}.ttf`,
+      android: `file:///android_asset/fonts/${constant.GURBANI_AKHAR_TRUE}.ttf`,
+    });
 
     const content = shabad
       .map((item) => {
@@ -105,13 +114,15 @@ export const loadHTML = (
         }
         let contentHtml = `<div id="${item.id}" class='text-item'>`;
         contentHtml += createDiv(
-          item.gurmukhi,
+          fontFace === constant.BALOO_PAAJI ? item.gurmukhiUni : item.gurmukhi,
           item.header,
           constant.GURMUKHI.toLowerCase(),
           textAlign,
           fontSize,
           isNightMode,
-          isLarivaar
+          isLarivaar,
+          "",
+          fontFace
         );
 
         if (isTransliteration) {
@@ -147,7 +158,8 @@ export const loadHTML = (
             fontSize,
             isNightMode,
             isLarivaar,
-            constant.GURMUKHI.toLowerCase()
+            constant.GURMUKHI.toLowerCase(),
+            constant.GURBANI_AKHAR_TRUE
           );
         }
 
@@ -173,7 +185,8 @@ export const loadHTML = (
       fontFace,
       content,
       isNightMode,
-      savePosition
+      savePosition,
+      defaultFontFaceURI
     );
     return htmlContent;
   } catch (error) {

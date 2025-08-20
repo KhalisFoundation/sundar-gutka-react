@@ -8,21 +8,23 @@ export const getBaniList = (language) => {
       .then((db) => {
         db.transaction((tx) => {
           tx.executeSql(
-            "SELECT ID, GurmukhiUni, Transliterations FROM Banis",
+            "SELECT ID, Gurmukhi, GurmukhiUni, Transliterations FROM Banis",
             [],
             (_tx, results) => {
               const { rows } = results;
               const count = rows.length;
               const totalResults = [];
               for (let i = 0; i < count; i += 1) {
-                const { ID, GurmukhiUni, Transliterations } = rows.item(i);
+                const { ID, Gurmukhi, GurmukhiUni, Transliterations } = rows.item(i);
 
                 totalResults.push({
                   id: ID,
-                  gurmukhi: GurmukhiUni,
+                  gurmukhi: Gurmukhi,
+                  gurmukhiUni: GurmukhiUni,
                   translit: getTranslitText(Transliterations, language),
                 });
               }
+              console.log("totalResults", totalResults);
               resolve(totalResults);
             },
             (error) => {
@@ -72,7 +74,7 @@ export const getShabadFromID = async (
     return new Promise((resolve, reject) => {
       db.transaction((tx) => {
         tx.executeSql(
-          `SELECT ID, Seq, header, Paragraph, GurmukhiUni, Visraam, Transliterations, Translations 
+          `SELECT ID, Seq, header, Paragraph,Gurmukhi, GurmukhiUni, Visraam, Transliterations, Translations 
            FROM mv_Banis_Shabad 
            WHERE Bani = ? AND ${baniLength} = 1 AND (MangalPosition IS NULL OR MangalPosition = 'current')
            ORDER BY Seq ASC;`,
@@ -86,6 +88,7 @@ export const getShabadFromID = async (
               let paragraphHeader = null;
               let prevParagraph = null;
               let gurmukhi = "";
+              let gurmukhiUni = "";
               let transliteration = "";
               let englishTranslation = "";
               let punjabiTranslation = "";
@@ -97,13 +100,15 @@ export const getShabadFromID = async (
                   ID,
                   GurmukhiBisram,
                   Visraam,
+                  Gurmukhi,
                   GurmukhiUni,
                   Paragraph,
                   header,
                   Transliterations,
                   Translations,
                 } = row;
-                const gurmukhiLine = Visraam && GurmukhiBisram ? GurmukhiBisram : GurmukhiUni;
+                const gurmukhiLine = Visraam && GurmukhiBisram ? GurmukhiBisram : Gurmukhi;
+                const gurmukhiUniLine = Visraam && GurmukhiBisram ? GurmukhiBisram : GurmukhiUni;
                 const vishraamPositions = parseVishraamPositions(
                   JSON.parse(Visraam),
                   vishraamSource
@@ -114,6 +119,16 @@ export const getShabadFromID = async (
                   isLarivar,
                   isLarivarAssist,
                 });
+                let curGurmukhiUni = createFormattedText(
+                  gurmukhiUniLine.split(" "),
+                  vishraamPositions,
+                  {
+                    isVishraam,
+                    vishraamOption,
+                    isLarivar,
+                    isLarivarAssist,
+                  }
+                );
 
                 const translationJson = JSON.parse(Translations) || {};
                 const getTranslation = (lang, field) => {
@@ -138,6 +153,17 @@ export const getShabadFromID = async (
                   );
                   curGurmukhi = replaced;
                 }
+                if (
+                  (shabadID === constant.CHOPAYI_SAHIB_ID ||
+                    shabadID === constant.REHRAAS_SAHIB_ID) &&
+                  padcched === constant.MAST_SABH_MAST
+                ) {
+                  const replaced = curGurmukhiUni.replace(
+                    /smwpqm squ suBm squ/g,
+                    constant.MAST_SABH_MAST_TUKK
+                  );
+                  curGurmukhiUni = replaced;
+                }
 
                 if (isParagraphMode) {
                   const isParagraphChange = prevParagraph !== Paragraph;
@@ -148,6 +174,7 @@ export const getShabadFromID = async (
                       paragraphResults.push({
                         id: `${paragraphId}`,
                         gurmukhi,
+                        gurmukhiUni,
                         translit: transliteration,
                         englishTranslations: englishTranslation,
                         punjabiTranslations: punjabiTranslation,
@@ -159,6 +186,7 @@ export const getShabadFromID = async (
                     paragraphId = ID;
                     paragraphHeader = header;
                     gurmukhi = curGurmukhi;
+                    gurmukhiUni = curGurmukhiUni;
                     transliteration = translit;
                     englishTranslation = English;
                     punjabiTranslation = Punjabi;
@@ -167,6 +195,7 @@ export const getShabadFromID = async (
                   } else {
                     const space = isLarivar ? "" : " ";
                     gurmukhi += `${space}${curGurmukhi}`;
+                    gurmukhiUni += `${space}${curGurmukhiUni}`;
                     transliteration += ` ${translit}`;
                     englishTranslation += ` ${English}`;
                     punjabiTranslation += ` ${Punjabi}`;
@@ -177,6 +206,7 @@ export const getShabadFromID = async (
                     paragraphResults.push({
                       id: `${paragraphId}`,
                       gurmukhi,
+                      gurmukhiUni,
                       translit: transliteration,
                       englishTranslations: englishTranslation,
                       punjabiTranslations: punjabiTranslation,
@@ -188,6 +218,7 @@ export const getShabadFromID = async (
                   totalResults.push({
                     id: `${ID}`,
                     gurmukhi: curGurmukhi,
+                    gurmukhiUni: curGurmukhiUni,
                     translit,
                     englishTranslations: English,
                     punjabiTranslations: Punjabi,
@@ -254,7 +285,7 @@ export const getBookmarksForID = (baniId, length, language) => {
       .then((db) => {
         db.transaction((tx) => {
           tx.executeSql(
-            `SELECT ID, BaniShabadID, Seq, GurmukhiUni, Transliterations, TukGurmukhiUni, TukTransliterations FROM Banis_Bookmarks WHERE Bani = ${baniId} AND BaniShabadID in (SELECT ID from mv_Banis_Shabad where Bani = ${baniId} AND ${baniLength} = 1)` +
+            `SELECT ID, BaniShabadID, Seq, Gurmukhi, GurmukhiUni, Transliterations, TukGurmukhiUni, TukTransliterations FROM Banis_Bookmarks WHERE Bani = ${baniId} AND BaniShabadID in (SELECT ID from mv_Banis_Shabad where Bani = ${baniId} AND ${baniLength} = 1)` +
               ` ORDER BY Seq ASC;`,
             [],
             (_tx, results) => {
@@ -263,8 +294,9 @@ export const getBookmarksForID = (baniId, length, language) => {
 
                 return {
                   shabadID: row.BaniShabadID,
-                  gurmukhi: row.GurmukhiUni,
-                  tukGurmukhi: row.TukGurmukhiUni,
+                  gurmukhi: row.Gurmukhi,
+                  gurmukhiUni: row.GurmukhiUni,
+                  tukGurmukhi: row.TukGurmukhi,
                   translit: getTranslitText(row.Transliterations, language),
                   tukTranslit: row.TukTransliterations
                     ? getTranslitText(row.TukTransliterations, language)

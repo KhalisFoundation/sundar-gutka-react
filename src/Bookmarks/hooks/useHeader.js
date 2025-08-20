@@ -3,15 +3,18 @@ import { Pressable } from "react-native";
 import { useSelector } from "react-redux";
 import { colors } from "@common";
 import { BackArrowIcon } from "@common/icons";
-import { styles, getHeaderStyle } from "../styles";
+import { getHeaderTitleStyle, getHeaderStyle } from "../styles";
 
 const useHeader = (navigation) => {
   const isNightMode = useSelector((state) => state.isNightMode);
-  const { headerTitleStyle } = styles;
+  const headerTitleStyle = getHeaderTitleStyle(isNightMode);
   const headerStyle = getHeaderStyle(isNightMode);
   const headerLeft = () => (
     <Pressable onPress={() => navigation.goBack()}>
-      <BackArrowIcon size={24} color={colors.READER_HEADER_COLOR} />
+      <BackArrowIcon
+        size={24}
+        color={isNightMode ? colors.WHITE_COLOR : colors.READER_HEADER_COLOR}
+      />
     </Pressable>
   );
 
