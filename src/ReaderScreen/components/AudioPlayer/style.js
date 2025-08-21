@@ -1,7 +1,7 @@
 import { StyleSheet } from "react-native";
 import { colors } from "@common";
 
-const fontFamily = "Baloo Paaji 2";
+const fontFamily = "BalooPaaji2";
 // Common values
 const SPACING = {
   xs: 4,
@@ -21,14 +21,12 @@ const BORDER_RADIUS = {
 
 const SHADOW = {
   light: {
-    shadowColor: colors.BLACK_COLOR,
     shadowOffset: { width: 0, height: 2 },
     shadowOpacity: 0.25,
     shadowRadius: 3.84,
     elevation: 5,
   },
   medium: {
-    shadowColor: colors.SHADOW_COLOR || colors.BLACK_COLOR,
     shadowOffset: { width: 0, height: 4 },
     shadowOpacity: 0.15,
     shadowRadius: 8,
@@ -39,10 +37,11 @@ const SHADOW = {
 const BACKGROUND_COLORS = {
   primary: colors.READER_HEADER_COLOR,
   secondary: "#E0E8F5",
-  light: "#e5e5e4",
+  tertiary: "#EEEEEE",
+  light: colors.READER_HEADER_COLOR_10,
   white: colors.WHITE_COLOR,
   semiTransparent: "rgba(255, 255, 255, 0.6)",
-  semiTransparentStrong: "rgba(255, 255, 255, 0.9)",
+  semiTransparentStrong: "rgba(255, 255, 255, 0.8)",
 };
 
 const TEXT_COLORS = {
@@ -74,37 +73,46 @@ const styles = StyleSheet.create({
     left: 0,
     right: 0,
     top: 0,
-    borderRadius: BORDER_RADIUS.xl,
+    borderRadius: BORDER_RADIUS.sm,
+    borderWidth: 1,
   },
   mainContainer: {
-    backgroundColor: BACKGROUND_COLORS.semiTransparent,
     position: "absolute",
     bottom: 0,
     left: 0,
     right: 0,
-    borderRadius: BORDER_RADIUS.xl,
+    borderRadius: BORDER_RADIUS.sm,
     margin: SPACING.md,
     ...SHADOW.light,
   },
 });
 
 export const audioControlBarStyles = StyleSheet.create({
+  blurOverlay: {
+    position: "absolute",
+    bottom: 0,
+    left: 0,
+    right: 0,
+    top: 0,
+    borderRadius: BORDER_RADIUS.md,
+  },
   container: {
-    borderRadius: BORDER_RADIUS.xl,
+    borderRadius: BORDER_RADIUS.md,
     position: "absolute",
     bottom: 0,
     left: 0,
     right: 0,
   },
   mainContainer: {
-    backgroundColor: BACKGROUND_COLORS.semiTransparentStrong,
-    borderRadius: BORDER_RADIUS.xl,
+    borderRadius: BORDER_RADIUS.md,
   },
   topControlBar: {
     flexDirection: "row",
     justifyContent: "space-between",
-    margin: 2,
     padding: 5,
+    width: "98%",
+    marginLeft: "auto",
+    marginRight: "auto",
   },
   leftControls: {
     flexDirection: "row",
@@ -116,23 +124,20 @@ export const audioControlBarStyles = StyleSheet.create({
   actionButton: {
     flexDirection: "row",
     alignItems: "center",
-    backgroundColor: BACKGROUND_COLORS.secondary,
-    padding: 7,
+    justifyContent: "center",
+    padding: 1,
     borderRadius: BORDER_RADIUS.xl,
-    gap: SPACING.xs,
   },
   actionButtonText: {
-    color: TEXT_COLORS.primary,
-    fontSize: FONT_SIZES.md,
-    fontWeight: FONT_WEIGHTS.medium,
+    fontSize: FONT_SIZES.sm,
+    fontWeight: FONT_WEIGHTS.normal,
     fontFamily,
+    margin: 5,
+    padding: 2,
   },
-  controlIcon: {
-    padding: SPACING.sm,
-  },
+  controlIcon: {},
   separator: {
     height: 1,
-    backgroundColor: BACKGROUND_COLORS.light,
   },
   mainSection: {
     flexDirection: "column",
@@ -146,16 +151,19 @@ export const audioControlBarStyles = StyleSheet.create({
     marginLeft: "auto",
     marginRight: "auto",
   },
+  trackInfoLeft: {
+    flexDirection: "row",
+    alignItems: "flex-end",
+    gap: SPACING.xs,
+  },
   trackName: {
     fontSize: FONT_SIZES.xl,
-    color: TEXT_COLORS.primary,
     fontFamily,
   },
-  infoTag: {
-    fontSize: FONT_SIZES.xs,
-    color: TEXT_COLORS.secondary,
-    fontStyle: "italic",
+  trackInfoText: {
+    fontSize: FONT_SIZES.sm,
     fontFamily,
+    marginBottom: 2,
   },
   playbackControls: {
     flexDirection: "row",
@@ -172,7 +180,6 @@ export const audioControlBarStyles = StyleSheet.create({
   },
   timestamp: {
     fontSize: FONT_SIZES.sm,
-    color: TEXT_COLORS.primary,
     fontFamily,
     alignSelf: "flex-end",
   },
@@ -182,7 +189,6 @@ export const audioTrackDialogStyles = StyleSheet.create({
   container: {
     zIndex: 100,
     padding: SPACING.xxl,
-    borderRadius: BORDER_RADIUS.xl,
   },
   header: {
     alignItems: "center",
@@ -192,14 +198,12 @@ export const audioTrackDialogStyles = StyleSheet.create({
     fontFamily,
     fontSize: FONT_SIZES.xl,
     fontWeight: FONT_WEIGHTS.bold,
-    color: TEXT_COLORS.primary,
     textAlign: "center",
     marginBottom: SPACING.sm,
   },
   subtitleText: {
     fontFamily,
     fontSize: FONT_SIZES.md,
-    color: TEXT_COLORS.primary,
     textAlign: "center",
     opacity: 0.8,
   },
@@ -211,7 +215,6 @@ export const audioTrackDialogStyles = StyleSheet.create({
     flexDirection: "row",
     justifyContent: "space-between",
     alignItems: "center",
-    backgroundColor: BACKGROUND_COLORS.light,
     borderRadius: BORDER_RADIUS.xl,
     padding: SPACING.lg,
     marginBottom: SPACING.md,
@@ -220,13 +223,13 @@ export const audioTrackDialogStyles = StyleSheet.create({
   },
   selectedTrackItem: {
     backgroundColor: BACKGROUND_COLORS.primary,
+    color: colors.WHITE_COLOR,
     borderColor: BACKGROUND_COLORS.primary,
   },
   trackName: {
     fontFamily,
     fontSize: FONT_SIZES.md,
     fontWeight: FONT_WEIGHTS.medium,
-    color: TEXT_COLORS.primary,
     flex: 1,
   },
   selectedTrackName: {
@@ -243,9 +246,6 @@ export const audioTrackDialogStyles = StyleSheet.create({
     alignSelf: "flex-end",
     minWidth: 120,
   },
-  playButtonDisabled: {
-    backgroundColor: colors.LIGHT_GRAY,
-  },
   playButtonText: {
     color: TEXT_COLORS.white,
     fontSize: FONT_SIZES.md,
@@ -257,18 +257,21 @@ export const audioTrackDialogStyles = StyleSheet.create({
 
 export const downloadBadgeStyles = StyleSheet.create({
   container: {
-    borderRadius: BORDER_RADIUS.sm,
+    borderTopLeftRadius: BORDER_RADIUS.xl,
+    borderTopRightRadius: BORDER_RADIUS.xl,
     marginRight: SPACING.xl,
     flexDirection: "row",
-    alignItems: "center",
     justifyContent: "center",
-    backgroundColor: BACKGROUND_COLORS.light,
+    backgroundColor: BACKGROUND_COLORS.tertiary,
     width: "35%",
     alignSelf: "flex-end",
   },
   downloadButton: {
     flexDirection: "row",
     alignItems: "center",
+    justifyContent: "center",
+    gap: SPACING.sm,
+    padding: 2,
   },
   downloadedContainer: {
     flexDirection: "row",
@@ -278,8 +281,8 @@ export const downloadBadgeStyles = StyleSheet.create({
   },
   downloadButtonText: {
     fontFamily,
-    fontSize: FONT_SIZES.xl,
-    color: TEXT_COLORS.primary,
+    fontSize: FONT_SIZES.sm,
+    fontWeight: 300,
   },
 });
 
@@ -290,7 +293,6 @@ export const minimizePlayerStyles = StyleSheet.create({
     right: SPACING.xl,
     width: "50%",
     height: 60,
-    backgroundColor: BACKGROUND_COLORS.white,
     borderRadius: BORDER_RADIUS.xl,
     padding: SPACING.xl,
     flexDirection: "row",
@@ -316,13 +318,11 @@ export const minimizePlayerStyles = StyleSheet.create({
     fontFamily,
     fontSize: FONT_SIZES.sm,
     fontWeight: FONT_WEIGHTS.bold,
-    color: TEXT_COLORS.dark,
     marginBottom: SPACING.xs,
   },
   artistName: {
     fontFamily,
     fontSize: FONT_SIZES.md,
-    color: TEXT_COLORS.dark,
     fontWeight: FONT_WEIGHTS.medium,
   },
 });

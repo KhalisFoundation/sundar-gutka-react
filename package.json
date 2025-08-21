@@ -12,6 +12,7 @@
   "dependencies": {
     "@eslint/eslintrc": "^3.3.0",
     "@eslint/js": "^9.22.0",
+    "@miblanchard/react-native-slider": "^2.6.0",
     "@notifee/react-native": "^9.1.8",
     "@react-native-async-storage/async-storage": "^2.1.2",
     "@react-native-community/blur": "^4.4.1",

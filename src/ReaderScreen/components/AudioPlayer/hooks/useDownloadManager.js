@@ -1,10 +1,5 @@
 import { useState, useEffect } from "react";
-import {
-  downloadTrack,
-  deleteTrack,
-  showDownloadConfirmation,
-  showDownloadMessage,
-} from "../utils/audioDownloader";
+import { downloadTrack, deleteTrack } from "../utils/audioDownloader";
 
 const useDownloadManager = (
   currentPlaying,
@@ -34,44 +29,36 @@ const useDownloadManager = (
 
   const handleDownload = async () => {
     if (!currentPlaying || isDownloading) return;
+    try {
+      setIsDownloading(true);
 
-    showDownloadConfirmation(
-      currentPlaying.displayName,
-      async () => {
-        try {
-          setIsDownloading(true);
-
-          const localPath = await downloadTrack(
-            currentPlaying.audioUrl,
-            currentPlaying.displayName,
-            (progress) => {
-              // Progress callback
-              console.log(`Download progress: ${progress}%`);
-            },
-            (local) => {
-              // Success callback
-              setIsDownloaded(true);
-              showDownloadMessage(true, currentPlaying.displayName);
-              addTrackToManifest(currentPlaying, local);
-            },
-            (error) => {
-              // Error callback
-              showDownloadMessage(false, currentPlaying.displayName, error.message);
-            }
-          );
-
-          addTrackToManifest(currentPlaying, localPath);
-        } catch (error) {
-          console.error("Download error:", error);
-          showDownloadMessage(false, currentPlaying.displayName, error.message);
-        } finally {
-          setIsDownloading(false);
+      const localPath = await downloadTrack(
+        currentPlaying.audioUrl,
+        currentPlaying.displayName,
+        (progress) => {
+          // Progress callback
+          console.log(`Download progress: ${progress}%`);
+        },
+        (local) => {
+          // Success callback
+          setIsDownloaded(true);
+          // showDownloadMessage(true, currentPlaying.displayName);
+          addTrackToManifest(currentPlaying, local);
+        },
+        (error) => {
+          console.log("Download error:", error);
+          // Error callback
+          // showDownloadMessage(false, currentPlaying.displayName, error.message);
         }
-      },
-      () => {
-        // User cancelled
-      }
-    );
+      );
+
+      addTrackToManifest(currentPlaying, localPath);
+    } catch (error) {
+      console.error("Download error:", error);
+      // showDownloadMessage(false, currentPlaying.displayName, error.message);
+    } finally {
+      setIsDownloading(false);
+    }
   };
 
   const handleDeleteDownload = async () => {

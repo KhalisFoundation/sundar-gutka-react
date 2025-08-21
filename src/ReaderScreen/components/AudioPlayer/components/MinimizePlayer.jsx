@@ -1,8 +1,11 @@
 import React from "react";
 import { View, Text, Pressable } from "react-native";
 import Icon from "react-native-vector-icons/MaterialIcons";
+import { useSelector } from "react-redux";
 import Svg, { Circle } from "react-native-svg";
 import PropTypes from "prop-types";
+import { colors } from "@common";
+import { PlayIcon } from "@common/icons";
 import { minimizePlayerStyles as styles } from "../style";
 
 const MinimizePlayer = ({
@@ -13,6 +16,7 @@ const MinimizePlayer = ({
   duration,
   displayName,
 }) => {
+  const isNightMode = useSelector((state) => state.isNightMode);
   // Convert time string to seconds (e.g., "0:10" -> 10, "1:30" -> 90)
   const timeToSeconds = (timeStr) => {
     if (!timeStr || typeof timeStr !== "string") {
@@ -49,7 +53,15 @@ const MinimizePlayer = ({
   const strokeDashoffset = circumference - progressValue * circumference;
 
   return (
-    <View style={styles.container}>
+    <View
+      style={[
+        styles.container,
+        {
+          backgroundColor: isNightMode ? colors.NIGHT_BLACK : colors.WHITE_COLOR,
+          shadowColor: isNightMode ? colors.NIGHT_MODE_BLACK : colors.SHADOW_COLOR,
+        },
+      ]}
+    >
       <Pressable style={styles.progressContainer} onPress={handlePlayPause}>
         {/* SVG Progress Circle */}
         <Svg width={size} height={size} style={{ position: "absolute" }}>
@@ -58,7 +70,7 @@ const MinimizePlayer = ({
             cx={size / 2}
             cy={size / 2}
             r={radius}
-            stroke="#f0f0f0"
+            stroke={colors.TERTIARY_COLOR}
             strokeWidth={strokeWidth}
             fill="transparent"
           />
@@ -67,7 +79,7 @@ const MinimizePlayer = ({
             cx={size / 2}
             cy={size / 2}
             r={radius}
-            stroke="#113979"
+            stroke={colors.READER_HEADER_COLOR}
             strokeWidth={strokeWidth}
             fill="transparent"
             strokeDasharray={strokeDasharray}
@@ -79,13 +91,38 @@ const MinimizePlayer = ({
 
         {/* Play/Pause Icon */}
         <View style={styles.playPauseButton}>
-          <Icon name={isPlaying ? "pause" : "play-arrow"} size={24} color="#113979" />
+          {isPlaying ? (
+            <Icon
+              name="pause"
+              size={30}
+              color={isNightMode ? colors.AUDIO_PLAYER_NIGHT_ICON : colors.READER_HEADER_COLOR}
+            />
+          ) : (
+            <PlayIcon
+              size={30}
+              color={isNightMode ? colors.AUDIO_PLAYER_NIGHT_ICON : colors.READER_HEADER_COLOR}
+            />
+          )}
         </View>
       </Pressable>
 
       <Pressable style={styles.textContainer} onPress={() => setIsMinimized(false)}>
-        <Text style={styles.timestamp}>{progress}</Text>
-        <Text style={styles.artistName}>{displayName}</Text>
+        <Text
+          style={[
+            styles.timestamp,
+            { color: isNightMode ? colors.AUDIO_PLAYER_NIGHT_ICON : colors.READER_HEADER_COLOR },
+          ]}
+        >
+          {progress}
+        </Text>
+        <Text
+          style={[
+            styles.artistName,
+            { color: isNightMode ? colors.AUDIO_PLAYER_NIGHT_ICON : colors.READER_HEADER_COLOR },
+          ]}
+        >
+          {displayName}
+        </Text>
       </Pressable>
     </View>
   );

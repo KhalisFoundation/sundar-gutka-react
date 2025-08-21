@@ -1,42 +1,28 @@
 import React from "react";
-import Svg, { Rect, Path } from "react-native-svg";
+import Svg, { Path } from "react-native-svg";
 import PropTypes from "prop-types";
 
-const PlayIcon = ({
-  width = 150,
-  height = 56,
-  iconColor = "#7789A7", // desaturated blue for the triangle
-}) => {
-  const r = height / 2; // full rounding for the pill
-  // Triangle center
-  const cx = width * 0.42;
-  const cy = height / 2;
-  const size = height * 0.37; // triangle size
-  const corner = size * 0.25; // corner radius for triangle
-
-  // Path with rounded corners
-  const path = `
-    M ${cx - size * 0.55 + corner} ${cy - size}
-    Q ${cx - size * 0.55} ${cy - size}, ${cx - size * 0.55} ${cy - size + corner}
-    L ${cx - size * 0.55} ${cy + size - corner}
-    Q ${cx - size * 0.55} ${cy + size}, ${cx - size * 0.55 + corner} ${cy + size}
-    L ${cx + size - corner} ${cy + corner}
-    Q ${cx + size} ${cy}, ${cx + size - corner} ${cy - corner}
-    Z
-  `;
-
+const PlayIcon = ({ size = 24, color }) => {
   return (
-    <Svg width={width} height={height}>
-      <Rect x={0} y={0} width={width} height={height} rx={r} ry={r} fill="transparent" />
-      <Path d={path} fill={iconColor} />
+    <Svg
+      width={size}
+      height={size}
+      fill={color}
+      stroke={color}
+      stroke-width="1.5"
+      viewBox="0 0 24 24"
+      stroke-linecap="round"
+      stroke-linejoin="round"
+      xmlns="http://www.w3.org/2000/svg"
+    >
+      <Path d="M14.581 9.402C16.194 10.718 17 11.375 17 12.5s-.806 1.783-2.419 3.098a23 23 0 0 1-1.292.99c-.356.25-.759.508-1.176.762-1.609.978-2.413 1.467-3.134.926-.722-.542-.787-1.675-.918-3.943A33 33 0 0 1 8 12.5c0-.563.023-1.192.06-1.833.132-2.267.197-3.401.919-3.943.721-.541 1.525-.052 3.134.926.417.254.82.512 1.176.762a23 23 0 0 1 1.292.99" />
     </Svg>
   );
 };
 
 PlayIcon.propTypes = {
-  width: PropTypes.number.isRequired,
-  height: PropTypes.number.isRequired,
-  iconColor: PropTypes.string.isRequired,
+  size: PropTypes.number.isRequired,
+  color: PropTypes.string.isRequired,
 };
 
 export default PlayIcon;

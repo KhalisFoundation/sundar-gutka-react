@@ -1,15 +1,14 @@
 import React, { useState } from "react";
 import { View, Text, ScrollView, Pressable } from "react-native";
-import { Icon } from "@rneui/themed";
 import PropTypes from "prop-types";
-import { colors } from "@common";
-import { PlayIcon } from "@common/icons";
+import { colors, STRINGS } from "@common";
+import { PlayIcon, ArrowRightIcon } from "@common/icons";
+import { useSelector } from "react-redux";
 import { audioTrackDialogStyles as styles } from "../style";
 
 const AudioTrackDialog = ({ handleTrackSelect, title = "", tracks = [] }) => {
-  console.log("tracks", tracks);
   const [selectedTrack, setSelectedTrack] = useState(null);
-
+  const isNightMode = useSelector((state) => state.isNightMode);
   const handleSelectTrack = (track) => {
     setSelectedTrack(track);
   };
@@ -24,8 +23,22 @@ const AudioTrackDialog = ({ handleTrackSelect, title = "", tracks = [] }) => {
     <View style={styles.container}>
       {/* Header */}
       <View style={styles.header}>
-        <Text style={styles.welcomeText}>Welcome to Sunder Gutka Audio</Text>
-        <Text style={styles.subtitleText}>Please choose a track for {title}</Text>
+        <Text
+          style={[
+            styles.welcomeText,
+            { color: isNightMode ? colors.AUDIO_PLAYER_NIGHT_ICON : colors.READER_HEADER_COLOR },
+          ]}
+        >
+          {STRINGS.welcome_to_sundar_gutka}
+        </Text>
+        <Text
+          style={[
+            styles.subtitleText,
+            { color: isNightMode ? colors.AUDIO_PLAYER_NIGHT_ICON : colors.READER_HEADER_COLOR },
+          ]}
+        >
+          {STRINGS.please_choose_a_track} {title}
+        </Text>
       </View>
 
       {/* Track Selection List */}
@@ -35,6 +48,9 @@ const AudioTrackDialog = ({ handleTrackSelect, title = "", tracks = [] }) => {
             key={track.id}
             style={[
               styles.trackItem,
+              {
+                backgroundColor: isNightMode ? colors.NIGHT_BLACK : colors.READER_HEADER_COLOR_10,
+              },
               selectedTrack && track.id === selectedTrack?.id && styles.selectedTrackItem,
             ]}
             onPress={() => handleSelectTrack(track)}
@@ -43,6 +59,9 @@ const AudioTrackDialog = ({ handleTrackSelect, title = "", tracks = [] }) => {
             <Text
               style={[
                 styles.trackName,
+                {
+                  color: isNightMode ? colors.AUDIO_PLAYER_NIGHT_ICON : colors.READER_HEADER_COLOR,
+                },
                 selectedTrack && track.id === selectedTrack.id && styles.selectedTrackName,
               ]}
             >
@@ -50,9 +69,8 @@ const AudioTrackDialog = ({ handleTrackSelect, title = "", tracks = [] }) => {
             </Text>
 
             <PlayIcon
-              width={24}
-              height={24}
-              iconColor={
+              size={30}
+              color={
                 selectedTrack && selectedTrack.id === track.id ? colors.WHITE_COLOR : "#808fad"
               }
             />
@@ -67,8 +85,8 @@ const AudioTrackDialog = ({ handleTrackSelect, title = "", tracks = [] }) => {
         disabled={!selectedTrack}
         activeOpacity={0.8}
       >
-        <Text style={styles.playButtonText}>Play</Text>
-        <Icon name="arrow-forward" type="material" size={20} color={colors.WHITE_COLOR} />
+        <Text style={styles.playButtonText}>{STRINGS.PLAY}</Text>
+        <ArrowRightIcon size={24} color={colors.WHITE_COLOR} />
       </Pressable>
     </View>
     // </BlurView>

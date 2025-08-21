@@ -4,24 +4,18 @@ import PropTypes from "prop-types";
 import { colors } from "@common";
 
 export const ResizeIcon = ({ size = 28, color = colors.READER_HEADER_COLOR, strokeWidth = 2 }) => (
-  <Svg width={size} height={size} viewBox="0 0 24 24" fill="none">
-    <Path
-      d="M6 18 L10 14 M6 14 H10 M10 18 V14"
-      stroke={color}
-      strokeWidth={strokeWidth}
-      strokeLinecap="round"
-      strokeLinejoin="round"
-      vectorEffect="non-scaling-stroke"
-    />
-    {/* Top-right arrow (points ↙) */}
-    <Path
-      d="M18 6 L14 10 M18 10 H14 M14 6 V10"
-      stroke={color}
-      strokeWidth={strokeWidth}
-      strokeLinecap="round"
-      strokeLinejoin="round"
-      vectorEffect="non-scaling-stroke"
-    />
+  <Svg
+    width={size}
+    height={size}
+    fill="none"
+    stroke={color}
+    stroke-width={strokeWidth}
+    viewBox="0 0 24 24"
+    stroke-linecap="round"
+    stroke-linejoin="round"
+    xmlns="http://www.w3.org/2000/svg"
+  >
+    <Path d="M20 10h-6V4M4 14h6v6M20 4l-6 6m-4 4-6 6" />
   </Svg>
 );
 

@@ -1,9 +1,8 @@
 import React from "react";
-import Svg, { Path } from "react-native-svg";
+import { Svg, Path } from "react-native-svg";
 import PropTypes from "prop-types";
-import { colors } from "@common";
 
-const CloseIcon = ({ size = 24, color = colors.READER_HEADER_COLOR }) => {
+const ArrowRightIcon = ({ size = 24, color }) => {
   return (
     <Svg
       width={size}
@@ -16,14 +15,14 @@ const CloseIcon = ({ size = 24, color = colors.READER_HEADER_COLOR }) => {
       stroke-linejoin="round"
       xmlns="http://www.w3.org/2000/svg"
     >
-      <Path d="M21 12a9 9 0 1 1-18 0 9 9 0 0 1 18 0m-6-3-6 6m0-6 6 6" />
+      <Path d="m18 8 4 4m0 0-4 4m4-4H2" />
     </Svg>
   );
 };
 
-CloseIcon.propTypes = {
+ArrowRightIcon.propTypes = {
   size: PropTypes.number.isRequired,
   color: PropTypes.string.isRequired,
 };
 
-export default CloseIcon;
+export default ArrowRightIcon;

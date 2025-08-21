@@ -186,20 +186,20 @@ export const showDownloadConfirmation = (trackTitle, onConfirm, onCancel) => {
 /**
  * Show download success/failure messages
  */
-export const showDownloadMessage = (success, trackTitle, errorMessage = null) => {
-  if (success) {
-    Alert.alert(
-      "Download Complete",
-      `"${trackTitle}" has been downloaded successfully and is available for offline listening.`,
-      [{ text: "OK" }]
-    );
-  } else {
-    Alert.alert(
-      "Download Failed",
-      `Failed to download "${trackTitle}". ${
-        errorMessage || "Please check your internet connection and try again."
-      }`,
-      [{ text: "OK" }]
-    );
-  }
-};
+// export const showDownloadMessage = (success, trackTitle, errorMessage = null) => {
+//   if (success) {
+//     Alert.alert(
+//       "Download Complete",
+//       `"${trackTitle}" has been downloaded successfully and is available for offline listening.`,
+//       [{ text: "OK" }]
+//     );
+//   } else {
+//     Alert.alert(
+//       "Download Failed",
+//       `Failed to download "${trackTitle}". ${
+//         errorMessage || "Please check your internet connection and try again."
+//       }`,
+//       [{ text: "OK" }]
+//     );
+//   }
+// };

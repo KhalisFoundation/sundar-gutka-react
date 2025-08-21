@@ -4,6 +4,7 @@ import { useSelector } from "react-redux";
 import PropTypes from "prop-types";
 import { exists } from "react-native-fs";
 import { BlurView } from "@react-native-community/blur";
+import { colors } from "@common";
 import { useAudioManifest, useDownloadManager, useTrackPlayer } from "./hooks";
 import { AudioTrackDialog, AudioControlBar } from "./components";
 import { formatUrlForTrackPlayer, isLocalFile } from "./utils/urlHelper";
@@ -12,7 +13,7 @@ import styles from "./style";
 const AudioPlayer = ({ baniID, title, shouldNavigateBack }) => {
   const [showTrackModal, setShowTrackModal] = useState(true);
   const isAudioAutoPlay = useSelector((state) => state.isAudioAutoPlay);
-
+  const isNightMode = useSelector((state) => state.isNightMode);
   // Custom hooks
   const {
     tracks,
@@ -112,7 +113,6 @@ const AudioPlayer = ({ baniID, title, shouldNavigateBack }) => {
       // Close the modal
       setShowTrackModal(false);
 
-      console.log("selectedTrack", selectedTrack);
       // Auto-play the new track if audio is enabled
       if (isAudioEnabled) {
         const formattedUrl = formatUrlForTrackPlayer(selectedTrack.audioUrl);
@@ -146,12 +146,23 @@ const AudioPlayer = ({ baniID, title, shouldNavigateBack }) => {
   }
 
   return (
-    <View style={styles.mainContainer}>
+    <View
+      style={[
+        styles.mainContainer,
+        {
+          backgroundColor: isNightMode ? colors.NIGHT_BLACK : colors.SEMI_TRANSPARENT,
+          shadowColor: isNightMode ? colors.NIGHT_BLACK : colors.WHITE_COLOR,
+        },
+      ]}
+    >
       <BlurView
-        style={styles.blurOverlay}
-        blurType="light"
+        style={[
+          styles.blurOverlay,
+          { borderColor: isNightMode ? colors.NIGHT_BLACK : colors.SEMI_TRANSPARENT },
+        ]}
+        blurType={isNightMode ? "dark" : "light"}
         blurAmount={5}
-        reducedTransparencyFallbackColor="#ffffff"
+        reducedTransparencyFallbackColor={isNightMode ? colors.BLACK_COLOR : colors.WHITE_COLOR}
       />
       {showTrackModal ? (
         <AudioTrackDialog handleTrackSelect={handleTrackSelect} title={title} tracks={tracks} />

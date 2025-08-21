@@ -8,61 +8,25 @@ export const DownloadIcon = ({
   color = colors.READER_HEADER_COLOR,
   strokeWidth = 1,
 }) => (
-  <Svg width={size} height={size} viewBox="0 0 24 24" fill="none">
-    {/* Cloud outline */}
-    <Path
-      d="
-        M7.5 18
-        H16.5
-        C18.43 18 20 16.43 20 14.5
-        C20 12.84 18.78 11.46 17.17 11.23
-        C16.67 8.98 14.62 7.25 12 7.25
-        C9.48 7.25 7.55 8.94 7.08 11.12
-        C5.58 11.33 4.25 12.66 4.25 14.25
-        C4.25 16.08 5.67 18 7.5 18
-      "
-      stroke={color}
-      strokeWidth={strokeWidth}
-      strokeLinecap="round"
-      strokeLinejoin="round"
-      fill="none"
-      vectorEffect="non-scaling-stroke"
-    />
-
-    {/* Arrow shaft */}
-    <Path
-      d="M12 10.5 V16.5"
-      stroke={color}
-      strokeWidth={strokeWidth}
-      strokeLinecap="round"
-      strokeLinejoin="round"
-      fill="none"
-      vectorEffect="non-scaling-stroke"
-    />
-
-    {/* Arrow head */}
-    <Path
-      d="M9.75 14.25 L12 16.5 L14.25 14.25"
-      stroke={color}
-      strokeWidth={strokeWidth}
-      strokeLinecap="round"
-      strokeLinejoin="round"
-      fill="none"
-      vectorEffect="non-scaling-stroke"
-    />
+  <Svg
+    width={size}
+    height={size}
+    fill="none"
+    stroke={color}
+    stroke-width={strokeWidth}
+    viewBox="0 0 24 24"
+    stroke-linecap="round"
+    stroke-linejoin="round"
+    xmlns="http://www.w3.org/2000/svg"
+  >
+    <Path d="m11.966 11.136-.004 8M19.825 17c4.495-3.16.475-7.73-3.706-7.73C13.296-1.732-3.265 7.368 4.074 15.662m11.07 1.156L11.962 20 8.78 16.818" />
   </Svg>
 );
 
 DownloadIcon.propTypes = {
-  size: PropTypes.number,
-  color: PropTypes.string,
-  strokeWidth: PropTypes.number,
-};
-
-DownloadIcon.defaultProps = {
-  size: 28,
-  color: colors.READER_HEADER_COLOR,
-  strokeWidth: 2,
+  size: PropTypes.number.isRequired,
+  color: PropTypes.string.isRequired,
+  strokeWidth: PropTypes.number.isRequired,
 };
 
 export default DownloadIcon;

@@ -1,8 +1,9 @@
 import React from "react";
 import { View, Text, Pressable } from "react-native";
-import Icon from "react-native-vector-icons/MaterialIcons";
 import PropTypes from "prop-types";
+import { useSelector } from "react-redux";
 import { DownloadIcon } from "@common/icons";
+import { colors, STRINGS } from "@common";
 import { downloadBadgeStyles as styles } from "../style";
 
 const DownloadBadge = ({
@@ -11,30 +12,35 @@ const DownloadBadge = ({
   isDownloading,
   isAudioEnabled,
   onDownload,
-  onDelete,
 }) => {
+  const isNightMode = useSelector((state) => state.isNightMode);
   if (!currentPlaying) {
     return null;
   }
   return (
-    <View style={styles.container}>
-      {isDownloaded ? (
-        <View style={styles.downloadedContainer}>
-          <Icon name="check-circle" size={30} color="#28a745" />
-          <Text style={styles.downloadedText}>Downloaded</Text>
-          <Pressable onPress={onDelete} style={styles.deleteButton}>
-            <Icon name="delete" size={30} color="#dc3545" />
-          </Pressable>
-        </View>
-      ) : (
+    <View
+      style={[
+        styles.container,
+        { backgroundColor: isNightMode ? colors.NIGHT_MODE_BLACK : colors.TERTIARY_COLOR },
+      ]}
+    >
+      {!isDownloaded && (
         <Pressable
           onPress={onDownload}
           style={styles.downloadButton}
           disabled={!isAudioEnabled || isDownloading}
         >
-          <DownloadIcon size={35} color={isAudioEnabled && !isDownloading ? "#1976d2" : "#ccc"} />
-          <Text style={[styles.downloadButtonText]}>
-            {isDownloading ? "Downloading." : "Download"}
+          <DownloadIcon
+            size={20}
+            color={isNightMode ? colors.WHITE_COLOR : colors.READER_HEADER_COLOR}
+          />
+          <Text
+            style={[
+              styles.downloadButtonText,
+              { color: isNightMode ? colors.WHITE_COLOR : colors.READER_HEADER_COLOR },
+            ]}
+          >
+            {isDownloading ? STRINGS.DOWNLOADING : STRINGS.DOWNLOAD}
           </Text>
         </Pressable>
       )}
@@ -48,7 +54,6 @@ DownloadBadge.propTypes = {
   isDownloaded: PropTypes.bool.isRequired,
   isAudioEnabled: PropTypes.bool.isRequired,
   onDownload: PropTypes.func.isRequired,
-  onDelete: PropTypes.func.isRequired,
 };
 
 export default DownloadBadge;
