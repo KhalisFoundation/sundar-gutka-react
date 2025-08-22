@@ -1,19 +1,17 @@
-import { StyleSheet } from "react-native";
-import { colors } from "@common";
-
-const styles = StyleSheet.create({
+const createStyles = (theme) => ({
   baniDBLogoImage: { alignSelf: "center" },
-  mainWrapper: { flex: 1 },
+  mainWrapper: { flex: 1, backgroundColor: theme.colors.surface },
   container: {
     padding: 16,
     margin: 16,
     borderRadius: 8,
     // shadow / elevation...
-    shadowColor: colors.NIGHT_BLACK,
+    shadowColor: theme.colors.shadow,
     shadowOpacity: 0.1,
     shadowRadius: 4,
     shadowOffset: { width: 0, height: 2 },
     elevation: 2,
+    backgroundColor: theme.colors.surface,
   },
   row: {
     flexDirection: "row",
@@ -23,15 +21,16 @@ const styles = StyleSheet.create({
   label: {
     fontSize: 16,
     marginRight: 12,
+    color: theme.colors.primaryText,
   },
   button: {
-    backgroundColor: colors.BANIDB_LIGHT,
+    backgroundColor: theme.colors.baniDB,
     paddingHorizontal: 16,
     paddingVertical: 8,
     borderRadius: 6,
   },
   buttonDisabled: {
-    backgroundColor: colors.LIGHT_GRAY,
+    backgroundColor: theme.colors.textDisabled,
   },
   buttonText: {
     fontSize: 14,
@@ -46,12 +45,13 @@ const styles = StyleSheet.create({
     top: "40%",
     fontSize: 18,
     fontWeight: "600",
+    color: theme.colors.primaryText,
   },
-  headerTitleStyle: { color: colors.WHITE_COLOR, fontWeight: "normal", fontSize: 18 },
-  headerStyle: { backgroundColor: colors.BANIDB_LIGHT },
+  headerTitleStyle: { color: theme.colors.primaryText, fontWeight: "normal", fontSize: 18 },
+  headerStyle: { backgroundColor: theme.colors.baniDB },
   baniDBContainer: { flexDirection: "row", justifyContent: "center" },
   baniDBImage: { width: 100, height: 100, margin: 10 },
-  baniDBText: { fontSize: 50, marginTop: 8 },
+  baniDBText: { fontSize: 50, marginTop: 8, color: theme.colors.primaryText },
 });
 
-export default styles;
+export default createStyles;

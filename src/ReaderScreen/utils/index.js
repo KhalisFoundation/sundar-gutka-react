@@ -1,14 +1,13 @@
 import { Platform } from "react-native";
-import { colors, constant, baseFontSize, logError, logMessage } from "@common";
+import { constant, baseFontSize, logError, logMessage } from "@common";
 import htmlTemplate from "./gutkahtml";
 import script from "./gutkaScript";
 
-export const fontColorForReader = (header, nightMode, text) => {
-  const { HEADER_COLOR_1_DARK, HEADER_COLOR_1_LIGHT, WHITE_COLOR, NIGHT_BLACK } = colors;
+export const fontColorForReader = (header, theme, text) => {
   const { GURMUKHI, TRANSLATION, TRANSLITERATION } = constant;
 
-  const getHeaderColor1 = () => (nightMode ? HEADER_COLOR_1_DARK : HEADER_COLOR_1_LIGHT);
-  const getHeaderColor2 = () => (nightMode ? WHITE_COLOR : NIGHT_BLACK);
+  const getHeaderColor1 = () => theme.colors.highlightTuk;
+  const getHeaderColor2 = () => theme.colors.primaryText;
 
   const defaultColor = getHeaderColor2();
   const gurmukhiMapping = {
@@ -53,7 +52,7 @@ export const createDiv = (
   type,
   textAlign,
   fontSize,
-  isNightMode,
+  theme,
   isLarivaar,
   punjabiTranslation = ""
 ) => {
@@ -66,7 +65,7 @@ export const createDiv = (
     fontSize,
     header,
     type === constant.TRANSLITERATION.toLowerCase() || type === constant.TRANSLATION.toLowerCase()
-  )}px; color: ${fontColorForReader(header, isNightMode, type.toUpperCase())};">
+  )}px; color: ${fontColorForReader(header, theme, type.toUpperCase())};">
       ${content}
     </div>
   `;
@@ -80,12 +79,12 @@ export const loadHTML = (
   isEnglishTranslation,
   isPunjabiTranslation,
   isSpanishTranslation,
-  isNightMode,
+  theme,
   isLarivaar,
   savePosition
 ) => {
   try {
-    const backColor = isNightMode ? colors.NIGHT_BLACK : colors.WHITE_COLOR;
+    const backColor = theme.colors.surface;
     const fileUri = Platform.select({
       ios: `${fontFace}.ttf`,
       android: `file:///android_asset/fonts/${fontFace}.ttf`,
@@ -110,7 +109,7 @@ export const loadHTML = (
           constant.GURMUKHI.toLowerCase(),
           textAlign,
           fontSize,
-          isNightMode,
+          theme,
           isLarivaar
         );
 
@@ -121,7 +120,7 @@ export const loadHTML = (
             constant.TRANSLITERATION.toLowerCase(),
             textAlign,
             fontSize,
-            isNightMode,
+            theme,
             isLarivaar
           );
         }
@@ -133,7 +132,7 @@ export const loadHTML = (
             constant.TRANSLATION.toLowerCase(),
             textAlign,
             fontSize,
-            isNightMode,
+            theme,
             isLarivaar
           );
         }
@@ -145,7 +144,7 @@ export const loadHTML = (
             constant.TRANSLATION.toLowerCase(),
             textAlign,
             fontSize,
-            isNightMode,
+            theme,
             isLarivaar,
             constant.GURMUKHI.toLowerCase()
           );
@@ -158,7 +157,7 @@ export const loadHTML = (
             constant.TRANSLATION.toLowerCase(),
             textAlign,
             fontSize,
-            isNightMode,
+            theme,
             isLarivaar
           );
         }
@@ -167,14 +166,7 @@ export const loadHTML = (
         return contentHtml;
       })
       .join("");
-    const htmlContent = htmlTemplate(
-      backColor,
-      fileUri,
-      fontFace,
-      content,
-      isNightMode,
-      savePosition
-    );
+    const htmlContent = htmlTemplate(backColor, fileUri, fontFace, content, theme, savePosition);
     return htmlContent;
   } catch (error) {
     logError(error);

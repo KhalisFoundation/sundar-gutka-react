@@ -1,4 +1,67 @@
-import styles from "./styles";
-import { iconNightColor, nightModeStyles, nightModeColor } from "./nightModeStyles";
-
-export { styles, iconNightColor, nightModeColor, nightModeStyles };
+const createStyles = (theme) => ({
+  nightBackColor: { backgdroundColor: theme.staticColors.NIGHT_BLACK },
+  iconStyle: { alignSelf: "flex-start" },
+  imageStyle: {},
+  headerView: { backgroundColor: theme.colors.primaryVariant, padding: 15 },
+  settingText: {
+    fontSize: 18,
+    alignSelf: "center",
+    color: theme.colors.primaryText,
+    position: "absolute",
+    top: 20,
+  },
+  settingsView: { backgroundColor: theme.colors.primaryVariant },
+  displayOptionsText: {
+    padding: 7,
+    backgroundColor: theme.colors.surface,
+    color: theme.colors.primaryText,
+  },
+  bottomSheetTitle: {
+    textAlign: "center",
+    fontSize: 20,
+    padding: 20,
+    borderTopLeftRadius: 20,
+    borderTopRightRadius: 20,
+  },
+  titleInfoStyle: {
+    fontSize: 12,
+  },
+  end: { padding: 40, backgroundColor: theme.colors.surface },
+  avatarStyle: { width: "100%", height: "100%", resizeMode: "contain" },
+  viewWrapper: {
+    justifyContent: "center",
+    marginTop: "auto",
+    marginLeft: "auto",
+    marginRight: "auto",
+    bottom: 0,
+    borderTopLeftRadius: 20,
+    borderTopRightRadius: 20,
+    overflow: "hidden",
+  },
+  width_100: {
+    width: "98%",
+  },
+  width_90: {
+    width: "70%",
+  },
+  blurViewStyle: { position: "absolute", top: 0, bottom: 0, left: 0, right: 0 },
+  androidViewWrapper: {
+    flex: 1,
+    justifyContent: "flex-end",
+    backgroundColor: "transparent",
+    width: "100%",
+  },
+  databaseUpdateBannerWrapper: {
+    fles: 1,
+    flexDirection: "row",
+    backgroundColor: theme.colors.primary,
+    justifyContent: "center",
+    alignItems: "center",
+    padding: 5,
+  },
+  baniDbImage: { width: 20, height: 20, marginRight: 10 },
+  updateText: { color: theme.staticColors.WHITE_COLOR, fontSize: 14 },
+  listItemTitle: { color: theme.colors.primaryText },
+  containerNightStyles: { backgroundColor: theme.colors.surfaceGrey },
+});
+export default createStyles;

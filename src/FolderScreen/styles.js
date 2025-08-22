@@ -1,8 +1,8 @@
-import { colors, constant } from "@common";
+import { constant } from "@common";
 
-const getHeaderStyles = () => ({
+const getHeaderStyles = (theme) => ({
   headerTitleStyle: {
-    color: colors.WHITE_COLOR,
+    color: theme.colors.primaryText,
     fontWeight: "normal",
     fontFamily: constant.GURBANI_AKHAR_TRUE,
     fontSize: 20,

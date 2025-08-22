@@ -10,16 +10,13 @@ import {
   StatusBarComponent,
   SafeArea,
 } from "@common";
-import useThemedStyles from "@common/hooks/useThemedStyles";
 import useTheme from "@common/context";
 import useHeader from "./hooks/useHeader";
 import useBookmarks from "./hooks/useBookmarks";
-import createStyles from "./styles";
 
 const Bookmarks = ({ navigation, route }) => {
   logMessage(constant.BOOKMARKS);
   useHeader(navigation);
-  const styles = useThemedStyles(createStyles);
   const { theme } = useTheme();
   const { bookmarksData } = useBookmarks(route);
   const dispatch = useDispatch();
@@ -32,8 +29,8 @@ const Bookmarks = ({ navigation, route }) => {
 
   return (
     <SafeArea backgroundColor={theme.colors.surface}>
-      <StatusBarComponent backgroundColor={styles.headerStyle.backgroundColor} />
-      <BaniList data={bookmarksData} onPress={onPress} isFolderScreen />
+      <StatusBarComponent backgroundColor={theme.colors.primaryVariant} />
+      <BaniList data={bookmarksData} onPress={onPress} isFolderScreen theme={theme} />
     </SafeArea>
   );
 };

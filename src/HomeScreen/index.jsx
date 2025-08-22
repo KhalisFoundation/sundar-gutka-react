@@ -15,7 +15,8 @@ import {
   SafeArea,
 } from "@common";
 import useTheme from "@common/context";
-import styles from "./styles";
+import useThemedStyles from "@common/hooks/useThemedStyles";
+import createStyles from "./styles";
 import BaniHeader from "./components/BaniHeader";
 import { useBaniLength, useBaniList, useDatabaseUpdateCheck } from "./hooks";
 import { setBaniOrder } from "../common/actions";
@@ -23,6 +24,7 @@ import { setBaniOrder } from "../common/actions";
 const HomeScreen = React.memo(({ navigation }) => {
   logMessage(constant.HOME_SCREEN);
   const { theme } = useTheme();
+  const styles = useThemedStyles(createStyles);
   const { navigate } = navigation;
   const { baniListData } = useBaniList();
   const language = useSelector((state) => state.language);
@@ -34,7 +36,6 @@ const HomeScreen = React.memo(({ navigation }) => {
   const { baniLengthSelector } = useBaniLength();
   const dispatch = useDispatch();
 
-  console.log("theme", theme.colors.primary);
   useEffect(() => {
     dispatch(actions.setLanguage(language));
     const order = validateBaniOrder(baniOrder);

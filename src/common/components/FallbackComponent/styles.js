@@ -1,12 +1,9 @@
-import { StyleSheet } from "react-native";
-import { colors } from "@common";
-
-const styles = StyleSheet.create({
+const createStyles = (theme) => ({
   container: {
     flex: 1,
     justifyContent: "center",
     alignItems: "center",
-    backgroundColor: colors.WHITE_COLOR,
+    backgroundColor: theme.colors.surface,
     padding: 8,
     textAlign: "center",
   },
@@ -25,4 +22,4 @@ const styles = StyleSheet.create({
   },
   btnWrap: { flexDirection: "row" },
 });
-export default styles;
+export default createStyles;

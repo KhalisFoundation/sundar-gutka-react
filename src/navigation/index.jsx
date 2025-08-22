@@ -1,9 +1,10 @@
 import React from "react";
 import { NavigationContainer } from "@react-navigation/native";
 import { createNativeStackNavigator } from "@react-navigation/native-stack";
-import { useSelector } from "react-redux";
 import { Icon } from "@rneui/themed";
-import { colors, navigationRef, stopTrace, resetTrace, startPerformanceTrace } from "@common";
+import { navigationRef, stopTrace, resetTrace, startPerformanceTrace } from "@common";
+import useTheme from "@common/context";
+import useThemedStyles from "@common/hooks/useThemedStyles";
 import HomeScreen from "../HomeScreen";
 import Reader from "../ReaderScreen";
 import Settings from "../Settings";
@@ -12,24 +13,23 @@ import EditBaniOrder from "../EditBaniOrder";
 import Bookmarks from "../Bookmarks";
 import ReminderOptions from "../Settings/components/reminders/ReminderOptions";
 import FolderScreen from "../FolderScreen";
-import { SettingsStyle } from "./style";
+import SettingsStyle from "./style";
 import DatabaseUpdateScreen from "../DatabaseUpdate";
 
 const Stack = createNativeStackNavigator();
 
-const headerLeft = (navigation, isNightMode) => (
+const headerLeft = (navigation, theme) => (
   <Icon
     name="arrow-back"
     size={30}
     onPress={() => navigation.goBack()}
-    color={isNightMode ? colors.TOOLBAR_TINT : colors.TOOLBAR_TINT_DARK}
+    color={theme.colors.primaryText}
   />
 );
 const Navigation = () => {
   const trace = React.useRef(null);
-  const isNightMode = useSelector((state) => state.isNightMode);
-  const settingsStyle = SettingsStyle(isNightMode);
-  const { headerTitleStyle, headerStyle } = settingsStyle;
+  const { theme } = useTheme();
+  const settingStyle = useThemedStyles(SettingsStyle);
 
   const handlingStateChange = async (state) => {
     if (trace.current) {
@@ -63,9 +63,9 @@ const Navigation = () => {
         <Stack.Screen name="Reader" component={Reader} options={{ headerShown: false }} />
         <Stack.Screen
           options={({ navigation }) => ({
-            headerLeft: () => headerLeft(navigation, isNightMode),
-            headerTitleStyle,
-            headerStyle,
+            headerLeft: () => headerLeft(navigation, theme),
+            headerTitleStyle: settingStyle.headerTitleStyle,
+            headerStyle: settingStyle.headerStyle,
           })}
           name="Settings"
           component={Settings}

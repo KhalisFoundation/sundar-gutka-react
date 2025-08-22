@@ -1,10 +1,9 @@
-import { StyleSheet } from "react-native";
 import colors from "../../colors";
 import constant from "../../constant";
 
-const styles = StyleSheet.create({
+const createStyles = (theme) => ({
   heading: {
-    color: colors.TOOLBAR_TINT,
+    color: theme.colors.primaryText,
     fontFamily: constant.GURBANI_AKHAR_THICK_TRUE,
     textAlign: "center",
     fontSize: 52,
@@ -18,18 +17,18 @@ const styles = StyleSheet.create({
   },
   baniLengthMessage: {
     marginTop: 15,
-    color: colors.TOOLBAR_TINT,
+    color: theme.colors.primaryText,
     fontSize: 14,
   },
   textPreferrence: {
     marginTop: 15,
-    color: colors.TOOLBAR_COLOR_ALT,
+    color: theme.colors.primaryVariant,
     fontWeight: "bold",
     fontSize: 18,
   },
   button: {
-    backgroundColor: colors.WHITE_COLOR,
-    color: colors.primary,
+    backgroundColor: theme.colors.surface,
+    color: theme.colors.primaryText,
     padding: 15,
     marginTop: 15,
     fontSize: 24,
@@ -38,13 +37,13 @@ const styles = StyleSheet.create({
     textTransform: "uppercase",
   },
   helpText: {
-    color: colors.TOOLBAR_COLOR_ALT,
+    color: theme.colors.primaryVariant,
     fontWeight: "bold",
     fontStyle: "italic",
     fontSize: 12,
   },
   moreInfo: {
-    color: colors.TOOLBAR_TINT,
+    color: theme.colors.primaryText,
     fontWeight: "normal",
     fontSize: 12,
   },
@@ -54,4 +53,4 @@ const styles = StyleSheet.create({
     marginTop: 15,
   },
 });
-export default styles;
+export default createStyles;

@@ -1,19 +1,22 @@
-import { StyleSheet } from "react-native";
-import { colors, constant } from "@common";
+import { constant } from "@common";
 
-const styles = StyleSheet.create({
+const createStyles = (theme) => ({
   container: { flex: 1, marginTop: 0 },
-  header: { backgroundColor: colors.primary },
-  fateh: { color: colors.TOOLBAR_TINT, fontSize: 18, textAlign: "center", margin: 5 },
+  header: { backgroundColor: theme.colors.primary },
+  fateh: { color: theme.staticColors.WHITE_COLOR, fontSize: 18, textAlign: "center", margin: 5 },
   headerDesign: {
     fontSize: 32,
-    color: colors.TOOLBAR_TINT,
+    color: theme.staticColors.WHITE_COLOR,
     fontFamily: constant.GURBANI_AKHAR_TRUE,
   },
-  headerTitle: { fontSize: 28, color: colors.TOOLBAR_TINT },
+  headerTitle: { fontSize: 28, color: theme.staticColors.WHITE_COLOR },
   titleContainer: { textAlign: "center", margin: 5 },
-  settingIcon: { position: "absolute", bottom: 10, right: 5 },
-  headerFatehStyle: { color: colors.TOOLBAR_TINT, fontSize: 22 },
+  settingIcon: {
+    position: "absolute",
+    bottom: 10,
+    right: 5,
+  },
+  headerFatehStyle: { color: theme.staticColors.WHITE_COLOR, fontSize: 22 },
   fatehContainer: {
     marginTop: 20,
     marginLeft: "auto",
@@ -21,9 +24,9 @@ const styles = StyleSheet.create({
   },
   ikongkar: {
     fontFamily: constant.GURBANI_AKHAR_TRUE,
-    color: colors.TOOLBAR_TINT,
+    color: theme.colors.WHITE_COLOR,
     fontSize: 22,
   },
 });
 
-export default styles;
+export default createStyles;
