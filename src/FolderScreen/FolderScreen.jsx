@@ -1,9 +1,8 @@
 import React from "react";
 import { View } from "react-native";
 import PropTypes from "prop-types";
-import { useSelector } from "react-redux";
+import useTheme from "@common/context";
 import {
-  colors,
   BaniList,
   constant,
   useScreenAnalytics,
@@ -14,10 +13,10 @@ import {
 import Header from "./header";
 
 const FolderScreen = ({ navigation, route }) => {
+  const { theme } = useTheme();
   logMessage(constant.FOLDERSCREEN);
   const { navigate } = navigation;
   const { data, title } = route.params.params;
-  const isNightMode = useSelector((state) => state.isNightMode);
   useScreenAnalytics(constant.FOLDERSCREEN);
 
   const onPress = (row) => {
@@ -29,17 +28,11 @@ const FolderScreen = ({ navigation, route }) => {
     });
   };
   return (
-    <SafeArea
-      backgroundColor={isNightMode ? colors.READER_STATUS_BAR_COLOR_NIGHT_MODE : colors.primary}
-    >
-      <View
-        style={{ flex: 1, backgroundColor: isNightMode ? colors.NIGHT_BLACK : colors.WHITE_COLOR }}
-      >
-        <StatusBarComponent
-          backgroundColor={isNightMode ? colors.READER_STATUS_BAR_COLOR_NIGHT_MODE : colors.primary}
-        />
+    <SafeArea backgroundColor={theme.colors.primary}>
+      <View style={{ flex: 1, backgroundColor: theme.colors.surface }}>
+        <StatusBarComponent backgroundColor={theme.colors.primary} />
         <Header navigation={navigation} title={title} />
-        <BaniList data={data} isFolderScreen onPress={onPress} />
+        <BaniList data={data} isFolderScreen onPress={onPress} theme={theme} />
       </View>
     </SafeArea>
   );

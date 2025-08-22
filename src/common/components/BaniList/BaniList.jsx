@@ -3,10 +3,12 @@ import { FlatList, Dimensions, Platform } from "react-native";
 import { ListItem, Avatar } from "@rneui/themed";
 import PropTypes from "prop-types";
 import { useSelector } from "react-redux";
+import useThemedStyles from "@common/hooks/useThemedStyles";
 import baseFontSize from "../../helpers";
-import { styles } from "../../../Settings/styles";
+import createStyles from "../../../Settings/styles";
 
 const BaniList = React.memo(({ data, onPress, theme }) => {
+  const styles = useThemedStyles(createStyles);
   const fontSize = useSelector((state) => state.fontSize);
   const fontFace = useSelector((state) => state.fontFace);
   const isTransliteration = useSelector((state) => state.isTransliteration);

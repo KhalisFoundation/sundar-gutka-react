@@ -1,11 +1,13 @@
 import React, { useMemo } from "react";
 import { Text, View, ScrollView, Linking } from "react-native";
 import { STRINGS } from "@common";
-import { useSelector } from "react-redux";
-import { baniDBAboutStyles as styles, darkMode } from "./styles";
+import useThemedStyles from "@common/hooks/useThemedStyles";
+import useTheme from "@common/context";
+import { baniDBAboutStyles } from "./styles";
 
 const BaniDBAbout = () => {
-  const isNightMode = useSelector((state) => state.isNightMode);
+  const { theme } = useTheme();
+  const styles = useThemedStyles(baniDBAboutStyles);
   const highlights = useMemo(
     () => [
       STRINGS.baniDBHighlight1,
@@ -16,20 +18,18 @@ const BaniDBAbout = () => {
     []
   );
 
-  const { darkModeContainer, darkModeText } = useMemo(() => darkMode(isNightMode), [isNightMode]);
-
   return (
-    <ScrollView contentContainerStyle={[styles.container, darkModeContainer]}>
+    <ScrollView contentContainerStyle={styles.container}>
       {highlights.map((highlight) => (
         <View key={highlight} style={styles.listItem}>
-          <Text style={[styles.bulletPoint, darkModeText]}>•</Text>
-          <Text style={[styles.listText, darkModeText]}>{highlight}</Text>
+          <Text style={styles.bulletPoint}>•</Text>
+          <Text style={styles.listText}>{highlight}</Text>
         </View>
       ))}
-      <Text style={darkModeText}>
+      <Text style={{ color: theme.colors.primaryText }}>
         {STRINGS.baniDBMistakeText}{" "}
         <Text
-          style={[darkModeText, { textDecorationLine: "underline" }]}
+          style={{ color: theme.colors.primaryText, textDecorationLine: "underline" }}
           onPress={() => Linking.openURL("https://tinyurl.com/banidb-signup")}
         >
           {STRINGS.baniDBSignUp}

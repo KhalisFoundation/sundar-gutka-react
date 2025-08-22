@@ -4,17 +4,20 @@ import { useDispatch, useSelector } from "react-redux";
 import Slider from "@react-native-community/slider";
 import { Icon } from "@rneui/themed";
 import PropTypes from "prop-types";
+import useTheme from "@common/context";
+import useThemedStyles from "@common/hooks/useThemedStyles";
 import { colors, constant, actions, trackReaderEvent, logError } from "@common";
-import { styles } from "../styles";
+import createStyles from "../styles";
 
 const AutoScrollComponent = ({ shabadID, webViewRef }) => {
+  const { theme } = useTheme();
   const [isPaused, togglePaused] = useState(true);
   const autoScrollSpeedObj = useSelector((state) => state.autoScrollSpeedObj);
   const [currentSpeed, setCurrentSpeed] = useState(
     autoScrollSpeedObj[shabadID] || constant.DEFAULT_SPEED
   );
   const dispatch = useDispatch();
-  const isNightMode = useSelector((state) => state.isNightMode);
+  const styles = useThemedStyles(createStyles);
 
   // Handle auto-scroll state changes
   useEffect(() => {
@@ -67,9 +70,7 @@ const AutoScrollComponent = ({ shabadID, webViewRef }) => {
       style={[
         styles.container,
         {
-          backgroundColor: isNightMode
-            ? colors.READER_STATUS_BAR_COLOR_NIGHT_MODE
-            : colors.READER_STATUS_BAR_COLOR,
+          backgroundColor: theme.colors.primary,
         },
       ]}
     >

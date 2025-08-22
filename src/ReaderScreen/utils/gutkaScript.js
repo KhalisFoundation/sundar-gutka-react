@@ -1,6 +1,6 @@
 import { Platform } from "react-native";
 
-const script = (nightMode, position) => {
+const script = (theme, position) => {
   const listener = Platform.OS === "android" ? "document" : "window";
   const body = Platform.OS === "android" ? "document.body" : "window.document.body";
   return `
@@ -100,7 +100,7 @@ window.addEventListener(
 );
 
 ${listener}.onload = () => {
-  if (${nightMode}) {
+  if (${theme.mode === "dark"}) {
   //fade event
 fadeInEffect();
 }

@@ -6,8 +6,9 @@ import { useDispatch, useSelector } from "react-redux";
 import moment from "moment";
 import PropTypes from "prop-types";
 import Accordion from "react-native-collapsible/Accordion";
+import useTheme from "@common/context";
+import useThemedStyles from "@common/hooks/useThemedStyles";
 import {
-  colors,
   constant,
   STRINGS,
   actions,
@@ -18,11 +19,12 @@ import {
 } from "@common";
 import { AccordianContent, AccordianHeader } from "./components";
 import { useHeader, useFetchBani } from "./hooks";
-import { styles, accordianNightColor, optionContainer } from "./styles";
+import createStyles from "./styles";
 
 const ReminderOptions = ({ navigation }) => {
   logMessage(constant.REMINDER_OPTIONS);
-  const isNightMode = useSelector((state) => state.isNightMode);
+  const { theme } = useTheme();
+  const styles = useThemedStyles(createStyles);
   const reminderBanis = useSelector((state) => state.reminderBanis);
   const isReminders = useSelector((state) => state.isReminders);
   const reminderSound = useSelector((state) => state.reminderSound);
@@ -37,9 +39,6 @@ const ReminderOptions = ({ navigation }) => {
 
   const dispatch = useDispatch();
   const selector = useRef(null);
-  const { backgroundColor, color } = optionContainer(isNightMode);
-
-  const accNightColor = useMemo(() => accordianNightColor(isNightMode), [isNightMode]);
   useFetchBani(setBaniListData, setReminderBaniData, setStateData, parsedReminderBanis);
   useHeader(baniListData, navigation, selector);
 
@@ -73,20 +72,15 @@ const ReminderOptions = ({ navigation }) => {
 
   return (
     <SafeAreaProvider>
-      <SafeAreaView
-        style={[
-          isNightMode && { backgroundColor: colors.INACTIVE_VIEW_COLOR_NIGHT_MODE },
-          styles.flexView,
-        ]}
-      >
+      <SafeAreaView style={styles.flexView}>
         <ScrollView>
           <View>
-            <StatusBarComponent backgroundColor={colors.TOOLBAR_COLOR_ALT2} />
+            <StatusBarComponent backgroundColor={theme.colors.primaryVariant} />
             {stateData.length > 0 && (
               <Accordion
                 activeSections={activeSections}
                 sections={stateData}
-                underlayColor={accNightColor}
+                underlayColor={theme.colors.surface}
                 renderHeader={(section, index, isActive) => (
                   <AccordianHeader section={section} isActive={isActive} />
                 )}
@@ -105,15 +99,19 @@ const ReminderOptions = ({ navigation }) => {
               ]}
               data={reminderBaniData}
               cancelText={STRINGS.cancel}
-              optionTextStyle={{ ...styles.modalSelectText, color, ...fontFamily }}
+              optionTextStyle={{
+                ...styles.modalSelectText,
+                color: theme.colors.primaryText,
+                ...fontFamily,
+              }}
               onChange={(option) => {
                 createReminder(option);
               }}
               customSelector={<View />}
               ref={selector}
-              cancelTextStyle={{ color }}
-              cancelStyle={{ backgroundColor }}
-              optionContainerStyle={{ backgroundColor }}
+              cancelTextStyle={{ color: theme.colors.primaryText }}
+              cancelStyle={{ backgroundColor: theme.colors.surfaceGrey }}
+              optionContainerStyle={{ backgroundColor: theme.colors.surfaceGrey }}
             />
           </View>
         </ScrollView>

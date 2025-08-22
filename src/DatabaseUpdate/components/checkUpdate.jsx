@@ -1,17 +1,18 @@
-import React, { useEffect, useRef, useState, useMemo } from "react";
+import React, { useEffect, useRef, useState } from "react";
 import { Animated, Text, View, Easing } from "react-native";
 import { Icon, ListItem } from "@rneui/themed";
 import { STRINGS } from "@common";
+import useTheme from "@common/context";
+import useThemedStyles from "@common/hooks/useThemedStyles";
 import PropTypes from "prop-types";
-import { useSelector } from "react-redux";
-import { checkUpdateStyles as styles, darkMode } from "./styles";
+import { checkUpdateStyles } from "./styles";
 
 const CheckUpdatesAnimation = ({ isLoading, isUpdateAvailable }) => {
-  const isNightMode = useSelector((state) => state.isNightMode);
+  const { theme } = useTheme();
+  const styles = useThemedStyles(checkUpdateStyles);
   const rotateAnim = useRef(new Animated.Value(0)).current;
   const [checking, setChecking] = useState(false);
   const animationRef = useRef(null);
-  const { darkModeContainer, darkModeText } = useMemo(() => darkMode(isNightMode), [isNightMode]);
 
   useEffect(() => {
     if (checking) {
@@ -57,28 +58,23 @@ const CheckUpdatesAnimation = ({ isLoading, isUpdateAvailable }) => {
   });
 
   return (
-    <View style={[styles.mainWrapper, darkModeContainer]}>
+    <View style={styles.mainWrapper}>
       {isLoading && (
-        <ListItem containerStyle={darkModeContainer}>
+        <ListItem containerStyle={styles.mainWrapper}>
           <ListItem.Title style={styles.header}>
-            <Text style={darkModeText}>{STRINGS.checkForUpdate}</Text>
+            <Text style={{ color: theme.colors.primaryText }}>{STRINGS.checkForUpdate}</Text>
           </ListItem.Title>
           <ListItem.Content>
             <Animated.View style={{ transform: [{ rotate: rotateInterpolate }] }}>
-              <Icon
-                name="refresh"
-                type="material"
-                size={35}
-                color={isNightMode ? "white" : "black"}
-              />
+              <Icon name="refresh" type="material" size={35} color={theme.colors.primaryText} />
             </Animated.View>
           </ListItem.Content>
         </ListItem>
       )}
       {!isUpdateAvailable && !isLoading && (
-        <ListItem containerStyle={darkModeContainer}>
-          <ListItem.Title style={[styles.header, darkModeContainer]}>
-            <Text style={darkModeText}>{STRINGS.upToDate}</Text>
+        <ListItem containerStyle={styles.mainWrapper}>
+          <ListItem.Title style={styles.header}>
+            <Text style={{ color: theme.colors.primaryText }}>{STRINGS.upToDate}</Text>
           </ListItem.Title>
         </ListItem>
       )}

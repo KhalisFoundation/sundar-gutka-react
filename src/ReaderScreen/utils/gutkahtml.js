@@ -5,7 +5,7 @@ const htmlTemplate = (
   fontFileUri,
   fontFace,
   content,
-  isNightMode,
+  theme,
   savePosition
 ) => `<!DOCTYPE html>
 <html lang="en">
@@ -44,7 +44,7 @@ const htmlTemplate = (
       text-align:right
     }
   </style>
-  <script>${script(isNightMode, savePosition)}</script>
+  <script>${script(theme, savePosition)}</script>
 </head>
 <body>
   ${content}  

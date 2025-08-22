@@ -25,6 +25,12 @@ const typography = {
   },
 };
 
+const staticColors = {
+  WHITE_COLOR: "#faf9f6", // used on Home Screen Header Ik ongkar and title
+  NIGHT_BLACK: "#121212",
+  NIGHT_OPACITY_BLACK: "rgba(0, 0, 0, 0.5)",
+};
+
 // Light and dark theme color palettes are derived from existing colors.
 export const lightTheme = {
   mode: "light",
@@ -37,7 +43,16 @@ export const lightTheme = {
     textDisabled: "#a3a3a3",
     underlayColor: "#009bff",
     headerVariant: "#003436",
+    baniDB: "#eaa040",
+    shadow: "#000",
+    highlightTuk: "#0066ff",
+    activeView: "#C7C7D7",
+    inactiveView: "#e9e9ee",
+    componentColor: "#232323",
+    enabledText: "#0066ff",
+    disabledText: "#a3a3a3",
   },
+  staticColors,
   typography,
   spacing,
   radius: {
@@ -62,9 +77,18 @@ export const darkTheme = {
     textDisabled: "#faf9f6",
     underlayColor: "#009bff",
     headerVariant: "#003436",
+    baniDB: "#eaa040",
+    shadow: "#fff",
+    highlightTuk: "#77baff",
+    activeView: "#2d2d2d",
+    inactiveView: "#232323",
+    componentColor: "#fefefe",
+    enabledText: "#2581df",
+    disabledText: "#a3a3a3",
   },
   typography,
   spacing,
+  staticColors,
   radius: {
     sm: 6,
     md: 10,

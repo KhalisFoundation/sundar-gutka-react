@@ -1,4 +1,4 @@
-import React, { useEffect, useState, useMemo } from "react";
+import React, { useEffect, useState } from "react";
 import { View, Image, Linking, Text, Pressable } from "react-native";
 import {
   constant,
@@ -8,26 +8,26 @@ import {
   logError,
   StatusBarComponent,
   SafeArea,
-  colors,
 } from "@common";
 import PropTypes from "prop-types";
-import { useDispatch, useSelector } from "react-redux";
+import { useDispatch } from "react-redux";
+import useThemedStyles from "@common/hooks/useThemedStyles";
+import useTheme from "@common/context";
 import CheckUpdatesAnimation from "./components/checkUpdate";
 import BaniDBAbout from "./components/baniDBAbout";
-import styles from "./styles";
 import DownloadComponent from "./components/Download";
 import useHeader from "./hooks/useHeader";
-import { darkMode } from "./components/styles";
+import createStyles from "./styles";
 
 const DatabaseUpdateScreen = ({ navigation }) => {
   logMessage(constant.DATABASE_UPDATE_SCREEN);
+  const { theme } = useTheme();
+  const styles = useThemedStyles(createStyles);
   const baniDBLogoFull = require("../../images/banidblogo.png");
   const [isLoading, setIsLoading] = useState(null);
   const [isUpdateAvailable, setIsUpdateAvailable] = useState(false);
-  const isNightMode = useSelector((state) => state.isNightMode);
-  useHeader(navigation, isNightMode);
+  useHeader(navigation);
   const dispatch = useDispatch();
-  const { darkModeContainer, darkModeText } = useMemo(() => darkMode(isNightMode), [isNightMode]);
 
   const checkForUpdates = async () => {
     try {
@@ -47,15 +47,15 @@ const DatabaseUpdateScreen = ({ navigation }) => {
   }, []);
 
   return (
-    <SafeArea backgroundColor={colors.BANIDB_LIGHT}>
-      <StatusBarComponent backgroundColor={colors.BANIDB_LIGHT} />
-      <View style={[styles.mainWrapper, darkModeContainer]}>
+    <SafeArea backgroundColor={theme.colors.baniDB}>
+      <StatusBarComponent backgroundColor={theme.colors.baniDB} />
+      <View style={styles.mainWrapper}>
         <CheckUpdatesAnimation isLoading={isLoading} isUpdateAvailable={isUpdateAvailable} />
         {!isLoading && isUpdateAvailable && <DownloadComponent />}
         <Pressable onPress={() => Linking.openURL(constant.BANI_DB_URL)}>
           <View style={styles.baniDBContainer}>
             <Image source={baniDBLogoFull} style={styles.baniDBImage} />
-            <Text style={[styles.baniDBText, darkModeText]}>BaniDB</Text>
+            <Text style={styles.baniDBText}>BaniDB</Text>
           </View>
         </Pressable>
         <BaniDBAbout />

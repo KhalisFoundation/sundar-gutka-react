@@ -3,12 +3,15 @@ import PropTypes from "prop-types";
 import { View, Text } from "react-native";
 import { Icon } from "@rneui/themed";
 import { useSelector } from "react-redux";
-import { constant, STRINGS, colors } from "@common";
-import styles from "../styles";
+import { constant, STRINGS } from "@common";
+import useTheme from "@common/context";
+import useThemedStyles from "@common/hooks/useThemedStyles";
+import createStyles from "../styles";
 
 const BaniHeader = (props) => {
-  const { navigate, theme } = props;
-
+  const { navigate } = props;
+  const { theme } = useTheme();
+  const styles = useThemedStyles(createStyles);
   const isDatabaseUpdateAvailable = useSelector((state) => state.isDatabaseUpdateAvaliable);
   return (
     <View
@@ -34,7 +37,7 @@ const BaniHeader = (props) => {
           name={isDatabaseUpdateAvailable ? "settings-suggest" : "settings"}
           type="material"
           size={35}
-          color={colors.TOOLBAR_TINT}
+          color={theme.staticColors.WHITE_COLOR}
           onPress={() => {
             navigate(constant.SETTINGS);
           }}

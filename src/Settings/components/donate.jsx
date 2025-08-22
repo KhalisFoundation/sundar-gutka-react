@@ -1,25 +1,24 @@
 import React from "react";
 import { Linking } from "react-native";
 import { ListItem, Icon } from "@rneui/themed";
-import { useSelector } from "react-redux";
 import { STRINGS } from "@common";
-import { iconNightColor, nightModeStyles, nightModeColor } from "../styles/nightModeStyles";
+import useTheme from "@common/context";
+import useThemedStyles from "@common/hooks/useThemedStyles";
+import createStyles from "../styles";
 
 const Donate = () => {
-  const isNightMode = useSelector((state) => state.isNightMode);
-  const iconColor = iconNightColor(isNightMode);
-  const { containerNightStyles } = nightModeStyles(isNightMode);
-  const nightColor = nightModeColor(isNightMode);
+  const { theme } = useTheme();
+  const styles = useThemedStyles(createStyles);
   const { donate } = STRINGS;
   return (
     <ListItem
       bottomDivider
-      containerStyle={containerNightStyles}
+      containerStyle={styles.containerNightStyles}
       onPress={() => Linking.openURL("https://khalisfoundation.org/donate/")}
     >
-      <Icon color={iconColor} name="volunteer-activism" size={30} />
+      <Icon color={theme.colors.primaryText} name="volunteer-activism" size={30} />
       <ListItem.Content>
-        <ListItem.Title style={nightColor}>{donate}</ListItem.Title>
+        <ListItem.Title style={styles.listItemTitle}>{donate}</ListItem.Title>
       </ListItem.Content>
       <ListItem.Chevron />
     </ListItem>

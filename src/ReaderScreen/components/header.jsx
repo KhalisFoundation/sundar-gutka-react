@@ -3,13 +3,14 @@ import { View, Text, Animated } from "react-native";
 import { useSelector } from "react-redux";
 import { Icon } from "@rneui/themed";
 import PropTypes from "prop-types";
-import colors from "@common/colors";
-import { getHeaderStyles, styles } from "../styles/styles";
+import useTheme from "@common/context";
+import useThemedStyles from "@common/hooks/useThemedStyles";
+import createStyles from "../styles";
 
 const Header = ({ title, handleBackPress, handleBookmarkPress, handleSettingsPress, isHeader }) => {
-  const isNightMode = useSelector((state) => state.isNightMode);
+  const { theme } = useTheme();
   const isDatabaseUpdateAvailable = useSelector((state) => state.isDatabaseUpdateAvaliable);
-  const getHeaderStyle = getHeaderStyles(isNightMode);
+  const styles = useThemedStyles(createStyles);
   const animationPosition = useRef(new Animated.Value(0)).current;
 
   const headerLeft = () => (
@@ -19,16 +20,21 @@ const Header = ({ title, handleBackPress, handleBookmarkPress, handleSettingsPre
       onPress={() => {
         handleBackPress();
       }}
-      color={colors.WHITE_COLOR}
+      color={theme.staticColors.WHITE_COLOR}
     />
   );
 
   const headerRight = () => (
     <View style={{ flexDirection: "row" }}>
-      <Icon name="bookmark" color={colors.TOOLBAR_TINT} size={30} onPress={handleBookmarkPress} />
+      <Icon
+        name="bookmark"
+        color={theme.staticColors.WHITE_COLOR}
+        size={30}
+        onPress={handleBookmarkPress}
+      />
       <Icon
         name={isDatabaseUpdateAvailable ? "settings-suggest" : "settings"}
-        color={colors.TOOLBAR_TINT}
+        color={theme.staticColors.WHITE_COLOR}
         size={30}
         onPress={() => handleSettingsPress()}
       />
@@ -81,10 +87,10 @@ const Header = ({ title, handleBackPress, handleBookmarkPress, handleSettingsPre
       ]}
       pointerEvents="box-none" // Ensure touch events pass through
     >
-      <View style={getHeaderStyle.headerStyle} pointerEvents="auto">
+      <View style={styles.headerStyle} pointerEvents="auto">
         <View style={styles.headerWrapper}>
           {headerLeft()}
-          <Text style={getHeaderStyle.headerTitleStyle}>{title}</Text>
+          <Text style={styles.headerTitleStyle}>{title}</Text>
           {headerRight()}
         </View>
       </View>

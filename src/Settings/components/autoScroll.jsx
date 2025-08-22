@@ -2,23 +2,20 @@ import React from "react";
 import { useSelector, useDispatch } from "react-redux";
 import { ListItem, Icon, Switch } from "@rneui/themed";
 import { toggleScreenAwake, toggleAutoScroll } from "@common/actions";
+import useTheme from "@common/context";
 import { STRINGS } from "@common";
-import { iconNightColor, nightModeStyles, nightModeColor } from "../styles/nightModeStyles";
 
 const AutoScroll = () => {
-  const isNightMode = useSelector((state) => state.isNightMode);
+  const { theme } = useTheme();
   const isAutoScroll = useSelector((state) => state.isAutoScroll);
   const isAudio = useSelector((state) => state.isAudio);
   const dispatch = useDispatch();
-  const iconColor = iconNightColor(isNightMode);
-  const { containerNightStyles } = nightModeStyles(isNightMode);
-  const nightColor = nightModeColor(isNightMode);
   const { AUTO_SCROLL } = STRINGS;
   return (
-    <ListItem bottomDivider containerStyle={containerNightStyles}>
-      <Icon color={iconColor} name="auto-fix-high" type="material" />
+    <ListItem bottomDivider containerStyle={{ backgroundColor: theme.colors.surfaceGrey }}>
+      <Icon color={theme.colors.primaryText} name="auto-fix-high" type="material" />
       <ListItem.Content>
-        <ListItem.Title style={nightColor}>{AUTO_SCROLL}</ListItem.Title>
+        <ListItem.Title style={{ color: theme.colors.primaryText }}>{AUTO_SCROLL}</ListItem.Title>
       </ListItem.Content>
       <Switch
         value={isAutoScroll}
