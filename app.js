@@ -16,6 +16,7 @@ import {
 import { TrackPlayerSetup } from "./src/common/TrackPlayerUtils";
 import Navigation from "./src/navigation";
 import { allowTracking } from "./src/common/firebase/analytics";
+import { initRC } from "./src/common/firebase/remoteConfig";
 
 const { store, persistor } = createStore();
 const App = () => {
@@ -25,10 +26,15 @@ const App = () => {
   }, []); // The empty array causes this effect to only run on mount
 
   useEffect(() => {
-    initializePerformanceMonitoring();
-    allowTracking();
-    initializeCrashlytics();
-    TrackPlayerSetup();
+    const initializeApp = async () => {
+      await initRC(); // Wait for remote config to load
+      initializePerformanceMonitoring();
+      allowTracking();
+      initializeCrashlytics();
+      TrackPlayerSetup();
+    };
+
+    initializeApp();
   }, []);
 
   useEffect(() => {
