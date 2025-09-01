@@ -24,7 +24,6 @@ export const getBaniList = (language) => {
                   translit: getTranslitText(Transliterations, language),
                 });
               }
-              console.log("totalResults", totalResults);
               resolve(totalResults);
             },
             (error) => {

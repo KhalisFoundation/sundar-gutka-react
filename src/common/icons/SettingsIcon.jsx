@@ -9,10 +9,10 @@ const SettingsIcon = ({ size = 24, color = colors.WHITE }) => (
     height={size}
     fill="none"
     stroke={color}
-    stroke-width="1.5"
+    strokeWidth="1.5"
     viewBox="0 0 24 24"
-    stroke-linecap="round"
-    stroke-linejoin="round"
+    strokeLinecap="round"
+    strokeLinejoin="round"
     xmlns="http://www.w3.org/2000/svg"
   >
     <Path d="M14.5 12a2.5 2.5 0 1 0-5 0 2.5 2.5 0 0 0 5 0" />

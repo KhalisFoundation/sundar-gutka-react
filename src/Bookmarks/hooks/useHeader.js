@@ -1,4 +1,4 @@
-import React, { useEffect } from "react";
+import React, { useEffect, useCallback } from "react";
 import { Pressable } from "react-native";
 import { useSelector } from "react-redux";
 import { colors } from "@common";
@@ -7,8 +7,8 @@ import { getHeaderTitleStyle, getHeaderStyle } from "../styles";
 
 const useHeader = (navigation) => {
   const isNightMode = useSelector((state) => state.isNightMode);
-  const headerTitleStyle = getHeaderTitleStyle(isNightMode);
-  const headerStyle = getHeaderStyle(isNightMode);
+  const headerTitleStyle = useCallback(getHeaderTitleStyle(isNightMode), [isNightMode]);
+  const headerStyle = useCallback(getHeaderStyle(isNightMode), [isNightMode]);
   const headerLeft = () => (
     <Pressable onPress={() => navigation.goBack()}>
       <BackArrowIcon

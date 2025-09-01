@@ -7,7 +7,7 @@ import baseFontSize from "../../helpers";
 import colors from "../../colors";
 import constant from "../../constant";
 import { styles } from "../../../Settings/styles";
-import { convertToUnicode } from "../../utils";
+import convertToUnicode from "../../utils";
 
 const BaniList = React.memo(({ data, onPress }) => {
   const fontSize = useSelector((state) => state.fontSize);
