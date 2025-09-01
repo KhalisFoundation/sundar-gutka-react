@@ -1,5 +1,5 @@
 import { StyleSheet } from "react-native";
-import { colors } from "@common";
+import { colors, constant } from "@common";
 
 const fontFamily = "BalooPaaji2";
 // Common values
@@ -119,6 +119,8 @@ export const audioControlBarStyles = StyleSheet.create({
     gap: SPACING.md,
   },
   rightControls: {
+    flexDirection: "row",
+    gap: SPACING.md,
     justifyContent: "center",
   },
   actionButton: {
@@ -216,7 +218,7 @@ export const audioTrackDialogStyles = StyleSheet.create({
     justifyContent: "space-between",
     alignItems: "center",
     borderRadius: BORDER_RADIUS.xl,
-    padding: SPACING.lg,
+    padding: SPACING.sm,
     marginBottom: SPACING.md,
     borderWidth: 2,
     borderColor: "transparent",
@@ -325,6 +327,27 @@ export const minimizePlayerStyles = StyleSheet.create({
     fontSize: FONT_SIZES.md,
     fontWeight: FONT_WEIGHTS.medium,
   },
+});
+
+export const audioSettingModalStyles = StyleSheet.create({
+  settingItemTitle: {
+    fontSize: FONT_SIZES.lg,
+    fontFamily,
+    fontWeight: FONT_WEIGHTS.normal,
+    color: "#666",
+  },
+  baniTitle: { fontFamily: constant.GURBANI_AKHAR_TRUE },
+  defaultTrackTitle: {
+    fontSize: FONT_SIZES.lg,
+    fontFamily,
+    fontWeight: FONT_WEIGHTS.normal,
+    color: colors.READER_HEADER_COLOR,
+    textDecorationLine: "underline",
+  },
+  switchStyle: { transform: [{ scaleX: 0.5 }, { scaleY: 0.5 }] },
+  switchContainer: { flexDirection: "row", margin: 5, gap: 5 },
+  modalContainer: { flexDirection: "row", margin: 5 },
+  defaultTrackContainer: { flexDirection: "row", alignItems: "center", gap: 0 },
 });
 
 export default styles;

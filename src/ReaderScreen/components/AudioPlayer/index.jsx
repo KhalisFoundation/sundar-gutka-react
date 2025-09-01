@@ -14,6 +14,7 @@ const AudioPlayer = ({ baniID, title, shouldNavigateBack }) => {
   const [showTrackModal, setShowTrackModal] = useState(true);
   const isAudioAutoPlay = useSelector((state) => state.isAudioAutoPlay);
   const isNightMode = useSelector((state) => state.isNightMode);
+  const defaultAudio = useSelector((state) => state.defaultAudio);
   // Custom hooks
   const {
     tracks,
@@ -89,9 +90,16 @@ const AudioPlayer = ({ baniID, title, shouldNavigateBack }) => {
 
   useEffect(() => {
     if (isAudioAutoPlay && currentPlaying) {
+      setShowTrackModal(false);
       handlePlayPause();
     }
   }, [isAudioAutoPlay, currentPlaying]);
+
+  useEffect(() => {
+    if (defaultAudio[baniID] && defaultAudio[baniID].audioUrl) {
+      setShowTrackModal(false);
+    }
+  }, [defaultAudio, baniID]);
 
   const handleSeek = async (value) => {
     if (!isAudioEnabled || !isInitialized) return;
@@ -168,17 +176,20 @@ const AudioPlayer = ({ baniID, title, shouldNavigateBack }) => {
         <AudioTrackDialog handleTrackSelect={handleTrackSelect} title={title} tracks={tracks} />
       ) : (
         <AudioControlBar
+          baniID={baniID}
+          handleTrackSelect={handleTrackSelect}
+          tracks={tracks}
           isPlaying={isPlaying}
           currentPlaying={currentPlaying}
           handlePlayPause={handlePlayPause}
           progress={progress}
-          setShowTrackModal={setShowTrackModal}
           handleSeek={handleSeek}
           isAudioEnabled={isAudioEnabled}
           isDownloading={isDownloading}
           isDownloaded={isDownloaded}
           handleDownload={handleDownload}
           handleDeleteDownload={handleDeleteDownload}
+          title={title}
         />
       )}
     </View>

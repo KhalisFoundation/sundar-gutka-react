@@ -83,12 +83,12 @@ const useAudioManifest = (baniID) => {
         setTracks(mappedData);
 
         // Set current playing based on default audio setting
-        if (defaultAudio && defaultAudio !== "") {
+        if (defaultAudio[baniID]) {
           // Find track with matching artist ID
           const defaultTrack = mappedData.find(
-            (track) => track.artistID.toString() === defaultAudio
+            (track) => track.artistID.toString() === defaultAudio[baniID].artistID.toString()
           );
-          if (defaultTrack) {
+          if (defaultTrack && defaultTrack.audioUrl) {
             setCurrentPlaying(defaultTrack);
           } else {
             setCurrentPlaying(mappedData[0]);

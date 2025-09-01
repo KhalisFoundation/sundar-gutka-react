@@ -6,11 +6,20 @@ import { PlayIcon, ArrowRightIcon } from "@common/icons";
 import { useSelector } from "react-redux";
 import { audioTrackDialogStyles as styles } from "../style";
 
-const AudioTrackDialog = ({ handleTrackSelect, title = "", tracks = [] }) => {
+const AudioTrackDialog = ({
+  handleTrackSelect,
+  title = "",
+  tracks = [],
+  isHeader = true,
+  isFooter = true,
+}) => {
   const [selectedTrack, setSelectedTrack] = useState(null);
   const isNightMode = useSelector((state) => state.isNightMode);
   const handleSelectTrack = (track) => {
     setSelectedTrack(track);
+    if (!isHeader) {
+      handleTrackSelect(track);
+    }
   };
 
   const handlePlay = () => {
@@ -22,24 +31,26 @@ const AudioTrackDialog = ({ handleTrackSelect, title = "", tracks = [] }) => {
   return (
     <View style={styles.container}>
       {/* Header */}
-      <View style={styles.header}>
-        <Text
-          style={[
-            styles.welcomeText,
-            { color: isNightMode ? colors.AUDIO_PLAYER_NIGHT_ICON : colors.READER_HEADER_COLOR },
-          ]}
-        >
-          {STRINGS.welcome_to_sundar_gutka}
-        </Text>
-        <Text
-          style={[
-            styles.subtitleText,
-            { color: isNightMode ? colors.AUDIO_PLAYER_NIGHT_ICON : colors.READER_HEADER_COLOR },
-          ]}
-        >
-          {STRINGS.please_choose_a_track} {title}
-        </Text>
-      </View>
+      {isHeader && (
+        <View style={styles.header}>
+          <Text
+            style={[
+              styles.welcomeText,
+              { color: isNightMode ? colors.AUDIO_PLAYER_NIGHT_ICON : colors.READER_HEADER_COLOR },
+            ]}
+          >
+            {STRINGS.welcome_to_sundar_gutka}
+          </Text>
+          <Text
+            style={[
+              styles.subtitleText,
+              { color: isNightMode ? colors.AUDIO_PLAYER_NIGHT_ICON : colors.READER_HEADER_COLOR },
+            ]}
+          >
+            {STRINGS.please_choose_a_track} {title}
+          </Text>
+        </View>
+      )}
 
       {/* Track Selection List */}
       <ScrollView style={styles.trackList} showsVerticalScrollIndicator>
@@ -79,15 +90,17 @@ const AudioTrackDialog = ({ handleTrackSelect, title = "", tracks = [] }) => {
       </ScrollView>
 
       {/* Play Button */}
-      <Pressable
-        style={[styles.playButton, !selectedTrack && styles.playButtonDisabled]}
-        onPress={handlePlay}
-        disabled={!selectedTrack}
-        activeOpacity={0.8}
-      >
-        <Text style={styles.playButtonText}>{STRINGS.PLAY}</Text>
-        <ArrowRightIcon size={24} color={colors.WHITE_COLOR} />
-      </Pressable>
+      {isFooter && (
+        <Pressable
+          style={[styles.playButton, !selectedTrack && styles.playButtonDisabled]}
+          onPress={handlePlay}
+          disabled={!selectedTrack}
+          activeOpacity={0.8}
+        >
+          <Text style={styles.playButtonText}>{STRINGS.PLAY}</Text>
+          <ArrowRightIcon size={24} color={colors.WHITE_COLOR} />
+        </Pressable>
+      )}
     </View>
     // </BlurView>
   );
@@ -103,6 +116,8 @@ AudioTrackDialog.propTypes = {
     })
   ).isRequired,
   handleTrackSelect: PropTypes.func.isRequired,
+  isHeader: PropTypes.bool.isRequired,
+  isFooter: PropTypes.bool.isRequired,
 };
 
 export default AudioTrackDialog;

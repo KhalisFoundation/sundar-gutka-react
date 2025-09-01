@@ -1,6 +1,5 @@
 import {
   getAppInstanceId,
-  logScreenView,
   logEvent,
   getAnalytics,
   setAnalyticsCollectionEnabled,
@@ -23,7 +22,7 @@ const allowTracking = async () => {
 };
 
 const trackScreenView = (screenName, screenClass = screenName) => {
-  logScreenView(analytics, {
+  logEvent(analytics, "screen_view", {
     screen_name: screenName,
     screen_class: screenClass.replace(/\s+/g, ""),
   });

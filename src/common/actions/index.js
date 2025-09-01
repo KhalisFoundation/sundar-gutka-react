@@ -55,8 +55,8 @@ export const toggleAudioSyncScroll = (value) => {
   return { type: actionTypes.TOGGLE_AUDIO_SYNC_SCROLL, value };
 };
 
-export const setDefaultAudio = (value) => {
-  trackSettingEvent(constant.DEFAULT_AUDIO, value);
+export const setDefaultAudio = (audio, shabadId) => {
+  const value = { [shabadId]: audio };
   return { type: actionTypes.SET_DEFAULT_AUDIO, value };
 };
 
