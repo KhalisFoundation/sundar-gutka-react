@@ -43,6 +43,7 @@ import {
 import { navigate, navigateTo, navigationRef } from "./rootNavigation";
 import createStore from "./store";
 import { showToast, showErrorToast, showSuccessToast, showInfoToast } from "./toast";
+import convertToUnicode from "./utils";
 
 export {
   colors,
@@ -93,6 +94,5 @@ export {
   showErrorToast,
   showSuccessToast,
   showInfoToast,
+  convertToUnicode,
 };
-
-export { convertToUnicode } from "./utils";

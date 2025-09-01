@@ -1,5 +1,6 @@
 import React, { useEffect } from "react";
 import ErrorBoundary from "react-native-error-boundary";
+import { SafeAreaProvider } from "react-native-safe-area-context";
 import SplashScreen from "react-native-splash-screen";
 import Toast from "react-native-toast-message";
 import { Provider } from "react-redux";
@@ -46,10 +47,12 @@ const App = () => {
     <ErrorBoundary onError={logError} FallbackComponent={FallBack}>
       <Provider store={store}>
         <PersistGate loading={null} persistor={persistor}>
-          <ThemeProvider>
-            <Navigation />
-            <Toast />
-          </ThemeProvider>
+          <SafeAreaProvider>
+            <ThemeProvider>
+              <Navigation />
+              <Toast />
+            </ThemeProvider>
+          </SafeAreaProvider>
         </PersistGate>
       </Provider>
     </ErrorBoundary>
