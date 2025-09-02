@@ -107,7 +107,7 @@ const AudioSettingsModal = ({ title, tracks, baniID }) => {
 AudioSettingsModal.propTypes = {
   title: PropTypes.string.isRequired,
   tracks: PropTypes.arrayOf(PropTypes.shape()).isRequired,
-  baniID: PropTypes.number.isRequired,
+  baniID: PropTypes.string.isRequired,
 };
 
 export default AudioSettingsModal;
