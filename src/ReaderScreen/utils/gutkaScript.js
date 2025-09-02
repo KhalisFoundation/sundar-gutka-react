@@ -24,6 +24,7 @@ const clearScrollTimeout=()=> {
 
 const scrollFunc=(e)=> {
   curPosition = getScrollPercent();
+  window.ReactNativeWebView.postMessage("scroll-" + curPosition);
   if (window.scrollY == 0) {
     window.ReactNativeWebView.postMessage("show");
   }

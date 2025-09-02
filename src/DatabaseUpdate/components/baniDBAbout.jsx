@@ -1,5 +1,5 @@
 import React, { useMemo } from "react";
-import { Text, View, ScrollView, Linking, Pressable } from "react-native";
+import { Text, View, ScrollView, Linking } from "react-native";
 import { STRINGS } from "@common";
 import { useSelector } from "react-redux";
 import { baniDBAboutStyles as styles, darkMode } from "./styles";
@@ -28,9 +28,12 @@ const BaniDBAbout = () => {
       ))}
       <Text style={darkModeText}>
         {STRINGS.baniDBMistakeText}{" "}
-        <Pressable onPress={() => Linking.openURL("https://tinyurl.com/banidb-signup")}>
-          <Text>{STRINGS.baniDBSignUp}</Text>
-        </Pressable>
+        <Text
+          style={[darkModeText, { textDecorationLine: "underline" }]}
+          onPress={() => Linking.openURL("https://tinyurl.com/banidb-signup")}
+        >
+          {STRINGS.baniDBSignUp}
+        </Text>
       </Text>
     </ScrollView>
   );

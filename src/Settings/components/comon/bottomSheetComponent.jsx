@@ -3,7 +3,7 @@ import { View, Modal, Text, Dimensions, Pressable, Platform, StyleSheet } from "
 import { Divider, Icon, ListItem } from "@rneui/themed";
 import { BlurView } from "@react-native-community/blur";
 import { useDispatch, useSelector } from "react-redux";
-import { constant } from "@common";
+import { constant, colors } from "@common";
 import PropTypes from "prop-types";
 import { SafeAreaProvider, SafeAreaView } from "react-native-safe-area-context";
 import SoundPlayer from "react-native-sound-player";
@@ -58,10 +58,10 @@ const BottomSheetComponent = ({
         >
           <Pressable style={StyleSheet.absoluteFill} onPress={() => toggleVisible(false)}>
             <BlurView
-              reducedTransparencyFallbackColor="white"
+              reducedTransparencyFallbackColor={colors.NIGHT_OPACITY_BLACK}
               style={styles.blurViewStyle}
               blurType="dark"
-              blurAmount={10}
+              enabled
             />
             <View style={bottomStyle}>
               <Text style={[styles.bottomSheetTitle, textNightStyle, containerNightStyles]}>

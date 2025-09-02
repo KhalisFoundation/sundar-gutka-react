@@ -40,20 +40,67 @@ const Reader = ({ navigation, route }) => {
   const webViewRef = useRef(null);
   const { webView } = styles;
   const { title, id } = route.params.params;
-  const [isHeader, toggleHeader] = useState(false);
+  const [isHeader, toggleHeader] = useState(true);
   const [viewLoaded, toggleViewLoaded] = useState(false);
   const [currentPosition, setCurrentPosition] = useState(savePosition[id] || 0);
   const [shouldNavigateBack, setShouldNavigateBack] = useState(false);
+  const [dateKey, setDateKey] = useState(Date.now().toString());
+  const positionPointer = useRef(0);
 
   const dispatch = useDispatch();
   const { shabad, isLoading } = useFetchShabad(id);
   const { backgroundColor, safeAreaViewBack, backViewColor } = nightColors(isNightMode);
   const { READER_STATUS_BAR_COLOR } = colors;
 
+  // Save scroll position when leaving screen or app goes to background
+  const saveScrollPosition = useCallback(() => {
+    if (positionPointer.current > 0) {
+      dispatch(actions.setPosition(parseFloat(positionPointer.current), id));
+    }
+  }, [dispatch, id]);
+
+  // Cleanup on unmount
+  useEffect(() => {
+    return () => {
+      // Save position when component unmounts
+      saveScrollPosition();
+    };
+  }, [saveScrollPosition]);
+
   // Memoize WebView key to prevent unnecessary remounts
   const webViewKey = useMemo(() => {
-    return `${id}-${isParagraphMode}-${isLarivaar}-${isLarivaarAssist}-${isVishraam}-${vishraamOption}`;
-  }, [id, isParagraphMode, isLarivaar, isLarivaarAssist, isVishraam, vishraamOption]);
+    return `${id}-${isParagraphMode}-${isLarivaar}-${isLarivaarAssist}-${isVishraam}-${vishraamOption}-${dateKey}`;
+  }, [id, isParagraphMode, isLarivaar, isLarivaarAssist, isVishraam, vishraamOption, dateKey]);
+
+  // Memoize WebView source to prevent unnecessary remounts
+  const webViewSource = useMemo(() => {
+    return {
+      html: loadHTML(
+        shabad,
+        isTransliteration,
+        fontSize,
+        fontFace,
+        isEnglishTranslation,
+        isPunjabiTranslation,
+        isSpanishTranslation,
+        isNightMode,
+        isLarivaar,
+        currentPosition
+      ),
+      baseUrl: Platform.OS === "ios" ? "./" : "",
+    };
+  }, [
+    shabad,
+    isTransliteration,
+    fontSize,
+    fontFace,
+    isEnglishTranslation,
+    isPunjabiTranslation,
+    isSpanishTranslation,
+    isNightMode,
+    isLarivaar,
+    currentPosition,
+  ]);
 
   const updateTheme = useCallback(() => {
     const currentColorScheme = Appearance.getColorScheme();
@@ -62,6 +109,29 @@ const Reader = ({ navigation, route }) => {
 
   useScreenAnalytics(title);
   useBookmarks(webViewRef, shabad, bookmarkPosition);
+
+  // Handle app state changes
+  useEffect(() => {
+    let isMounted = true;
+    const subscription = AppState.addEventListener("change", (state) => {
+      if (!isMounted) return;
+
+      if (state === "active") {
+        // App came to foreground
+        if (theme === constant.Default) {
+          updateTheme();
+        }
+      } else if (state === "background") {
+        // App went to background - save scroll position
+        saveScrollPosition();
+      }
+    });
+
+    return () => {
+      isMounted = false;
+      subscription.remove();
+    };
+  }, [theme, updateTheme, saveScrollPosition]);
 
   useEffect(() => {
     if (savePosition && id) {
@@ -74,35 +144,12 @@ const Reader = ({ navigation, route }) => {
     }
   }, [savePosition, id]);
 
-  useEffect(() => {
-    let isMounted = true;
-    const subscription = AppState.addEventListener("change", (state) => {
-      if (!isMounted) return;
-
-      if (webViewRef?.current) {
-        webViewRef.current.postMessage(JSON.stringify({ Back: true }));
-      }
-
-      if (state === "active") {
-        if (theme === constant.Default) {
-          updateTheme();
-        }
-      }
-    });
-
-    return () => {
-      isMounted = false;
-      subscription.remove();
-    };
-  }, [theme, updateTheme]);
-
   const handleBackPress = useCallback(() => {
     if (webViewRef?.current) {
       webViewRef.current.postMessage(JSON.stringify({ Back: true }));
       setShouldNavigateBack(true);
     }
     return true;
-    // webViewRef is a ref object and is stable across renders, so it does not need to be included in the dependency array.
   }, []);
 
   useEffect(() => {
@@ -120,21 +167,26 @@ const Reader = ({ navigation, route }) => {
 
   const handleMessage = useCallback(
     (message) => {
-      const env = message.nativeEvent.data;
-      if (env === "toggle") {
+      // Update last activity timestamp
+      const { data } = message.nativeEvent;
+      // Handle UI toggle messages
+      if (data === "toggle") {
         toggleHeader((prev) => !prev);
-      } else if (env === "show") {
+      } else if (data === "show") {
         toggleHeader(true);
-      } else if (env === "hide") {
+      } else if (data === "hide") {
         toggleHeader(false);
-      } else if (env.includes("save")) {
-        const position = env.split("-")[1];
+      } else if (data.includes("save")) {
+        const position = data.split("-")[1];
         setCurrentPosition(position);
         dispatch(actions.setPosition(position, id));
         if (shouldNavigateBack) {
           navigation.goBack();
           setShouldNavigateBack(false);
         }
+      } else if (data.includes("scroll-")) {
+        const position = data.split("-")[1];
+        positionPointer.current = position;
       }
     },
     [dispatch, id, navigation, shouldNavigateBack]
@@ -143,7 +195,7 @@ const Reader = ({ navigation, route }) => {
   const handleLoadStart = useCallback(() => {
     setTimeout(() => {
       toggleViewLoaded(true);
-    }, 500);
+    }, 100);
   }, []);
 
   const handleError = useCallback((syntheticEvent) => {
@@ -156,11 +208,16 @@ const Reader = ({ navigation, route }) => {
     logError("HTTP error status code:", nativeEvent.statusCode);
   }, []);
 
+  const reloadWebView = useCallback(() => {
+    if (webViewRef.current) {
+      setDateKey(Date.now().toString());
+    }
+  }, []);
+
   return (
     <SafeArea backgroundColor={safeAreaViewBack.backgroundColor}>
       <StatusBarComponent backgroundColor={backgroundColor} />
       <Header
-        navigation={navigation}
         title={title}
         handleBackPress={handleBackPress}
         handleBookmarkPress={handleBookmarkPress}
@@ -182,21 +239,9 @@ const Reader = ({ navigation, route }) => {
         bounces={false}
         overScrollMode="never"
         nestedScrollEnabled
-        source={{
-          html: loadHTML(
-            shabad,
-            isTransliteration,
-            fontSize,
-            fontFace,
-            isEnglishTranslation,
-            isPunjabiTranslation,
-            isSpanishTranslation,
-            isNightMode,
-            isLarivaar,
-            currentPosition
-          ),
-          baseUrl: Platform.OS === "ios" ? "./" : "",
-        }}
+        onContentProcessDidTerminate={reloadWebView}
+        source={webViewSource}
+        backgroundColor={isNightMode ? colors.NIGHT_BLACK : colors.WHITE_COLOR}
         style={[webView, isNightMode && { opacity: viewLoaded ? 1 : 0.1 }, backViewColor]}
         onMessage={handleMessage}
       />

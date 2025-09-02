@@ -55,4 +55,5 @@ export default {
   WHITE_TEXT: "#fff",
   ANIMATION_STROKE_LIGHT: "#e6e6e6",
   ANIMATION_STROKE_ACTIVE: "#007AFF",
+  NIGHT_OPACITY_BLACK: "rgba(0, 0, 0, 0.5)",
 };
