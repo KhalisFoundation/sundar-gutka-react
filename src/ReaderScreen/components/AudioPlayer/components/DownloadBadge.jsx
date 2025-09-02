@@ -1,7 +1,7 @@
 import React from "react";
 import { View, Text, Pressable } from "react-native";
-import PropTypes from "prop-types";
 import { useSelector } from "react-redux";
+import PropTypes from "prop-types";
 import { DownloadIcon } from "@common/icons";
 import { colors, STRINGS } from "@common";
 import { downloadBadgeStyles as styles } from "../style";

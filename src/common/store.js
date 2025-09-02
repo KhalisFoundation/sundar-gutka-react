@@ -1,8 +1,8 @@
+import AsyncStorage from "@react-native-async-storage/async-storage";
 import { configureStore } from "@reduxjs/toolkit";
 import { persistReducer, persistStore } from "redux-persist";
-import AsyncStorage from "@react-native-async-storage/async-storage";
-import reducer from "./reducer";
 import crashlyticsMiddleware from "./middleware/crashlytics";
+import reducer from "./reducer";
 
 const persistConfig = { key: "root", storage: AsyncStorage, blacklist: ["navigation", "baniList"] };
 const persistedReducer = persistReducer(persistConfig, reducer);

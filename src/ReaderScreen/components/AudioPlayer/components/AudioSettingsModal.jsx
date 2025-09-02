@@ -1,17 +1,17 @@
 import React, { useState } from "react";
 import { View, Text, Switch, Pressable } from "react-native";
 import { useSelector, useDispatch } from "react-redux";
+import PropTypes from "prop-types";
 import {
   toggleAudio,
   toggleAudioAutoPlay,
   toggleAudioSyncScroll,
   setDefaultAudio,
 } from "@common/actions";
-import PropTypes from "prop-types";
-import { colors } from "@common";
 import { ChevronRight } from "@common/icons/";
-import AudioTrackDialog from "./AudioTrackDialog";
+import { colors } from "@common";
 import { audioSettingModalStyles as styles } from "../style";
+import AudioTrackDialog from "./AudioTrackDialog";
 
 const AudioSettingsModal = ({ title, tracks, baniID }) => {
   const isAudio = useSelector((state) => state.isAudio);

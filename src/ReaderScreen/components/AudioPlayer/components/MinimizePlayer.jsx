@@ -1,11 +1,11 @@
 import React from "react";
 import { View, Text, Pressable } from "react-native";
-import Icon from "react-native-vector-icons/MaterialIcons";
-import { useSelector } from "react-redux";
 import Svg, { Circle } from "react-native-svg";
+import { useSelector } from "react-redux";
 import PropTypes from "prop-types";
-import { colors } from "@common";
+import Icon from "react-native-vector-icons/MaterialIcons";
 import { PlayIcon } from "@common/icons";
+import { colors } from "@common";
 import { minimizePlayerStyles as styles } from "../style";
 
 const MinimizePlayer = ({

@@ -1,6 +1,6 @@
 import useBookmarks from "./useBookmarks";
 import useFetchShabad from "./useFetchShabad";
-import usePrevious from "./usePrevious";
 import useFooterAnimation from "./useFooterAnimation";
+import usePrevious from "./usePrevious";
 
 export { useBookmarks, useFetchShabad, usePrevious, useFooterAnimation };

@@ -1,7 +1,7 @@
 import React, { useState, useEffect, useCallback } from "react";
 import { View, Text } from "react-native";
-import Slider from "@react-native-community/slider";
 import { useDispatch, useSelector } from "react-redux";
+import Slider from "@react-native-community/slider";
 import { Icon } from "@rneui/themed";
 import PropTypes from "prop-types";
 import { colors, constant, actions, trackReaderEvent, logError } from "@common";

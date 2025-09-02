@@ -1,10 +1,11 @@
 import React, { useState, useEffect } from "react";
 import { View, Text, Pressable, Animated } from "react-native";
-import Icon from "react-native-vector-icons/MaterialIcons";
-import PropTypes from "prop-types";
-import { Slider } from "@miblanchard/react-native-slider";
-import { colors, STRINGS } from "@common";
 import { useSelector, useDispatch } from "react-redux";
+import { Slider } from "@miblanchard/react-native-slider";
+import { BlurView } from "@react-native-community/blur";
+import PropTypes from "prop-types";
+import Icon from "react-native-vector-icons/MaterialIcons";
+import { toggleAudio } from "@common/actions";
 import {
   MusicNoteIcon,
   SettingsIcon,
@@ -12,15 +13,14 @@ import {
   PlayIcon,
   CloseIcon,
 } from "@common/icons";
-import { BlurView } from "@react-native-community/blur";
-import { toggleAudio } from "@common/actions";
+import { colors, STRINGS } from "@common";
 import { useTrackPlayer, useAnimation } from "../hooks";
-import MinimizePlayer from "./MinimizePlayer";
-import DownloadBadge from "./DownloadBadge";
 import { audioControlBarStyles as styles } from "../style";
-import AudioTrackDialog from "./AudioTrackDialog";
-import AudioSettingsModal from "./AudioSettingsModal";
 import ActionComponents from "./ActionComponent";
+import AudioSettingsModal from "./AudioSettingsModal";
+import AudioTrackDialog from "./AudioTrackDialog";
+import DownloadBadge from "./DownloadBadge";
+import MinimizePlayer from "./MinimizePlayer";
 
 const AudioControlBar = ({
   baniID,

@@ -1,11 +1,11 @@
 import { useState, useEffect } from "react";
-import { useSelector } from "react-redux";
 import TrackPlayer, {
   usePlaybackState,
   useProgress,
   State,
   AppKilledPlaybackBehavior,
 } from "react-native-track-player";
+import { useSelector } from "react-redux";
 import { addTrack, playTrack, pauseTrack, stopTrack, resetPlayer } from "@common/TrackPlayerUtils";
 
 const useTrackPlayer = () => {

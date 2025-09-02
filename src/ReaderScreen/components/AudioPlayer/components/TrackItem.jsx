@@ -1,9 +1,9 @@
 import React from "react";
 import { Pressable, Text } from "react-native";
 import { useSelector } from "react-redux";
-import { colors } from "@common";
-import { PlayIcon } from "@common/icons";
 import PropTypes from "prop-types";
+import { PlayIcon } from "@common/icons";
+import { colors } from "@common";
 import { audioTrackDialogStyles as styles } from "../style";
 
 const TrackItem = ({ track, selectedTrack, handleSelectTrack }) => {

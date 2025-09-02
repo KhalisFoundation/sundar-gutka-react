@@ -1,9 +1,9 @@
 import React, { useState } from "react";
 import { View, Text, ScrollView, Pressable } from "react-native";
-import PropTypes from "prop-types";
-import { colors, STRINGS } from "@common";
-import { PlayIcon, ArrowRightIcon } from "@common/icons";
 import { useSelector } from "react-redux";
+import PropTypes from "prop-types";
+import { PlayIcon, ArrowRightIcon } from "@common/icons";
+import { colors, STRINGS } from "@common";
 import { audioTrackDialogStyles as styles } from "../style";
 
 const AudioTrackDialog = ({

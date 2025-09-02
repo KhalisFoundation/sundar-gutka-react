@@ -1,6 +1,6 @@
 import React, { useEffect } from "react";
-import { Icon } from "@rneui/themed";
 import { useSelector } from "react-redux";
+import { Icon } from "@rneui/themed";
 import { colors } from "@common";
 import { styles, getHeaderStyle } from "../styles";
 

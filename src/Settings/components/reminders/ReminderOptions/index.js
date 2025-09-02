@@ -1,11 +1,11 @@
 import React, { useState, useRef, useMemo } from "react";
-import { useDispatch, useSelector } from "react-redux";
 import { View, ScrollView } from "react-native";
-import { SafeAreaProvider, SafeAreaView } from "react-native-safe-area-context";
-import Accordion from "react-native-collapsible/Accordion";
-import PropTypes from "prop-types";
 import ModalSelector from "react-native-modal-selector";
+import { SafeAreaProvider, SafeAreaView } from "react-native-safe-area-context";
+import { useDispatch, useSelector } from "react-redux";
 import moment from "moment";
+import PropTypes from "prop-types";
+import Accordion from "react-native-collapsible/Accordion";
 import {
   colors,
   constant,
@@ -16,9 +16,9 @@ import {
   logMessage,
   StatusBarComponent,
 } from "@common";
-import { styles, accordianNightColor, optionContainer } from "./styles";
 import { AccordianContent, AccordianHeader } from "./components";
 import { useHeader, useFetchBani } from "./hooks";
+import { styles, accordianNightColor, optionContainer } from "./styles";
 
 const ReminderOptions = ({ navigation }) => {
   logMessage(constant.REMINDER_OPTIONS);

@@ -1,14 +1,14 @@
 import React, { useState, useEffect } from "react";
 import { View, Text } from "react-native";
-import { useSelector } from "react-redux";
-import PropTypes from "prop-types";
 import { exists } from "react-native-fs";
+import { useSelector } from "react-redux";
 import { BlurView } from "@react-native-community/blur";
+import PropTypes from "prop-types";
 import { colors } from "@common";
-import { useAudioManifest, useDownloadManager, useTrackPlayer } from "./hooks";
 import { AudioTrackDialog, AudioControlBar } from "./components";
-import { formatUrlForTrackPlayer, isLocalFile } from "./utils/urlHelper";
+import { useAudioManifest, useDownloadManager, useTrackPlayer } from "./hooks";
 import styles from "./style";
+import { formatUrlForTrackPlayer, isLocalFile } from "./utils/urlHelper";
 
 const AudioPlayer = ({ baniID, title, shouldNavigateBack }) => {
   const [showTrackModal, setShowTrackModal] = useState(true);

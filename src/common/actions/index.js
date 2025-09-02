@@ -1,7 +1,7 @@
-import * as actionTypes from "./actionTypes";
-import STRINGS from "../localization";
-import { trackSettingEvent } from "../firebase/analytics";
 import constant from "../constant";
+import { trackSettingEvent } from "../firebase/analytics";
+import STRINGS from "../localization";
+import * as actionTypes from "./actionTypes";
 
 export const toggleNightMode = (value) => {
   trackSettingEvent(constant.NIGHT_MODE, value);

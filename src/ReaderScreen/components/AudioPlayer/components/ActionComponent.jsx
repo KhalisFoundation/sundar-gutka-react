@@ -1,8 +1,8 @@
 import React from "react";
 import { Text, Pressable } from "react-native";
 import { useSelector } from "react-redux";
-import { colors } from "@common";
 import PropTypes from "prop-types";
+import { colors } from "@common";
 import { audioControlBarStyles as styles } from "../style";
 
 const ActionComponents = ({ selector, toggle, Icon, text }) => {
@@ -13,11 +13,7 @@ const ActionComponents = ({ selector, toggle, Icon, text }) => {
 
   if (selector) {
     backgroundColor = colors.READER_HEADER_COLOR;
-    if (isNightMode) {
-      color = colors.WHITE_COLOR;
-    } else {
-      color = colors.AUDIO_PLAYER_NIGHT_ICON;
-    }
+    color = isNightMode ? colors.WHITE_COLOR : colors.AUDIO_PLAYER_NIGHT_ICON;
   } else {
     backgroundColor = isNightMode ? colors.ACTION_BUTTON_NIGHT_MODE : colors.ACTION_BUTTON_COLOR;
     color = colors.READER_HEADER_COLOR;
