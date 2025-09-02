@@ -51,10 +51,6 @@ const useAudioManifest = (baniID) => {
             if (downloadedTrack) {
               // Use local URL if track is downloaded
               const fullLocalPath = `${DocumentDirectoryPath}/audio/${downloadedTrack.localURL}`;
-              console.log("Converting to full path:", {
-                relativePath: downloadedTrack.localURL,
-                fullLocalPath,
-              });
               return {
                 ...apiTrack,
                 audioUrl: fullLocalPath,

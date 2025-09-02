@@ -118,7 +118,7 @@ const AudioControlBar = ({
           isPlaying={isPlaying}
           progress={formatTime(progress.position)}
           duration={formatTime(progress.duration)}
-          displayName={currentPlaying.displayName}
+          displayName={currentPlaying?.displayName || ""}
         />
       </Animated.View>
 
@@ -316,7 +316,7 @@ AudioControlBar.propTypes = {
   handleDownload: PropTypes.func.isRequired,
   handleDeleteDownload: PropTypes.func.isRequired,
   title: PropTypes.string.isRequired,
-  baniID: PropTypes.number.isRequired,
+  baniID: PropTypes.string.isRequired,
 };
 
 export default AudioControlBar;

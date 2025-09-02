@@ -106,8 +106,14 @@ const AudioTrackDialog = ({
   );
 };
 
+AudioTrackDialog.defaultProps = {
+  title: "",
+  isHeader: true,
+  isFooter: true,
+};
+
 AudioTrackDialog.propTypes = {
-  title: PropTypes.string.isRequired,
+  title: PropTypes.string,
   tracks: PropTypes.arrayOf(
     PropTypes.shape({
       id: PropTypes.oneOfType([PropTypes.string, PropTypes.number]).isRequired,
@@ -116,8 +122,8 @@ AudioTrackDialog.propTypes = {
     })
   ).isRequired,
   handleTrackSelect: PropTypes.func.isRequired,
-  isHeader: PropTypes.bool.isRequired,
-  isFooter: PropTypes.bool.isRequired,
+  isHeader: PropTypes.bool,
+  isFooter: PropTypes.bool,
 };
 
 export default AudioTrackDialog;

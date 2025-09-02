@@ -8,14 +8,19 @@ import { audioControlBarStyles as styles } from "../style";
 const ActionComponents = ({ selector, toggle, Icon, text }) => {
   const isNightMode = useSelector((state) => state.isNightMode);
 
-  let color = colors.READER_HEADER_COLOR;
+  let color;
+  let backgroundColor;
+
   if (selector) {
-    color = colors.READER_HEADER_COLOR;
+    backgroundColor = colors.READER_HEADER_COLOR;
     if (isNightMode) {
       color = colors.WHITE_COLOR;
     } else {
       color = colors.AUDIO_PLAYER_NIGHT_ICON;
     }
+  } else {
+    backgroundColor = isNightMode ? colors.ACTION_BUTTON_NIGHT_MODE : colors.ACTION_BUTTON_COLOR;
+    color = colors.READER_HEADER_COLOR;
   }
 
   return (
@@ -23,12 +28,7 @@ const ActionComponents = ({ selector, toggle, Icon, text }) => {
       style={[
         styles.actionButton,
         {
-          backgroundColor: isNightMode
-            ? colors.ACTION_BUTTON_NIGHT_MODE
-            : colors.ACTION_BUTTON_COLOR,
-        },
-        {
-          backgroundColor: selector ? colors.READER_HEADER_COLOR : colors.ACTION_BUTTON_COLOR,
+          backgroundColor,
         },
       ]}
       onPress={() => toggle((prev) => !prev)}
