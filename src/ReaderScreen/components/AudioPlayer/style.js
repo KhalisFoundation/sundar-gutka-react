@@ -197,7 +197,7 @@ export const audioTrackDialogStyles = StyleSheet.create({
   container: {
     zIndex: 100,
     padding: SPACING.xxl,
-    gap: SPACING.md,
+    gap: SPACING.sm,
   },
   header: {
     alignItems: "center",
