@@ -97,7 +97,7 @@ const AudioTrackDialog = ({
           disabled={!selectedTrack}
           activeOpacity={0.8}
         >
-          <Text style={styles.playButtonText}>{STRINGS.PLAY}</Text>
+          <Text style={styles.playButtonText}>{STRINGS.NEXT}</Text>
           <ArrowRightIcon size={24} color={colors.WHITE_COLOR} />
         </Pressable>
       )}

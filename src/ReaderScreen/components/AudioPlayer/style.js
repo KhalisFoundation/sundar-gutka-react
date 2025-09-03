@@ -1,7 +1,7 @@
 import { StyleSheet } from "react-native";
 import { colors, constant } from "@common";
 
-const fontFamily = "BalooPaaji2";
+const fontFamily = "Baloo Paaji 2";
 // Common values
 const SPACING = {
   xs: 4,
@@ -124,26 +124,26 @@ export const audioControlBarStyles = StyleSheet.create({
     justifyContent: "center",
   },
   actionButton: {
-    flexDirection: "row",
-    alignItems: "center",
-    justifyContent: "center",
-    padding: 1,
     borderRadius: BORDER_RADIUS.xl,
   },
   actionButtonText: {
-    fontSize: FONT_SIZES.sm,
+    fontSize: FONT_SIZES.md,
     fontWeight: FONT_WEIGHTS.normal,
     fontFamily,
-    margin: 5,
-    padding: 2,
   },
-  controlIcon: {},
+  actionButtonContent: {
+    flexDirection: "row",
+    alignItems: "center",
+    justifyContent: "center",
+    gap: 2,
+    paddingHorizontal: SPACING.sm,
+    paddingVertical: SPACING.xs,
+  },
   separator: {
     height: 1,
   },
   mainSection: {
     flexDirection: "column",
-    padding: SPACING.md,
     paddingHorizontal: SPACING.md,
   },
   trackInfo: {
@@ -161,6 +161,7 @@ export const audioControlBarStyles = StyleSheet.create({
   trackName: {
     fontSize: FONT_SIZES.xl,
     fontFamily,
+    fontWeight: FONT_WEIGHTS.medium,
   },
   trackInfoText: {
     fontSize: FONT_SIZES.sm,
@@ -169,21 +170,26 @@ export const audioControlBarStyles = StyleSheet.create({
   },
   playbackControls: {
     flexDirection: "row",
+    // justifyContent: "space-between",
+    // alignItems: "center",
+    paddingHorizontal: SPACING.md,
+    gap: SPACING.md,
+  },
+  playButton: {
+    borderRadius: 25,
+    justifyContent: "center",
     alignItems: "center",
-    justifyContent: "space-evenly",
   },
-  playButton: {},
   progressContainer: {
-    width: "80%",
-  },
-  progressBar: {},
-  slider: {
-    width: "100%",
+    flex: 1,
   },
   timestamp: {
     fontSize: FONT_SIZES.sm,
     fontFamily,
-    alignSelf: "flex-end",
+    right: 0,
+    position: "absolute",
+    bottom: 25,
+    fontWeight: FONT_WEIGHTS.normal,
   },
 });
 
@@ -191,27 +197,23 @@ export const audioTrackDialogStyles = StyleSheet.create({
   container: {
     zIndex: 100,
     padding: SPACING.xxl,
+    gap: SPACING.md,
   },
   header: {
     alignItems: "center",
-    marginBottom: SPACING.xxl,
   },
   welcomeText: {
     fontFamily,
     fontSize: FONT_SIZES.xl,
-    fontWeight: FONT_WEIGHTS.bold,
+    fontWeight: FONT_WEIGHTS.semibold,
     textAlign: "center",
-    marginBottom: SPACING.sm,
   },
   subtitleText: {
     fontFamily,
     fontSize: FONT_SIZES.md,
-    textAlign: "center",
-    opacity: 0.8,
   },
   trackList: {
     maxHeight: 200,
-    marginBottom: SPACING.xxl,
   },
   trackItem: {
     flexDirection: "row",
@@ -219,6 +221,7 @@ export const audioTrackDialogStyles = StyleSheet.create({
     alignItems: "center",
     borderRadius: BORDER_RADIUS.xl,
     padding: SPACING.sm,
+    paddingLeft: SPACING.xl,
     marginBottom: SPACING.md,
     borderWidth: 2,
     borderColor: "transparent",
@@ -231,7 +234,7 @@ export const audioTrackDialogStyles = StyleSheet.create({
   trackName: {
     fontFamily,
     fontSize: FONT_SIZES.md,
-    fontWeight: FONT_WEIGHTS.medium,
+    fontWeight: FONT_WEIGHTS.normal,
     flex: 1,
   },
   selectedTrackName: {
@@ -240,7 +243,7 @@ export const audioTrackDialogStyles = StyleSheet.create({
   playButton: {
     backgroundColor: BACKGROUND_COLORS.primary,
     borderRadius: BORDER_RADIUS.lg,
-    paddingVertical: SPACING.lg,
+    paddingVertical: SPACING.sm,
     paddingHorizontal: SPACING.xxl,
     flexDirection: "row",
     justifyContent: "center",

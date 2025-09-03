@@ -154,6 +154,7 @@ const STRINGS = new LocalizedStrings({
     PLAY: "Play",
     DOWNLOAD: "Download",
     DOWNLOADING: "Downloading",
+    NEXT: "Next",
   },
   hi: {
     about: "हमारे बारे",
@@ -306,6 +307,7 @@ const STRINGS = new LocalizedStrings({
     PLAY: "चलाएं",
     DOWNLOAD: "डाउनलोड",
     DOWNLOADING: "डाउनलोड हो रहा है",
+    NEXT: "अगला",
   },
 
   pa: {
@@ -458,6 +460,7 @@ const STRINGS = new LocalizedStrings({
     PLAY: "ਚਲਾਓ",
     DOWNLOAD: "ਡਾਊਨਲੋਡ",
     DOWNLOADING: "ਡਾਊਨਲੋਡ ਹੋ ਰਹਿ ਰਹਾ ਹੈ",
+    NEXT: "ਅਗਲਾ",
   },
   fr: {
     about: "Infos",
@@ -616,6 +619,7 @@ const STRINGS = new LocalizedStrings({
     PLAY: "Jouer",
     DOWNLOAD: "Télécharger",
     DOWNLOADING: "Téléchargement en cours",
+    NEXT: "Suivant",
   },
   it: {
     about: "Info",
@@ -764,6 +768,7 @@ const STRINGS = new LocalizedStrings({
     upToDate: "Il tuo BaniDB è aggiornato.",
     baniDBBannerText: "È disponibile un nuovo aggiornamento di BaniDB. Tocca per aggiornare ora.",
     MORE_TRACKS: "Più tracce",
+    NEXT: "Prossimo",
   },
   es: {
     about: "Sobre Nosotros",
@@ -920,6 +925,7 @@ const STRINGS = new LocalizedStrings({
     PLAY: "Reproducir",
     DOWNLOAD: "Descargar",
     DOWNLOADING: "Descargando",
+    NEXT: "Siguiente",
   },
 });
 

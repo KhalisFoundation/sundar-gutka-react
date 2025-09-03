@@ -1,5 +1,5 @@
 import React from "react";
-import { Text, Pressable } from "react-native";
+import { Text, Pressable, View } from "react-native";
 import { useSelector } from "react-redux";
 import PropTypes from "prop-types";
 import { colors } from "@common";
@@ -29,17 +29,19 @@ const ActionComponents = ({ selector, toggle, Icon, text }) => {
       ]}
       onPress={() => toggle((prev) => !prev)}
     >
-      <Icon size={25} color={color} />
-      <Text
-        style={[
-          styles.actionButtonText,
-          {
-            color,
-          },
-        ]}
-      >
-        {text}
-      </Text>
+      <View style={styles.actionButtonContent}>
+        <Icon size={25} color={color} />
+        <Text
+          style={[
+            styles.actionButtonText,
+            {
+              color,
+            },
+          ]}
+        >
+          {text}
+        </Text>
+      </View>
     </Pressable>
   );
 };

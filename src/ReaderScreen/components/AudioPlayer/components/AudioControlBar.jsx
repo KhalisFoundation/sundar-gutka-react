@@ -6,13 +6,7 @@ import { BlurView } from "@react-native-community/blur";
 import PropTypes from "prop-types";
 import Icon from "react-native-vector-icons/MaterialIcons";
 import { toggleAudio } from "@common/actions";
-import {
-  MusicNoteIcon,
-  SettingsIcon,
-  ExpandCollapseIcon,
-  PlayIcon,
-  CloseIcon,
-} from "@common/icons";
+import { MusicNoteIcon, SettingsIcon, ExpandCollapseIcon, CloseIcon } from "@common/icons";
 import { colors, STRINGS } from "@common";
 import { useTrackPlayer, useAnimation } from "../hooks";
 import { audioControlBarStyles as styles } from "../style";
@@ -53,6 +47,12 @@ const AudioControlBar = ({
     const mins = Math.floor(seconds / 60);
     const secs = Math.floor(seconds % 60);
     return `${mins}:${secs.toString().padStart(2, "0")}`;
+  };
+
+  // Calculate slider colors to avoid nested ternary
+  const getSliderMinTrackColor = () => {
+    if (!isAudioEnabled) return colors.LIGHT_GRAY;
+    return isNightMode ? colors.AUDIO_PLAYER_NIGHT_ICON : colors.READER_HEADER_COLOR;
   };
   const actionComponents = [
     {
@@ -167,7 +167,7 @@ const AudioControlBar = ({
               {actionItems.map((item) => (
                 <Pressable key={item.id} style={styles.controlIcon} onPress={item.onPress}>
                   <item.Icon
-                    size={25}
+                    size={30}
                     color={
                       isNightMode ? colors.AUDIO_PLAYER_NIGHT_ICON : colors.READER_HEADER_COLOR
                     }
@@ -240,18 +240,6 @@ const AudioControlBar = ({
                   ({STRINGS.info})
                 </Text>
               </View>
-              <Text
-                style={[
-                  styles.timestamp,
-                  {
-                    color: isNightMode
-                      ? colors.AUDIO_PLAYER_NIGHT_ICON
-                      : colors.READER_HEADER_COLOR,
-                  },
-                ]}
-              >
-                {formatTime(progress.position)}/{formatTime(progress.duration)}
-              </Text>
             </View>
 
             <View style={styles.playbackControls}>
@@ -265,7 +253,8 @@ const AudioControlBar = ({
                     }
                   />
                 ) : (
-                  <PlayIcon
+                  <Icon
+                    name="play-arrow"
                     size={30}
                     color={
                       isNightMode ? colors.AUDIO_PLAYER_NIGHT_ICON : colors.READER_HEADER_COLOR
@@ -276,18 +265,35 @@ const AudioControlBar = ({
 
               <View style={styles.progressContainer}>
                 <View style={styles.progressBar}>
+                  <Text
+                    style={[
+                      styles.timestamp,
+                      {
+                        color: isNightMode
+                          ? colors.AUDIO_PLAYER_NIGHT_ICON
+                          : colors.READER_HEADER_COLOR,
+                      },
+                    ]}
+                  >
+                    {formatTime(progress.position)}
+                  </Text>
                   <Slider
                     value={progress.position}
                     minimumValue={0}
                     maximumValue={progress.duration}
                     onSlidingComplete={([v]) => handleSeek(v)}
-                    minimumTrackTintColor={
-                      isAudioEnabled ? colors.READER_HEADER_COLOR : colors.LIGHT_GRAY
-                    }
-                    maximumTrackTintColor="#d3d3d3"
+                    minimumTrackTintColor={getSliderMinTrackColor()}
+                    maximumTrackTintColor={isNightMode ? colors.NIGHT_GREY_COLOR : "#e0e0e0"}
                     disabled={!isAudioEnabled}
-                    trackStyle={{ height: 3 }}
-                    thumbStyle={{ width: 2, height: 2, borderRadius: 10 }}
+                    t
+                    trackStyle={{
+                      height: 6,
+                      borderRadius: 3,
+                    }}
+                    thumbStyle={{
+                      width: 10,
+                      height: 10,
+                    }}
                   />
                 </View>
               </View>
