@@ -1,6 +1,6 @@
 import { unicode } from "anvaad-js";
 
-const convertToUnicode = (tuk) => {
-  return unicode(tuk);
+const convertToUnicode = (word) => {
+  return unicode(word);
 };
 export default convertToUnicode;
