@@ -285,7 +285,6 @@ const AudioControlBar = ({
                     minimumTrackTintColor={getSliderMinTrackColor()}
                     maximumTrackTintColor={isNightMode ? colors.NIGHT_GREY_COLOR : "#e0e0e0"}
                     disabled={!isAudioEnabled}
-                    t
                     trackStyle={{
                       height: 6,
                       borderRadius: 3,
