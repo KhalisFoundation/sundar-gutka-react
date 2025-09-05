@@ -1,10 +1,11 @@
-import { useState, useEffect } from "react";
+import { useState, useEffect, useCallback } from "react";
 import { useSelector, useDispatch } from "react-redux";
 import { DocumentDirectoryPath } from "react-native-fs";
 import { fetchManifest } from "@service";
-import { actions } from "@common";
+import { actions, useRemote } from "@common";
 
 const useAudioManifest = (baniID) => {
+  const { BASIC_AUTH_USERNAME, BASIC_AUTH_PASSWORD, REMOTE_AUDIO_API_URL } = useRemote();
   const [tracks, setTracks] = useState([]);
   const [currentPlaying, setCurrentPlaying] = useState(null);
   const [isLoading, setIsLoading] = useState(false);
@@ -13,10 +14,15 @@ const useAudioManifest = (baniID) => {
   const dispatch = useDispatch();
   const audioManifest = useSelector((state) => state.audioManifest);
 
-  const fetchAudioManifest = async () => {
+  const fetchAudioManifest = useCallback(async () => {
     try {
       setIsLoading(true);
-      const manifest = await fetchManifest(baniID);
+      const manifest = await fetchManifest(
+        baniID,
+        BASIC_AUTH_USERNAME,
+        BASIC_AUTH_PASSWORD,
+        REMOTE_AUDIO_API_URL
+      );
 
       let mappedData = null;
       if (manifest === null) {
@@ -102,7 +108,7 @@ const useAudioManifest = (baniID) => {
     } finally {
       setIsLoading(false);
     }
-  };
+  }, [baniID, BASIC_AUTH_USERNAME, BASIC_AUTH_PASSWORD, REMOTE_AUDIO_API_URL]);
 
   const addTrackToManifest = (track, localPath) => {
     const trackData = {

@@ -16,8 +16,6 @@ const BUNDLED_DB_PATH = `${MainBundlePath}/www/${constant.DB}.db`;
 const BUNDLED_MD5_PATH = `${MainBundlePath}/www/${constant.DB}.md5`;
 export const LOCAL_DB_PATH = `${DocumentDirectoryPath}/${constant.DB}.db`;
 const LOCAL_MD5_PATH = `${DocumentDirectoryPath}/${constant.DB}.md5`;
-const REMOTE_MD5_URL = `${constant.REMOTE_DB_URL}/${constant.DB}.md5`;
-export const REMOTE_DB_URL = `${constant.REMOTE_DB_URL}/${constant.DB}.db`;
 
 export const listDocumentDirectory = async () => {
   try {
@@ -67,9 +65,9 @@ export const getCurrentDBMD5Hash = async () => {
  * Compare local and remote MD5 hashes to determine if an update is needed.
  */
 
-export const fetchRemoteMD5Hash = async () => {
+export const fetchRemoteMD5Hash = async (REMOTE_DB_URL) => {
   try {
-    const response = await fetch(REMOTE_MD5_URL);
+    const response = await fetch(`${REMOTE_DB_URL}/${constant.DB}.md5`);
     if (!response.ok) {
       throw new Error(`Failed to fetch remote MD5 hash: ${response.status} ${response.statusText}`);
     }
@@ -81,9 +79,9 @@ export const fetchRemoteMD5Hash = async () => {
   }
 };
 
-export const writeRemoteMD5Hash = async () => {
+export const writeRemoteMD5Hash = async (REMOTE_DB_URL) => {
   try {
-    const response = await fetch(REMOTE_MD5_URL);
+    const response = await fetch(`${REMOTE_DB_URL}/${constant.DB}.md5`);
     if (!response.ok) {
       throw new Error(`Failed to fetch remote MD5 hash: ${response.statusText}`);
     }
@@ -96,9 +94,9 @@ export const writeRemoteMD5Hash = async () => {
   }
 };
 
-export const checkForBaniDBUpdate = async () => {
+export const checkForBaniDBUpdate = async (REMOTE_DB_URL) => {
   const localHash = await getCurrentDBMD5Hash();
-  const remoteHash = await fetchRemoteMD5Hash();
+  const remoteHash = await fetchRemoteMD5Hash(REMOTE_DB_URL);
   return localHash !== null && localHash !== remoteHash;
 };
 

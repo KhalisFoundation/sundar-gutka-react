@@ -33,7 +33,6 @@ import createStore from "./store";
 import {
   ensureDbExists,
   checkForBaniDBUpdate,
-  REMOTE_DB_URL,
   writeRemoteMD5Hash,
   LOCAL_DB_PATH,
   listDocumentDirectory,
@@ -42,6 +41,7 @@ import {
 } from "./rnfs";
 import StatusBarComponent from "./components/StatusBar";
 import SafeArea from "./components/SafeArea";
+import useRemote from "./hooks/useRemote";
 
 export {
   colors,
@@ -80,7 +80,6 @@ export {
   resetTrace,
   ensureDbExists,
   checkForBaniDBUpdate,
-  REMOTE_DB_URL,
   writeRemoteMD5Hash,
   LOCAL_DB_PATH,
   listDocumentDirectory,
@@ -88,4 +87,5 @@ export {
   getCurrentDBMD5Hash,
   StatusBarComponent,
   SafeArea,
+  useRemote,
 };

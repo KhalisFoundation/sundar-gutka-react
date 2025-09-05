@@ -1,5 +1,5 @@
 const defaultConfig = {
-  IS_AUDIO_ENABLED: false,
+  IS_AUDIO_FEATURE_ENABLED: false,
   REMOTE_DB_URL: "https://banidb.blob.core.windows.net/database",
   BASIC_AUTH_USERNAME: "admin",
   BASIC_AUTH_PASSWORD: "",

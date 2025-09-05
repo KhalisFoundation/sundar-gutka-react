@@ -20,7 +20,6 @@ import {
   SafeArea,
 } from "@common";
 import StatusBarComponent from "@common/components/StatusBar";
-import { audioEnabled } from "@common/firebase/remoteConfig";
 import { Header, AutoScrollComponent, AudioPlayer } from "./components";
 import { useBookmarks, useFetchShabad, useFooterAnimation } from "./hooks";
 import { styles, nightColors } from "./styles";
@@ -60,8 +59,6 @@ const Reader = ({ navigation, route }) => {
   const { shabad, isLoading } = useFetchShabad(id);
   const { backgroundColor, safeAreaViewBack, backViewColor } = nightColors(isNightMode);
   const { READER_STATUS_BAR_COLOR } = colors;
-
-  console.log("isAudioEnabled", audioEnabled());
 
   const { animationPosition } = useFooterAnimation(isHeader);
 

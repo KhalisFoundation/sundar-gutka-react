@@ -8,9 +8,10 @@ import {
   checkForBaniDBUpdate,
   LOCAL_DB_PATH,
   writeRemoteMD5Hash,
-  REMOTE_DB_URL,
   getCurrentDBMD5Hash,
   STRINGS,
+  useRemote,
+  constant,
 } from "@common";
 import { useDispatch, useSelector } from "react-redux";
 import initDB, { closeDatabase } from "../../database/connect";
@@ -28,6 +29,7 @@ const DownloadComponent = () => {
   const isNightMode = useSelector((state) => state.isNightMode);
   const { darkModeContainer, darkModeText } = useMemo(() => darkMode(isNightMode), [isNightMode]);
   const dispatch = useDispatch();
+  const { REMOTE_DB_URL } = useRemote();
 
   // keep text % in sync with the animated value
   useEffect(() => {
@@ -44,7 +46,7 @@ const DownloadComponent = () => {
     const currentMD5Hash = await getCurrentDBMD5Hash();
     try {
       // 1️⃣ Check if an update is really needed
-      const needs = await checkForBaniDBUpdate();
+      const needs = await checkForBaniDBUpdate(REMOTE_DB_URL);
       if (!needs) {
         logMessage("No update needed.");
         return;
@@ -59,7 +61,7 @@ const DownloadComponent = () => {
 
       // 2️⃣ Kick off the RNFS download with a progress callback
       await downloadFile({
-        fromUrl: REMOTE_DB_URL,
+        fromUrl: `${REMOTE_DB_URL}/${constant.DB}.db`,
         toFile: tmpPath,
         progressDivider: 1,
         begin: () => {
@@ -80,7 +82,7 @@ const DownloadComponent = () => {
       }
 
       await moveFile(tmpPath, LOCAL_DB_PATH);
-      await writeRemoteMD5Hash();
+      await writeRemoteMD5Hash(REMOTE_DB_URL);
       logMessage("Database updated on disk. Re-initializing…");
       await initDB();
       logMessage("Database is now up to date!");

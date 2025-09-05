@@ -1,8 +1,7 @@
-import { constant } from "@common";
-
 // Common API configuration
-const getApiConfig = () => {
-  const { BASIC_AUTH_USERNAME, BASIC_AUTH_PASSWORD, REMOTE_AUDIO_API_URL } = constant;
+const getApiConfig = (cred) => {
+  const { BASIC_AUTH_USERNAME, BASIC_AUTH_PASSWORD, REMOTE_AUDIO_API_URL } = cred;
+
   const credentials = btoa(`${BASIC_AUTH_USERNAME}:${BASIC_AUTH_PASSWORD}`);
   return {
     baseUrl: REMOTE_AUDIO_API_URL,
@@ -14,9 +13,9 @@ const getApiConfig = () => {
 };
 
 // Generic API request function
-const makeApiRequest = async (endpoint, options = {}) => {
+const makeApiRequest = async (endpoint, credentials, options = {}) => {
   try {
-    const config = getApiConfig();
+    const config = getApiConfig(credentials);
     const response = await fetch(`${config.baseUrl}${endpoint}`, {
       method: "GET",
       headers: config.headers,
@@ -45,8 +44,14 @@ const mapArtistData = (artist) => ({
   description: artist.description,
 });
 
-export const fetchManifest = async (baniId) => {
-  const data = await makeApiRequest(`/banis/${baniId}`);
+export const fetchManifest = async (
+  baniId,
+  BASIC_AUTH_USERNAME,
+  BASIC_AUTH_PASSWORD,
+  REMOTE_AUDIO_API_URL
+) => {
+  const credentials = { BASIC_AUTH_USERNAME, BASIC_AUTH_PASSWORD, REMOTE_AUDIO_API_URL };
+  const data = await makeApiRequest(`/banis/${baniId}`, credentials);
 
   if (!data || data.data.length === 0) {
     return null;
@@ -55,8 +60,16 @@ export const fetchManifest = async (baniId) => {
   return data;
 };
 
-export const fetchArtists = async () => {
-  const data = await makeApiRequest("/artists");
+export const fetchArtists = async (
+  BASIC_AUTH_USERNAME,
+  BASIC_AUTH_PASSWORD,
+  REMOTE_AUDIO_API_URL
+) => {
+  const data = await makeApiRequest("/artists", {
+    BASIC_AUTH_USERNAME,
+    BASIC_AUTH_PASSWORD,
+    REMOTE_AUDIO_API_URL,
+  });
 
   if (data?.status === "success" && data.data) {
     return data.data.map(mapArtistData);

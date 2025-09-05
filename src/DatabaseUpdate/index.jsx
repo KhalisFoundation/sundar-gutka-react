@@ -9,6 +9,7 @@ import {
   StatusBarComponent,
   SafeArea,
   colors,
+  useRemote,
 } from "@common";
 import PropTypes from "prop-types";
 import { useDispatch, useSelector } from "react-redux";
@@ -28,11 +29,12 @@ const DatabaseUpdateScreen = ({ navigation }) => {
   useHeader(navigation, isNightMode);
   const dispatch = useDispatch();
   const { darkModeContainer, darkModeText } = useMemo(() => darkMode(isNightMode), [isNightMode]);
+  const { REMOTE_DB_URL } = useRemote();
 
   const checkForUpdates = async () => {
     try {
       setIsLoading(true);
-      const needUpdate = await checkForBaniDBUpdate();
+      const needUpdate = await checkForBaniDBUpdate(REMOTE_DB_URL);
       setIsUpdateAvailable(needUpdate);
       setIsLoading(false);
       dispatch(actions.toggleDatabaseUpdateAvailable(needUpdate));

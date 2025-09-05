@@ -1,7 +1,7 @@
 import React, { useState, useEffect } from "react";
 import { ListItem, Icon, Switch } from "@rneui/themed";
 import { useSelector, useDispatch } from "react-redux";
-import { STRINGS } from "@common";
+import { STRINGS, useRemote } from "@common";
 import {
   toggleAudio,
   toggleAudioAutoPlay,
@@ -13,6 +13,7 @@ import { iconNightColor, nightModeStyles, nightModeColor } from "../styles/night
 import { ListItemComponent, BottomSheetComponent } from "./comon";
 
 const Audio = () => {
+  const { BASIC_AUTH_USERNAME, BASIC_AUTH_PASSWORD, REMOTE_AUDIO_API_URL } = useRemote();
   const [isVisible, toggleVisible] = useState(false);
   const [defaultAudioOptions, setDefaultAudioOptions] = useState([]);
   const [isLoadingArtists, setIsLoadingArtists] = useState(true);
@@ -32,7 +33,11 @@ const Audio = () => {
     const fetchArtistsData = async () => {
       try {
         setIsLoadingArtists(true);
-        const options = await fetchArtists();
+        const options = await fetchArtists(
+          BASIC_AUTH_USERNAME,
+          BASIC_AUTH_PASSWORD,
+          REMOTE_AUDIO_API_URL
+        );
         setDefaultAudioOptions(options);
       } catch (error) {
         console.error("Error fetching artists:", error);
