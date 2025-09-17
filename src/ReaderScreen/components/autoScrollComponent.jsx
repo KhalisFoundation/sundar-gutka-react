@@ -14,6 +14,7 @@ const AutoScrollComponent = ({ shabadID, webViewRef }) => {
     autoScrollSpeedObj[shabadID] || constant.DEFAULT_SPEED
   );
   const dispatch = useDispatch();
+  const isNightMode = useSelector((state) => state.isNightMode);
 
   // Handle auto-scroll state changes
   useEffect(() => {
@@ -62,7 +63,16 @@ const AutoScrollComponent = ({ shabadID, webViewRef }) => {
   );
 
   return (
-    <View>
+    <View
+      style={[
+        styles.container,
+        {
+          backgroundColor: isNightMode
+            ? colors.READER_STATUS_BAR_COLOR_NIGHT_MODE
+            : colors.READER_STATUS_BAR_COLOR,
+        },
+      ]}
+    >
       <View style={styles.wrapper}>
         {isPaused ? (
           <Icon

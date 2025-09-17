@@ -1,9 +1,9 @@
 import React, { useState, useCallback, useEffect } from "react";
+import { Pressable, Text, View } from "react-native";
 import DraggableFlatList, {
   ShadowDecorator,
   ScaleDecorator,
 } from "react-native-draggable-flatlist";
-import { Pressable, Text, View } from "react-native";
 import { GestureHandlerRootView } from "react-native-gesture-handler";
 import { useSelector, useDispatch, batch } from "react-redux";
 import PropTypes from "prop-types";
@@ -15,8 +15,8 @@ import {
   SafeArea,
   StatusBarComponent,
 } from "@common";
-import { activeColor, nightStyles, styles } from "./styles";
 import Header from "./components/Header";
+import { activeColor, nightStyles, styles } from "./styles";
 
 const EditBaniOrder = ({ navigation }) => {
   logMessage(constant.EDIT_BANI_ORDER);

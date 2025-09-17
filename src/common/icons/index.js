@@ -7,3 +7,4 @@ export { default as DownloadIcon } from "./DownloadIcon";
 export { default as ArrowRightIcon } from "./ArrowRightIcon";
 export { default as CircleIcon } from "./CircleIcon";
 export { default as ChevronRight } from "./ChevronRight";
+export { default as PauseIcon } from "./PauseIcon";

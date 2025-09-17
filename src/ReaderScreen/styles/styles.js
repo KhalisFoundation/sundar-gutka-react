@@ -49,10 +49,9 @@ export const styles = StyleSheet.create({
     bottom: 0,
     left: 0,
     right: 0,
-    paddingTop: 0,
-    padding: 20,
+    paddingVertical: 0,
+    paddingHorizontal: 20,
     overflow: "hidden",
-    backgroundColor: colors.READER_FOOTER_COLOR,
   },
   sliderText: {
     color: colors.TOOLBAR_TINT,

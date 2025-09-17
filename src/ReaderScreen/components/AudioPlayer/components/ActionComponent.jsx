@@ -13,10 +13,10 @@ const ActionComponents = ({ selector, toggle, Icon, text }) => {
 
   if (selector) {
     backgroundColor = colors.READER_HEADER_COLOR;
-    color = isNightMode ? colors.WHITE_COLOR : colors.AUDIO_PLAYER_NIGHT_ICON;
+    color = colors.WHITE_COLOR;
   } else {
     backgroundColor = isNightMode ? colors.ACTION_BUTTON_NIGHT_MODE : colors.ACTION_BUTTON_COLOR;
-    color = colors.READER_HEADER_COLOR;
+    color = isNightMode ? colors.AUDIO_PLAYER_NIGHT_ICON : colors.READER_HEADER_COLOR;
   }
 
   return (

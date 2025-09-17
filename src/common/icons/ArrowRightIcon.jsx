@@ -10,7 +10,7 @@ const ArrowRightIcon = ({ size = 24, color }) => {
       fill="none"
       stroke={color}
       stroke-width="1.5"
-      viewBox={`0 0 ${size} ${size}`}
+      viewBox="0 0 24 24"
       strokeLinecap="round"
       strokeLinejoin="round"
       xmlns="http://www.w3.org/2000/svg"

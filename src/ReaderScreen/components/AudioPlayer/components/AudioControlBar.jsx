@@ -1,20 +1,26 @@
 import React, { useState, useEffect } from "react";
-import { View, Text, Pressable, Animated } from "react-native";
+import { View, Text, Pressable, Animated, StyleSheet, Platform } from "react-native";
 import { useSelector, useDispatch } from "react-redux";
 import { Slider } from "@miblanchard/react-native-slider";
 import { BlurView } from "@react-native-community/blur";
 import PropTypes from "prop-types";
-import Icon from "react-native-vector-icons/MaterialIcons";
 import { toggleAudio } from "@common/actions";
-import { MusicNoteIcon, SettingsIcon, ExpandCollapseIcon, CloseIcon } from "@common/icons";
+import {
+  MusicNoteIcon,
+  SettingsIcon,
+  ExpandCollapseIcon,
+  CloseIcon,
+  PlayIcon,
+  PauseIcon,
+} from "@common/icons";
 import { colors, STRINGS } from "@common";
 import { useTrackPlayer, useAnimation } from "../hooks";
 import { audioControlBarStyles as styles } from "../style";
 import ActionComponents from "./ActionComponent";
 import AudioSettingsModal from "./AudioSettingsModal";
-import AudioTrackDialog from "./AudioTrackDialog";
 import DownloadBadge from "./DownloadBadge";
 import MinimizePlayer from "./MinimizePlayer";
+import ScrollViewComponent from "./ScrollViewComponent";
 
 const AudioControlBar = ({
   baniID,
@@ -43,6 +49,8 @@ const AudioControlBar = ({
     isMoreTracksModalOpen,
     isMinimized
   );
+  const backgroundColor = Platform.OS === "ios" ? colors.SEMI_TRANSPARENT : colors.WHITE_COLOR;
+
   const formatTime = (seconds) => {
     const mins = Math.floor(seconds / 60);
     const secs = Math.floor(seconds % 60);
@@ -98,7 +106,7 @@ const AudioControlBar = ({
   }, [isMoreTracksModalOpen]);
 
   return (
-    <View style={[styles.container]}>
+    <>
       {/* Minimized Player with Animation */}
       <Animated.View
         style={{
@@ -121,153 +129,136 @@ const AudioControlBar = ({
           displayName={currentPlaying?.displayName || ""}
         />
       </Animated.View>
-
-      {/* Full Player with Animation */}
-      <Animated.View
-        style={{
-          opacity: playerOpacity,
-        }}
-        pointerEvents={isMinimized ? "none" : "auto"}
-      >
-        <DownloadBadge
-          currentPlaying={currentPlaying}
-          isDownloaded={isDownloaded}
-          isDownloading={isDownloading}
-          isAudioEnabled={isAudioEnabled}
-          onDownload={handleDownload}
-          onDelete={handleDeleteDownload}
-        />
-        <View
-          style={[
-            styles.mainContainer,
-            { backgroundColor: isNightMode ? colors.NIGHT_BLACK : colors.SEMI_TRANSPARENT },
-          ]}
+      <View style={[styles.container]} pointerEvents="box-none">
+        {/* Full Player with Animation */}
+        <Animated.View
+          style={{
+            opacity: playerOpacity,
+          }}
+          pointerEvents={isMinimized ? "none" : "auto"}
         >
-          <BlurView
-            style={styles.blurOverlay}
-            blurType={isNightMode ? "dark" : "light"}
-            blurAmount={5}
-            reducedTransparencyFallbackColor={isNightMode ? colors.BLACK_COLOR : colors.WHITE_COLOR}
+          <DownloadBadge
+            currentPlaying={currentPlaying}
+            isDownloaded={isDownloaded}
+            isDownloading={isDownloading}
+            isAudioEnabled={isAudioEnabled}
+            onDownload={handleDownload}
+            onDelete={handleDeleteDownload}
           />
-          {/* Top Control Bar */}
-          <View style={styles.topControlBar}>
-            <View style={styles.leftControls}>
-              {actionComponents.map((component) => (
-                <ActionComponents
-                  key={component.text}
-                  selector={component.selector}
-                  toggle={component.toggle}
-                  Icon={component.Icon}
-                  text={component.text}
-                />
-              ))}
-            </View>
-
-            <View style={styles.rightControls}>
-              {actionItems.map((item) => (
-                <Pressable key={item.id} style={styles.controlIcon} onPress={item.onPress}>
-                  <item.Icon
-                    size={30}
-                    color={
-                      isNightMode ? colors.AUDIO_PLAYER_NIGHT_ICON : colors.READER_HEADER_COLOR
-                    }
-                  />
-                </Pressable>
-              ))}
-            </View>
-          </View>
-
-          {/* Separator */}
           <View
             style={[
-              styles.separator,
+              styles.mainContainer,
               {
-                backgroundColor: isNightMode
-                  ? colors.AUDIO_PLAYER_NIGHT_ICON
-                  : colors.READER_HEADER_COLOR_10,
+                backgroundColor: isNightMode ? colors.NIGHT_BLACK : backgroundColor,
               },
             ]}
-          />
-          <Animated.View
-            style={{
-              height: modalHeight,
-              opacity: modalOpacity,
-              overflow: "hidden",
-            }}
           >
-            {isSettingsModalOpen && (
-              <AudioSettingsModal title={title} tracks={tracks} baniID={baniID} />
-            )}
-
-            {isMoreTracksModalOpen && (
-              <AudioTrackDialog
-                handleTrackSelect={handleTrackSelect}
-                tracks={tracks}
-                isHeader={false}
-                isFooter={false}
+            {Platform.OS === "ios" && (
+              <BlurView
+                style={StyleSheet.absoluteFill}
+                blurType={isNightMode ? "dark" : "light"}
+                blurAmount={5}
+                reducedTransparencyFallbackColor={
+                  isNightMode ? colors.BLACK_COLOR : backgroundColor
+                }
               />
             )}
-          </Animated.View>
+            {/* Top Control Bar */}
+            <View style={styles.topControlBar}>
+              <View style={styles.leftControls}>
+                {actionComponents.map((component) => (
+                  <ActionComponents
+                    key={component.text}
+                    selector={component.selector}
+                    toggle={component.toggle}
+                    Icon={component.Icon}
+                    text={component.text}
+                  />
+                ))}
+              </View>
 
-          {/* Main Playback Section */}
-          <View style={styles.mainSection}>
-            <View style={styles.trackInfo}>
-              <View style={styles.trackInfoLeft}>
-                {currentPlaying && currentPlaying.displayName && (
-                  <Text
-                    style={[
-                      styles.trackName,
-                      {
-                        color: isNightMode
-                          ? colors.AUDIO_PLAYER_NIGHT_ICON
-                          : colors.READER_HEADER_COLOR,
-                      },
-                    ]}
-                  >
-                    {currentPlaying.displayName}
-                  </Text>
-                )}
-                <Text
-                  style={[
-                    styles.trackInfoText,
-                    {
-                      color: isNightMode
-                        ? colors.AUDIO_PLAYER_NIGHT_ICON
-                        : colors.READER_HEADER_COLOR,
-                    },
-                  ]}
-                >
-                  ({STRINGS.info})
-                </Text>
+              <View style={styles.rightControls}>
+                {actionItems.map((item) => (
+                  <Pressable key={item.id} style={styles.controlIcon} onPress={item.onPress}>
+                    <item.Icon
+                      size={30}
+                      color={
+                        isNightMode ? colors.AUDIO_PLAYER_NIGHT_ICON : colors.READER_HEADER_COLOR
+                      }
+                    />
+                  </Pressable>
+                ))}
               </View>
             </View>
 
-            <View style={styles.playbackControls}>
-              <Pressable style={styles.playButton} onPress={handlePlayPause}>
-                {isPlaying ? (
-                  <Icon
-                    name="pause"
-                    size={30}
-                    color={
-                      isNightMode ? colors.AUDIO_PLAYER_NIGHT_ICON : colors.READER_HEADER_COLOR
-                    }
-                  />
-                ) : (
-                  <Icon
-                    name="play-arrow"
-                    size={30}
-                    color={
-                      isNightMode ? colors.AUDIO_PLAYER_NIGHT_ICON : colors.READER_HEADER_COLOR
-                    }
-                  />
-                )}
-              </Pressable>
+            {/* Separator */}
+            <View
+              style={[
+                styles.separator,
+                {
+                  backgroundColor: isNightMode
+                    ? colors.AUDIO_PLAYER_NIGHT_ICON
+                    : colors.READER_HEADER_COLOR_10,
+                },
+              ]}
+            />
+            <Animated.View
+              style={{
+                backgroundColor: isNightMode ? colors.NIGHT_BLACK : "#eee",
+                height: modalHeight,
+                opacity: modalOpacity,
+                overflow: "hidden",
+                justifyContent: "center",
+              }}
+            >
+              {isSettingsModalOpen && (
+                <AudioSettingsModal title={title} tracks={tracks} baniID={baniID} />
+              )}
 
-              <View style={styles.progressContainer}>
-                <View style={styles.progressBar}>
-                  <Text
+              {isMoreTracksModalOpen && (
+                <View
+                  style={{
+                    width: "90%",
+                    alignSelf: "center",
+                    padding: 10,
+                    zIndex: 20,
+                  }}
+                >
+                  <ScrollViewComponent
+                    tracks={tracks}
+                    selectedTrack={currentPlaying}
+                    handleSelectTrack={handleTrackSelect}
+                  />
+                </View>
+              )}
+            </Animated.View>
+
+            {/* Main Playback Section */}
+            <View
+              style={[
+                styles.mainSection,
+                { borderWidth: 1, borderColor: isNightMode ? colors.NIGHT_GREY_COLOR : "#eee" },
+              ]}
+            >
+              <View style={styles.trackInfo}>
+                <View style={styles.trackInfoLeft}>
+                  {currentPlaying && currentPlaying.displayName && (
+                    <Text
+                      style={[
+                        styles.trackName,
+                        {
+                          color: isNightMode
+                            ? colors.AUDIO_PLAYER_NIGHT_ICON
+                            : colors.READER_HEADER_COLOR,
+                        },
+                      ]}
+                    >
+                      {currentPlaying.displayName}
+                    </Text>
+                  )}
+                  {/* <Text
                     style={[
-                      styles.timestamp,
+                      styles.trackInfoText,
                       {
                         color: isNightMode
                           ? colors.AUDIO_PLAYER_NIGHT_ICON
@@ -275,32 +266,69 @@ const AudioControlBar = ({
                       },
                     ]}
                   >
-                    {formatTime(progress.position)}
-                  </Text>
-                  <Slider
-                    value={progress.position}
-                    minimumValue={0}
-                    maximumValue={progress.duration}
-                    onSlidingComplete={([v]) => handleSeek(v)}
-                    minimumTrackTintColor={getSliderMinTrackColor()}
-                    maximumTrackTintColor={isNightMode ? colors.NIGHT_GREY_COLOR : "#e0e0e0"}
-                    disabled={!isAudioEnabled}
-                    trackStyle={{
-                      height: 6,
-                      borderRadius: 3,
-                    }}
-                    thumbStyle={{
-                      width: 10,
-                      height: 10,
-                    }}
-                  />
+                    ({STRINGS.info})
+                  </Text> */}
+                </View>
+              </View>
+
+              <View style={styles.playbackControls}>
+                <Pressable style={styles.playButton} onPress={handlePlayPause}>
+                  {isPlaying ? (
+                    <PauseIcon
+                      size={30}
+                      color={
+                        isNightMode ? colors.AUDIO_PLAYER_NIGHT_ICON : colors.READER_HEADER_COLOR
+                      }
+                    />
+                  ) : (
+                    <PlayIcon
+                      size={30}
+                      color={
+                        isNightMode ? colors.AUDIO_PLAYER_NIGHT_ICON : colors.READER_HEADER_COLOR
+                      }
+                    />
+                  )}
+                </Pressable>
+
+                <View style={styles.progressContainer}>
+                  <View style={styles.progressBar}>
+                    <Text
+                      style={[
+                        styles.timestamp,
+                        {
+                          color: isNightMode
+                            ? colors.AUDIO_PLAYER_NIGHT_ICON
+                            : colors.READER_HEADER_COLOR,
+                        },
+                      ]}
+                    >
+                      {formatTime(progress.position)}
+                    </Text>
+                    <Slider
+                      value={progress.position}
+                      minimumValue={0}
+                      maximumValue={progress.duration}
+                      onSlidingComplete={([v]) => handleSeek(v)}
+                      minimumTrackTintColor={getSliderMinTrackColor()}
+                      maximumTrackTintColor={isNightMode ? colors.NIGHT_GREY_COLOR : "#e0e0e0"}
+                      disabled={!isAudioEnabled}
+                      trackStyle={{
+                        height: 6,
+                        borderRadius: 3,
+                      }}
+                      thumbStyle={{
+                        width: 10,
+                        height: 10,
+                      }}
+                    />
+                  </View>
                 </View>
               </View>
             </View>
           </View>
-        </View>
-      </Animated.View>
-    </View>
+        </Animated.View>
+      </View>
+    </>
   );
 };
 

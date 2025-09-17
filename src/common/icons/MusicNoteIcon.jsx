@@ -10,7 +10,7 @@ export const MusicIcon = ({ size = 28, color = colors.READER_HEADER_COLOR, strok
     fill="none"
     stroke={color}
     strokeWidth={strokeWidth}
-    viewBox={`0 0 ${size} ${size}`}
+    viewBox="0 0 24 24"
     strokeLinecap="round"
     strokeLinejoin="round"
     xmlns="http://www.w3.org/2000/svg"

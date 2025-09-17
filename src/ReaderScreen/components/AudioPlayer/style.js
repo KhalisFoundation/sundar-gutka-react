@@ -1,7 +1,10 @@
-import { StyleSheet } from "react-native";
+import { StyleSheet, Platform } from "react-native";
 import { colors, constant } from "@common";
 
-const fontFamily = "Baloo Paaji 2";
+const fontFamily = Platform.select({
+  ios: "Baloo Paaji 2",
+  android: "BalooPaaji2-Regular",
+});
 // Common values
 const SPACING = {
   xs: 4,
@@ -67,15 +70,6 @@ const FONT_WEIGHTS = {
 };
 
 const styles = StyleSheet.create({
-  blurOverlay: {
-    position: "absolute",
-    bottom: 0,
-    left: 0,
-    right: 0,
-    top: 0,
-    borderRadius: BORDER_RADIUS.sm,
-    borderWidth: 1,
-  },
   mainContainer: {
     position: "absolute",
     bottom: 0,
@@ -100,11 +94,14 @@ export const audioControlBarStyles = StyleSheet.create({
     borderRadius: BORDER_RADIUS.md,
     position: "absolute",
     bottom: 0,
-    left: 0,
+    left: 10,
     right: 0,
+    paddingBottom: 10,
+    width: "95%",
   },
   mainContainer: {
     borderRadius: BORDER_RADIUS.md,
+    ...SHADOW.light,
   },
   topControlBar: {
     flexDirection: "row",
@@ -130,21 +127,23 @@ export const audioControlBarStyles = StyleSheet.create({
     fontSize: FONT_SIZES.md,
     fontWeight: FONT_WEIGHTS.normal,
     fontFamily,
+    marginBottom: 4,
   },
   actionButtonContent: {
     flexDirection: "row",
     alignItems: "center",
     justifyContent: "center",
-    gap: 2,
-    paddingHorizontal: SPACING.xs,
+    gap: 4,
+    paddingHorizontal: SPACING.sm,
     paddingVertical: SPACING.xs,
   },
   separator: {
     height: 1,
   },
   mainSection: {
-    flexDirection: "column",
     paddingHorizontal: SPACING.md,
+    // borderWidth: 1,
+    // borderColor: "#eee",
   },
   trackInfo: {
     flexDirection: "row",
@@ -176,12 +175,14 @@ export const audioControlBarStyles = StyleSheet.create({
     gap: SPACING.md,
   },
   playButton: {
-    borderRadius: 25,
     justifyContent: "center",
     alignItems: "center",
   },
   progressContainer: {
     flex: 1,
+    marginTop: 2,
+    justifyContent: "center",
+    // alignItems: "center",
   },
   timestamp: {
     fontSize: FONT_SIZES.sm,
@@ -194,37 +195,55 @@ export const audioControlBarStyles = StyleSheet.create({
 });
 
 export const audioTrackDialogStyles = StyleSheet.create({
+  blurOverlay: {
+    position: "absolute",
+    bottom: 0,
+    left: 0,
+    right: 0,
+    top: 0,
+    borderRadius: BORDER_RADIUS.sm,
+    borderWidth: 1,
+  },
   container: {
-    zIndex: 100,
+    zIndex: 10,
     padding: SPACING.xxl,
     gap: SPACING.sm,
+    borderRadius: BORDER_RADIUS.md,
+    borderWidth: 1,
+    borderColor: colors.READER_HEADER_COLOR_10,
   },
   header: {
     alignItems: "center",
   },
   welcomeText: {
-    fontFamily,
+    fontFamily: "BalooPaaji2-SemiBold",
     fontSize: FONT_SIZES.xl,
     fontWeight: FONT_WEIGHTS.semibold,
     textAlign: "center",
+    marginBottom: SPACING.sm,
+    lineHeight: FONT_SIZES.xl * 1.3, // Better line height for Android
   },
   subtitleText: {
     fontFamily,
     fontSize: FONT_SIZES.md,
+    textAlign: "center",
+    lineHeight: FONT_SIZES.md * 1.4, // Better line height for Android
   },
   trackList: {
     maxHeight: 200,
+    zIndex: 10,
   },
   trackItem: {
     flexDirection: "row",
     justifyContent: "space-between",
     alignItems: "center",
     borderRadius: BORDER_RADIUS.xl,
-    padding: SPACING.sm,
-    paddingLeft: SPACING.xl,
+    padding: SPACING.md,
+    paddingHorizontal: SPACING.xl,
     marginBottom: SPACING.md,
-    borderWidth: 2,
+    // borderWidth: 2,
     borderColor: "transparent",
+    minHeight: 60, // Consistent height for Android
   },
   selectedTrackItem: {
     backgroundColor: BACKGROUND_COLORS.primary,
@@ -243,7 +262,7 @@ export const audioTrackDialogStyles = StyleSheet.create({
   playButton: {
     backgroundColor: BACKGROUND_COLORS.primary,
     borderRadius: BORDER_RADIUS.lg,
-    paddingVertical: SPACING.sm,
+    paddingVertical: SPACING.md,
     paddingHorizontal: SPACING.xxl,
     flexDirection: "row",
     justifyContent: "center",
@@ -286,7 +305,7 @@ export const downloadBadgeStyles = StyleSheet.create({
   },
   downloadButtonText: {
     fontFamily,
-    fontSize: FONT_SIZES.sm,
+    fontSize: FONT_SIZES.xs,
     fontWeight: 300,
   },
 });
@@ -294,10 +313,10 @@ export const downloadBadgeStyles = StyleSheet.create({
 export const minimizePlayerStyles = StyleSheet.create({
   container: {
     position: "absolute",
-    bottom: 0,
+    bottom: 10,
     right: SPACING.xl,
     width: "50%",
-    height: 60,
+    maxHeight: 60,
     borderRadius: BORDER_RADIUS.xl,
     padding: SPACING.xl,
     flexDirection: "row",
@@ -334,7 +353,7 @@ export const minimizePlayerStyles = StyleSheet.create({
 
 export const audioSettingModalStyles = StyleSheet.create({
   settingItemTitle: {
-    fontSize: FONT_SIZES.lg,
+    fontSize: FONT_SIZES.md,
     fontFamily,
     fontWeight: FONT_WEIGHTS.normal,
     color: "#666",
@@ -347,9 +366,9 @@ export const audioSettingModalStyles = StyleSheet.create({
     color: colors.READER_HEADER_COLOR,
     textDecorationLine: "underline",
   },
-  switchStyle: { transform: [{ scaleX: 0.5 }, { scaleY: 0.5 }] },
-  switchContainer: { flexDirection: "row", margin: 5, gap: 5 },
-  modalContainer: { flexDirection: "row", margin: 5 },
+  switchStyle: { transform: [{ scaleX: 1.2 }, { scaleY: 1.2 }], marginLeft: 10 },
+  switchContainer: { flexDirection: "row", flexWrap: "wrap" },
+  modalContainer: { flexDirection: "row", margin: 5, alignItems: "center" },
   defaultTrackContainer: { flexDirection: "row", alignItems: "center", gap: 0 },
 });
 

@@ -11,7 +11,7 @@ import {
 import { ChevronRight } from "@common/icons/";
 import { colors } from "@common";
 import { audioSettingModalStyles as styles } from "../style";
-import AudioTrackDialog from "./AudioTrackDialog";
+import ScrollViewComponent from "./ScrollViewComponent";
 
 const AudioSettingsModal = ({ title, tracks, baniID }) => {
   const isAudio = useSelector((state) => state.isAudio);
@@ -54,7 +54,7 @@ const AudioSettingsModal = ({ title, tracks, baniID }) => {
   return (
     <View>
       {isSettingsModalOpen && (
-        <View>
+        <View style={{ width: "85%", marginLeft: "auto", marginRight: "auto" }}>
           {settings.map((setting) => (
             <View key={setting.title} style={styles.modalContainer}>
               <Text style={styles.settingItemTitle}>{setting.title} :</Text>
@@ -93,12 +93,21 @@ const AudioSettingsModal = ({ title, tracks, baniID }) => {
       )}
 
       {isDefaultTrackModalOpen && (
-        <AudioTrackDialog
-          tracks={tracks}
-          isHeader={false}
-          isFooter={false}
-          handleTrackSelect={handleTrackSelect}
-        />
+        <View
+          style={{
+            width: "90%",
+            alignSelf: "center",
+            padding: 10,
+            zIndex: 20,
+            maxHeight: 250,
+          }}
+        >
+          <ScrollViewComponent
+            tracks={tracks}
+            selectedTrack={defaultAudio[baniID]}
+            handleSelectTrack={handleTrackSelect}
+          />
+        </View>
       )}
     </View>
   );

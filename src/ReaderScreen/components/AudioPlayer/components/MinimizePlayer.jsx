@@ -3,8 +3,7 @@ import { View, Text, Pressable } from "react-native";
 import Svg, { Circle } from "react-native-svg";
 import { useSelector } from "react-redux";
 import PropTypes from "prop-types";
-import Icon from "react-native-vector-icons/MaterialIcons";
-import { PlayIcon } from "@common/icons";
+import { PlayIcon, PauseIcon } from "@common/icons";
 import { colors } from "@common";
 import { minimizePlayerStyles as styles } from "../style";
 
@@ -92,8 +91,7 @@ const MinimizePlayer = ({
         {/* Play/Pause Icon */}
         <View style={styles.playPauseButton}>
           {isPlaying ? (
-            <Icon
-              name="pause"
+            <PauseIcon
               size={30}
               color={isNightMode ? colors.AUDIO_PLAYER_NIGHT_ICON : colors.READER_HEADER_COLOR}
             />

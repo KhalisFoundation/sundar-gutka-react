@@ -1,10 +1,12 @@
 import React, { useState } from "react";
-import { View, Text, ScrollView, Pressable } from "react-native";
+import { View, Text, Pressable, Platform } from "react-native";
 import { useSelector } from "react-redux";
+import { BlurView } from "@react-native-community/blur";
 import PropTypes from "prop-types";
-import { PlayIcon, ArrowRightIcon } from "@common/icons";
+import { ArrowRightIcon } from "@common/icons";
 import { colors, STRINGS } from "@common";
 import { audioTrackDialogStyles as styles } from "../style";
+import ScrollViewComponent from "./ScrollViewComponent";
 
 const AudioTrackDialog = ({
   handleTrackSelect,
@@ -29,7 +31,25 @@ const AudioTrackDialog = ({
   };
 
   return (
-    <View style={styles.container}>
+    <View
+      style={[
+        styles.container,
+        { backgroundColor: isNightMode ? colors.NIGHT_BLACK : colors.SEMI_TRANSPARENT },
+      ]}
+    >
+      {Platform.OS === "ios" && (
+        <BlurView
+          style={[
+            styles.blurOverlay,
+            {
+              borderColor: isNightMode ? colors.NIGHT_BLACK : colors.SEMI_TRANSPARENT,
+            },
+          ]}
+          blurType={isNightMode ? "dark" : "light"}
+          blurAmount={5}
+          reducedTransparencyFallbackColor={isNightMode ? colors.BLACK_COLOR : colors.WHITE_COLOR}
+        />
+      )}
       {/* Header */}
       {isHeader && (
         <View style={styles.header}>
@@ -53,41 +73,11 @@ const AudioTrackDialog = ({
       )}
 
       {/* Track Selection List */}
-      <ScrollView style={styles.trackList} showsVerticalScrollIndicator>
-        {tracks.map((track) => (
-          <Pressable
-            key={track.id}
-            style={[
-              styles.trackItem,
-              {
-                backgroundColor: isNightMode ? colors.NIGHT_BLACK : colors.READER_HEADER_COLOR_10,
-              },
-              selectedTrack && track.id === selectedTrack?.id && styles.selectedTrackItem,
-            ]}
-            onPress={() => handleSelectTrack(track)}
-            activeOpacity={0.7}
-          >
-            <Text
-              style={[
-                styles.trackName,
-                {
-                  color: isNightMode ? colors.AUDIO_PLAYER_NIGHT_ICON : colors.READER_HEADER_COLOR,
-                },
-                selectedTrack && track.id === selectedTrack.id && styles.selectedTrackName,
-              ]}
-            >
-              {track.displayName}
-            </Text>
-
-            <PlayIcon
-              size={30}
-              color={
-                selectedTrack && selectedTrack.id === track.id ? colors.WHITE_COLOR : "#808fad"
-              }
-            />
-          </Pressable>
-        ))}
-      </ScrollView>
+      <ScrollViewComponent
+        tracks={tracks}
+        selectedTrack={selectedTrack}
+        handleSelectTrack={handleSelectTrack}
+      />
 
       {/* Play Button */}
       {isFooter && (
