@@ -211,6 +211,9 @@ export const audioTrackDialogStyles = StyleSheet.create({
     borderRadius: BORDER_RADIUS.md,
     borderWidth: 1,
     borderColor: colors.READER_HEADER_COLOR_10,
+    width: "95%",
+    marginLeft: "auto",
+    marginRight: "auto",
   },
   header: {
     alignItems: "center",

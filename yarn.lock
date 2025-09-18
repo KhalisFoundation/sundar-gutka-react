@@ -2112,10 +2112,10 @@
   dependencies:
     invariant "^2.2.4"
 
-"@react-native-community/slider@^4.5.7":
-  version "4.5.7"
-  resolved "https://registry.yarnpkg.com/@react-native-community/slider/-/slider-4.5.7.tgz#523178779f302aa162b0d57211842f81522e8ece"
-  integrity sha512-WMDDZjNF2Bd8M8TrSqKf5xhM9ikdfCHtSPur64Ow3bB/OVrKufUQZ59NmYdNZNeGPvcHHTsafuYTY8zfZfbchQ==
+"@react-native-community/slider@^5.0.0":
+  version "5.0.1"
+  resolved "https://registry.yarnpkg.com/@react-native-community/slider/-/slider-5.0.1.tgz#478789e526af31e0660c6f49fa5c5429d8d4287b"
+  integrity sha512-K3JRWkIW4wQ79YJ6+BPZzp1SamoikxfPRw7Yw4B4PElEQmqZFrmH9M5LxvIo460/3QSrZF/wCgi3qizJt7g/iw==
 
 "@react-native-firebase/analytics@^23.1.2":
   version "23.1.2"
@@ -6908,7 +6908,7 @@ react-native-fs@^2.20.0:
     base-64 "^0.1.0"
     utf8 "^3.0.0"
 
-react-native-gesture-handler@^2.26.0:
+react-native-gesture-handler@^2.25.0:
   version "2.28.0"
   resolved "https://registry.yarnpkg.com/react-native-gesture-handler/-/react-native-gesture-handler-2.28.0.tgz#07fb4f5eae72f810aac3019b060d26c1835bfd0c"
   integrity sha512-0msfJ1vRxXKVgTgvL+1ZOoYw3/0z1R+Ked0+udoJhyplC2jbVKIJ8Z1bzWdpQRCV3QcQ87Op0zJVE5DhKK2A0A==

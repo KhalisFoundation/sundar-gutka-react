@@ -4,7 +4,6 @@ export { default as BookmarkIcon } from "./BookmarkIcon";
 export { default as SettingsIcon } from "./SettingsIcon";
 export { default as BackArrowIcon } from "./BackArrowIcon";
 export { default as MusicNoteIcon } from "./MusicNoteIcon";
-export { default as SettingsIcon } from "./SettingsIcon";
 export { default as ExpandCollapseIcon } from "./ExpandCollapseIcon";
 export { default as CloseIcon } from "./CloseIcon";
 export { default as PlayIcon } from "./PlayIcon";

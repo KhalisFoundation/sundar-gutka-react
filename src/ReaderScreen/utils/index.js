@@ -95,10 +95,6 @@ export const loadHTML = (
       ios: `${fontFace}.ttf`,
       android: `file:///android_asset/fonts/${fontFace}.ttf`,
     });
-    const defaultFontFaceURI = Platform.select({
-      ios: `${constant.GURBANI_AKHAR_TRUE}.ttf`,
-      android: `file:///android_asset/fonts/${constant.GURBANI_AKHAR_TRUE}.ttf`,
-    });
 
     const content = shabad
       .map((item) => {
@@ -185,8 +181,7 @@ export const loadHTML = (
       fontFace,
       content,
       isNightMode,
-      savePosition,
-      defaultFontFaceURI
+      savePosition
     );
     return htmlContent;
   } catch (error) {

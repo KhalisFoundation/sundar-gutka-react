@@ -1,7 +1,6 @@
 import React, { useEffect, useCallback } from "react";
 import { Pressable } from "react-native";
 import { useSelector } from "react-redux";
-import { Icon } from "@rneui/themed";
 import { BackArrowIcon } from "@common/icons";
 import { colors } from "@common";
 import { getHeaderTitleStyle, getHeaderStyle } from "../styles";

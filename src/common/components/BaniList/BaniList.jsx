@@ -1,17 +1,18 @@
 import React, { useCallback, useEffect, useState } from "react";
 import { FlatList, Dimensions, Platform } from "react-native";
+import { useSelector } from "react-redux";
 import { ListItem, Avatar } from "@rneui/themed";
 import PropTypes from "prop-types";
-import { useSelector } from "react-redux";
-import baseFontSize from "../../helpers";
+import { styles } from "../../../Settings/styles";
 import colors from "../../colors";
 import constant from "../../constant";
-import { styles } from "../../../Settings/styles";
+import baseFontSize from "../../helpers";
 import convertToUnicode from "../../utils";
 
 const BaniList = React.memo(({ data, onPress }) => {
   const fontSize = useSelector((state) => state.fontSize);
   const fontFace = useSelector((state) => state.fontFace);
+  console.log(fontFace);
   const isTransliteration = useSelector((state) => state.isTransliteration);
   const isNightMode = useSelector((state) => state.isNightMode);
   const [isPotrait, toggleIsPotrait] = useState(true);

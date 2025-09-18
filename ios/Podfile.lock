@@ -1529,7 +1529,7 @@ PODS:
     - ReactCommon/turbomodule/bridging
     - ReactCommon/turbomodule/core
     - Yoga
-  - react-native-slider (4.5.7):
+  - react-native-slider (5.0.1):
     - DoubleConversion
     - glog
     - hermes-engine
@@ -1542,7 +1542,7 @@ PODS:
     - React-featureflags
     - React-graphics
     - React-ImageManager
-    - react-native-slider/common (= 4.5.7)
+    - react-native-slider/common (= 5.0.1)
     - React-NativeModulesApple
     - React-RCTFabric
     - React-rendererdebug
@@ -1551,7 +1551,7 @@ PODS:
     - ReactCommon/turbomodule/bridging
     - ReactCommon/turbomodule/core
     - Yoga
-  - react-native-slider/common (4.5.7):
+  - react-native-slider/common (5.0.1):
     - DoubleConversion
     - glog
     - hermes-engine
@@ -1959,7 +1959,7 @@ PODS:
     - RNFBApp
   - RNFS (2.20.0):
     - React-Core
-  - RNGestureHandler (2.26.0):
+  - RNGestureHandler (2.28.0):
     - DoubleConversion
     - glog
     - hermes-engine
@@ -2617,7 +2617,7 @@ SPEC CHECKSUMS:
   react-native-keep-awake: 5fb94de503761b67af1bec52f83e18d66e9abaf3
   react-native-restart: 7595693413fe3ca15893702f2c8306c62a708162
   react-native-safe-area-context: b6552f52e87c808d4e20da0c216e3206831b58ba
-  react-native-slider: 27263d134d55db948a4706f1e47d0ec88fb354dd
+  react-native-slider: c200205d150ef94babb7e005329a01ed951573d1
   react-native-splash-screen: 4312f786b13a81b5169ef346d76d33bc0c6dc457
   react-native-sqlite-storage: f6d515e1c446d1e6d026aa5352908a25d4de3261
   react-native-track-player: 82ef1756ffeea61140fea17519ecd6d64ec3cf3e
@@ -2661,7 +2661,7 @@ SPEC CHECKSUMS:
   RNFBMessaging: e00b41a6356ad43fdd125438ac1e8975bd0ed28c
   RNFBPerf: d2013b0b9ac1d352b2e66928ef023e388906a6b7
   RNFS: 4ac0f0ea233904cb798630b3c077808c06931688
-  RNGestureHandler: 5fca159e221d84c26a24d249ef5552c0393776e2
+  RNGestureHandler: ab7287c9593b75911be221b6c97d7ae6e02652e6
   RNNotifee: 4a6ee5c7deaf00e005050052d73ee6315dff7ec9
   RNReanimated: c021f620a8a8494147399ed4e02fdc09fb60ac35
   RNScreens: 7a4eb8a0fe4dc5537e10559ddedc4709a9cd0561

@@ -1,5 +1,6 @@
 import React, { useEffect } from "react";
 import ErrorBoundary from "react-native-error-boundary";
+import { SafeAreaProvider } from "react-native-safe-area-context";
 import SplashScreen from "react-native-splash-screen";
 import { Provider } from "react-redux";
 import notifee, { EventType } from "@notifee/react-native";
@@ -13,8 +14,6 @@ import {
   navigateTo,
   initializePerformanceMonitoring,
 } from "@common";
-import { SafeAreaProvider } from "react-native-safe-area-context";
-import Navigation from "./src/navigation";
 import { allowTracking } from "./src/common/firebase/analytics";
 import { TrackPlayerSetup } from "./src/common/TrackPlayerUtils";
 import Navigation from "./src/navigation";

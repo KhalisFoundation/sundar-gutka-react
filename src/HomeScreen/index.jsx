@@ -1,7 +1,7 @@
 import React, { useEffect } from "react";
 import { Appearance, AppState, View } from "react-native";
-import PropTypes from "prop-types";
 import { useDispatch, useSelector } from "react-redux";
+import PropTypes from "prop-types";
 import {
   useScreenAnalytics,
   actions,
@@ -15,10 +15,10 @@ import {
   StatusBarComponent,
   SafeArea,
 } from "@common";
-import styles from "./styles";
+import { setBaniOrder } from "../common/actions";
 import BaniHeader from "./components/BaniHeader";
 import { useBaniLength, useBaniList, useDatabaseUpdateCheck } from "./hooks";
-import { setBaniOrder } from "../common/actions";
+import styles from "./styles";
 
 const HomeScreen = React.memo(({ navigation }) => {
   logMessage(constant.HOME_SCREEN);

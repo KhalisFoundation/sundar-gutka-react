@@ -1,4 +1,3 @@
-import { constant } from "@common";
 import script from "./gutkaScript";
 
 const htmlTemplate = (
@@ -7,8 +6,7 @@ const htmlTemplate = (
   fontFace,
   content,
   isNightMode,
-  savePosition,
-  defaultFontFaceURI
+  savePosition
 ) => `<!DOCTYPE html>
 <html lang="en">
 <head>
@@ -23,10 +21,6 @@ const htmlTemplate = (
     @font-face {
       font-family: '${fontFace}';
       src: url('${fontFileUri}') format('truetype'),local('${fontFace}');
-    }
-    @font-face {
-      font-family: '${constant.GURBANI_AKHAR_TRUE}';
-      src: url('${defaultFontFaceURI}') format('truetype'),local('${constant.GURBANI_AKHAR_TRUE}');
     }
 
     .gurmukhi {

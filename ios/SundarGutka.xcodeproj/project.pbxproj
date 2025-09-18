@@ -23,7 +23,6 @@
 		DA119E1E2A5F0D7200FD0E10 /* wake_up_jap.mp3 in Resources */ = {isa = PBXBuildFile; fileRef = DA119E1C2A5F0D7200FD0E10 /* wake_up_jap.mp3 */; };
 		DF8412F6597D54178D51F9AF /* libPods-SundarGutka.a in Frameworks */ = {isa = PBXBuildFile; fileRef = 682F7438823B6ACC3130EAA3 /* libPods-SundarGutka.a */; };
 		F00557B100F7FA7802293CBE /* PrivacyInfo.xcprivacy in Resources */ = {isa = PBXBuildFile; fileRef = B5622B2E177976AE33F51A68 /* PrivacyInfo.xcprivacy */; };
-		F8F868107FF84886A2F7664B /* BalooPaaji2-VariableFont_wght.ttf in Resources */ = {isa = PBXBuildFile; fileRef = AAF86A1C791D42E9B96E724E /* BalooPaaji2-VariableFont_wght.ttf */; };
 		FE704EC35D2847DFBE7DC00D /* AnmolLipiSG.ttf in Resources */ = {isa = PBXBuildFile; fileRef = C973C1C9E6ED468AA759E427 /* AnmolLipiSG.ttf */; };
 /* End PBXBuildFile section */
 
@@ -53,7 +52,6 @@
 		8917CE6BBDDE4A87D431C3B3 /* Pods-SundarGutka.release.xcconfig */ = {isa = PBXFileReference; includeInIndex = 1; lastKnownFileType = text.xcconfig; name = "Pods-SundarGutka.release.xcconfig"; path = "Target Support Files/Pods-SundarGutka/Pods-SundarGutka.release.xcconfig"; sourceTree = "<group>"; };
 		A469D6722B637179001A107B /* GoogleService-Info.plist */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = text.plist.xml; path = "GoogleService-Info.plist"; sourceTree = "<group>"; };
 		A469D6742B637193001A107B /* www */ = {isa = PBXFileReference; lastKnownFileType = folder; path = www; sourceTree = "<group>"; };
-		AAF86A1C791D42E9B96E724E /* BalooPaaji2-VariableFont_wght.ttf */ = {isa = PBXFileReference; explicitFileType = undefined; fileEncoding = undefined; includeInIndex = 0; lastKnownFileType = unknown; name = "BalooPaaji2-VariableFont_wght.ttf"; path = "../assets/fonts/BalooPaaji2-VariableFont_wght.ttf"; sourceTree = "<group>"; };
 		B5622B2E177976AE33F51A68 /* PrivacyInfo.xcprivacy */ = {isa = PBXFileReference; includeInIndex = 1; lastKnownFileType = text.xml; name = PrivacyInfo.xcprivacy; path = SundarGutka/PrivacyInfo.xcprivacy; sourceTree = "<group>"; };
 		C973C1C9E6ED468AA759E427 /* AnmolLipiSG.ttf */ = {isa = PBXFileReference; explicitFileType = undefined; fileEncoding = 9; includeInIndex = 0; lastKnownFileType = unknown; name = AnmolLipiSG.ttf; path = ../assets/fonts/AnmolLipiSG.ttf; sourceTree = "<group>"; };
 		DA119E1B2A5F0D7200FD0E10 /* waheguru_soul.mp3 */ = {isa = PBXFileReference; lastKnownFileType = audio.mp3; path = waheguru_soul.mp3; sourceTree = "<group>"; };
@@ -515,7 +513,7 @@
 				CODE_SIGN_ENTITLEMENTS = SundarGutka/SundarGutka.entitlements;
 				CODE_SIGN_IDENTITY = "Apple Development";
 				CODE_SIGN_STYLE = Automatic;
-				CURRENT_PROJECT_VERSION = 36;
+				CURRENT_PROJECT_VERSION = 37;
 				DEFINES_MODULE = YES;
 				DEVELOPMENT_TEAM = B3W82WVBU9;
 				ENABLE_BITCODE = NO;
@@ -554,7 +552,7 @@
 				CODE_SIGN_ENTITLEMENTS = SundarGutka/SundarGutka.entitlements;
 				CODE_SIGN_IDENTITY = "Apple Development";
 				CODE_SIGN_STYLE = Automatic;
-				CURRENT_PROJECT_VERSION = 36;
+				CURRENT_PROJECT_VERSION = 37;
 				DEFINES_MODULE = YES;
 				DEVELOPMENT_TEAM = B3W82WVBU9;
 				INFOPLIST_FILE = SundarGutka/Info.plist;

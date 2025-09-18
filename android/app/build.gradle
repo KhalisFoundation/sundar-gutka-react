@@ -86,7 +86,7 @@ android {
         applicationId = "com.WahegurooNetwork.SundarGutka"
         minSdkVersion = rootProject.ext.minSdkVersion
         targetSdkVersion = rootProject.ext.targetSdkVersion
-        versionCode = 165
+        versionCode = 166
         versionName = "5.8.2"
          ndk {
             abiFilters "arm64-v8a", "armeabi-v7a", "x86", "x86_64"

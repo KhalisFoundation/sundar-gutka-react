@@ -11,6 +11,7 @@ import { WebView } from "react-native-webview";
 import { useDispatch, useSelector } from "react-redux";
 import PropTypes from "prop-types";
 import StatusBarComponent from "@common/components/StatusBar";
+import { HomeIcon, BookmarkIcon, SettingsIcon, MusicIcon } from "@common/icons";
 import {
   constant,
   colors,
@@ -20,11 +21,8 @@ import {
   logError,
   SafeArea,
 } from "@common";
-import { HomeIcon, BookmarkIcon, SettingsIcon } from "@common/icons";
-import BottomNavigation from "./components/BottomNavigation";
-import { Header, AutoScrollComponent } from "./components";
-import { useBookmarks, useFetchShabad } from "./hooks";
 import { Header, AutoScrollComponent, AudioPlayer } from "./components";
+import BottomNavigation from "./components/BottomNavigation";
 import { useBookmarks, useFetchShabad, useFooterAnimation } from "./hooks";
 import { styles, nightColors } from "./styles";
 import { loadHTML } from "./utils";
@@ -229,6 +227,14 @@ const Reader = ({ navigation, route }) => {
   const navigationItems = [
     { key: "Home", icon: HomeIcon, handlePress: () => navigation.navigate("Home") },
     {
+      key: "Music",
+      icon: MusicIcon,
+      handlePress: () => {
+        dispatch(actions.toggleAutoScroll(false));
+        dispatch(actions.toggleAudio(!isAudio));
+      },
+    },
+    {
       key: "Bookmarks",
       icon: BookmarkIcon,
       handlePress: () => handleBookmarkPress(),
@@ -243,11 +249,7 @@ const Reader = ({ navigation, route }) => {
   return (
     <SafeArea backgroundColor={safeAreaViewBack.backgroundColor} topPadding>
       <StatusBarComponent backgroundColor={backgroundColor} />
-      <Header
-        title={fontFace === constant.BALOO_PAAJI ? titleUni : title}
-        handleBackPress={handleBackPress}
-        isHeader={isHeader}
-      />
+      <Header title={titleUni} handleBackPress={handleBackPress} isHeader={isHeader} />
       {isLoading && <ActivityIndicator size="small" color={READER_STATUS_BAR_COLOR} />}
       <WebView
         key={webViewKey}
@@ -281,7 +283,7 @@ const Reader = ({ navigation, route }) => {
       >
         {isAutoScroll && <AutoScrollComponent shabadID={id} webViewRef={webViewRef} />}
       </Animated.View>
-      <BottomNavigation currentRoute="Reader" navigationItems={navigationItems} />
+      <BottomNavigation navigationItems={navigationItems} />
     </SafeArea>
   );
 };

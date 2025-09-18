@@ -237,7 +237,11 @@ const AudioControlBar = ({
             <View
               style={[
                 styles.mainSection,
-                { borderWidth: 1, borderColor: isNightMode ? colors.NIGHT_GREY_COLOR : "#eee" },
+                {
+                  borderRadius: 20,
+                  borderTopWidth: 1,
+                  borderColor: isNightMode ? colors.NIGHT_GREY_COLOR : "#eee",
+                },
               ]}
             >
               <View style={styles.trackInfo}>

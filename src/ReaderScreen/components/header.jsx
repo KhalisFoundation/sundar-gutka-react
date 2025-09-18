@@ -6,6 +6,7 @@ import { useSelector } from "react-redux";
 import PropTypes from "prop-types";
 import colors from "@common/colors";
 import { BackArrowIcon } from "@common/icons";
+import { constant } from "@common";
 import { getHeaderStyles, styles } from "../styles/styles";
 
 const Header = ({ title, handleBackPress, isHeader }) => {
@@ -85,7 +86,10 @@ const Header = ({ title, handleBackPress, isHeader }) => {
             <Text
               style={[
                 getHeaderStyle.headerTitleStyle,
-                { fontFamily: fontFace, fontWeight: "bold" },
+                {
+                  fontFamily:
+                    fontFace === constant.BALOO_PAAJI ? constant.BALOO_PAAJI_SEMI_BOLD : fontFace,
+                },
               ]}
             >
               {title}
