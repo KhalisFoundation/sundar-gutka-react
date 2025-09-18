@@ -1,49 +1,20 @@
-import React, { useState, useEffect, useCallback, useRef } from "react";
-import { View, Text, Animated, Platform } from "react-native";
-import Slider from "@react-native-community/slider";
+import React, { useState, useEffect, useCallback } from "react";
+import { View, Text } from "react-native";
 import { useDispatch, useSelector } from "react-redux";
+import Slider from "@react-native-community/slider";
 import { Icon } from "@rneui/themed";
 import PropTypes from "prop-types";
 import { colors, constant, actions, trackReaderEvent, logError } from "@common";
 import { styles } from "../styles";
 
-const AutoScrollComponent = ({ shabadID, isFooter, webViewRef }) => {
+const AutoScrollComponent = ({ shabadID, webViewRef }) => {
   const [isPaused, togglePaused] = useState(true);
   const autoScrollSpeedObj = useSelector((state) => state.autoScrollSpeedObj);
   const [currentSpeed, setCurrentSpeed] = useState(
     autoScrollSpeedObj[shabadID] || constant.DEFAULT_SPEED
   );
-  const [animationPosition] = useState(new Animated.Value(0));
   const dispatch = useDispatch();
-  const animationRef = useRef(null);
-
-  // Cleanup animation on unmount
-  useEffect(() => {
-    return () => {
-      if (animationRef.current) {
-        animationRef.current.stop();
-      }
-    };
-  }, []);
-
-  // Handle animation
-  useEffect(() => {
-    const value = isFooter ? 0 : 130;
-    if (animationRef.current) {
-      animationRef.current.stop();
-    }
-    animationRef.current = Animated.timing(animationPosition, {
-      toValue: value,
-      duration: 500,
-      useNativeDriver: true,
-    });
-    animationRef.current.start((finished) => {
-      if (!finished) {
-        // If animation was interrupted, force the final value
-        animationPosition.setValue(value);
-      }
-    });
-  }, [isFooter, animationPosition]);
+  const isNightMode = useSelector((state) => state.isNightMode);
 
   // Handle auto-scroll state changes
   useEffect(() => {
@@ -113,58 +84,56 @@ const AutoScrollComponent = ({ shabadID, isFooter, webViewRef }) => {
     [handleSpeed]
   );
 
-  const bottomSpace = Platform.OS === "ios" ? 10 : 0;
-
   return (
-    <View>
-      <Animated.View
-        style={[
-          styles.container,
-          { transform: [{ translateY: animationPosition }], paddingBottom: bottomSpace },
-        ]}
-        pointerEvents="box-none" // Ensure touch events pass through
-      >
-        <View style={styles.wrapper} pointerEvents="auto">
-          {isPaused ? (
-            <Icon
-              name="play-arrow"
-              color={colors.TOOLBAR_TINT}
-              size={30}
-              onPress={handlePlay}
-              accessibilityLabel="Play auto-scroll"
-            />
-          ) : (
-            <Icon
-              name="pause"
-              color={colors.TOOLBAR_TINT}
-              size={30}
-              onPress={handlePause}
-              accessibilityLabel="Pause auto-scroll"
-            />
-          )}
-          <Slider
-            style={styles.slider}
-            minimumTrackTintColor={colors.SLIDER_TRACK_MIN_TINT}
-            maximumTrackTintColor={colors.SLIDER_TRACK_MAX_TINT}
-            thumbTintColor={colors.WHITE_COLOR}
-            minimumValue={1}
-            maximumValue={100}
-            step={1}
-            value={currentSpeed}
-            onValueChange={handleValueChange}
-            onSlidingComplete={handleSlidingComplete}
-            accessibilityLabel="Auto-scroll speed"
+    <View
+      style={[
+        styles.container,
+        {
+          backgroundColor: isNightMode
+            ? colors.READER_STATUS_BAR_COLOR_NIGHT_MODE
+            : colors.READER_STATUS_BAR_COLOR,
+        },
+      ]}
+    >
+      <View style={styles.wrapper}>
+        {isPaused ? (
+          <Icon
+            name="play-arrow"
+            color={colors.TOOLBAR_TINT}
+            size={30}
+            onPress={handlePlay}
+            accessibilityLabel="Play auto-scroll"
           />
-          <Text style={styles.sliderText}>{currentSpeed}</Text>
-        </View>
-      </Animated.View>
+        ) : (
+          <Icon
+            name="pause"
+            color={colors.TOOLBAR_TINT}
+            size={30}
+            onPress={handlePause}
+            accessibilityLabel="Pause auto-scroll"
+          />
+        )}
+        <Slider
+          style={styles.slider}
+          minimumTrackTintColor={colors.SLIDER_TRACK_MIN_TINT}
+          maximumTrackTintColor={colors.SLIDER_TRACK_MAX_TINT}
+          thumbTintColor={colors.WHITE_COLOR}
+          minimumValue={1}
+          maximumValue={100}
+          step={1}
+          value={currentSpeed}
+          onValueChange={handleValueChange}
+          onSlidingComplete={handleSlidingComplete}
+          accessibilityLabel="Auto-scroll speed"
+        />
+        <Text style={styles.sliderText}>{currentSpeed}</Text>
+      </View>
     </View>
   );
 };
 
 AutoScrollComponent.propTypes = {
   shabadID: PropTypes.number.isRequired,
-  isFooter: PropTypes.bool.isRequired,
   webViewRef: PropTypes.shape({
     current: PropTypes.shape({
       postMessage: PropTypes.func,

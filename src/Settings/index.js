@@ -1,7 +1,7 @@
 import React, { useEffect } from "react";
+import { StatusBar, ScrollView, Text } from "react-native";
 import { useSelector } from "react-redux";
 import PropTypes from "prop-types";
-import { StatusBar, ScrollView, Text } from "react-native";
 import {
   STRINGS,
   colors,
@@ -11,28 +11,29 @@ import {
   StatusBarComponent,
   SafeArea,
 } from "@common";
-import { nightModeStyles } from "./styles/nightModeStyles";
-import FontSizeComponent from "./components/fontSize";
-import FontFaceComponent from "./components/fontFace";
-import LanguageComponent from "./components/language";
-import TransliterationComponent from "./components/transliteration";
-import ThemeComponent from "./components/theme";
-import HideStatusBar from "./components/statusBar";
-import BaniLengthComponent from "./components/baniLength";
-import LarivaarComponent from "./components/larivaar";
-import PadchedSettingsComponent from "./components/padched";
-import VishraamComponent from "./components/vishraam";
-import TranslationComponent from "./components/translation";
-import RemindersComponent from "./components/reminders/reminders";
+import Audio from "./components/audio";
 import AutoScroll from "./components/autoScroll";
-import KeepAwake from "./components/keepAwake";
-import EditBaniOrder from "./components/editBaniOrder";
-import ParagraphMode from "./components/paragraphMode";
+import BaniLengthComponent from "./components/baniLength";
 import CollectStatistics from "./components/collectStatistics";
-import Donate from "./components/donate";
-import styles from "./styles/styles";
 import ListItemWithIcon from "./components/comon/ListitemWithIcon";
 import DatabaseUpdateBanner from "./components/databaseUpdate";
+import Donate from "./components/donate";
+import EditBaniOrder from "./components/editBaniOrder";
+import FontFaceComponent from "./components/fontFace";
+import FontSizeComponent from "./components/fontSize";
+import KeepAwake from "./components/keepAwake";
+import LanguageComponent from "./components/language";
+import LarivaarComponent from "./components/larivaar";
+import PadchedSettingsComponent from "./components/padched";
+import ParagraphMode from "./components/paragraphMode";
+import RemindersComponent from "./components/reminders/reminders";
+import HideStatusBar from "./components/statusBar";
+import ThemeComponent from "./components/theme";
+import TranslationComponent from "./components/translation";
+import TransliterationComponent from "./components/transliteration";
+import VishraamComponent from "./components/vishraam";
+import { nightModeStyles } from "./styles/nightModeStyles";
+import styles from "./styles/styles";
 
 const Settings = ({ navigation }) => {
   logMessage(constant.SETTINGS);
@@ -73,6 +74,7 @@ const Settings = ({ navigation }) => {
         <HideStatusBar />
         <AutoScroll />
         <KeepAwake />
+        <Audio />
         {/* Bani Options */}
         <Text style={[displayOptionsText, scrollViewNightStyles]}>{BANI_OPTIONS}</Text>
         <EditBaniOrder navigate={navigate} isNightMode={isNightMode} />

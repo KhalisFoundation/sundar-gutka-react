@@ -1,9 +1,11 @@
-import constant from "./constant";
-import colors from "./colors";
 import * as actions from "./actions";
-import STRINGS from "./localization";
-import useScreenAnalytics from "./hooks/useScreenAnalytics";
-import { logError, initializeCrashlytics, setCustomKey, logMessage } from "./firebase/crashlytics";
+import colors from "./colors";
+import { FallBack, BaniLengthSelector, BaniList } from "./components";
+import orderedBani from "./components/BaniList/baniOrderHelper";
+import SafeArea from "./components/SafeArea";
+import StatusBarComponent from "./components/StatusBar";
+import constant from "./constant";
+import defaultBaniOrder from "./defaultBaniOrder";
 import {
   allowTracking,
   trackScreenView,
@@ -11,25 +13,23 @@ import {
   trackSettingEvent,
   trackReminderEvent,
 } from "./firebase/analytics";
+import { logError, initializeCrashlytics, setCustomKey, logMessage } from "./firebase/crashlytics";
 import {
   initializePerformanceMonitoring,
   startPerformanceTrace,
   stopTrace,
   resetTrace,
 } from "./firebase/performance";
+import baseFontSize, { validateBaniOrder } from "./helpers";
+import useKeepAwake from "./hooks/keepAwake";
+import useScreenAnalytics from "./hooks/useScreenAnalytics";
+import STRINGS from "./localization";
 import {
   updateReminders,
   cancelAllReminders,
   checkPermissions,
   resetBadgeCount,
 } from "./notifications";
-import { FallBack, BaniLengthSelector, BaniList } from "./components";
-import useKeepAwake from "./hooks/keepAwake";
-import baseFontSize, { validateBaniOrder } from "./helpers";
-import { navigate, navigateTo, navigationRef } from "./rootNavigation";
-import orderedBani from "./components/BaniList/baniOrderHelper";
-import defaultBaniOrder from "./defaultBaniOrder";
-import createStore from "./store";
 import {
   ensureDbExists,
   checkForBaniDBUpdate,
@@ -40,8 +40,8 @@ import {
   revertMD5Hash,
   getCurrentDBMD5Hash,
 } from "./rnfs";
-import StatusBarComponent from "./components/StatusBar";
-import SafeArea from "./components/SafeArea";
+import { navigate, navigateTo, navigationRef } from "./rootNavigation";
+import createStore from "./store";
 import convertToUnicode from "./utils";
 
 export {

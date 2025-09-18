@@ -14,6 +14,10 @@ const STRINGS = new LocalizedStrings({
     anmol_lipi: "Anmol Lipi",
     APP_VERSION: "App Version",
     AUTO_SCROLL: "Auto Scroll",
+    AUDIO: "Audio Player",
+    AUDIO_AUTO_PLAY: "Audio Auto Play",
+    AUDIO_SYNC_SCROLL: "Sync Scroll with Audio",
+    DEFAULT_AUDIO: "Default Audio",
     bani_length: "Bani Length",
     bani_length_alert_1:
       "Throughout the past few centuries, there have been many different “sampardhas” or “jathas” that have been conceived from the core concepts of Sikhi and Gurmat. These sampardhas often have different opinions and thoughts about some aspects of Sikh history, Gurbani and Rehat, but still fall collectively under the united Khalsa Panth and, most importantly, the Akaal Takht. The Akaal Takht is the highest order and institution that all Sikhs adhere to.",
@@ -22,7 +26,7 @@ const STRINGS = new LocalizedStrings({
     bani_length_alert_3:
       "We therefore have created the option to select lengths of what Paath you do that apply to four of the main Banis read most often. These have been structured in relation to length but all have a minimum of the SGPC standard or fall under the Akaal Takht. We do not include any versions that are by sampardhas excommunicated by the Akaal Takht as a standard.",
     bani_length_alert_4:
-      "For those who may be confused about which version to begin reading these Banis, we recommend reading the longest Bani because the more we read and recite, the better it is for our souls. However, for beginners, we would suggest to start with the “short” setting and change to increase the length setting in future once you are comfortable, confident and have more time.",
+      "For those who may be confused about which version to begin reading these Banis, we recommend reading the longest Bani because the more we read and recite, the better it is for our souls. However, for beginners, we would suggest to start with the short setting and change to increase the length setting in future once you are comfortable, confident and have more time.",
     bani_length_alert_5:
       "Here is a breakdown of the lengths and which sampardhas typically use them:-",
     bani_length_alert_6: "SHORT: This is the minimum SGPC/Akaal Takht standard.",
@@ -143,6 +147,15 @@ const STRINGS = new LocalizedStrings({
     checkForUpdate: "Checking for BaniDB updates...",
     upToDate: "Your BaniDB is up to date.",
     baniDBBannerText: "A new BaniDB update is available. Tap to update now.",
+    MORE_TRACKS: "More Tracks",
+    AUDIO_SETTINGS: "Audio Settings",
+    info: "info",
+    welcome_to_sundar_gutka: "Welcome to Sundar Gutka Audio",
+    please_choose_a_track: "Please choose a track for",
+    PLAY: "Play",
+    DOWNLOAD: "Download",
+    DOWNLOADING: "Downloading",
+    NEXT: "Next",
   },
   hi: {
     about: "हमारे बारे",
@@ -156,6 +169,10 @@ const STRINGS = new LocalizedStrings({
     anmol_lipi: "अनमोल लिपि",
     APP_VERSION: "एप्प वर्जन",
     AUTO_SCROLL: "ऑटो स्क्रॉल",
+    AUDIO: "ऑडियो प्लेयर",
+    AUDIO_AUTO_PLAY: "ऑडियो ऑटो प्ले",
+    AUDIO_SYNC_SCROLL: "ऑडियो के साथ स्क्रॉल सिंक करें",
+    DEFAULT_AUDIO: "डिफ़ॉल्ट ऑडियो",
     bani_length: "बाणी लंबाई",
     bani_length_alert_1:
       "पिछले कुछ सदियों में, कई सम्प्रदायें और संगठन पैदा हुई हैं, जो सिख सिद्धांत और गुरुमत पर केंद्रित हैं। हालांकि इन संप्रदायों में सिख इतिहास, गुरबानी और अनुपालन पर मतभेद रहे हैं, पर वे पूर्ण रूप से  खालसा पंथ का हिस्सा बने हुए हैं और उच्चतम अकाल तख्त के बैनर तले ही रह रहे हैं।",
@@ -284,6 +301,15 @@ const STRINGS = new LocalizedStrings({
     checkForUpdate: "BaniDB अद्यतन की जाँच की जा रही है...",
     upToDate: "आपका BaniDB अद्यतित है।",
     baniDBBannerText: "नया BaniDB अपडेट उपलब्ध है। अभी अपडेट करने के लिए टैप करें।",
+    MORE_TRACKS: "अधिक ट्रैक",
+    AUDIO_SETTINGS: "ऑडियो सेटिंग्स",
+    info: "जानकारी",
+    welcome_to_sundar_gutka: "सुंदर गुटका ऑडियो में आपका स्वागत है",
+    please_choose_a_track: "कृपया एक ट्रैक चुनें",
+    PLAY: "चलाएं",
+    DOWNLOAD: "डाउनलोड",
+    DOWNLOADING: "डाउनलोड हो रहा है",
+    NEXT: "अगला",
   },
 
   pa: {
@@ -299,6 +325,10 @@ const STRINGS = new LocalizedStrings({
     anmol_lipi: "ਅਨਮੋਲ ਲਿਪੀ",
     APP_VERSION: "ਐਪ ਵਰਜ਼ਨ",
     AUTO_SCROLL: "ਆਟੋ ਸਕਰੋਲ",
+    AUDIO: "ਓਡੀਓ ਪਲੇਅਰ",
+    AUDIO_AUTO_PLAY: "ਓਡੀਓ ਆਟੋ ਪਲੇ",
+    AUDIO_SYNC_SCROLL: "ਓਡੀਓ ਨਾਲ ਸਕਰੋਲ ਸਿੰਕ ਕਰੋ",
+    DEFAULT_AUDIO: "ਡਿਫਾਲਟ ਓਡੀਓ",
     bani_length: "ਬਾਣੀ ਲੰਬਾਈ",
     bani_length_alert_1:
       "ਬੀਤੀਆਂ ਕੁਝ ਸਦੀਆਂ ਦੌਰਾਨ ਅਨੇਕਾਂ ਅਜਿਹੀਆਂ ਸੰਪਰਦਾਵਾਂ ਤੇ ਜੱਥੇਬੰਦੀਆਂ ਪੈਦਾ ਹੋਈਆਂ ਜਿਨ੍ਹਾਂ ਦਾ ਧੁਰਾ ਸਿੱਖੀ ਸਿਧਾਂਤ ਅਤੇ ਗੁਰਮਤਿ ਰਿਹਾ। ਭਾਵੇਂ ਇਹਨਾਂ ਸੰਪਰਦਾਵਾਂ ਵਿੱਚ ਸਿੱਖ ਇਤਿਹਾਸ, ਗੁਰਬਾਣੀ ਅਤੇ ਰਹਿਤ ਨੂੰ ਲੈ ਕੇ ਆਪਸੀ ਮਤਭੇਦ ਰਹੇ ਹਨ, ਪਰ ਸਮੂਹ ਤੌਰ ਤੇ ਖਾਲਸਾ ਪੰਥ ਦੇ ਹਿੱਸੇ ਵਜੋਂ ਹੀ ਵਿਚਰੀਆਂ ਹਨ ਤੇ ਸੱਭ ਤੋਂ ਵੱਧ ਕੇ ਸਰਬ ਉੱਚ ਅਕਾਲ ਤਖਤ ਦੇ ਝੰਡੇ ਹੇਠ ਹੀ ਰਹੀਆਂ (ਰਹਿੰਦੀਆਂ) ਹਨ।",
@@ -307,7 +337,7 @@ const STRINGS = new LocalizedStrings({
     bani_length_alert_3:
       "ਏਸੇ ਲਈ ਅਸੀਂ ਇਸ ਐਪ (ਜੁਗਤ) ਵਿੱਚ ਆਮ ਤੌਰ ਤੇ ਚਾਰ ਸੱਭ ਤੋਂ ਵੱਧ ਪੜ੍ਹੀਆਂ ਜਾਣ ਵਾਲੀਆਂ ਬਾਣੀਆਂ ਦੀ ਲੰਬਾਈ ਚੁਣਨ ਦੀ ਸਹੂਲਤ ਦਿੱਤੀ ਹੈ। ਇਹਨਾਂ ਚੋਣਾਂ ਨੂੰ ਬਾਣੀ ਦੀ ਲੰਬਾਈ ਦੇ ਹਿਸਾਬ ਨਾਲ ਤਰਤੀਬ ਦਿੱਤੀ ਗਈ ਹੈ ਪਰ ਸਾਰੀਆਂ ਹੀ ਬਾਣੀਆਂ ਅਕਾਲ ਤਖਤ ਸਾਹਬ ਵੱਲ੍ਹੋਂ ਪ੍ਰਵਾਨਤ ਮਿਆਰਾਂ ਅਨੁਸਾਰ ਹਨ। ਅਸੀਂ ਅਕਾਲ ਤਖਤ ਤੋਂ ਛੇਕੀ ਹੋਈ ਕਿਸੇ ਵੀ ਸੰਪਰਦਾ ਵੱਲ੍ਹੋਂ ਵਰਤੀ ਜਾਂਦੀ ਬਾਣੀ ਦੀ ਕੋਈ ਵੀ ਵੰਨਗੀ ਇਸ ਜੁਗਤ ਵਿੱਚ ਨਹੀਂ ਪਾਈ",
     bani_length_alert_4:
-      "ਜੇ ਤੁਸੀਂ ਇਸ ਉਲਝਣ ਵਿੱਚ ਹੋ ਕੇ ਕਿਸ ਬਾਣੀ ਤੋਂ ਸ਼ੁਰੂ ਕਰੋਂ, ਸਾਡੀ ਸਲਾਹ ਹੈ ਸਭ ਤੋਂ ਲੰਬੀ ਬਾਣੀ ਕਿਉਂਕਿ ਜਿੰਨਾ ਜ਼ਿਆਦਾ ਅਸੀਂ ਬਾਣੀ ਅਭਿਆਸ ਕਰਾਂਗੇ, ਸਾਡੀ ਰੂਹ ਲਈ ਉੰਨਾਂ ਹੀ ਵਧੀਆ ਹੈ।  ਜੇ ਤੁਸੀਂ ਬਿਲਕੁਲ ਨਵੇਂ ਹੋ ਤਾਂ ਤੁਸੀਂ ਸਭ ਤੋਂ ਛੋਟੀ ਬਾਣੀ ਤੋਂ ਵੀ ਸ਼ੁਰੂ ਕਰ ਸਕਦੇ ਹੋ ਤੇ ਜਿਵੇਂ ਜਿਵੇਂ ਤੁਹਾਡਾ ਨਾਮ ਅਭਿਆਸ ਵੱਧ ਦਾ ਹੈ, ਤੁਸੀਂ ਜ਼ਿਆਦਾ ਬਾਣੀ ਪੜ੍ਹ ਸਕਦੇ ਓ।",
+      "ਜੇ ਤੁਸੀਂ ਇਸ ਉਲਝਣ ਵਿੱਚ ਹੋ ਕੇ ਕਿਸ ਬਾਣੀ ਤੋਂ ਸ਼ੁਰੂ ਕਰੋਂ, ਸਾਡੀ ਸਲਾਹ ਹੈ ਸਭ ਤੋਂ ਲੰਬੀ ਬਾਣੀ ਕਿਕਿ ਜਿੰਨਾ ਜ਼ਿਆਦਾ ਅਸੀਂ ਬਾਣੀ ਅਭਿਆਸ ਕਰਾਂਗੇ, ਸਾਡੀ ਰੂਹ ਲਈ ਉੰਨਾਂ ਹੀ ਵਧੀਆ ਹੈ।  ਜੇ ਤੁਸੀਂ ਬਿਲਕੁਲ ਨਵੇਂ ਹੋ ਤਾਂ ਤੁਸੀਂ ਸਭ ਤੋਂ ਛੋਟੀ ਬਾਣੀ ਤੋਂ ਵੀ ਸ਼ੁਰੂ ਕਰ ਸਕਦੇ ਹੋ ਤੇ ਜਿਵੇਂ ਜਿਵੇਂ ਤੁਹਾਡਾ ਨਾਮ ਅਭਿਆਸ ਵੱਧ ਦਾ ਹੈ, ਤੁਸੀਂ ਜ਼ਿਆਦਾ ਬਾਣੀ ਪੜ੍ਹ ਸਕਦੇ ਓ।",
     bani_length_alert_5: "ਬਾਣੀਆਂ ਦੀ ਤਰਤੀਬ ਉਨ੍ਹਾਂ ਦੀ  ਲੰਬਾਈ ਅਤੇ ਸੰਪਰਦਾਵਾਂ ਦੇ ਹਿਸਾਬ ਨਾਲ ਕੀਤੀ ਗਈ ਹੈ।",
     bani_length_alert_6: "ਛੋਟੀ - ਇਹ ਬਾਣੀ ਅਕਾਲ ਤਖਤ ਸਾਹਿਬ ਵਲ੍ਹੋ ਘੱਟੋ ਘੱਟ ਪ੍ਰਵਾਣਤ ਮਿਆਰਾਂ ਅਨੁਸਾਰ ਹੈ",
     bani_length_alert_7: "ਮੱਧਮ - ਅਖੰਡ ਕੀਰਤਨੀ ਜਥਾ ਅਤੇ ਹੋਰ।",
@@ -425,6 +455,15 @@ const STRINGS = new LocalizedStrings({
     checkForUpdate: "BaniDB ਅੱਪਡੇਟਾਂ ਦੀ ਜਾਂਚ ਕੀਤੀ ਜਾ ਰਹੀ ਹੈ...",
     upToDate: "ਤੁਹਾਡਾ BaniDB ਅੱਪ ਟੂ ਡੇਟ ਹੈ।",
     baniDBBannerText: "ਇੱਕ ਨਵਾਂ BaniDB ਅੱਪਡੇਟ ਉਪਲਬਧ ਹੈ। ਹੁਣੇ ਅੱਪਡੇਟ ਕਰਨ ਲਈ ਟੈਪ ਕਰੋ।",
+    MORE_TRACKS: "ਹੋਰ ਟਰੈਕ",
+    AUDIO_SETTINGS: "ਆਡੀਓ ਸੈਟਿੰਗਾਂ",
+    info: "ਜਾਣਕਾਰੀ",
+    welcome_to_sundar_gutka: "ਸੁੰਦਰ ਗੁਟਕਾ ਆਡੀਓ ਵਿੱਚ ਤੁਹਾਡਾ ਸਵਾਗਤ ਹੈ",
+    please_choose_a_track: "ਕਿਰਪਾ ਕਰਕੇ ਟਰੈਕ ਚੁਣੋ",
+    PLAY: "ਚਲਾਓ",
+    DOWNLOAD: "ਡਾਊਨਲੋਡ",
+    DOWNLOADING: "ਡਾਊਨਲੋਡ ਹੋ ਰਹਿ ਰਹਾ ਹੈ",
+    NEXT: "ਅਗਲਾ",
   },
   fr: {
     about: "Infos",
@@ -440,6 +479,10 @@ const STRINGS = new LocalizedStrings({
     anmol_lipi: "Anmol Leppi",
     APP_VERSION: "Version",
     AUTO_SCROLL: "Défilement Automatique",
+    AUDIO: "Lecteur Audio",
+    AUDIO_AUTO_PLAY: "Lecture Audio Automatique",
+    AUDIO_SYNC_SCROLL: "Synchroniser le défilement avec l'audio",
+    DEFAULT_AUDIO: "Audio par défaut",
     bani_length: "Longueur de Bani",
     bani_length_alert_1:
       "Au cours des derniers siècles, il y a eu de nombreux «sampardhas» ou «jathas» différents qui ont été conçus à partir des concepts fondamentaux du Sikhi et du Gurmat. Ces sampardhas ont souvent des opinions différentes sur certains aspects de l'histoire sikh, Gurbani et Rehat, mais relèvent toujours collectivement du Khalsa Panth uni et, plus important encore, de l'Akal Takht. L'Akaal Takht est l'ordre le plus élevé et est la plus haute institution à laquelle tous les Sikhs adhèrent.",
@@ -560,18 +603,27 @@ const STRINGS = new LocalizedStrings({
     baniDBHighlight1:
       "La base de données Gurbani la plus précise au monde : plus de 43 000 corrections et ce n'est pas fini.",
     baniDBHighlight2:
-      "Méticuleusement vérifié : les données de Sri Guru Granth Sahib Ji ont fait l’objet de nombreux examens.",
+      "Méticuleusement vérifié : les données de Sri Guru Granth Sahib Ji ont fait l'objet de nombreux examens.",
     baniDBHighlight3:
       "Normalisation unique : se concentre sur la précision des lagamatras (orthographe) et des padh chhedh (séparation des mots)",
     baniDBHighlight4:
       "Distinct des publications SGPC : la seule base de données standardisée indépendamment des pothis Gurbani du SGPC.",
     baniDBMistakeText:
-      "Vous avez trouvé une erreur en gurbani ? Vous souhaitez une meilleure traduction ? Devenez contributeur à BaniDB ! Visitez :",
+      "Vous avez trouvé une erreur en gurbani ? Vous souhaitez une meilleure traduction ? Devenez contributeur à BaniDB ! Visitez :",
     baniDBSignUp: "Inscription à BaniDB",
     checkForUpdate: "Vérification des mises à jour de BaniDB...",
     upToDate: "Votre BaniDB est à jour.",
     baniDBBannerText:
       "Une nouvelle mise à jour de BaniDB est disponible. Appuyez pour mettre à jour maintenant.",
+    MORE_TRACKS: "Plus de pistes",
+    AUDIO_SETTINGS: "Paramètres audio",
+    info: "info",
+    welcome_to_sundar_gutka: "Bienvenue dans Sundar Gutka Audio",
+    please_choose_a_track: "Veuillez choisir un piste pour",
+    PLAY: "Jouer",
+    DOWNLOAD: "Télécharger",
+    DOWNLOADING: "Téléchargement en cours",
+    NEXT: "Suivant",
   },
   it: {
     about: "Info",
@@ -587,15 +639,19 @@ const STRINGS = new LocalizedStrings({
     anmol_lipi: "Anmòl Leppi",
     APP_VERSION: "Versione",
     AUTO_SCROLL: "Scorrimento Automatico",
+    AUDIO: "Lettore Audio",
+    AUDIO_AUTO_PLAY: "Riproduzione Audio Automatica",
+    AUDIO_SYNC_SCROLL: "Sincronizza scorrimento con audio",
+    DEFAULT_AUDIO: "Audio predefinito",
     bani_length: "Lunghezza delle Bani",
     bani_length_alert_1:
-      "Nel corso degli ultimi secoli, ci sono stati molti ”sampardhas” o ”jathas” diversi che sono stati concepiti dai concetti fondamentali di Sikhi e della Gurmat. Questi esempi hanno spesso opinioni e pensieri diversi su alcuni aspetti della storia dei Sikh, Gurbani e Rehat. Cadono ancora sotto l'unione di Khalsa Panth e, soprattutto, di Akaal Takht. L'Akaal Takht è il più alto ordine e istituzione a cui tutti i sikh aderiscono.",
+      "Nel corso degli ultimi secoli, ci sono stati molti sampardhas o jathas diversi che sono stati concepiti dai concetti fondamentali di Sikhi e della Gurmat. Questi esempi hanno spesso opinioni e pensieri diversi su alcuni aspetti della storia dei Sikh, Gurbani e Rehat. Cadono ancora sotto l'unione di Khalsa Panth e, soprattutto, di Akaal Takht. L'Akaal Takht è il più alto ordine e istituzione a cui tutti i sikh aderiscono.",
     bani_length_alert_2:
       "Queste differenze hanno anche portato a diverse raccomandazioni a proposito delle Baani compilate e Paath (preghiere) che leggiamo quotidianamente, il che rende difficile creare una singola app Sundar Gutka con un'unica versione di Paath in grado di soddisfare tutti.",
     bani_length_alert_3:
       "Pertanto abbiamo offerto la possibilità di selezionare le lunghezze di ciò che fai Paath che si applica a quattro deile Bani principale lette più spesso. Queste sono state strutturate in relazione alla lunghezza ma tutte hanno un minimo dello standard SGPC o rientrane nell'Akaal Takht. Come standard, non includiamo alcuna versione di sampardhas che sono stati scomunicati dall'Akaal Takht.",
     bani_length_alert_4:
-      "Per coloro che potrebbero essere confusi su quale versione iniziare a leggere queste Banis, raccomandiamo di leggere la Bani più lunga perché più leggiamo e recitiamo, meglio è per le nostre anime. Tuttavia, per i principianti, consigliamo di iniziare con l'impostazione ”breve” e modificare per aumentare l'impostazione della lunghezza in futuro una volta che si è a proprio agio, sicuri e hanno più tempo.",
+      "Per coloro che potrebbero essere confusi su quale versione iniziare a leggere queste Banis, raccomandiamo di leggere la Bani più lunga perché più leggiamo e recitiamo, meglio è per le nostre anime. Tuttavia, per i principianti, consigliamo di iniziare con l'impostazione breve e modificare per aumentare l'impostazione della lunghezza in futuro una volta che si è a proprio agio, sicuri e hanno più tempo.",
     bani_length_alert_5: "Ecco qui le lunghezze e quali sampardhas le usano normalmente: -",
     bani_length_alert_6: "BREVE: questo è lo standard minimo SGPC / Akaal Takht.",
     bani_length_alert_7: "MEDIA: in genere letto dai seguaci di Akhand Kirtani Jatha e altri.",
@@ -716,6 +772,8 @@ const STRINGS = new LocalizedStrings({
     checkForUpdate: "Controllo degli aggiornamenti di BaniDB...",
     upToDate: "Il tuo BaniDB è aggiornato.",
     baniDBBannerText: "È disponibile un nuovo aggiornamento di BaniDB. Tocca per aggiornare ora.",
+    MORE_TRACKS: "Più tracce",
+    NEXT: "Prossimo",
   },
   es: {
     about: "Sobre Nosotros",
@@ -731,15 +789,19 @@ const STRINGS = new LocalizedStrings({
     anmol_lipi: "Anmól Lippi ",
     APP_VERSION: "Versión ",
     AUTO_SCROLL: "Desplazamiento automático",
+    AUDIO: "Reproductor de Audio",
+    AUDIO_AUTO_PLAY: "Reproducción Automática de Audio",
+    AUDIO_SYNC_SCROLL: "Sincronizar desplazamiento con audio",
+    DEFAULT_AUDIO: "Audio predeterminado",
     bani_length: "Largueza de las Bani",
     bani_length_alert_1:
-      "A lo largo de los últimos siglos, ha habido muchos ”sampardhas” o ”jathas” diferentes que se han concebido a partir de los conceptos centrales de Sikhi y Gurmat.  Estos sampardhas a menudo tienen diferentes opiniones y pensamientos sobre algunos aspectos de la historia sikh, Gurbani y Rehat, pero aún caen colectivamente bajo el Khalsa Panth unido y, lo más importante, el Akaal Takht.El Akaal Takht es el más alto orden e institución a la que se adhieren todos los sikhs.",
+      "A lo largo de los últimos siglos, ha habido muchos sampardhas o jathas diferentes que se han concebido a partir de los conceptos centrales de Sikhi y Gurmat.  Estos sampardhas a menudo tienen diferentes opiniones y pensamientos sobre algunos aspectos de la historia sikh, Gurbani y Rehat, pero aún caen colectivamente bajo el Khalsa Panth unido y, lo más importante, el Akaal Takht.El Akaal Takht es el más alto orden e institución a la que se adhieren todos los sikhs.",
     bani_length_alert_2:
       "Estas diferencias también han dado lugar a diferentes recomendaciones sobre Baanis y Paath (oraciones) compiladas que leemos a diario, lo que dificulta la creación de una sola aplicación Sundar Gutka con una única versión de Paath que satisfaga a todos.",
     bani_length_alert_3:
       "Por lo tanto, hemos creado la opción de seleccionar longitudes de lo que hace Paath que se aplica a cuatro de los principales Banis leídos con mayor frecuencia. Estos se han estructurado en relación con la longitud, pero todos tienen un mínimo del estándar SGPC o caen bajo el Akaal Takht. Como estándar, no incluimos ninguna versión que sea realizada por sampardhas excomulgada por el Akaal Takht.",
     bani_length_alert_4:
-      "For those who are confused about from which version to start reading these Banis, we recommend reading the longest Bani because the more we read and recite, the better it will be for our souls. However, for beginners, we suggest starting with the ”short” setting and changing to increase length in the future once you are comfortable, confident, and have more time.",
+      "For those who are confused about from which version to start reading these Banis, we recommend reading the longest Bani because the more we read and recite, the better it will be for our souls. However, for beginners, we suggest starting with the short setting and changing to increase length in the future once you are comfortable, confident, and have more time.",
     bani_length_alert_5:
       "Aquí hay un desglose de las longitudes y qué sampard las usa típicamente:",
     bani_length_alert_6: "CORTA: Este es el estándar mínimo SGPC / Akaal Takht.",
@@ -861,6 +923,15 @@ const STRINGS = new LocalizedStrings({
     checkForUpdate: "Comprobando actualizaciones de BaniDB...",
     upToDate: "Su BaniDB está actualizado.",
     baniDBBannerText: "Hay una nueva actualización de BaniDB disponible. Pulsa para actualizar.",
+    MORE_TRACKS: "Más pistas",
+    AUDIO_SETTINGS: "Configuración de audio",
+    info: "info",
+    welcome_to_sundar_gutka: "Bienvenido a Sundar Gutka Audio",
+    please_choose_a_track: "Por favor, elija una pista para",
+    PLAY: "Reproducir",
+    DOWNLOAD: "Descargar",
+    DOWNLOADING: "Descargando",
+    NEXT: "Siguiente",
   },
 });
 

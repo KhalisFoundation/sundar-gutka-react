@@ -1,8 +1,16 @@
 import React, { useState, useRef, useEffect, useCallback, useMemo } from "react";
-import { useDispatch, useSelector } from "react-redux";
-import { Appearance, ActivityIndicator, BackHandler, AppState, Platform } from "react-native";
+import {
+  Appearance,
+  ActivityIndicator,
+  BackHandler,
+  AppState,
+  Platform,
+  Animated,
+} from "react-native";
 import { WebView } from "react-native-webview";
+import { useDispatch, useSelector } from "react-redux";
 import PropTypes from "prop-types";
+import StatusBarComponent from "@common/components/StatusBar";
 import {
   constant,
   colors,
@@ -12,11 +20,12 @@ import {
   logError,
   SafeArea,
 } from "@common";
-import StatusBarComponent from "@common/components/StatusBar";
 import { HomeIcon, BookmarkIcon, SettingsIcon } from "@common/icons";
 import BottomNavigation from "./components/BottomNavigation";
 import { Header, AutoScrollComponent } from "./components";
 import { useBookmarks, useFetchShabad } from "./hooks";
+import { Header, AutoScrollComponent, AudioPlayer } from "./components";
+import { useBookmarks, useFetchShabad, useFooterAnimation } from "./hooks";
 import { styles, nightColors } from "./styles";
 import { loadHTML } from "./utils";
 
@@ -25,6 +34,7 @@ const Reader = ({ navigation, route }) => {
   const isNightMode = useSelector((state) => state.isNightMode);
   const bookmarkPosition = useSelector((state) => state.bookmarkPosition);
   const isAutoScroll = useSelector((state) => state.isAutoScroll);
+  const isAudio = useSelector((state) => state.isAudio);
   const isTransliteration = useSelector((state) => state.isTransliteration);
   const fontSize = useSelector((state) => state.fontSize);
   const fontFace = useSelector((state) => state.fontFace);
@@ -53,6 +63,8 @@ const Reader = ({ navigation, route }) => {
   const { shabad, isLoading } = useFetchShabad(id);
   const { backgroundColor, safeAreaViewBack, backViewColor } = nightColors(isNightMode);
   const { READER_STATUS_BAR_COLOR } = colors;
+
+  const { animationPosition } = useFooterAnimation(isHeader);
 
   // Save scroll position when leaving screen or app goes to background
   const saveScrollPosition = useCallback(() => {
@@ -171,10 +183,8 @@ const Reader = ({ navigation, route }) => {
     (message) => {
       // Update last activity timestamp
       const { data } = message.nativeEvent;
-      // Handle UI toggle messages
-      if (data === "toggle") {
-        toggleHeader((prev) => !prev);
-      } else if (data === "show") {
+      // Handle UI messages (removed toggle since it's handled by onTouchStart)
+      if (data === "show") {
         toggleHeader(true);
       } else if (data === "hide") {
         toggleHeader(false);
@@ -258,11 +268,19 @@ const Reader = ({ navigation, route }) => {
         backgroundColor={isNightMode ? colors.NIGHT_BLACK : colors.WHITE_COLOR}
         style={[webView, isNightMode && { opacity: viewLoaded ? 1 : 0.1 }, backViewColor]}
         onMessage={handleMessage}
+        onTouchStart={() => {
+          // Toggle header when WebView is touched (not overlaid elements)
+          toggleHeader((prev) => !prev);
+        }}
       />
 
-      {isAutoScroll && (
-        <AutoScrollComponent shabadID={id} webViewRef={webViewRef} isFooter={isHeader} />
-      )}
+      {isAudio && <AudioPlayer baniID={id} title={title} shouldNavigateBack={shouldNavigateBack} />}
+      <Animated.View
+        style={[{ transform: [{ translateY: animationPosition }] }]}
+        pointerEvents="box-none" // Allow touches to pass through to WebView when not hitting child components
+      >
+        {isAutoScroll && <AutoScrollComponent shabadID={id} webViewRef={webViewRef} />}
+      </Animated.View>
       <BottomNavigation currentRoute="Reader" navigationItems={navigationItems} />
     </SafeArea>
   );

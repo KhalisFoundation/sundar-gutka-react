@@ -1,11 +1,11 @@
 import React, { useEffect, useRef } from "react";
 import { View, Text, Animated, Pressable, StyleSheet } from "react-native";
-import PropTypes from "prop-types";
-import { useSelector } from "react-redux";
 import LinearGradient from "react-native-linear-gradient";
+import { useSafeAreaInsets } from "react-native-safe-area-context";
+import { useSelector } from "react-redux";
+import PropTypes from "prop-types";
 import colors from "@common/colors";
 import { BackArrowIcon } from "@common/icons";
-import { useSafeAreaInsets } from "react-native-safe-area-context";
 import { getHeaderStyles, styles } from "../styles/styles";
 
 const Header = ({ title, handleBackPress, isHeader }) => {

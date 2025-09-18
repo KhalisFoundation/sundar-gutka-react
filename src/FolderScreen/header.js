@@ -1,8 +1,8 @@
 import React, { useEffect, useCallback } from "react";
+import { useSelector } from "react-redux";
 import { Icon } from "@rneui/themed";
 import PropTypes from "prop-types";
 import { colors, constant } from "@common";
-import { useSelector } from "react-redux";
 import getHeaderStyles from "./styles";
 
 const Header = ({ navigation, title }) => {
