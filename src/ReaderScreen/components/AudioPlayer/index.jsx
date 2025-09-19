@@ -6,10 +6,11 @@ import { useSelector } from "react-redux";
 import PropTypes from "prop-types";
 import { AudioTrackDialog, AudioControlBar } from "./components";
 import { useAudioManifest, useDownloadManager, useTrackPlayer } from "./hooks";
+import useAudioSyncScroll from "./hooks/useAudioSyncScroll";
 import styles from "./style";
 import { formatUrlForTrackPlayer, isLocalFile } from "./utils/urlHelper";
 
-const AudioPlayer = ({ baniID, title, shouldNavigateBack }) => {
+const AudioPlayer = ({ baniID, title, shouldNavigateBack, webViewRef }) => {
   const [showTrackModal, setShowTrackModal] = useState(true);
   const isAudioAutoPlay = useSelector((state) => state.isAudioAutoPlay);
   const defaultAudio = useSelector((state) => state.defaultAudio);
@@ -41,6 +42,15 @@ const AudioPlayer = ({ baniID, title, shouldNavigateBack }) => {
     isAudioEnabled,
     isInitialized,
   } = useTrackPlayer();
+
+  // Audio sync scroll hook
+  const { currentSequence, isScrollingEnabled } = useAudioSyncScroll(
+    progress,
+    isPlaying,
+    webViewRef,
+    baniID,
+    currentPlaying?.artistID || null
+  );
 
   useEffect(() => {
     if (shouldNavigateBack) {
@@ -192,6 +202,11 @@ AudioPlayer.propTypes = {
   baniID: PropTypes.string.isRequired,
   title: PropTypes.string.isRequired,
   shouldNavigateBack: PropTypes.bool.isRequired,
+  webViewRef: PropTypes.shape({
+    current: PropTypes.shape({
+      postMessage: PropTypes.func,
+    }),
+  }),
 };
 
 export default AudioPlayer;

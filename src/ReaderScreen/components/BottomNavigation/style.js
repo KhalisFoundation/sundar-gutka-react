@@ -13,8 +13,6 @@ const styles = StyleSheet.create({
     alignItems: "center",
     width: "100%",
     height: 70,
-    borderBottomEndRadius: 20,
-    borderBottomStartRadius: 20,
     paddingHorizontal: 20,
     gap: 25,
     backgroundColor: colors.READER_HEADER_COLOR,

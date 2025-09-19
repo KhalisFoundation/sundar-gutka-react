@@ -97,7 +97,7 @@ export const loadHTML = (
     });
 
     const content = shabad
-      .map((item) => {
+      .map((item, index) => {
         const textAlignMap = {
           0: "left",
           1: "left",
@@ -108,7 +108,7 @@ export const loadHTML = (
         if (textAlign === undefined) {
           textAlign = "right";
         }
-        let contentHtml = `<div id="${item.id}" class='text-item'>`;
+        let contentHtml = `<div id="${index + 1}" class='text-item'>`;
         contentHtml += createDiv(
           fontFace === constant.BALOO_PAAJI ? item.gurmukhiUni : item.gurmukhi,
           item.header,

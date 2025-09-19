@@ -1,10 +1,7 @@
-import { StyleSheet, Platform } from "react-native";
+import { StyleSheet } from "react-native";
 import { colors, constant } from "@common";
 
-const fontFamily = Platform.select({
-  ios: "Baloo Paaji 2",
-  android: "BalooPaaji2-Regular",
-});
+const fontFamily = constant.BALOO_PAAJI;
 // Common values
 const SPACING = {
   xs: 4,
@@ -214,6 +211,7 @@ export const audioTrackDialogStyles = StyleSheet.create({
     width: "95%",
     marginLeft: "auto",
     marginRight: "auto",
+    marginBottom: 10,
   },
   header: {
     alignItems: "center",
@@ -280,6 +278,9 @@ export const audioTrackDialogStyles = StyleSheet.create({
     marginRight: SPACING.sm,
     fontFamily,
   },
+  playButtonDisabled: {
+    opacity: 0.5,
+  },
 });
 
 export const downloadBadgeStyles = StyleSheet.create({
@@ -343,14 +344,12 @@ export const minimizePlayerStyles = StyleSheet.create({
   },
   timestamp: {
     fontFamily,
-    fontSize: FONT_SIZES.sm,
-    fontWeight: FONT_WEIGHTS.bold,
-    marginBottom: SPACING.xs,
+    fontSize: FONT_SIZES.md,
+    justifyContent: "center",
   },
   artistName: {
     fontFamily,
     fontSize: FONT_SIZES.md,
-    fontWeight: FONT_WEIGHTS.medium,
   },
 });
 
@@ -373,6 +372,23 @@ export const audioSettingModalStyles = StyleSheet.create({
   switchContainer: { flexDirection: "row", flexWrap: "wrap" },
   modalContainer: { flexDirection: "row", margin: 5, alignItems: "center" },
   defaultTrackContainer: { flexDirection: "row", alignItems: "center", gap: 0 },
+  defaultTrackWrapper: {
+    backgroundColor: BACKGROUND_COLORS.primary,
+    padding: SPACING.sm,
+    borderRadius: BORDER_RADIUS.xl,
+    color: TEXT_COLORS.white,
+    fontSize: FONT_SIZES.md,
+    fontFamily,
+    fontWeight: FONT_WEIGHTS.normal,
+    flexDirection: "row",
+    alignItems: "center",
+    gap: SPACING.sm,
+  },
+  chooseDefaultTrack: {
+    fontSize: FONT_SIZES.md,
+    fontFamily,
+    color: colors.WHITE_COLOR,
+  },
 });
 
 export default styles;
