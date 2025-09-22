@@ -6,9 +6,9 @@ import notifee, {
   AuthorizationStatus,
 } from "@notifee/react-native";
 import moment from "moment";
+import { FallBack } from "./components";
 import constant from "./constant";
 import { logError, logMessage } from "./firebase/crashlytics";
-import { FallBack } from "./components";
 
 // Utility function to check if BROADCAST_CLOSE_SYSTEM_DIALOGS permission is available
 const checkBroadcastPermission = async () => {

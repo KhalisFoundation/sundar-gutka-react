@@ -62,10 +62,6 @@ const isAudioSyncScroll = createReducer(false, {
   [actionTypes.TOGGLE_AUDIO_SYNC_SCROLL]: (state, action) => action.value,
 });
 
-const defaultAudio = createReducer("", {
-  [actionTypes.SET_DEFAULT_AUDIO]: (state, action) => action.value,
-});
-
 const baniLength = createReducer("", {
   [actionTypes.SET_BANI_LENGTH]: (state, action) => action.value,
 });
@@ -196,6 +192,16 @@ const baniList = (state = [], action) => {
       return state;
   }
 };
+
+const defaultAudio = (state = {}, action) => {
+  switch (action.type) {
+    case actionTypes.SET_DEFAULT_AUDIO:
+      return { ...state, ...action.value };
+    default:
+      return state;
+  }
+};
+
 const savePosition = (state = {}, action) => {
   switch (action.type) {
     case actionTypes.SET_SAVE_POSITION:

@@ -1,19 +1,18 @@
 import React, { useState, useEffect } from "react";
 import { View, Text } from "react-native";
+import { exists } from "react-native-fs";
+import TrackPlayer from "react-native-track-player";
 import { useSelector } from "react-redux";
 import PropTypes from "prop-types";
-import { exists } from "react-native-fs";
-import { BlurView } from "@react-native-community/blur";
-import { colors } from "@common";
-import { useAudioManifest, useDownloadManager, useTrackPlayer } from "./hooks";
 import { AudioTrackDialog, AudioControlBar } from "./components";
-import { formatUrlForTrackPlayer, isLocalFile } from "./utils/urlHelper";
+import { useAudioManifest, useDownloadManager, useTrackPlayer } from "./hooks";
 import styles from "./style";
+import { formatUrlForTrackPlayer, isLocalFile } from "./utils/urlHelper";
 
 const AudioPlayer = ({ baniID, title, shouldNavigateBack }) => {
   const [showTrackModal, setShowTrackModal] = useState(true);
   const isAudioAutoPlay = useSelector((state) => state.isAudioAutoPlay);
-  const isNightMode = useSelector((state) => state.isNightMode);
+  const defaultAudio = useSelector((state) => state.defaultAudio);
   // Custom hooks
   const {
     tracks,
@@ -34,6 +33,7 @@ const AudioPlayer = ({ baniID, title, shouldNavigateBack }) => {
   const {
     isPlaying,
     progress,
+    play,
     pause,
     stop,
     addAndPlayTrack,
@@ -57,6 +57,15 @@ const AudioPlayer = ({ baniID, title, shouldNavigateBack }) => {
       if (isPlaying) {
         await pause();
       } else {
+        // Check if there's already a track loaded in the queue
+        const currentTrack = await TrackPlayer.getActiveTrack();
+        // If the current track matches what we want to play, just resume
+        if (currentTrack && currentTrack.id === currentPlaying.id) {
+          await play();
+          return;
+        }
+
+        // Otherwise, load the new track
         // Check if local file exists
         if (isLocalFile(currentPlaying.audioUrl)) {
           const cleanPath = currentPlaying.audioUrl.replace("file://", "");
@@ -89,9 +98,16 @@ const AudioPlayer = ({ baniID, title, shouldNavigateBack }) => {
 
   useEffect(() => {
     if (isAudioAutoPlay && currentPlaying) {
+      setShowTrackModal(false);
       handlePlayPause();
     }
   }, [isAudioAutoPlay, currentPlaying]);
+
+  useEffect(() => {
+    if (defaultAudio[baniID] && defaultAudio[baniID].audioUrl) {
+      setShowTrackModal(false);
+    }
+  }, [defaultAudio, baniID]);
 
   const handleSeek = async (value) => {
     if (!isAudioEnabled || !isInitialized) return;
@@ -142,43 +158,30 @@ const AudioPlayer = ({ baniID, title, shouldNavigateBack }) => {
   }
 
   if (!tracks || tracks.length === 0) {
+    console.log("No tracks found for baniID:", baniID);
     return null;
   }
 
   return (
-    <View
-      style={[
-        styles.mainContainer,
-        {
-          backgroundColor: isNightMode ? colors.NIGHT_BLACK : colors.SEMI_TRANSPARENT,
-          shadowColor: isNightMode ? colors.NIGHT_BLACK : colors.WHITE_COLOR,
-        },
-      ]}
-    >
-      <BlurView
-        style={[
-          styles.blurOverlay,
-          { borderColor: isNightMode ? colors.NIGHT_BLACK : colors.SEMI_TRANSPARENT },
-        ]}
-        blurType={isNightMode ? "dark" : "light"}
-        blurAmount={5}
-        reducedTransparencyFallbackColor={isNightMode ? colors.BLACK_COLOR : colors.WHITE_COLOR}
-      />
+    <View>
       {showTrackModal ? (
         <AudioTrackDialog handleTrackSelect={handleTrackSelect} title={title} tracks={tracks} />
       ) : (
         <AudioControlBar
+          baniID={baniID}
+          handleTrackSelect={handleTrackSelect}
+          tracks={tracks}
           isPlaying={isPlaying}
           currentPlaying={currentPlaying}
           handlePlayPause={handlePlayPause}
           progress={progress}
-          setShowTrackModal={setShowTrackModal}
           handleSeek={handleSeek}
           isAudioEnabled={isAudioEnabled}
           isDownloading={isDownloading}
           isDownloaded={isDownloaded}
           handleDownload={handleDownload}
           handleDeleteDownload={handleDeleteDownload}
+          title={title}
         />
       )}
     </View>

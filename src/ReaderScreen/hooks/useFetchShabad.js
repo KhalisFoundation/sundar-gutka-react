@@ -1,7 +1,7 @@
 import { useState, useEffect, useCallback } from "react";
 import { useSelector } from "react-redux";
-import { getShabadFromID } from "@database";
 import { logError, logMessage } from "@common";
+import { getShabadFromID } from "@database";
 
 const useFetchShabad = (shabadID) => {
   const [shabad, setShabad] = useState([]);

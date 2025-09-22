@@ -1,7 +1,10 @@
-import { StyleSheet } from "react-native";
-import { colors } from "@common";
+import { StyleSheet, Platform } from "react-native";
+import { colors, constant } from "@common";
 
-const fontFamily = "BalooPaaji2";
+const fontFamily = Platform.select({
+  ios: "Baloo Paaji 2",
+  android: "BalooPaaji2-Regular",
+});
 // Common values
 const SPACING = {
   xs: 4,
@@ -67,15 +70,6 @@ const FONT_WEIGHTS = {
 };
 
 const styles = StyleSheet.create({
-  blurOverlay: {
-    position: "absolute",
-    bottom: 0,
-    left: 0,
-    right: 0,
-    top: 0,
-    borderRadius: BORDER_RADIUS.sm,
-    borderWidth: 1,
-  },
   mainContainer: {
     position: "absolute",
     bottom: 0,
@@ -100,11 +94,14 @@ export const audioControlBarStyles = StyleSheet.create({
     borderRadius: BORDER_RADIUS.md,
     position: "absolute",
     bottom: 0,
-    left: 0,
+    left: 10,
     right: 0,
+    paddingBottom: 10,
+    width: "95%",
   },
   mainContainer: {
     borderRadius: BORDER_RADIUS.md,
+    ...SHADOW.light,
   },
   topControlBar: {
     flexDirection: "row",
@@ -119,30 +116,34 @@ export const audioControlBarStyles = StyleSheet.create({
     gap: SPACING.md,
   },
   rightControls: {
+    flexDirection: "row",
+    gap: SPACING.md,
     justifyContent: "center",
   },
   actionButton: {
-    flexDirection: "row",
-    alignItems: "center",
-    justifyContent: "center",
-    padding: 1,
     borderRadius: BORDER_RADIUS.xl,
   },
   actionButtonText: {
-    fontSize: FONT_SIZES.sm,
+    fontSize: FONT_SIZES.md,
     fontWeight: FONT_WEIGHTS.normal,
     fontFamily,
-    margin: 5,
-    padding: 2,
+    marginBottom: 4,
   },
-  controlIcon: {},
+  actionButtonContent: {
+    flexDirection: "row",
+    alignItems: "center",
+    justifyContent: "center",
+    gap: 4,
+    paddingHorizontal: SPACING.sm,
+    paddingVertical: SPACING.xs,
+  },
   separator: {
     height: 1,
   },
   mainSection: {
-    flexDirection: "column",
-    padding: SPACING.md,
     paddingHorizontal: SPACING.md,
+    // borderWidth: 1,
+    // borderColor: "#eee",
   },
   trackInfo: {
     flexDirection: "row",
@@ -159,6 +160,7 @@ export const audioControlBarStyles = StyleSheet.create({
   trackName: {
     fontSize: FONT_SIZES.xl,
     fontFamily,
+    fontWeight: FONT_WEIGHTS.medium,
   },
   trackInfoText: {
     fontSize: FONT_SIZES.sm,
@@ -167,59 +169,81 @@ export const audioControlBarStyles = StyleSheet.create({
   },
   playbackControls: {
     flexDirection: "row",
+    // justifyContent: "space-between",
+    // alignItems: "center",
+    paddingHorizontal: SPACING.md,
+    gap: SPACING.md,
+  },
+  playButton: {
+    justifyContent: "center",
     alignItems: "center",
-    justifyContent: "space-evenly",
   },
-  playButton: {},
   progressContainer: {
-    width: "80%",
-  },
-  progressBar: {},
-  slider: {
-    width: "100%",
+    flex: 1,
+    marginTop: 2,
+    justifyContent: "center",
+    // alignItems: "center",
   },
   timestamp: {
     fontSize: FONT_SIZES.sm,
     fontFamily,
-    alignSelf: "flex-end",
+    right: 0,
+    position: "absolute",
+    bottom: 25,
+    fontWeight: FONT_WEIGHTS.normal,
   },
 });
 
 export const audioTrackDialogStyles = StyleSheet.create({
+  blurOverlay: {
+    position: "absolute",
+    bottom: 0,
+    left: 0,
+    right: 0,
+    top: 0,
+    borderRadius: BORDER_RADIUS.sm,
+    borderWidth: 1,
+  },
   container: {
-    zIndex: 100,
+    zIndex: 10,
     padding: SPACING.xxl,
+    gap: SPACING.sm,
+    borderRadius: BORDER_RADIUS.md,
+    borderWidth: 1,
+    borderColor: colors.READER_HEADER_COLOR_10,
   },
   header: {
     alignItems: "center",
-    marginBottom: SPACING.xxl,
   },
   welcomeText: {
-    fontFamily,
+    fontFamily: "BalooPaaji2-SemiBold",
     fontSize: FONT_SIZES.xl,
-    fontWeight: FONT_WEIGHTS.bold,
+    fontWeight: FONT_WEIGHTS.semibold,
     textAlign: "center",
     marginBottom: SPACING.sm,
+    lineHeight: FONT_SIZES.xl * 1.3, // Better line height for Android
   },
   subtitleText: {
     fontFamily,
     fontSize: FONT_SIZES.md,
     textAlign: "center",
-    opacity: 0.8,
+    lineHeight: FONT_SIZES.md * 1.4, // Better line height for Android
   },
   trackList: {
     maxHeight: 200,
-    marginBottom: SPACING.xxl,
+    zIndex: 10,
   },
   trackItem: {
     flexDirection: "row",
     justifyContent: "space-between",
     alignItems: "center",
     borderRadius: BORDER_RADIUS.xl,
-    padding: SPACING.lg,
+    padding: SPACING.md,
+    paddingHorizontal: SPACING.xl,
     marginBottom: SPACING.md,
-    borderWidth: 2,
+    // borderWidth: 2,
     borderColor: "transparent",
+    minHeight: 60, // Consistent height for Android
   },
   selectedTrackItem: {
     backgroundColor: BACKGROUND_COLORS.primary,
@@ -229,7 +253,7 @@ export const audioTrackDialogStyles = StyleSheet.create({
   trackName: {
     fontFamily,
     fontSize: FONT_SIZES.md,
-    fontWeight: FONT_WEIGHTS.medium,
+    fontWeight: FONT_WEIGHTS.normal,
     flex: 1,
   },
   selectedTrackName: {
@@ -238,7 +262,7 @@ export const audioTrackDialogStyles = StyleSheet.create({
   playButton: {
     backgroundColor: BACKGROUND_COLORS.primary,
     borderRadius: BORDER_RADIUS.lg,
-    paddingVertical: SPACING.lg,
+    paddingVertical: SPACING.md,
     paddingHorizontal: SPACING.xxl,
     flexDirection: "row",
     justifyContent: "center",
@@ -281,7 +305,7 @@ export const downloadBadgeStyles = StyleSheet.create({
   },
   downloadButtonText: {
     fontFamily,
-    fontSize: FONT_SIZES.sm,
+    fontSize: FONT_SIZES.xs,
     fontWeight: 300,
   },
 });
@@ -289,10 +313,10 @@ export const downloadBadgeStyles = StyleSheet.create({
 export const minimizePlayerStyles = StyleSheet.create({
   container: {
     position: "absolute",
-    bottom: 0,
+    bottom: 10,
     right: SPACING.xl,
     width: "50%",
-    height: 60,
+    maxHeight: 60,
     borderRadius: BORDER_RADIUS.xl,
     padding: SPACING.xl,
     flexDirection: "row",
@@ -325,6 +349,27 @@ export const minimizePlayerStyles = StyleSheet.create({
     fontSize: FONT_SIZES.md,
     fontWeight: FONT_WEIGHTS.medium,
   },
+});
+
+export const audioSettingModalStyles = StyleSheet.create({
+  settingItemTitle: {
+    fontSize: FONT_SIZES.md,
+    fontFamily,
+    fontWeight: FONT_WEIGHTS.normal,
+    color: "#666",
+  },
+  baniTitle: { fontFamily: constant.GURBANI_AKHAR_TRUE },
+  defaultTrackTitle: {
+    fontSize: FONT_SIZES.lg,
+    fontFamily,
+    fontWeight: FONT_WEIGHTS.normal,
+    color: colors.READER_HEADER_COLOR,
+    textDecorationLine: "underline",
+  },
+  switchStyle: { transform: [{ scaleX: 1.2 }, { scaleY: 1.2 }], marginLeft: 10 },
+  switchContainer: { flexDirection: "row", flexWrap: "wrap" },
+  modalContainer: { flexDirection: "row", margin: 5, alignItems: "center" },
+  defaultTrackContainer: { flexDirection: "row", alignItems: "center", gap: 0 },
 });
 
 export default styles;
