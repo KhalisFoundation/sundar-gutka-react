@@ -48,7 +48,7 @@ const Reader = ({ navigation, route }) => {
   const webViewRef = useRef(null);
   const { webView } = styles;
   const { title, id } = route.params.params;
-  const [isHeader, toggleHeader] = useState(false);
+  const [isHeader, toggleHeader] = useState(true);
   const [viewLoaded, toggleViewLoaded] = useState(false);
   const [currentPosition, setCurrentPosition] = useState(savePosition[id] || 0);
   const [shouldNavigateBack, setShouldNavigateBack] = useState(false);
@@ -226,7 +226,6 @@ const Reader = ({ navigation, route }) => {
     <SafeArea backgroundColor={safeAreaViewBack.backgroundColor}>
       <StatusBarComponent backgroundColor={backgroundColor} />
       <Header
-        navigation={navigation}
         title={title}
         handleBackPress={handleBackPress}
         handleBookmarkPress={handleBookmarkPress}

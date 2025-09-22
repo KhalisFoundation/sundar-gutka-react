@@ -5,8 +5,8 @@ const styles = StyleSheet.create({
     flexDirection: "row",
     justifyContent: "space-between",
     alignItems: "center",
-    height: 86,
-    padding: 10,
+    height: 45,
+    padding: 5,
   },
   leftContainer: {
     flex: 1,
@@ -18,9 +18,8 @@ const styles = StyleSheet.create({
   },
   title: {
     fontSize: 20,
-    fontWeight: "500",
+    fontWeight: "300",
     textAlign: "center",
-    flex: 2,
   },
 });
 
