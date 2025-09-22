@@ -44,13 +44,7 @@ const AudioPlayer = ({ baniID, title, shouldNavigateBack, webViewRef }) => {
   } = useTrackPlayer();
 
   // Audio sync scroll hook
-  const { currentSequence, isScrollingEnabled } = useAudioSyncScroll(
-    progress,
-    isPlaying,
-    webViewRef,
-    baniID,
-    currentPlaying?.artistID || null
-  );
+  useAudioSyncScroll(progress, isPlaying, webViewRef, baniID, currentPlaying?.artistID);
 
   useEffect(() => {
     if (shouldNavigateBack) {
@@ -206,7 +200,7 @@ AudioPlayer.propTypes = {
     current: PropTypes.shape({
       postMessage: PropTypes.func,
     }),
-  }),
+  }).isRequired,
 };
 
 export default AudioPlayer;

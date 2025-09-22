@@ -1,5 +1,6 @@
 import { useEffect, useRef } from "react";
 import { useSelector } from "react-redux";
+import satnamSinghBaniTimestamps from "@service/2_SatnamSingh";
 import baniTimestamps from "@service/bani_timestamps";
 
 const useAudioSyncScroll = (progress, isPlaying, webViewRef, baniID, artistID) => {
@@ -8,11 +9,12 @@ const useAudioSyncScroll = (progress, isPlaying, webViewRef, baniID, artistID) =
   const isScrollingRef = useRef(false);
 
   // Find current sequence based on audio progress
-  const findCurrentSequence = (currentTime) => {
+  const findCurrentSequence = (currentTime, artist) => {
     if (!currentTime || currentTime === 0) return null;
 
     // Find the timestamp entry that contains the current time
-    const currentTimestamp = baniTimestamps.find(
+    const baniLRC = artist === 4 ? baniTimestamps : satnamSinghBaniTimestamps;
+    const currentTimestamp = baniLRC.find(
       (timestamp) => currentTime >= timestamp.start && currentTime <= timestamp.end
     );
 
@@ -51,11 +53,19 @@ const useAudioSyncScroll = (progress, isPlaying, webViewRef, baniID, artistID) =
   // Main effect to handle sync scrolling
   useEffect(() => {
     // Only proceed if sync scroll is enabled and audio is playing
-    if (!isAudioSyncScroll || !isPlaying || !progress?.position || baniID !== 2 || artistID !== 4) {
+    if (
+      !isAudioSyncScroll ||
+      !isPlaying ||
+      !progress?.position ||
+      baniID !== 2 ||
+      (artistID !== 4 && artistID !== 5)
+    ) {
+      console.log("not scrolling");
       return;
     }
+    console.log("artistID", artistID);
 
-    const currentSequence = findCurrentSequence(progress.position);
+    const currentSequence = findCurrentSequence(progress.position, artistID);
 
     // Only scroll if sequence changed and we have a valid sequence
     if (currentSequence !== null && currentSequence !== lastSequenceRef.current) {
@@ -66,14 +76,14 @@ const useAudioSyncScroll = (progress, isPlaying, webViewRef, baniID, artistID) =
 
   // Reset when sync scroll is disabled or audio stops
   useEffect(() => {
-    if (!isAudioSyncScroll || !isPlaying || baniID !== 2 || artistID !== 4) {
+    if (!isAudioSyncScroll || !isPlaying || baniID !== 2 || artistID !== 4 || artistID !== 5) {
       lastSequenceRef.current = null;
       isScrollingRef.current = false;
     }
   }, [isAudioSyncScroll, isPlaying, baniID, artistID]);
 
   return {
-    currentSequence: findCurrentSequence(progress?.position || 0),
+    currentSequence: findCurrentSequence(progress?.position || 0, artistID),
     isScrollingEnabled: isAudioSyncScroll && isPlaying,
   };
 };
