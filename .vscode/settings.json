@@ -25,5 +25,6 @@
   "react-native-ide.moduleMapping": {
     "__RNIDE_lib__/JSXRuntime/react-native-78-79/react-jsx-dev-runtime.development.js": "react/jsx-dev-runtime",
     "__RNIDE_lib__/rn-renderer/react-native-78-79/ReactFabric-dev.js": "react-native/Libraries/Renderer/implementations/ReactFabric-dev.js"
-  }
+  },
+  "java.configuration.updateBuildConfiguration": "interactive"
 }

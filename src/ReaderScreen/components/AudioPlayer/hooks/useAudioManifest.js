@@ -1,8 +1,8 @@
 import { useState, useEffect, useCallback } from "react";
-import { useSelector, useDispatch } from "react-redux";
 import { DocumentDirectoryPath } from "react-native-fs";
-import { fetchManifest } from "@service";
+import { useSelector, useDispatch } from "react-redux";
 import { actions, useRemote } from "@common";
+import { fetchManifest } from "@service";
 
 const useAudioManifest = (baniID) => {
   const { BASIC_AUTH_USERNAME, BASIC_AUTH_PASSWORD, REMOTE_AUDIO_API_URL } = useRemote();
@@ -57,10 +57,6 @@ const useAudioManifest = (baniID) => {
             if (downloadedTrack) {
               // Use local URL if track is downloaded
               const fullLocalPath = `${DocumentDirectoryPath}/audio/${downloadedTrack.localURL}`;
-              console.log("Converting to full path:", {
-                relativePath: downloadedTrack.localURL,
-                fullLocalPath,
-              });
               return {
                 ...apiTrack,
                 audioUrl: fullLocalPath,
@@ -89,12 +85,12 @@ const useAudioManifest = (baniID) => {
         setTracks(mappedData);
 
         // Set current playing based on default audio setting
-        if (defaultAudio && defaultAudio !== "") {
+        if (defaultAudio[baniID]) {
           // Find track with matching artist ID
           const defaultTrack = mappedData.find(
-            (track) => track.artistID.toString() === defaultAudio
+            (track) => track.artistID.toString() === defaultAudio[baniID].artistID.toString()
           );
-          if (defaultTrack) {
+          if (defaultTrack && defaultTrack.audioUrl) {
             setCurrentPlaying(defaultTrack);
           } else {
             setCurrentPlaying(mappedData[0]);

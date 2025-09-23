@@ -8,9 +8,6 @@ const script = (nightMode, position) => {
 let autoScrollTimeout;
 let autoScrollSpeed = 0;
 let scrollMultiplier = 1.5;
-let dragging = false;
-let holding = false;
-let holdTimer;
 let curPosition = 0;
 let isScrolling;
 let isManuallyScrolling = false;
@@ -83,21 +80,7 @@ const setAutoScroll=()=> {
   }
 }
 
-const handleTouchEnd = () => {
-  clearTimeout(holdTimer);
-  if (autoScrollSpeed !== 0 && autoScrollTimeout === null) {
-    setTimeout(()=> {
-      window.ReactNativeWebView.postMessage("hide");
-    }, 5000);
-    setAutoScroll();
-  }
-  if (!dragging && !holding) {
-
-    window.ReactNativeWebView.postMessage("toggle");
-  }
-  dragging = false;
-  holding = false;
-}
+// Remove handleTouchEnd since we're handling toggle at React Native level
 const scrollToPosition=()=> {
   let scrollY = (document.body.scrollHeight - window.innerHeight) * ${position};
   window.scrollTo(0, scrollY);
@@ -116,7 +99,7 @@ window.addEventListener(
   false
 );
 
-window.onload = () => {
+${listener}.onload = () => {
   if (${nightMode}) {
   //fade event
 fadeInEffect();
@@ -127,7 +110,7 @@ fadeInEffect();
 
 
 //  Listen for scroll events
-window.addEventListener(
+${listener}.addEventListener(
   "scroll",
   (event)=> {
     // Clear our timeout throughout the scroll
@@ -142,23 +125,16 @@ window.addEventListener(
 
 
 
-window.onscroll = scrollFunc;
-window.addEventListener("touchstart", ()=> {
+${listener}.onscroll = scrollFunc;
+// Touch events for auto-scroll handling only
+${listener}.addEventListener("touchstart", ()=> {
   if (autoScrollSpeed !== 0) {
     clearScrollTimeout();
   }
-  dragging = false;
-  holding = false;
-  holdTimer = setTimeout(()=> {
-    holding = true;
-  }, 1000); // Longer than 1 seconds is not a tap
 });
-window.addEventListener("touchmove", ()=> {
+${listener}.addEventListener("touchmove", ()=> {
   isManuallyScrolling = true;
-  dragging = true;
 });
-
-window.addEventListener("touchend", handleTouchEnd);
 
 ${listener}.addEventListener(
   "message",

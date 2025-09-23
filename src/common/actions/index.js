@@ -1,7 +1,7 @@
-import * as actionTypes from "./actionTypes";
-import STRINGS from "../localization";
-import { trackSettingEvent } from "../firebase/analytics";
 import constant from "../constant";
+import { trackSettingEvent } from "../firebase/analytics";
+import STRINGS from "../localization";
+import * as actionTypes from "./actionTypes";
 
 export const toggleNightMode = (value) => {
   trackSettingEvent(constant.NIGHT_MODE, value);
@@ -55,8 +55,8 @@ export const toggleAudioSyncScroll = (value) => {
   return { type: actionTypes.TOGGLE_AUDIO_SYNC_SCROLL, value };
 };
 
-export const setDefaultAudio = (value) => {
-  trackSettingEvent(constant.DEFAULT_AUDIO, value);
+export const setDefaultAudio = (audio, shabadId) => {
+  const value = { [shabadId]: audio };
   return { type: actionTypes.SET_DEFAULT_AUDIO, value };
 };
 

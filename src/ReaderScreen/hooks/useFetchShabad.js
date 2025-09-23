@@ -1,7 +1,7 @@
 import { useState, useEffect, useCallback } from "react";
 import { useSelector } from "react-redux";
-import { getShabadFromID } from "@database";
 import { logError, logMessage } from "@common";
+import { getShabadFromID } from "@database";
 
 const useFetchShabad = (shabadID) => {
   const [shabad, setShabad] = useState([]);
@@ -14,6 +14,7 @@ const useFetchShabad = (shabadID) => {
   const isLarivaarAssist = useSelector((state) => state.isLarivaarAssist);
   const isParagraphMode = useSelector((state) => state.isParagraphMode);
   const isVishraam = useSelector((state) => state.isVishraam);
+  const padched = useSelector((state) => state.padched);
 
   const fetchShabad = useCallback(async () => {
     try {
@@ -28,7 +29,8 @@ const useFetchShabad = (shabadID) => {
           isLarivaar,
           isLarivaarAssist,
           isParagraphMode,
-          isVishraam
+          isVishraam,
+          padched
         );
         if (shabadData) {
           setShabad(shabadData);
@@ -52,6 +54,7 @@ const useFetchShabad = (shabadID) => {
     isLarivaarAssist,
     isParagraphMode,
     isVishraam,
+    padched,
   ]);
   useEffect(() => {
     fetchShabad();

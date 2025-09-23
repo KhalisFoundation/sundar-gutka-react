@@ -1,9 +1,9 @@
 import React, { useEffect } from "react";
-import { Provider } from "react-redux";
-import { PersistGate } from "redux-persist/integration/react";
 import ErrorBoundary from "react-native-error-boundary";
-import notifee, { EventType } from "@notifee/react-native";
 import SplashScreen from "react-native-splash-screen";
+import { Provider } from "react-redux";
+import notifee, { EventType } from "@notifee/react-native";
+import { PersistGate } from "redux-persist/integration/react";
 import {
   createStore,
   logError,
@@ -13,6 +13,7 @@ import {
   navigateTo,
   initializePerformanceMonitoring,
 } from "@common";
+import { allowTracking } from "./src/common/firebase/analytics";
 import { TrackPlayerSetup } from "./src/common/TrackPlayerUtils";
 import Navigation from "./src/navigation";
 import { allowTracking } from "./src/common/firebase/analytics";

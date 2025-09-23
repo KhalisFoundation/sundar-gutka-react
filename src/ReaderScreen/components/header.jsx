@@ -1,19 +1,12 @@
 import React, { useEffect, useRef } from "react";
 import { View, Text, Animated } from "react-native";
+import { useSelector } from "react-redux";
 import { Icon } from "@rneui/themed";
 import PropTypes from "prop-types";
-import { useSelector } from "react-redux";
 import colors from "@common/colors";
 import { getHeaderStyles, styles } from "../styles/styles";
 
-const Header = ({
-  navigation,
-  title,
-  handleBackPress,
-  handleBookmarkPress,
-  handleSettingsPress,
-  isHeader,
-}) => {
+const Header = ({ title, handleBackPress, handleBookmarkPress, handleSettingsPress, isHeader }) => {
   const isNightMode = useSelector((state) => state.isNightMode);
   const isDatabaseUpdateAvailable = useSelector((state) => state.isDatabaseUpdateAvaliable);
   const getHeaderStyle = getHeaderStyles(isNightMode);
@@ -43,18 +36,39 @@ const Header = ({
   );
 
   useEffect(() => {
-    navigation.setOptions({
-      headerShown: false,
-    });
-  }, [navigation]);
-
-  useEffect(() => {
     const value = isHeader ? 0 : -120;
-    Animated.timing(animationPosition, {
+
+    // Stop any existing animation first
+    animationPosition.stopAnimation();
+
+    const animation = Animated.timing(animationPosition, {
       toValue: value,
       duration: 500,
       useNativeDriver: true,
-    }).start();
+    });
+
+    animation.start((finished) => {
+      if (!finished) {
+        // If animation was interrupted, force the final value
+        animationPosition.setValue(value);
+      }
+    });
+
+    // Cleanup function
+    return () => {
+      animation.stop();
+    };
+  }, [isHeader, animationPosition]);
+
+  // Add animation reset as fallback for stuck states
+  useEffect(() => {
+    const resetTimer = setTimeout(() => {
+      // Force position if animation seems stuck
+      const targetValue = isHeader ? 0 : -120;
+      animationPosition.setValue(targetValue);
+    }, 1000);
+
+    return () => clearTimeout(resetTimer);
   }, [isHeader, animationPosition]);
 
   return (
@@ -65,8 +79,9 @@ const Header = ({
           transform: [{ translateY: animationPosition }],
         },
       ]}
+      pointerEvents="box-none" // Ensure touch events pass through
     >
-      <View style={getHeaderStyle.headerStyle}>
+      <View style={getHeaderStyle.headerStyle} pointerEvents="auto">
         <View style={styles.headerWrapper}>
           {headerLeft()}
           <Text style={getHeaderStyle.headerTitleStyle}>{title}</Text>
@@ -78,7 +93,6 @@ const Header = ({
 };
 
 Header.propTypes = {
-  navigation: PropTypes.shape().isRequired,
   title: PropTypes.string.isRequired,
   handleBackPress: PropTypes.func.isRequired,
   handleBookmarkPress: PropTypes.func.isRequired,

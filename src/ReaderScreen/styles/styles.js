@@ -49,10 +49,9 @@ export const styles = StyleSheet.create({
     bottom: 0,
     left: 0,
     right: 0,
-    paddingTop: 0,
-    padding: 20,
+    paddingVertical: 0,
+    paddingHorizontal: 20,
     overflow: "hidden",
-    backgroundColor: colors.READER_FOOTER_COLOR,
   },
   sliderText: {
     color: colors.TOOLBAR_TINT,
@@ -64,17 +63,17 @@ export const styles = StyleSheet.create({
   headerWrapper: {
     flex: 1,
     flexDirection: "row",
-    marginTop: 50,
     margin: 10,
     justifyContent: "space-between",
   },
   animatedView: {
     position: "absolute",
+    top: 0, // Ensure proper positioning from top
     left: 0,
     right: 0,
     overflow: "hidden",
     backgroundColor: "transparent",
-    zIndex: 1,
+    zIndex: 1000, // Higher z-index to ensure visibility
   },
   footerWrapper: {
     paddingLeft: 20,
@@ -105,5 +104,7 @@ export const getHeaderStyles = (isNightMode) => ({
     backgroundColor: !isNightMode
       ? colors.READER_STATUS_BAR_COLOR
       : colors.READER_STATUS_BAR_COLOR_NIGHT_MODE,
+    height: 90, // Ensure header has proper height
+    paddingTop: 40,
   },
 });

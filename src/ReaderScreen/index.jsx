@@ -1,5 +1,4 @@
 import React, { useState, useRef, useEffect, useCallback, useMemo } from "react";
-import { useDispatch, useSelector } from "react-redux";
 import {
   Appearance,
   ActivityIndicator,
@@ -9,7 +8,9 @@ import {
   Animated,
 } from "react-native";
 import { WebView } from "react-native-webview";
+import { useDispatch, useSelector } from "react-redux";
 import PropTypes from "prop-types";
+import StatusBarComponent from "@common/components/StatusBar";
 import {
   constant,
   colors,
@@ -19,7 +20,6 @@ import {
   logError,
   SafeArea,
 } from "@common";
-import StatusBarComponent from "@common/components/StatusBar";
 import { Header, AutoScrollComponent, AudioPlayer } from "./components";
 import { useBookmarks, useFetchShabad, useFooterAnimation } from "./hooks";
 import { styles, nightColors } from "./styles";
@@ -48,7 +48,7 @@ const Reader = ({ navigation, route }) => {
   const webViewRef = useRef(null);
   const { webView } = styles;
   const { title, id } = route.params.params;
-  const [isHeader, toggleHeader] = useState(false);
+  const [isHeader, toggleHeader] = useState(true);
   const [viewLoaded, toggleViewLoaded] = useState(false);
   const [currentPosition, setCurrentPosition] = useState(savePosition[id] || 0);
   const [shouldNavigateBack, setShouldNavigateBack] = useState(false);
@@ -179,10 +179,8 @@ const Reader = ({ navigation, route }) => {
     (message) => {
       // Update last activity timestamp
       const { data } = message.nativeEvent;
-      // Handle UI toggle messages
-      if (data === "toggle") {
-        toggleHeader((prev) => !prev);
-      } else if (data === "show") {
+      // Handle UI messages (removed toggle since it's handled by onTouchStart)
+      if (data === "show") {
         toggleHeader(true);
       } else if (data === "hide") {
         toggleHeader(false);
@@ -228,7 +226,6 @@ const Reader = ({ navigation, route }) => {
     <SafeArea backgroundColor={safeAreaViewBack.backgroundColor}>
       <StatusBarComponent backgroundColor={backgroundColor} />
       <Header
-        navigation={navigation}
         title={title}
         handleBackPress={handleBackPress}
         handleBookmarkPress={handleBookmarkPress}
@@ -255,11 +252,16 @@ const Reader = ({ navigation, route }) => {
         backgroundColor={isNightMode ? colors.NIGHT_BLACK : colors.WHITE_COLOR}
         style={[webView, isNightMode && { opacity: viewLoaded ? 1 : 0.1 }, backViewColor]}
         onMessage={handleMessage}
+        onTouchStart={() => {
+          // Toggle header when WebView is touched (not overlaid elements)
+          toggleHeader((prev) => !prev);
+        }}
       />
-      <Animated.View style={[{ transform: [{ translateY: animationPosition }] }]}>
-        {isAudio && (
-          <AudioPlayer baniID={id} title={title} shouldNavigateBack={shouldNavigateBack} />
-        )}
+      {isAudio && <AudioPlayer baniID={id} title={title} shouldNavigateBack={shouldNavigateBack} />}
+      <Animated.View
+        style={[{ transform: [{ translateY: animationPosition }] }]}
+        pointerEvents="box-none" // Allow touches to pass through to WebView when not hitting child components
+      >
         {isAutoScroll && <AutoScrollComponent shabadID={id} webViewRef={webViewRef} />}
       </Animated.View>
     </SafeArea>
