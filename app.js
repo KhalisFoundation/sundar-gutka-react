@@ -14,10 +14,9 @@ import {
   initializePerformanceMonitoring,
 } from "@common";
 import { allowTracking } from "./src/common/firebase/analytics";
+import { initRC } from "./src/common/firebase/remoteConfig";
 import { TrackPlayerSetup } from "./src/common/TrackPlayerUtils";
 import Navigation from "./src/navigation";
-import { allowTracking } from "./src/common/firebase/analytics";
-import { initRC } from "./src/common/firebase/remoteConfig";
 
 const { store, persistor } = createStore();
 const App = () => {
