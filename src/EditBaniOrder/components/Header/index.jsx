@@ -1,9 +1,9 @@
 import React, { useCallback } from "react";
-import { View, Text } from "react-native";
+import { View } from "react-native";
 import { Icon } from "@rneui/themed";
 import { useSelector } from "react-redux";
 import PropTypes from "prop-types";
-import { STRINGS } from "@common";
+import { STRINGS, CustomText } from "@common";
 import styles from "./styles";
 import { nightStyles } from "../../styles";
 
@@ -44,7 +44,9 @@ const Header = ({ navigation, setReset }) => {
   return (
     <View style={[styles.container, { backgroundColor: headerStyles.backgroundColor }]}>
       <View style={styles.leftContainer}>{headerLeft()}</View>
-      <Text style={[styles.title, { color: headerStyles.textColor }]}>{EDIT_BANI_ORDER}</Text>
+      <CustomText style={[styles.title, { color: headerStyles.textColor }]}>
+        {EDIT_BANI_ORDER}
+      </CustomText>
       <View style={styles.rightContainer}>{headerRight()}</View>
     </View>
   );

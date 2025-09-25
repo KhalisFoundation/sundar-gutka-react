@@ -33,6 +33,7 @@ const TranslationComponent = () => {
           <ListItem.Content>
             <ListItem.Title
               style={[{ paddingLeft: 16 }, isNightMode && { color: colors.WHITE_COLOR }]}
+              allowFontScaling={false}
             >
               {STRINGS.translations}
             </ListItem.Title>
@@ -54,7 +55,10 @@ const TranslationComponent = () => {
       >
         <Avatar />
         <ListItem.Content>
-          <ListItem.Title style={[isNightMode && { color: colors.WHITE_COLOR }]}>
+          <ListItem.Title
+            style={[isNightMode && { color: colors.WHITE_COLOR }]}
+            allowFontScaling={false}
+          >
             {STRINGS.en_translations}
           </ListItem.Title>
         </ListItem.Content>
@@ -72,7 +76,10 @@ const TranslationComponent = () => {
       >
         <Avatar />
         <ListItem.Content>
-          <ListItem.Title style={[isNightMode && { color: colors.WHITE_COLOR }]}>
+          <ListItem.Title
+            style={[isNightMode && { color: colors.WHITE_COLOR }]}
+            allowFontScaling={false}
+          >
             {STRINGS.pu_translations}
           </ListItem.Title>
         </ListItem.Content>
@@ -90,7 +97,10 @@ const TranslationComponent = () => {
       >
         <Avatar />
         <ListItem.Content>
-          <ListItem.Title style={[isNightMode && { color: colors.WHITE_COLOR }]}>
+          <ListItem.Title
+            style={[isNightMode && { color: colors.WHITE_COLOR }]}
+            allowFontScaling={false}
+          >
             {STRINGS.es_translations}
           </ListItem.Title>
         </ListItem.Content>

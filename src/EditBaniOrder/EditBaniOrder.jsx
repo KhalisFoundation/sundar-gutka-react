@@ -3,7 +3,7 @@ import DraggableFlatList, {
   ShadowDecorator,
   ScaleDecorator,
 } from "react-native-draggable-flatlist";
-import { Pressable, Text, View } from "react-native";
+import { Pressable, View } from "react-native";
 import { GestureHandlerRootView } from "react-native-gesture-handler";
 import { useSelector, useDispatch, batch } from "react-redux";
 import PropTypes from "prop-types";
@@ -14,6 +14,7 @@ import {
   logMessage,
   SafeArea,
   StatusBarComponent,
+  CustomText,
 } from "@common";
 import { activeColor, nightStyles, styles } from "./styles";
 import Header from "./components/Header";
@@ -47,7 +48,7 @@ const EditBaniOrder = ({ navigation }) => {
           <ScaleDecorator>
             <Pressable activeOpacity={1} onLongPress={drag} disabled={isActive} style={activeStyle}>
               <View key={item.id} style={[rowItem, backColor]}>
-                <Text style={[textColor, text]}>{item.gurmukhi}</Text>
+                <CustomText style={[textColor, text]}>{item.gurmukhi}</CustomText>
               </View>
             </Pressable>
           </ScaleDecorator>

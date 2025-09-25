@@ -18,7 +18,9 @@ const EditBaniOrder = ({ navigate, isNightMode }) => {
     >
       <Avatar source={rearrangeIcon} avatarStyle={styles.avatarStyle} />
       <ListItem.Content>
-        <ListItem.Title style={nightColor}>{EDIT_BANI_ORDER}</ListItem.Title>
+        <ListItem.Title style={nightColor} allowFontScaling={false}>
+          {EDIT_BANI_ORDER}
+        </ListItem.Title>
       </ListItem.Content>
       <ListItem.Chevron />
     </ListItem>

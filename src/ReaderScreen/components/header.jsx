@@ -1,9 +1,9 @@
 import React, { useEffect, useRef } from "react";
-import { View, Text, Animated } from "react-native";
+import { View, Animated } from "react-native";
 import { Icon } from "@rneui/themed";
 import PropTypes from "prop-types";
 import { useSelector } from "react-redux";
-import colors from "@common/colors";
+import { colors, CustomText } from "@common";
 import { getHeaderStyles, styles } from "../styles/styles";
 
 const Header = ({ title, handleBackPress, handleBookmarkPress, handleSettingsPress, isHeader }) => {
@@ -84,7 +84,7 @@ const Header = ({ title, handleBackPress, handleBookmarkPress, handleSettingsPre
       <View style={getHeaderStyle.headerStyle} pointerEvents="auto">
         <View style={styles.headerWrapper}>
           {headerLeft()}
-          <Text style={getHeaderStyle.headerTitleStyle}>{title}</Text>
+          <CustomText style={getHeaderStyle.headerTitleStyle}>{title}</CustomText>
           {headerRight()}
         </View>
       </View>

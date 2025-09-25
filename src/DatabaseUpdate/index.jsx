@@ -1,5 +1,5 @@
 import React, { useEffect, useState, useMemo } from "react";
-import { View, Image, Linking, Text, Pressable } from "react-native";
+import { View, Image, Linking, Pressable } from "react-native";
 import {
   constant,
   logMessage,
@@ -9,6 +9,7 @@ import {
   StatusBarComponent,
   SafeArea,
   colors,
+  CustomText,
 } from "@common";
 import PropTypes from "prop-types";
 import { useDispatch, useSelector } from "react-redux";
@@ -55,7 +56,7 @@ const DatabaseUpdateScreen = ({ navigation }) => {
         <Pressable onPress={() => Linking.openURL(constant.BANI_DB_URL)}>
           <View style={styles.baniDBContainer}>
             <Image source={baniDBLogoFull} style={styles.baniDBImage} />
-            <Text style={[styles.baniDBText, darkModeText]}>BaniDB</Text>
+            <CustomText style={[styles.baniDBText, darkModeText]}>BaniDB</CustomText>
           </View>
         </Pressable>
         <BaniDBAbout />

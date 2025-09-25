@@ -17,7 +17,9 @@ const AutoScroll = () => {
     <ListItem bottomDivider containerStyle={containerNightStyles}>
       <Icon color={iconColor} name="auto-fix-high" type="material" />
       <ListItem.Content>
-        <ListItem.Title style={nightColor}>{AUTO_SCROLL}</ListItem.Title>
+        <ListItem.Title style={nightColor} allowFontScaling={false}>
+          {AUTO_SCROLL}
+        </ListItem.Title>
       </ListItem.Content>
       <Switch
         value={isAutoScroll}

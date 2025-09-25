@@ -26,7 +26,9 @@ const VishraamComponent = () => {
       <ListItem bottomDivider containerStyle={containerNightStyles}>
         <Icon color={iconColor} name="pause" size={30} />
         <ListItem.Content>
-          <ListItem.Title style={textNightStyle}>{STRINGS.show_vishraams}</ListItem.Title>
+          <ListItem.Title style={textNightStyle} allowFontScaling={false}>
+            {STRINGS.show_vishraams}
+          </ListItem.Title>
         </ListItem.Content>
         <Switch value={isVishraam} onValueChange={(value) => dispatch(toggleVishraam(value))} />
       </ListItem>

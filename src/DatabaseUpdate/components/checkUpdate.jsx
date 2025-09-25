@@ -1,7 +1,7 @@
 import React, { useEffect, useRef, useState, useMemo } from "react";
-import { Animated, Text, View, Easing } from "react-native";
+import { Animated, View, Easing } from "react-native";
 import { Icon, ListItem } from "@rneui/themed";
-import { STRINGS } from "@common";
+import { STRINGS, CustomText } from "@common";
 import PropTypes from "prop-types";
 import { useSelector } from "react-redux";
 import { checkUpdateStyles as styles, darkMode } from "./styles";
@@ -61,7 +61,7 @@ const CheckUpdatesAnimation = ({ isLoading, isUpdateAvailable }) => {
       {isLoading && (
         <ListItem containerStyle={darkModeContainer}>
           <ListItem.Title style={styles.header}>
-            <Text style={darkModeText}>{STRINGS.checkForUpdate}</Text>
+            <CustomText style={darkModeText}>{STRINGS.checkForUpdate}</CustomText>
           </ListItem.Title>
           <ListItem.Content>
             <Animated.View style={{ transform: [{ rotate: rotateInterpolate }] }}>
@@ -78,7 +78,7 @@ const CheckUpdatesAnimation = ({ isLoading, isUpdateAvailable }) => {
       {!isUpdateAvailable && !isLoading && (
         <ListItem containerStyle={darkModeContainer}>
           <ListItem.Title style={[styles.header, darkModeContainer]}>
-            <Text style={darkModeText}>{STRINGS.upToDate}</Text>
+            <CustomText style={darkModeText}>{STRINGS.upToDate}</CustomText>
           </ListItem.Title>
         </ListItem>
       )}

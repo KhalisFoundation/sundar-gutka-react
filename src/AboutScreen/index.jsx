@@ -1,5 +1,5 @@
 import React from "react";
-import { Linking, Image, View, Text, TouchableHighlight } from "react-native";
+import { Linking, Image, View, TouchableHighlight } from "react-native";
 import PropTypes from "prop-types";
 import { useSelector } from "react-redux";
 import { getVersion, getBuildNumber } from "react-native-device-info";
@@ -11,6 +11,7 @@ import {
   logMessage,
   StatusBarComponent,
   SafeArea,
+  CustomText,
 } from "@common";
 import { styles, nightStyles } from "./styles";
 import useHeader from "./hooks/useHeader";
@@ -54,31 +55,34 @@ const AboutScreen = ({ navigation }) => {
       >
         <StatusBarComponent backgroundColor={TOOLBAR_COLOR_ALT2} />
         <View style={margin10}>
-          <Text style={[isNightMode && nightMode, SGTitle]}>{SUNDAR_GUTKA}</Text>
-          <Text style={[margin, isNightMode && nightMode]}>{CREATED_BY}:</Text>
+          <CustomText style={[isNightMode && nightMode, SGTitle]}>{SUNDAR_GUTKA}</CustomText>
+          <CustomText style={[margin, isNightMode && nightMode]}>{CREATED_BY}:</CustomText>
           <TouchableHighlight
             underlayColor={underlayColor.color}
             onPress={() => Linking.openURL(KHALIS_FOUNDATION_URL)}
           >
             <Image source={isNightMode ? khalislogo150white : khalislogo150} />
           </TouchableHighlight>
-          <Text style={[isNightMode && nightMode, margin]}>{ABOUT_WELCOME}</Text>
+          <CustomText style={[isNightMode && nightMode, margin]}>{ABOUT_WELCOME}</CustomText>
 
           <View style={margin}>
-            <Text style={[isNightMode && nightMode]}>{ABOUT_HELP}</Text>
-            <Text style={underlayColor} onPress={() => Linking.openURL(KHALIS_FOUNDATION_URL)}>
+            <CustomText style={[isNightMode && nightMode]}>{ABOUT_HELP}</CustomText>
+            <CustomText
+              style={underlayColor}
+              onPress={() => Linking.openURL(KHALIS_FOUNDATION_URL)}
+            >
               {KHALIS_FOUNDATION_URL}
-            </Text>
+            </CustomText>
           </View>
 
-          <Text style={[isNightMode && nightMode, margin]}>{ABOUT_RESPECT}</Text>
-          <Text style={[isNightMode && nightMode, margin]}>
+          <CustomText style={[isNightMode && nightMode, margin]}>{ABOUT_RESPECT}</CustomText>
+          <CustomText style={[isNightMode && nightMode, margin]}>
             {ABOUT_SG}{" "}
-            <Text style={underlayColor} onPress={() => Linking.openURL(constant.BANI_DB_URL)}>
+            <CustomText style={underlayColor} onPress={() => Linking.openURL(constant.BANI_DB_URL)}>
               {BANI_DB}
-            </Text>
-            <Text> {ABOUT_OPEN_SOURCE}</Text>
-          </Text>
+            </CustomText>
+            <CustomText> {ABOUT_OPEN_SOURCE}</CustomText>
+          </CustomText>
 
           <TouchableHighlight
             style={margin}
@@ -87,17 +91,17 @@ const AboutScreen = ({ navigation }) => {
           >
             <Image source={baniDBLogo} />
           </TouchableHighlight>
-          <Text style={[isNightMode && nightMode, margin]}>{ABOUT_PARDON}</Text>
+          <CustomText style={[isNightMode && nightMode, margin]}>{ABOUT_PARDON}</CustomText>
 
           <View style={singleLine}>
             <View style={leftContainer}>
-              <Text style={[margin, isNightMode && nightMode]}>
+              <CustomText style={[margin, isNightMode && nightMode]}>
                 &copy; {new Date().getFullYear()} {KHALIS_FOUNDATION}
-              </Text>
+              </CustomText>
             </View>
-            <Text style={[margin, isNightMode && nightMode]}>
+            <CustomText style={[margin, isNightMode && nightMode]}>
               {APP_VERSION}: {getVersion()} ({getBuildNumber()})
-            </Text>
+            </CustomText>
           </View>
         </View>
       </View>

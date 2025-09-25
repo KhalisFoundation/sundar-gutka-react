@@ -18,7 +18,9 @@ const ListItemWithIcon = ({ iconName, title, navigate, navigationTarget }) => {
     >
       <Icon name={iconName} size={30} color={iconColor} />
       <ListItem.Content>
-        <ListItem.Title style={nightColor}>{title}</ListItem.Title>
+        <ListItem.Title style={nightColor} allowFontScaling={false}>
+          {title}
+        </ListItem.Title>
       </ListItem.Content>
       <ListItem.Chevron />
     </ListItem>

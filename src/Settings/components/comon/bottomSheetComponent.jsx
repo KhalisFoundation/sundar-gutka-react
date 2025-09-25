@@ -1,9 +1,9 @@
 import React, { useEffect, useState } from "react";
-import { View, Modal, Text, Dimensions, Pressable, Platform, StyleSheet } from "react-native";
+import { View, Modal, Dimensions, Pressable, Platform, StyleSheet } from "react-native";
 import { Divider, Icon, ListItem } from "@rneui/themed";
 import { BlurView } from "@react-native-community/blur";
 import { useDispatch, useSelector } from "react-redux";
-import { constant, colors } from "@common";
+import { constant, colors, CustomText } from "@common";
 import PropTypes from "prop-types";
 import { SafeAreaProvider, SafeAreaView } from "react-native-safe-area-context";
 import SoundPlayer from "react-native-sound-player";
@@ -64,9 +64,9 @@ const BottomSheetComponent = ({
               enabled
             />
             <View style={bottomStyle}>
-              <Text style={[styles.bottomSheetTitle, textNightStyle, containerNightStyles]}>
+              <CustomText style={[styles.bottomSheetTitle, textNightStyle, containerNightStyles]}>
                 {title}
-              </Text>
+              </CustomText>
               <Divider />
               {actionConstant.map((item) => (
                 <ListItem
@@ -83,7 +83,9 @@ const BottomSheetComponent = ({
                   }}
                 >
                   <ListItem.Content>
-                    <ListItem.Title style={nightStyles}>{item.title}</ListItem.Title>
+                    <ListItem.Title style={nightStyles} allowFontScaling={false}>
+                      {item.title}
+                    </ListItem.Title>
                   </ListItem.Content>
                   {value === item.key && <Icon color={nightStyles.color} name="check" />}
                 </ListItem>

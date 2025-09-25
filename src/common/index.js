@@ -23,7 +23,7 @@ import {
   checkPermissions,
   resetBadgeCount,
 } from "./notifications";
-import { FallBack, BaniLengthSelector, BaniList } from "./components";
+import { FallBack, BaniLengthSelector, BaniList, CustomText } from "./components";
 import useKeepAwake from "./hooks/keepAwake";
 import baseFontSize, { validateBaniOrder } from "./helpers";
 import { navigate, navigateTo, navigationRef } from "./rootNavigation";
@@ -64,6 +64,7 @@ export {
   BaniLengthSelector,
   useKeepAwake,
   BaniList,
+  CustomText,
   baseFontSize,
   resetBadgeCount,
   createStore,

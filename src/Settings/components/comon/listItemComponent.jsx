@@ -16,10 +16,12 @@ const ListItemComponent = ({ icon, title, value, isAvatar, actionConstant, onPre
       {isAvatar && <Avatar source={Number(icon)} avatarStyle={styles.avatarStyle} />}
       {!isAvatar && <Icon name={icon} color={iconColor} size={30} />}
       <ListItem.Content>
-        <ListItem.Title style={textNightStyle}>{title}</ListItem.Title>
+        <ListItem.Title style={textNightStyle} allowFontScaling={false}>
+          {title}
+        </ListItem.Title>
       </ListItem.Content>
       {value && (
-        <ListItem.Title style={[styles.titleInfoStyle, textNightGrey]}>
+        <ListItem.Title style={[styles.titleInfoStyle, textNightGrey]} allowFontScaling={false}>
           {actionConstant.filter((item) => item.key === value).map((item) => item.title)[0]}
         </ListItem.Title>
       )}

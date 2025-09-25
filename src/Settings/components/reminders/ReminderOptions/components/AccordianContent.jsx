@@ -1,9 +1,9 @@
 import React, { useState } from "react";
-import { View, TouchableOpacity, Text } from "react-native";
+import { View, TouchableOpacity } from "react-native";
 import { Icon, Divider } from "@rneui/themed";
 import PropTypes from "prop-types";
 import { useDispatch, useSelector } from "react-redux";
-import { STRINGS, colors } from "@common";
+import { STRINGS, colors, CustomText } from "@common";
 import { setReminderBanis } from "@common/actions";
 import { styles } from "../styles";
 import LabelModal from "../modals/LabelModal";
@@ -43,14 +43,14 @@ const AccordianContent = ({ section, isActive }) => {
             color={isNightMode ? colors.COMPONENT_COLOR_NIGHT_MODE : colors.COMPONENT_COLOR}
             size={30}
           />
-          <Text
+          <CustomText
             style={[
               styles.accContentText,
               { color: isNightMode ? colors.COMPONENT_COLOR_NIGHT_MODE : colors.COMPONENT_COLOR },
             ]}
           >
             {title}
-          </Text>
+          </CustomText>
         </View>
       </TouchableOpacity>
 
@@ -65,13 +65,13 @@ const AccordianContent = ({ section, isActive }) => {
             color={isNightMode ? colors.COMPONENT_COLOR_NIGHT_MODE : colors.COMPONENT_COLOR}
             size={30}
           />
-          <Text
+          <CustomText
             style={[
               { color: isNightMode ? colors.COMPONENT_COLOR_NIGHT_MODE : colors.COMPONENT_COLOR },
             ]}
           >
             {STRINGS.delete}
-          </Text>
+          </CustomText>
         </View>
       </TouchableOpacity>
       <Divider color={colors.COMPONENT_COLOR_NIGHT_MODE} />

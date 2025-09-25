@@ -18,7 +18,9 @@ const ParagraphMode = () => {
     <ListItem bottomDivider containerStyle={containerNightStyles}>
       <Icon color={iconColor} name="view-headline" size={30} />
       <ListItem.Content>
-        <ListItem.Title style={nightColor}>{PARAGRAPH_MODE}</ListItem.Title>
+        <ListItem.Title style={nightColor} allowFontScaling={false}>
+          {PARAGRAPH_MODE}
+        </ListItem.Title>
       </ListItem.Content>
       <Switch
         value={isParagraphMode}

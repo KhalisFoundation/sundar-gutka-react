@@ -20,7 +20,9 @@ const StatusBar = () => {
       {!isStatusBar && <Icon color={iconColor} name="visibility-off" type="material" />}
       {isStatusBar && <Icon color={iconColor} name="visibility" type="material" />}
       <ListItem.Content>
-        <ListItem.Title style={nightColor}>{HIDE_STATUS_BAR}</ListItem.Title>
+        <ListItem.Title style={nightColor} allowFontScaling={false}>
+          {HIDE_STATUS_BAR}
+        </ListItem.Title>
       </ListItem.Content>
       <Switch value={isStatusBar} onValueChange={(value) => dispatch(toggleStatusBar(value))} />
     </ListItem>

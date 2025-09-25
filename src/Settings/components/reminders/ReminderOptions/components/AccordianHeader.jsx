@@ -1,11 +1,11 @@
 import React, { useState } from "react";
-import { View, TouchableOpacity, Text } from "react-native";
+import { View, TouchableOpacity } from "react-native";
 import { Switch, Icon, Divider } from "@rneui/themed";
 import PropTypes from "prop-types";
 import { useDispatch, useSelector } from "react-redux";
 import DateTimePicker from "react-native-modal-datetime-picker";
 import moment from "moment";
-import { colors, constant, updateReminders, trackReminderEvent } from "@common";
+import { colors, constant, updateReminders, trackReminderEvent, CustomText } from "@common";
 import { setReminderBanis } from "@common/actions";
 import { styles } from "../styles";
 
@@ -54,7 +54,7 @@ const AccordianHeader = ({ section, isActive }) => {
     <View style={{ margin: 10 }}>
       <View style={styles.viewColumn}>
         <View style={styles.viewRow}>
-          <Text
+          <CustomText
             style={[
               styles.cardTitle,
               isNightMode && { color: colors.MODAL_TEXT_NIGHT_MODE },
@@ -63,12 +63,12 @@ const AccordianHeader = ({ section, isActive }) => {
             ]}
           >
             {isTransliteration ? translit : gurmukhi}
-          </Text>
+          </CustomText>
           <Switch value={enabled} onValueChange={(value) => handelSwitchToggled(value, key)} />
         </View>
         <View style={styles.viewRow}>
           <TouchableOpacity onPress={() => toggleTimePicker(true)}>
-            <Text
+            <CustomText
               style={[
                 styles.timeFont,
                 isNightMode && { color: colors.MODAL_TEXT_NIGHT_MODE },
@@ -78,7 +78,7 @@ const AccordianHeader = ({ section, isActive }) => {
               ]}
             >
               {time}
-            </Text>
+            </CustomText>
           </TouchableOpacity>
           <Icon
             name={isActive ? "expand-less" : "expand-more"}

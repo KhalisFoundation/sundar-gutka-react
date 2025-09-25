@@ -20,7 +20,9 @@ const KeepAwake = () => {
     <ListItem bottomDivider containerStyle={containerNightStyles}>
       <Avatar source={screenIcon} avatarStyle={styles.avatarStyle} />
       <ListItem.Content>
-        <ListItem.Title style={nightColor}>{KEEP_AWAKE}</ListItem.Title>
+        <ListItem.Title style={nightColor} allowFontScaling={false}>
+          {KEEP_AWAKE}
+        </ListItem.Title>
       </ListItem.Content>
       <Switch
         value={isScreenAwake}

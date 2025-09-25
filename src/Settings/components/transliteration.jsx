@@ -33,7 +33,10 @@ const TransliterationComponent = () => {
       >
         <Avatar source={romanizedIcon} avatarStyle={styles.avatarStyle} />
         <ListItem.Content>
-          <ListItem.Title style={[isNightMode && { color: colors.WHITE_COLOR }]}>
+          <ListItem.Title
+            style={[isNightMode && { color: colors.WHITE_COLOR }]}
+            allowFontScaling={false}
+          >
             {STRINGS.transliteration}
           </ListItem.Title>
         </ListItem.Content>

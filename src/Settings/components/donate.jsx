@@ -19,7 +19,9 @@ const Donate = () => {
     >
       <Icon color={iconColor} name="volunteer-activism" size={30} />
       <ListItem.Content>
-        <ListItem.Title style={nightColor}>{donate}</ListItem.Title>
+        <ListItem.Title style={nightColor} allowFontScaling={false}>
+          {donate}
+        </ListItem.Title>
       </ListItem.Content>
       <ListItem.Chevron />
     </ListItem>

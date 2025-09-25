@@ -1,8 +1,8 @@
 import React from "react";
 import PropTypes from "prop-types";
-import { Text, View, Animated } from "react-native";
+import { View, Animated } from "react-native";
 import Svg, { Circle, G } from "react-native-svg";
-import { colors } from "@common";
+import { colors, CustomText } from "@common";
 import styles from "../styles";
 import { darkMode } from "./styles";
 
@@ -42,7 +42,7 @@ const DownloadAnimation = ({ progress, progressAnim }) => {
           />
         </G>
       </Svg>
-      <Text style={[styles.percentText, darkModeText]}>{progress}%</Text>
+      <CustomText style={[styles.percentText, darkModeText]}>{progress}%</CustomText>
     </View>
   );
 };

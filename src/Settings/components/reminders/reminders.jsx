@@ -79,7 +79,9 @@ const RemindersComponent = ({ navigation }) => {
       <ListItem bottomDivider containerStyle={containerNightStyles}>
         <Icon color={iconColor} name="timer" size={30} />
         <ListItem.Content>
-          <ListItem.Title style={textNightStyle}>{STRINGS.reminders}</ListItem.Title>
+          <ListItem.Title style={textNightStyle} allowFontScaling={false}>
+            {STRINGS.reminders}
+          </ListItem.Title>
         </ListItem.Content>
         <Switch value={isReminders} onValueChange={(value) => handleReminders(value)} />
       </ListItem>
@@ -92,7 +94,9 @@ const RemindersComponent = ({ navigation }) => {
         >
           <Icon name="event" color={iconColor} size={30} />
           <ListItem.Content>
-            <ListItem.Title style={textNightStyle}>{STRINGS.set_reminder_options}</ListItem.Title>
+            <ListItem.Title style={textNightStyle} allowFontScaling={false}>
+              {STRINGS.set_reminder_options}
+            </ListItem.Title>
           </ListItem.Content>
           <ListItem.Chevron />
         </ListItem>

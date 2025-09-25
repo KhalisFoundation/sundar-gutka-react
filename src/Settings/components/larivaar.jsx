@@ -19,7 +19,9 @@ const LarivaarComponent = () => {
       <ListItem bottomDivider containerStyle={containerNightStyles}>
         <Avatar source={larivaarIcon} avatarStyle={styles.avatarStyle} />
         <ListItem.Content>
-          <ListItem.Title style={textNightStyle}>{STRINGS.larivaar}</ListItem.Title>
+          <ListItem.Title style={textNightStyle} allowFontScaling={false}>
+            {STRINGS.larivaar}
+          </ListItem.Title>
         </ListItem.Content>
         <Switch value={isLarivaar} onValueChange={(value) => dispatch(toggleLarivaar(value))} />
       </ListItem>
@@ -27,7 +29,9 @@ const LarivaarComponent = () => {
         <ListItem bottomDivider containerStyle={containerNightStyles}>
           <Icon name="opacity" size={30} color={iconColor} />
           <ListItem.Content>
-            <ListItem.Title style={textNightStyle}>{STRINGS.larivaar_assist}</ListItem.Title>
+            <ListItem.Title style={textNightStyle} allowFontScaling={false}>
+              {STRINGS.larivaar_assist}
+            </ListItem.Title>
           </ListItem.Content>
           <Switch
             value={isLarivaarAssist}

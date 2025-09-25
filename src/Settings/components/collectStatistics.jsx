@@ -17,7 +17,9 @@ const CollectStatistics = () => {
     <ListItem bottomDivider containerStyle={containerNightStyles}>
       <Avatar source={analyticsIcon} avatarStyle={styles.avatarStyle} />
       <ListItem.Content>
-        <ListItem.Title style={nightColor}>{COLLECT_STATISTICS}</ListItem.Title>
+        <ListItem.Title style={nightColor} allowFontScaling={false}>
+          {COLLECT_STATISTICS}
+        </ListItem.Title>
       </ListItem.Content>
       <Switch
         value={isStatistics}

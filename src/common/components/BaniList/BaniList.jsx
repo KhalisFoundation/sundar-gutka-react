@@ -42,6 +42,7 @@ const BaniList = React.memo(({ data, onPress }) => {
           )}
           <ListItem.Content>
             <ListItem.Title
+              allowFontScaling={false}
               style={[
                 isNightMode && { color: colors.WHITE_COLOR },
                 {
@@ -54,6 +55,7 @@ const BaniList = React.memo(({ data, onPress }) => {
             </ListItem.Title>
             {row.item.tukGurmukhi && (
               <ListItem.Subtitle
+                allowFontScaling={false}
                 style={[
                   isNightMode && { color: "#ecf0f1" },
                   { fontFamily: !isTransliteration ? fontFace : null },

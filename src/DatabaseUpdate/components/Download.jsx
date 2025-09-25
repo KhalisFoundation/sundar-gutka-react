@@ -1,5 +1,5 @@
 import React, { useEffect, useRef, useState, useMemo } from "react";
-import { Text, Animated, View } from "react-native";
+import { Animated, View } from "react-native";
 import { downloadFile, exists, unlink, moveFile } from "react-native-fs";
 import {
   logMessage,
@@ -11,6 +11,7 @@ import {
   REMOTE_DB_URL,
   getCurrentDBMD5Hash,
   STRINGS,
+  CustomText,
 } from "@common";
 import { useDispatch, useSelector } from "react-redux";
 import initDB, { closeDatabase } from "../../database/connect";
@@ -99,9 +100,9 @@ const DownloadComponent = () => {
   return (
     <View style={[styles.container, darkModeContainer]}>
       {downloadSuccess !== null && (
-        <Text style={[styles.label, darkModeText]}>
+        <CustomText style={[styles.label, darkModeText]}>
           {downloadSuccess ? STRINGS.downloadSuccessful : STRINGS.downloadFailed}
-        </Text>
+        </CustomText>
       )}
       {!downloadSuccess && (
         <>

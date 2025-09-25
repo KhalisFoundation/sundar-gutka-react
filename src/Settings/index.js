@@ -1,7 +1,7 @@
 import React, { useEffect } from "react";
 import { useSelector } from "react-redux";
 import PropTypes from "prop-types";
-import { StatusBar, ScrollView, Text } from "react-native";
+import { StatusBar, ScrollView } from "react-native";
 import {
   STRINGS,
   colors,
@@ -10,6 +10,7 @@ import {
   logMessage,
   StatusBarComponent,
   SafeArea,
+  CustomText,
 } from "@common";
 import { nightModeStyles } from "./styles/nightModeStyles";
 import FontSizeComponent from "./components/fontSize";
@@ -62,7 +63,9 @@ const Settings = ({ navigation }) => {
 
       {isDatabaseUpdateAvailable && <DatabaseUpdateBanner navigate={navigate} />}
       <ScrollView>
-        <Text style={[displayOptionsText, scrollViewNightStyles]}>{DISPLAY_OPTIONS}</Text>
+        <CustomText style={[displayOptionsText, scrollViewNightStyles]}>
+          {DISPLAY_OPTIONS}
+        </CustomText>
         <FontSizeComponent />
         <FontFaceComponent />
         <LanguageComponent language={language} />
@@ -74,7 +77,7 @@ const Settings = ({ navigation }) => {
         <AutoScroll />
         <KeepAwake />
         {/* Bani Options */}
-        <Text style={[displayOptionsText, scrollViewNightStyles]}>{BANI_OPTIONS}</Text>
+        <CustomText style={[displayOptionsText, scrollViewNightStyles]}>{BANI_OPTIONS}</CustomText>
         <EditBaniOrder navigate={navigate} isNightMode={isNightMode} />
         <BaniLengthComponent />
         <LarivaarComponent />
@@ -82,7 +85,7 @@ const Settings = ({ navigation }) => {
         <PadchedSettingsComponent />
         <VishraamComponent />
         <RemindersComponent navigation={navigation} />
-        <Text style={[displayOptionsText, scrollViewNightStyles]}>{OTHER_OPTIONS}</Text>
+        <CustomText style={[displayOptionsText, scrollViewNightStyles]}>{OTHER_OPTIONS}</CustomText>
         <CollectStatistics />
         <Donate />
         <ListItemWithIcon
@@ -97,7 +100,7 @@ const Settings = ({ navigation }) => {
           navigate={navigate}
           navigationTarget="DatabaseUpdate"
         />
-        <Text style={[end, backgroundNightStyle]} />
+        <CustomText style={[end, backgroundNightStyle]} />
       </ScrollView>
     </SafeArea>
   );
