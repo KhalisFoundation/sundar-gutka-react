@@ -7,6 +7,8 @@ export default {
   IPA: "IPA",
   GURBANI_AKHAR_TRUE: "GurbaniAkharTrue",
   GURBANI_AKHAR_THICK_TRUE: "GurbaniAkharThickTrue",
+  BALOO_PAAJI: "BalooPaaji2-Regular",
+  BALOO_PAAJI_SEMI_BOLD: "BalooPaaji2-SemiBold",
   READER: "Reader",
   SETTINGS: "Settings",
   EXTRA_SMALL: "EXTRA_SMALL",

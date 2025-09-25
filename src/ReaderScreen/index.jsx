@@ -257,7 +257,14 @@ const Reader = ({ navigation, route }) => {
           toggleHeader((prev) => !prev);
         }}
       />
-      {isAudio && <AudioPlayer baniID={id} title={title} shouldNavigateBack={shouldNavigateBack} />}
+      {isAudio && (
+        <AudioPlayer
+          baniID={id}
+          title={title}
+          shouldNavigateBack={shouldNavigateBack}
+          webViewRef={webViewRef}
+        />
+      )}
       <Animated.View
         style={[{ transform: [{ translateY: animationPosition }] }]}
         pointerEvents="box-none" // Allow touches to pass through to WebView when not hitting child components
