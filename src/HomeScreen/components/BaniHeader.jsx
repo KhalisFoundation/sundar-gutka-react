@@ -48,10 +48,5 @@ const BaniHeader = (props) => {
 };
 BaniHeader.propTypes = {
   navigate: PropTypes.func.isRequired,
-  theme: PropTypes.shape({
-    colors: PropTypes.shape({
-      primary: PropTypes.string.isRequired,
-    }).isRequired,
-  }).isRequired,
 };
 export default BaniHeader;
