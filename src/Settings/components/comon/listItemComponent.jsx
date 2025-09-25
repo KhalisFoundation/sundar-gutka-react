@@ -16,7 +16,7 @@ const ListItemComponent = ({ icon, title, value, isAvatar, actionConstant, onPre
         <ListItem.Title style={styles.listItemTitle}>{title}</ListItem.Title>
       </ListItem.Content>
       {value && (
-        <ListItem.Title style={[styles.titleInfoStyle, styles.listItemTitle]}>
+        <ListItem.Title style={[styles.titleInfoStyle]}>
           {actionConstant.filter((item) => item.key === value).map((item) => item.title)[0]}
         </ListItem.Title>
       )}

@@ -19,12 +19,12 @@ const Header = ({ navigation, setReset }) => {
         name="arrow-back"
         size={30}
         onPress={() => goBack()}
-        color={theme.colors.primaryText}
+        color={theme.staticColors.WHITE_COLOR}
         accessibilityLabel="Go back"
         accessibilityRole="button"
       />
     ),
-    [goBack, theme.colors.primaryText]
+    [goBack, theme.staticColors.WHITE_COLOR]
   );
 
   const headerRight = useCallback(
@@ -33,12 +33,12 @@ const Header = ({ navigation, setReset }) => {
         name="refresh"
         size={30}
         onPress={() => setReset(true)}
-        color={theme.colors.primaryText}
+        color={theme.staticColors.WHITE_COLOR}
         accessibilityLabel="Reset bani order"
         accessibilityRole="button"
       />
     ),
-    [setReset, theme.colors.primaryText]
+    [setReset, theme.staticColors.WHITE_COLOR]
   );
 
   return (

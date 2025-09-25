@@ -1,26 +1,30 @@
-import { constant, colors } from "@common";
+import { colors } from "@common";
 
 const createStyles = (theme) => ({
   gurmukhiText: {
-    margin: 5,
+    margin: theme.spacing.sm,
   },
   translit: {
-    fontFamily: constant.Arial,
-    padding: 0.2,
+    fontFamily: theme.typography.fonts.arial,
+    padding: theme.spacing.xs,
+    fontSize: theme.typography.sizes.md,
   },
   englishTranslations: {
-    padding: 0.2,
-    fontFamily: constant.Arial,
+    padding: theme.spacing.xs,
+    fontFamily: theme.typography.fonts.arial,
+    fontSize: theme.typography.sizes.md,
   },
   spanishTranslations: {
-    padding: 0.2,
-    fontFamily: constant.Arial,
+    padding: theme.spacing.xs,
+    fontFamily: theme.typography.fonts.arial,
+    fontSize: theme.typography.sizes.md,
   },
   punjabiTranslations: {
-    padding: 0.2,
+    padding: theme.spacing.xs,
+    fontSize: theme.typography.sizes.md,
   },
   vishraamGradient: {
-    borderRadius: 5,
+    borderRadius: theme.radius.sm,
   },
 
   vishraamShort: {
@@ -30,7 +34,7 @@ const createStyles = (theme) => ({
     opacity: 0.65,
   },
   webView: { flex: 1 },
-  top50: { marginTop: 50 },
+  top50: { marginTop: theme.spacing.xxxl + theme.spacing.lg },
   paragraphStyle: { flex: 1, flexDirection: "row" },
   slider: {
     flex: 1,
@@ -41,41 +45,42 @@ const createStyles = (theme) => ({
     height: 70,
   },
   container: {
-    borderRadius: 30,
+    borderRadius: theme.radius.lg + theme.spacing.lg,
     position: "absolute",
     bottom: 0,
     left: 0,
     right: 0,
     paddingTop: 0,
-    padding: 20,
+    padding: theme.spacing.xl,
     overflow: "hidden",
     backgroundColor: theme.colors.primary,
   },
   sliderText: {
     color: theme.staticColors.WHITE_COLOR,
+    fontSize: theme.typography.sizes.md,
   },
   headerViewWrapper: {
     backgroundColor: theme.colors.primary,
-    height: 90,
+    height: theme.components.header.height + theme.spacing.xxl + theme.spacing.sm,
   },
   headerWrapper: {
     flex: 1,
     flexDirection: "row",
-    margin: 10,
+    margin: theme.spacing.md,
     justifyContent: "space-between",
   },
   animatedView: {
     position: "absolute",
-    top: 0, // Ensure proper positioning from top
+    top: 0,
     left: 0,
     right: 0,
     overflow: "hidden",
     backgroundColor: "transparent",
-    zIndex: 1000, // Higher z-index to ensure visibility
+    zIndex: 1000,
   },
   footerWrapper: {
-    paddingLeft: 20,
-    paddingRight: 20,
+    paddingLeft: theme.spacing.xl,
+    paddingRight: theme.spacing.xl,
     position: "absolute",
     bottom: 0,
     left: 0,
@@ -83,22 +88,24 @@ const createStyles = (theme) => ({
     flexDirection: "row",
     justifyContent: "space-between",
     zIndex: 10,
-    height: 60,
+    height: theme.components.header.height + theme.spacing.sm,
   },
   headerTitleStyle: {
     color: theme.staticColors.WHITE_COLOR,
-    fontWeight: "normal",
-    fontFamily: constant.GURBANI_AKHAR_TRUE,
-    fontSize: 20,
+    fontWeight: theme.typography.weights.normal,
+    fontFamily: theme.typography.fonts.gurbaniPrimary,
+    fontSize: theme.typography.sizes.xxl,
   },
   footerTitleStyle: {
     color: theme.staticColors.WHITE_COLOR,
-    fontFamily: constant.GURBANI_AKHAR_TRUE,
+    fontFamily: theme.typography.fonts.gurbaniPrimary,
+    fontSize: theme.typography.sizes.lg,
   },
   headerStyle: {
     backgroundColor: theme.colors.primary,
-    height: 90, // Ensure header has proper height
-    paddingTop: 40,
+    height: theme.components.header.height + theme.spacing.xxl + theme.spacing.sm,
+    paddingTop: theme.spacing.xxl + theme.spacing.md,
+    paddingHorizontal: theme.components.header.paddingHorizontal,
   },
 });
 export default createStyles;

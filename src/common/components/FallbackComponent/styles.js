@@ -4,22 +4,31 @@ const createStyles = (theme) => ({
     justifyContent: "center",
     alignItems: "center",
     backgroundColor: theme.colors.surface,
-    padding: 8,
+    padding: theme.spacing.md,
     textAlign: "center",
   },
   title: {
-    fontSize: 18,
-    fontWeight: "bold",
+    fontSize: theme.typography.sizes.xl,
+    fontWeight: theme.typography.weights.bold,
     textAlign: "center",
+    color: theme.colors.primaryText,
+    marginBottom: theme.spacing.lg,
   },
   icon: {
-    fontSize: 48,
+    fontSize: theme.typography.sizes.xxxl + theme.typography.sizes.xl,
+    color: theme.colors.primaryText,
+    marginBottom: theme.spacing.lg,
   },
   text: {
-    marginVertical: 16,
+    marginVertical: theme.spacing.lg,
     textAlign: "center",
     width: 300,
+    fontSize: theme.typography.sizes.lg,
+    color: theme.colors.primaryText,
   },
-  btnWrap: { flexDirection: "row" },
+  btnWrap: {
+    flexDirection: "row",
+    marginTop: theme.spacing.xl,
+  },
 });
 export default createStyles;

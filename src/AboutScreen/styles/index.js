@@ -11,68 +11,74 @@ export default function createStyles(theme) {
     },
 
     wrapper: {
-      margin: 10,
+      margin: theme.spacing.md,
     },
 
     // Text styles
     titleText: {
       color: theme.colors.primaryText,
-      fontSize: 20,
-      fontWeight: "bold",
-      marginBottom: 20,
+      fontSize: theme.typography.sizes.xxxl,
+      fontWeight: theme.typography.weights.bold,
+      marginBottom: theme.spacing.xl,
     },
 
     createByText: {
-      marginTop: 20,
-      marginBottom: 10,
+      marginTop: theme.spacing.xl,
+      marginBottom: theme.spacing.md,
       color: theme.colors.primaryText,
+      fontSize: theme.typography.sizes.lg,
     },
 
     welcomeText: {
-      marginTop: 20,
-      marginBottom: 10,
+      marginTop: theme.spacing.xl,
+      marginBottom: theme.spacing.md,
       color: theme.colors.primaryText,
+      fontSize: theme.typography.sizes.lg,
     },
 
     helpText: {
       color: theme.colors.primaryText,
-      marginVertical: 8,
-      lineHeight: 20,
+      marginVertical: theme.spacing.md,
+      fontSize: theme.typography.sizes.lg,
     },
 
     respectText: {
-      marginTop: 20,
-      marginBottom: 10,
+      marginTop: theme.spacing.xl,
+      marginBottom: theme.spacing.md,
       color: theme.colors.primaryText,
+      fontSize: theme.typography.sizes.lg,
     },
 
     sgText: {
-      marginTop: 20,
-      marginBottom: 10,
+      marginTop: theme.spacing.xl,
+      marginBottom: theme.spacing.md,
       color: theme.colors.primaryText,
+      fontSize: theme.typography.sizes.lg,
     },
 
     pardonText: {
-      marginTop: 20,
-      marginBottom: 10,
+      marginTop: theme.spacing.xl,
+      marginBottom: theme.spacing.md,
       color: theme.colors.primaryText,
+      fontSize: theme.typography.sizes.lg,
     },
 
     // Link styles
     linkText: {
       color: theme.colors.underlayColor,
       textDecorationLine: "underline",
+      fontSize: theme.typography.sizes.lg,
     },
 
     // Image styles
     logo: {
-      marginVertical: 15,
+      marginVertical: theme.spacing.lg,
     },
 
     // Layout styles
     margin: {
       color: theme.colors.underlayColor,
-      marginBottom: 10,
+      marginBottom: theme.spacing.md,
     },
 
     singleLine: {
@@ -87,15 +93,24 @@ export default function createStyles(theme) {
 
     // Footer styles
     footerText: {
-      marginTop: 20,
-      marginBottom: 10,
+      marginTop: theme.spacing.xl,
+      marginBottom: theme.spacing.md,
       color: theme.colors.primaryText,
+      fontSize: theme.typography.sizes.lg,
     },
 
     underlayColor: {
       color: theme.colors.primary,
     },
-    headerTitleStyle: { color: "#fff", fontWeight: "normal", fontSize: 18 },
-    headerStyle: { backgroundColor: theme.colors.headerVariant },
+    headerTitleStyle: {
+      color: "#fff",
+      fontWeight: theme.typography.weights.normal,
+      fontSize: theme.typography.sizes.xl,
+    },
+    headerStyle: {
+      backgroundColor: theme.colors.headerVariant,
+      height: theme.components.header.height,
+      paddingHorizontal: theme.components.header.paddingHorizontal,
+    },
   };
 }

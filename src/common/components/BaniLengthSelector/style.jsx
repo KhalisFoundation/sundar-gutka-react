@@ -1,56 +1,55 @@
-import colors from "../../colors";
-import constant from "../../constant";
-
 const createStyles = (theme) => ({
   heading: {
-    color: theme.colors.primaryText,
-    fontFamily: constant.GURBANI_AKHAR_THICK_TRUE,
+    color: theme.staticColors.WHITE_COLOR,
+    fontFamily: theme.typography.fonts.gurbaniThick,
     textAlign: "center",
-    fontSize: 52,
+    fontSize: theme.typography.sizes.massive + theme.spacing.xl,
   },
   viewWrapper: {
-    margin: 10,
+    margin: theme.spacing.md,
   },
   wrapper: {
     flex: 1,
-    backgroundColor: colors.primary,
+    backgroundColor: theme.colors.primary,
   },
   baniLengthMessage: {
-    marginTop: 15,
-    color: theme.colors.primaryText,
-    fontSize: 14,
+    marginTop: theme.spacing.lg,
+    color: theme.staticColors.WHITE_COLOR,
+    fontSize: theme.typography.sizes.md,
   },
   textPreferrence: {
-    marginTop: 15,
-    color: theme.colors.primaryVariant,
-    fontWeight: "bold",
-    fontSize: 18,
+    marginTop: theme.spacing.lg,
+    color: theme.staticColors.WHITE_COLOR,
+    fontWeight: theme.typography.weights.bold,
+    fontSize: theme.typography.sizes.xl,
   },
   button: {
     backgroundColor: theme.colors.surface,
     color: theme.colors.primaryText,
-    padding: 15,
-    marginTop: 15,
-    fontSize: 24,
-    fontWeight: "bold",
+    padding: theme.spacing.lg,
+    marginTop: theme.spacing.lg,
+    fontSize: theme.typography.sizes.xxxl,
+    fontWeight: theme.typography.weights.bold,
     textAlign: "center",
     textTransform: "uppercase",
+    borderRadius: theme.components.button.borderRadius,
+    minHeight: theme.components.button.minHeight,
   },
   helpText: {
     color: theme.colors.primaryVariant,
-    fontWeight: "bold",
+    fontWeight: theme.typography.weights.bold,
     fontStyle: "italic",
-    fontSize: 12,
+    fontSize: theme.typography.sizes.sm,
   },
   moreInfo: {
     color: theme.colors.primaryText,
-    fontWeight: "normal",
-    fontSize: 12,
+    fontWeight: theme.typography.weights.normal,
+    fontSize: theme.typography.sizes.sm,
   },
   helpWrapper: {
     flexDirection: "row",
     alignItems: "center",
-    marginTop: 15,
+    marginTop: theme.spacing.lg,
   },
 });
 export default createStyles;
