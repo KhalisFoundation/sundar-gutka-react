@@ -10,18 +10,86 @@ const spacing = {
   md: 8,
   lg: 16,
   xl: 24,
+  xxl: 32,
+  xxxl: 48,
+  huge: 64,
 };
 
 const typography = {
-  heading: 20,
-  subheading: 18,
-  body: 16,
-  caption: 12,
-  // Expose common font families used in the app for convenience
+  // Font sizes
+  sizes: {
+    xs: 10,
+    sm: 12,
+    md: 14,
+    lg: 16,
+    xl: 18,
+    xxl: 20,
+    xxxl: 24,
+    huge: 28,
+    massive: 32,
+    // Legacy sizes for backward compatibility
+    heading: 20,
+    subheading: 18,
+    body: 16,
+    caption: 12,
+  },
+  // Line heights
+  lineHeights: {
+    tight: 1.2,
+    normal: 1.4,
+    relaxed: 1.6,
+    loose: 1.8,
+  },
+  // Font weights
+  weights: {
+    light: "300",
+    normal: "400",
+    medium: "500",
+    semibold: "600",
+    bold: "700",
+  },
+  // Font families
   fonts: {
     gurbaniPrimary: constant.GURBANI_AKHAR_TRUE,
     gurbaniThick: constant.GURBANI_AKHAR_THICK_TRUE,
     arial: constant.Arial,
+    // Additional fonts can be added as constants are defined
+  },
+};
+
+// Component-specific spacing and sizing
+const components = {
+  header: {
+    height: 56,
+    paddingHorizontal: spacing.lg,
+    paddingVertical: spacing.md,
+  },
+  button: {
+    paddingHorizontal: spacing.lg,
+    paddingVertical: spacing.md,
+    borderRadius: 8,
+    minHeight: 44,
+  },
+  card: {
+    padding: spacing.lg,
+    marginVertical: spacing.sm,
+    marginHorizontal: spacing.md,
+    borderRadius: 12,
+  },
+  list: {
+    itemPadding: spacing.lg,
+    itemMargin: spacing.sm,
+    sectionHeaderPadding: spacing.md,
+  },
+  modal: {
+    padding: spacing.xl,
+    borderRadius: 16,
+  },
+  input: {
+    paddingHorizontal: spacing.md,
+    paddingVertical: spacing.md,
+    borderRadius: 8,
+    minHeight: 44,
   },
 };
 
@@ -55,6 +123,7 @@ export const lightTheme = {
   staticColors,
   typography,
   spacing,
+  components,
   radius: {
     sm: 6,
     md: 10,
@@ -88,6 +157,7 @@ export const darkTheme = {
   },
   typography,
   spacing,
+  components,
   staticColors,
   radius: {
     sm: 6,

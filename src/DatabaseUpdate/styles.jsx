@@ -2,9 +2,9 @@ const createStyles = (theme) => ({
   baniDBLogoImage: { alignSelf: "center" },
   mainWrapper: { flex: 1, backgroundColor: theme.colors.surface },
   container: {
-    padding: 16,
-    margin: 16,
-    borderRadius: 8,
+    padding: theme.spacing.lg,
+    margin: theme.spacing.lg,
+    borderRadius: theme.components.card.borderRadius,
     // shadow / elevation...
     shadowColor: theme.colors.shadow,
     shadowOpacity: 0.1,
@@ -19,39 +19,57 @@ const createStyles = (theme) => ({
     justifyContent: "space-between",
   },
   label: {
-    fontSize: 16,
-    marginRight: 12,
+    fontSize: theme.typography.sizes.lg,
+    marginRight: theme.spacing.md,
     color: theme.colors.primaryText,
   },
   button: {
     backgroundColor: theme.colors.baniDB,
-    paddingHorizontal: 16,
-    paddingVertical: 8,
-    borderRadius: 6,
+    paddingHorizontal: theme.components.button.paddingHorizontal,
+    paddingVertical: theme.components.button.paddingVertical,
+    borderRadius: theme.components.button.borderRadius,
+    minHeight: theme.components.button.minHeight,
   },
   buttonDisabled: {
     backgroundColor: theme.colors.textDisabled,
   },
   buttonText: {
-    fontSize: 14,
-    fontWeight: "600",
+    fontSize: theme.typography.sizes.md,
+    fontWeight: theme.typography.weights.semibold,
   },
   progressContainer: {
     alignItems: "center",
-    marginBottom: 12,
+    marginBottom: theme.spacing.md,
   },
   percentText: {
     position: "absolute",
     top: "40%",
-    fontSize: 18,
-    fontWeight: "600",
+    fontSize: theme.typography.sizes.xl,
+    fontWeight: theme.typography.weights.semibold,
     color: theme.colors.primaryText,
   },
-  headerTitleStyle: { color: theme.colors.primaryText, fontWeight: "normal", fontSize: 18 },
-  headerStyle: { backgroundColor: theme.colors.baniDB },
+  headerTitleStyle: {
+    color: theme.colors.primaryText,
+    fontWeight: theme.typography.weights.normal,
+    fontSize: theme.typography.sizes.xl,
+  },
+  headerStyle: {
+    backgroundColor: theme.colors.baniDB,
+    height: theme.components.header.height,
+    paddingHorizontal: theme.components.header.paddingHorizontal,
+  },
   baniDBContainer: { flexDirection: "row", justifyContent: "center" },
-  baniDBImage: { width: 100, height: 100, margin: 10 },
-  baniDBText: { fontSize: 50, marginTop: 8, color: theme.colors.primaryText },
+  baniDBImage: {
+    width: theme.spacing.huge + theme.spacing.xxl + theme.spacing.sm,
+    height: theme.spacing.huge + theme.spacing.xxl + theme.spacing.sm,
+    margin: theme.spacing.md,
+  },
+  baniDBText: {
+    fontSize: theme.typography.sizes.massive + theme.typography.sizes.xl,
+    marginTop: theme.spacing.md,
+    color: theme.colors.primaryText,
+    fontWeight: theme.typography.weights.light,
+  },
 });
 
 export default createStyles;

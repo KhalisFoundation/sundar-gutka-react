@@ -1,11 +1,9 @@
-import { constant } from "@common";
-
 const getHeaderStyles = (theme) => ({
   headerTitleStyle: {
     color: theme.colors.primaryText,
-    fontWeight: "normal",
-    fontFamily: constant.GURBANI_AKHAR_TRUE,
-    fontSize: 20,
+    fontWeight: theme.typography.weights.normal,
+    fontFamily: theme.typography.fonts.gurbaniPrimary,
+    fontSize: theme.typography.sizes.xxl,
   },
 });
 export default getHeaderStyles;

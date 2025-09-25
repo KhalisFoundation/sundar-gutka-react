@@ -3,8 +3,8 @@ const createStyles = (theme) => ({
     flexDirection: "row",
     justifyContent: "space-between",
     alignItems: "center",
-    height: 45,
-    padding: 5,
+    height: theme.components.header.height - theme.spacing.md,
+    padding: theme.spacing.sm,
     backgroundColor: theme.colors.headerVariant,
   },
   leftContainer: {
@@ -16,10 +16,10 @@ const createStyles = (theme) => ({
     alignItems: "flex-end",
   },
   title: {
-    fontSize: 20,
-    fontWeight: "300",
+    fontSize: theme.typography.sizes.xxl,
+    fontWeight: theme.typography.weights.light,
     textAlign: "center",
-    color: theme.colors.primaryText,
+    color: theme.staticColors.WHITE_COLOR,
   },
 });
 

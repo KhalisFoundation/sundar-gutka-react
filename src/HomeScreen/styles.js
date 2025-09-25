@@ -1,31 +1,49 @@
-import { constant } from "@common";
-
 const createStyles = (theme) => ({
-  container: { flex: 1, marginTop: 0 },
-  header: { backgroundColor: theme.colors.primary },
-  fateh: { color: theme.staticColors.WHITE_COLOR, fontSize: 18, textAlign: "center", margin: 5 },
-  headerDesign: {
-    fontSize: 32,
-    color: theme.staticColors.WHITE_COLOR,
-    fontFamily: constant.GURBANI_AKHAR_TRUE,
+  container: {
+    flex: 1,
+    marginTop: 0,
   },
-  headerTitle: { fontSize: 28, color: theme.staticColors.WHITE_COLOR },
-  titleContainer: { textAlign: "center", margin: 5 },
+  header: {
+    backgroundColor: theme.colors.primary,
+  },
+  fateh: {
+    color: theme.staticColors.WHITE_COLOR,
+    fontSize: theme.typography.sizes.xl,
+    textAlign: "center",
+    margin: theme.spacing.sm,
+  },
+  headerDesign: {
+    fontSize: theme.typography.sizes.massive,
+    color: theme.staticColors.WHITE_COLOR,
+    fontFamily: theme.typography.fonts.gurbaniPrimary,
+  },
+  headerTitle: {
+    fontSize: theme.typography.sizes.huge,
+    color: theme.staticColors.WHITE_COLOR,
+    fontWeight: theme.typography.weights.medium,
+  },
+  titleContainer: {
+    textAlign: "center",
+    margin: theme.spacing.sm,
+  },
   settingIcon: {
     position: "absolute",
-    bottom: 10,
-    right: 5,
+    bottom: theme.spacing.md,
+    right: theme.spacing.sm,
   },
-  headerFatehStyle: { color: theme.staticColors.WHITE_COLOR, fontSize: 22 },
+  headerFatehStyle: {
+    color: theme.staticColors.WHITE_COLOR,
+    fontSize: theme.typography.sizes.xl,
+  },
   fatehContainer: {
-    marginTop: 20,
+    marginTop: theme.spacing.lg,
     marginLeft: "auto",
     marginRight: "auto",
   },
   ikongkar: {
-    fontFamily: constant.GURBANI_AKHAR_TRUE,
-    color: theme.colors.WHITE_COLOR,
-    fontSize: 22,
+    fontFamily: theme.typography.fonts.gurbaniPrimary,
+    color: theme.staticColors.WHITE_COLOR,
+    fontSize: theme.typography.sizes.xxl,
   },
 });
 

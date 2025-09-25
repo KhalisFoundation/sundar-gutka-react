@@ -1,17 +1,15 @@
-import { constant } from "@common";
-
 export const createStyles = (theme) => ({
   rowItem: {
-    height: 60,
+    height: theme.components.header.height + theme.spacing.sm,
     alignItems: "center",
     justifyContent: "center",
-    padding: 10,
+    padding: theme.spacing.md,
     marginTop: 1,
     backgroundColor: theme.colors.surface,
   },
   text: {
-    fontFamily: constant.GURBANI_AKHAR_TRUE,
-    fontSize: 24,
+    fontFamily: theme.typography.fonts.gurbaniPrimary,
+    fontSize: theme.typography.sizes.xxxl,
     textAlign: "center",
     color: theme.colors.primaryText,
   },
