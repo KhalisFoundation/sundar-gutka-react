@@ -1,48 +1,36 @@
 import React, { useEffect, useRef } from "react";
-import { View, Text, Animated } from "react-native";
-import { Icon } from "@rneui/themed";
+import { View, Text, Animated, Pressable, StyleSheet } from "react-native";
 import PropTypes from "prop-types";
 import { useSelector } from "react-redux";
+import LinearGradient from "react-native-linear-gradient";
+import { BackArrowIcon } from "@common/icons";
+import { useSafeAreaInsets } from "react-native-safe-area-context";
 import useThemedStyles from "@common/hooks/useThemedStyles";
 import useTheme from "@common/context";
 import createStyles from "../styles";
 
-const Header = ({ title, handleBackPress, handleBookmarkPress, handleSettingsPress, isHeader }) => {
+const Header = ({ title, handleBackPress, isHeader }) => {
   const { theme } = useTheme();
-  const isDatabaseUpdateAvailable = useSelector((state) => state.isDatabaseUpdateAvaliable);
   const styles = useThemedStyles(createStyles);
   const animationPosition = useRef(new Animated.Value(0)).current;
+  const fontFace = useSelector((state) => state.fontFace);
+  const insets = useSafeAreaInsets();
+
+  const MID = "rgba(17,57,121,1)"; // #113979
+  const EDGE = "rgba(17,57,121,0)";
 
   const headerLeft = () => (
-    <Icon
-      name="arrow-back"
-      size={30}
+    <Pressable
       onPress={() => {
         handleBackPress();
       }}
-      color={theme.staticColors.WHITE_COLOR}
-    />
-  );
-
-  const headerRight = () => (
-    <View style={{ flexDirection: "row" }}>
-      <Icon
-        name="bookmark"
-        color={theme.staticColors.WHITE_COLOR}
-        size={30}
-        onPress={handleBookmarkPress}
-      />
-      <Icon
-        name={isDatabaseUpdateAvailable ? "settings-suggest" : "settings"}
-        color={theme.staticColors.WHITE_COLOR}
-        size={30}
-        onPress={() => handleSettingsPress()}
-      />
-    </View>
+    >
+      <BackArrowIcon size={30} color={theme.colors.primaryHeaderVariant} />
+    </Pressable>
   );
 
   useEffect(() => {
-    const value = isHeader ? 0 : -120;
+    const value = isHeader ? insets.top : -120;
 
     // Stop any existing animation first
     animationPosition.stopAnimation();
@@ -70,7 +58,7 @@ const Header = ({ title, handleBackPress, handleBookmarkPress, handleSettingsPre
   useEffect(() => {
     const resetTimer = setTimeout(() => {
       // Force position if animation seems stuck
-      const targetValue = isHeader ? 0 : -120;
+      const targetValue = isHeader ? insets.top : -120;
       animationPosition.setValue(targetValue);
     }, 1000);
 
@@ -89,11 +77,25 @@ const Header = ({ title, handleBackPress, handleBookmarkPress, handleSettingsPre
     >
       <View style={styles.headerStyle} pointerEvents="auto">
         <View style={styles.headerWrapper}>
-          {headerLeft()}
-          <Text style={styles.headerTitleStyle}>{title}</Text>
-          {headerRight()}
+          <View style={{ width: "20%" }}>{headerLeft()}</View>
+          <View style={{ width: "60%" }}>
+            <Text style={[styles.headerTitleStyle, { fontFamily: fontFace, fontWeight: "bold" }]}>
+              {title}
+            </Text>
+          </View>
         </View>
       </View>
+      <LinearGradient
+        colors={[EDGE, MID, MID, EDGE]}
+        locations={[0, 0.48, 0.52, 1]}
+        start={{ x: 0, y: 0 }}
+        end={{ x: 1, y: 0 }}
+        style={{
+          width: "100%",
+          height: StyleSheet.hairlineWidth,
+          pointerEvents: "none",
+        }}
+      />
     </Animated.View>
   );
 };
@@ -101,8 +103,6 @@ const Header = ({ title, handleBackPress, handleBookmarkPress, handleSettingsPre
 Header.propTypes = {
   title: PropTypes.string.isRequired,
   handleBackPress: PropTypes.func.isRequired,
-  handleBookmarkPress: PropTypes.func.isRequired,
-  handleSettingsPress: PropTypes.func.isRequired,
   isHeader: PropTypes.bool.isRequired,
 };
 export default Header;

@@ -5,7 +5,7 @@ const createStyles = (theme) => ({
     fontSize: theme.typography.sizes.xxl,
   },
   headerStyle: {
-    backgroundColor: theme.colors.primaryVariant,
+    backgroundColor: theme.colors.surface,
     height: theme.components.header.height,
     paddingHorizontal: theme.components.header.paddingHorizontal,
   },

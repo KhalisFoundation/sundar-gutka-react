@@ -35,6 +35,7 @@ const createStyles = (theme) => ({
     color: theme.staticColors.WHITE_COLOR,
     fontSize: theme.typography.sizes.xl,
   },
+
   fatehContainer: {
     marginTop: theme.spacing.lg,
     marginLeft: "auto",

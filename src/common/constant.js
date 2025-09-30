@@ -7,6 +7,7 @@ export default {
   IPA: "IPA",
   GURBANI_AKHAR_TRUE: "GurbaniAkharTrue",
   GURBANI_AKHAR_THICK_TRUE: "GurbaniAkharThickTrue",
+  BALOO_PAAJI: "BalooPaaji2",
   READER: "Reader",
   SETTINGS: "Settings",
   EXTRA_SMALL: "EXTRA_SMALL",
@@ -87,4 +88,6 @@ export default {
   CHOPAYI_SAHIB_ID: 9,
   REHRAAS_SAHIB_ID: 21,
   MAST_SABH_MAST_TUKK: "smwpq msqu suB msqu",
+  MAST_SABH_MAST_TUKK_UNI: "ਸਮਾਪਤ ਮਸਤੁ ਸੁਭ ਮਸਤੁ",
+  MINIMUM_BOTTOM_PADDING: 35,
 };

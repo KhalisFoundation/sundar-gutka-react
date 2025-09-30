@@ -16,10 +16,10 @@ import {
 } from "@common";
 import useTheme from "@common/context";
 import useThemedStyles from "@common/hooks/useThemedStyles";
-import createStyles from "./styles";
 import BaniHeader from "./components/BaniHeader";
 import { useBaniLength, useBaniList, useDatabaseUpdateCheck } from "./hooks";
 import { setBaniOrder } from "../common/actions";
+import createStyles from "./styles";
 
 const HomeScreen = React.memo(({ navigation }) => {
   logMessage(constant.HOME_SCREEN);
@@ -47,12 +47,20 @@ const HomeScreen = React.memo(({ navigation }) => {
     if (!bani.folder) {
       navigate(constant.READER, {
         key: `Reader-${bani.id}`,
-        params: { id: bani.id, title: bani.gurmukhi },
+        params: {
+          id: bani.id,
+          title: bani.gurmukhi,
+          titleUni: bani.gurmukhiUni,
+        },
       });
     } else {
       navigate(constant.FOLDERSCREEN, {
         key: `Folder-${bani.gurmukhi}`,
-        params: { data: bani.folder, title: bani.gurmukhi },
+        params: {
+          data: bani.folder,
+          title: bani.gurmukhi,
+          titleUni: bani.gurmukhiUni,
+        },
       });
     }
   };

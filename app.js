@@ -13,6 +13,7 @@ import {
   navigateTo,
   initializePerformanceMonitoring,
 } from "@common";
+import { SafeAreaProvider } from "react-native-safe-area-context";
 import Navigation from "./src/navigation";
 import { allowTracking } from "./src/common/firebase/analytics";
 import ThemeProvider from "./src/common/context/ThemeProvider";
@@ -44,7 +45,9 @@ const App = () => {
       <Provider store={store}>
         <PersistGate loading={null} persistor={persistor}>
           <ThemeProvider>
-            <Navigation />
+            <SafeAreaProvider>
+              <Navigation />
+            </SafeAreaProvider>
           </ThemeProvider>
         </PersistGate>
       </Provider>

@@ -1,5 +1,4 @@
 export default {
-  // These can be gradually migrated to the new semantic names above
   VISHRAM_SHORT: "#16a085",
   VISHRAM_LONG: "#d35400",
   VISHRAM_SHORT_GRADIENT: "rgba(22, 160, 133,1.0)",

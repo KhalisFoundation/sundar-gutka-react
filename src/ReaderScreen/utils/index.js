@@ -6,13 +6,13 @@ import script from "./gutkaScript";
 export const fontColorForReader = (header, theme, text) => {
   const { GURMUKHI, TRANSLATION, TRANSLITERATION } = constant;
 
-  const getHeaderColor1 = () => theme.colors.highlightTuk;
+  const getHeaderColor1 = () => theme.colors.primaryHeaderVariant;
   const getHeaderColor2 = () => theme.colors.primaryText;
 
   const defaultColor = getHeaderColor2();
   const gurmukhiMapping = {
     1: getHeaderColor1(),
-    2: defaultColor,
+    2: getHeaderColor1(),
     6: defaultColor,
     default: defaultColor,
   };
@@ -89,13 +89,17 @@ export const loadHTML = (
       ios: `${fontFace}.ttf`,
       android: `file:///android_asset/fonts/${fontFace}.ttf`,
     });
+    const defaultFontFaceURI = Platform.select({
+      ios: `${constant.GURBANI_AKHAR_TRUE}.ttf`,
+      android: `file:///android_asset/fonts/${constant.GURBANI_AKHAR_TRUE}.ttf`,
+    });
 
     const content = shabad
       .map((item) => {
         const textAlignMap = {
           0: "left",
-          1: "center",
-          2: "center",
+          1: "left",
+          2: "left",
         };
 
         let textAlign = textAlignMap[item.header];
@@ -104,13 +108,15 @@ export const loadHTML = (
         }
         let contentHtml = `<div id="${item.id}" class='text-item'>`;
         contentHtml += createDiv(
-          item.gurmukhi,
+          fontFace === constant.BALOO_PAAJI ? item.gurmukhiUni : item.gurmukhi,
           item.header,
           constant.GURMUKHI.toLowerCase(),
           textAlign,
           fontSize,
           theme,
-          isLarivaar
+          isLarivaar,
+          "",
+          fontFace
         );
 
         if (isTransliteration) {
@@ -146,7 +152,8 @@ export const loadHTML = (
             fontSize,
             theme,
             isLarivaar,
-            constant.GURMUKHI.toLowerCase()
+            constant.GURMUKHI.toLowerCase(),
+            constant.GURBANI_AKHAR_TRUE
           );
         }
 
@@ -166,7 +173,15 @@ export const loadHTML = (
         return contentHtml;
       })
       .join("");
-    const htmlContent = htmlTemplate(backColor, fileUri, fontFace, content, theme, savePosition);
+    const htmlContent = htmlTemplate(
+      backColor,
+      fileUri,
+      fontFace,
+      content,
+      theme,
+      savePosition,
+      defaultFontFaceURI
+    );
     return htmlContent;
   } catch (error) {
     logError(error);

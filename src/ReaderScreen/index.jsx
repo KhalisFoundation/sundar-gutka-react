@@ -7,6 +7,8 @@ import { constant, actions, useScreenAnalytics, logMessage, logError, SafeArea }
 import useTheme from "@common/context";
 import useThemedStyles from "@common/hooks/useThemedStyles";
 import StatusBarComponent from "@common/components/StatusBar";
+import { HomeIcon, BookmarkIcon, SettingsIcon } from "@common/icons";
+import BottomNavigation from "./components/BottomNavigation";
 import { Header, AutoScrollComponent } from "./components";
 import { useBookmarks, useFetchShabad } from "./hooks";
 import createStyles from "./styles";
@@ -33,7 +35,7 @@ const Reader = ({ navigation, route }) => {
 
   const webViewRef = useRef(null);
   const { webView } = styles;
-  const { title, id } = route.params.params;
+  const { title, id, titleUni } = route.params.params;
   const [isHeader, toggleHeader] = useState(true);
   const [viewLoaded, toggleViewLoaded] = useState(false);
   const [currentPosition, setCurrentPosition] = useState(savePosition[id] || 0);
@@ -198,14 +200,26 @@ const Reader = ({ navigation, route }) => {
     }
   }, []);
 
+  const navigationItems = [
+    { key: "Home", icon: HomeIcon, handlePress: () => navigation.navigate("Home") },
+    {
+      key: "Bookmarks",
+      icon: BookmarkIcon,
+      handlePress: () => handleBookmarkPress(),
+    },
+    {
+      key: "Settings",
+      icon: SettingsIcon,
+      handlePress: () => handleSettingsPress(),
+    },
+  ];
+
   return (
     <SafeArea backgroundColor={theme.colors.surface}>
       <StatusBarComponent backgroundColor={theme.colors.primary} />
       <Header
-        title={title}
+        title={fontFace === constant.BALOO_PAAJI ? titleUni : title}
         handleBackPress={handleBackPress}
-        handleBookmarkPress={handleBookmarkPress}
-        handleSettingsPress={handleSettingsPress}
         isHeader={isHeader}
       />
       {isLoading && <ActivityIndicator size="small" color={theme.colors.primary} />}
@@ -237,6 +251,7 @@ const Reader = ({ navigation, route }) => {
       {isAutoScroll && (
         <AutoScrollComponent shabadID={id} webViewRef={webViewRef} isFooter={isHeader} />
       )}
+      <BottomNavigation currentRoute="Reader" navigationItems={navigationItems} />
     </SafeArea>
   );
 };
