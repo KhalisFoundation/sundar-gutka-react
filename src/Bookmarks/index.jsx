@@ -30,7 +30,7 @@ const Bookmarks = ({ navigation, route }) => {
   return (
     <SafeArea backgroundColor={theme.colors.surface}>
       <StatusBarComponent backgroundColor={theme.colors.primaryVariant} />
-      <BaniList data={bookmarksData} onPress={onPress} isFolderScreen theme={theme} />
+      <BaniList data={bookmarksData} onPress={onPress} isFolderScreen />
     </SafeArea>
   );
 };

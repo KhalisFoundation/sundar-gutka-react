@@ -22,7 +22,6 @@ const AboutScreen = ({ navigation }) => {
 
   useScreenAnalytics(constant.ABOUT_SCREEN);
   useHeader(navigation);
-  // Legacy styles for backward compatibility
   const {
     CREATED_BY,
     SUNDAR_GUTKA,

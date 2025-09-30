@@ -32,7 +32,7 @@ const FolderScreen = ({ navigation, route }) => {
       <View style={{ flex: 1, backgroundColor: theme.colors.surface }}>
         <StatusBarComponent backgroundColor={theme.colors.primary} />
         <Header navigation={navigation} title={title} />
-        <BaniList data={data} isFolderScreen onPress={onPress} theme={theme} />
+        <BaniList data={data} isFolderScreen onPress={onPress} />
       </View>
     </SafeArea>
   );
