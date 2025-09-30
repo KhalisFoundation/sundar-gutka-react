@@ -61,13 +61,16 @@ const createStyles = (theme) => ({
   },
   headerViewWrapper: {
     backgroundColor: theme.colors.primary,
-    height: theme.components.header.height + theme.spacing.xxl + theme.spacing.sm,
+    height: 90,
   },
   headerWrapper: {
     flex: 1,
     flexDirection: "row",
-    margin: theme.spacing.md,
     justifyContent: "space-between",
+    width: "95%",
+    marginLeft: "auto",
+    marginRight: "auto",
+    alignItems: "center",
   },
   animatedView: {
     position: "absolute",
@@ -91,10 +94,9 @@ const createStyles = (theme) => ({
     height: theme.components.header.height + theme.spacing.sm,
   },
   headerTitleStyle: {
-    color: theme.staticColors.WHITE_COLOR,
-    fontWeight: theme.typography.weights.normal,
-    fontFamily: theme.typography.fonts.gurbaniPrimary,
-    fontSize: theme.typography.sizes.xxl,
+    color: theme.colors.primaryHeaderVariant,
+    fontSize: theme.typography.sizes.lg,
+    zIndex: 1,
   },
   footerTitleStyle: {
     color: theme.staticColors.WHITE_COLOR,
@@ -102,10 +104,7 @@ const createStyles = (theme) => ({
     fontSize: theme.typography.sizes.lg,
   },
   headerStyle: {
-    backgroundColor: theme.colors.primary,
-    height: theme.components.header.height + theme.spacing.xxl + theme.spacing.sm,
-    paddingTop: theme.spacing.xxl + theme.spacing.md,
-    paddingHorizontal: theme.components.header.paddingHorizontal,
+    backgroundColor: theme.colors.surface,
   },
 });
 export default createStyles;

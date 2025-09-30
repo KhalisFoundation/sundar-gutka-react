@@ -6,7 +6,7 @@ import staticColors from "./staticColors";
 const darkTheme = {
   mode: "dark",
   colors: {
-    primary: "#141a3c",
+    primary: "#113979",
     surface: "#121212",
     primaryText: "#faf9f6",
     primaryVariant: "#99852c",
@@ -22,6 +22,8 @@ const darkTheme = {
     componentColor: "#fefefe",
     enabledText: "#2581df",
     disabledText: "#a3a3a3",
+    primaryHeader: "#121212",
+    primaryHeaderVariant: "#faf9f6",
   },
   typography,
   spacing,
