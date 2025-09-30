@@ -5,7 +5,7 @@ import { useSelector } from "react-redux";
 import { Icon } from "@rneui/themed";
 import { colors, navigationRef, stopTrace, resetTrace, startPerformanceTrace } from "@common";
 import HomeScreen from "../HomeScreen";
-import Reader from "../ReaderScreen";
+import ReaderScreen from "../ReaderScreen";
 import Settings from "../Settings";
 import AboutScreen from "../AboutScreen";
 import EditBaniOrder from "../EditBaniOrder";
@@ -25,6 +25,7 @@ const headerLeft = (navigation, isNightMode) => (
     color={isNightMode ? colors.TOOLBAR_TINT : colors.TOOLBAR_TINT_DARK}
   />
 );
+
 const Navigation = () => {
   const trace = React.useRef(null);
   const isNightMode = useSelector((state) => state.isNightMode);
@@ -60,7 +61,7 @@ const Navigation = () => {
           name="Home"
           component={HomeScreen}
         />
-        <Stack.Screen name="Reader" component={Reader} options={{ headerShown: false }} />
+        <Stack.Screen name="Reader" component={ReaderScreen} options={{ headerShown: false }} />
         <Stack.Screen
           options={({ navigation }) => ({
             headerLeft: () => headerLeft(navigation, isNightMode),

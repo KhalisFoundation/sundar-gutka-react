@@ -10,12 +10,14 @@ const styles = StyleSheet.create({
     color: colors.TOOLBAR_TINT,
     fontFamily: constant.GURBANI_AKHAR_TRUE,
   },
-  headerTitle: { fontSize: 28, color: colors.TOOLBAR_TINT },
+  headerTitle: {
+    fontSize: 28,
+    color: colors.TOOLBAR_TINT,
+  },
   titleContainer: { textAlign: "center", margin: 5 },
   settingIcon: { position: "absolute", bottom: 10, right: 5 },
   headerFatehStyle: { color: colors.TOOLBAR_TINT, fontSize: 22 },
   fatehContainer: {
-    marginTop: 20,
     marginLeft: "auto",
     marginRight: "auto",
   },

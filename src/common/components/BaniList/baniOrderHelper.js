@@ -6,6 +6,7 @@ const extractBaniDetails = (baniItem) => {
     id: baniItem.id,
     gurmukhi: baniItem.gurmukhi,
     translit: baniItem.translit,
+    gurmukhiUni: baniItem.gurmukhiUni,
   };
 };
 const orderedBani = (baniList, baniOrder) => {
@@ -34,7 +35,12 @@ const orderedBani = (baniList, baniOrder) => {
         }, []);
 
         return folder.length
-          ? { gurmukhi: element.gurmukhi, translit: element.translit, folder }
+          ? {
+              gurmukhiUni: element.gurmukhiUni,
+              gurmukhi: element.gurmukhi,
+              translit: element.translit,
+              folder,
+            }
           : null;
       })
       // Filter out any nulls in case an ID did not match

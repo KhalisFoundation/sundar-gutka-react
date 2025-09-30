@@ -13,6 +13,7 @@ import {
   navigateTo,
   initializePerformanceMonitoring,
 } from "@common";
+import { SafeAreaProvider } from "react-native-safe-area-context";
 import Navigation from "./src/navigation";
 import { allowTracking } from "./src/common/firebase/analytics";
 
@@ -42,7 +43,9 @@ const App = () => {
     <ErrorBoundary onError={logError} FallbackComponent={FallBack}>
       <Provider store={store}>
         <PersistGate loading={null} persistor={persistor}>
-          <Navigation />
+          <SafeAreaProvider>
+            <Navigation />
+          </SafeAreaProvider>
         </PersistGate>
       </Provider>
     </ErrorBoundary>

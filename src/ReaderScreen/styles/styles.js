@@ -64,8 +64,11 @@ export const styles = StyleSheet.create({
   headerWrapper: {
     flex: 1,
     flexDirection: "row",
-    margin: 10,
+    alignItems: "center",
     justifyContent: "space-between",
+    width: "95%",
+    marginLeft: "auto",
+    marginRight: "auto",
   },
   animatedView: {
     position: "absolute",
@@ -91,10 +94,9 @@ export const styles = StyleSheet.create({
 });
 export const getHeaderStyles = (isNightMode) => ({
   headerTitleStyle: {
-    color: colors.WHITE_COLOR,
-    fontWeight: "normal",
-    fontFamily: constant.GURBANI_AKHAR_TRUE,
+    color: isNightMode ? colors.WHITE_COLOR : colors.READER_HEADER_COLOR,
     fontSize: 20,
+    zIndex: 1,
   },
   footerTitleStyle: {
     color: colors.WHITE_COLOR,
@@ -102,10 +104,6 @@ export const getHeaderStyles = (isNightMode) => ({
   },
 
   headerStyle: {
-    backgroundColor: !isNightMode
-      ? colors.READER_STATUS_BAR_COLOR
-      : colors.READER_STATUS_BAR_COLOR_NIGHT_MODE,
-    height: 90, // Ensure header has proper height
-    paddingTop: 40,
+    backgroundColor: !isNightMode ? colors.WHITE_COLOR : colors.NIGHT_BLACK,
   },
 });
