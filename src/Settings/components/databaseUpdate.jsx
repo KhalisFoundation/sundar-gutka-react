@@ -1,6 +1,6 @@
 import PropTypes from "prop-types";
 import React from "react";
-import { Image, Pressable, Text, View } from "react-native";
+import { Image, Pressable, View } from "react-native";
 import { STRINGS, CustomText } from "@common";
 import { styles } from "../styles";
 
