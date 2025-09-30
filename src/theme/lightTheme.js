@@ -6,7 +6,7 @@ import components from "./components";
 const lightTheme = {
   mode: "light",
   colors: {
-    primary: "#2a3381",
+    primary: "#113979",
     surface: "#faf9f6",
     primaryText: "#121212",
     primaryVariant: "#DEBB0A",
@@ -22,6 +22,8 @@ const lightTheme = {
     componentColor: "#232323",
     enabledText: "#0066ff",
     disabledText: "#a3a3a3",
+    primaryHeader: "#113979",
+    primaryHeaderVariant: "#113979",
   },
   staticColors,
   typography,
