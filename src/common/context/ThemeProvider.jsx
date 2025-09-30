@@ -2,8 +2,8 @@ import React, { useState, useEffect, useMemo } from "react";
 import { Appearance } from "react-native";
 import { useSelector, useDispatch } from "react-redux";
 import PropTypes from "prop-types";
+import { lightTheme, darkTheme } from "@theme";
 import ThemeContext from "./ThemeContext";
-import { lightTheme, darkTheme } from "../theme";
 import constant from "../constant";
 import { setTheme } from "../actions";
 

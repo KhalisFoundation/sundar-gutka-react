@@ -4,10 +4,12 @@ import { ListItem, Avatar } from "@rneui/themed";
 import PropTypes from "prop-types";
 import { useSelector } from "react-redux";
 import useThemedStyles from "@common/hooks/useThemedStyles";
-import baseFontSize from "../../helpers";
-import createStyles from "../../../Settings/styles";
+import useTheme from "@common/context";
+import { baseFontSize } from "@common";
+import createStyles from "@settings/styles";
 
-const BaniList = React.memo(({ data, onPress, theme }) => {
+const BaniList = React.memo(({ data, onPress }) => {
+  const { theme } = useTheme();
   const styles = useThemedStyles(createStyles);
   const fontSize = useSelector((state) => state.fontSize);
   const fontFace = useSelector((state) => state.fontFace);

@@ -63,8 +63,8 @@ const HomeScreen = React.memo(({ navigation }) => {
     <SafeArea backgroundColor={theme.colors.primary}>
       <View style={[{ backgroundColor: theme.colors.surface }, styles.container]}>
         <StatusBarComponent backgroundColor={theme.colors.primary} />
-        <BaniHeader navigate={navigate} theme={theme} />
-        <BaniList theme={theme} data={baniListData} onPress={onPress} />
+        <BaniHeader navigate={navigate} />
+        <BaniList data={baniListData} onPress={onPress} />
       </View>
     </SafeArea>
   );

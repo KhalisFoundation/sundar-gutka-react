@@ -9,6 +9,8 @@ module.exports = {
           "@common": "./src/common",
           "@database": "./src/database/db",
           "@service": "./src/services",
+          "@settings": "./src/Settings",
+          "@theme": "./src/theme",
         },
       },
     ],
