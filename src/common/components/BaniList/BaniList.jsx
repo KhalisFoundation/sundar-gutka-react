@@ -5,7 +5,9 @@ import PropTypes from "prop-types";
 import { useSelector } from "react-redux";
 import baseFontSize from "../../helpers";
 import colors from "../../colors";
+import constant from "../../constant";
 import { styles } from "../../../Settings/styles";
+import convertToUnicode from "../../utils";
 
 const BaniList = React.memo(({ data, onPress }) => {
   const fontSize = useSelector((state) => state.fontSize);
@@ -24,6 +26,24 @@ const BaniList = React.memo(({ data, onPress }) => {
     });
     return () => subscription.remove();
   }, []);
+  const isUnicode = fontFace === constant.BALOO_PAAJI;
+
+  const getBaniTuk = (row) => {
+    if (!row || !row.item) {
+      return "";
+    }
+    if (isTransliteration) {
+      return row.item.translit;
+    }
+    if (isUnicode) {
+      if (row?.item?.gurmukhiUni) {
+        return row.item.gurmukhiUni;
+      }
+      return convertToUnicode(row.item.gurmukhi);
+    }
+    return row.item.gurmukhi;
+  };
+
   const renderBanis = useCallback(
     (row) => {
       return (
@@ -50,17 +70,17 @@ const BaniList = React.memo(({ data, onPress }) => {
                 },
               ]}
             >
-              {isTransliteration ? row.item.translit : row.item.gurmukhi}
+              {getBaniTuk(row)}
             </ListItem.Title>
             {row.item.tukGurmukhi && (
               <ListItem.Subtitle
                 style={[
-                  isNightMode && { color: "#ecf0f1" },
+                  isNightMode && { color: colors.WHITE_COLOR },
                   { fontFamily: !isTransliteration ? fontFace : null },
                   { fontSize: 17 },
                 ]}
               >
-                {isTransliteration ? row.item.tukTranslit : row.item.tukGurmukhi}
+                {getBaniTuk(row)}
               </ListItem.Subtitle>
             )}
           </ListItem.Content>

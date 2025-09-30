@@ -42,6 +42,7 @@ import {
 } from "./rnfs";
 import StatusBarComponent from "./components/StatusBar";
 import SafeArea from "./components/SafeArea";
+import convertToUnicode from "./utils";
 
 export {
   colors,
@@ -88,4 +89,5 @@ export {
   getCurrentDBMD5Hash,
   StatusBarComponent,
   SafeArea,
+  convertToUnicode,
 };

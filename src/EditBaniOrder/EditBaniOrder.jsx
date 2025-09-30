@@ -102,7 +102,7 @@ const EditBaniOrder = ({ navigation }) => {
     setOrderData(ids);
   };
   return (
-    <SafeArea backgroundColor={headerStyles.backgroundColor}>
+    <SafeArea backgroundColor={headerStyles.backgroundColor} topPadding>
       <StatusBarComponent backgroundColor={headerStyles.backgroundColor} />
       <Header navigation={navigation} setReset={setReset} />
       <GestureHandlerRootView

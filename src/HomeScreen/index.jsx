@@ -65,12 +65,20 @@ const HomeScreen = React.memo(({ navigation }) => {
     if (!bani.folder) {
       navigate(constant.READER, {
         key: `Reader-${bani.id}`,
-        params: { id: bani.id, title: bani.gurmukhi },
+        params: {
+          id: bani.id,
+          title: bani.gurmukhi,
+          titleUni: bani.gurmukhiUni,
+        },
       });
     } else {
       navigate(constant.FOLDERSCREEN, {
         key: `Folder-${bani.gurmukhi}`,
-        params: { data: bani.folder, title: bani.gurmukhi },
+        params: {
+          data: bani.folder,
+          title: bani.gurmukhi,
+          titleUni: bani.gurmukhiUni,
+        },
       });
     }
   };
@@ -79,6 +87,7 @@ const HomeScreen = React.memo(({ navigation }) => {
     <BaniLengthSelector />
   ) : (
     <SafeArea
+      topPadding
       backgroundColor={
         isNightMode ? colors.READER_STATUS_BAR_COLOR_NIGHT_MODE : colors.TOOLBAR_COLOR
       }
