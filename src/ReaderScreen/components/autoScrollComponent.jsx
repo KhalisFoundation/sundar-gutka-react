@@ -1,10 +1,10 @@
 import React, { useState, useEffect, useCallback, useRef } from "react";
-import { View, Text, Animated, Platform } from "react-native";
+import { View, Animated, Platform } from "react-native";
 import Slider from "@react-native-community/slider";
 import { useDispatch, useSelector } from "react-redux";
 import { Icon } from "@rneui/themed";
 import PropTypes from "prop-types";
-import { colors, constant, actions, trackReaderEvent, logError } from "@common";
+import { colors, constant, actions, trackReaderEvent, logError, CustomText } from "@common";
 import { styles } from "../styles";
 
 const AutoScrollComponent = ({ shabadID, isFooter, webViewRef }) => {
@@ -155,7 +155,7 @@ const AutoScrollComponent = ({ shabadID, isFooter, webViewRef }) => {
             onSlidingComplete={handleSlidingComplete}
             accessibilityLabel="Auto-scroll speed"
           />
-          <Text style={styles.sliderText}>{currentSpeed}</Text>
+          <CustomText style={styles.sliderText}>{currentSpeed}</CustomText>
         </View>
       </Animated.View>
     </View>

@@ -1,7 +1,8 @@
 import React from "react";
-import { Button, Text, View, Linking } from "react-native";
+import { Button, View, Linking } from "react-native";
 import { SafeAreaProvider, SafeAreaView } from "react-native-safe-area-context";
 import RNRestart from "react-native-restart";
+import { CustomText } from "@common";
 import STRINGS from "../../localization";
 import styles from "./styles";
 import useScreenAnalytics from "../../hooks/useScreenAnalytics";
@@ -15,8 +16,8 @@ const FallBack = () => {
   return (
     <SafeAreaProvider>
       <SafeAreaView style={container}>
-        <Text style={title}>{STRINGS.errorTitle}</Text>
-        <Text style={text}>{STRINGS.errorMessage}</Text>
+        <CustomText style={title}>{STRINGS.errorTitle}</CustomText>
+        <CustomText style={text}>{STRINGS.errorMessage}</CustomText>
         <View style={btnWrap}>
           <Button onPress={() => RNRestart.Restart()} title={STRINGS.errorReload} />
           <Button
