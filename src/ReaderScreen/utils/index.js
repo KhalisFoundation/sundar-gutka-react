@@ -54,7 +54,8 @@ export const createDiv = (
   fontSize,
   theme,
   isLarivaar,
-  punjabiTranslation = ""
+  punjabiTranslation = "",
+  fontFace = null
 ) => {
   const fontClass =
     type === constant.GURMUKHI.toLowerCase() || punjabiTranslation !== ""
@@ -65,7 +66,7 @@ export const createDiv = (
     fontSize,
     header,
     type === constant.TRANSLITERATION.toLowerCase() || type === constant.TRANSLATION.toLowerCase()
-  )}px; color: ${fontColorForReader(header, theme, type.toUpperCase())};">
+  )}px; font-family: ${fontFace}; color: ${fontColorForReader(header, theme, type.toUpperCase())};">
       ${content}
     </div>
   `;
