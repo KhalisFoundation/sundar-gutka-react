@@ -1964,7 +1964,7 @@ PODS:
     - RNFBApp
   - RNFS (2.20.0):
     - React-Core
-  - RNGestureHandler (2.26.0):
+  - RNGestureHandler (2.28.0):
     - DoubleConversion
     - glog
     - hermes-engine
@@ -2664,12 +2664,9 @@ SPEC CHECKSUMS:
   RNFBCrashlytics: 31668c28905cfb539e24f8c763fa8a05fb21e83c
   RNFBMessaging: e00b41a6356ad43fdd125438ac1e8975bd0ed28c
   RNFBPerf: d2013b0b9ac1d352b2e66928ef023e388906a6b7
-<<<<<<< HEAD
   RNFBRemoteConfig: fdb09f620ac74fe984b76209993767d3822a1400
-=======
->>>>>>> add-audio-player
   RNFS: 4ac0f0ea233904cb798630b3c077808c06931688
-  RNGestureHandler: 5fca159e221d84c26a24d249ef5552c0393776e2
+  RNGestureHandler: ab7287c9593b75911be221b6c97d7ae6e02652e6
   RNNotifee: 4a6ee5c7deaf00e005050052d73ee6315dff7ec9
   RNReanimated: c021f620a8a8494147399ed4e02fdc09fb60ac35
   RNScreens: 7a4eb8a0fe4dc5537e10559ddedc4709a9cd0561

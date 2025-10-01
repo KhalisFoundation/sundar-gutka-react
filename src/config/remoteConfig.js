@@ -3,7 +3,8 @@ const defaultConfig = {
   REMOTE_DB_URL: "https://banidb.blob.core.windows.net/database",
   BASIC_AUTH_USERNAME: "admin",
   BASIC_AUTH_PASSWORD: "",
-  REMOTE_AUDIO_API_URL: "http://10.0.0.45:3000/v1/",
+  REMOTE_AUDIO_API_URL:
+    "https://sttm-audio-api-v2.salmonriver-80392db4.eastus.azurecontainerapps.io/",
 };
 
 export default defaultConfig;
