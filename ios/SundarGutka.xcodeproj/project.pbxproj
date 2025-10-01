@@ -23,7 +23,7 @@
 		DA119E1E2A5F0D7200FD0E10 /* wake_up_jap.mp3 in Resources */ = {isa = PBXBuildFile; fileRef = DA119E1C2A5F0D7200FD0E10 /* wake_up_jap.mp3 */; };
 		DF8412F6597D54178D51F9AF /* libPods-SundarGutka.a in Frameworks */ = {isa = PBXBuildFile; fileRef = 682F7438823B6ACC3130EAA3 /* libPods-SundarGutka.a */; };
 		F00557B100F7FA7802293CBE /* PrivacyInfo.xcprivacy in Resources */ = {isa = PBXBuildFile; fileRef = B5622B2E177976AE33F51A68 /* PrivacyInfo.xcprivacy */; };
-		F8F868107FF84886A2F7664B /* BalooPaaji2-VariableFont_wght.ttf in Resources */ = {isa = PBXBuildFile; fileRef = AAF86A1C791D42E9B96E724E /* BalooPaaji2-VariableFont_wght.ttf */; };
+		FBFDB6C768724B24A1934728 /* BalooPaaji2-Regular.ttf in Resources */ = {isa = PBXBuildFile; fileRef = 50F10F736273495BB4DB20E3 /* BalooPaaji2-Regular.ttf */; };
 		FE704EC35D2847DFBE7DC00D /* AnmolLipiSG.ttf in Resources */ = {isa = PBXBuildFile; fileRef = C973C1C9E6ED468AA759E427 /* AnmolLipiSG.ttf */; };
 /* End PBXBuildFile section */
 
@@ -44,7 +44,9 @@
 		13B07F961A680F5B00A75B9A /* SundarGutka.app */ = {isa = PBXFileReference; explicitFileType = wrapper.application; includeInIndex = 0; path = SundarGutka.app; sourceTree = BUILT_PRODUCTS_DIR; };
 		13B07FB51A68108700A75B9A /* Images.xcassets */ = {isa = PBXFileReference; lastKnownFileType = folder.assetcatalog; name = Images.xcassets; path = SundarGutka/Images.xcassets; sourceTree = "<group>"; };
 		13B07FB61A68108700A75B9A /* Info.plist */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = text.plist.xml; name = Info.plist; path = SundarGutka/Info.plist; sourceTree = "<group>"; };
+		2822EC75687945A6BD56D12B /* BalooPaaji2-SemiBold.ttf */ = {isa = PBXFileReference; explicitFileType = undefined; fileEncoding = undefined; includeInIndex = 0; lastKnownFileType = unknown; name = "BalooPaaji2-SemiBold.ttf"; path = "../assets/fonts/BalooPaaji2-SemiBold.ttf"; sourceTree = "<group>"; };
 		28D38692B74A4A1DAC2F2D3C /* Arial.ttf */ = {isa = PBXFileReference; explicitFileType = undefined; fileEncoding = 9; includeInIndex = 0; lastKnownFileType = unknown; name = Arial.ttf; path = ../assets/fonts/Arial.ttf; sourceTree = "<group>"; };
+		50F10F736273495BB4DB20E3 /* BalooPaaji2-Regular.ttf */ = {isa = PBXFileReference; explicitFileType = undefined; fileEncoding = undefined; includeInIndex = 0; lastKnownFileType = unknown; name = "BalooPaaji2-Regular.ttf"; path = "../assets/fonts/BalooPaaji2-Regular.ttf"; sourceTree = "<group>"; };
 		682F7438823B6ACC3130EAA3 /* libPods-SundarGutka.a */ = {isa = PBXFileReference; explicitFileType = archive.ar; includeInIndex = 0; path = "libPods-SundarGutka.a"; sourceTree = BUILT_PRODUCTS_DIR; };
 		6A13EDB20C5F49D4980F2FC1 /* BalooPaaji2-SemiBold.ttf */ = {isa = PBXFileReference; explicitFileType = undefined; fileEncoding = 9; includeInIndex = 0; lastKnownFileType = unknown; name = "BalooPaaji2-SemiBold.ttf"; path = "../assets/fonts/BalooPaaji2-SemiBold.ttf"; sourceTree = "<group>"; };
 		7805EE332D930CA0008726B1 /* AppDelegate.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = AppDelegate.swift; sourceTree = "<group>"; };
@@ -53,7 +55,6 @@
 		8917CE6BBDDE4A87D431C3B3 /* Pods-SundarGutka.release.xcconfig */ = {isa = PBXFileReference; includeInIndex = 1; lastKnownFileType = text.xcconfig; name = "Pods-SundarGutka.release.xcconfig"; path = "Target Support Files/Pods-SundarGutka/Pods-SundarGutka.release.xcconfig"; sourceTree = "<group>"; };
 		A469D6722B637179001A107B /* GoogleService-Info.plist */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = text.plist.xml; path = "GoogleService-Info.plist"; sourceTree = "<group>"; };
 		A469D6742B637193001A107B /* www */ = {isa = PBXFileReference; lastKnownFileType = folder; path = www; sourceTree = "<group>"; };
-		AAF86A1C791D42E9B96E724E /* BalooPaaji2-VariableFont_wght.ttf */ = {isa = PBXFileReference; explicitFileType = undefined; fileEncoding = undefined; includeInIndex = 0; lastKnownFileType = unknown; name = "BalooPaaji2-VariableFont_wght.ttf"; path = "../assets/fonts/BalooPaaji2-VariableFont_wght.ttf"; sourceTree = "<group>"; };
 		B5622B2E177976AE33F51A68 /* PrivacyInfo.xcprivacy */ = {isa = PBXFileReference; includeInIndex = 1; lastKnownFileType = text.xml; name = PrivacyInfo.xcprivacy; path = SundarGutka/PrivacyInfo.xcprivacy; sourceTree = "<group>"; };
 		C973C1C9E6ED468AA759E427 /* AnmolLipiSG.ttf */ = {isa = PBXFileReference; explicitFileType = undefined; fileEncoding = 9; includeInIndex = 0; lastKnownFileType = unknown; name = AnmolLipiSG.ttf; path = ../assets/fonts/AnmolLipiSG.ttf; sourceTree = "<group>"; };
 		DA119E1B2A5F0D7200FD0E10 /* waheguru_soul.mp3 */ = {isa = PBXFileReference; lastKnownFileType = audio.mp3; path = waheguru_soul.mp3; sourceTree = "<group>"; };

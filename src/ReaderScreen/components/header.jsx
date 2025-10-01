@@ -1,7 +1,8 @@
 import React, { useEffect, useRef } from "react";
-import { View, Text, Animated, Pressable, StyleSheet } from "react-native";
+import { View, Text, Animated, Pressable } from "react-native";
 import LinearGradient from "react-native-linear-gradient";
 import { useSafeAreaInsets } from "react-native-safe-area-context";
+import { useSelector } from "react-redux";
 import PropTypes from "prop-types";
 import useTheme from "@common/context";
 import useThemedStyles from "@common/hooks/useThemedStyles";
@@ -11,7 +12,7 @@ import createStyles from "../styles";
 const Header = ({ title, handleBackPress, isHeader }) => {
   const { theme } = useTheme();
   const styles = useThemedStyles(createStyles);
-
+  const fontFace = useSelector((state) => state.fontFace);
   const animationPosition = useRef(new Animated.Value(0)).current;
   const insets = useSafeAreaInsets();
 
@@ -79,7 +80,7 @@ const Header = ({ title, handleBackPress, isHeader }) => {
         <View style={styles.headerWrapper}>
           <View style={{ width: "20%" }}>{headerLeft()}</View>
           <View style={{ width: "60%" }}>
-            <Text style={styles.headerTitleStyle}>{title}</Text>
+            <Text style={[styles.headerTitleStyle, { fontFamily: fontFace }]}>{title}</Text>
           </View>
         </View>
       </View>
@@ -90,7 +91,7 @@ const Header = ({ title, handleBackPress, isHeader }) => {
         end={{ x: 1, y: 0 }}
         style={{
           width: "100%",
-          height: StyleSheet.hairlineWidth,
+          height: 1.2,
           pointerEvents: "none",
         }}
       />

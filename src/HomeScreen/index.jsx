@@ -68,7 +68,7 @@ const HomeScreen = React.memo(({ navigation }) => {
   return baniLengthSelector ? (
     <BaniLengthSelector />
   ) : (
-    <SafeArea backgroundColor={theme.colors.primary}>
+    <SafeArea backgroundColor={theme.colors.primary} topPadding>
       <View style={[{ backgroundColor: theme.colors.surface }, styles.container]}>
         <StatusBarComponent backgroundColor={theme.colors.primary} />
         <BaniHeader navigate={navigate} />
