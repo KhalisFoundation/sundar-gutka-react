@@ -63,7 +63,8 @@
 		<string>MaterialIcons.ttf</string>
 		<string>MaterialCommunityIcons.ttf</string>
 		<string>Ionicons.ttf</string>
-		<string>BalooPaaji2-VariableFont_wght.ttf</string>
+		<string>BalooPaaji2-Regular.ttf</string>
+		<string>BalooPaaji2-SemiBold.ttf</string>
 	</array>
 	<key>UIBackgroundModes</key>
 	<array>

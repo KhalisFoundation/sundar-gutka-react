@@ -1,5 +1,5 @@
 import React, { useEffect, useRef } from "react";
-import { View, Text, Animated, Pressable, StyleSheet } from "react-native";
+import { View, Text, Animated, Pressable } from "react-native";
 import PropTypes from "prop-types";
 import { useSelector } from "react-redux";
 import LinearGradient from "react-native-linear-gradient";
@@ -79,9 +79,7 @@ const Header = ({ title, handleBackPress, isHeader }) => {
         <View style={styles.headerWrapper}>
           <View style={{ width: "20%" }}>{headerLeft()}</View>
           <View style={{ width: "60%" }}>
-            <Text style={[styles.headerTitleStyle, { fontFamily: fontFace, fontWeight: "bold" }]}>
-              {title}
-            </Text>
+            <Text style={[styles.headerTitleStyle, { fontFamily: fontFace }]}>{title}</Text>
           </View>
         </View>
       </View>
@@ -92,7 +90,7 @@ const Header = ({ title, handleBackPress, isHeader }) => {
         end={{ x: 1, y: 0 }}
         style={{
           width: "100%",
-          height: StyleSheet.hairlineWidth,
+          height: 1.2,
           pointerEvents: "none",
         }}
       />

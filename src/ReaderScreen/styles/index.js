@@ -47,7 +47,7 @@ const createStyles = (theme) => ({
   container: {
     borderRadius: theme.radius.lg + theme.spacing.lg,
     position: "absolute",
-    bottom: 0,
+    bottom: 5,
     left: 0,
     right: 0,
     paddingTop: 0,
@@ -59,12 +59,8 @@ const createStyles = (theme) => ({
     color: theme.staticColors.WHITE_COLOR,
     fontSize: theme.typography.sizes.md,
   },
-  headerViewWrapper: {
-    backgroundColor: theme.colors.primary,
-    height: 90,
-  },
+
   headerWrapper: {
-    flex: 1,
     flexDirection: "row",
     justifyContent: "space-between",
     width: "95%",
@@ -73,12 +69,6 @@ const createStyles = (theme) => ({
     alignItems: "center",
   },
   animatedView: {
-    position: "absolute",
-    top: 0,
-    left: 0,
-    right: 0,
-    overflow: "hidden",
-    backgroundColor: "transparent",
     zIndex: 1000,
   },
   footerWrapper: {
@@ -95,7 +85,7 @@ const createStyles = (theme) => ({
   },
   headerTitleStyle: {
     color: theme.colors.primaryHeaderVariant,
-    fontSize: theme.typography.sizes.lg,
+    fontSize: theme.typography.sizes.xxl,
     zIndex: 1,
   },
   footerTitleStyle: {
