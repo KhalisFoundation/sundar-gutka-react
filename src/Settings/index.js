@@ -10,6 +10,7 @@ import {
   logMessage,
   StatusBarComponent,
   SafeArea,
+  useRemote,
 } from "@common";
 import Audio from "./components/audio";
 import AutoScroll from "./components/autoScroll";
@@ -36,6 +37,7 @@ import { nightModeStyles } from "./styles/nightModeStyles";
 import styles from "./styles/styles";
 
 const Settings = ({ navigation }) => {
+  const { IS_AUDIO_FEATURE_ENABLED } = useRemote();
   logMessage(constant.SETTINGS);
   useScreenAnalytics(constant.SETTINGS);
   const isNightMode = useSelector((state) => state.isNightMode);
@@ -74,7 +76,7 @@ const Settings = ({ navigation }) => {
         <HideStatusBar />
         <AutoScroll />
         <KeepAwake />
-        <Audio />
+        {IS_AUDIO_FEATURE_ENABLED && <Audio />}
         {/* Bani Options */}
         <Text style={[displayOptionsText, scrollViewNightStyles]}>{BANI_OPTIONS}</Text>
         <EditBaniOrder navigate={navigate} isNightMode={isNightMode} />

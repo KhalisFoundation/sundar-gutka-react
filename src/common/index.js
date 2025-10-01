@@ -22,6 +22,7 @@ import {
 } from "./firebase/performance";
 import baseFontSize, { validateBaniOrder } from "./helpers";
 import useKeepAwake from "./hooks/keepAwake";
+import useRemote from "./hooks/useRemote";
 import useScreenAnalytics from "./hooks/useScreenAnalytics";
 import STRINGS from "./localization";
 import {
@@ -33,7 +34,6 @@ import {
 import {
   ensureDbExists,
   checkForBaniDBUpdate,
-  REMOTE_DB_URL,
   writeRemoteMD5Hash,
   LOCAL_DB_PATH,
   listDocumentDirectory,
@@ -80,7 +80,6 @@ export {
   resetTrace,
   ensureDbExists,
   checkForBaniDBUpdate,
-  REMOTE_DB_URL,
   writeRemoteMD5Hash,
   LOCAL_DB_PATH,
   listDocumentDirectory,
@@ -88,4 +87,5 @@ export {
   getCurrentDBMD5Hash,
   StatusBarComponent,
   SafeArea,
+  useRemote,
 };

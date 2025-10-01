@@ -2148,6 +2148,11 @@
   resolved "https://registry.yarnpkg.com/@react-native-firebase/perf/-/perf-23.1.2.tgz#4e90cce41a3ef928707168bf278028241d0ca84a"
   integrity sha512-MEYZYtKPoBBN0AaWwrHQ6jUYm1JzGJnGy44aBqpvaCMb2RO6gvGuFGPQQKNKhbPEdZemdiSEKFeuP54vMQl1IQ==
 
+"@react-native-firebase/remote-config@^23.1.2":
+  version "23.1.2"
+  resolved "https://registry.yarnpkg.com/@react-native-firebase/remote-config/-/remote-config-23.1.2.tgz#116c313b65c5b152e1e1f7a2d61e28fea4cb1e39"
+  integrity sha512-crWZFBflUBVlkhtIn/b/ODJbSkILZ6X6Nv373s6T+3FIjj/tRJ0ckBecssrGnGB+R08EcD8NB2CUtxMJrjZLcA==
+
 "@react-native/assets-registry@0.78.2":
   version "0.78.2"
   resolved "https://registry.yarnpkg.com/@react-native/assets-registry/-/assets-registry-0.78.2.tgz#9ff1d1a5eab7c0f0a2681eebecaf39a811cd3072"
