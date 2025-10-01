@@ -1,5 +1,5 @@
-import { getBoolean, getString } from "@common/firebase/remoteConfig";
 import { useMemo } from "react";
+import { getBoolean, getString } from "@common/firebase/remoteConfig";
 
 const useRemote = () => {
   const values = useMemo(
