@@ -1,16 +1,17 @@
 import React, { useEffect, useRef } from "react";
-import { View, Text, Animated, Pressable, StyleSheet } from "react-native";
+import { View, Text, Animated, Pressable } from "react-native";
 import PropTypes from "prop-types";
 import { useSelector } from "react-redux";
 import LinearGradient from "react-native-linear-gradient";
-import colors from "@common/colors";
 import { BackArrowIcon } from "@common/icons";
 import { useSafeAreaInsets } from "react-native-safe-area-context";
-import { getHeaderStyles, styles } from "../styles/styles";
+import useThemedStyles from "@common/hooks/useThemedStyles";
+import useTheme from "@common/context";
+import createStyles from "../styles";
 
 const Header = ({ title, handleBackPress, isHeader }) => {
-  const isNightMode = useSelector((state) => state.isNightMode);
-  const getHeaderStyle = getHeaderStyles(isNightMode);
+  const { theme } = useTheme();
+  const styles = useThemedStyles(createStyles);
   const animationPosition = useRef(new Animated.Value(0)).current;
   const fontFace = useSelector((state) => state.fontFace);
   const insets = useSafeAreaInsets();
@@ -20,15 +21,11 @@ const Header = ({ title, handleBackPress, isHeader }) => {
 
   const headerLeft = () => (
     <Pressable
-      style={{ padding: 10 }}
       onPress={() => {
         handleBackPress();
       }}
     >
-      <BackArrowIcon
-        size={30}
-        color={isNightMode ? colors.WHITE_COLOR : colors.READER_HEADER_COLOR}
-      />
+      <BackArrowIcon size={30} color={theme.colors.primaryHeaderVariant} />
     </Pressable>
   );
 
@@ -78,18 +75,11 @@ const Header = ({ title, handleBackPress, isHeader }) => {
       ]}
       pointerEvents="box-none" // Ensure touch events pass through
     >
-      <View style={getHeaderStyle.headerStyle} pointerEvents="auto">
+      <View style={styles.headerStyle} pointerEvents="auto">
         <View style={styles.headerWrapper}>
           <View style={{ width: "20%" }}>{headerLeft()}</View>
           <View style={{ width: "60%" }}>
-            <Text
-              style={[
-                getHeaderStyle.headerTitleStyle,
-                { fontFamily: fontFace, fontWeight: "bold" },
-              ]}
-            >
-              {title}
-            </Text>
+            <Text style={[styles.headerTitleStyle, { fontFamily: fontFace }]}>{title}</Text>
           </View>
         </View>
       </View>
@@ -100,7 +90,7 @@ const Header = ({ title, handleBackPress, isHeader }) => {
         end={{ x: 1, y: 0 }}
         style={{
           width: "100%",
-          height: StyleSheet.hairlineWidth,
+          height: 1.2,
           pointerEvents: "none",
         }}
       />

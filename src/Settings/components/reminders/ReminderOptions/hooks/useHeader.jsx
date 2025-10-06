@@ -1,10 +1,12 @@
 import React, { useEffect } from "react";
 import { Icon } from "@rneui/themed";
 import { useDispatch, useSelector } from "react-redux";
-import { colors, STRINGS } from "@common";
+import { STRINGS } from "@common";
+import useTheme from "@common/context";
 import setDefaultReminders from "../utils";
 
 const useHeader = (baniListData, navigation, selector) => {
+  const { theme } = useTheme();
   const dispatch = useDispatch();
   const isReminders = useSelector((state) => state.isReminders);
   const reminderSound = useSelector((state) => state.reminderSound);
@@ -13,7 +15,7 @@ const useHeader = (baniListData, navigation, selector) => {
       name="arrow-back"
       size={30}
       onPress={() => navigation.goBack()}
-      color={colors.WHITE_COLOR}
+      color={theme.staticColors.WHITE_COLOR}
     />
   );
   const headerRight = () => {
@@ -21,7 +23,7 @@ const useHeader = (baniListData, navigation, selector) => {
       <>
         <Icon
           name="refresh"
-          color={colors.TOOLBAR_TINT}
+          color={theme.staticColors.WHITE_COLOR}
           style={{ marginRight: 10 }}
           size={30}
           onPress={() => {
@@ -30,7 +32,7 @@ const useHeader = (baniListData, navigation, selector) => {
         />
         <Icon
           name="add"
-          color={colors.TOOLBAR_TINT}
+          color={theme.staticColors.WHITE_COLOR}
           size={30}
           onPress={() => {
             selector.current.open();
@@ -43,12 +45,12 @@ const useHeader = (baniListData, navigation, selector) => {
     navigation.setOptions({
       title: STRINGS.set_reminder_options,
       headerTitleStyle: {
-        color: colors.WHITE_COLOR,
+        color: theme.staticColors.WHITE_COLOR,
         fontWeight: "normal",
         fontSize: 18,
       },
       headerStyle: {
-        backgroundColor: colors.TOOLBAR_COLOR_ALT2,
+        backgroundColor: theme.colors.headerVariant,
       },
       headerLeft,
       headerRight: () => (baniListData.length > 0 ? headerRight() : null),

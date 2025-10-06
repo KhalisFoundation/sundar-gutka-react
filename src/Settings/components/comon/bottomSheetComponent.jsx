@@ -2,12 +2,14 @@ import React, { useEffect, useState } from "react";
 import { View, Modal, Text, Dimensions, Pressable, Platform, StyleSheet } from "react-native";
 import { Divider, Icon, ListItem } from "@rneui/themed";
 import { BlurView } from "@react-native-community/blur";
-import { useDispatch, useSelector } from "react-redux";
-import { constant, colors } from "@common";
+import { useDispatch } from "react-redux";
+import { constant } from "@common";
 import PropTypes from "prop-types";
 import { SafeAreaProvider, SafeAreaView } from "react-native-safe-area-context";
 import SoundPlayer from "react-native-sound-player";
-import { styles, nightModeStyles, nightModeColor } from "../../styles";
+import useTheme from "@common/context";
+import useThemedStyles from "@common/hooks/useThemedStyles";
+import createStyles from "../../styles";
 
 const BottomSheetComponent = ({
   isVisible,
@@ -17,10 +19,9 @@ const BottomSheetComponent = ({
   action,
   toggleVisible,
 }) => {
+  const { theme } = useTheme();
+  const styles = useThemedStyles(createStyles);
   const dispatch = useDispatch();
-  const isNightMode = useSelector((state) => state.isNightMode);
-  const { containerNightStyles, textNightStyle } = nightModeStyles(isNightMode);
-  const nightStyles = nightModeColor(isNightMode);
   const { width, height } = Dimensions.get("window");
 
   const [orientation, setOrientation] = useState(width < height ? "PORTRAIT" : "LANDSCAPE");
@@ -58,13 +59,15 @@ const BottomSheetComponent = ({
         >
           <Pressable style={StyleSheet.absoluteFill} onPress={() => toggleVisible(false)}>
             <BlurView
-              reducedTransparencyFallbackColor={colors.NIGHT_OPACITY_BLACK}
+              reducedTransparencyFallbackColor={theme.staticColors.NIGHT_OPACITY_BLACK}
               style={styles.blurViewStyle}
               blurType="dark"
               enabled
             />
             <View style={bottomStyle}>
-              <Text style={[styles.bottomSheetTitle, textNightStyle, containerNightStyles]}>
+              <Text
+                style={[styles.bottomSheetTitle, styles.listItemTitle, styles.containerNightStyles]}
+              >
                 {title}
               </Text>
               <Divider />
@@ -72,7 +75,7 @@ const BottomSheetComponent = ({
                 <ListItem
                   key={item.key}
                   bottomDivider
-                  containerStyle={containerNightStyles}
+                  containerStyle={styles.containerNightStyles}
                   onPress={() => {
                     toggleVisible(false);
                     dispatch(action(item.key));
@@ -83,13 +86,13 @@ const BottomSheetComponent = ({
                   }}
                 >
                   <ListItem.Content>
-                    <ListItem.Title style={nightStyles}>{item.title}</ListItem.Title>
+                    <ListItem.Title style={styles.listItemTitle}>{item.title}</ListItem.Title>
                   </ListItem.Content>
-                  {value === item.key && <Icon color={nightStyles.color} name="check" />}
+                  {value === item.key && <Icon color={theme.colors.primaryText} name="check" />}
                 </ListItem>
               ))}
               {Platform.OS === "ios" && (
-                <ListItem bottomDivider containerStyle={containerNightStyles} />
+                <ListItem bottomDivider containerStyle={styles.containerNightStyles} />
               )}
             </View>
           </Pressable>

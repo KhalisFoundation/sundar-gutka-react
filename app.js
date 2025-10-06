@@ -16,6 +16,7 @@ import {
 import { SafeAreaProvider } from "react-native-safe-area-context";
 import Navigation from "./src/navigation";
 import { allowTracking } from "./src/common/firebase/analytics";
+import ThemeProvider from "./src/common/context/ThemeProvider";
 
 const { store, persistor } = createStore();
 const App = () => {
@@ -43,9 +44,11 @@ const App = () => {
     <ErrorBoundary onError={logError} FallbackComponent={FallBack}>
       <Provider store={store}>
         <PersistGate loading={null} persistor={persistor}>
-          <SafeAreaProvider>
-            <Navigation />
-          </SafeAreaProvider>
+          <ThemeProvider>
+            <SafeAreaProvider>
+              <Navigation />
+            </SafeAreaProvider>
+          </ThemeProvider>
         </PersistGate>
       </Provider>
     </ErrorBoundary>

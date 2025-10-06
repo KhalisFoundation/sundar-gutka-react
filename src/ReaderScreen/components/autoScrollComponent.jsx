@@ -5,9 +5,12 @@ import { useDispatch, useSelector } from "react-redux";
 import { Icon } from "@rneui/themed";
 import PropTypes from "prop-types";
 import { colors, constant, actions, trackReaderEvent, logError } from "@common";
-import { styles } from "../styles";
+import useThemedStyles from "@common/hooks/useThemedStyles";
+import useTheme from "@common/context";
+import createStyles from "../styles";
 
 const AutoScrollComponent = ({ shabadID, isFooter, webViewRef }) => {
+  const { theme } = useTheme();
   const [isPaused, togglePaused] = useState(true);
   const autoScrollSpeedObj = useSelector((state) => state.autoScrollSpeedObj);
   const [currentSpeed, setCurrentSpeed] = useState(
@@ -16,6 +19,7 @@ const AutoScrollComponent = ({ shabadID, isFooter, webViewRef }) => {
   const [animationPosition] = useState(new Animated.Value(0));
   const dispatch = useDispatch();
   const animationRef = useRef(null);
+  const styles = useThemedStyles(createStyles);
 
   // Cleanup animation on unmount
   useEffect(() => {
@@ -128,7 +132,7 @@ const AutoScrollComponent = ({ shabadID, isFooter, webViewRef }) => {
           {isPaused ? (
             <Icon
               name="play-arrow"
-              color={colors.TOOLBAR_TINT}
+              color={theme.staticColors.WHITE_COLOR}
               size={30}
               onPress={handlePlay}
               accessibilityLabel="Play auto-scroll"
@@ -136,7 +140,7 @@ const AutoScrollComponent = ({ shabadID, isFooter, webViewRef }) => {
           ) : (
             <Icon
               name="pause"
-              color={colors.TOOLBAR_TINT}
+              color={theme.staticColors.WHITE_COLOR}
               size={30}
               onPress={handlePause}
               accessibilityLabel="Pause auto-scroll"

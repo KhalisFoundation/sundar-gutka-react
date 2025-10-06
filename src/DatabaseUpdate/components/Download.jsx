@@ -1,4 +1,4 @@
-import React, { useEffect, useRef, useState, useMemo } from "react";
+import React, { useEffect, useRef, useState } from "react";
 import { Text, Animated, View } from "react-native";
 import { downloadFile, exists, unlink, moveFile } from "react-native-fs";
 import {
@@ -12,21 +12,22 @@ import {
   getCurrentDBMD5Hash,
   STRINGS,
 } from "@common";
-import { useDispatch, useSelector } from "react-redux";
+import { useDispatch } from "react-redux";
+import useTheme from "@common/context";
+import useThemedStyles from "@common/hooks/useThemedStyles";
 import initDB, { closeDatabase } from "../../database/connect";
-import styles from "../styles";
-import { darkMode } from "./styles";
+import createStyles from "../styles";
 import DownloadAnimation from "./DownloadAnimation";
 import { revertMD5Hash } from "../../common/rnfs";
 import DownloadControls from "./DownloadControls";
 
 const DownloadComponent = () => {
+  const { theme } = useTheme();
+  const styles = useThemedStyles(createStyles);
   const [progress, setProgress] = useState(0);
   const [downloading, setDownloading] = useState(false);
   const [downloadSuccess, setDownloadSuccess] = useState(null);
   const progressAnim = useRef(new Animated.Value(0)).current;
-  const isNightMode = useSelector((state) => state.isNightMode);
-  const { darkModeContainer, darkModeText } = useMemo(() => darkMode(isNightMode), [isNightMode]);
   const dispatch = useDispatch();
 
   // keep text % in sync with the animated value
@@ -97,9 +98,9 @@ const DownloadComponent = () => {
   };
 
   return (
-    <View style={[styles.container, darkModeContainer]}>
+    <View style={styles.container}>
       {downloadSuccess !== null && (
-        <Text style={[styles.label, darkModeText]}>
+        <Text style={styles.label}>
           {downloadSuccess ? STRINGS.downloadSuccessful : STRINGS.downloadFailed}
         </Text>
       )}
@@ -109,7 +110,7 @@ const DownloadComponent = () => {
           <DownloadControls
             downloading={downloading}
             onStartDownload={startDownload}
-            darkModeText={darkModeText}
+            darkModeText={{ color: theme.colors.primaryText }}
           />
         </>
       )}

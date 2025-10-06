@@ -1,28 +1,23 @@
 import React, { useState, useRef, useEffect, useCallback, useMemo } from "react";
 import { useDispatch, useSelector } from "react-redux";
-import { Appearance, ActivityIndicator, BackHandler, AppState, Platform } from "react-native";
+import { ActivityIndicator, BackHandler, AppState, Platform } from "react-native";
 import { WebView } from "react-native-webview";
 import PropTypes from "prop-types";
-import {
-  constant,
-  colors,
-  actions,
-  useScreenAnalytics,
-  logMessage,
-  logError,
-  SafeArea,
-} from "@common";
+import { constant, actions, useScreenAnalytics, logMessage, logError, SafeArea } from "@common";
+import useTheme from "@common/context";
+import useThemedStyles from "@common/hooks/useThemedStyles";
 import StatusBarComponent from "@common/components/StatusBar";
 import { HomeIcon, BookmarkIcon, SettingsIcon } from "@common/icons";
 import BottomNavigation from "./components/BottomNavigation";
 import { Header, AutoScrollComponent } from "./components";
 import { useBookmarks, useFetchShabad } from "./hooks";
-import { styles, nightColors } from "./styles";
+import createStyles from "./styles";
 import { loadHTML } from "./utils";
 
 const Reader = ({ navigation, route }) => {
   logMessage(constant.READER);
-  const isNightMode = useSelector((state) => state.isNightMode);
+  const { theme } = useTheme();
+  const styles = useThemedStyles(createStyles);
   const bookmarkPosition = useSelector((state) => state.bookmarkPosition);
   const isAutoScroll = useSelector((state) => state.isAutoScroll);
   const isTransliteration = useSelector((state) => state.isTransliteration);
@@ -37,7 +32,6 @@ const Reader = ({ navigation, route }) => {
   const isVishraam = useSelector((state) => state.isVishraam);
   const vishraamOption = useSelector((state) => state.vishraamOption);
   const savePosition = useSelector((state) => state.savePosition);
-  const theme = useSelector((state) => state.theme);
 
   const webViewRef = useRef(null);
   const { webView } = styles;
@@ -51,8 +45,6 @@ const Reader = ({ navigation, route }) => {
 
   const dispatch = useDispatch();
   const { shabad, isLoading } = useFetchShabad(id);
-  const { backgroundColor, safeAreaViewBack, backViewColor } = nightColors(isNightMode);
-  const { READER_STATUS_BAR_COLOR } = colors;
 
   // Save scroll position when leaving screen or app goes to background
   const saveScrollPosition = useCallback(() => {
@@ -85,7 +77,7 @@ const Reader = ({ navigation, route }) => {
         isEnglishTranslation,
         isPunjabiTranslation,
         isSpanishTranslation,
-        isNightMode,
+        theme,
         isLarivaar,
         currentPosition
       ),
@@ -99,15 +91,10 @@ const Reader = ({ navigation, route }) => {
     isEnglishTranslation,
     isPunjabiTranslation,
     isSpanishTranslation,
-    isNightMode,
+    theme,
     isLarivaar,
     currentPosition,
   ]);
-
-  const updateTheme = useCallback(() => {
-    const currentColorScheme = Appearance.getColorScheme();
-    dispatch(actions.toggleNightMode(currentColorScheme === "dark"));
-  }, [dispatch]);
 
   useScreenAnalytics(title);
   useBookmarks(webViewRef, shabad, bookmarkPosition);
@@ -120,9 +107,6 @@ const Reader = ({ navigation, route }) => {
 
       if (state === "active") {
         // App came to foreground
-        if (theme === constant.Default) {
-          updateTheme();
-        }
       } else if (state === "background") {
         // App went to background - save scroll position
         saveScrollPosition();
@@ -133,7 +117,7 @@ const Reader = ({ navigation, route }) => {
       isMounted = false;
       subscription.remove();
     };
-  }, [theme, updateTheme, saveScrollPosition]);
+  }, [saveScrollPosition]);
 
   useEffect(() => {
     if (savePosition && id) {
@@ -231,14 +215,14 @@ const Reader = ({ navigation, route }) => {
   ];
 
   return (
-    <SafeArea backgroundColor={safeAreaViewBack.backgroundColor} topPadding>
-      <StatusBarComponent backgroundColor={backgroundColor} />
+    <SafeArea backgroundColor={theme.colors.surface}>
+      <StatusBarComponent backgroundColor={theme.colors.primary} />
       <Header
         title={fontFace === constant.BALOO_PAAJI ? titleUni : title}
         handleBackPress={handleBackPress}
         isHeader={isHeader}
       />
-      {isLoading && <ActivityIndicator size="small" color={READER_STATUS_BAR_COLOR} />}
+      {isLoading && <ActivityIndicator size="small" color={theme.colors.primary} />}
       <WebView
         key={webViewKey}
         webviewDebuggingEnabled
@@ -255,8 +239,12 @@ const Reader = ({ navigation, route }) => {
         nestedScrollEnabled
         onContentProcessDidTerminate={reloadWebView}
         source={webViewSource}
-        backgroundColor={isNightMode ? colors.NIGHT_BLACK : colors.WHITE_COLOR}
-        style={[webView, isNightMode && { opacity: viewLoaded ? 1 : 0.1 }, backViewColor]}
+        backgroundColor={theme.colors.surface}
+        style={[
+          webView,
+          theme.mode === "dark" && { opacity: viewLoaded ? 1 : 0.1 },
+          { backgroundColor: theme.colors.surface },
+        ]}
         onMessage={handleMessage}
       />
 

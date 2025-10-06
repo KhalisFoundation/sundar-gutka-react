@@ -1,27 +1,23 @@
-import React, { useEffect, useCallback } from "react";
+import React, { useEffect } from "react";
 import { Pressable } from "react-native";
-import { useSelector } from "react-redux";
-import { colors } from "@common";
+import useThemedStyles from "@common/hooks/useThemedStyles";
 import { BackArrowIcon } from "@common/icons";
-import { getHeaderTitleStyle, getHeaderStyle } from "../styles";
+import useTheme from "@common/context";
+import createStyles from "../styles";
 
 const useHeader = (navigation) => {
-  const isNightMode = useSelector((state) => state.isNightMode);
-  const headerTitleStyle = useCallback(getHeaderTitleStyle(isNightMode), [isNightMode]);
-  const headerStyle = useCallback(getHeaderStyle(isNightMode), [isNightMode]);
+  const { theme } = useTheme();
+  const styles = useThemedStyles(createStyles);
   const headerLeft = () => (
     <Pressable onPress={() => navigation.goBack()}>
-      <BackArrowIcon
-        size={24}
-        color={isNightMode ? colors.WHITE_COLOR : colors.READER_HEADER_COLOR}
-      />
+      <BackArrowIcon size={24} color={theme.colors.primaryText} />
     </Pressable>
   );
 
   useEffect(() => {
     navigation.setOptions({
-      headerTitleStyle,
-      headerStyle,
+      headerTitleStyle: styles.headerTitleStyle,
+      headerStyle: styles.headerStyle,
       headerLeft,
     });
   }, []);

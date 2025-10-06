@@ -1,10 +1,13 @@
 import React from "react";
 import { View, Pressable } from "react-native";
 import PropTypes from "prop-types";
-import { colors } from "@common";
-import styles from "./style";
+import useTheme from "@common/context";
+import useThemedStyles from "@common/hooks/useThemedStyles";
+import createStyles from "./style";
 
 const BottomNavigation = ({ navigationItems, currentRoute }) => {
+  const { theme } = useTheme();
+  const styles = useThemedStyles(createStyles);
   return (
     <View style={[styles.container]}>
       <View style={styles.navigationBar}>
@@ -18,7 +21,7 @@ const BottomNavigation = ({ navigationItems, currentRoute }) => {
               style={[styles.iconContainer, isActive && styles.activeIconContainer]}
               onPress={item.handlePress}
             >
-              <IconComponent size={24} color={colors.WHITE_COLOR} />
+              <IconComponent size={24} color={theme.staticColors.WHITE_COLOR} />
             </Pressable>
           );
         })}

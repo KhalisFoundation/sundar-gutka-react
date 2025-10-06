@@ -13,14 +13,17 @@ import {
   FallBack,
 } from "@common";
 import { getBaniList } from "@database";
-import { nightModeStyles, iconNightColor } from "../../styles";
+import useTheme from "@common/context";
+import useThemedStyles from "@common/hooks/useThemedStyles";
 import { ListItemComponent, BottomSheetComponent } from "../comon";
 import setDefaultReminders from "./ReminderOptions/utils";
 import { getReminderSound } from "../comon/strings";
+import createStyles from "../../styles";
 
 const RemindersComponent = ({ navigation }) => {
+  const { theme } = useTheme();
+  const styles = useThemedStyles(createStyles);
   const REMINDER_SOUNDS = getReminderSound(STRINGS);
-  const isNightMode = useSelector((state) => state.isNightMode);
   const isReminders = useSelector((state) => state.isReminders);
   const reminderSound = useSelector((state) => state.reminderSound);
   const transliterationLanguage = useSelector((state) => state.transliterationLanguage);
@@ -28,8 +31,6 @@ const RemindersComponent = ({ navigation }) => {
 
   const dispatch = useDispatch();
   const { navigate } = navigation;
-  const { containerNightStyles, textNightStyle } = nightModeStyles(isNightMode);
-  const iconColor = iconNightColor(isNightMode);
 
   const redirectToSettings = async () => {
     Alert.alert(STRINGS.permissionTitle, STRINGS.premissionDescription, [
@@ -76,10 +77,10 @@ const RemindersComponent = ({ navigation }) => {
 
   return (
     <>
-      <ListItem bottomDivider containerStyle={containerNightStyles}>
-        <Icon color={iconColor} name="timer" size={30} />
+      <ListItem bottomDivider containerStyle={styles.containerNightStyles}>
+        <Icon color={theme.colors.primaryText} name="timer" size={30} />
         <ListItem.Content>
-          <ListItem.Title style={textNightStyle}>{STRINGS.reminders}</ListItem.Title>
+          <ListItem.Title style={styles.listItemTitle}>{STRINGS.reminders}</ListItem.Title>
         </ListItem.Content>
         <Switch value={isReminders} onValueChange={(value) => handleReminders(value)} />
       </ListItem>
@@ -87,12 +88,14 @@ const RemindersComponent = ({ navigation }) => {
       {isReminders && (
         <ListItem
           bottomDivider
-          containerStyle={containerNightStyles}
+          containerStyle={styles.containerNightStyles}
           onPress={() => navigate("ReminderOptions")}
         >
-          <Icon name="event" color={iconColor} size={30} />
+          <Icon name="event" color={theme.colors.primaryText} size={30} />
           <ListItem.Content>
-            <ListItem.Title style={textNightStyle}>{STRINGS.set_reminder_options}</ListItem.Title>
+            <ListItem.Title style={styles.listItemTitle}>
+              {STRINGS.set_reminder_options}
+            </ListItem.Title>
           </ListItem.Content>
           <ListItem.Chevron />
         </ListItem>

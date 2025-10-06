@@ -1,27 +1,29 @@
-import { StyleSheet } from "react-native";
-import { colors } from "@common";
-
-export const checkUpdateStyles = StyleSheet.create({
+export const checkUpdateStyles = (theme) => ({
   container: {
     flex: 1,
     justifyContent: "center",
     alignItems: "center",
+    backgroundColor: theme.colors.surface,
   },
   header: {
     fontSize: 20,
     marginBottom: 5,
+    backgroundColor: theme.colors.surface,
   },
   status: {
     marginTop: 20,
     fontSize: 18,
   },
-  mainWrapper: {},
+  mainWrapper: {
+    backgroundColor: theme.colors.surface,
+  },
 });
 
-export const baniDBAboutStyles = StyleSheet.create({
+export const baniDBAboutStyles = (theme) => ({
   container: {
     flexGrow: 1,
     padding: 20,
+    backgroundColor: theme.colors.surface,
   },
   header: {
     fontSize: 24,
@@ -38,19 +40,12 @@ export const baniDBAboutStyles = StyleSheet.create({
     fontSize: 16,
     lineHeight: 24,
     marginRight: 10,
+    color: theme.colors.primaryText,
   },
   listText: {
     flex: 1,
     fontSize: 16,
     lineHeight: 24,
-  },
-});
-
-export const darkMode = (isNightMode) => ({
-  darkModeContainer: {
-    backgroundColor: isNightMode ? colors.NIGHT_BLACK : colors.WHITE_COLOR,
-  },
-  darkModeText: {
-    color: isNightMode ? colors.WHITE_COLOR : colors.NIGHT_BLACK,
+    color: theme.colors.primaryText,
   },
 });

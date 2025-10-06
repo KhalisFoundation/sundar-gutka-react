@@ -4,14 +4,14 @@ import PropTypes from "prop-types";
 import { StatusBar, ScrollView, Text } from "react-native";
 import {
   STRINGS,
-  colors,
   useScreenAnalytics,
   constant,
   logMessage,
   StatusBarComponent,
   SafeArea,
 } from "@common";
-import { nightModeStyles } from "./styles/nightModeStyles";
+import useTheme from "@common/context";
+import useThemedStyles from "@common/hooks/useThemedStyles";
 import FontSizeComponent from "./components/fontSize";
 import FontFaceComponent from "./components/fontFace";
 import LanguageComponent from "./components/language";
@@ -30,18 +30,18 @@ import EditBaniOrder from "./components/editBaniOrder";
 import ParagraphMode from "./components/paragraphMode";
 import CollectStatistics from "./components/collectStatistics";
 import Donate from "./components/donate";
-import styles from "./styles/styles";
+import createStyles from "./styles";
 import ListItemWithIcon from "./components/comon/ListitemWithIcon";
 import DatabaseUpdateBanner from "./components/databaseUpdate";
 
 const Settings = ({ navigation }) => {
   logMessage(constant.SETTINGS);
   useScreenAnalytics(constant.SETTINGS);
-  const isNightMode = useSelector((state) => state.isNightMode);
   const isDatabaseUpdateAvailable = useSelector((state) => state.isDatabaseUpdateAvailable);
 
   const { navigate } = navigation;
-  const { scrollViewNightStyles, backgroundNightStyle } = nightModeStyles(isNightMode);
+  const { theme } = useTheme();
+  const styles = useThemedStyles(createStyles);
   const { displayOptionsText, end } = styles;
   const { DISPLAY_OPTIONS, BANI_OPTIONS, OTHER_OPTIONS } = STRINGS;
   const language = useSelector((state) => state.language);
@@ -53,16 +53,12 @@ const Settings = ({ navigation }) => {
   }, [language]);
 
   return (
-    <SafeArea backgroundColor={isNightMode ? colors.NIGHT_BLACK : colors.WHITE_COLOR}>
-      <StatusBarComponent
-        backgroundColor={
-          !isNightMode ? colors.TOOLBAR_COLOR_ALT : colors.TOOLBAR_COLOR_ALT_NIGHT_MODE
-        }
-      />
+    <SafeArea backgroundColor={theme.colors.surface}>
+      <StatusBarComponent backgroundColor={theme.colors.primaryVariant} />
 
       {isDatabaseUpdateAvailable && <DatabaseUpdateBanner navigate={navigate} />}
       <ScrollView>
-        <Text style={[displayOptionsText, scrollViewNightStyles]}>{DISPLAY_OPTIONS}</Text>
+        <Text style={displayOptionsText}>{DISPLAY_OPTIONS}</Text>
         <FontSizeComponent />
         <FontFaceComponent />
         <LanguageComponent language={language} />
@@ -74,15 +70,15 @@ const Settings = ({ navigation }) => {
         <AutoScroll />
         <KeepAwake />
         {/* Bani Options */}
-        <Text style={[displayOptionsText, scrollViewNightStyles]}>{BANI_OPTIONS}</Text>
-        <EditBaniOrder navigate={navigate} isNightMode={isNightMode} />
+        <Text style={displayOptionsText}>{BANI_OPTIONS}</Text>
+        <EditBaniOrder navigate={navigate} />
         <BaniLengthComponent />
         <LarivaarComponent />
         <ParagraphMode />
         <PadchedSettingsComponent />
         <VishraamComponent />
         <RemindersComponent navigation={navigation} />
-        <Text style={[displayOptionsText, scrollViewNightStyles]}>{OTHER_OPTIONS}</Text>
+        <Text style={displayOptionsText}>{OTHER_OPTIONS}</Text>
         <CollectStatistics />
         <Donate />
         <ListItemWithIcon
@@ -97,7 +93,7 @@ const Settings = ({ navigation }) => {
           navigate={navigate}
           navigationTarget="DatabaseUpdate"
         />
-        <Text style={[end, backgroundNightStyle]} />
+        <Text style={end} />
       </ScrollView>
     </SafeArea>
   );

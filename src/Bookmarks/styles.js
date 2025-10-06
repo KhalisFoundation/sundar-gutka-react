@@ -1,15 +1,17 @@
-import { colors, constant } from "@common";
-
-export const getHeaderStyle = (isNightMode) => ({
-  backgroundColor: !isNightMode ? colors.WHITE : colors.BLACK,
+const createStyles = (theme) => ({
+  headerTitleStyle: {
+    color: theme.colors.primaryText,
+    fontWeight: theme.typography.weights.normal,
+    fontSize: theme.typography.sizes.xxl,
+  },
+  headerStyle: {
+    backgroundColor: theme.colors.surface,
+    height: theme.components.header.height,
+    paddingHorizontal: theme.components.header.paddingHorizontal,
+  },
+  nightBackColor: {
+    backgroundColor: theme.colors.surface,
+  },
 });
 
-export const nightMode = (isNightMode) => ({
-  backgroundColor: isNightMode ? colors.BLACK : colors.WHITE,
-});
-export const getHeaderTitleStyle = (isNightMode) => ({
-  color: isNightMode ? colors.WHITE_COLOR : colors.READER_HEADER_COLOR,
-  fontWeight: "normal",
-  fontSize: 20,
-  fontFamily: constant.GURMUKHI_AKHAR_TRUE,
-});
+export default createStyles;
