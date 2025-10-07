@@ -103,7 +103,7 @@ const dummyData = {
     // Jaap Sahib
     {
       bani_id: 4,
-      track_id: 4,
+      track_id: 9,
       track_url:
         "https://raw.githubusercontent.com/amitojsingh/SG_audio/main//BhaiJarnailSingh/jaap-sahib.mp3",
       track_length_seconds: 1709,
@@ -113,7 +113,7 @@ const dummyData = {
     },
     {
       bani_id: 4,
-      track_id: 5,
+      track_id: 10,
       track_url:
         "https://raw.githubusercontent.com/amitojsingh/SG_audio/main//BhaiHarpreetSinghSangrur/JaapSahib.mp3",
       track_length_seconds: 1709,
@@ -123,7 +123,7 @@ const dummyData = {
     },
     {
       bani_id: 4,
-      track_id: 6,
+      track_id: 11,
       track_url:
         "https://raw.githubusercontent.com/amitojsingh/SG_audio/main//BhaiSatnamSinghZira/JaapSahib.mp3",
       track_length_seconds: 1709,
@@ -136,7 +136,7 @@ const dummyData = {
     // Chaupai Sahib
     {
       bani_id: 9,
-      track_id: 9,
+      track_id: 12,
       track_url:
         "https://raw.githubusercontent.com/amitojsingh/SG_audio/main//BhaiJarnailSingh/chopai-sahib.mp3",
       track_length_seconds: 1709,
@@ -149,7 +149,7 @@ const dummyData = {
     // Anand Sahib
     {
       bani_id: 10,
-      track_id: 10,
+      track_id: 13,
       track_url:
         "https://raw.githubusercontent.com/amitojsingh/SG_audio/main//BhaiJarnailSingh/anand-sahib.mp3",
       track_length_seconds: 1709,
@@ -162,7 +162,7 @@ const dummyData = {
     // Rehras Sahib
     {
       bani_id: 21,
-      track_id: 21,
+      track_id: 14,
       track_url:
         "https://raw.githubusercontent.com/amitojsingh/SG_audio/main//BhaiJarnailSingh/Rehras-sahib.mp3",
       track_length_seconds: 1709,
@@ -172,7 +172,7 @@ const dummyData = {
     },
     {
       bani_id: 21,
-      track_id: 22,
+      track_id: 15,
       track_url:
         "https://raw.githubusercontent.com/amitojsingh/SG_audio/main//BibiJaspreetKaur/RehrasSahib.mp3",
       track_length_seconds: 1709,
@@ -185,7 +185,7 @@ const dummyData = {
     // Sohila Sahib
     {
       bani_id: 23,
-      track_id: 23,
+      track_id: 16,
       track_url:
         "https://raw.githubusercontent.com/amitojsingh/SG_audio/main//BhaiJarnailSingh/kirtan-sohaila.mp3",
       track_length_seconds: 1709,

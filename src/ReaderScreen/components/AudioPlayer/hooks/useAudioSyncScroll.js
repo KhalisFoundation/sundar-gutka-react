@@ -1,19 +1,47 @@
-import { useEffect, useRef } from "react";
+import { useEffect, useRef, useState } from "react";
 import { useSelector } from "react-redux";
-import satnamSinghBaniTimestamps from "@service/2_SatnamSingh";
-import baniTimestamps from "@service/bani_timestamps";
 
-const useAudioSyncScroll = (progress, isPlaying, webViewRef, baniID, artistID) => {
+const useAudioSyncScroll = (progress, isPlaying, webViewRef, audioUrl) => {
   const isAudioSyncScroll = useSelector((state) => state.isAudioSyncScroll);
   const lastSequenceRef = useRef(null);
   const isScrollingRef = useRef(false);
+  const [baniLRC, setBaniLRC] = useState(null);
+
+  // Function to fetch JSON file content
+  const fetchLRCData = async (jsonUrl) => {
+    try {
+      const response = await fetch(jsonUrl);
+
+      if (response.ok) {
+        const data = await response.json();
+        return data;
+      }
+      return false;
+    } catch (error) {
+      return false;
+    }
+  };
+
+  // Load LRC data when audioUrl changes
+  useEffect(() => {
+    if (!audioUrl) {
+      setBaniLRC(null);
+      return;
+    }
+
+    const jsonUrl = audioUrl.replace(".mp3", ".json");
+    fetchLRCData(jsonUrl).then((data) => {
+      setBaniLRC(data);
+    });
+  }, [audioUrl]);
 
   // Find current sequence based on audio progress
-  const findCurrentSequence = (currentTime, artist) => {
-    if (!currentTime || currentTime === 0) return null;
+  const findCurrentSequence = (currentTime) => {
+    if (!currentTime || currentTime === 0 || !baniLRC || !Array.isArray(baniLRC)) {
+      return null;
+    }
 
     // Find the timestamp entry that contains the current time
-    const baniLRC = artist === 4 ? baniTimestamps : satnamSinghBaniTimestamps;
     const currentTimestamp = baniLRC.find(
       (timestamp) => currentTime >= timestamp.start && currentTime <= timestamp.end
     );
@@ -45,7 +73,6 @@ const useAudioSyncScroll = (progress, isPlaying, webViewRef, baniID, artistID) =
         isScrollingRef.current = false;
       }, 500);
     } catch (error) {
-      console.error("Error sending scroll message to WebView:", error);
       isScrollingRef.current = false;
     }
   };
@@ -53,37 +80,28 @@ const useAudioSyncScroll = (progress, isPlaying, webViewRef, baniID, artistID) =
   // Main effect to handle sync scrolling
   useEffect(() => {
     // Only proceed if sync scroll is enabled and audio is playing
-    if (
-      !isAudioSyncScroll ||
-      !isPlaying ||
-      !progress?.position ||
-      baniID !== 2 ||
-      (artistID !== 4 && artistID !== 5)
-    ) {
-      console.log("not scrolling");
+    if (!isAudioSyncScroll || !isPlaying || !progress?.position || !baniLRC) {
       return;
     }
-    console.log("artistID", artistID);
-
-    const currentSequence = findCurrentSequence(progress.position, artistID);
+    const currentSequence = findCurrentSequence(progress.position);
 
     // Only scroll if sequence changed and we have a valid sequence
     if (currentSequence !== null && currentSequence !== lastSequenceRef.current) {
       lastSequenceRef.current = currentSequence;
       scrollToSequence(currentSequence);
     }
-  }, [progress?.position, isPlaying, isAudioSyncScroll, webViewRef, baniID, artistID]);
+  }, [progress?.position, isPlaying, isAudioSyncScroll, webViewRef, baniLRC]);
 
   // Reset when sync scroll is disabled or audio stops
   useEffect(() => {
-    if (!isAudioSyncScroll || !isPlaying || baniID !== 2 || artistID !== 4 || artistID !== 5) {
+    if (!isAudioSyncScroll || !isPlaying || !baniLRC) {
       lastSequenceRef.current = null;
       isScrollingRef.current = false;
     }
-  }, [isAudioSyncScroll, isPlaying, baniID, artistID]);
+  }, [isAudioSyncScroll, isPlaying, baniLRC]);
 
   return {
-    currentSequence: findCurrentSequence(progress?.position || 0, artistID),
+    currentSequence: findCurrentSequence(progress?.position || 0),
     isScrollingEnabled: isAudioSyncScroll && isPlaying,
   };
 };
