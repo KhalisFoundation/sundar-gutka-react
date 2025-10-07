@@ -5,6 +5,7 @@ const useAudioSyncScroll = (progress, isPlaying, webViewRef, audioUrl) => {
   const isAudioSyncScroll = useSelector((state) => state.isAudioSyncScroll);
   const lastSequenceRef = useRef(null);
   const isScrollingRef = useRef(false);
+  const scrollTimeoutRef = useRef(null);
   const [baniLRC, setBaniLRC] = useState(null);
 
   // Function to fetch JSON file content
@@ -56,6 +57,11 @@ const useAudioSyncScroll = (progress, isPlaying, webViewRef, audioUrl) => {
     }
 
     try {
+      // Clear any existing timeout
+      if (scrollTimeoutRef.current) {
+        clearTimeout(scrollTimeoutRef.current);
+      }
+
       // Prevent multiple rapid scroll calls
       if (isScrollingRef.current) return;
       isScrollingRef.current = true;
@@ -69,11 +75,16 @@ const useAudioSyncScroll = (progress, isPlaying, webViewRef, audioUrl) => {
       webViewRef.current.postMessage(JSON.stringify(scrollMessage));
 
       // Reset scrolling flag after a short delay
-      setTimeout(() => {
+      scrollTimeoutRef.current = setTimeout(() => {
         isScrollingRef.current = false;
+        scrollTimeoutRef.current = null;
       }, 500);
     } catch (error) {
       isScrollingRef.current = false;
+      if (scrollTimeoutRef.current) {
+        clearTimeout(scrollTimeoutRef.current);
+        scrollTimeoutRef.current = null;
+      }
     }
   };
 
@@ -97,8 +108,22 @@ const useAudioSyncScroll = (progress, isPlaying, webViewRef, audioUrl) => {
     if (!isAudioSyncScroll || !isPlaying || !baniLRC) {
       lastSequenceRef.current = null;
       isScrollingRef.current = false;
+      // Clear any pending timeout
+      if (scrollTimeoutRef.current) {
+        clearTimeout(scrollTimeoutRef.current);
+        scrollTimeoutRef.current = null;
+      }
     }
   }, [isAudioSyncScroll, isPlaying, baniLRC]);
+
+  // Cleanup timeout on unmount
+  useEffect(() => {
+    return () => {
+      if (scrollTimeoutRef.current) {
+        clearTimeout(scrollTimeoutRef.current);
+      }
+    };
+  }, []);
 
   return {
     currentSequence: findCurrentSequence(progress?.position || 0),
