@@ -37,7 +37,7 @@ const useAudioSyncScroll = (progress, isPlaying, webViewRef, audioUrl) => {
 
   // Find current sequence based on audio progress
   const findCurrentSequence = (currentTime) => {
-    if (!currentTime || currentTime === 0 || !baniLRC || !Array.isArray(baniLRC)) {
+    if (!currentTime || !baniLRC || !Array.isArray(baniLRC)) {
       return null;
     }
 
