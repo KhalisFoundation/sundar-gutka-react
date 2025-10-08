@@ -27,14 +27,16 @@ const makeApiRequest = async (endpoint, options = {}) => {
     });
 
     if (!response.ok) {
-      // Log API failures in development for debugging
+      // API request failed - show error toast to user
+      showErrorToast("Unable to connect to audio server. Please check your connection.");
       return null;
     }
 
     const data = await response.json();
     return data;
   } catch (error) {
-    // Silently fail for network errors - app continues without audio features
+    // Network error - show toast and continue without audio features
+    showErrorToast("Network error. Audio features temporarily unavailable.");
     return null;
   }
 };
