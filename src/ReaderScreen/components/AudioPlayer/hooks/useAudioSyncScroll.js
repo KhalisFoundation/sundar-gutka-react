@@ -1,5 +1,6 @@
 import { useEffect, useRef, useState } from "react";
 import { useSelector } from "react-redux";
+import { showErrorToast } from "@common";
 
 const useAudioSyncScroll = (progress, isPlaying, webViewRef, audioUrl) => {
   const isAudioSyncScroll = useSelector((state) => state.isAudioSyncScroll);
@@ -19,6 +20,7 @@ const useAudioSyncScroll = (progress, isPlaying, webViewRef, audioUrl) => {
       }
       return false;
     } catch (error) {
+      showErrorToast("Audio sync unavailable. Playback will continue without auto-scroll.");
       return false;
     }
   };
@@ -67,6 +69,7 @@ const useAudioSyncScroll = (progress, isPlaying, webViewRef, audioUrl) => {
     // Validate sequence is a safe positive integer
     const sequenceNumber = Number(sequence);
     if (!Number.isInteger(sequenceNumber) || sequenceNumber < 1) {
+      // Invalid sequence - fail silently to prevent XSS
       return;
     }
 

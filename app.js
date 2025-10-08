@@ -1,6 +1,7 @@
 import React, { useEffect } from "react";
 import ErrorBoundary from "react-native-error-boundary";
 import SplashScreen from "react-native-splash-screen";
+import Toast from "react-native-toast-message";
 import { Provider } from "react-redux";
 import notifee, { EventType } from "@notifee/react-native";
 import { PersistGate } from "redux-persist/integration/react";
@@ -45,6 +46,7 @@ const App = () => {
       <Provider store={store}>
         <PersistGate loading={null} persistor={persistor}>
           <Navigation />
+          <Toast />
         </PersistGate>
       </Provider>
     </ErrorBoundary>

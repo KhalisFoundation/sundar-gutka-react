@@ -1,4 +1,4 @@
-import { constant } from "@common";
+import { constant, showErrorToast } from "@common";
 
 // Common API configuration
 const getApiConfig = () => {
@@ -27,12 +27,14 @@ const makeApiRequest = async (endpoint, options = {}) => {
     });
 
     if (!response.ok) {
+      // Log API failures in development for debugging
       return null;
     }
 
     const data = await response.json();
     return data;
   } catch (error) {
+    // Silently fail for network errors - app continues without audio features
     return null;
   }
 };
@@ -50,6 +52,7 @@ export const fetchManifest = async (baniId) => {
   const data = await makeApiRequest(`/banis/${baniId}`);
 
   if (!data || data.data.length === 0) {
+    showErrorToast("Audio tracks unavailable. Check your internet connection and try again.");
     return null;
   }
   return data;
@@ -61,5 +64,6 @@ export const fetchArtists = async () => {
   if (data?.status === "success" && data.data) {
     return data.data.map(mapArtistData);
   }
+  showErrorToast("Could not load audio artists. Please check your connection.");
   return null;
 };
