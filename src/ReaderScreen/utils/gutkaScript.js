@@ -159,10 +159,18 @@ ${listener}.addEventListener(
     }
       // Handle sync scroll to sequence
     if (message.hasOwnProperty("action") && message.action === "scrollToSequence") {
-      const element = document.getElementById(message.sequence);
+      // Sanitize and validate sequence number
+      const sequenceNumber = parseInt(message.sequence, 10);
+      
+      // Validate that it's a valid positive integer
+      if (!Number.isInteger(sequenceNumber) || sequenceNumber < 1) {
+        return;
+      }
+      
+      const element = document.getElementById(sequenceNumber);
       
       if (element) {
-        const behavior = message.behavior || "smooth";
+        const behavior = message.behavior === "smooth" ? "smooth" : "auto";
         element.scrollIntoView({
           behavior: behavior,
           block: "center",

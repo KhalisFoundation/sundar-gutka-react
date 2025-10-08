@@ -25,15 +25,23 @@ const useAudioSyncScroll = (progress, isPlaying, webViewRef, audioUrl) => {
 
   // Load LRC data when audioUrl changes
   useEffect(() => {
+    let isMounted = true;
+
     if (!audioUrl) {
       setBaniLRC(null);
-      return;
+      return undefined;
     }
 
     const jsonUrl = audioUrl.replace(".mp3", ".json");
     fetchLRCData(jsonUrl).then((data) => {
-      setBaniLRC(data);
+      if (isMounted) {
+        setBaniLRC(data);
+      }
     });
+
+    return () => {
+      isMounted = false;
+    };
   }, [audioUrl]);
 
   // Find current sequence based on audio progress
@@ -56,6 +64,12 @@ const useAudioSyncScroll = (progress, isPlaying, webViewRef, audioUrl) => {
       return;
     }
 
+    // Validate sequence is a safe positive integer
+    const sequenceNumber = Number(sequence);
+    if (!Number.isInteger(sequenceNumber) || sequenceNumber < 1) {
+      return;
+    }
+
     try {
       // Clear any existing timeout
       if (scrollTimeoutRef.current) {
@@ -68,7 +82,7 @@ const useAudioSyncScroll = (progress, isPlaying, webViewRef, audioUrl) => {
 
       const scrollMessage = {
         action: "scrollToSequence",
-        sequence,
+        sequence: sequenceNumber,
         behavior: "smooth", // smooth scrolling
       };
 

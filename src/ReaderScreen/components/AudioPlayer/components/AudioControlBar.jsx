@@ -204,7 +204,7 @@ const AudioControlBar = ({
             />
             <Animated.View
               style={{
-                backgroundColor: isNightMode ? colors.NIGHT_BLACK : "#eee",
+                backgroundColor: isNightMode ? colors.NIGHT_BLACK : colors.TERTIARY_COLOR,
                 height: modalHeight,
                 opacity: modalOpacity,
                 overflow: "hidden",
@@ -240,7 +240,7 @@ const AudioControlBar = ({
                 {
                   borderRadius: 20,
                   borderTopWidth: 1,
-                  borderColor: isNightMode ? colors.NIGHT_GREY_COLOR : "#eee",
+                  borderColor: isNightMode ? colors.NIGHT_GREY_COLOR : colors.TERTIARY_COLOR,
                 },
               ]}
             >

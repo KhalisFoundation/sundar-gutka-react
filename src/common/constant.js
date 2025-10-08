@@ -92,20 +92,8 @@ export default {
   REMOTE_DB_URL: "https://banidb.blob.core.windows.net/database",
   BASIC_AUTH_USERNAME: "admin",
   BASIC_AUTH_PASSWORD: "sttm_audio_api@Khalis13",
-  // REMOTE_AUDIO_API_URL:
-  //   "https://sttm-audio-api-v2.salmonriver-80392db4.eastus.azurecontainerapps.io/v1/",
-  // Platform-specific API URLs
-  get REMOTE_AUDIO_API_URL() {
-    const { Platform } = require("react-native");
-    if (Platform.OS === "android") {
-      return "http://10.0.2.2:3000/v1/"; // Android emulator
-    }
-    if (Platform.OS === "ios") {
-      return "http://localhost:3000/v1/"; // iOS simulator
-    }
-    return "http://localhost:3000/v1/"; // Default
-  },
-  // }
+  REMOTE_AUDIO_API_URL:
+    "https://sttm-audio-api-v2.salmonriver-80392db4.eastus.azurecontainerapps.io/v1/",
   CHOPAYI_SAHIB_ID: 9,
   REHRAAS_SAHIB_ID: 21,
   MAST_SABH_MAST_TUKK: "smwpq msqu suB msqu",
