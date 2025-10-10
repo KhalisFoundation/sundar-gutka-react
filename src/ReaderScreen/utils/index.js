@@ -92,7 +92,7 @@ export const loadHTML = (
     });
 
     const content = shabad
-      .map((item) => {
+      .map((item, index) => {
         const textAlignMap = {
           0: "left",
           1: "center",
@@ -103,7 +103,7 @@ export const loadHTML = (
         if (textAlign === undefined) {
           textAlign = "right";
         }
-        let contentHtml = `<div id="${item.id}" class='text-item'>`;
+        let contentHtml = `<div id="${index + 1}" class='text-item'>`;
         contentHtml += createDiv(
           item.gurmukhi,
           item.header,

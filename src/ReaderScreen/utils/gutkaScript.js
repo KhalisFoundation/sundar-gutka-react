@@ -157,6 +157,38 @@ ${listener}.addEventListener(
         setAutoScroll();
       }
     }
+      // Handle sync scroll to sequence
+    if (message.hasOwnProperty("action") && message.action === "scrollToSequence") {
+      // Sanitize and validate sequence number
+      const sequenceNumber = parseInt(message.sequence, 10);
+      
+      // Validate that it's a valid positive integer
+      if (!Number.isInteger(sequenceNumber) || sequenceNumber < 1) {
+        return;
+      }
+      
+      const element = document.getElementById(sequenceNumber);
+      
+      if (element) {
+        const behavior = message.behavior === "smooth" ? "smooth" : "auto";
+        element.scrollIntoView({
+          behavior: behavior,
+          block: "center",
+          inline: "nearest"
+        });
+        
+        // Optional: Highlight the current sequence briefly
+        const originalBackgroundColor = element.style.backgroundColor;
+        element.style.backgroundColor = "${
+          nightMode ? "rgba(255, 255, 255, 0.1)" : "rgba(0, 0, 0, 0.05)"
+        }";
+        element.style.transition = "background-color 0.3s ease";
+        
+        setTimeout(() => {
+          element.style.backgroundColor = originalBackgroundColor;
+        }, 1000);
+      }
+    }
   },
   false
 );

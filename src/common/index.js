@@ -42,6 +42,7 @@ import {
 } from "./rnfs";
 import { navigate, navigateTo, navigationRef } from "./rootNavigation";
 import createStore from "./store";
+import { showToast, showErrorToast, showSuccessToast, showInfoToast } from "./toast";
 
 export {
   colors,
@@ -88,4 +89,8 @@ export {
   getCurrentDBMD5Hash,
   StatusBarComponent,
   SafeArea,
+  showToast,
+  showErrorToast,
+  showSuccessToast,
+  showInfoToast,
 };

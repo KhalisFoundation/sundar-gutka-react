@@ -79,13 +79,21 @@ const AudioSettingsModal = ({ title, tracks, baniID }) => {
               setIsSettingsModalOpen(false);
             }}
           >
-            <Text style={styles.settingItemTitle}>
-              Default Track For <Text style={styles.baniTitle}>{title}</Text>:{" "}
-            </Text>
-            {defaultAudio[baniID] && defaultAudio[baniID].displayName && (
-              <View style={styles.defaultTrackContainer}>
-                <Text style={styles.defaultTrackTitle}>{defaultAudio[baniID].displayName} </Text>
-                <ChevronRight size={24} color={colors.READER_HEADER_COLOR} />
+            {defaultAudio[baniID] && defaultAudio[baniID].displayName ? (
+              <>
+                <Text style={styles.settingItemTitle}>
+                  Default Track For <Text style={styles.baniTitle}>{title}</Text>:{" "}
+                </Text>
+
+                <View style={styles.defaultTrackContainer}>
+                  <Text style={styles.defaultTrackTitle}>{defaultAudio[baniID].displayName} </Text>
+                  <ChevronRight size={24} color={colors.READER_HEADER_COLOR} />
+                </View>
+              </>
+            ) : (
+              <View style={styles.defaultTrackWrapper}>
+                <Text style={styles.chooseDefaultTrack}>Choose Default Track</Text>
+                <ChevronRight size={24} color={colors.WHITE_COLOR} />
               </View>
             )}
           </Pressable>

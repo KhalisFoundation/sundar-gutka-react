@@ -7,6 +7,8 @@ export default {
   IPA: "IPA",
   GURBANI_AKHAR_TRUE: "GurbaniAkharTrue",
   GURBANI_AKHAR_THICK_TRUE: "GurbaniAkharThickTrue",
+  BALOO_PAAJI: "BalooPaaji2-Regular",
+  BALOO_PAAJI_SEMI_BOLD: "BalooPaaji2-SemiBold",
   READER: "Reader",
   SETTINGS: "Settings",
   EXTRA_SMALL: "EXTRA_SMALL",
@@ -92,18 +94,6 @@ export default {
   BASIC_AUTH_PASSWORD: "sttm_audio_api@Khalis13",
   REMOTE_AUDIO_API_URL:
     "https://sttm-audio-api-v2.salmonriver-80392db4.eastus.azurecontainerapps.io/v1/",
-  //   // Platform-specific API URLs
-  //   get REMOTE_AUDIO_API_URL() {
-  //     const { Platform } = require("react-native");
-  //     if (Platform.OS === "android") {
-  //       return "http://10.0.2.2:3000/v1/"; // Android emulator
-  //     }
-  //     if (Platform.OS === "ios") {
-  //       return "http://localhost:3000/v1/"; // iOS simulator
-  //     }
-  //     return "http://localhost:3000/v1/"; // Default
-  //   },
-  // };
   CHOPAYI_SAHIB_ID: 9,
   REHRAAS_SAHIB_ID: 21,
   MAST_SABH_MAST_TUKK: "smwpq msqu suB msqu",
