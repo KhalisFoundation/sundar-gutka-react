@@ -180,7 +180,7 @@ ${listener}.addEventListener(
         // Optional: Highlight the current sequence briefly
         const originalBackgroundColor = element.style.backgroundColor;
         element.style.backgroundColor = "${
-          nightMode ? "rgba(255, 255, 255, 0.1)" : "rgba(0, 0, 0, 0.05)"
+          theme.mode === "dark" ? "rgba(255, 255, 255, 0.1)" : "rgba(0, 0, 0, 0.05)"
         }";
         element.style.transition = "background-color 0.3s ease";
         
