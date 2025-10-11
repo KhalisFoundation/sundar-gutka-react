@@ -21,12 +21,11 @@ const Header = ({ title, handleBackPress, isHeader }) => {
 
   const headerLeft = () => (
     <Pressable
-      style={{ padding: 10 }}
       onPress={() => {
         handleBackPress();
       }}
     >
-      <BackArrowIcon size={24} color={theme.colors.primaryText} />
+      <BackArrowIcon size={30} color={theme.colors.primaryHeaderVariant} />
     </Pressable>
   );
 

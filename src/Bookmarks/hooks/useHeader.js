@@ -8,7 +8,6 @@ import createStyles from "../styles";
 const useHeader = (navigation) => {
   const { theme } = useTheme();
   const styles = useThemedStyles(createStyles);
-
   const headerLeft = () => (
     <Pressable onPress={() => navigation.goBack()}>
       <BackArrowIcon size={24} color={theme.colors.primaryText} />

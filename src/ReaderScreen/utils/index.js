@@ -6,7 +6,7 @@ import script from "./gutkaScript";
 export const fontColorForReader = (header, theme, text) => {
   const { GURMUKHI, TRANSLATION, TRANSLITERATION } = constant;
 
-  const getHeaderColor1 = () => theme.colors.highlightTuk;
+  const getHeaderColor1 = () => theme.colors.primaryHeaderVariant;
   const getHeaderColor2 = () => theme.colors.primaryText;
 
   const defaultColor = getHeaderColor2();
@@ -90,6 +90,10 @@ export const loadHTML = (
       ios: `${fontFace}.ttf`,
       android: `file:///android_asset/fonts/${fontFace}.ttf`,
     });
+    const defaultFontFaceURI = Platform.select({
+      ios: `${constant.GURBANI_AKHAR_TRUE}.ttf`,
+      android: `file:///android_asset/fonts/${constant.GURBANI_AKHAR_TRUE}.ttf`,
+    });
 
     const content = shabad
       .map((item, index) => {
@@ -111,7 +115,9 @@ export const loadHTML = (
           textAlign,
           fontSize,
           theme,
-          isLarivaar
+          isLarivaar,
+          "",
+          fontFace
         );
 
         if (isTransliteration) {
@@ -168,7 +174,15 @@ export const loadHTML = (
         return contentHtml;
       })
       .join("");
-    const htmlContent = htmlTemplate(backColor, fileUri, fontFace, content, theme, savePosition);
+    const htmlContent = htmlTemplate(
+      backColor,
+      fileUri,
+      fontFace,
+      content,
+      theme,
+      savePosition,
+      defaultFontFaceURI
+    );
     return htmlContent;
   } catch (error) {
     logError(error);

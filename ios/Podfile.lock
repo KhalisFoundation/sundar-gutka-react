@@ -140,7 +140,10 @@ PODS:
     - nanopb (~> 3.30910.0)
     - PromisesSwift (~> 2.1)
   - FirebaseSharedSwift (11.15.0)
+<<<<<<< HEAD
 >>>>>>> a742c44 (Add Baloo Paaji fonts to asset manifests and update styles across components)
+=======
+>>>>>>> dev
   - fmt (11.0.2)
   - glog (0.3.5)
   - GoogleAdsOnDeviceConversion (2.2.0):
