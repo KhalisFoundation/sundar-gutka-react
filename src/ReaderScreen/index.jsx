@@ -41,6 +41,7 @@ const Reader = ({ navigation, route }) => {
   const [currentPosition, setCurrentPosition] = useState(savePosition[id] || 0);
   const [shouldNavigateBack, setShouldNavigateBack] = useState(false);
   const [dateKey, setDateKey] = useState(Date.now().toString());
+  const [titleText, setTitleText] = useState(null);
   const positionPointer = useRef(0);
 
   const dispatch = useDispatch();
@@ -54,6 +55,10 @@ const Reader = ({ navigation, route }) => {
       dispatch(actions.setPosition(parseFloat(positionPointer.current), id));
     }
   }, [dispatch, id]);
+
+  useEffect(() => {
+    setTitleText(fontFace === constant.BALOO_PAAJI ? titleUni : title);
+  }, [fontFace, titleUni, title]);
 
   // Cleanup on unmount
   useEffect(() => {
@@ -225,11 +230,7 @@ const Reader = ({ navigation, route }) => {
   return (
     <SafeArea backgroundColor={theme.colors.surface}>
       <StatusBarComponent backgroundColor={theme.colors.primary} />
-      <Header
-        title={fontFace === constant.BALOO_PAAJI ? titleUni : title}
-        handleBackPress={handleBackPress}
-        isHeader={isHeader}
-      />
+      <Header title={titleText} handleBackPress={handleBackPress} isHeader={isHeader} />
       {isLoading && <ActivityIndicator size="small" color={theme.colors.primary} />}
       <WebView
         key={webViewKey}
@@ -262,7 +263,7 @@ const Reader = ({ navigation, route }) => {
       {isAudio && (
         <AudioPlayer
           baniID={id}
-          title={title}
+          title={titleText}
           shouldNavigateBack={shouldNavigateBack}
           webViewRef={webViewRef}
         />

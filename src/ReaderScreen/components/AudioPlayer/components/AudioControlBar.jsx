@@ -52,8 +52,6 @@ const AudioControlBar = ({
     isMoreTracksModalOpen,
     isMinimized
   );
-  const backgroundColor =
-    Platform.OS === "ios" ? theme.staticColors.SEMI_TRANSPARENT : theme.staticColors.WHITE_COLOR;
 
   const formatTime = (seconds) => {
     const mins = Math.floor(seconds / 60);
@@ -110,7 +108,7 @@ const AudioControlBar = ({
   }, [isMoreTracksModalOpen]);
 
   return (
-    <>
+    <View>
       {/* Minimized Player with Animation */}
       <Animated.View
         style={[
@@ -142,15 +140,19 @@ const AudioControlBar = ({
             isAudioEnabled={isAudioEnabled}
             onDownload={handleDownload}
           />
-          <View style={[styles.mainContainer, isNightMode && styles.mainContainerNight]}>
-            {Platform.OS === "ios" && theme.mode === "light" && (
+          <View
+            style={[
+              styles.mainContainer,
+              isNightMode && styles.mainContainerNight,
+              Platform.OS === "ios" && styles.mainContainerIOS,
+            ]}
+          >
+            {Platform.OS === "ios" && (
               <BlurView
                 style={StyleSheet.absoluteFill}
-                blurType={isNightMode ? "dark" : "light"}
-                blurAmount={5}
-                reducedTransparencyFallbackColor={
-                  isNightMode ? theme.staticColors.NIGHT_BLACK : backgroundColor
-                }
+                blurType={theme.mode === "dark" ? "dark" : "light"}
+                blurAmount={10}
+                reducedTransparencyFallbackColor={theme.colors.transparentOverlay}
               />
             )}
             {/* Top Control Bar */}
@@ -244,7 +246,7 @@ const AudioControlBar = ({
           </View>
         </Animated.View>
       </View>
-    </>
+    </View>
   );
 };
 

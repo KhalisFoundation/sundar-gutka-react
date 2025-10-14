@@ -167,29 +167,25 @@ const AudioPlayer = ({ baniID, title, shouldNavigateBack, webViewRef }) => {
     return null;
   }
 
-  return (
-    <View>
-      {showTrackModal ? (
-        <AudioTrackDialog handleTrackSelect={handleTrackSelect} title={title} tracks={tracks} />
-      ) : (
-        <AudioControlBar
-          baniID={baniID}
-          handleTrackSelect={handleTrackSelect}
-          tracks={tracks}
-          isPlaying={isPlaying}
-          currentPlaying={currentPlaying}
-          handlePlayPause={handlePlayPause}
-          progress={progress}
-          handleSeek={handleSeek}
-          isAudioEnabled={isAudioEnabled}
-          isDownloading={isDownloading}
-          isDownloaded={isDownloaded}
-          handleDownload={handleDownload}
-          handleDeleteDownload={handleDeleteDownload}
-          title={title}
-        />
-      )}
-    </View>
+  return showTrackModal ? (
+    <AudioTrackDialog handleTrackSelect={handleTrackSelect} title={title} tracks={tracks} />
+  ) : (
+    <AudioControlBar
+      baniID={baniID}
+      handleTrackSelect={handleTrackSelect}
+      tracks={tracks}
+      isPlaying={isPlaying}
+      currentPlaying={currentPlaying}
+      handlePlayPause={handlePlayPause}
+      progress={progress}
+      handleSeek={handleSeek}
+      isAudioEnabled={isAudioEnabled}
+      isDownloading={isDownloading}
+      isDownloaded={isDownloaded}
+      handleDownload={handleDownload}
+      handleDeleteDownload={handleDeleteDownload}
+      title={title}
+    />
   );
 };
 

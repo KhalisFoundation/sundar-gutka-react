@@ -60,6 +60,9 @@ export const audioControlBarStyles = (theme) => ({
   mainContainerNight: {
     backgroundColor: theme.staticColors.NIGHT_BLACK,
   },
+  mainContainerIOS: {
+    backgroundColor: "transparent",
+  },
   minimizePlayerAnimation: {
     opacity: 0,
     position: "absolute",
@@ -79,6 +82,7 @@ export const audioControlBarStyles = (theme) => ({
     backgroundColor: theme.colors.surface,
     overflow: "hidden",
     justifyContent: "center",
+    zIndex: 1,
   },
   moreTracksModalContainer: {
     width: "90%",
@@ -103,6 +107,7 @@ export const audioControlBarStyles = (theme) => ({
     width: "98%",
     marginLeft: "auto",
     marginRight: "auto",
+    zIndex: 1,
   },
   leftControls: {
     flexDirection: "row",
@@ -134,9 +139,11 @@ export const audioControlBarStyles = (theme) => ({
   separator: {
     height: 1,
     backgroundColor: theme.colors.separator,
+    zIndex: 1,
   },
   mainSection: {
     paddingHorizontal: theme.spacing.md_12,
+    zIndex: 1,
   },
   trackInfo: {
     flexDirection: "row",
@@ -185,51 +192,63 @@ export const audioControlBarStyles = (theme) => ({
 });
 
 export const audioTrackDialogStyles = (theme) => ({
+  modalWrapper: {
+    position: "absolute",
+    left: 0,
+    right: 0,
+    bottom: 60,
+    zIndex: 1000,
+  },
   blurOverlay: {
     position: "absolute",
     bottom: 0,
     left: 0,
     right: 0,
     top: 0,
-    borderRadius: BORDER_RADIUS.sm,
-    borderWidth: 1,
-    borderColor: theme.colors.overlay,
+    borderRadius: BORDER_RADIUS.md,
   },
   container: {
-    zIndex: 10,
     padding: theme.spacing.xl,
     gap: theme.spacing.md,
     borderRadius: BORDER_RADIUS.md,
     borderWidth: 1,
     borderColor: theme.staticColors.TRACK_COLOR,
-    backgroundColor: theme.colors.overlay,
     width: "95%",
     marginLeft: "auto",
     marginRight: "auto",
     marginBottom: theme.spacing.md_12,
   },
+  containerIOS: {
+    backgroundColor: "transparent",
+  },
+  containerAndroid: {
+    backgroundColor: theme.colors.transparentOverlay,
+  },
   header: {
     alignItems: "center",
+    zIndex: 1,
+  },
+  closeButton: {
+    position: "absolute",
+    top: theme.spacing.md,
+    right: theme.spacing.md,
+    zIndex: 10,
   },
   welcomeText: {
-    fontFamily: "BalooPaaji2-SemiBold",
+    fontFamily: constant.BALOO_PAAJI_SEMI_BOLD,
     fontSize: theme.typography.sizes.xxl,
-    fontWeight: theme.typography.weights.semibold,
     textAlign: "center",
-    marginBottom: theme.spacing.md,
-    lineHeight: theme.typography.sizes.xxl * 1.3, // Better line height for Android
-    color: theme.colors.audioPlayer,
+    color: theme.colors.audioTitleText,
   },
   subtitleText: {
-    fontFamily: theme.typography.fonts.balooPaaji,
+    fontFamily: constant.BALOO_PAAJI,
     fontSize: theme.typography.sizes.lg,
     textAlign: "center",
-    lineHeight: theme.typography.sizes.lg * 1.4, // Better line height for Android
-    color: theme.colors.audioPlayer,
+    color: theme.colors.audioTitleText,
   },
   trackList: {
     maxHeight: 200,
-    zIndex: 10,
+    zIndex: 1,
   },
   trackItem: {
     flexDirection: "row",
@@ -267,6 +286,7 @@ export const audioTrackDialogStyles = (theme) => ({
     alignItems: "center",
     alignSelf: "flex-end",
     minWidth: 120,
+    zIndex: 1,
   },
   playButtonText: {
     color: theme.staticColors.WHITE_COLOR,

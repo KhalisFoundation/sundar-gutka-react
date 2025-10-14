@@ -32,6 +32,7 @@ const darkTheme = {
     trackBackgroundColor: "rgba(37, 105, 214, 0.2)",
     controlBarBackgroundColor: "#000000",
     separator: "rgba(255, 255, 255, 0.2)",
+    transparentOverlay: "rgba(18, 18, 18, 0.95)",
   },
   typography,
   spacing,
