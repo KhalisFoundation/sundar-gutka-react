@@ -5,6 +5,8 @@ import { Slider } from "@miblanchard/react-native-slider";
 import { BlurView } from "@react-native-community/blur";
 import PropTypes from "prop-types";
 import { toggleAudio } from "@common/actions";
+import useTheme from "@common/context";
+import useThemedStyles from "@common/hooks/useThemedStyles";
 import {
   MusicNoteIcon,
   SettingsIcon,
@@ -13,9 +15,9 @@ import {
   PlayIcon,
   PauseIcon,
 } from "@common/icons";
-import { colors, STRINGS } from "@common";
+import { STRINGS } from "@common";
 import { useTrackPlayer, useAnimation } from "../hooks";
-import { audioControlBarStyles as styles } from "../style";
+import { audioControlBarStyles } from "../style";
 import ActionComponents from "./ActionComponent";
 import AudioSettingsModal from "./AudioSettingsModal";
 import DownloadBadge from "./DownloadBadge";
@@ -33,11 +35,12 @@ const AudioControlBar = ({
   isDownloading = false,
   isDownloaded = false,
   handleDownload,
-  handleDeleteDownload,
   handleTrackSelect,
   tracks,
   title,
 }) => {
+  const { theme } = useTheme();
+  const styles = useThemedStyles(audioControlBarStyles);
   const [isMinimized, setIsMinimized] = useState(false);
   const isNightMode = useSelector((state) => state.isNightMode);
   const [isSettingsModalOpen, setIsSettingsModalOpen] = useState(false);
@@ -49,7 +52,8 @@ const AudioControlBar = ({
     isMoreTracksModalOpen,
     isMinimized
   );
-  const backgroundColor = Platform.OS === "ios" ? colors.SEMI_TRANSPARENT : colors.WHITE_COLOR;
+  const backgroundColor =
+    Platform.OS === "ios" ? theme.staticColors.SEMI_TRANSPARENT : theme.staticColors.WHITE_COLOR;
 
   const formatTime = (seconds) => {
     const mins = Math.floor(seconds / 60);
@@ -59,8 +63,8 @@ const AudioControlBar = ({
 
   // Calculate slider colors to avoid nested ternary
   const getSliderMinTrackColor = () => {
-    if (!isAudioEnabled) return colors.LIGHT_GRAY;
-    return isNightMode ? colors.AUDIO_PLAYER_NIGHT_ICON : colors.READER_HEADER_COLOR;
+    if (!isAudioEnabled) return theme.staticColors.LIGHT_GRAY;
+    return theme.colors.audioPlayer;
   };
   const actionComponents = [
     {
@@ -109,15 +113,11 @@ const AudioControlBar = ({
     <>
       {/* Minimized Player with Animation */}
       <Animated.View
-        style={{
-          opacity: minimizeOpacity,
-          position: "absolute",
-          top: 0,
-          left: 0,
-          right: 0,
-          bottom: 0,
-          zIndex: isMinimized ? 1 : 0,
-        }}
+        style={[
+          styles.minimizePlayerAnimation,
+          { opacity: minimizeOpacity },
+          isMinimized && styles.minimizePlayerAnimationActive,
+        ]}
         pointerEvents={isMinimized ? "auto" : "none"}
       >
         <MinimizePlayer
@@ -132,9 +132,7 @@ const AudioControlBar = ({
       <View style={[styles.container]} pointerEvents="box-none">
         {/* Full Player with Animation */}
         <Animated.View
-          style={{
-            opacity: playerOpacity,
-          }}
+          style={[styles.fullPlayerAnimation, { opacity: playerOpacity }]}
           pointerEvents={isMinimized ? "none" : "auto"}
         >
           <DownloadBadge
@@ -143,23 +141,15 @@ const AudioControlBar = ({
             isDownloading={isDownloading}
             isAudioEnabled={isAudioEnabled}
             onDownload={handleDownload}
-            onDelete={handleDeleteDownload}
           />
-          <View
-            style={[
-              styles.mainContainer,
-              {
-                backgroundColor: isNightMode ? colors.NIGHT_BLACK : backgroundColor,
-              },
-            ]}
-          >
-            {Platform.OS === "ios" && (
+          <View style={[styles.mainContainer, isNightMode && styles.mainContainerNight]}>
+            {Platform.OS === "ios" && theme.mode === "light" && (
               <BlurView
                 style={StyleSheet.absoluteFill}
                 blurType={isNightMode ? "dark" : "light"}
                 blurAmount={5}
                 reducedTransparencyFallbackColor={
-                  isNightMode ? colors.BLACK_COLOR : backgroundColor
+                  isNightMode ? theme.staticColors.NIGHT_BLACK : backgroundColor
                 }
               />
             )}
@@ -180,50 +170,23 @@ const AudioControlBar = ({
               <View style={styles.rightControls}>
                 {actionItems.map((item) => (
                   <Pressable key={item.id} style={styles.controlIcon} onPress={item.onPress}>
-                    <item.Icon
-                      size={30}
-                      color={
-                        isNightMode ? colors.AUDIO_PLAYER_NIGHT_ICON : colors.READER_HEADER_COLOR
-                      }
-                    />
+                    <item.Icon size={30} color={theme.colors.audioTitleText} />
                   </Pressable>
                 ))}
               </View>
             </View>
 
             {/* Separator */}
-            <View
-              style={[
-                styles.separator,
-                {
-                  backgroundColor: isNightMode
-                    ? colors.AUDIO_PLAYER_NIGHT_ICON
-                    : colors.READER_HEADER_COLOR_10,
-                },
-              ]}
-            />
+            <View style={styles.separator} />
             <Animated.View
-              style={{
-                backgroundColor: isNightMode ? colors.NIGHT_BLACK : colors.TERTIARY_COLOR,
-                height: modalHeight,
-                opacity: modalOpacity,
-                overflow: "hidden",
-                justifyContent: "center",
-              }}
+              style={[styles.modalAnimation, { height: modalHeight, opacity: modalOpacity }]}
             >
               {isSettingsModalOpen && (
                 <AudioSettingsModal title={title} tracks={tracks} baniID={baniID} />
               )}
 
               {isMoreTracksModalOpen && (
-                <View
-                  style={{
-                    width: "90%",
-                    alignSelf: "center",
-                    padding: 10,
-                    zIndex: 20,
-                  }}
-                >
+                <View style={styles.moreTracksModalContainer}>
                   <ScrollViewComponent
                     tracks={tracks}
                     selectedTrack={currentPlaying}
@@ -234,78 +197,27 @@ const AudioControlBar = ({
             </Animated.View>
 
             {/* Main Playback Section */}
-            <View
-              style={[
-                styles.mainSection,
-                {
-                  borderRadius: 20,
-                  borderTopWidth: 1,
-                  borderColor: isNightMode ? colors.NIGHT_GREY_COLOR : colors.TERTIARY_COLOR,
-                },
-              ]}
-            >
+            <View style={[styles.mainSection, styles.mainSectionWithBorder]}>
               <View style={styles.trackInfo}>
                 <View style={styles.trackInfoLeft}>
                   {currentPlaying && currentPlaying.displayName && (
-                    <Text
-                      style={[
-                        styles.trackName,
-                        {
-                          color: isNightMode
-                            ? colors.AUDIO_PLAYER_NIGHT_ICON
-                            : colors.READER_HEADER_COLOR,
-                        },
-                      ]}
-                    >
-                      {currentPlaying.displayName}
-                    </Text>
+                    <Text style={styles.trackName}>{currentPlaying.displayName}</Text>
                   )}
-                  {/* <Text
-                    style={[
-                      styles.trackInfoText,
-                      {
-                        color: isNightMode
-                          ? colors.AUDIO_PLAYER_NIGHT_ICON
-                          : colors.READER_HEADER_COLOR,
-                      },
-                    ]}
-                  >
-                    ({STRINGS.info})
-                  </Text> */}
                 </View>
               </View>
 
               <View style={styles.playbackControls}>
                 <Pressable style={styles.playButton} onPress={handlePlayPause}>
                   {isPlaying ? (
-                    <PauseIcon
-                      size={30}
-                      color={
-                        isNightMode ? colors.AUDIO_PLAYER_NIGHT_ICON : colors.READER_HEADER_COLOR
-                      }
-                    />
+                    <PauseIcon size={30} color={theme.colors.audioTitleText} />
                   ) : (
-                    <PlayIcon
-                      size={30}
-                      color={
-                        isNightMode ? colors.AUDIO_PLAYER_NIGHT_ICON : colors.READER_HEADER_COLOR
-                      }
-                    />
+                    <PlayIcon size={30} color={theme.colors.audioTitleText} />
                   )}
                 </Pressable>
 
                 <View style={styles.progressContainer}>
                   <View style={styles.progressBar}>
-                    <Text
-                      style={[
-                        styles.timestamp,
-                        {
-                          color: isNightMode
-                            ? colors.AUDIO_PLAYER_NIGHT_ICON
-                            : colors.READER_HEADER_COLOR,
-                        },
-                      ]}
-                    >
+                    <Text style={[styles.timestamp, styles.timestampWithColor]}>
                       {formatTime(progress.position)}
                     </Text>
                     <Slider
@@ -314,7 +226,7 @@ const AudioControlBar = ({
                       maximumValue={progress.duration}
                       onSlidingComplete={([v]) => handleSeek(v)}
                       minimumTrackTintColor={getSliderMinTrackColor()}
-                      maximumTrackTintColor={isNightMode ? colors.NIGHT_GREY_COLOR : "#e0e0e0"}
+                      maximumTrackTintColor={theme.colors.surfaceGrey}
                       disabled={!isAudioEnabled}
                       trackStyle={{
                         height: 6,
@@ -351,7 +263,6 @@ AudioControlBar.propTypes = {
   isDownloading: PropTypes.bool.isRequired,
   isDownloaded: PropTypes.bool.isRequired,
   handleDownload: PropTypes.func.isRequired,
-  handleDeleteDownload: PropTypes.func.isRequired,
   title: PropTypes.string.isRequired,
   baniID: PropTypes.string.isRequired,
 };

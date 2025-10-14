@@ -2,18 +2,18 @@ import React from "react";
 import { useSelector, useDispatch } from "react-redux";
 import { ListItem, Icon, Switch } from "@rneui/themed";
 import { toggleAudio, toggleAudioAutoPlay, toggleAudioSyncScroll } from "@common/actions";
+import useTheme from "@common/context";
+import useThemedStyles from "@common/hooks/useThemedStyles";
 import { STRINGS } from "@common";
-import { iconNightColor, nightModeStyles, nightModeColor } from "../styles/nightModeStyles";
+import createStyles from "../styles";
 
 const Audio = () => {
-  const isNightMode = useSelector((state) => state.isNightMode);
+  const { theme } = useTheme();
+  const styles = useThemedStyles(createStyles);
   const isAudio = useSelector((state) => state.isAudio);
   const isAudioAutoPlay = useSelector((state) => state.isAudioAutoPlay);
   const isAudioSyncScroll = useSelector((state) => state.isAudioSyncScroll);
   const dispatch = useDispatch();
-  const iconColor = iconNightColor(isNightMode);
-  const { containerNightStyles } = nightModeStyles(isNightMode);
-  const nightColor = nightModeColor(isNightMode);
   const { AUDIO, AUDIO_AUTO_PLAY, AUDIO_SYNC_SCROLL } = STRINGS;
 
   // Audio settings configuration
@@ -50,10 +50,14 @@ const Audio = () => {
     if (!shouldShow) return null;
 
     return (
-      <ListItem key={setting.id} bottomDivider containerStyle={containerNightStyles}>
-        <Icon color={iconColor} name={setting.icon} type="material" />
+      <ListItem
+        key={setting.id}
+        bottomDivider
+        containerStyle={{ backgroundColor: theme.colors.surfaceGrey }}
+      >
+        <Icon color={theme.colors.primaryText} name={setting.icon} type="material" />
         <ListItem.Content>
-          <ListItem.Title style={nightColor}>{setting.title}</ListItem.Title>
+          <ListItem.Title style={styles.listItemTitle}>{setting.title}</ListItem.Title>
         </ListItem.Content>
         <Switch
           value={setting.value}

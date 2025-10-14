@@ -4,12 +4,14 @@ import { exists } from "react-native-fs";
 import TrackPlayer from "react-native-track-player";
 import { useSelector } from "react-redux";
 import PropTypes from "prop-types";
+import useThemedStyles from "@common/hooks/useThemedStyles";
 import { AudioTrackDialog, AudioControlBar } from "./components";
 import { useAudioManifest, useDownloadManager, useTrackPlayer, useAudioSyncScroll } from "./hooks";
-import styles from "./style";
+import createStyles from "./style";
 import { formatUrlForTrackPlayer, isLocalFile } from "./utils/urlHelper";
 
 const AudioPlayer = ({ baniID, title, shouldNavigateBack, webViewRef }) => {
+  const styles = useThemedStyles(createStyles);
   const [showTrackModal, setShowTrackModal] = useState(true);
   const isAudioAutoPlay = useSelector((state) => state.isAudioAutoPlay);
   const defaultAudio = useSelector((state) => state.defaultAudio);

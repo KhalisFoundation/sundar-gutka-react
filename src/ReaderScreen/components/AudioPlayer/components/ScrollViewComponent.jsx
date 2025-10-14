@@ -1,13 +1,14 @@
 import React from "react";
 import { ScrollView, Pressable, Text } from "react-native";
-import { useSelector } from "react-redux";
 import PropTypes from "prop-types";
+import useTheme from "@common/context";
+import useThemedStyles from "@common/hooks/useThemedStyles";
 import { PlayIcon } from "@common/icons";
-import { colors } from "@common";
-import { audioTrackDialogStyles as styles } from "../style";
+import { audioTrackDialogStyles } from "../style";
 
 const ScrollViewComponent = ({ tracks, selectedTrack = null, handleSelectTrack }) => {
-  const isNightMode = useSelector((state) => state.isNightMode);
+  const { theme } = useTheme();
+  const styles = useThemedStyles(audioTrackDialogStyles);
   return (
     <ScrollView
       style={styles.trackList}
@@ -24,10 +25,8 @@ const ScrollViewComponent = ({ tracks, selectedTrack = null, handleSelectTrack }
           style={[
             styles.trackItem,
             {
-              backgroundColor: isNightMode
-                ? colors.REAder_HEADER_COLOR_10
-                : colors.READER_HEADER_COLOR_10,
-              borderColor: isNightMode ? colors.NIGHT_MODE_BLACK : "transparent",
+              backgroundColor: theme.colors.trackBackgroundColor,
+              borderColor: theme.mode === "dark" ? theme.staticColors.NIGHT_BLACK : "transparent",
               borderWidth: 1,
             },
             selectedTrack && track.id === selectedTrack?.id && styles.selectedTrackItem,
@@ -39,7 +38,7 @@ const ScrollViewComponent = ({ tracks, selectedTrack = null, handleSelectTrack }
             style={[
               styles.trackName,
               {
-                color: isNightMode ? colors.AUDIO_PLAYER_NIGHT_ICON : colors.READER_HEADER_COLOR,
+                color: theme.colors.audioTitleText,
               },
               selectedTrack && track.id === selectedTrack.id && styles.selectedTrackName,
             ]}
@@ -49,7 +48,11 @@ const ScrollViewComponent = ({ tracks, selectedTrack = null, handleSelectTrack }
 
           <PlayIcon
             size={30}
-            color={selectedTrack && selectedTrack.id === track.id ? colors.WHITE_COLOR : "#808fad"}
+            color={
+              selectedTrack && selectedTrack.id === track.id
+                ? theme.staticColors.WHITE_COLOR
+                : theme.colors.audioPlayer
+            }
           />
         </Pressable>
       ))}

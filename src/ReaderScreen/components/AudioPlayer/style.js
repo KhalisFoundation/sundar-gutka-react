@@ -1,16 +1,4 @@
-import { StyleSheet } from "react-native";
-import { colors, constant } from "@common";
-
-const fontFamily = constant.BALOO_PAAJI;
-// Common values
-const SPACING = {
-  xs: 4,
-  sm: 8,
-  md: 12,
-  lg: 16,
-  xl: 20,
-  xxl: 24,
-};
+import { constant } from "@common";
 
 const BORDER_RADIUS = {
   sm: 15,
@@ -34,51 +22,19 @@ const SHADOW = {
   },
 };
 
-const BACKGROUND_COLORS = {
-  primary: colors.READER_HEADER_COLOR,
-  secondary: "#E0E8F5",
-  tertiary: "#EEEEEE",
-  light: colors.READER_HEADER_COLOR_10,
-  white: colors.WHITE_COLOR,
-  semiTransparent: "rgba(255, 255, 255, 0.6)",
-  semiTransparentStrong: "rgba(255, 255, 255, 0.8)",
-};
-
-const TEXT_COLORS = {
-  primary: colors.READER_HEADER_COLOR,
-  secondary: "#808FAD",
-  white: colors.WHITE_COLOR,
-  dark: "#113979",
-};
-
-const FONT_SIZES = {
-  xs: 12,
-  sm: 14,
-  md: 16,
-  lg: 18,
-  xl: 20,
-};
-
-const FONT_WEIGHTS = {
-  normal: "400",
-  medium: "500",
-  semibold: "600",
-  bold: "bold",
-};
-
-const styles = StyleSheet.create({
+const createStyles = (theme) => ({
   mainContainer: {
     position: "absolute",
     bottom: 0,
     left: 0,
     right: 0,
     borderRadius: BORDER_RADIUS.sm,
-    margin: SPACING.md,
+    margin: theme.spacing.md_12,
     ...SHADOW.light,
   },
 });
 
-export const audioControlBarStyles = StyleSheet.create({
+export const audioControlBarStyles = (theme) => ({
   blurOverlay: {
     position: "absolute",
     bottom: 0,
@@ -98,7 +54,47 @@ export const audioControlBarStyles = StyleSheet.create({
   },
   mainContainer: {
     borderRadius: BORDER_RADIUS.md,
+    backgroundColor: theme.colors.controlBarBackgroundColor,
     ...SHADOW.light,
+  },
+  mainContainerNight: {
+    backgroundColor: theme.staticColors.NIGHT_BLACK,
+  },
+  minimizePlayerAnimation: {
+    opacity: 0,
+    position: "absolute",
+    top: 0,
+    left: 0,
+    right: 0,
+    bottom: 0,
+    zIndex: 0,
+  },
+  minimizePlayerAnimationActive: {
+    zIndex: 1,
+  },
+  fullPlayerAnimation: {
+    opacity: 1,
+  },
+  modalAnimation: {
+    backgroundColor: theme.colors.surface,
+    overflow: "hidden",
+    justifyContent: "center",
+  },
+  moreTracksModalContainer: {
+    width: "90%",
+    alignSelf: "center",
+    padding: 10,
+    zIndex: 20,
+  },
+
+  mainSectionWithBorder: {
+    borderRadius: 20,
+    borderTopWidth: 1,
+    borderColor: theme.colors.surfaceGrey,
+  },
+
+  timestampWithColor: {
+    color: theme.colors.audioPlayer,
   },
   topControlBar: {
     flexDirection: "row",
@@ -110,20 +106,21 @@ export const audioControlBarStyles = StyleSheet.create({
   },
   leftControls: {
     flexDirection: "row",
-    gap: SPACING.md,
+    gap: theme.spacing.md_12,
   },
   rightControls: {
     flexDirection: "row",
-    gap: SPACING.md,
+    gap: theme.spacing.md_12,
     justifyContent: "center",
+    alignItems: "center",
   },
   actionButton: {
     borderRadius: BORDER_RADIUS.xl,
   },
   actionButtonText: {
-    fontSize: FONT_SIZES.md,
-    fontWeight: FONT_WEIGHTS.normal,
-    fontFamily,
+    fontSize: theme.typography.sizes.lg,
+    fontWeight: theme.typography.weights.normal,
+    fontFamily: theme.typography.fonts.balooPaaji,
     marginBottom: 4,
   },
   actionButtonContent: {
@@ -131,16 +128,15 @@ export const audioControlBarStyles = StyleSheet.create({
     alignItems: "center",
     justifyContent: "center",
     gap: 4,
-    paddingHorizontal: SPACING.sm,
-    paddingVertical: SPACING.xs,
+    paddingHorizontal: theme.spacing.md,
+    paddingVertical: theme.spacing.md,
   },
   separator: {
     height: 1,
+    backgroundColor: theme.colors.separator,
   },
   mainSection: {
-    paddingHorizontal: SPACING.md,
-    // borderWidth: 1,
-    // borderColor: "#eee",
+    paddingHorizontal: theme.spacing.md_12,
   },
   trackInfo: {
     flexDirection: "row",
@@ -152,24 +148,22 @@ export const audioControlBarStyles = StyleSheet.create({
   trackInfoLeft: {
     flexDirection: "row",
     alignItems: "flex-end",
-    gap: SPACING.xs,
+    gap: theme.spacing.md,
   },
   trackName: {
-    fontSize: FONT_SIZES.xl,
-    fontFamily,
-    fontWeight: FONT_WEIGHTS.medium,
+    fontSize: theme.typography.sizes.xxl,
+    fontFamily: theme.typography.fonts.balooPaaji,
+    color: theme.colors.audioTitleText,
   },
   trackInfoText: {
-    fontSize: FONT_SIZES.sm,
-    fontFamily,
+    fontSize: theme.typography.sizes.md,
+    fontFamily: theme.typography.fonts.balooPaaji,
     marginBottom: 2,
   },
   playbackControls: {
     flexDirection: "row",
-    // justifyContent: "space-between",
-    // alignItems: "center",
-    paddingHorizontal: SPACING.md,
-    gap: SPACING.md,
+    paddingHorizontal: theme.spacing.md_12,
+    gap: theme.spacing.md_12,
   },
   playButton: {
     justifyContent: "center",
@@ -179,19 +173,18 @@ export const audioControlBarStyles = StyleSheet.create({
     flex: 1,
     marginTop: 2,
     justifyContent: "center",
-    // alignItems: "center",
   },
   timestamp: {
-    fontSize: FONT_SIZES.sm,
-    fontFamily,
+    fontSize: theme.typography.sizes.md,
+    fontFamily: theme.typography.fonts.balooPaaji,
     right: 0,
     position: "absolute",
     bottom: 25,
-    fontWeight: FONT_WEIGHTS.normal,
+    fontWeight: theme.typography.weights.normal,
   },
 });
 
-export const audioTrackDialogStyles = StyleSheet.create({
+export const audioTrackDialogStyles = (theme) => ({
   blurOverlay: {
     position: "absolute",
     bottom: 0,
@@ -200,35 +193,39 @@ export const audioTrackDialogStyles = StyleSheet.create({
     top: 0,
     borderRadius: BORDER_RADIUS.sm,
     borderWidth: 1,
+    borderColor: theme.colors.overlay,
   },
   container: {
     zIndex: 10,
-    padding: SPACING.xxl,
-    gap: SPACING.sm,
+    padding: theme.spacing.xl,
+    gap: theme.spacing.md,
     borderRadius: BORDER_RADIUS.md,
     borderWidth: 1,
-    borderColor: colors.READER_HEADER_COLOR_10,
+    borderColor: theme.staticColors.TRACK_COLOR,
+    backgroundColor: theme.colors.overlay,
     width: "95%",
     marginLeft: "auto",
     marginRight: "auto",
-    marginBottom: SPACING.md,
+    marginBottom: theme.spacing.md_12,
   },
   header: {
     alignItems: "center",
   },
   welcomeText: {
     fontFamily: "BalooPaaji2-SemiBold",
-    fontSize: FONT_SIZES.xl,
-    fontWeight: FONT_WEIGHTS.semibold,
+    fontSize: theme.typography.sizes.xxl,
+    fontWeight: theme.typography.weights.semibold,
     textAlign: "center",
-    marginBottom: SPACING.sm,
-    lineHeight: FONT_SIZES.xl * 1.3, // Better line height for Android
+    marginBottom: theme.spacing.md,
+    lineHeight: theme.typography.sizes.xxl * 1.3, // Better line height for Android
+    color: theme.colors.audioPlayer,
   },
   subtitleText: {
-    fontFamily,
-    fontSize: FONT_SIZES.md,
+    fontFamily: theme.typography.fonts.balooPaaji,
+    fontSize: theme.typography.sizes.lg,
     textAlign: "center",
-    lineHeight: FONT_SIZES.md * 1.4, // Better line height for Android
+    lineHeight: theme.typography.sizes.lg * 1.4, // Better line height for Android
+    color: theme.colors.audioPlayer,
   },
   trackList: {
     maxHeight: 200,
@@ -239,32 +236,32 @@ export const audioTrackDialogStyles = StyleSheet.create({
     justifyContent: "space-between",
     alignItems: "center",
     borderRadius: BORDER_RADIUS.xl,
-    padding: SPACING.md,
-    paddingHorizontal: SPACING.xl,
-    marginBottom: SPACING.md,
+    padding: theme.spacing.md_12,
+    paddingHorizontal: theme.spacing.xl_20,
+    marginBottom: theme.spacing.md_12,
     // borderWidth: 2,
     borderColor: "transparent",
-    minHeight: 60, // Consistent height for Android
+    minHeight: 40, // Consistent height for Android
   },
   selectedTrackItem: {
-    backgroundColor: BACKGROUND_COLORS.primary,
-    color: colors.WHITE_COLOR,
-    borderColor: BACKGROUND_COLORS.primary,
+    backgroundColor: theme.colors.primary,
+    color: theme.staticColors.WHITE_COLOR,
+    borderColor: theme.colors.primary,
   },
   trackName: {
-    fontFamily,
-    fontSize: FONT_SIZES.md,
-    fontWeight: FONT_WEIGHTS.normal,
+    fontFamily: theme.typography.fonts.balooPaaji,
+    fontSize: theme.typography.sizes.lg,
+    fontWeight: theme.typography.weights.normal,
     flex: 1,
   },
   selectedTrackName: {
-    color: TEXT_COLORS.white,
+    color: theme.staticColors.WHITE_COLOR,
   },
   playButton: {
-    backgroundColor: BACKGROUND_COLORS.primary,
+    backgroundColor: theme.colors.primary,
     borderRadius: BORDER_RADIUS.lg,
-    paddingVertical: SPACING.md,
-    paddingHorizontal: SPACING.xxl,
+    paddingVertical: theme.spacing.md_12,
+    paddingHorizontal: theme.spacing.xl,
     flexDirection: "row",
     justifyContent: "center",
     alignItems: "center",
@@ -272,25 +269,25 @@ export const audioTrackDialogStyles = StyleSheet.create({
     minWidth: 120,
   },
   playButtonText: {
-    color: TEXT_COLORS.white,
-    fontSize: FONT_SIZES.md,
-    fontWeight: FONT_WEIGHTS.semibold,
-    marginRight: SPACING.sm,
-    fontFamily,
+    color: theme.staticColors.WHITE_COLOR,
+    fontSize: theme.typography.sizes.lg,
+    fontWeight: theme.typography.weights.semibold,
+    marginRight: theme.spacing.md,
+    fontFamily: theme.typography.fonts.balooPaaji,
   },
   playButtonDisabled: {
     opacity: 0.5,
   },
 });
 
-export const downloadBadgeStyles = StyleSheet.create({
+export const downloadBadgeStyles = (theme) => ({
   container: {
     borderTopLeftRadius: BORDER_RADIUS.xl,
     borderTopRightRadius: BORDER_RADIUS.xl,
-    marginRight: SPACING.xl,
+    marginRight: theme.spacing.xl_20,
     flexDirection: "row",
     justifyContent: "center",
-    backgroundColor: BACKGROUND_COLORS.tertiary,
+    backgroundColor: theme.colors.surface,
     width: "35%",
     alignSelf: "flex-end",
   },
@@ -298,34 +295,37 @@ export const downloadBadgeStyles = StyleSheet.create({
     flexDirection: "row",
     alignItems: "center",
     justifyContent: "center",
-    gap: SPACING.sm,
+    gap: theme.spacing.md,
     padding: 2,
   },
   downloadedContainer: {
     flexDirection: "row",
     alignItems: "center",
-    gap: SPACING.sm,
-    padding: SPACING.sm,
+    gap: theme.spacing.md,
+    padding: theme.spacing.md,
   },
   downloadButtonText: {
-    fontFamily,
-    fontSize: FONT_SIZES.xs,
-    fontWeight: 300,
+    fontFamily: theme.typography.fonts.balooPaaji,
+    fontSize: theme.typography.sizes.sm,
+    fontWeight: theme.typography.weights.light,
+    color: theme.colors.primaryHeaderVariant,
   },
 });
 
-export const minimizePlayerStyles = StyleSheet.create({
+export const minimizePlayerStyles = (theme) => ({
   container: {
     position: "absolute",
     bottom: 10,
-    right: SPACING.xl,
+    right: theme.spacing.xl_20,
     width: "50%",
     maxHeight: 60,
     borderRadius: BORDER_RADIUS.xl,
-    padding: SPACING.xl,
+    padding: theme.spacing.xl_20,
     flexDirection: "row",
     alignItems: "center",
-    gap: SPACING.md,
+    gap: theme.spacing.md_12,
+    backgroundColor: theme.colors.surface,
+    shadowColor: theme.colors.surfaceGrey,
     ...SHADOW.medium,
   },
   progressContainer: {
@@ -339,33 +339,43 @@ export const minimizePlayerStyles = StyleSheet.create({
     position: "absolute",
     zIndex: 1,
   },
+  svgContainer: {
+    position: "absolute",
+  },
   textContainer: {
     flex: 1,
   },
   timestamp: {
-    fontFamily,
-    fontSize: FONT_SIZES.md,
+    fontFamily: theme.typography.fonts.balooPaaji,
+    fontSize: theme.typography.sizes.lg,
     justifyContent: "center",
+    color: theme.colors.audioTitleText,
   },
   artistName: {
-    fontFamily,
-    fontSize: FONT_SIZES.md,
+    fontFamily: theme.typography.fonts.balooPaaji,
+    fontSize: theme.typography.sizes.lg,
+    color: theme.colors.audioTitleText,
   },
 });
 
-export const audioSettingModalStyles = StyleSheet.create({
+export const audioSettingModalStyles = (theme) => ({
+  settingsModalContainer: {
+    width: "85%",
+    marginLeft: "auto",
+    marginRight: "auto",
+  },
   settingItemTitle: {
-    fontSize: FONT_SIZES.md,
-    fontFamily,
-    fontWeight: FONT_WEIGHTS.normal,
+    fontSize: theme.typography.sizes.lg,
+    fontFamily: theme.typography.fonts.balooPaaji,
+    fontWeight: theme.typography.weights.normal,
     color: "#666",
   },
   baniTitle: { fontFamily: constant.GURBANI_AKHAR_TRUE },
   defaultTrackTitle: {
-    fontSize: FONT_SIZES.lg,
-    fontFamily,
-    fontWeight: FONT_WEIGHTS.normal,
-    color: colors.READER_HEADER_COLOR,
+    fontSize: theme.typography.sizes.lg,
+    fontFamily: theme.typography.fonts.balooPaaji,
+    fontWeight: theme.typography.weights.normal,
+    color: theme.colors.primary,
     textDecorationLine: "underline",
   },
   switchStyle: { transform: [{ scaleX: 1.2 }, { scaleY: 1.2 }], marginLeft: 10 },
@@ -373,22 +383,29 @@ export const audioSettingModalStyles = StyleSheet.create({
   modalContainer: { flexDirection: "row", margin: 5, alignItems: "center" },
   defaultTrackContainer: { flexDirection: "row", alignItems: "center", gap: 0 },
   defaultTrackWrapper: {
-    backgroundColor: BACKGROUND_COLORS.primary,
-    padding: SPACING.sm,
+    backgroundColor: theme.colors.primary,
+    padding: theme.spacing.md,
     borderRadius: BORDER_RADIUS.xl,
-    color: TEXT_COLORS.white,
-    fontSize: FONT_SIZES.md,
-    fontFamily,
-    fontWeight: FONT_WEIGHTS.normal,
+    color: theme.staticColors.WHITE_COLOR,
+    fontSize: theme.typography.sizes.lg,
+    fontFamily: theme.typography.fonts.balooPaaji,
+    fontWeight: theme.typography.weights.normal,
     flexDirection: "row",
     alignItems: "center",
-    gap: SPACING.sm,
+    gap: theme.spacing.md,
   },
   chooseDefaultTrack: {
-    fontSize: FONT_SIZES.md,
-    fontFamily,
-    color: colors.WHITE_COLOR,
+    fontSize: theme.typography.sizes.lg,
+    fontFamily: theme.typography.fonts.balooPaaji,
+    color: theme.staticColors.WHITE_COLOR,
+  },
+  defaultTrackModalContainer: {
+    width: "90%",
+    alignSelf: "center",
+    padding: 10,
+    zIndex: 20,
+    maxHeight: 250,
   },
 });
 
-export default styles;
+export default createStyles;

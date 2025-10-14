@@ -4,11 +4,11 @@ const typography = {
   // Font sizes
   sizes: {
     xs: 10,
-    sm: 12,
-    md: 14,
-    lg: 16,
-    xl: 18,
-    xxl: 20,
+    sm: 12, // xs
+    md: 14, // sm
+    lg: 16, // md
+    xl: 18, // lg
+    xxl: 20, // xl
     xxxl: 24,
     huge: 28,
     massive: 32,
@@ -38,6 +38,7 @@ const typography = {
     gurbaniPrimary: constant.GURBANI_AKHAR_TRUE,
     gurbaniThick: constant.GURBANI_AKHAR_THICK_TRUE,
     arial: constant.Arial,
+    balooPaaji: constant.BALOO_PAAJI,
     // Additional fonts can be added as constants are defined
   },
 };

@@ -44,18 +44,18 @@ const App = () => {
   }, []);
 
   return (
-    <ErrorBoundary onError={logError} FallbackComponent={FallBack}>
-      <Provider store={store}>
-        <PersistGate loading={null} persistor={persistor}>
-          <SafeAreaProvider>
-            <ThemeProvider>
+    <Provider store={store}>
+      <PersistGate loading={null} persistor={persistor}>
+        <ThemeProvider>
+          <ErrorBoundary onError={logError} FallbackComponent={FallBack}>
+            <SafeAreaProvider>
               <Navigation />
               <Toast />
-            </ThemeProvider>
-          </SafeAreaProvider>
-        </PersistGate>
-      </Provider>
-    </ErrorBoundary>
+            </SafeAreaProvider>
+          </ErrorBoundary>
+        </ThemeProvider>
+      </PersistGate>
+    </Provider>
   );
 };
 

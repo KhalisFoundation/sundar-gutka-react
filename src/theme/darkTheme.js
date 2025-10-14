@@ -1,7 +1,7 @@
-import typography from "./typography";
-import spacing from "./spacing";
 import components from "./components";
+import spacing from "./spacing";
 import staticColors from "./staticColors";
+import typography from "./typography";
 
 const darkTheme = {
   mode: "dark",
@@ -24,6 +24,14 @@ const darkTheme = {
     disabledText: "#a3a3a3",
     primaryHeader: "#121212",
     primaryHeaderVariant: "#faf9f6",
+    actionButton: "#121F35",
+    audioPlayer: "#BED2F2",
+    overlay: staticColors.NIGHT_BLACK,
+    audioTitleText: "#BED2F2",
+    trackBorderColor: "#464646",
+    trackBackgroundColor: "rgba(37, 105, 214, 0.2)",
+    controlBarBackgroundColor: "#000000",
+    separator: "rgba(255, 255, 255, 0.2)",
   },
   typography,
   spacing,

@@ -1,8 +1,8 @@
 import React, { useEffect } from "react";
 import { Icon } from "@rneui/themed";
 import useTheme from "@common/context";
-import { STRINGS } from "@common";
 import useThemedStyles from "@common/hooks/useThemedStyles";
+import { STRINGS } from "@common";
 import createStyles from "../styles";
 
 const useHeader = (navigation) => {

@@ -1,11 +1,12 @@
 import React, { useState } from "react";
 import { View, Text, Pressable, Platform } from "react-native";
-import { useSelector } from "react-redux";
 import { BlurView } from "@react-native-community/blur";
 import PropTypes from "prop-types";
+import useTheme from "@common/context";
+import useThemedStyles from "@common/hooks/useThemedStyles";
 import { ArrowRightIcon } from "@common/icons";
-import { colors, STRINGS } from "@common";
-import { audioTrackDialogStyles as styles } from "../style";
+import { STRINGS } from "@common";
+import { audioTrackDialogStyles } from "../style";
 import ScrollViewComponent from "./ScrollViewComponent";
 
 const AudioTrackDialog = ({
@@ -15,8 +16,9 @@ const AudioTrackDialog = ({
   isHeader = true,
   isFooter = true,
 }) => {
+  const styles = useThemedStyles(audioTrackDialogStyles);
+  const { theme } = useTheme();
   const [selectedTrack, setSelectedTrack] = useState(null);
-  const isNightMode = useSelector((state) => state.isNightMode);
   const handleSelectTrack = (track) => {
     setSelectedTrack(track);
     if (!isHeader) {
@@ -31,42 +33,20 @@ const AudioTrackDialog = ({
   };
 
   return (
-    <View
-      style={[
-        styles.container,
-        { backgroundColor: isNightMode ? colors.NIGHT_BLACK : colors.SEMI_TRANSPARENT },
-      ]}
-    >
+    <View style={styles.container}>
       {Platform.OS === "ios" && (
         <BlurView
-          style={[
-            styles.blurOverlay,
-            {
-              borderColor: isNightMode ? colors.NIGHT_BLACK : colors.SEMI_TRANSPARENT,
-            },
-          ]}
-          blurType={isNightMode ? "dark" : "light"}
+          style={styles.blurOverlay}
+          blurType={theme.mode === "dark" ? "dark" : "light"}
           blurAmount={5}
-          reducedTransparencyFallbackColor={isNightMode ? colors.BLACK_COLOR : colors.WHITE_COLOR}
+          reducedTransparencyFallbackColor={theme.colors.surface}
         />
       )}
       {/* Header */}
       {isHeader && (
         <View style={styles.header}>
-          <Text
-            style={[
-              styles.welcomeText,
-              { color: isNightMode ? colors.AUDIO_PLAYER_NIGHT_ICON : colors.READER_HEADER_COLOR },
-            ]}
-          >
-            {STRINGS.welcome_to_sundar_gutka}
-          </Text>
-          <Text
-            style={[
-              styles.subtitleText,
-              { color: isNightMode ? colors.AUDIO_PLAYER_NIGHT_ICON : colors.READER_HEADER_COLOR },
-            ]}
-          >
+          <Text style={styles.welcomeText}>{STRINGS.welcome_to_sundar_gutka}</Text>
+          <Text style={styles.subtitleText}>
             {STRINGS.please_choose_a_track} {title}
           </Text>
         </View>
@@ -88,7 +68,7 @@ const AudioTrackDialog = ({
           activeOpacity={0.8}
         >
           <Text style={styles.playButtonText}>{STRINGS.NEXT}</Text>
-          <ArrowRightIcon size={24} color={colors.WHITE_COLOR} />
+          <ArrowRightIcon size={24} color={theme.staticColors.WHITE_COLOR} />
         </Pressable>
       )}
     </View>

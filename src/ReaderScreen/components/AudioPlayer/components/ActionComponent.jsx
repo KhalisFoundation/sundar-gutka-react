@@ -1,22 +1,23 @@
 import React from "react";
 import { Text, Pressable, View } from "react-native";
-import { useSelector } from "react-redux";
 import PropTypes from "prop-types";
-import { colors } from "@common";
-import { audioControlBarStyles as styles } from "../style";
+import useTheme from "@common/context";
+import useThemedStyles from "@common/hooks/useThemedStyles";
+import { audioControlBarStyles } from "../style";
 
 const ActionComponents = ({ selector, toggle, Icon, text }) => {
-  const isNightMode = useSelector((state) => state.isNightMode);
+  const { theme } = useTheme();
+  const styles = useThemedStyles(audioControlBarStyles);
 
   let color;
   let backgroundColor;
 
   if (selector) {
-    backgroundColor = colors.READER_HEADER_COLOR;
-    color = colors.WHITE_COLOR;
+    backgroundColor = theme.colors.primary;
+    color = theme.staticColors.WHITE_COLOR;
   } else {
-    backgroundColor = isNightMode ? colors.ACTION_BUTTON_NIGHT_MODE : colors.ACTION_BUTTON_COLOR;
-    color = isNightMode ? colors.AUDIO_PLAYER_NIGHT_ICON : colors.READER_HEADER_COLOR;
+    backgroundColor = theme.colors.actionButton;
+    color = theme.colors.audioTitleText;
   }
 
   return (
@@ -47,7 +48,7 @@ const ActionComponents = ({ selector, toggle, Icon, text }) => {
 };
 
 ActionComponents.propTypes = {
-  selector: PropTypes.string.isRequired,
+  selector: PropTypes.bool.isRequired,
   toggle: PropTypes.func.isRequired,
   Icon: PropTypes.func.isRequired,
   text: PropTypes.string.isRequired,

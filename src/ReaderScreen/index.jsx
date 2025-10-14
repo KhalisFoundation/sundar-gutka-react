@@ -6,17 +6,9 @@ import PropTypes from "prop-types";
 import StatusBarComponent from "@common/components/StatusBar";
 import useTheme from "@common/context";
 import useThemedStyles from "@common/hooks/useThemedStyles";
-import { HomeIcon, BookmarkIcon, SettingsIcon } from "@common/icons";
-import {
-  BottomNavigation,
-  constant,
-  actions,
-  useScreenAnalytics,
-  logMessage,
-  logError,
-  SafeArea,
-} from "@common";
-import { Header, AutoScrollComponent, AudioPlayer } from "./components";
+import { HomeIcon, BookmarkIcon, SettingsIcon, MusicIcon } from "@common/icons";
+import { constant, actions, useScreenAnalytics, logMessage, logError, SafeArea } from "@common";
+import { Header, AutoScrollComponent, AudioPlayer, BottomNavigation } from "./components";
 import { useBookmarks, useFetchShabad, useFooterAnimation } from "./hooks";
 import createStyles from "./styles";
 import { loadHTML } from "./utils";
@@ -211,6 +203,14 @@ const Reader = ({ navigation, route }) => {
   const navigationItems = [
     { key: "Home", icon: HomeIcon, handlePress: () => navigation.navigate("Home") },
     {
+      key: "Music",
+      icon: MusicIcon,
+      handlePress: () => {
+        dispatch(actions.toggleAutoScroll(false));
+        dispatch(actions.toggleAudio(!isAudio));
+      },
+    },
+    {
       key: "Bookmarks",
       icon: BookmarkIcon,
       handlePress: () => handleBookmarkPress(),
@@ -223,7 +223,7 @@ const Reader = ({ navigation, route }) => {
   ];
 
   return (
-    <SafeArea backgroundColor={theme.colors.surface} topPadding>
+    <SafeArea backgroundColor={theme.colors.surface}>
       <StatusBarComponent backgroundColor={theme.colors.primary} />
       <Header
         title={fontFace === constant.BALOO_PAAJI ? titleUni : title}
@@ -274,7 +274,7 @@ const Reader = ({ navigation, route }) => {
         {isAutoScroll && <AutoScrollComponent shabadID={id} webViewRef={webViewRef} />}
       </Animated.View>
 
-      <BottomNavigation currentRoute="Reader" navigationItems={navigationItems} />
+      <BottomNavigation navigationItems={navigationItems} />
     </SafeArea>
   );
 };

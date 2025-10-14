@@ -9,7 +9,7 @@ const PlayIcon = ({ size = 24, color }) => {
       height={size}
       fill={color}
       stroke={color}
-      strokeWidth="1.5"
+      strokeWidth="0"
       viewBox="0 0 24 24"
       strokeLinecap="round"
       strokeLinejoin="round"

@@ -1,20 +1,21 @@
 import React from "react";
 import { Pressable, Text } from "react-native";
-import { useSelector } from "react-redux";
 import PropTypes from "prop-types";
+import useTheme from "@common/context";
+import useThemedStyles from "@common/hooks/useThemedStyles";
 import { PlayIcon } from "@common/icons";
-import { colors } from "@common";
-import { audioTrackDialogStyles as styles } from "../style";
+import { audioTrackDialogStyles } from "../style";
 
 const TrackItem = ({ track, selectedTrack, handleSelectTrack }) => {
-  const isNightMode = useSelector((state) => state.isNightMode);
+  const { theme } = useTheme();
+  const styles = useThemedStyles(audioTrackDialogStyles);
   return (
     <Pressable
       key={track.id}
       style={[
         styles.trackItem,
         {
-          backgroundColor: isNightMode ? colors.NIGHT_BLACK : colors.READER_HEADER_COLOR_10,
+          backgroundColor: theme.colors.overlay,
         },
         selectedTrack && track.id === selectedTrack?.id && styles.selectedTrackItem,
       ]}
@@ -25,7 +26,7 @@ const TrackItem = ({ track, selectedTrack, handleSelectTrack }) => {
         style={[
           styles.trackName,
           {
-            color: isNightMode ? colors.AUDIO_PLAYER_NIGHT_ICON : colors.READER_HEADER_COLOR,
+            color: theme.colors.audioPlayer,
           },
           selectedTrack && track.id === selectedTrack.id && styles.selectedTrackName,
         ]}
@@ -35,7 +36,11 @@ const TrackItem = ({ track, selectedTrack, handleSelectTrack }) => {
 
       <PlayIcon
         size={30}
-        color={selectedTrack && selectedTrack.id === track.id ? colors.WHITE_COLOR : "#808fad"}
+        color={
+          selectedTrack && selectedTrack.id === track.id
+            ? theme.staticColors.WHITE_COLOR
+            : theme.colors.audioPlayer
+        }
       />
     </Pressable>
   );

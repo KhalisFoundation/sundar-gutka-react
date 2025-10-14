@@ -1,10 +1,11 @@
 import React from "react";
 import { View, Text, Pressable } from "react-native";
-import { useSelector } from "react-redux";
 import PropTypes from "prop-types";
+import useTheme from "@common/context";
+import useThemedStyles from "@common/hooks/useThemedStyles";
 import { DownloadIcon } from "@common/icons";
-import { colors, STRINGS } from "@common";
-import { downloadBadgeStyles as styles } from "../style";
+import { STRINGS } from "@common";
+import { downloadBadgeStyles } from "../style";
 
 const DownloadBadge = ({
   currentPlaying,
@@ -13,33 +14,21 @@ const DownloadBadge = ({
   isAudioEnabled,
   onDownload,
 }) => {
-  const isNightMode = useSelector((state) => state.isNightMode);
+  const { theme } = useTheme();
+  const styles = useThemedStyles(downloadBadgeStyles);
   if (!currentPlaying) {
     return null;
   }
   return (
-    <View
-      style={[
-        styles.container,
-        { backgroundColor: isNightMode ? colors.NIGHT_MODE_BLACK : colors.TERTIARY_COLOR },
-      ]}
-    >
+    <View style={styles.container}>
       {!isDownloaded && (
         <Pressable
           onPress={onDownload}
           style={styles.downloadButton}
           disabled={!isAudioEnabled || isDownloading}
         >
-          <DownloadIcon
-            size={20}
-            color={isNightMode ? colors.WHITE_COLOR : colors.READER_HEADER_COLOR}
-          />
-          <Text
-            style={[
-              styles.downloadButtonText,
-              { color: isNightMode ? colors.WHITE_COLOR : colors.READER_HEADER_COLOR },
-            ]}
-          >
+          <DownloadIcon size={20} color={theme.colors.primaryHeaderVariant} />
+          <Text style={styles.downloadButtonText}>
             {isDownloading ? STRINGS.DOWNLOADING : STRINGS.DOWNLOAD}
           </Text>
         </Pressable>

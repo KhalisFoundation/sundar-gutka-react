@@ -66,6 +66,8 @@ const createStyles = (theme) => ({
     width: "95%",
     marginLeft: "auto",
     marginRight: "auto",
+    marginTop: theme.spacing.md,
+    marginBottom: theme.spacing.md,
     alignItems: "center",
   },
   animatedView: {

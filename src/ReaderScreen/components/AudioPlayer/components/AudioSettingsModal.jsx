@@ -8,12 +8,15 @@ import {
   toggleAudioSyncScroll,
   setDefaultAudio,
 } from "@common/actions";
+import useTheme from "@common/context";
+import useThemedStyles from "@common/hooks/useThemedStyles";
 import { ChevronRight } from "@common/icons/";
-import { colors } from "@common";
-import { audioSettingModalStyles as styles } from "../style";
+import { audioSettingModalStyles } from "../style";
 import ScrollViewComponent from "./ScrollViewComponent";
 
 const AudioSettingsModal = ({ title, tracks, baniID }) => {
+  const { theme } = useTheme();
+  const styles = useThemedStyles(audioSettingModalStyles);
   const isAudio = useSelector((state) => state.isAudio);
   const [isSettingsModalOpen, setIsSettingsModalOpen] = useState(true);
   const isAudioAutoPlay = useSelector((state) => state.isAudioAutoPlay);
@@ -54,7 +57,7 @@ const AudioSettingsModal = ({ title, tracks, baniID }) => {
   return (
     <View>
       {isSettingsModalOpen && (
-        <View style={{ width: "85%", marginLeft: "auto", marginRight: "auto" }}>
+        <View style={styles.settingsModalContainer}>
           {settings.map((setting) => (
             <View key={setting.title} style={styles.modalContainer}>
               <Text style={styles.settingItemTitle}>{setting.title} :</Text>
@@ -62,8 +65,8 @@ const AudioSettingsModal = ({ title, tracks, baniID }) => {
                 <Switch
                   value={setting.defaultValue}
                   ios_backgroundColor="#3e3e3e"
-                  trackColor={{ false: "#767577", true: colors.READER_HEADER_COLOR }}
-                  thumbColor={setting.defaultValue ? colors.WHITE_COLOR : "#f4f3f4"}
+                  trackColor={{ false: "#767577", true: theme.colors.primary }}
+                  thumbColor={setting.defaultValue ? theme.staticColors.WHITE_COLOR : "#f4f3f4"}
                   style={styles.switchStyle}
                   onValueChange={setting.onValueChange}
                 />
@@ -87,13 +90,13 @@ const AudioSettingsModal = ({ title, tracks, baniID }) => {
 
                 <View style={styles.defaultTrackContainer}>
                   <Text style={styles.defaultTrackTitle}>{defaultAudio[baniID].displayName} </Text>
-                  <ChevronRight size={24} color={colors.READER_HEADER_COLOR} />
+                  <ChevronRight size={24} color={theme.colors.primary} />
                 </View>
               </>
             ) : (
               <View style={styles.defaultTrackWrapper}>
                 <Text style={styles.chooseDefaultTrack}>Choose Default Track</Text>
-                <ChevronRight size={24} color={colors.WHITE_COLOR} />
+                <ChevronRight size={24} color={theme.staticColors.WHITE_COLOR} />
               </View>
             )}
           </Pressable>
@@ -101,15 +104,7 @@ const AudioSettingsModal = ({ title, tracks, baniID }) => {
       )}
 
       {isDefaultTrackModalOpen && (
-        <View
-          style={{
-            width: "90%",
-            alignSelf: "center",
-            padding: 10,
-            zIndex: 20,
-            maxHeight: 250,
-          }}
-        >
+        <View style={styles.defaultTrackModalContainer}>
           <ScrollViewComponent
             tracks={tracks}
             selectedTrack={defaultAudio[baniID]}
