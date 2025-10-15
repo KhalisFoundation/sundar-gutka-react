@@ -2,9 +2,11 @@ import * as actions from "./actions";
 import colors from "./colors";
 import { FallBack, BaniLengthSelector, BaniList } from "./components";
 import orderedBani from "./components/BaniList/baniOrderHelper";
+import BottomNavigation from "./components/BottomNavigation";
 import SafeArea from "./components/SafeArea";
 import StatusBarComponent from "./components/StatusBar";
 import constant from "./constant";
+import useTheme from "./context";
 import defaultBaniOrder from "./defaultBaniOrder";
 import {
   allowTracking,
@@ -23,6 +25,7 @@ import {
 import baseFontSize, { validateBaniOrder } from "./helpers";
 import useKeepAwake from "./hooks/keepAwake";
 import useScreenAnalytics from "./hooks/useScreenAnalytics";
+import useThemedStyles from "./hooks/useThemedStyles";
 import STRINGS from "./localization";
 import {
   updateReminders,
@@ -95,4 +98,7 @@ export {
   showSuccessToast,
   showInfoToast,
   convertToUnicode,
+  BottomNavigation,
+  useTheme,
+  useThemedStyles,
 };

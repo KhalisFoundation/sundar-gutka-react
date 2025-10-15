@@ -1,27 +1,18 @@
 import React, { useState, useEffect } from "react";
 import { View, Text, Pressable, Animated, StyleSheet, Platform } from "react-native";
-import { useSelector, useDispatch } from "react-redux";
+import { useSelector } from "react-redux";
 import { Slider } from "@miblanchard/react-native-slider";
 import { BlurView } from "@react-native-community/blur";
 import PropTypes from "prop-types";
-import { toggleAudio } from "@common/actions";
 import useTheme from "@common/context";
 import useThemedStyles from "@common/hooks/useThemedStyles";
-import {
-  MusicNoteIcon,
-  SettingsIcon,
-  ExpandCollapseIcon,
-  CloseIcon,
-  PlayIcon,
-  PauseIcon,
-} from "@common/icons";
+import { MusicNoteIcon, SettingsIcon, CloseIcon, PlayIcon, PauseIcon } from "@common/icons";
 import { STRINGS } from "@common";
-import { useTrackPlayer, useAnimation } from "../hooks";
+import { useAnimation } from "../hooks";
 import { audioControlBarStyles } from "../style";
 import ActionComponents from "./ActionComponent";
 import AudioSettingsModal from "./AudioSettingsModal";
 import DownloadBadge from "./DownloadBadge";
-import MinimizePlayer from "./MinimizePlayer";
 import ScrollViewComponent from "./ScrollViewComponent";
 
 const AudioControlBar = ({
@@ -38,19 +29,16 @@ const AudioControlBar = ({
   handleTrackSelect,
   tracks,
   title,
+  onCloseTrackModal,
 }) => {
   const { theme } = useTheme();
   const styles = useThemedStyles(audioControlBarStyles);
-  const [isMinimized, setIsMinimized] = useState(false);
   const isNightMode = useSelector((state) => state.isNightMode);
   const [isSettingsModalOpen, setIsSettingsModalOpen] = useState(false);
   const [isMoreTracksModalOpen, setIsMoreTracksModalOpen] = useState(false);
-  const { stop } = useTrackPlayer();
-  const dispatch = useDispatch();
-  const { modalHeight, modalOpacity, playerOpacity, minimizeOpacity } = useAnimation(
+  const { modalHeight, modalOpacity, playerOpacity } = useAnimation(
     isSettingsModalOpen,
-    isMoreTracksModalOpen,
-    isMinimized
+    isMoreTracksModalOpen
   );
 
   const formatTime = (seconds) => {
@@ -80,18 +68,17 @@ const AudioControlBar = ({
   ];
 
   const actionItems = [
-    {
-      onPress: () => setIsMinimized(true),
-      Icon: ExpandCollapseIcon,
-      id: 1,
-    },
+    // {
+    //   onPress: () => setIsMinimized(true),
+    //   Icon: ExpandCollapseIcon,
+    //   id: 1,
+    // },
     {
       onPress: () => {
-        stop();
-        dispatch(toggleAudio(false));
+        onCloseTrackModal();
       },
       Icon: CloseIcon,
-      id: 2,
+      id: 1,
     },
   ];
 
@@ -109,7 +96,7 @@ const AudioControlBar = ({
 
   return (
     <View>
-      {/* Minimized Player with Animation */}
+      {/* Minimized Player with Animation
       <Animated.View
         style={[
           styles.minimizePlayerAnimation,
@@ -126,12 +113,12 @@ const AudioControlBar = ({
           duration={formatTime(progress.duration)}
           displayName={currentPlaying?.displayName || ""}
         />
-      </Animated.View>
+      </Animated.View> */}
       <View style={[styles.container]} pointerEvents="box-none">
         {/* Full Player with Animation */}
         <Animated.View
           style={[styles.fullPlayerAnimation, { opacity: playerOpacity }]}
-          pointerEvents={isMinimized ? "none" : "auto"}
+          // pointerEvents={isMinimized ? "none" : "auto"}
         >
           <DownloadBadge
             currentPlaying={currentPlaying}
@@ -267,6 +254,7 @@ AudioControlBar.propTypes = {
   handleDownload: PropTypes.func.isRequired,
   title: PropTypes.string.isRequired,
   baniID: PropTypes.string.isRequired,
+  onCloseTrackModal: PropTypes.func.isRequired,
 };
 
 export default AudioControlBar;

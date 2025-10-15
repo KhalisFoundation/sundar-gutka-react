@@ -3,10 +3,16 @@ import { ScrollView, Pressable, Text } from "react-native";
 import PropTypes from "prop-types";
 import useTheme from "@common/context";
 import useThemedStyles from "@common/hooks/useThemedStyles";
-import { PlayIcon } from "@common/icons";
+import { PlayIcon, StopIcon } from "@common/icons";
 import { audioTrackDialogStyles } from "../style";
 
-const ScrollViewComponent = ({ tracks, selectedTrack = null, handleSelectTrack }) => {
+const ScrollViewComponent = ({
+  tracks,
+  selectedTrack = null,
+  playingTrack = null,
+  isPlaying = false,
+  handleSelectTrack,
+}) => {
   const { theme } = useTheme();
   const styles = useThemedStyles(audioTrackDialogStyles);
   return (
@@ -46,14 +52,25 @@ const ScrollViewComponent = ({ tracks, selectedTrack = null, handleSelectTrack }
             {track.displayName}
           </Text>
 
-          <PlayIcon
-            size={30}
-            color={
-              selectedTrack && selectedTrack.id === track.id
-                ? theme.staticColors.WHITE_COLOR
-                : theme.colors.audioPlayer
-            }
-          />
+          {playingTrack && playingTrack.id === track.id && isPlaying ? (
+            <StopIcon
+              size={30}
+              color={
+                selectedTrack && selectedTrack.id === track.id
+                  ? theme.staticColors.WHITE_COLOR
+                  : theme.colors.audioPlayer
+              }
+            />
+          ) : (
+            <PlayIcon
+              size={30}
+              color={
+                selectedTrack && selectedTrack.id === track.id
+                  ? theme.staticColors.WHITE_COLOR
+                  : theme.colors.audioPlayer
+              }
+            />
+          )}
         </Pressable>
       ))}
     </ScrollView>
@@ -62,6 +79,8 @@ const ScrollViewComponent = ({ tracks, selectedTrack = null, handleSelectTrack }
 
 ScrollViewComponent.defaultProps = {
   selectedTrack: null,
+  playingTrack: null,
+  isPlaying: false,
 };
 
 ScrollViewComponent.propTypes = {
@@ -75,6 +94,11 @@ ScrollViewComponent.propTypes = {
     id: PropTypes.string.isRequired,
     displayName: PropTypes.string.isRequired,
   }),
+  playingTrack: PropTypes.shape({
+    id: PropTypes.string.isRequired,
+    displayName: PropTypes.string.isRequired,
+  }),
+  isPlaying: PropTypes.bool,
   handleSelectTrack: PropTypes.func.isRequired,
 };
 

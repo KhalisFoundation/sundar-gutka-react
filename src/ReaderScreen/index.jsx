@@ -3,12 +3,20 @@ import { ActivityIndicator, BackHandler, AppState, Platform, Animated } from "re
 import { WebView } from "react-native-webview";
 import { useDispatch, useSelector } from "react-redux";
 import PropTypes from "prop-types";
-import StatusBarComponent from "@common/components/StatusBar";
-import useTheme from "@common/context";
-import useThemedStyles from "@common/hooks/useThemedStyles";
 import { HomeIcon, BookmarkIcon, SettingsIcon, MusicIcon } from "@common/icons";
-import { constant, actions, useScreenAnalytics, logMessage, logError, SafeArea } from "@common";
-import { Header, AutoScrollComponent, AudioPlayer, BottomNavigation } from "./components";
+import {
+  constant,
+  actions,
+  useScreenAnalytics,
+  logMessage,
+  logError,
+  SafeArea,
+  BottomNavigation,
+  useTheme,
+  useThemedStyles,
+  StatusBarComponent,
+} from "@common";
+import { Header, AutoScrollComponent, AudioPlayer } from "./components";
 import { useBookmarks, useFetchShabad, useFooterAnimation } from "./hooks";
 import createStyles from "./styles";
 import { loadHTML } from "./utils";
@@ -275,7 +283,7 @@ const Reader = ({ navigation, route }) => {
         {isAutoScroll && <AutoScrollComponent shabadID={id} webViewRef={webViewRef} />}
       </Animated.View>
 
-      <BottomNavigation navigationItems={navigationItems} />
+      <BottomNavigation navigationItems={navigationItems} activeKey={isAudio ? "Music" : null} />
     </SafeArea>
   );
 };

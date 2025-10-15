@@ -2,8 +2,9 @@ import React, { useState, useEffect } from "react";
 import { View, Text } from "react-native";
 import { exists } from "react-native-fs";
 import TrackPlayer from "react-native-track-player";
-import { useSelector } from "react-redux";
+import { useSelector, useDispatch } from "react-redux";
 import PropTypes from "prop-types";
+import { toggleAudio } from "@common/actions";
 import useThemedStyles from "@common/hooks/useThemedStyles";
 import { AudioTrackDialog, AudioControlBar } from "./components";
 import { useAudioManifest, useDownloadManager, useTrackPlayer, useAudioSyncScroll } from "./hooks";
@@ -11,6 +12,7 @@ import createStyles from "./style";
 import { formatUrlForTrackPlayer, isLocalFile } from "./utils/urlHelper";
 
 const AudioPlayer = ({ baniID, title, shouldNavigateBack, webViewRef }) => {
+  const dispatch = useDispatch();
   const styles = useThemedStyles(createStyles);
   const [showTrackModal, setShowTrackModal] = useState(true);
   const isAudioAutoPlay = useSelector((state) => state.isAudioAutoPlay);
@@ -101,6 +103,13 @@ const AudioPlayer = ({ baniID, title, shouldNavigateBack, webViewRef }) => {
     }
   };
 
+  const onCloseTrackModal = () => {
+    if (isPlaying) {
+      stop();
+    }
+    dispatch(toggleAudio(false));
+  };
+
   useEffect(() => {
     if (isAudioAutoPlay && currentPlaying) {
       setShowTrackModal(false);
@@ -168,7 +177,12 @@ const AudioPlayer = ({ baniID, title, shouldNavigateBack, webViewRef }) => {
   }
 
   return showTrackModal ? (
-    <AudioTrackDialog handleTrackSelect={handleTrackSelect} title={title} tracks={tracks} />
+    <AudioTrackDialog
+      handleTrackSelect={handleTrackSelect}
+      title={title}
+      tracks={tracks}
+      onCloseTrackModal={onCloseTrackModal}
+    />
   ) : (
     <AudioControlBar
       baniID={baniID}
@@ -185,6 +199,7 @@ const AudioPlayer = ({ baniID, title, shouldNavigateBack, webViewRef }) => {
       handleDownload={handleDownload}
       handleDeleteDownload={handleDeleteDownload}
       title={title}
+      onCloseTrackModal={onCloseTrackModal}
     />
   );
 };
