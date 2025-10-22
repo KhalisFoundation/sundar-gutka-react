@@ -1,7 +1,6 @@
 const createStyles = (theme) => ({
   container: {
     flex: 1,
-    marginTop: 0,
   },
   header: {
     backgroundColor: theme.colors.primary,
@@ -36,7 +35,6 @@ const createStyles = (theme) => ({
     fontSize: theme.typography.sizes.xl,
   },
   fatehContainer: {
-    marginTop: theme.spacing.lg,
     marginLeft: "auto",
     marginRight: "auto",
   },

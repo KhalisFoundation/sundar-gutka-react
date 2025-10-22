@@ -129,8 +129,8 @@ const useAudioManifest = (baniID) => {
     const track = existingTracks.find((t) => t.id === trackId);
     if (track && track.localURL) {
       // Check if the file actually exists
-      const fullPath = `${DocumentDirectoryPath}/audio/${track.localURL}`;
-      return fullPath;
+      // const fullPath = `${DocumentDirectoryPath}/audio/${track.localURL}`;
+      return true;
     }
     return false;
   };

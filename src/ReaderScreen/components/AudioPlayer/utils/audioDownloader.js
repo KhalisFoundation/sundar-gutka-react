@@ -33,10 +33,15 @@ const generateFilename = (url) => {
 export const isTrackDownloaded = async (url) => {
   try {
     const { artistName, fileName } = generateFilename(url);
-    const filePath = `${AUDIO_DIRECTORY}/${artistName}/${fileName}`;
+    const audioFilePath = `${AUDIO_DIRECTORY}/${artistName}/${fileName}`;
+    const jsonFileName = fileName.replace(/\.[^/.]+$/, ".json");
+    const jsonFilePath = `${AUDIO_DIRECTORY}/${artistName}/${jsonFileName}`;
 
-    const fileExists = await exists(filePath);
-    return fileExists;
+    const audioFileExists = await exists(audioFilePath);
+    const jsonFileExists = await exists(jsonFilePath);
+
+    // Both files must exist for the track to be considered downloaded
+    return audioFileExists && jsonFileExists;
   } catch (error) {
     logError(`Error checking if track is downloaded: ${error.message}`);
     return false;
@@ -56,6 +61,18 @@ export const getFullLocalTrackPath = (url) => {
   return `${AUDIO_DIRECTORY}/${artistName}/${fileName}`;
 };
 
+export const getLocalJsonPath = (url) => {
+  const { artistName, fileName } = generateFilename(url);
+  const jsonFileName = fileName.replace(/\.[^/.]+$/, ".json");
+  return `${artistName}/${jsonFileName}`;
+};
+
+export const getFullLocalJsonPath = (url) => {
+  const { artistName, fileName } = generateFilename(url);
+  const jsonFileName = fileName.replace(/\.[^/.]+$/, ".json");
+  return `${AUDIO_DIRECTORY}/${artistName}/${jsonFileName}`;
+};
+
 /**
  * Download audio track with progress tracking
  */
@@ -64,6 +81,10 @@ export const downloadTrack = async (url, trackTitle, onProgress, onComplete, onE
     const { artistName, fileName } = generateFilename(url);
     const fullLocalPath = `${AUDIO_DIRECTORY}/${artistName}/${fileName}`;
     const relativePath = `${artistName}/${fileName}`;
+
+    // Generate JSON lyrics file path
+    const jsonFileName = fileName.replace(/\.[^/.]+$/, ".json"); // Replace extension with .json
+    const fullJsonPath = `${AUDIO_DIRECTORY}/${artistName}/${jsonFileName}`;
 
     // Create directory if it doesn't exist
     const audioDirectoryExists = await exists(AUDIO_DIRECTORY);
@@ -79,59 +100,102 @@ export const downloadTrack = async (url, trackTitle, onProgress, onComplete, onE
       await mkdir(artistDirectory, { NSURLIsExcludedFromBackupKey: true });
     }
 
-    // Check if file already exists
-    const fileExists = await exists(fullLocalPath);
+    // Check if both files already exist
+    const audioFileExists = await exists(fullLocalPath);
+    const jsonFileExists = await exists(fullJsonPath);
 
-    if (fileExists) {
-      logMessage(`Track already downloaded: ${fileName}`);
+    if (audioFileExists && jsonFileExists) {
+      logMessage(`Track and lyrics already downloaded: ${fileName}`);
       onComplete?.(relativePath);
       return relativePath;
     }
 
     logMessage(`Starting download: ${trackTitle}`);
 
-    // Start download with progress tracking
-    const downloadTask = downloadFile({
-      fromUrl: url,
-      toFile: fullLocalPath,
-      progressDivider: 1,
-      begin: () => {
-        logMessage(`Download started for: ${trackTitle}`);
-        onProgress?.(0);
-      },
-      progress: ({ contentLength, bytesWritten }) => {
-        if (contentLength > 0) {
-          const progress = Math.floor((bytesWritten / contentLength) * 100);
-          onProgress?.(progress);
-        }
-      },
-    });
+    // Generate JSON URL from audio URL
+    const jsonUrl = url.replace(/\.[^/.]+$/, ".json"); // Replace extension with .json
 
-    // Wait for download to complete
-    const result = await downloadTask.promise;
+    // Download both files concurrently
+    const downloadPromises = [];
 
-    if (result.statusCode === 200) {
-      // Verify file was actually created
-      const finalFileExists = await exists(fullLocalPath);
+    // Download audio file
+    if (!audioFileExists) {
+      const audioDownloadTask = downloadFile({
+        fromUrl: url,
+        toFile: fullLocalPath,
+        progressDivider: 1,
+        begin: () => {
+          logMessage(`Audio download started for: ${trackTitle}`);
+        },
+        progress: ({ contentLength, bytesWritten }) => {
+          if (contentLength > 0) {
+            const progress = Math.floor((bytesWritten / contentLength) * 50); // Audio is 50% of total
+            onProgress?.(progress);
+          }
+        },
+      });
+      downloadPromises.push(audioDownloadTask.promise);
+    }
 
-      if (finalFileExists) {
-        logMessage(`Download completed: ${fileName}`);
+    // Download JSON lyrics file
+    if (!jsonFileExists) {
+      const jsonDownloadTask = downloadFile({
+        fromUrl: jsonUrl,
+        toFile: fullJsonPath,
+        progressDivider: 1,
+        begin: () => {
+          logMessage(`Lyrics download started for: ${trackTitle}`);
+        },
+        progress: ({ contentLength, bytesWritten }) => {
+          if (contentLength > 0) {
+            const progress = Math.floor((bytesWritten / contentLength) * 50) + 50; // JSON is 50% of total
+            onProgress?.(progress);
+          }
+        },
+      });
+      downloadPromises.push(jsonDownloadTask.promise);
+    }
+
+    // Wait for all downloads to complete
+    const results = await Promise.all(downloadPromises);
+
+    // Check if all downloads were successful
+    const allSuccessful = results.every((result) => result.statusCode === 200);
+
+    if (allSuccessful) {
+      // Verify both files were actually created
+      const finalAudioExists = await exists(fullLocalPath);
+      const finalJsonExists = await exists(fullJsonPath);
+
+      if (finalAudioExists && finalJsonExists) {
+        logMessage(`Download completed: ${fileName} and ${jsonFileName}`);
         onComplete?.(relativePath);
         return relativePath;
       }
-      console.error("❌ Download completed but file doesn't exist!");
-      throw new Error("Download completed but file was not created");
+      logError("❌ Download completed but files don't exist!");
+      throw new Error("Download completed but files were not created");
     }
-    throw new Error(`Download failed with status: ${result.statusCode}`);
+    throw new Error(
+      `Download failed with status codes: ${results.map((r) => r.statusCode).join(", ")}`
+    );
   } catch (error) {
     logError(`Download error for ${trackTitle}: ${error.message}`);
 
-    // Clean up partial download if it exists
+    // Clean up partial downloads if they exist
     try {
       const fullLocalPath = getFullLocalTrackPath(url);
-      const fileExists = await exists(fullLocalPath);
-      if (fileExists) {
+      const { artistName, fileName } = generateFilename(url);
+      const jsonFileName = fileName.replace(/\.[^/.]+$/, ".json");
+      const fullJsonPath = `${AUDIO_DIRECTORY}/${artistName}/${jsonFileName}`;
+
+      const audioFileExists = await exists(fullLocalPath);
+      const jsonFileExists = await exists(fullJsonPath);
+
+      if (audioFileExists) {
         await unlink(fullLocalPath);
+      }
+      if (jsonFileExists) {
+        await unlink(fullJsonPath);
       }
     } catch (cleanupError) {
       logError(`Error cleaning up failed download: ${cleanupError.message}`);
@@ -147,15 +211,39 @@ export const downloadTrack = async (url, trackTitle, onProgress, onComplete, onE
  */
 export const deleteTrack = async (url) => {
   try {
-    const fileExists = await exists(url);
+    const { artistName, fileName } = generateFilename(url);
+    const audioFilePath = `${AUDIO_DIRECTORY}/${artistName}/${fileName}`;
+    const jsonFileName = fileName.replace(/\.[^/.]+$/, ".json");
+    const jsonFilePath = `${AUDIO_DIRECTORY}/${artistName}/${jsonFileName}`;
 
-    if (fileExists) {
-      await unlink(url);
-      logMessage(`Deleted track: ${url}`);
-      return true;
+    let deletedFiles = 0;
+    let totalFiles = 0;
+
+    // Delete audio file
+    const audioFileExists = await exists(audioFilePath);
+    if (audioFileExists) {
+      totalFiles += 1;
+      await unlink(audioFilePath);
+      deletedFiles += 1;
+      logMessage(`Deleted audio file: ${fileName}`);
     }
-    logMessage(`Track not found for deletion: ${url}`);
-    return false;
+
+    // Delete JSON lyrics file
+    const jsonFileExists = await exists(jsonFilePath);
+    if (jsonFileExists) {
+      totalFiles += 1;
+      await unlink(jsonFilePath);
+      deletedFiles += 1;
+      logMessage(`Deleted lyrics file: ${jsonFileName}`);
+    }
+
+    if (totalFiles === 0) {
+      logMessage(`No files found for deletion: ${fileName}`);
+      return false;
+    }
+
+    logMessage(`Successfully deleted ${deletedFiles}/${totalFiles} files for track: ${fileName}`);
+    return deletedFiles === totalFiles;
   } catch (error) {
     logError(`Error deleting track ${url}: ${error.message}`);
     return false;
@@ -182,24 +270,3 @@ export const showDownloadConfirmation = (trackTitle, onConfirm, onCancel) => {
     ]
   );
 };
-
-/**
- * Show download success/failure messages
- */
-// export const showDownloadMessage = (success, trackTitle, errorMessage = null) => {
-//   if (success) {
-//     Alert.alert(
-//       "Download Complete",
-//       `"${trackTitle}" has been downloaded successfully and is available for offline listening.`,
-//       [{ text: "OK" }]
-//     );
-//   } else {
-//     Alert.alert(
-//       "Download Failed",
-//       `Failed to download "${trackTitle}". ${
-//         errorMessage || "Please check your internet connection and try again."
-//       }`,
-//       [{ text: "OK" }]
-//     );
-//   }
-// };

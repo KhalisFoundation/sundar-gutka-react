@@ -60,6 +60,11 @@ export const setDefaultAudio = (audio, shabadId) => {
   return { type: actionTypes.SET_DEFAULT_AUDIO, value };
 };
 
+export const setAudioPlaybackSpeed = (value) => {
+  trackSettingEvent("AUDIO_PLAYBACK_SPEED", value);
+  return { type: actionTypes.SET_AUDIO_PLAYBACK_SPEED, value };
+};
+
 export const toggleStatusBar = (value) => {
   trackSettingEvent(constant.STATUS_BAR, value);
   return { type: actionTypes.TOGGLE_STATUS_BAR, value };

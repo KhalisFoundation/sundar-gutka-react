@@ -50,8 +50,9 @@ const createStyles = (theme) => ({
     bottom: 5,
     left: 0,
     right: 0,
-    paddingTop: 0,
-    padding: theme.spacing.xl,
+    // paddingTop: 0,
+    paddingHorizontal: theme.spacing.xl,
+    paddingVertical: theme.spacing.sm,
     overflow: "hidden",
     backgroundColor: theme.colors.primary,
   },
@@ -63,16 +64,15 @@ const createStyles = (theme) => ({
   headerWrapper: {
     flexDirection: "row",
     justifyContent: "space-between",
+    height: 80,
     width: "95%",
     marginLeft: "auto",
     marginRight: "auto",
     marginTop: theme.spacing.md,
     marginBottom: theme.spacing.md,
-    alignItems: "center",
+    alignItems: "flex-end",
   },
-  animatedView: {
-    zIndex: 1000,
-  },
+
   footerWrapper: {
     paddingLeft: theme.spacing.xl,
     paddingRight: theme.spacing.xl,
@@ -97,6 +97,13 @@ const createStyles = (theme) => ({
   },
   headerStyle: {
     backgroundColor: theme.colors.surface,
+  },
+  animatedView: {
+    position: "absolute",
+    top: 0,
+    left: 0,
+    right: 0,
+    zIndex: 10,
   },
 });
 export default createStyles;

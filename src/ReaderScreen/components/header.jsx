@@ -1,7 +1,6 @@
 import React, { useEffect, useRef } from "react";
 import { View, Text, Animated, Pressable } from "react-native";
 import LinearGradient from "react-native-linear-gradient";
-import { useSafeAreaInsets } from "react-native-safe-area-context";
 import { useSelector } from "react-redux";
 import PropTypes from "prop-types";
 import useTheme from "@common/context";
@@ -14,7 +13,6 @@ const Header = ({ title, handleBackPress, isHeader }) => {
   const styles = useThemedStyles(createStyles);
   const fontFace = useSelector((state) => state.fontFace);
   const animationPosition = useRef(new Animated.Value(0)).current;
-  const insets = useSafeAreaInsets();
 
   const MID = "rgba(17,57,121,1)"; // #113979
   const EDGE = "rgba(17,57,121,0)";
@@ -30,7 +28,7 @@ const Header = ({ title, handleBackPress, isHeader }) => {
   );
 
   useEffect(() => {
-    const value = isHeader ? insets.top : -120;
+    const value = isHeader ? 0 : -120;
 
     // Stop any existing animation first
     animationPosition.stopAnimation();
@@ -58,7 +56,7 @@ const Header = ({ title, handleBackPress, isHeader }) => {
   useEffect(() => {
     const resetTimer = setTimeout(() => {
       // Force position if animation seems stuck
-      const targetValue = isHeader ? insets.top : -120;
+      const targetValue = isHeader ? 0 : -120;
       animationPosition.setValue(targetValue);
     }, 1000);
 

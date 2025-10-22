@@ -27,8 +27,6 @@ const makeApiRequest = async (endpoint, options = {}) => {
     });
 
     if (!response.ok) {
-      // API request failed - show error toast to user
-      showErrorToast("Unable to connect to audio server. Please check your connection.");
       return null;
     }
 
@@ -54,7 +52,6 @@ export const fetchManifest = async (baniId) => {
   const data = await makeApiRequest(`/banis/${baniId}`);
 
   if (!data || data.data.length === 0) {
-    showErrorToast("Audio tracks unavailable. Check your internet connection and try again.");
     return null;
   }
   return data;

@@ -7,7 +7,7 @@ import PropTypes from "prop-types";
 import { toggleAudio } from "@common/actions";
 import useThemedStyles from "@common/hooks/useThemedStyles";
 import { AudioTrackDialog, AudioControlBar } from "./components";
-import { useAudioManifest, useDownloadManager, useTrackPlayer, useAudioSyncScroll } from "./hooks";
+import { useAudioManifest, useTrackPlayer, useAudioSyncScroll } from "./hooks";
 import createStyles from "./style";
 import { formatUrlForTrackPlayer, isLocalFile } from "./utils/urlHelper";
 
@@ -17,22 +17,9 @@ const AudioPlayer = ({ baniID, title, shouldNavigateBack, webViewRef }) => {
   const [showTrackModal, setShowTrackModal] = useState(true);
   const isAudioAutoPlay = useSelector((state) => state.isAudioAutoPlay);
   const defaultAudio = useSelector((state) => state.defaultAudio);
+  const audioPlaybackSpeed = useSelector((state) => state.audioPlaybackSpeed);
   // Custom hooks
-  const {
-    tracks,
-    currentPlaying,
-    setCurrentPlaying,
-    addTrackToManifest,
-    removeTrackFromManifest,
-    isTrackDownloaded,
-  } = useAudioManifest(baniID);
-
-  const { isDownloading, isDownloaded, handleDownload, handleDeleteDownload } = useDownloadManager(
-    currentPlaying,
-    addTrackToManifest,
-    removeTrackFromManifest,
-    isTrackDownloaded
-  );
+  const { tracks, currentPlaying, setCurrentPlaying } = useAudioManifest(baniID);
 
   const {
     isPlaying,
@@ -42,6 +29,7 @@ const AudioPlayer = ({ baniID, title, shouldNavigateBack, webViewRef }) => {
     stop,
     addAndPlayTrack,
     seekTo,
+    setRate,
     isAudioEnabled,
     isInitialized,
   } = useTrackPlayer();
@@ -54,6 +42,13 @@ const AudioPlayer = ({ baniID, title, shouldNavigateBack, webViewRef }) => {
       stop();
     }
   }, [shouldNavigateBack]);
+
+  // Apply saved playback speed when initialized
+  useEffect(() => {
+    if (isInitialized && audioPlaybackSpeed && setRate) {
+      setRate(audioPlaybackSpeed);
+    }
+  }, [isInitialized, audioPlaybackSpeed, setRate]);
 
   const handlePlayPause = async () => {
     if (!isInitialized || !isAudioEnabled || !currentPlaying) {
@@ -171,13 +166,9 @@ const AudioPlayer = ({ baniID, title, shouldNavigateBack, webViewRef }) => {
     );
   }
 
-  if (!tracks || tracks.length === 0) {
-    console.log("No tracks found for baniID:", baniID);
-    return null;
-  }
-
   return showTrackModal ? (
     <AudioTrackDialog
+      baniID={baniID}
       handleTrackSelect={handleTrackSelect}
       title={title}
       tracks={tracks}
@@ -187,17 +178,11 @@ const AudioPlayer = ({ baniID, title, shouldNavigateBack, webViewRef }) => {
     <AudioControlBar
       baniID={baniID}
       handleTrackSelect={handleTrackSelect}
-      tracks={tracks}
       isPlaying={isPlaying}
-      currentPlaying={currentPlaying}
       handlePlayPause={handlePlayPause}
       progress={progress}
       handleSeek={handleSeek}
       isAudioEnabled={isAudioEnabled}
-      isDownloading={isDownloading}
-      isDownloaded={isDownloaded}
-      handleDownload={handleDownload}
-      handleDeleteDownload={handleDeleteDownload}
       title={title}
       onCloseTrackModal={onCloseTrackModal}
     />

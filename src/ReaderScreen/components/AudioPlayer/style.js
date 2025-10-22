@@ -42,27 +42,24 @@ export const audioControlBarStyles = (theme) => ({
     right: 0,
     top: 0,
     borderRadius: BORDER_RADIUS.md,
+    overflow: "hidden",
   },
   container: {
-    borderRadius: BORDER_RADIUS.md,
     position: "absolute",
-    bottom: 0,
-    left: 10,
+    bottom: 80,
+    left: 0,
     right: 0,
-    paddingBottom: 10,
-    width: "95%",
+    marginBottom: theme.spacing.md_12,
   },
   mainContainer: {
+    width: "95%",
+    marginLeft: "auto",
+    marginRight: "auto",
     borderRadius: BORDER_RADIUS.md,
-    backgroundColor: theme.colors.controlBarBackgroundColor,
     ...SHADOW.light,
+    backgroundColor: theme.colors.transparentOverlay,
   },
-  mainContainerNight: {
-    backgroundColor: theme.staticColors.NIGHT_BLACK,
-  },
-  mainContainerIOS: {
-    backgroundColor: "transparent",
-  },
+
   minimizePlayerAnimation: {
     opacity: 0,
     position: "absolute",
@@ -75,9 +72,6 @@ export const audioControlBarStyles = (theme) => ({
   minimizePlayerAnimationActive: {
     zIndex: 1,
   },
-  fullPlayerAnimation: {
-    opacity: 1,
-  },
   modalAnimation: {
     backgroundColor: theme.colors.surface,
     overflow: "hidden",
@@ -89,12 +83,6 @@ export const audioControlBarStyles = (theme) => ({
     alignSelf: "center",
     padding: 10,
     zIndex: 20,
-  },
-
-  mainSectionWithBorder: {
-    borderRadius: 20,
-    borderTopWidth: 1,
-    borderColor: theme.colors.surfaceGrey,
   },
 
   timestampWithColor: {
@@ -126,7 +114,6 @@ export const audioControlBarStyles = (theme) => ({
     fontSize: theme.typography.sizes.lg,
     fontWeight: theme.typography.weights.normal,
     fontFamily: theme.typography.fonts.balooPaaji,
-    marginBottom: 4,
   },
   actionButtonContent: {
     flexDirection: "row",
@@ -134,10 +121,10 @@ export const audioControlBarStyles = (theme) => ({
     justifyContent: "center",
     gap: 4,
     paddingHorizontal: theme.spacing.md,
-    paddingVertical: theme.spacing.md,
+    paddingVertical: theme.spacing.sm,
   },
   separator: {
-    height: 1,
+    height: 2,
     backgroundColor: theme.colors.separator,
     zIndex: 1,
   },
@@ -196,7 +183,7 @@ export const audioTrackDialogStyles = (theme) => ({
     position: "absolute",
     left: 0,
     right: 0,
-    bottom: 60,
+    bottom: 80,
     zIndex: 1000,
   },
   blurOverlay: {
@@ -298,16 +285,43 @@ export const audioTrackDialogStyles = (theme) => ({
   playButtonDisabled: {
     opacity: 0.5,
   },
+  noTracksContainer: {
+    alignItems: "center",
+    justifyContent: "center",
+    gap: theme.spacing.md,
+    padding: theme.spacing.md,
+  },
+  noTracksText: {
+    fontFamily: theme.typography.fonts.balooPaajiSemiBold,
+    fontSize: theme.typography.sizes.xxl,
+    color: theme.colors.audioTitleText,
+  },
+  noTracksSubtext: {
+    fontFamily: theme.typography.fonts.balooPaajiSemiBold,
+    fontSize: theme.typography.sizes.xxl,
+    color: theme.colors.audioTitleText,
+    textAlign: "center",
+  },
+  joinMailingListButton: {
+    padding: theme.spacing.md_12,
+    paddingHorizontal: theme.spacing.xl,
+  },
+  joinMailingListText: {
+    color: theme.colors.audioTitleText,
+    fontSize: theme.typography.sizes.xxl,
+    fontFamily: theme.typography.fonts.balooPaaji,
+  },
 });
 
 export const downloadBadgeStyles = (theme) => ({
   container: {
+    position: "relative",
+    zIndex: 10,
+    bottom: 0,
     borderTopLeftRadius: BORDER_RADIUS.xl,
     borderTopRightRadius: BORDER_RADIUS.xl,
     marginRight: theme.spacing.xl_20,
-    flexDirection: "row",
-    justifyContent: "center",
-    backgroundColor: theme.colors.surface,
+    backgroundColor: theme.colors.separator,
     width: "35%",
     alignSelf: "flex-end",
   },
@@ -380,51 +394,33 @@ export const minimizePlayerStyles = (theme) => ({
 
 export const audioSettingModalStyles = (theme) => ({
   settingsModalContainer: {
-    width: "85%",
+    width: "95%",
     marginLeft: "auto",
     marginRight: "auto",
+    backgroundColor: theme.colors.surface,
+    padding: theme.spacing.md,
   },
   settingItemTitle: {
-    fontSize: theme.typography.sizes.lg,
+    fontSize: theme.typography.sizes.xl,
     fontFamily: theme.typography.fonts.balooPaaji,
-    fontWeight: theme.typography.weights.normal,
-    color: "#666",
+    color: theme.colors.audioSettingsModalText,
   },
-  baniTitle: { fontFamily: constant.GURBANI_AKHAR_TRUE },
-  defaultTrackTitle: {
-    fontSize: theme.typography.sizes.lg,
-    fontFamily: theme.typography.fonts.balooPaaji,
-    fontWeight: theme.typography.weights.normal,
-    color: theme.colors.primary,
-    textDecorationLine: "underline",
-  },
-  switchStyle: { transform: [{ scaleX: 1.2 }, { scaleY: 1.2 }], marginLeft: 10 },
-  switchContainer: { flexDirection: "row", flexWrap: "wrap" },
-  modalContainer: { flexDirection: "row", margin: 5, alignItems: "center" },
-  defaultTrackContainer: { flexDirection: "row", alignItems: "center", gap: 0 },
-  defaultTrackWrapper: {
-    backgroundColor: theme.colors.primary,
-    padding: theme.spacing.md,
-    borderRadius: BORDER_RADIUS.xl,
-    color: theme.staticColors.WHITE_COLOR,
-    fontSize: theme.typography.sizes.lg,
-    fontFamily: theme.typography.fonts.balooPaaji,
-    fontWeight: theme.typography.weights.normal,
+  switchStyle: { transform: [{ scaleX: 0.7 }, { scaleY: 0.7 }] },
+  speedControlContainer: {
     flexDirection: "row",
     alignItems: "center",
+    justifyContent: "center",
     gap: theme.spacing.md,
   },
-  chooseDefaultTrack: {
-    fontSize: theme.typography.sizes.lg,
-    fontFamily: theme.typography.fonts.balooPaaji,
-    color: theme.staticColors.WHITE_COLOR,
+
+  modalContainer: {
+    flexDirection: "row",
+    justifyContent: "space-between",
+    margin: theme.spacing.md,
   },
-  defaultTrackModalContainer: {
-    width: "90%",
-    alignSelf: "center",
-    padding: 10,
-    zIndex: 20,
-    maxHeight: 250,
+  divider: {
+    height: 1,
+    backgroundColor: theme.colors.separator,
   },
 });
 

@@ -13,3 +13,5 @@ export { default as MusicIcon } from "./MusicIcon";
 export { default as BookmarkIcon } from "./BookmarkIcon";
 export { default as BackArrowIcon } from "./BackArrowIcon";
 export { default as StopIcon } from "./StopIcon";
+export { default as PlusIcon } from "./plusIcon";
+export { default as MinusIcon } from "./minusIcon";

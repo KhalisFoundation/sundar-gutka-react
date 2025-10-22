@@ -127,6 +127,18 @@ const useTrackPlayer = () => {
     }
   };
 
+  const setRate = async (rate) => {
+    if (!isInitialized) {
+      console.log("Audio is not initialized");
+      return;
+    }
+    try {
+      await TrackPlayer.setRate(rate);
+    } catch (error) {
+      console.error("Error setting playback rate:", error);
+    }
+  };
+
   return {
     isPlaying,
     playbackState,
@@ -137,6 +149,7 @@ const useTrackPlayer = () => {
     reset,
     addAndPlayTrack,
     seekTo,
+    setRate,
     isAudioEnabled: isAudio && isInitialized,
     isInitialized,
     setIsPlaying,

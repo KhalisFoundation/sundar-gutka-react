@@ -1,11 +1,11 @@
 import React from "react";
-import PropTypes from "prop-types";
 import { View, Text } from "react-native";
-import { Icon } from "@rneui/themed";
 import { useSelector } from "react-redux";
-import { constant, STRINGS } from "@common";
+import { Icon } from "@rneui/themed";
+import PropTypes from "prop-types";
 import useTheme from "@common/context";
 import useThemedStyles from "@common/hooks/useThemedStyles";
+import { constant, STRINGS } from "@common";
 import createStyles from "../styles";
 
 const BaniHeader = (props) => {

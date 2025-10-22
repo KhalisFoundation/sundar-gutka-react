@@ -1,8 +1,9 @@
 import React, { useState } from "react";
-import { View, Text, Pressable, Platform } from "react-native";
-import { useSelector } from "react-redux";
+import { View, Text, Pressable, Platform, Linking } from "react-native";
+import { useSelector, useDispatch } from "react-redux";
 import { BlurView } from "@react-native-community/blur";
 import PropTypes from "prop-types";
+import { setDefaultAudio } from "@common/actions";
 import useTheme from "@common/context";
 import useThemedStyles from "@common/hooks/useThemedStyles";
 import { ArrowRightIcon, CloseIcon } from "@common/icons";
@@ -12,6 +13,7 @@ import { audioTrackDialogStyles } from "../style";
 import ScrollViewComponent from "./ScrollViewComponent";
 
 const AudioTrackDialog = ({
+  baniID,
   handleTrackSelect,
   title = "",
   tracks = [],
@@ -19,6 +21,7 @@ const AudioTrackDialog = ({
   isHeader = true,
   isFooter = true,
 }) => {
+  const dispatch = useDispatch();
   const styles = useThemedStyles(audioTrackDialogStyles);
   const fontFace = useSelector((state) => state.fontFace);
   const { theme } = useTheme();
@@ -64,6 +67,7 @@ const AudioTrackDialog = ({
   const handlePlay = () => {
     if (selectedTrack) {
       handleTrackSelect(selectedTrack);
+      dispatch(setDefaultAudio(selectedTrack, baniID));
     }
   };
 
@@ -93,7 +97,7 @@ const AudioTrackDialog = ({
           <CloseIcon size={30} color={theme.colors.audioTitleText} />
         </Pressable>
         {/* Header */}
-        {isHeader && (
+        {isHeader && tracks && tracks.length > 0 && (
           <View style={styles.header}>
             <Text style={styles.welcomeText}>{STRINGS.welcome_to_sundar_gutka}</Text>
             <Text style={styles.subtitleText}>
@@ -103,16 +107,44 @@ const AudioTrackDialog = ({
         )}
 
         {/* Track Selection List */}
-        <ScrollViewComponent
-          tracks={tracks}
-          selectedTrack={selectedTrack}
-          playingTrack={playingTrack}
-          isPlaying={isPlaying}
-          handleSelectTrack={handleSelectTrack}
-        />
+        {tracks && tracks.length > 0 ? (
+          <ScrollViewComponent
+            tracks={tracks}
+            selectedTrack={selectedTrack}
+            playingTrack={playingTrack}
+            isPlaying={isPlaying}
+            handleSelectTrack={handleSelectTrack}
+          />
+        ) : (
+          <View style={styles.noTracksContainer}>
+            <Text style={styles.noTracksText}>Maafi ji 🙏🏽</Text>
+            <Text style={styles.noTracksSubtext}>
+              We do not have audios for{" "}
+              <Text
+                style={{
+                  fontFamily: fontFace,
+                }}
+              >
+                {title}
+              </Text>{" "}
+              yet.
+            </Text>
+            <Pressable
+              style={styles.joinMailingListButton}
+              onPress={() =>
+                Linking.openURL("https://khalisfoundation.org").catch(() => {
+                  // Fallback to main website if newsletter link fails
+                  Linking.openURL("https://khalisfoundation.org");
+                })
+              }
+            >
+              <Text style={styles.joinMailingListText}>Request audio for this paath.</Text>
+            </Pressable>
+          </View>
+        )}
 
         {/* Play Button */}
-        {isFooter && (
+        {isFooter && tracks && tracks.length > 0 && (
           <Pressable
             style={[styles.playButton, !selectedTrack && styles.playButtonDisabled]}
             onPress={handlePlay}
@@ -147,6 +179,7 @@ AudioTrackDialog.propTypes = {
   isHeader: PropTypes.bool,
   isFooter: PropTypes.bool,
   onCloseTrackModal: PropTypes.func.isRequired,
+  baniID: PropTypes.number.isRequired,
 };
 
 export default AudioTrackDialog;

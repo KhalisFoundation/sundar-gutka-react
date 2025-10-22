@@ -62,6 +62,10 @@ const isAudioSyncScroll = createReducer(false, {
   [actionTypes.TOGGLE_AUDIO_SYNC_SCROLL]: (state, action) => action.value,
 });
 
+const audioPlaybackSpeed = createReducer(1.0, {
+  [actionTypes.SET_AUDIO_PLAYBACK_SPEED]: (state, action) => action.value,
+});
+
 const baniLength = createReducer("", {
   [actionTypes.SET_BANI_LENGTH]: (state, action) => action.value,
 });
@@ -231,6 +235,7 @@ const rootReducer = combineReducers({
   isAudio,
   isAudioAutoPlay,
   isAudioSyncScroll,
+  audioPlaybackSpeed,
   defaultAudio,
   isScreenAwake,
   isStatusBar,

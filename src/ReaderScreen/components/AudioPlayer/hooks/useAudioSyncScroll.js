@@ -57,11 +57,14 @@ const useAudioSyncScroll = (progress, isPlaying, webViewRef, audioUrl) => {
       (timestamp) => currentTime >= timestamp.start && currentTime <= timestamp.end
     );
 
-    return currentTimestamp ? currentTimestamp.sequence : null;
+    return {
+      currentSequence: currentTimestamp ? currentTimestamp.sequence : null,
+      timeOut: currentTimestamp ? (currentTimestamp.end - currentTimestamp.start) * 1000 : 1000, // convert to milliseconds
+    };
   };
 
   // Scroll to specific sequence in WebView
-  const scrollToSequence = (sequence) => {
+  const scrollToSequence = (sequence, timeOut) => {
     if (!webViewRef?.current?.postMessage || !sequence) {
       return;
     }
@@ -87,6 +90,7 @@ const useAudioSyncScroll = (progress, isPlaying, webViewRef, audioUrl) => {
         action: "scrollToSequence",
         sequence: sequenceNumber,
         behavior: "smooth", // smooth scrolling
+        timeout: timeOut,
       };
 
       webViewRef.current.postMessage(JSON.stringify(scrollMessage));
@@ -111,12 +115,12 @@ const useAudioSyncScroll = (progress, isPlaying, webViewRef, audioUrl) => {
     if (!isAudioSyncScroll || !isPlaying || !progress?.position || !baniLRC) {
       return;
     }
-    const currentSequence = findCurrentSequence(progress.position);
+    const { currentSequence, timeOut } = findCurrentSequence(progress.position);
 
     // Only scroll if sequence changed and we have a valid sequence
     if (currentSequence !== null && currentSequence !== lastSequenceRef.current) {
       lastSequenceRef.current = currentSequence;
-      scrollToSequence(currentSequence);
+      scrollToSequence(currentSequence, timeOut);
     }
   }, [progress?.position, isPlaying, isAudioSyncScroll, webViewRef, baniLRC]);
 
@@ -143,7 +147,7 @@ const useAudioSyncScroll = (progress, isPlaying, webViewRef, audioUrl) => {
   }, []);
 
   return {
-    currentSequence: findCurrentSequence(progress?.position || 0),
+    currentSequence: findCurrentSequence(progress?.position || 0)?.currentSequence,
     isScrollingEnabled: isAudioSyncScroll && isPlaying,
   };
 };

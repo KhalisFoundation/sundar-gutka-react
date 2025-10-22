@@ -6,6 +6,7 @@ const staticColors = {
   SEMI_TRANSPARENT: "rgba(255, 255, 255, 0.6)",
   LIGHT_GRAY: "#e0e0e0",
   TRACK_COLOR: "rgba(17, 57, 121, 0.1)",
+  SLIDER_TRACK_COLOR: "rgba(238, 238, 238, 0.93)",
 };
 
 export default staticColors;

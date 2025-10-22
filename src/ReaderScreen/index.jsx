@@ -237,7 +237,7 @@ const Reader = ({ navigation, route }) => {
 
   return (
     <SafeArea backgroundColor={theme.colors.surface}>
-      <StatusBarComponent backgroundColor={theme.colors.primary} />
+      <StatusBarComponent backgroundColor={theme.colors.surface} />
       <Header title={titleText} handleBackPress={handleBackPress} isHeader={isHeader} />
       {isLoading && <ActivityIndicator size="small" color={theme.colors.primary} />}
       <WebView
@@ -260,7 +260,7 @@ const Reader = ({ navigation, route }) => {
         style={[
           webView,
           theme.mode === "dark" && { opacity: viewLoaded ? 1 : 0.1 },
-          { backgroundColor: theme.colors.surface },
+          { backgroundColor: theme.colors.surface, marginTop: 60 },
         ]}
         onMessage={handleMessage}
         onTouchStart={() => {

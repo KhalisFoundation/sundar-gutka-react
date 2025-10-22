@@ -33,6 +33,7 @@ const lightTheme = {
     controlBarBackgroundColor: "#ffffff",
     separator: "#eeeeee",
     transparentOverlay: "rgba(255, 255, 255, 0.95)",
+    audioSettingsModalText: "#666666",
   },
   staticColors,
   typography,

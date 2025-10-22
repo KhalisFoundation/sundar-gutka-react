@@ -1,35 +1,41 @@
-import React, { useState } from "react";
-import { View, Text, Switch, Pressable } from "react-native";
+import React, { useEffect } from "react";
+import { View, Text, Switch, ScrollView, Pressable } from "react-native";
 import { useSelector, useDispatch } from "react-redux";
-import PropTypes from "prop-types";
 import {
   toggleAudio,
   toggleAudioAutoPlay,
   toggleAudioSyncScroll,
-  setDefaultAudio,
+  setAudioPlaybackSpeed,
 } from "@common/actions";
 import useTheme from "@common/context";
 import useThemedStyles from "@common/hooks/useThemedStyles";
-import { ChevronRight } from "@common/icons/";
+import { PlusIcon, MinusIcon } from "@common/icons";
+import { useTrackPlayer } from "../hooks";
 import { audioSettingModalStyles } from "../style";
-import ScrollViewComponent from "./ScrollViewComponent";
 
-const AudioSettingsModal = ({ title, tracks, baniID }) => {
+const AudioSettingsModal = () => {
   const { theme } = useTheme();
   const styles = useThemedStyles(audioSettingModalStyles);
   const isAudio = useSelector((state) => state.isAudio);
-  const [isSettingsModalOpen, setIsSettingsModalOpen] = useState(true);
   const isAudioAutoPlay = useSelector((state) => state.isAudioAutoPlay);
   const isAudioSyncScroll = useSelector((state) => state.isAudioSyncScroll);
-  const defaultAudio = useSelector((state) => state.defaultAudio);
-  const [isDefaultTrackModalOpen, setIsDefaultTrackModalOpen] = useState(false);
+  const audioPlaybackSpeed = useSelector((state) => state.audioPlaybackSpeed);
   const dispatch = useDispatch();
+  const { setRate } = useTrackPlayer();
 
-  const handleTrackSelect = (track) => {
-    dispatch(setDefaultAudio(track, baniID));
-    setIsDefaultTrackModalOpen(false);
-    setIsSettingsModalOpen(true);
+  const handleSpeedChange = async (value) => {
+    if (value < 1.0 || value > 2.0) return;
+    dispatch(setAudioPlaybackSpeed(value));
+    await setRate(value);
   };
+
+  // Apply saved playback speed on mount
+  useEffect(() => {
+    if (audioPlaybackSpeed && setRate) {
+      setRate(audioPlaybackSpeed);
+    }
+  }, []);
+
   const settings = [
     {
       title: "Audio Player",
@@ -55,13 +61,13 @@ const AudioSettingsModal = ({ title, tracks, baniID }) => {
     },
   ];
   return (
-    <View>
-      {isSettingsModalOpen && (
-        <View style={styles.settingsModalContainer}>
-          {settings.map((setting) => (
-            <View key={setting.title} style={styles.modalContainer}>
-              <Text style={styles.settingItemTitle}>{setting.title} :</Text>
-              {setting.defaultValue !== null ? (
+    <ScrollView style={styles.settingsModalContainer}>
+      <View>
+        {settings.map((setting) => (
+          <View key={setting.title}>
+            <View style={styles.modalContainer}>
+              <Text style={styles.settingItemTitle}>{setting.title}</Text>
+              <View>
                 <Switch
                   value={setting.defaultValue}
                   ios_backgroundColor="#3e3e3e"
@@ -70,56 +76,32 @@ const AudioSettingsModal = ({ title, tracks, baniID }) => {
                   style={styles.switchStyle}
                   onValueChange={setting.onValueChange}
                 />
-              ) : (
-                <Text>{setting.value}</Text>
-              )}
-            </View>
-          ))}
-          <Pressable
-            style={styles.switchContainer}
-            onPress={() => {
-              setIsDefaultTrackModalOpen(true);
-              setIsSettingsModalOpen(false);
-            }}
-          >
-            {defaultAudio[baniID] && defaultAudio[baniID].displayName ? (
-              <>
-                <Text style={styles.settingItemTitle}>
-                  Default Track For <Text style={styles.baniTitle}>{title}</Text>:{" "}
-                </Text>
-
-                <View style={styles.defaultTrackContainer}>
-                  <Text style={styles.defaultTrackTitle}>{defaultAudio[baniID].displayName} </Text>
-                  <ChevronRight size={24} color={theme.colors.primary} />
-                </View>
-              </>
-            ) : (
-              <View style={styles.defaultTrackWrapper}>
-                <Text style={styles.chooseDefaultTrack}>Choose Default Track</Text>
-                <ChevronRight size={24} color={theme.staticColors.WHITE_COLOR} />
               </View>
-            )}
-          </Pressable>
+            </View>
+            <View style={styles.divider} />
+          </View>
+        ))}
+        <View style={styles.modalContainer}>
+          <Text style={styles.settingItemTitle}>Playback Speed</Text>
+          <View right style={styles.speedControlContainer}>
+            <Pressable
+              onPress={() => handleSpeedChange(audioPlaybackSpeed + 0.1)}
+              disabled={audioPlaybackSpeed > 2.0}
+            >
+              <PlusIcon size={24} color={theme.colors.audioSettingsModalText} />
+            </Pressable>
+            <Text style={styles.settingItemTitle}>{audioPlaybackSpeed.toFixed(1)}x</Text>
+            <Pressable
+              onPress={() => handleSpeedChange(audioPlaybackSpeed - 0.1)}
+              disabled={audioPlaybackSpeed < 1.0}
+            >
+              <MinusIcon size={24} color={theme.colors.audioSettingsModalText} />
+            </Pressable>
+          </View>
         </View>
-      )}
-
-      {isDefaultTrackModalOpen && (
-        <View style={styles.defaultTrackModalContainer}>
-          <ScrollViewComponent
-            tracks={tracks}
-            selectedTrack={defaultAudio[baniID]}
-            handleSelectTrack={handleTrackSelect}
-          />
-        </View>
-      )}
-    </View>
+      </View>
+    </ScrollView>
   );
-};
-
-AudioSettingsModal.propTypes = {
-  title: PropTypes.string.isRequired,
-  tracks: PropTypes.arrayOf(PropTypes.shape()).isRequired,
-  baniID: PropTypes.string.isRequired,
 };
 
 export default AudioSettingsModal;

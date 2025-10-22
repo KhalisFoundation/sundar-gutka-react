@@ -33,6 +33,7 @@ const darkTheme = {
     controlBarBackgroundColor: "#000000",
     separator: "rgba(255, 255, 255, 0.2)",
     transparentOverlay: "rgba(18, 18, 18, 0.95)",
+    audioSettingsModalText: "#faf9f6",
   },
   typography,
   spacing,

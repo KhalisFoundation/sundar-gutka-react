@@ -1,4 +1,4 @@
-import { useState, useEffect } from "react";
+import { useState } from "react";
 import { downloadTrack, deleteTrack } from "../utils/audioDownloader";
 
 const useDownloadManager = (
@@ -10,26 +10,27 @@ const useDownloadManager = (
   const [isDownloading, setIsDownloading] = useState(false);
   const [isDownloaded, setIsDownloaded] = useState(false);
 
-  // Check download status when current track changes
-  useEffect(() => {
-    const checkDownloadStatus = () => {
-      if (currentPlaying) {
-        try {
-          const downloaded = isTrackDownloaded(currentPlaying.id);
-          setIsDownloaded(downloaded);
-          console.log(`Track ${currentPlaying.id} download status:`, downloaded);
-        } catch (error) {
-          console.error("Error checking download status:", error);
-        }
+  const checkDownloadStatus = () => {
+    if (currentPlaying) {
+      try {
+        const downloaded = isTrackDownloaded(currentPlaying.id);
+        setIsDownloaded(downloaded);
+        return downloaded;
+      } catch (error) {
+        setIsDownloaded(false);
+        console.error("Error checking download status:", error);
+        return false;
       }
-    };
-
-    checkDownloadStatus();
-  }, [currentPlaying, isTrackDownloaded]);
+    }
+    return false;
+  };
 
   const handleDownload = async () => {
     if (!currentPlaying || isDownloading) return;
+
     try {
+      const downloaded = checkDownloadStatus();
+      if (downloaded) return;
       setIsDownloading(true);
 
       const localPath = await downloadTrack(

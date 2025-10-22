@@ -78,7 +78,7 @@ const AutoScrollComponent = ({ shabadID, webViewRef }) => {
         {isPaused ? (
           <Icon
             name="play-arrow"
-            color={colors.TOOLBAR_TINT}
+            color={theme.staticColors.WHITE_COLOR}
             size={30}
             onPress={handlePlay}
             accessibilityLabel="Play auto-scroll"
@@ -86,7 +86,7 @@ const AutoScrollComponent = ({ shabadID, webViewRef }) => {
         ) : (
           <Icon
             name="pause"
-            color={colors.TOOLBAR_TINT}
+            color={theme.staticColors.WHITE_COLOR}
             size={30}
             onPress={handlePause}
             accessibilityLabel="Pause auto-scroll"

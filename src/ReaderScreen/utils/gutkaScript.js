@@ -161,6 +161,7 @@ ${listener}.addEventListener(
     if (message.hasOwnProperty("action") && message.action === "scrollToSequence") {
       // Sanitize and validate sequence number
       const sequenceNumber = parseInt(message.sequence, 10);
+      const timeOut = message.timeout;
       
       // Validate that it's a valid positive integer
       if (!Number.isInteger(sequenceNumber) || sequenceNumber < 1) {
@@ -176,17 +177,15 @@ ${listener}.addEventListener(
           block: "center",
           inline: "nearest"
         });
-        
-        // Optional: Highlight the current sequence briefly
         const originalBackgroundColor = element.style.backgroundColor;
+        
         element.style.backgroundColor = "${
           theme.mode === "dark" ? "rgba(255, 255, 255, 0.1)" : "rgba(0, 0, 0, 0.05)"
         }";
         element.style.transition = "background-color 0.3s ease";
-        
-        setTimeout(() => {
+        setTimeout(()=> {
           element.style.backgroundColor = originalBackgroundColor;
-        }, 1000);
+        }, timeOut);        
       }
     }
   },
