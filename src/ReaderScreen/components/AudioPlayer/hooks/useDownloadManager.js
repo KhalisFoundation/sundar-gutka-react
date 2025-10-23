@@ -1,4 +1,5 @@
 import { useState } from "react";
+import { logError, logMessage } from "@common";
 import { downloadTrack, deleteTrack } from "../utils/audioDownloader";
 
 const useDownloadManager = (
@@ -18,7 +19,7 @@ const useDownloadManager = (
         return downloaded;
       } catch (error) {
         setIsDownloaded(false);
-        console.error("Error checking download status:", error);
+        logError("Error checking download status:", error);
         return false;
       }
     }
@@ -36,10 +37,6 @@ const useDownloadManager = (
       const localPath = await downloadTrack(
         currentPlaying.audioUrl,
         currentPlaying.displayName,
-        (progress) => {
-          // Progress callback
-          console.log(`Download progress: ${progress}%`);
-        },
         (local) => {
           // Success callback
           setIsDownloaded(true);
@@ -47,7 +44,7 @@ const useDownloadManager = (
           addTrackToManifest(currentPlaying, local);
         },
         (error) => {
-          console.log("Download error:", error);
+          logError("Download error:", error);
           // Error callback
           // showDownloadMessage(false, currentPlaying.displayName, error.message);
         }
@@ -55,7 +52,7 @@ const useDownloadManager = (
 
       addTrackToManifest(currentPlaying, localPath);
     } catch (error) {
-      console.error("Download error:", error);
+      logError("Download error:", error);
       // showDownloadMessage(false, currentPlaying.displayName, error.message);
     } finally {
       setIsDownloading(false);
@@ -74,10 +71,10 @@ const useDownloadManager = (
       const success = await deleteTrack(currentPlaying.audioUrl);
 
       if (!success) {
-        console.warn("File deletion failed, but track removed from manifest");
+        logMessage("File deletion failed, but track removed from manifest");
       }
     } catch (error) {
-      console.error("Error deleting track:", error);
+      logError("Error deleting track:", error);
     }
   };
 

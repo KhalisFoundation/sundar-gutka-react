@@ -1,7 +1,7 @@
 import { useState, useEffect } from "react";
 import { DocumentDirectoryPath } from "react-native-fs";
 import { useSelector, useDispatch } from "react-redux";
-import { actions } from "@common";
+import { actions, logError } from "@common";
 import { fetchManifest } from "@service";
 
 const useAudioManifest = (baniID) => {
@@ -94,7 +94,7 @@ const useAudioManifest = (baniID) => {
         }
       }
     } catch (error) {
-      console.error("Error fetching manifest:", error);
+      logError("Error fetching manifest:", error);
     } finally {
       setIsLoading(false);
     }

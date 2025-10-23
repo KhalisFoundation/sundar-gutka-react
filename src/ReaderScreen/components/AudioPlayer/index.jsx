@@ -1,15 +1,14 @@
 import React, { useState, useEffect } from "react";
 import { View, Text } from "react-native";
-import { exists } from "react-native-fs";
 import TrackPlayer from "react-native-track-player";
 import { useSelector, useDispatch } from "react-redux";
 import PropTypes from "prop-types";
-import { toggleAudio } from "@common/actions";
+import { toggleAudio, logError } from "@common/actions";
 import useThemedStyles from "@common/hooks/useThemedStyles";
 import { AudioTrackDialog, AudioControlBar } from "./components";
 import { useAudioManifest, useTrackPlayer, useAudioSyncScroll } from "./hooks";
 import createStyles from "./style";
-import { formatUrlForTrackPlayer, isLocalFile } from "./utils/urlHelper";
+import { formatUrlForTrackPlayer } from "./utils/urlHelper";
 
 const AudioPlayer = ({ baniID, title, shouldNavigateBack, webViewRef }) => {
   const dispatch = useDispatch();
@@ -69,17 +68,6 @@ const AudioPlayer = ({ baniID, title, shouldNavigateBack, webViewRef }) => {
 
         // Otherwise, load the new track
         // Check if local file exists
-        if (isLocalFile(currentPlaying.audioUrl)) {
-          const cleanPath = currentPlaying.audioUrl.replace("file://", "");
-          const fileExists = await exists(cleanPath);
-
-          if (!fileExists) {
-            console.error("❌ LOCAL FILE DOES NOT EXIST:", cleanPath);
-            // You could fallback to remote URL here if needed
-          } else {
-            console.log("✅ Local file exists, proceeding with playback");
-          }
-        }
 
         const formattedUrl = formatUrlForTrackPlayer(currentPlaying.audioUrl);
 
@@ -94,7 +82,7 @@ const AudioPlayer = ({ baniID, title, shouldNavigateBack, webViewRef }) => {
         await addAndPlayTrack(track);
       }
     } catch (error) {
-      console.error("Error in handlePlayPause:", error);
+      logError("Error in handlePlayPause:", error);
     }
   };
 
@@ -123,7 +111,7 @@ const AudioPlayer = ({ baniID, title, shouldNavigateBack, webViewRef }) => {
     try {
       await seekTo(value);
     } catch (error) {
-      console.error("Error seeking:", error);
+      logError("Error seeking:", error);
     }
   };
 
@@ -153,7 +141,7 @@ const AudioPlayer = ({ baniID, title, shouldNavigateBack, webViewRef }) => {
         await addAndPlayTrack(track);
       }
     } catch (error) {
-      console.error("Error switching track:", error);
+      logError("Error switching track:", error);
     }
   };
 

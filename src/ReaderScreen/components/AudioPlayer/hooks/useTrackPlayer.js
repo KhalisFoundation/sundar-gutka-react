@@ -7,6 +7,7 @@ import TrackPlayer, {
 } from "react-native-track-player";
 import { useSelector } from "react-redux";
 import { addTrack, playTrack, pauseTrack, stopTrack, resetPlayer } from "@common/TrackPlayerUtils";
+import { logError, logMessage } from "@common";
 
 const useTrackPlayer = () => {
   const [isInitialized, setIsInitialized] = useState(false);
@@ -50,7 +51,7 @@ const useTrackPlayer = () => {
         }
         setIsInitialized(true);
       } catch (error) {
-        console.error("Error initializing TrackPlayer:", error);
+        logError("Error initializing TrackPlayer:", error);
       }
     };
 
@@ -64,13 +65,13 @@ const useTrackPlayer = () => {
 
   const play = async () => {
     if (!isInitialized || !isAudio) {
-      console.log("Audio is not initialized or disabled in settings");
+      logMessage("Audio is not initialized or disabled in settings");
       return;
     }
     try {
       await playTrack();
     } catch (error) {
-      console.error("Error playing track:", error);
+      logError("Error playing track:", error);
     }
   };
 
@@ -79,7 +80,7 @@ const useTrackPlayer = () => {
     try {
       await pauseTrack();
     } catch (error) {
-      console.error("Error pausing track:", error);
+      logError("Error pausing track:", error);
     }
   };
 
@@ -88,7 +89,7 @@ const useTrackPlayer = () => {
     try {
       await stopTrack();
     } catch (error) {
-      console.error("Error stopping track:", error);
+      logError("Error stopping track:", error);
     }
   };
 
@@ -97,13 +98,13 @@ const useTrackPlayer = () => {
     try {
       await resetPlayer();
     } catch (error) {
-      console.error("Error resetting player:", error);
+      logError("Error resetting player:", error);
     }
   };
 
   const addAndPlayTrack = async (track) => {
     if (!isInitialized || !isAudio) {
-      console.log("Audio is not initialized or disabled in settings");
+      logMessage("Audio is not initialized or disabled in settings");
       return;
     }
     try {
@@ -111,31 +112,31 @@ const useTrackPlayer = () => {
       await addTrack(track);
       await play();
     } catch (error) {
-      console.error("Error adding and playing track:", error);
+      logError("Error adding and playing track:", error);
     }
   };
 
   const seekTo = async (position) => {
     if (!isInitialized || !isAudio) {
-      console.log("Audio is not initialized or disabled in settings");
+      logMessage("Audio is not initialized or disabled in settings");
       return;
     }
     try {
       await TrackPlayer.seekTo(position);
     } catch (error) {
-      console.error("Error seeking to position:", error);
+      logError("Error seeking to position:", error);
     }
   };
 
   const setRate = async (rate) => {
     if (!isInitialized) {
-      console.log("Audio is not initialized");
+      logMessage("Audio is not initialized");
       return;
     }
     try {
       await TrackPlayer.setRate(rate);
     } catch (error) {
-      console.error("Error setting playback rate:", error);
+      logError("Error setting playback rate:", error);
     }
   };
 

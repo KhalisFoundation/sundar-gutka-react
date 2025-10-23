@@ -22,10 +22,9 @@ export const REMOTE_DB_URL = `${constant.REMOTE_DB_URL}/${constant.DB}.db`;
 export const listDocumentDirectory = async () => {
   try {
     const files = await readDir(DocumentDirectoryPath);
-    console.log("Files in Document Directory:", files);
     return files;
   } catch (error) {
-    console.error("Error reading directory:", error);
+    logError("Error in listDocumentDirectory:", error);
     return [];
   }
 };
