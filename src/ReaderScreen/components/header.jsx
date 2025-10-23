@@ -75,10 +75,11 @@ const Header = ({ title, handleBackPress, isHeader }) => {
     >
       <View style={styles.headerStyle} pointerEvents="auto">
         <View style={styles.headerWrapper}>
-          <View style={{ width: "20%" }}>{headerLeft()}</View>
-          <View style={{ width: "60%" }}>
+          <View style={styles.headerLeft}>{headerLeft()}</View>
+          <View style={styles.headerCenter}>
             <Text style={[styles.headerTitleStyle, { fontFamily: fontFace }]}>{title}</Text>
           </View>
+          <View style={styles.headerRight} />
         </View>
       </View>
       <LinearGradient

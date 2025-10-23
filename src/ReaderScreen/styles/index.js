@@ -63,14 +63,33 @@ const createStyles = (theme) => ({
 
   headerWrapper: {
     flexDirection: "row",
-    justifyContent: "space-between",
     height: 80,
-    width: "95%",
+    width: "100%",
     marginLeft: "auto",
     marginRight: "auto",
     marginTop: theme.spacing.md,
     marginBottom: theme.spacing.md,
     alignItems: "flex-end",
+    justifyContent: "space-between",
+  },
+
+  headerLeft: {
+    marginLeft: theme.spacing.lg,
+    flex: 1,
+    alignItems: "flex-start",
+    justifyContent: "center",
+  },
+
+  headerCenter: {
+    flex: 2,
+    alignItems: "center",
+    justifyContent: "center",
+  },
+
+  headerRight: {
+    flex: 1,
+    alignItems: "flex-end",
+    justifyContent: "center",
   },
 
   footerWrapper: {

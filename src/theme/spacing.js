@@ -1,10 +1,10 @@
 const spacing = {
   xs: 2,
-  sm: 4, // xs
-  md: 8, // sm
-  md_12: 12, // md
+  sm: 4,
+  md: 8,
+  md_12: 12,
   lg: 16,
-  xl: 24, // xxl
+  xl: 24,
   xl_20: 20,
   xxl: 32,
   xxxl: 48,

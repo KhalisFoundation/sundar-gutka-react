@@ -4,11 +4,11 @@ const typography = {
   // Font sizes
   sizes: {
     xs: 10,
-    sm: 12, // xs
-    md: 14, // sm
-    lg: 16, // md
-    xl: 18, // lg
-    xxl: 20, // xl
+    sm: 12,
+    md: 14,
+    lg: 16,
+    xl: 18,
+    xxl: 20,
     xxxl: 24,
     huge: 28,
     massive: 32,
