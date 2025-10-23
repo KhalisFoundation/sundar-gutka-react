@@ -179,7 +179,7 @@ AudioTrackDialog.propTypes = {
   isHeader: PropTypes.bool,
   isFooter: PropTypes.bool,
   onCloseTrackModal: PropTypes.func.isRequired,
-  baniID: PropTypes.number.isRequired,
+  baniID: PropTypes.string.isRequired,
 };
 
 export default AudioTrackDialog;
