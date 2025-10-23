@@ -92,6 +92,7 @@ export const getShabadFromID = async (
               let englishTranslation = "";
               let punjabiTranslation = "";
               let spanishTranslation = "";
+              let paragraphSequences = [];
 
               for (let i = 0; i < len; i += 1) {
                 const row = results.rows.item(i);
@@ -105,6 +106,7 @@ export const getShabadFromID = async (
                   header,
                   Transliterations,
                   Translations,
+                  Seq,
                 } = row;
                 const gurmukhiLine = Visraam && GurmukhiBisram ? GurmukhiBisram : Gurmukhi;
                 const gurmukhiUniLine = Visraam && GurmukhiBisram ? GurmukhiBisram : GurmukhiUni;
@@ -179,6 +181,7 @@ export const getShabadFromID = async (
                         punjabiTranslations: punjabiTranslation,
                         spanishTranslations: spanishTranslation,
                         header: paragraphHeader,
+                        sequences: paragraphSequences, // Add sequence information
                       });
                     }
 
@@ -191,6 +194,7 @@ export const getShabadFromID = async (
                     punjabiTranslation = Punjabi;
                     spanishTranslation = Spanish;
                     prevParagraph = Paragraph;
+                    paragraphSequences = [Seq]; // Start new sequence array with first verse ID
                   } else {
                     const space = isLarivar ? "" : " ";
                     gurmukhi += `${space}${curGurmukhi}`;
@@ -199,6 +203,7 @@ export const getShabadFromID = async (
                     englishTranslation += ` ${English}`;
                     punjabiTranslation += ` ${Punjabi}`;
                     spanishTranslation += ` ${Spanish}`;
+                    paragraphSequences.push(Seq); // Add this verse's ID to sequences
                   }
 
                   if (isLastIteration) {
@@ -211,6 +216,7 @@ export const getShabadFromID = async (
                       punjabiTranslations: punjabiTranslation,
                       spanishTranslations: spanishTranslation,
                       header: paragraphHeader,
+                      sequences: paragraphSequences, // Add sequence information
                     });
                   }
                 } else {
@@ -223,6 +229,7 @@ export const getShabadFromID = async (
                     punjabiTranslations: Punjabi,
                     spanishTranslations: Spanish,
                     header,
+                    sequence: Seq,
                   });
                 }
               }

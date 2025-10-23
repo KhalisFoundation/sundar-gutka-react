@@ -11,6 +11,8 @@ let scrollMultiplier = 1.5;
 let curPosition = 0;
 let isScrolling;
 let isManuallyScrolling = false;
+let lastHighlightedElement = null;
+let highlightTimeout = null;
 
 const clearScrollTimeout=()=> {
   if (autoScrollTimeout != null) {
@@ -161,6 +163,7 @@ ${listener}.addEventListener(
     if (message.hasOwnProperty("action") && message.action === "scrollToSequence") {
       // Sanitize and validate sequence number
       const sequenceNumber = parseInt(message.sequence, 10);
+      const isParagraphMode = message.isParagraphMode;
       const timeOut = message.timeout;
       
       // Validate that it's a valid positive integer
@@ -168,23 +171,55 @@ ${listener}.addEventListener(
         return;
       }
       
-      const element = document.getElementById(sequenceNumber);
+      let element = null;
+      
+      if (isParagraphMode) {
+        // Use CSS selector trick with pipe delimiters for instant match
+        element = document.querySelector('[data-sequences*="|' + sequenceNumber + '|"]');
+      } else {
+        element = document.getElementById(sequenceNumber);
+      }
       
       if (element) {
-        const behavior = message.behavior === "smooth" ? "smooth" : "auto";
-        element.scrollIntoView({
-          behavior: behavior,
-          block: "center",
-          inline: "nearest"
-        });
-        const originalBackgroundColor = element.style.backgroundColor;
+        // Check if this is the same element as last time
+        const isSameElement = lastHighlightedElement === element;
         
+        // Clear previous highlight timeout if exists
+        if (highlightTimeout) {
+          clearTimeout(highlightTimeout);
+          highlightTimeout = null;
+        }
+        
+        // Remove highlight from previous element if different
+        if (lastHighlightedElement && !isSameElement) {
+          lastHighlightedElement.style.backgroundColor = '';
+          lastHighlightedElement.style.transition = '';
+        }
+        
+        // Only scroll if it's a different element
+        if (!isSameElement) {
+          const behavior = message.behavior === "smooth" ? "smooth" : "auto";
+          element.scrollIntoView({
+            behavior: behavior,
+            block: "center",
+            inline: "nearest"
+          });
+        }
+        
+        // Apply highlight
+        const originalBackgroundColor = element.style.backgroundColor;
         element.style.backgroundColor = "${
           theme.mode === "dark" ? "rgba(255, 255, 255, 0.1)" : "rgba(0, 0, 0, 0.05)"
         }";
         element.style.transition = "background-color 0.3s ease";
-        setTimeout(()=> {
+        
+        // Store current element
+        lastHighlightedElement = element;
+        
+        // Remove highlight after timeout
+        highlightTimeout = setTimeout(()=> {
           element.style.backgroundColor = originalBackgroundColor;
+          highlightTimeout = null;
         }, timeOut);        
       }
     }

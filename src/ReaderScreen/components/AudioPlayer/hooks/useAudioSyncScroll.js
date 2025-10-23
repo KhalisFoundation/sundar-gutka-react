@@ -4,6 +4,7 @@ import { showErrorToast } from "@common";
 
 const useAudioSyncScroll = (progress, isPlaying, webViewRef, audioUrl) => {
   const isAudioSyncScroll = useSelector((state) => state.isAudioSyncScroll);
+  const isParagraphMode = useSelector((state) => state.isParagraphMode);
   const lastSequenceRef = useRef(null);
   const isScrollingRef = useRef(false);
   const scrollTimeoutRef = useRef(null);
@@ -91,6 +92,7 @@ const useAudioSyncScroll = (progress, isPlaying, webViewRef, audioUrl) => {
         sequence: sequenceNumber,
         behavior: "smooth", // smooth scrolling
         timeout: timeOut,
+        isParagraphMode,
       };
 
       webViewRef.current.postMessage(JSON.stringify(scrollMessage));

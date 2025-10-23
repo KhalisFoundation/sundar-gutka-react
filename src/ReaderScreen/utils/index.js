@@ -96,7 +96,7 @@ export const loadHTML = (
     });
 
     const content = shabad
-      .map((item, index) => {
+      .map((item) => {
         const textAlignMap = {
           0: "left",
           1: "left",
@@ -107,7 +107,12 @@ export const loadHTML = (
         if (textAlign === undefined) {
           textAlign = "right";
         }
-        let contentHtml = `<div id="${index + 1}" class='text-item'>`;
+        // Use pipe delimiters for easy CSS selector matching
+        const paragraphId = item.sequences ? item.sequences[0] : item.sequence;
+        const sequencesData = item.sequences
+          ? ` data-sequences='|${item.sequences.join("|")}|'`
+          : "";
+        let contentHtml = `<div id="${paragraphId}" class='text-item'${sequencesData}>`;
         contentHtml += createDiv(
           fontFace === constant.BALOO_PAAJI ? item.gurmukhiUni : item.gurmukhi,
           item.header,
