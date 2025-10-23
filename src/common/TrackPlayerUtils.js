@@ -17,6 +17,7 @@ export const addTrack = async (track) => {
   try {
     // Validate track object
     if (!track.url) {
+      logError("Track URL is missing or empty");
       throw new Error("Track URL is missing or empty");
     }
     if (!track.id) {
@@ -28,7 +29,7 @@ export const addTrack = async (track) => {
     // Get queue to verify track was added
     // const queue = await TrackPlayer.getQueue();
   } catch (error) {
-    logError("❌ Error adding track to TrackPlayer:", error);
+    logError(`❌ Error adding track to TrackPlayer: ${error}`);
     throw error; // Re-throw to handle upstream
   }
 };
@@ -45,7 +46,7 @@ export const pauseTrack = async () => {
   try {
     await TrackPlayer.pause();
   } catch (error) {
-    logError("Error pausing track:", error);
+    logError(`Error pausing track: ${error}`);
   }
 };
 
@@ -53,7 +54,7 @@ export const stopTrack = async () => {
   try {
     await TrackPlayer.stop();
   } catch (error) {
-    logError("Error stopping track:", error);
+    logError(`Error stopping track: ${error}`);
   }
 };
 
@@ -61,6 +62,6 @@ export const resetPlayer = async () => {
   try {
     await TrackPlayer.reset();
   } catch (error) {
-    logError("Error resetting player:", error);
+    logError(`Error resetting player: ${error}`);
   }
 };
