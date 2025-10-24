@@ -1,0 +1,135 @@
+name: Play Store - Production Build - Beta Track
+
+on:
+  workflow_dispatch:
+    inputs:
+      version_name:
+        description: "Version Name (e.g. 1.2.3)"
+        required: true
+        default: "1.2.3"
+      version_code:
+        description: "Version Code"
+        required: true
+        default: "10"
+      environment:
+        description: "Deployment Environment"
+        type: choice
+        options:
+          - production
+          - staging
+        required: true
+        default: "production"
+
+jobs:
+  beta-build:
+    name: Android Beta Build
+    runs-on: ubuntu-latest
+    timeout-minutes: 60 # Add timeout to prevent hanging builds
+
+    strategy:
+      matrix:
+        node-version: [18.x]
+      fail-fast: true # Stop all jobs if one fails
+
+    steps:
+      - name: Checkout Repository
+        uses: actions/checkout@v4
+        with:
+          fetch-depth: 0 # Fetch all history for proper versioning
+
+      - name: Setup Node.js
+        uses: actions/setup-node@v3
+        with:
+          node-version: ${{ matrix.node-version }}
+          cache: "npm"
+
+      - name: Setup JDK
+        uses: actions/setup-java@v3
+        with:
+          distribution: "temurin"
+          java-version: "17"
+          cache: "gradle"
+
+      - name: Print Build Information
+        run: |
+          echo "Version Name: ${{ github.event.inputs.version_name }}"
+          echo "Version Code: ${{ github.event.inputs.version_code }}"
+          echo "Environment: ${{ github.event.inputs.environment }}"
+          java -version
+          node -v
+          npm -v
+
+      - name: Cache Gradle Files
+        uses: actions/cache@v3
+        with:
+          path: |
+            ~/.gradle/caches
+            ~/.gradle/wrapper
+          key: ${{ runner.os }}-gradle-${{ hashFiles('**/*.gradle*', '**/gradle-wrapper.properties') }}
+          restore-keys: |
+            ${{ runner.os }}-gradle-
+
+      - name: Setup Keystore
+        run: |
+          echo "${{ secrets.ANDROID_KEYSTORE_FILE }}" | base64 -d > "${{ github.workspace }}/android/app/production.keystore"
+          echo "storeFile=./app/production.keystore" >> android/keystore.properties
+          echo "storePassword=${{ secrets.ANDROID_KEYSTORE_PASSWORD }}" >> android/keystore.properties
+          echo "keyAlias=${{ secrets.ANDROID_KEYSTORE_ALIAS }}" >> android/keystore.properties
+          echo "keyPassword=${{ secrets.ANDROID_KEYSTORE_PASSWORD }}" >> android/keystore.properties
+          chmod 600 android/keystore.properties
+
+      - name: Setup Play Store Credentials
+        run: |
+          echo "${{ secrets.PLAYSTORE_SERVICE_ACCOUNT_JSON }}" > "${{ github.workspace }}/android/playstore-service-account.json"
+          chmod 600 "${{ github.workspace }}/android/playstore-service-account.json"
+
+      - name: Install Dependencies
+        run: |
+          npm ci
+          cd android && ./gradlew clean
+
+      - name: Setup Ruby and Fastlane
+        uses: ruby/setup-ruby@v1
+        with:
+          ruby-version: "3.2"
+          bundler-cache: true
+          working-directory: "android"
+
+      - name: Install Fastlane and Plugins
+        working-directory: android
+        run: |
+          gem install bundler
+          bundle config path vendor/bundle
+          bundle install
+          bundle exec fastlane add_plugin increment_version_code
+          bundle exec fastlane add_plugin increment_version_name
+
+      - name: Setup Git Config
+        run: |
+          git config user.name "GitHub Actions"
+          git config user.email "github-actions[bot]@users.noreply.github.com"
+
+      - name: Build and Upload to Play Store
+        uses: maierj/fastlane-action@v3.0.0
+        with:
+          lane: "android beta"
+          subdirectory: "android"
+          bundle-install-path: "vendor/bundle"
+        env:
+          ANDROID_KEYSTORE_FILE: "${{ github.workspace }}/android/app/production.keystore"
+          ANDROID_KEYSTORE_PASSWORD: ${{ secrets.ANDROID_KEYSTORE_PASSWORD }}
+          ANDROID_KEYSTORE_ALIAS: ${{ secrets.ANDROID_KEYSTORE_ALIAS }}
+          VERSION_CODE: ${{ github.event.inputs.version_code }}
+          VERSION_NAME: ${{ github.event.inputs.version_name }}
+          BUNDLE_ID: ${{ secrets.BUNDLE_ID }}
+          ENVIRONMENT: ${{ github.event.inputs.environment }}
+          PLAYSTORE_JSON_KEY_FILE: "${{ github.workspace }}/android/playstore-service-account.json"
+          CI: true
+          SUPPLY_JSON_KEY: "${{ github.workspace }}/android/playstore-service-account.json"
+
+      - name: Cleanup Credentials
+        if: always()
+        run: |
+          rm -f "${{ github.workspace }}/android/app/production.keystore"
+          rm -f "${{ github.workspace }}/android/playstore-service-account.json"
+          rm -f android/keystore.properties
