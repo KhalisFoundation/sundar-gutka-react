@@ -28,10 +28,24 @@ const App = () => {
   }, []); // The empty array causes this effect to only run on mount
 
   useEffect(() => {
-    initializePerformanceMonitoring();
-    allowTracking();
-    initializeCrashlytics();
-    TrackPlayerSetup();
+    // Initialize Firebase services asynchronously to avoid blocking startup
+    const initializeServices = async () => {
+      try {
+        // Initialize Firebase services in parallel
+        await Promise.all([
+          initializePerformanceMonitoring(),
+          allowTracking(),
+          initializeCrashlytics(),
+        ]);
+
+        // Initialize TrackPlayer after Firebase services
+        await TrackPlayerSetup();
+      } catch (error) {
+        logError("Error initializing services:", error);
+      }
+    };
+
+    initializeServices();
   }, []);
 
   useEffect(() => {

@@ -154,6 +154,9 @@ const AudioPlayer = ({ baniID, title, shouldNavigateBack, webViewRef }) => {
     );
   }
 
+  // Show track dialog even if tracks are empty - let the dialog handle loading state
+  // This prevents blocking the UI while manifest loads
+
   return showTrackModal ? (
     <AudioTrackDialog
       baniID={baniID}

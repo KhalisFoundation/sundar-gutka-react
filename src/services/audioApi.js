@@ -22,7 +22,7 @@ const makeApiRequest = async (endpoint, options = {}) => {
     const response = await fetch(fullUrl, {
       method: "GET",
       headers: config.headers,
-      timeout: 15000, // 15 second timeout for slow networks
+      timeout: 8000, // Reduced timeout to 8 seconds for faster failure detection
       ...options,
     });
 

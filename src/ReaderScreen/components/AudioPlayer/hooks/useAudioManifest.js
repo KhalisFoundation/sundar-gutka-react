@@ -4,6 +4,9 @@ import { useSelector, useDispatch } from "react-redux";
 import { actions, logError } from "@common";
 import { fetchManifest } from "@service";
 
+// Global cache to persist across component unmounts
+const globalApiCache = {};
+
 const useAudioManifest = (baniID) => {
   const [tracks, setTracks] = useState([]);
   const [currentPlaying, setCurrentPlaying] = useState(null);
@@ -13,86 +16,107 @@ const useAudioManifest = (baniID) => {
   const dispatch = useDispatch();
   const audioManifest = useSelector((state) => state.audioManifest);
 
-  const fetchAudioManifest = async () => {
-    try {
-      setIsLoading(true);
-      const manifest = await fetchManifest(baniID);
+  // Process manifest data (API or cached)
+  const processManifestData = (manifest, existingData = null) => {
+    let mappedData = null;
 
-      let mappedData = null;
-      if (manifest === null) {
-        // If no manifest from API, use existing Redux data
-        mappedData = audioManifest[baniID] || null;
-      } else {
-        // Map API manifest data to our format
-        mappedData = manifest.data.map((item) => {
-          return {
-            id: item.track_id,
-            track_id: item.track_id,
-            artistID: item.artist_id,
-            audioUrl: item.track_url,
-            displayName: item.artist_name,
-            trackLengthSec: item.track_length_seconds,
-            trackSizeMB: item.track_size_mb,
-          };
-        });
-      }
+    if (existingData) {
+      // Use existing Redux data
+      mappedData = existingData.map((track) => {
+        const fullLocalPath = `${DocumentDirectoryPath}/audio/${track.localURL}`;
+        return {
+          id: track.id,
+          artistID: track.artistID,
+          audioUrl: fullLocalPath,
+          displayName: track.displayName,
+          isDownloaded: true,
+        };
+      });
+    } else if (manifest && manifest.data) {
+      // Map API manifest data to our format
+      mappedData = manifest.data.map((item) => ({
+        id: item.track_id,
+        track_id: item.track_id,
+        artistID: item.artist_id,
+        audioUrl: item.track_url,
+        displayName: item.artist_name,
+        trackLengthSec: item.track_length_seconds,
+        trackSizeMB: item.track_size_mb,
+      }));
 
-      // If we have downloaded tracks in Redux, merge them with API data
+      // Merge with downloaded tracks if available
       if (audioManifest[baniID] && audioManifest[baniID].length > 0) {
         const downloadedTracks = audioManifest[baniID];
+        mappedData = mappedData.map((apiTrack) => {
+          const downloadedTrack = downloadedTracks.find(
+            (downloaded) => downloaded.id === apiTrack.id
+          );
 
-        if (mappedData) {
-          // Merge downloaded tracks with API tracks
-          mappedData = mappedData.map((apiTrack) => {
-            const downloadedTrack = downloadedTracks.find(
-              (downloaded) => downloaded.id === apiTrack.id
-            );
-
-            if (downloadedTrack) {
-              // Use local URL if track is downloaded
-              const fullLocalPath = `${DocumentDirectoryPath}/audio/${downloadedTrack.localURL}`;
-              return {
-                ...apiTrack,
-                audioUrl: fullLocalPath,
-                isDownloaded: true,
-              };
-            }
-            return apiTrack;
-          });
-        } else {
-          // If no API data, use downloaded tracks
-          mappedData = downloadedTracks.map((track) => {
-            const fullLocalPath = `${DocumentDirectoryPath}/audio/${track.localURL}`;
-
+          if (downloadedTrack) {
+            const fullLocalPath = `${DocumentDirectoryPath}/audio/${downloadedTrack.localURL}`;
             return {
-              id: track.id,
-              artistID: track.artistID,
+              ...apiTrack,
               audioUrl: fullLocalPath,
-              displayName: track.displayName,
               isDownloaded: true,
             };
-          });
-        }
-      }
-
-      if (mappedData && mappedData.length > 0) {
-        setTracks(mappedData);
-
-        // Set current playing based on default audio setting
-        if (defaultAudio[baniID]) {
-          // Find track with matching artist ID
-          const defaultTrack = mappedData.find(
-            (track) => track.artistID.toString() === defaultAudio[baniID].artistID.toString()
-          );
-          if (defaultTrack && defaultTrack.audioUrl) {
-            setCurrentPlaying(defaultTrack);
-          } else {
-            setCurrentPlaying(mappedData[0]);
           }
+          return apiTrack;
+        });
+      }
+    }
+
+    if (mappedData && mappedData.length > 0) {
+      setTracks(mappedData);
+
+      // Set current playing based on default audio setting
+      if (defaultAudio[baniID]) {
+        const defaultTrack = mappedData.find(
+          (track) => track.artistID.toString() === defaultAudio[baniID].artistID.toString()
+        );
+        if (defaultTrack && defaultTrack.audioUrl) {
+          setCurrentPlaying(defaultTrack);
         } else {
           setCurrentPlaying(mappedData[0]);
         }
+      } else {
+        setCurrentPlaying(mappedData[0]);
       }
+    }
+  };
+
+  const fetchAudioManifest = async () => {
+    try {
+      setIsLoading(true);
+
+      // Check global cache first
+      if (globalApiCache[baniID]) {
+        const cachedData = globalApiCache[baniID];
+        processManifestData(cachedData);
+        return;
+      }
+
+      // Check if we have existing Redux data first
+      if (audioManifest[baniID] && audioManifest[baniID].length > 0) {
+        const existingData = audioManifest[baniID];
+        processManifestData(null, existingData);
+        return;
+      }
+
+      // Only make API call if no cached data
+      // Add timeout to prevent hanging on slow networks
+      const manifestPromise = fetchManifest(baniID);
+      const timeoutPromise = new Promise((_, reject) =>
+        setTimeout(() => reject(new Error("Manifest fetch timeout")), 5000)
+      );
+
+      const manifest = await Promise.race([manifestPromise, timeoutPromise]);
+
+      // Cache the API response globally
+      if (manifest) {
+        globalApiCache[baniID] = manifest;
+      }
+
+      processManifestData(manifest);
     } catch (error) {
       logError("Error fetching manifest:", error);
     } finally {
@@ -137,7 +161,10 @@ const useAudioManifest = (baniID) => {
 
   useEffect(() => {
     if (baniID) {
-      fetchAudioManifest();
+      // Only fetch if we don't have data for this baniID
+      if (!tracks.length && !isLoading) {
+        fetchAudioManifest();
+      }
     }
   }, [baniID]);
 
