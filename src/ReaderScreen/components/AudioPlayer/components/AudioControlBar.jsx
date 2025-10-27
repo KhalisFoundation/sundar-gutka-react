@@ -1,4 +1,4 @@
-import React, { useState, useEffect } from "react";
+import React, { useState, useEffect, useMemo } from "react";
 import { View, Text, Pressable, Animated, Platform } from "react-native";
 import { Slider } from "@miblanchard/react-native-slider";
 import { BlurView } from "@react-native-community/blur";
@@ -23,13 +23,14 @@ const AudioControlBar = ({
   handleTrackSelect,
   onCloseTrackModal,
   baniID,
+  currentPlaying,
 }) => {
   const { theme } = useTheme();
   const styles = useThemedStyles(audioControlBarStyles);
   const [isSettingsModalOpen, setIsSettingsModalOpen] = useState(false);
   const [isMoreTracksModalOpen, setIsMoreTracksModalOpen] = useState(false);
   const { modalHeight, modalOpacity } = useAnimation(isSettingsModalOpen, isMoreTracksModalOpen);
-  const { tracks, currentPlaying, addTrackToManifest, removeTrackFromManifest, isTrackDownloaded } =
+  const { tracks, addTrackToManifest, removeTrackFromManifest, isTrackDownloaded } =
     useAudioManifest(baniID);
   const { isDownloading, isDownloaded, handleDownload } = useDownloadManager(
     currentPlaying,
@@ -44,11 +45,11 @@ const AudioControlBar = ({
     return `${mins}:${secs.toString().padStart(2, "0")}`;
   };
 
-  // Calculate slider colors to avoid nested ternary
-  const getSliderMinTrackColor = () => {
+  // Memoize slider color to avoid recalculating on every render
+  const sliderMinTrackColor = useMemo(() => {
     if (!isAudioEnabled) return theme.staticColors.LIGHT_GRAY;
     return theme.colors.primary;
-  };
+  }, [isAudioEnabled, theme.staticColors.LIGHT_GRAY, theme.colors.primary]);
   const actionComponents = [
     {
       selector: isMoreTracksModalOpen,
@@ -178,7 +179,7 @@ const AudioControlBar = ({
                   minimumValue={0}
                   maximumValue={progress.duration}
                   onSlidingComplete={([v]) => handleSeek(v)}
-                  minimumTrackTintColor={getSliderMinTrackColor()}
+                  minimumTrackTintColor={sliderMinTrackColor}
                   maximumTrackTintColor={theme.staticColors.SLIDER_TRACK_COLOR}
                   disabled={!isAudioEnabled}
                   trackStyle={{
@@ -199,6 +200,10 @@ const AudioControlBar = ({
   );
 };
 
+AudioControlBar.defaultProps = {
+  currentPlaying: null,
+};
+
 AudioControlBar.propTypes = {
   isPlaying: PropTypes.bool.isRequired,
   handlePlayPause: PropTypes.func.isRequired,
@@ -211,6 +216,11 @@ AudioControlBar.propTypes = {
   isAudioEnabled: PropTypes.bool.isRequired,
   onCloseTrackModal: PropTypes.func.isRequired,
   baniID: PropTypes.string.isRequired,
+  currentPlaying: PropTypes.shape({
+    id: PropTypes.string,
+    displayName: PropTypes.string,
+    audioUrl: PropTypes.string,
+  }),
 };
 
 export default AudioControlBar;

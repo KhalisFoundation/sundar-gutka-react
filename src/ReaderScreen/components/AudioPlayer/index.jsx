@@ -5,6 +5,7 @@ import { useSelector, useDispatch } from "react-redux";
 import PropTypes from "prop-types";
 import { toggleAudio, logError } from "@common/actions";
 import useThemedStyles from "@common/hooks/useThemedStyles";
+import { showErrorToast } from "@common/toast";
 import { AudioTrackDialog, AudioControlBar } from "./components";
 import { useAudioManifest, useTrackPlayer, useAudioSyncScroll } from "./hooks";
 import createStyles from "./style";
@@ -18,7 +19,7 @@ const AudioPlayer = ({ baniID, title, shouldNavigateBack, webViewRef }) => {
   const defaultAudio = useSelector((state) => state.defaultAudio);
   const audioPlaybackSpeed = useSelector((state) => state.audioPlaybackSpeed);
   // Custom hooks
-  const { tracks, currentPlaying, setCurrentPlaying } = useAudioManifest(baniID);
+  const { tracks, currentPlaying, setCurrentPlaying, isLoading } = useAudioManifest(baniID);
 
   const {
     isPlaying,
@@ -66,9 +67,6 @@ const AudioPlayer = ({ baniID, title, shouldNavigateBack, webViewRef }) => {
           return;
         }
 
-        // Otherwise, load the new track
-        // Check if local file exists
-
         const formattedUrl = formatUrlForTrackPlayer(currentPlaying.audioUrl);
 
         const track = {
@@ -83,6 +81,7 @@ const AudioPlayer = ({ baniID, title, shouldNavigateBack, webViewRef }) => {
       }
     } catch (error) {
       logError("Error in handlePlayPause:", error);
+      showErrorToast("Unable to play audio. Please try again.");
     }
   };
 
@@ -112,6 +111,7 @@ const AudioPlayer = ({ baniID, title, shouldNavigateBack, webViewRef }) => {
       await seekTo(value);
     } catch (error) {
       logError("Error seeking:", error);
+      showErrorToast("Unable to seek audio. Please try again.");
     }
   };
 
@@ -142,6 +142,7 @@ const AudioPlayer = ({ baniID, title, shouldNavigateBack, webViewRef }) => {
       }
     } catch (error) {
       logError("Error switching track:", error);
+      showErrorToast("Unable to switch audio track. Please try again.");
     }
   };
 
@@ -160,6 +161,7 @@ const AudioPlayer = ({ baniID, title, shouldNavigateBack, webViewRef }) => {
       handleTrackSelect={handleTrackSelect}
       title={title}
       tracks={tracks}
+      isLoading={isLoading}
       onCloseTrackModal={onCloseTrackModal}
     />
   ) : (
@@ -172,6 +174,7 @@ const AudioPlayer = ({ baniID, title, shouldNavigateBack, webViewRef }) => {
       handleSeek={handleSeek}
       isAudioEnabled={isAudioEnabled}
       title={title}
+      currentPlaying={currentPlaying}
       onCloseTrackModal={onCloseTrackModal}
     />
   );

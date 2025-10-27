@@ -1,5 +1,5 @@
 import React, { useState } from "react";
-import { View, Text, Pressable, Platform, Linking } from "react-native";
+import { View, Text, Pressable, Platform, Linking, ActivityIndicator } from "react-native";
 import { useSelector, useDispatch } from "react-redux";
 import { BlurView } from "@react-native-community/blur";
 import PropTypes from "prop-types";
@@ -20,6 +20,7 @@ const AudioTrackDialog = ({
   onCloseTrackModal,
   isHeader = true,
   isFooter = true,
+  isLoading = false,
 }) => {
   const dispatch = useDispatch();
   const styles = useThemedStyles(audioTrackDialogStyles);
@@ -59,6 +60,7 @@ const AudioTrackDialog = ({
       await addAndPlayTrack(trackToPlay);
       setPlayingTrack(track);
     } catch (error) {
+      console.log("Error playing track:", error);
       // Error handling - track play failed
       setPlayingTrack(null);
     }
@@ -70,6 +72,16 @@ const AudioTrackDialog = ({
       dispatch(setDefaultAudio(selectedTrack, baniID));
     }
   };
+
+  if (isLoading) {
+    return (
+      <View style={styles.modalWrapper}>
+        <View style={styles.loadingContainer}>
+          <ActivityIndicator size="large" color={theme.colors.primary} />
+        </View>
+      </View>
+    );
+  }
 
   return (
     <View style={styles.modalWrapper}>
@@ -164,6 +176,7 @@ AudioTrackDialog.defaultProps = {
   title: "",
   isHeader: true,
   isFooter: true,
+  isLoading: false,
 };
 
 AudioTrackDialog.propTypes = {
@@ -180,6 +193,7 @@ AudioTrackDialog.propTypes = {
   isFooter: PropTypes.bool,
   onCloseTrackModal: PropTypes.func.isRequired,
   baniID: PropTypes.string.isRequired,
+  isLoading: PropTypes.bool,
 };
 
 export default AudioTrackDialog;

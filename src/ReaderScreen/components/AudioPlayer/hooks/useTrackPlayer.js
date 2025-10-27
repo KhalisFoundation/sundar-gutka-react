@@ -1,12 +1,15 @@
 import { useState, useEffect } from "react";
-import TrackPlayer, {
-  usePlaybackState,
-  useProgress,
-  State,
-  AppKilledPlaybackBehavior,
-} from "react-native-track-player";
+import TrackPlayer, { usePlaybackState, useProgress, State } from "react-native-track-player";
 import { useSelector } from "react-redux";
-import { addTrack, playTrack, pauseTrack, stopTrack, resetPlayer } from "@common/TrackPlayerUtils";
+import {
+  addTrack,
+  playTrack,
+  pauseTrack,
+  stopTrack,
+  resetPlayer,
+  TrackPlayerSetup,
+  getTrackPlayerState,
+} from "@common/TrackPlayerUtils";
 import { logError, logMessage } from "@common";
 
 const useTrackPlayer = () => {
@@ -19,43 +22,33 @@ const useTrackPlayer = () => {
   useEffect(() => {
     const setupPlayer = async () => {
       try {
-        // Check if player is already initialized
-        const isSetup = await TrackPlayer.isServiceRunning();
-        if (!isSetup) {
-          // Initialize player if not already set up
-          await TrackPlayer.setupPlayer({
-            waitForBuffer: true,
-            maxCacheSize: 1024,
-            iosCategory: "playback",
-            alwaysPauseOnInterruption: true,
-          });
-          await TrackPlayer.updateOptions({
-            android: {
-              appKilledPlaybackBehavior:
-                AppKilledPlaybackBehavior.StopPlaybackAndRemoveNotification,
-            },
-            capabilities: [
-              TrackPlayer.Capability.Play,
-              TrackPlayer.Capability.Pause,
-              TrackPlayer.Capability.SkipToNext,
-              TrackPlayer.Capability.SkipToPrevious,
-              TrackPlayer.Capability.Stop,
-              TrackPlayer.Capability.SeekTo,
-            ],
-            compactCapabilities: [
-              TrackPlayer.Capability.Play,
-              TrackPlayer.Capability.Pause,
-              TrackPlayer.Capability.SkipToNext,
-            ],
-          });
-        }
-        setIsInitialized(true);
+        // Use singleton service for initialization
+        await TrackPlayerSetup();
+
+        // Check state from singleton
+        const state = getTrackPlayerState();
+        setIsInitialized(state.isInitialized);
       } catch (error) {
         logError("Error initializing TrackPlayer:", error);
+        setIsInitialized(false);
       }
     };
 
     setupPlayer();
+
+    // Cleanup function
+    return () => {
+      // Cleanup on unmount
+      const cleanup = async () => {
+        try {
+          // Stop any active playback when component unmounts
+          await stopTrack();
+        } catch (error) {
+          logError("Error during cleanup:", error);
+        }
+      };
+      cleanup();
+    };
   }, []);
 
   useEffect(() => {
@@ -108,7 +101,7 @@ const useTrackPlayer = () => {
       return;
     }
     try {
-      await reset(); // Clear current queue
+      await reset();
       await addTrack(track);
       await play();
     } catch (error) {

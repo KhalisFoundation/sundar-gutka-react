@@ -13,85 +13,100 @@ const useAudioManifest = (baniID) => {
   const dispatch = useDispatch();
   const audioManifest = useSelector((state) => state.audioManifest);
 
+  // Map API manifest data to our track format
+  const mapApiDataToTracks = (manifest) => {
+    if (!manifest?.data || manifest.data.length === 0) {
+      return null;
+    }
+
+    return manifest.data.map((item) => ({
+      id: item.track_id,
+      track_id: item.track_id,
+      artistID: item.artist_id,
+      audioUrl: item.track_url,
+      displayName: item.artist_name,
+      trackLengthSec: item.track_length_seconds,
+      trackSizeMB: item.track_size_mb,
+    }));
+  };
+
+  // Merge downloaded tracks with API tracks
+  const mergeDownloadedTracks = (apiTracks, downloadedTracks) => {
+    if (!apiTracks) {
+      // If no API data, use downloaded tracks
+      return downloadedTracks.map((track) => {
+        const fullLocalPath = `${DocumentDirectoryPath}/audio/${track.localURL}`;
+        return {
+          id: track.id,
+          artistID: track.artistID,
+          audioUrl: fullLocalPath,
+          displayName: track.displayName,
+          isDownloaded: true,
+        };
+      });
+    }
+
+    // Merge downloaded tracks with API tracks
+    return apiTracks.map((apiTrack) => {
+      const downloadedTrack = downloadedTracks.find((downloaded) => downloaded.id === apiTrack.id);
+
+      if (downloadedTrack) {
+        // Use local URL if track is downloaded
+        const fullLocalPath = `${DocumentDirectoryPath}/audio/${downloadedTrack.localURL}`;
+        return {
+          ...apiTrack,
+          audioUrl: fullLocalPath,
+          isDownloaded: true,
+        };
+      }
+      return apiTrack;
+    });
+  };
+
+  // Set default track based on user preferences
+  const setDefaultTrack = (trackList) => {
+    if (!trackList || trackList.length === 0) {
+      return;
+    }
+
+    // Check if user has a preferred audio for this bani
+    if (defaultAudio[baniID]) {
+      // Find track with matching artist ID
+      const defaultTrack = trackList.find(
+        (track) => track.artistID.toString() === defaultAudio[baniID].artistID.toString()
+      );
+      if (defaultTrack && defaultTrack.audioUrl) {
+        setCurrentPlaying(defaultTrack);
+        return;
+      }
+    }
+
+    // Otherwise, use the first track
+    setCurrentPlaying(trackList[0]);
+  };
+
   const fetchAudioManifest = async () => {
     try {
       setIsLoading(true);
+
+      // Fetch manifest from API
       const manifest = await fetchManifest(baniID);
 
-      let mappedData = null;
-      if (manifest === null) {
-        // If no manifest from API, use existing Redux data
-        mappedData = audioManifest[baniID] || null;
-      } else {
-        // Map API manifest data to our format
-        mappedData = manifest.data.map((item) => {
-          return {
-            id: item.track_id,
-            track_id: item.track_id,
-            artistID: item.artist_id,
-            audioUrl: item.track_url,
-            displayName: item.artist_name,
-            trackLengthSec: item.track_length_seconds,
-            trackSizeMB: item.track_size_mb,
-          };
-        });
+      // Map API data to tracks
+      let mappedData = mapApiDataToTracks(manifest);
+
+      // Get downloaded tracks from Redux
+      const downloadedTracks = audioManifest[baniID];
+
+      // Merge downloaded tracks with API tracks if available
+      if (downloadedTracks && downloadedTracks.length > 0) {
+        mappedData = mergeDownloadedTracks(mappedData, downloadedTracks);
       }
 
-      // If we have downloaded tracks in Redux, merge them with API data
-      if (audioManifest[baniID] && audioManifest[baniID].length > 0) {
-        const downloadedTracks = audioManifest[baniID];
-
-        if (mappedData) {
-          // Merge downloaded tracks with API tracks
-          mappedData = mappedData.map((apiTrack) => {
-            const downloadedTrack = downloadedTracks.find(
-              (downloaded) => downloaded.id === apiTrack.id
-            );
-
-            if (downloadedTrack) {
-              // Use local URL if track is downloaded
-              const fullLocalPath = `${DocumentDirectoryPath}/audio/${downloadedTrack.localURL}`;
-              return {
-                ...apiTrack,
-                audioUrl: fullLocalPath,
-                isDownloaded: true,
-              };
-            }
-            return apiTrack;
-          });
-        } else {
-          // If no API data, use downloaded tracks
-          mappedData = downloadedTracks.map((track) => {
-            const fullLocalPath = `${DocumentDirectoryPath}/audio/${track.localURL}`;
-
-            return {
-              id: track.id,
-              artistID: track.artistID,
-              audioUrl: fullLocalPath,
-              displayName: track.displayName,
-              isDownloaded: true,
-            };
-          });
-        }
-      }
-
+      // Set tracks and default playing track
       if (mappedData && mappedData.length > 0) {
         setTracks(mappedData);
-
-        // Set current playing based on default audio setting
-        if (defaultAudio[baniID]) {
-          // Find track with matching artist ID
-          const defaultTrack = mappedData.find(
-            (track) => track.artistID.toString() === defaultAudio[baniID].artistID.toString()
-          );
-          if (defaultTrack && defaultTrack.audioUrl) {
-            setCurrentPlaying(defaultTrack);
-          } else {
-            setCurrentPlaying(mappedData[0]);
-          }
-        } else {
-          setCurrentPlaying(mappedData[0]);
-        }
+        setDefaultTrack(mappedData);
       }
     } catch (error) {
       logError("Error fetching manifest:", error);
