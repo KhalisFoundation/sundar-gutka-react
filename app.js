@@ -1,9 +1,11 @@
 import React, { useEffect } from "react";
-import { Provider } from "react-redux";
-import { PersistGate } from "redux-persist/integration/react";
 import ErrorBoundary from "react-native-error-boundary";
-import notifee, { EventType } from "@notifee/react-native";
+import { SafeAreaProvider } from "react-native-safe-area-context";
 import SplashScreen from "react-native-splash-screen";
+import Toast from "react-native-toast-message";
+import { Provider } from "react-redux";
+import notifee, { EventType } from "@notifee/react-native";
+import { PersistGate } from "redux-persist/integration/react";
 import {
   createStore,
   logError,
@@ -13,10 +15,10 @@ import {
   navigateTo,
   initializePerformanceMonitoring,
 } from "@common";
-import { SafeAreaProvider } from "react-native-safe-area-context";
-import Navigation from "./src/navigation";
-import { allowTracking } from "./src/common/firebase/analytics";
 import ThemeProvider from "./src/common/context/ThemeProvider";
+import { allowTracking } from "./src/common/firebase/analytics";
+import { TrackPlayerSetup } from "./src/common/TrackPlayerUtils";
+import Navigation from "./src/navigation";
 
 const { store, persistor } = createStore();
 const App = () => {
@@ -29,6 +31,7 @@ const App = () => {
     initializePerformanceMonitoring();
     allowTracking();
     initializeCrashlytics();
+    TrackPlayerSetup();
   }, []);
 
   useEffect(() => {
@@ -41,17 +44,18 @@ const App = () => {
   }, []);
 
   return (
-    <ErrorBoundary onError={logError} FallbackComponent={FallBack}>
-      <Provider store={store}>
-        <PersistGate loading={null} persistor={persistor}>
-          <ThemeProvider>
+    <Provider store={store}>
+      <PersistGate loading={null} persistor={persistor}>
+        <ThemeProvider>
+          <ErrorBoundary onError={logError} FallbackComponent={FallBack}>
             <SafeAreaProvider>
               <Navigation />
+              <Toast />
             </SafeAreaProvider>
-          </ThemeProvider>
-        </PersistGate>
-      </Provider>
-    </ErrorBoundary>
+          </ErrorBoundary>
+        </ThemeProvider>
+      </PersistGate>
+    </Provider>
   );
 };
 

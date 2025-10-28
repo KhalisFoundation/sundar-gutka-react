@@ -1,11 +1,13 @@
 import React, { useState, useRef, useMemo } from "react";
-import { useDispatch, useSelector } from "react-redux";
 import { View, ScrollView } from "react-native";
-import { SafeAreaProvider, SafeAreaView } from "react-native-safe-area-context";
-import Accordion from "react-native-collapsible/Accordion";
-import PropTypes from "prop-types";
 import ModalSelector from "react-native-modal-selector";
+import { SafeAreaProvider, SafeAreaView } from "react-native-safe-area-context";
+import { useDispatch, useSelector } from "react-redux";
 import moment from "moment";
+import PropTypes from "prop-types";
+import Accordion from "react-native-collapsible/Accordion";
+import useTheme from "@common/context";
+import useThemedStyles from "@common/hooks/useThemedStyles";
 import {
   constant,
   STRINGS,
@@ -15,8 +17,6 @@ import {
   logMessage,
   StatusBarComponent,
 } from "@common";
-import useTheme from "@common/context";
-import useThemedStyles from "@common/hooks/useThemedStyles";
 import { AccordianContent, AccordianHeader } from "./components";
 import { useHeader, useFetchBani } from "./hooks";
 import createStyles from "./styles";

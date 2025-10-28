@@ -1,13 +1,14 @@
 import React from "react";
-import { ListItem, Icon, Switch } from "@rneui/themed";
 import { useSelector, useDispatch } from "react-redux";
-import { STRINGS } from "@common";
+import { ListItem, Icon, Switch } from "@rneui/themed";
 import { toggleScreenAwake, toggleAutoScroll } from "@common/actions";
 import useTheme from "@common/context";
+import { STRINGS } from "@common";
 
 const AutoScroll = () => {
   const { theme } = useTheme();
   const isAutoScroll = useSelector((state) => state.isAutoScroll);
+  const isAudio = useSelector((state) => state.isAudio);
   const dispatch = useDispatch();
   const { AUTO_SCROLL } = STRINGS;
   return (
@@ -18,6 +19,7 @@ const AutoScroll = () => {
       </ListItem.Content>
       <Switch
         value={isAutoScroll}
+        disabled={isAudio}
         onValueChange={(value) => {
           /* The screen should remain active whenever Auto Scroll is enabled. */
           dispatch(toggleScreenAwake(value));

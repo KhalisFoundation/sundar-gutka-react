@@ -1,14 +1,13 @@
 import React, { useCallback, useEffect, useState } from "react";
 import { FlatList, Dimensions, Platform } from "react-native";
-import { ListItem, Avatar } from "@rneui/themed";
-import PropTypes from "prop-types";
 import { useSelector } from "react-redux";
-import useThemedStyles from "@common/hooks/useThemedStyles";
-import useTheme from "@common/context";
-import { baseFontSize } from "@common";
+import { ListItem, Avatar } from "@rneui/themed";
 import createStyles from "@settings/styles";
-import constant from "../../constant";
-import convertToUnicode from "../../utils";
+import PropTypes from "prop-types";
+import constant from "@common/constant";
+import useTheme from "@common/context";
+import useThemedStyles from "@common/hooks/useThemedStyles";
+import { convertToUnicode, baseFontSize } from "@common";
 
 const BaniList = React.memo(({ data, onPress }) => {
   const { theme } = useTheme();

@@ -3,9 +3,9 @@ import { Appearance } from "react-native";
 import { useSelector, useDispatch } from "react-redux";
 import PropTypes from "prop-types";
 import { lightTheme, darkTheme } from "@theme";
-import ThemeContext from "./ThemeContext";
-import constant from "../constant";
 import { setTheme } from "../actions";
+import constant from "../constant";
+import ThemeContext from "./ThemeContext";
 
 const ThemeProvider = ({ children }) => {
   const dispatch = useDispatch();

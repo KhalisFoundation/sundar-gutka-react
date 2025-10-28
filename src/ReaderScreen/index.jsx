@@ -1,16 +1,23 @@
 import React, { useState, useRef, useEffect, useCallback, useMemo } from "react";
-import { useDispatch, useSelector } from "react-redux";
-import { ActivityIndicator, BackHandler, AppState, Platform } from "react-native";
+import { ActivityIndicator, BackHandler, AppState, Platform, Animated } from "react-native";
 import { WebView } from "react-native-webview";
+import { useDispatch, useSelector } from "react-redux";
 import PropTypes from "prop-types";
-import { constant, actions, useScreenAnalytics, logMessage, logError, SafeArea } from "@common";
-import useTheme from "@common/context";
-import useThemedStyles from "@common/hooks/useThemedStyles";
-import StatusBarComponent from "@common/components/StatusBar";
-import { HomeIcon, BookmarkIcon, SettingsIcon } from "@common/icons";
-import BottomNavigation from "./components/BottomNavigation";
-import { Header, AutoScrollComponent } from "./components";
-import { useBookmarks, useFetchShabad } from "./hooks";
+import { HomeIcon, BookmarkIcon, SettingsIcon, MusicIcon } from "@common/icons";
+import {
+  constant,
+  actions,
+  useScreenAnalytics,
+  logMessage,
+  logError,
+  SafeArea,
+  BottomNavigation,
+  useTheme,
+  useThemedStyles,
+  StatusBarComponent,
+} from "@common";
+import { Header, AutoScrollComponent, AudioPlayer } from "./components";
+import { useBookmarks, useFetchShabad, useFooterAnimation } from "./hooks";
 import createStyles from "./styles";
 import { loadHTML } from "./utils";
 
@@ -20,6 +27,7 @@ const Reader = ({ navigation, route }) => {
   const styles = useThemedStyles(createStyles);
   const bookmarkPosition = useSelector((state) => state.bookmarkPosition);
   const isAutoScroll = useSelector((state) => state.isAutoScroll);
+  const isAudio = useSelector((state) => state.isAudio);
   const isTransliteration = useSelector((state) => state.isTransliteration);
   const fontSize = useSelector((state) => state.fontSize);
   const fontFace = useSelector((state) => state.fontFace);
@@ -41,10 +49,13 @@ const Reader = ({ navigation, route }) => {
   const [currentPosition, setCurrentPosition] = useState(savePosition[id] || 0);
   const [shouldNavigateBack, setShouldNavigateBack] = useState(false);
   const [dateKey, setDateKey] = useState(Date.now().toString());
+  const [titleText, setTitleText] = useState(null);
   const positionPointer = useRef(0);
 
   const dispatch = useDispatch();
   const { shabad, isLoading } = useFetchShabad(id);
+
+  const { animationPosition } = useFooterAnimation(isHeader);
 
   // Save scroll position when leaving screen or app goes to background
   const saveScrollPosition = useCallback(() => {
@@ -52,6 +63,10 @@ const Reader = ({ navigation, route }) => {
       dispatch(actions.setPosition(parseFloat(positionPointer.current), id));
     }
   }, [dispatch, id]);
+
+  useEffect(() => {
+    setTitleText(fontFace === constant.BALOO_PAAJI ? titleUni : title);
+  }, [fontFace, titleUni, title]);
 
   // Cleanup on unmount
   useEffect(() => {
@@ -155,10 +170,8 @@ const Reader = ({ navigation, route }) => {
     (message) => {
       // Update last activity timestamp
       const { data } = message.nativeEvent;
-      // Handle UI toggle messages
-      if (data === "toggle") {
-        toggleHeader((prev) => !prev);
-      } else if (data === "show") {
+      // Handle UI messages (removed toggle since it's handled by onTouchStart)
+      if (data === "show") {
         toggleHeader(true);
       } else if (data === "hide") {
         toggleHeader(false);
@@ -203,6 +216,14 @@ const Reader = ({ navigation, route }) => {
   const navigationItems = [
     { key: "Home", icon: HomeIcon, handlePress: () => navigation.navigate("Home") },
     {
+      key: "Music",
+      icon: MusicIcon,
+      handlePress: () => {
+        dispatch(actions.toggleAutoScroll(false));
+        dispatch(actions.toggleAudio(!isAudio));
+      },
+    },
+    {
       key: "Bookmarks",
       icon: BookmarkIcon,
       handlePress: () => handleBookmarkPress(),
@@ -216,12 +237,8 @@ const Reader = ({ navigation, route }) => {
 
   return (
     <SafeArea backgroundColor={theme.colors.surface}>
-      <StatusBarComponent backgroundColor={theme.colors.primary} />
-      <Header
-        title={fontFace === constant.BALOO_PAAJI ? titleUni : title}
-        handleBackPress={handleBackPress}
-        isHeader={isHeader}
-      />
+      <StatusBarComponent backgroundColor={theme.colors.surface} />
+      <Header title={titleText} handleBackPress={handleBackPress} isHeader={isHeader} />
       {isLoading && <ActivityIndicator size="small" color={theme.colors.primary} />}
       <WebView
         key={webViewKey}
@@ -243,15 +260,30 @@ const Reader = ({ navigation, route }) => {
         style={[
           webView,
           theme.mode === "dark" && { opacity: viewLoaded ? 1 : 0.1 },
-          { backgroundColor: theme.colors.surface },
+          { backgroundColor: theme.colors.surface, marginTop: 60 },
         ]}
         onMessage={handleMessage}
+        onTouchStart={() => {
+          // Toggle header when WebView is touched (not overlaid elements)
+          toggleHeader((prev) => !prev);
+        }}
       />
-
-      {isAutoScroll && (
-        <AutoScrollComponent shabadID={id} webViewRef={webViewRef} isFooter={isHeader} />
+      {isAudio && (
+        <AudioPlayer
+          baniID={id}
+          title={titleText}
+          shouldNavigateBack={shouldNavigateBack}
+          webViewRef={webViewRef}
+        />
       )}
-      <BottomNavigation currentRoute="Reader" navigationItems={navigationItems} />
+      <Animated.View
+        style={[{ transform: [{ translateY: animationPosition }] }]}
+        pointerEvents="box-none" // Allow touches to pass through to WebView when not hitting child components
+      >
+        {isAutoScroll && <AutoScrollComponent shabadID={id} webViewRef={webViewRef} />}
+      </Animated.View>
+
+      <BottomNavigation navigationItems={navigationItems} activeKey={isAudio ? "Music" : null} />
     </SafeArea>
   );
 };

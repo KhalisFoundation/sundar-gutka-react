@@ -8,6 +8,7 @@ module.exports = {
         alias: {
           "@common": "./src/common",
           "@database": "./src/database/db",
+          "@service": "./src/services",
           "@settings": "./src/Settings",
           "@theme": "./src/theme",
         },

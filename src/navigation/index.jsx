@@ -2,19 +2,19 @@ import React from "react";
 import { NavigationContainer } from "@react-navigation/native";
 import { createNativeStackNavigator } from "@react-navigation/native-stack";
 import { Icon } from "@rneui/themed";
-import { navigationRef, stopTrace, resetTrace, startPerformanceTrace } from "@common";
 import useTheme from "@common/context";
 import useThemedStyles from "@common/hooks/useThemedStyles";
+import { navigationRef, stopTrace, resetTrace, startPerformanceTrace } from "@common";
+import AboutScreen from "../AboutScreen";
+import Bookmarks from "../Bookmarks";
+import DatabaseUpdateScreen from "../DatabaseUpdate";
+import EditBaniOrder from "../EditBaniOrder";
+import FolderScreen from "../FolderScreen";
 import HomeScreen from "../HomeScreen";
 import ReaderScreen from "../ReaderScreen";
 import Settings from "../Settings";
-import AboutScreen from "../AboutScreen";
-import EditBaniOrder from "../EditBaniOrder";
-import Bookmarks from "../Bookmarks";
 import ReminderOptions from "../Settings/components/reminders/ReminderOptions";
-import FolderScreen from "../FolderScreen";
 import SettingsStyle from "./style";
-import DatabaseUpdateScreen from "../DatabaseUpdate";
 
 const Stack = createNativeStackNavigator();
 

@@ -1,8 +1,8 @@
 import React, { useEffect } from "react";
 import { Pressable } from "react-native";
+import useTheme from "@common/context";
 import useThemedStyles from "@common/hooks/useThemedStyles";
 import { BackArrowIcon } from "@common/icons";
-import useTheme from "@common/context";
 import createStyles from "../styles";
 
 const useHeader = (navigation) => {

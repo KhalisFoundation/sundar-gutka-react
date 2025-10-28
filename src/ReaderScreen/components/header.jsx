@@ -1,20 +1,18 @@
 import React, { useEffect, useRef } from "react";
 import { View, Text, Animated, Pressable } from "react-native";
-import PropTypes from "prop-types";
-import { useSelector } from "react-redux";
 import LinearGradient from "react-native-linear-gradient";
-import { BackArrowIcon } from "@common/icons";
-import { useSafeAreaInsets } from "react-native-safe-area-context";
-import useThemedStyles from "@common/hooks/useThemedStyles";
+import { useSelector } from "react-redux";
+import PropTypes from "prop-types";
 import useTheme from "@common/context";
+import useThemedStyles from "@common/hooks/useThemedStyles";
+import { BackArrowIcon } from "@common/icons";
 import createStyles from "../styles";
 
 const Header = ({ title, handleBackPress, isHeader }) => {
   const { theme } = useTheme();
   const styles = useThemedStyles(createStyles);
-  const animationPosition = useRef(new Animated.Value(0)).current;
   const fontFace = useSelector((state) => state.fontFace);
-  const insets = useSafeAreaInsets();
+  const animationPosition = useRef(new Animated.Value(0)).current;
 
   const MID = "rgba(17,57,121,1)"; // #113979
   const EDGE = "rgba(17,57,121,0)";
@@ -30,7 +28,7 @@ const Header = ({ title, handleBackPress, isHeader }) => {
   );
 
   useEffect(() => {
-    const value = isHeader ? insets.top : -120;
+    const value = isHeader ? 0 : -120;
 
     // Stop any existing animation first
     animationPosition.stopAnimation();
@@ -58,7 +56,7 @@ const Header = ({ title, handleBackPress, isHeader }) => {
   useEffect(() => {
     const resetTimer = setTimeout(() => {
       // Force position if animation seems stuck
-      const targetValue = isHeader ? insets.top : -120;
+      const targetValue = isHeader ? 0 : -120;
       animationPosition.setValue(targetValue);
     }, 1000);
 
@@ -77,10 +75,11 @@ const Header = ({ title, handleBackPress, isHeader }) => {
     >
       <View style={styles.headerStyle} pointerEvents="auto">
         <View style={styles.headerWrapper}>
-          <View style={{ width: "20%" }}>{headerLeft()}</View>
-          <View style={{ width: "60%" }}>
+          <View style={styles.headerLeft}>{headerLeft()}</View>
+          <View style={styles.headerCenter}>
             <Text style={[styles.headerTitleStyle, { fontFamily: fontFace }]}>{title}</Text>
           </View>
+          <View style={styles.headerRight} />
         </View>
       </View>
       <LinearGradient

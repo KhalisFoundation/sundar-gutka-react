@@ -1,7 +1,7 @@
 import React from "react";
 import { View } from "react-native";
-import PropTypes from "prop-types";
 import { useSafeAreaInsets } from "react-native-safe-area-context";
+import PropTypes from "prop-types";
 import { constant } from "@common";
 
 const SafeArea = ({ children, backgroundColor, topPadding = false }) => {

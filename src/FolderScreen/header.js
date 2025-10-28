@@ -1,9 +1,9 @@
 import React, { useEffect, useCallback } from "react";
 import { Icon } from "@rneui/themed";
 import PropTypes from "prop-types";
-import { constant } from "@common";
 import useTheme from "@common/context";
 import useThemedStyles from "@common/hooks/useThemedStyles";
+import { constant } from "@common";
 import getHeaderStyles from "./styles";
 
 const Header = ({ navigation, title }) => {

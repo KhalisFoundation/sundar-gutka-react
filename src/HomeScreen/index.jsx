@@ -1,7 +1,9 @@
 import React, { useEffect } from "react";
 import { View } from "react-native";
-import PropTypes from "prop-types";
 import { useDispatch, useSelector } from "react-redux";
+import PropTypes from "prop-types";
+import useTheme from "@common/context";
+import useThemedStyles from "@common/hooks/useThemedStyles";
 import {
   useScreenAnalytics,
   actions,
@@ -14,11 +16,9 @@ import {
   StatusBarComponent,
   SafeArea,
 } from "@common";
-import useTheme from "@common/context";
-import useThemedStyles from "@common/hooks/useThemedStyles";
+import { setBaniOrder } from "../common/actions";
 import BaniHeader from "./components/BaniHeader";
 import { useBaniLength, useBaniList, useDatabaseUpdateCheck } from "./hooks";
-import { setBaniOrder } from "../common/actions";
 import createStyles from "./styles";
 
 const HomeScreen = React.memo(({ navigation }) => {
@@ -69,8 +69,8 @@ const HomeScreen = React.memo(({ navigation }) => {
     <BaniLengthSelector />
   ) : (
     <SafeArea backgroundColor={theme.colors.primary} topPadding>
+      <StatusBarComponent backgroundColor={theme.colors.primary} />
       <View style={[{ backgroundColor: theme.colors.surface }, styles.container]}>
-        <StatusBarComponent backgroundColor={theme.colors.primary} />
         <BaniHeader navigate={navigate} />
         <BaniList data={baniListData} onPress={onPress} />
       </View>

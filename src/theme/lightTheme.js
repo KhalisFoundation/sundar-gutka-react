@@ -1,7 +1,7 @@
+import components from "./components";
+import spacing from "./spacing";
 import staticColors from "./staticColors";
 import typography from "./typography";
-import spacing from "./spacing";
-import components from "./components";
 
 const lightTheme = {
   mode: "light",
@@ -24,6 +24,16 @@ const lightTheme = {
     disabledText: "#a3a3a3",
     primaryHeader: "#113979",
     primaryHeaderVariant: "#113979",
+    actionButton: "#D3E1F7",
+    audioPlayer: "rgba(17, 57, 121, 0.5)",
+    overlay: staticColors.SEMI_TRANSPARENT,
+    audioTitleText: "#113979",
+    trackBorderColor: staticColors.TRACK_COLOR,
+    trackBackgroundColor: staticColors.TRACK_COLOR,
+    controlBarBackgroundColor: "#ffffff",
+    separator: "#eeeeee",
+    transparentOverlay: "rgba(255, 255, 255, 0.95)",
+    audioSettingsModalText: "#666666",
   },
   staticColors,
   typography,
