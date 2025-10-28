@@ -4,7 +4,7 @@ import { ListItem, Icon, Switch } from "@rneui/themed";
 import { toggleStatusBar } from "@common/actions";
 import useTheme from "@common/context";
 import useThemedStyles from "@common/hooks/useThemedStyles";
-import STRINGS from "@common/localization";
+import { STRINGS, ListItemTitle } from "@common";
 import createStyles from "../styles";
 
 const StatusBar = () => {
@@ -21,9 +21,7 @@ const StatusBar = () => {
       )}
       {isStatusBar && <Icon color={theme.colors.primaryText} name="visibility" type="material" />}
       <ListItem.Content>
-        <ListItem.Title style={styles.listItemTitle} allowFontScaling={false}>
-          {HIDE_STATUS_BAR}
-        </ListItem.Title>
+        <ListItemTitle title={HIDE_STATUS_BAR} style={styles.listItemTitle} />
       </ListItem.Content>
       <Switch value={isStatusBar} onValueChange={(value) => dispatch(toggleStatusBar(value))} />
     </ListItem>

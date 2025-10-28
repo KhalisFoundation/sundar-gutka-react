@@ -4,7 +4,7 @@ import { ListItem, Icon, Switch } from "@rneui/themed";
 import { toggleParagraphMode } from "@common/actions";
 import useTheme from "@common/context";
 import useThemedStyles from "@common/hooks/useThemedStyles";
-import { STRINGS } from "@common";
+import { STRINGS, ListItemTitle } from "@common";
 import createStyles from "../styles";
 
 const ParagraphMode = () => {
@@ -18,9 +18,7 @@ const ParagraphMode = () => {
     <ListItem bottomDivider containerStyle={styles.containerNightStyles}>
       <Icon color={theme.colors.primaryText} name="view-headline" size={30} />
       <ListItem.Content>
-        <ListItem.Title style={styles.listItemTitle} allowFontScaling={false}>
-          {PARAGRAPH_MODE}
-        </ListItem.Title>
+        <ListItemTitle title={PARAGRAPH_MODE} style={styles.listItemTitle} />
       </ListItem.Content>
       <Switch
         value={isParagraphMode}

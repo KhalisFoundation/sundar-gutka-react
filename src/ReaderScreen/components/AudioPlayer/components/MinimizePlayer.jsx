@@ -1,10 +1,11 @@
 import React from "react";
-import { View, Text, Pressable } from "react-native";
+import { View, Pressable } from "react-native";
 import Svg, { Circle } from "react-native-svg";
 import PropTypes from "prop-types";
 import useTheme from "@common/context";
 import useThemedStyles from "@common/hooks/useThemedStyles";
 import { PlayIcon, PauseIcon } from "@common/icons";
+import { CustomText } from "@common";
 import { minimizePlayerStyles } from "../style";
 
 const MinimizePlayer = ({
@@ -92,8 +93,8 @@ const MinimizePlayer = ({
       </Pressable>
 
       <Pressable style={styles.textContainer} onPress={() => setIsMinimized(false)}>
-        <Text style={styles.timestamp}>{progress}</Text>
-        <Text style={styles.artistName}>{displayName}</Text>
+        <CustomText style={styles.timestamp}>{progress}</CustomText>
+        <CustomText style={styles.artistName}>{displayName}</CustomText>
       </Pressable>
     </View>
   );

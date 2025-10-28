@@ -7,7 +7,7 @@ import PropTypes from "prop-types";
 import constant from "@common/constant";
 import useTheme from "@common/context";
 import useThemedStyles from "@common/hooks/useThemedStyles";
-import { convertToUnicode, baseFontSize } from "@common";
+import { convertToUnicode, baseFontSize, ListItemTitle } from "@common";
 
 const BaniList = React.memo(({ data, onPress }) => {
   const { theme } = useTheme();
@@ -62,8 +62,8 @@ const BaniList = React.memo(({ data, onPress }) => {
             />
           )}
           <ListItem.Content>
-            <ListItem.Title
-              allowFontScaling={false}
+            <ListItemTitle
+              title={getBaniTuk(row)}
               style={[
                 { color: theme.colors.primaryText },
                 {
@@ -71,20 +71,16 @@ const BaniList = React.memo(({ data, onPress }) => {
                   fontFamily: !isTransliteration ? fontFace : null,
                 },
               ]}
-            >
-              {getBaniTuk(row)}
-            </ListItem.Title>
+            />
             {row.item.tukGurmukhi && (
-              <ListItem.Subtitle
-                allowFontScaling={false}
+              <ListItemTitle
+                title={row.item.tukGurmukhi}
                 style={[
                   { color: theme.colors.primaryText },
                   { fontFamily: !isTransliteration ? fontFace : null },
                   { fontSize: 17 },
                 ]}
-              >
-                {getBaniTuk(row)}
-              </ListItem.Subtitle>
+              />
             )}
           </ListItem.Content>
         </ListItem>

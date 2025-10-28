@@ -13,6 +13,7 @@ import {
   logError,
   logMessage,
   FallBack,
+  ListItemTitle,
 } from "@common";
 import { getBaniList } from "@database";
 import createStyles from "../../styles";
@@ -80,9 +81,7 @@ const RemindersComponent = ({ navigation }) => {
       <ListItem bottomDivider containerStyle={styles.containerNightStyles}>
         <Icon color={theme.colors.primaryText} name="timer" size={30} />
         <ListItem.Content>
-          <ListItem.Title style={styles.listItemTitle} allowFontScaling={false}>
-            {STRINGS.reminders}
-          </ListItem.Title>
+          <ListItemTitle title={STRINGS.reminders} style={styles.listItemTitle} />
         </ListItem.Content>
         <Switch value={isReminders} onValueChange={(value) => handleReminders(value)} />
       </ListItem>
@@ -95,9 +94,7 @@ const RemindersComponent = ({ navigation }) => {
         >
           <Icon name="event" color={theme.colors.primaryText} size={30} />
           <ListItem.Content>
-            <ListItem.Title style={styles.listItemTitle} allowFontScaling={false}>
-              {STRINGS.set_reminder_options}
-            </ListItem.Title>
+            <ListItemTitle title={STRINGS.set_reminder_options} style={styles.listItemTitle} />
           </ListItem.Content>
           <ListItem.Chevron />
         </ListItem>

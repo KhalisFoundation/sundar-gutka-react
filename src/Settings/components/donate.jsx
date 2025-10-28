@@ -1,7 +1,7 @@
 import React from "react";
 import { Linking } from "react-native";
 import { ListItem, Icon } from "@rneui/themed";
-import { STRINGS, useTheme, useThemedStyles } from "@common";
+import { STRINGS, useTheme, useThemedStyles, ListItemTitle } from "@common";
 import createStyles from "../styles";
 
 const Donate = () => {
@@ -16,9 +16,7 @@ const Donate = () => {
     >
       <Icon color={theme.colors.primaryText} name="volunteer-activism" size={30} />
       <ListItem.Content>
-        <ListItem.Title style={styles.listItemTitle} allowFontScaling={false}>
-          {donate}
-        </ListItem.Title>
+        <ListItemTitle title={donate} style={styles.listItemTitle} />
       </ListItem.Content>
       <ListItem.Chevron />
     </ListItem>

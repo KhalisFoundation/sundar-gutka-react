@@ -8,7 +8,7 @@ import {
 } from "@common/actions";
 import useTheme from "@common/context";
 import useThemedStyles from "@common/hooks/useThemedStyles";
-import { STRINGS } from "@common";
+import { STRINGS, ListItemTitle } from "@common";
 import createStyles from "../styles";
 
 const TranslationComponent = () => {
@@ -31,12 +31,10 @@ const TranslationComponent = () => {
         <>
           <Avatar source={translationAvatar} avatarStyle={styles.avatarStyle} />
           <ListItem.Content>
-            <ListItem.Title
+            <ListItemTitle
+              title={STRINGS.translations}
               style={[{ paddingLeft: 16 }, styles.listItemTitle]}
-              allowFontScaling={false}
-            >
-              {STRINGS.translations}
-            </ListItem.Title>
+            />
           </ListItem.Content>
         </>
       }
@@ -50,9 +48,7 @@ const TranslationComponent = () => {
       <ListItem bottomDivider containerStyle={styles.containerNightStyles}>
         <Avatar />
         <ListItem.Content>
-          <ListItem.Title style={styles.listItemTitle} allowFontScaling={false}>
-            {STRINGS.en_translations}
-          </ListItem.Title>
+          <ListItemTitle title={STRINGS.en_translations} style={styles.listItemTitle} />
         </ListItem.Content>
         <Switch
           value={isEnglishTranslation}
@@ -63,9 +59,7 @@ const TranslationComponent = () => {
       <ListItem bottomDivider containerStyle={styles.containerNightStyles}>
         <Avatar />
         <ListItem.Content>
-          <ListItem.Title style={styles.listItemTitle} allowFontScaling={false}>
-            {STRINGS.pu_translations}
-          </ListItem.Title>
+          <ListItemTitle title={STRINGS.pu_translations} style={styles.listItemTitle} />
         </ListItem.Content>
         <Switch
           value={isPunjabiTranslation}
@@ -76,9 +70,7 @@ const TranslationComponent = () => {
       <ListItem bottomDivider containerStyle={styles.containerNightStyles}>
         <Avatar />
         <ListItem.Content>
-          <ListItem.Title style={styles.listItemTitle} allowFontScaling={false}>
-            {STRINGS.es_translations}
-          </ListItem.Title>
+          <ListItemTitle title={STRINGS.es_translations} style={styles.listItemTitle} />
         </ListItem.Content>
         <Switch
           value={isSpanishTranslation}

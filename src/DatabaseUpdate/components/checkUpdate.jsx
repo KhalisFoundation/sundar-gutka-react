@@ -4,7 +4,7 @@ import { Icon, ListItem } from "@rneui/themed";
 import PropTypes from "prop-types";
 import useTheme from "@common/context";
 import useThemedStyles from "@common/hooks/useThemedStyles";
-import { STRINGS, CustomText } from "@common";
+import { STRINGS, CustomText, ListItemTitle } from "@common";
 import { checkUpdateStyles } from "./styles";
 
 const CheckUpdatesAnimation = ({ isLoading, isUpdateAvailable }) => {
@@ -61,11 +61,7 @@ const CheckUpdatesAnimation = ({ isLoading, isUpdateAvailable }) => {
     <View style={styles.mainWrapper}>
       {isLoading && (
         <ListItem containerStyle={styles.mainWrapper}>
-          <ListItem.Title style={styles.header}>
-            <CustomText style={{ color: theme.colors.primaryText }}>
-              {STRINGS.checkForUpdate}
-            </CustomText>
-          </ListItem.Title>
+          <ListItemTitle title={STRINGS.checkForUpdate} style={styles.header} />
           <ListItem.Content>
             <Animated.View style={{ transform: [{ rotate: rotateInterpolate }] }}>
               <Icon name="refresh" type="material" size={35} color={theme.colors.primaryText} />
@@ -75,9 +71,8 @@ const CheckUpdatesAnimation = ({ isLoading, isUpdateAvailable }) => {
       )}
       {!isUpdateAvailable && !isLoading && (
         <ListItem containerStyle={styles.mainWrapper}>
-          <ListItem.Title style={styles.header}>
-            <CustomText style={{ color: theme.colors.primaryText }}>{STRINGS.upToDate}</CustomText>
-          </ListItem.Title>
+          <ListItemTitle title={STRINGS.upToDate} style={styles.header} />
+          <CustomText style={{ color: theme.colors.primaryText }}>{STRINGS.upToDate}</CustomText>
         </ListItem>
       )}
     </View>

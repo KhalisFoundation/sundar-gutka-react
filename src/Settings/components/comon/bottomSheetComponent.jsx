@@ -8,7 +8,7 @@ import { Divider, Icon, ListItem } from "@rneui/themed";
 import PropTypes from "prop-types";
 import useTheme from "@common/context";
 import useThemedStyles from "@common/hooks/useThemedStyles";
-import { constant, CustomText } from "@common";
+import { constant, CustomText, ListItemTitle } from "@common";
 import createStyles from "../../styles";
 
 const BottomSheetComponent = ({
@@ -86,9 +86,7 @@ const BottomSheetComponent = ({
                   }}
                 >
                   <ListItem.Content>
-                    <ListItem.Title style={styles.listItemTitle} allowFontScaling={false}>
-                      {item.title}
-                    </ListItem.Title>
+                    <ListItemTitle title={item.title} style={styles.listItemTitle} />
                   </ListItem.Content>
                   {value === item.key && <Icon color={theme.colors.primaryText} name="check" />}
                 </ListItem>

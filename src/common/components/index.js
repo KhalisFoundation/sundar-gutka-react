@@ -3,6 +3,7 @@ import BaniList from "./BaniList/BaniList";
 import BottomNavigation from "./BottomNavigation";
 import CustomText from "./CustomText";
 import FallBack from "./FallbackComponent";
+import ListItemTitle from "./ListItemTitle";
 import SafeArea from "./SafeArea";
 import StatusBarComponent from "./StatusBar";
 
@@ -14,4 +15,5 @@ export {
   SafeArea,
   StatusBarComponent,
   CustomText,
+  ListItemTitle,
 };
