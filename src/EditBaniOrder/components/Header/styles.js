@@ -2,8 +2,8 @@ const createStyles = (theme) => ({
   container: {
     flexDirection: "row",
     justifyContent: "space-between",
-    alignItems: "center",
-    height: theme.components.header.height - theme.spacing.md,
+    alignItems: "flex-end",
+    height: 100,
     padding: theme.spacing.sm,
     backgroundColor: theme.colors.headerVariant,
   },
