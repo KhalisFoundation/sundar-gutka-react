@@ -2,9 +2,9 @@ import React, { useCallback } from "react";
 import { View, Text } from "react-native";
 import { Icon } from "@rneui/themed";
 import PropTypes from "prop-types";
-import { STRINGS } from "@common";
 import useTheme from "@common/context";
 import useThemedStyles from "@common/hooks/useThemedStyles";
+import { STRINGS } from "@common";
 import createStyles from "./styles";
 
 const Header = ({ navigation, setReset }) => {
