@@ -1,15 +1,15 @@
 import React from "react";
 import { View, Pressable, Alert } from "react-native";
 import { SafeAreaProvider, SafeAreaView } from "react-native-safe-area-context";
-import { Icon } from "@rneui/themed";
 import { useDispatch } from "react-redux";
-import { CustomText } from "@common";
-import STRINGS from "../../localization";
-import styles from "./style";
-import colors from "../../colors";
+import { Icon } from "@rneui/themed";
+import { CustomText, STRINGS, useThemedStyles, useTheme } from "@common";
 import { setBaniLength } from "../../actions";
+import createStyles from "./style";
 
 const BaniLengthSelector = () => {
+  const styles = useThemedStyles(createStyles);
+  const { theme } = useTheme();
   const baniLengths = [STRINGS.short, STRINGS.medium, STRINGS.long, STRINGS.extra_long];
   const dispatch = useDispatch();
 
@@ -36,7 +36,7 @@ const BaniLengthSelector = () => {
             </Pressable>
           ))}
           <Pressable style={styles.helpWrapper} onPress={baniLengthInfo}>
-            <Icon color={colors.TOOLBAR_COLOR_ALT} name="info" size={30} />
+            <Icon color={theme.colors.primaryVariant} name="info" size={30} />
             <CustomText style={styles.helpText}>{STRINGS.need_help_deciding}</CustomText>
             <CustomText style={styles.moreInfo}>{STRINGS.click_more_info}</CustomText>
           </Pressable>

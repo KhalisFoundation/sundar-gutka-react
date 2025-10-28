@@ -1,6 +1,9 @@
-import React, { useEffect, useRef, useState, useMemo } from "react";
+import React, { useEffect, useRef, useState } from "react";
 import { Animated, View } from "react-native";
 import { downloadFile, exists, unlink, moveFile } from "react-native-fs";
+import { useDispatch } from "react-redux";
+import useTheme from "@common/context";
+import useThemedStyles from "@common/hooks/useThemedStyles";
 import {
   logMessage,
   logError,
@@ -13,21 +16,19 @@ import {
   STRINGS,
   CustomText,
 } from "@common";
-import { useDispatch, useSelector } from "react-redux";
-import initDB, { closeDatabase } from "../../database/connect";
-import styles from "../styles";
-import { darkMode } from "./styles";
-import DownloadAnimation from "./DownloadAnimation";
 import { revertMD5Hash } from "../../common/rnfs";
+import initDB, { closeDatabase } from "../../database/connect";
+import createStyles from "../styles";
+import DownloadAnimation from "./DownloadAnimation";
 import DownloadControls from "./DownloadControls";
 
 const DownloadComponent = () => {
+  const { theme } = useTheme();
+  const styles = useThemedStyles(createStyles);
   const [progress, setProgress] = useState(0);
   const [downloading, setDownloading] = useState(false);
   const [downloadSuccess, setDownloadSuccess] = useState(null);
   const progressAnim = useRef(new Animated.Value(0)).current;
-  const isNightMode = useSelector((state) => state.isNightMode);
-  const { darkModeContainer, darkModeText } = useMemo(() => darkMode(isNightMode), [isNightMode]);
   const dispatch = useDispatch();
 
   // keep text % in sync with the animated value
@@ -98,9 +99,9 @@ const DownloadComponent = () => {
   };
 
   return (
-    <View style={[styles.container, darkModeContainer]}>
+    <View style={styles.container}>
       {downloadSuccess !== null && (
-        <CustomText style={[styles.label, darkModeText]}>
+        <CustomText style={styles.label}>
           {downloadSuccess ? STRINGS.downloadSuccessful : STRINGS.downloadFailed}
         </CustomText>
       )}
@@ -110,7 +111,7 @@ const DownloadComponent = () => {
           <DownloadControls
             downloading={downloading}
             onStartDownload={startDownload}
-            darkModeText={darkModeText}
+            darkModeText={{ color: theme.colors.primaryText }}
           />
         </>
       )}

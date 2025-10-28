@@ -1,12 +1,11 @@
-import { StyleSheet } from "react-native";
-
-const styles = StyleSheet.create({
+const createStyles = (theme) => ({
   container: {
     flexDirection: "row",
     justifyContent: "space-between",
     alignItems: "center",
-    height: 45,
-    padding: 5,
+    height: theme.components.header.height - theme.spacing.md,
+    padding: theme.spacing.sm,
+    backgroundColor: theme.colors.headerVariant,
   },
   leftContainer: {
     flex: 1,
@@ -17,10 +16,11 @@ const styles = StyleSheet.create({
     alignItems: "flex-end",
   },
   title: {
-    fontSize: 20,
-    fontWeight: "300",
+    fontSize: theme.typography.sizes.xxl,
+    fontWeight: theme.typography.weights.light,
     textAlign: "center",
+    color: theme.staticColors.WHITE_COLOR,
   },
 });
 
-export default styles;
+export default createStyles;

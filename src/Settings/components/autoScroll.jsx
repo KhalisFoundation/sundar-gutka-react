@@ -1,28 +1,27 @@
 import React from "react";
-import { ListItem, Icon, Switch } from "@rneui/themed";
 import { useSelector, useDispatch } from "react-redux";
-import { STRINGS } from "@common";
+import { ListItem, Icon, Switch } from "@rneui/themed";
 import { toggleScreenAwake, toggleAutoScroll } from "@common/actions";
-import { iconNightColor, nightModeStyles, nightModeColor } from "../styles/nightModeStyles";
+import useTheme from "@common/context";
+import { STRINGS } from "@common";
 
 const AutoScroll = () => {
-  const isNightMode = useSelector((state) => state.isNightMode);
+  const { theme } = useTheme();
   const isAutoScroll = useSelector((state) => state.isAutoScroll);
+  const isAudio = useSelector((state) => state.isAudio);
   const dispatch = useDispatch();
-  const iconColor = iconNightColor(isNightMode);
-  const { containerNightStyles } = nightModeStyles(isNightMode);
-  const nightColor = nightModeColor(isNightMode);
   const { AUTO_SCROLL } = STRINGS;
   return (
-    <ListItem bottomDivider containerStyle={containerNightStyles}>
-      <Icon color={iconColor} name="auto-fix-high" type="material" />
+    <ListItem bottomDivider containerStyle={{ backgroundColor: theme.colors.surfaceGrey }}>
+      <Icon color={theme.colors.primaryText} name="auto-fix-high" type="material" />
       <ListItem.Content>
-        <ListItem.Title style={nightColor} allowFontScaling={false}>
+        <ListItem.Title style={{ color: theme.colors.primaryText }} allowFontScaling={false}>
           {AUTO_SCROLL}
         </ListItem.Title>
       </ListItem.Content>
       <Switch
         value={isAutoScroll}
+        disabled={isAudio}
         onValueChange={(value) => {
           /* The screen should remain active whenever Auto Scroll is enabled. */
           dispatch(toggleScreenAwake(value));

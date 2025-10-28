@@ -1,21 +1,20 @@
 import React from "react";
-import PropTypes from "prop-types";
 import { View } from "react-native";
-import { Icon } from "@rneui/themed";
 import { useSelector } from "react-redux";
-import { constant, STRINGS, colors, CustomText } from "@common";
-import styles from "../styles";
+import { Icon } from "@rneui/themed";
+import PropTypes from "prop-types";
+import { constant, STRINGS, CustomText, useTheme, useThemedStyles } from "@common";
+import createStyles from "../styles";
 
 const BaniHeader = (props) => {
   const { navigate } = props;
-  const isNightMode = useSelector((state) => state.isNightMode);
+  const { theme } = useTheme();
+  const styles = useThemedStyles(createStyles);
   const isDatabaseUpdateAvailable = useSelector((state) => state.isDatabaseUpdateAvaliable);
   return (
     <View
       style={{
-        backgroundColor: isNightMode
-          ? colors.READER_STATUS_BAR_COLOR_NIGHT_MODE
-          : colors.TOOLBAR_COLOR,
+        backgroundColor: theme.colors.primary,
       }}
     >
       <View style={styles.fatehContainer}>
@@ -36,7 +35,7 @@ const BaniHeader = (props) => {
           name={isDatabaseUpdateAvailable ? "settings-suggest" : "settings"}
           type="material"
           size={35}
-          color={colors.TOOLBAR_TINT}
+          color={theme.staticColors.WHITE_COLOR}
           onPress={() => {
             navigate(constant.SETTINGS);
           }}

@@ -1,18 +1,18 @@
 import React from "react";
-import PropTypes from "prop-types";
-import { View, Animated } from "react-native";
+import { Animated, View } from "react-native";
 import Svg, { Circle, G } from "react-native-svg";
-import { colors, CustomText } from "@common";
-import styles from "../styles";
-import { darkMode } from "./styles";
+import PropTypes from "prop-types";
+import { CustomText, useTheme, useThemedStyles } from "@common";
+import createStyles from "../styles";
 
 const AnimatedCircle = Animated.createAnimatedComponent(Circle);
 
 const DownloadAnimation = ({ progress, progressAnim }) => {
+  const { theme } = useTheme();
+  const styles = useThemedStyles(createStyles);
   const radius = 50;
   const strokeWidth = 10;
   const circumference = 2 * Math.PI * radius;
-  const { darkModeText } = darkMode();
   return (
     <View style={styles.progressContainer}>
       <Svg width={120} height={120} viewBox="0 0 120 120">
@@ -22,7 +22,7 @@ const DownloadAnimation = ({ progress, progressAnim }) => {
             cx="60"
             cy="60"
             r={radius}
-            stroke={colors.ANIMATION_STROKE_LIGHT}
+            stroke={theme.colors.surfaceGrey}
             strokeWidth={strokeWidth}
             fill="none"
           />
@@ -30,7 +30,7 @@ const DownloadAnimation = ({ progress, progressAnim }) => {
             cx="60"
             cy="60"
             r={radius}
-            stroke={colors.ANIMATION_STROKE_ACTIVE}
+            stroke={theme.colors.primary}
             strokeWidth={strokeWidth}
             fill="none"
             strokeDasharray={circumference}
@@ -42,7 +42,7 @@ const DownloadAnimation = ({ progress, progressAnim }) => {
           />
         </G>
       </Svg>
-      <CustomText style={[styles.percentText, darkModeText]}>{progress}%</CustomText>
+      <CustomText style={styles.percentText}>{progress}%</CustomText>
     </View>
   );
 };

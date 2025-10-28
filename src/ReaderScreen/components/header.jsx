@@ -1,39 +1,33 @@
 import React, { useEffect, useRef } from "react";
-import { View, Animated, Pressable, StyleSheet } from "react-native";
-import PropTypes from "prop-types";
-import { useSelector } from "react-redux";
+import { View, Animated, Pressable } from "react-native";
 import LinearGradient from "react-native-linear-gradient";
-import { colors, CustomText } from "@common";
+import { useSelector } from "react-redux";
+import PropTypes from "prop-types";
 import { BackArrowIcon } from "@common/icons";
-import { useSafeAreaInsets } from "react-native-safe-area-context";
-import { getHeaderStyles, styles } from "../styles/styles";
+import { CustomText, useTheme, useThemedStyles } from "@common";
+import createStyles from "../styles";
 
 const Header = ({ title, handleBackPress, isHeader }) => {
-  const isNightMode = useSelector((state) => state.isNightMode);
-  const getHeaderStyle = getHeaderStyles(isNightMode);
-  const animationPosition = useRef(new Animated.Value(0)).current;
+  const { theme } = useTheme();
+  const styles = useThemedStyles(createStyles);
   const fontFace = useSelector((state) => state.fontFace);
-  const insets = useSafeAreaInsets();
+  const animationPosition = useRef(new Animated.Value(0)).current;
 
   const MID = "rgba(17,57,121,1)"; // #113979
   const EDGE = "rgba(17,57,121,0)";
 
   const headerLeft = () => (
     <Pressable
-      style={{ padding: 10 }}
       onPress={() => {
         handleBackPress();
       }}
     >
-      <BackArrowIcon
-        size={30}
-        color={isNightMode ? colors.WHITE_COLOR : colors.READER_HEADER_COLOR}
-      />
+      <BackArrowIcon size={30} color={theme.colors.primaryHeaderVariant} />
     </Pressable>
   );
 
   useEffect(() => {
-    const value = isHeader ? insets.top : -120;
+    const value = isHeader ? 0 : -120;
 
     // Stop any existing animation first
     animationPosition.stopAnimation();
@@ -61,7 +55,7 @@ const Header = ({ title, handleBackPress, isHeader }) => {
   useEffect(() => {
     const resetTimer = setTimeout(() => {
       // Force position if animation seems stuck
-      const targetValue = isHeader ? insets.top : -120;
+      const targetValue = isHeader ? 0 : -120;
       animationPosition.setValue(targetValue);
     }, 1000);
 
@@ -78,19 +72,15 @@ const Header = ({ title, handleBackPress, isHeader }) => {
       ]}
       pointerEvents="box-none" // Ensure touch events pass through
     >
-      <View style={getHeaderStyle.headerStyle} pointerEvents="auto">
+      <View style={styles.headerStyle} pointerEvents="auto">
         <View style={styles.headerWrapper}>
-          <View style={{ width: "20%" }}>{headerLeft()}</View>
-          <View style={{ width: "60%" }}>
-            <CustomText
-              style={[
-                getHeaderStyle.headerTitleStyle,
-                { fontFamily: fontFace, fontWeight: "bold" },
-              ]}
-            >
+          <View style={styles.headerLeft}>{headerLeft()}</View>
+          <View style={styles.headerCenter}>
+            <CustomText style={[styles.headerTitleStyle, { fontFamily: fontFace }]}>
               {title}
             </CustomText>
           </View>
+          <View style={styles.headerRight} />
         </View>
       </View>
       <LinearGradient
@@ -100,7 +90,7 @@ const Header = ({ title, handleBackPress, isHeader }) => {
         end={{ x: 1, y: 0 }}
         style={{
           width: "100%",
-          height: StyleSheet.hairlineWidth,
+          height: 1.2,
           pointerEvents: "none",
         }}
       />

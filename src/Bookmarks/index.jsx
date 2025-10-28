@@ -1,6 +1,7 @@
 import React from "react";
-import { useDispatch, useSelector } from "react-redux";
+import { useDispatch } from "react-redux";
 import PropTypes from "prop-types";
+import { HomeIcon, BookmarkIcon, SettingsIcon } from "@common/icons";
 import {
   BaniList,
   actions,
@@ -9,17 +10,34 @@ import {
   logMessage,
   StatusBarComponent,
   SafeArea,
+  BottomNavigation,
+  useTheme,
 } from "@common";
-import useHeader from "./hooks/useHeader";
 import useBookmarks from "./hooks/useBookmarks";
-import { nightMode, getHeaderStyle } from "./styles";
+import useHeader from "./hooks/useHeader";
 
 const Bookmarks = ({ navigation, route }) => {
+  const navigationItems = [
+    {
+      key: "Home",
+      icon: HomeIcon,
+      handlePress: () => navigation.navigate("Home"),
+    },
+    {
+      key: "Bookmarks",
+      icon: BookmarkIcon,
+      handlePress: () => navigation.navigate(constant.BOOKMARKS),
+    },
+    {
+      key: "Settings",
+      icon: SettingsIcon,
+      handlePress: () => navigation.navigate(constant.SETTINGS),
+    },
+  ];
   logMessage(constant.BOOKMARKS);
   useHeader(navigation);
+  const { theme } = useTheme();
   const { bookmarksData } = useBookmarks(route);
-  const isNightMode = useSelector((state) => state.isNightMode);
-  const { backgroundColor } = nightMode(isNightMode);
   const dispatch = useDispatch();
   useScreenAnalytics(constant.BOOKMARKS);
 
@@ -29,9 +47,10 @@ const Bookmarks = ({ navigation, route }) => {
   };
 
   return (
-    <SafeArea backgroundColor={backgroundColor}>
-      <StatusBarComponent backgroundColor={getHeaderStyle(isNightMode).backgroundColor} />
+    <SafeArea backgroundColor={theme.colors.surface}>
+      <StatusBarComponent backgroundColor={theme.colors.primaryVariant} />
       <BaniList data={bookmarksData} onPress={onPress} isFolderScreen />
+      <BottomNavigation navigationItems={navigationItems} activeKey="Bookmarks" />
     </SafeArea>
   );
 };

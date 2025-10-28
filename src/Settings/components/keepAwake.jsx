@@ -1,26 +1,23 @@
 import React from "react";
-import { ListItem, Switch, Avatar } from "@rneui/themed";
 import { useSelector, useDispatch } from "react-redux";
-import { STRINGS } from "@common";
+import { ListItem, Switch, Avatar } from "@rneui/themed";
 import { toggleScreenAwake } from "@common/actions";
-import { nightModeStyles, nightModeColor } from "../styles/nightModeStyles";
-import { styles } from "../styles";
+import { STRINGS, useThemedStyles } from "@common";
+import createStyles from "../styles";
 
 const KeepAwake = () => {
+  const styles = useThemedStyles(createStyles);
   const dispatch = useDispatch();
-  const isNightMode = useSelector((state) => state.isNightMode);
   const isScreenAwake = useSelector((state) => state.isScreenAwake);
   const isAutoScroll = useSelector((state) => state.isAutoScroll);
 
-  const { containerNightStyles } = nightModeStyles(isNightMode);
-  const nightColor = nightModeColor(isNightMode);
   const { KEEP_AWAKE } = STRINGS;
   const screenIcon = require("../../../images/screenonicon.png");
   return (
-    <ListItem bottomDivider containerStyle={containerNightStyles}>
+    <ListItem bottomDivider containerStyle={styles.containerNightStyles}>
       <Avatar source={screenIcon} avatarStyle={styles.avatarStyle} />
       <ListItem.Content>
-        <ListItem.Title style={nightColor} allowFontScaling={false}>
+        <ListItem.Title style={styles.listItemTitle} allowFontScaling={false}>
           {KEEP_AWAKE}
         </ListItem.Title>
       </ListItem.Content>

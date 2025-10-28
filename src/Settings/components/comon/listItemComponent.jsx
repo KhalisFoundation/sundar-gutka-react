@@ -1,27 +1,24 @@
-import React, { useMemo } from "react";
+import React from "react";
 import { ListItem, Avatar, Icon } from "@rneui/themed";
 import PropTypes from "prop-types";
-import { useSelector } from "react-redux";
-import { styles, nightModeStyles, iconNightColor } from "../../styles";
+import useTheme from "@common/context";
+import useThemedStyles from "@common/hooks/useThemedStyles";
+import createStyles from "../../styles";
 
 const ListItemComponent = ({ icon, title, value, isAvatar, actionConstant, onPressAction }) => {
-  const isNightMode = useSelector((state) => state.isNightMode);
-  const { containerNightStyles, textNightStyle, textNightGrey } = useMemo(
-    () => nightModeStyles(isNightMode),
-    [isNightMode]
-  );
-  const iconColor = useMemo(() => iconNightColor(isNightMode), [isNightMode]);
+  const { theme } = useTheme();
+  const styles = useThemedStyles(createStyles);
   return (
-    <ListItem bottomDivider containerStyle={containerNightStyles} onPress={onPressAction}>
+    <ListItem bottomDivider containerStyle={styles.containerNightStyles} onPress={onPressAction}>
       {isAvatar && <Avatar source={Number(icon)} avatarStyle={styles.avatarStyle} />}
-      {!isAvatar && <Icon name={icon} color={iconColor} size={30} />}
+      {!isAvatar && <Icon name={icon} color={theme.colors.primaryText} size={30} />}
       <ListItem.Content>
-        <ListItem.Title style={textNightStyle} allowFontScaling={false}>
+        <ListItem.Title style={styles.listItemTitle} allowFontScaling={false}>
           {title}
         </ListItem.Title>
       </ListItem.Content>
       {value && (
-        <ListItem.Title style={[styles.titleInfoStyle, textNightGrey]} allowFontScaling={false}>
+        <ListItem.Title style={[styles.titleInfoStyle]} allowFontScaling={false}>
           {actionConstant.filter((item) => item.key === value).map((item) => item.title)[0]}
         </ListItem.Title>
       )}

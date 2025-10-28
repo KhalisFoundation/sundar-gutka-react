@@ -2,6 +2,7 @@
   "extends": ["airbnb", "prettier", "plugin:prettier/recommended", "eslint-config-prettier"],
   "parser": "@babel/eslint-parser",
   "rules": {
+    "react-native/no-unused-styles": 2,
     "curly": "warn",
     "import/no-unresolved": "off",
     "global-require": 0,
@@ -25,7 +26,36 @@
         "trailingComma": "es5",
         "printWidth": 100
       }
+    ],
+    "import/order": [
+      "error",
+      {
+        "groups": ["builtin", "external", "internal", "parent", "sibling", "index"],
+        "pathGroups": [
+          {
+            "pattern": "react*",
+            "group": "external",
+            "position": "before"
+          },
+          {
+            "pattern": "@common/**",
+            "group": "internal",
+            "position": "before"
+          },
+          {
+            "pattern": "@**",
+            "group": "internal",
+            "position": "before"
+          }
+        ],
+        "pathGroupsExcludedImportTypes": ["builtin"],
+        "newlines-between": "never",
+        "alphabetize": {
+          "order": "asc",
+          "caseInsensitive": true
+        }
+      }
     ]
   },
-  "plugins": ["prettier"]
+  "plugins": ["prettier", "react-native"]
 }

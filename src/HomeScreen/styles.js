@@ -1,31 +1,48 @@
-import { StyleSheet } from "react-native";
-import { colors, constant } from "@common";
-
-const styles = StyleSheet.create({
-  container: { flex: 1, marginTop: 0 },
-  header: { backgroundColor: colors.TOOLBAR_COLOR },
-  fateh: { color: colors.TOOLBAR_TINT, fontSize: 18, textAlign: "center", margin: 5 },
+const createStyles = (theme) => ({
+  container: {
+    flex: 1,
+  },
+  header: {
+    backgroundColor: theme.colors.primary,
+  },
+  fateh: {
+    color: theme.staticColors.WHITE_COLOR,
+    fontSize: theme.typography.sizes.xl,
+    textAlign: "center",
+    margin: theme.spacing.sm,
+  },
   headerDesign: {
-    fontSize: 32,
-    color: colors.TOOLBAR_TINT,
-    fontFamily: constant.GURBANI_AKHAR_TRUE,
+    fontSize: theme.typography.sizes.massive,
+    color: theme.staticColors.WHITE_COLOR,
+    fontFamily: theme.typography.fonts.gurbaniPrimary,
   },
   headerTitle: {
-    fontSize: 28,
-    color: colors.TOOLBAR_TINT,
+    fontSize: theme.typography.sizes.huge,
+    color: theme.staticColors.WHITE_COLOR,
+    fontWeight: theme.typography.weights.medium,
   },
-  titleContainer: { textAlign: "center", margin: 5 },
-  settingIcon: { position: "absolute", bottom: 10, right: 5 },
-  headerFatehStyle: { color: colors.TOOLBAR_TINT, fontSize: 22 },
+  titleContainer: {
+    textAlign: "center",
+    margin: theme.spacing.sm,
+  },
+  settingIcon: {
+    position: "absolute",
+    bottom: theme.spacing.md,
+    right: theme.spacing.sm,
+  },
+  headerFatehStyle: {
+    color: theme.staticColors.WHITE_COLOR,
+    fontSize: theme.typography.sizes.xl,
+  },
   fatehContainer: {
     marginLeft: "auto",
     marginRight: "auto",
   },
   ikongkar: {
-    fontFamily: constant.GURBANI_AKHAR_TRUE,
-    color: colors.TOOLBAR_TINT,
-    fontSize: 22,
+    fontFamily: theme.typography.fonts.gurbaniPrimary,
+    color: theme.staticColors.WHITE_COLOR,
+    fontSize: theme.typography.sizes.xxl,
   },
 });
 
-export default styles;
+export default createStyles;

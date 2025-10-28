@@ -1,12 +1,13 @@
-import PropTypes from "prop-types";
 import React from "react";
 import { Image, Pressable, View } from "react-native";
-import { STRINGS, CustomText } from "@common";
-import { styles } from "../styles";
+import PropTypes from "prop-types";
+import { STRINGS, CustomText, useThemedStyles } from "@common";
+import createStyles from "../styles";
 
 const baniDbLogo = require("../../../images/banidblogo.png");
 
 const DatabaseUpdateBanner = ({ navigate }) => {
+  const styles = useThemedStyles(createStyles);
   return (
     <Pressable onPress={() => navigate("DatabaseUpdate")}>
       <View style={styles.databaseUpdateBannerWrapper}>

@@ -50,6 +50,22 @@ const isAutoScroll = createReducer(false, {
   [actionTypes.TOGGLE_AUTO_SCROLL]: (state, action) => action.value,
 });
 
+const isAudio = createReducer(false, {
+  [actionTypes.TOGGLE_AUDIO]: (state, action) => action.value,
+});
+
+const isAudioAutoPlay = createReducer(false, {
+  [actionTypes.TOGGLE_AUDIO_AUTO_PLAY]: (state, action) => action.value,
+});
+
+const isAudioSyncScroll = createReducer(false, {
+  [actionTypes.TOGGLE_AUDIO_SYNC_SCROLL]: (state, action) => action.value,
+});
+
+const audioPlaybackSpeed = createReducer(1.0, {
+  [actionTypes.SET_AUDIO_PLAYBACK_SPEED]: (state, action) => action.value,
+});
+
 const baniLength = createReducer("", {
   [actionTypes.SET_BANI_LENGTH]: (state, action) => action.value,
 });
@@ -122,6 +138,38 @@ const isDatabaseUpdateAvailable = createReducer(false, {
   [actionTypes.TOGGLE_DATABASE_UPDATE_AVAILABLE]: (state, action) => action.value,
 });
 
+// Audio Manifest reducer
+const audioManifest = (state = {}, action) => {
+  switch (action.type) {
+    case actionTypes.SET_AUDIO_MANIFEST:
+      return {
+        ...state,
+        [action.payload.baniId]: action.payload.tracks,
+      };
+    case actionTypes.UPDATE_AUDIO_MANIFEST:
+      return {
+        ...state,
+        [action.payload.baniId]: action.payload.tracks,
+      };
+    case actionTypes.CLEAR_AUDIO_MANIFEST: {
+      const stateCopy = { ...state };
+      delete stateCopy[action.payload.baniId];
+      return stateCopy;
+    }
+    case actionTypes.DELETE_MANIFEST_TRACK: {
+      const { baniId, trackId } = action.payload;
+      const currentTracks = state[baniId] || [];
+      const updatedTracks = currentTracks.filter((track) => track.id !== trackId);
+      return {
+        ...state,
+        [baniId]: updatedTracks,
+      };
+    }
+    default:
+      return state;
+  }
+};
+
 const autoScrollSpeedObj = (state = {}, action) => {
   switch (action.type) {
     case actionTypes.SET_AUTO_SCROLL_SPEED:
@@ -148,6 +196,16 @@ const baniList = (state = [], action) => {
       return state;
   }
 };
+
+const defaultAudio = (state = {}, action) => {
+  switch (action.type) {
+    case actionTypes.SET_DEFAULT_AUDIO:
+      return { ...state, ...action.value };
+    default:
+      return state;
+  }
+};
+
 const savePosition = (state = {}, action) => {
   switch (action.type) {
     case actionTypes.SET_SAVE_POSITION:
@@ -174,6 +232,11 @@ const rootReducer = combineReducers({
   isTransliteration,
   theme,
   isAutoScroll,
+  isAudio,
+  isAudioAutoPlay,
+  isAudioSyncScroll,
+  audioPlaybackSpeed,
+  defaultAudio,
   isScreenAwake,
   isStatusBar,
   baniLength,
@@ -199,5 +262,6 @@ const rootReducer = combineReducers({
   scrollPosition,
   isHeaderFooter,
   isDatabaseUpdateAvailable,
+  audioManifest,
 });
 export default rootReducer;

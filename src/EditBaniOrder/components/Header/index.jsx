@@ -1,17 +1,15 @@
 import React, { useCallback } from "react";
 import { View } from "react-native";
 import { Icon } from "@rneui/themed";
-import { useSelector } from "react-redux";
 import PropTypes from "prop-types";
-import { STRINGS, CustomText } from "@common";
-import styles from "./styles";
-import { nightStyles } from "../../styles";
+import { STRINGS, CustomText, useTheme, useThemedStyles } from "@common";
+import createStyles from "./styles";
 
 const Header = ({ navigation, setReset }) => {
-  const isNightMode = useSelector((state) => state.isNightMode);
+  const { theme } = useTheme();
+  const styles = useThemedStyles(createStyles);
   const { goBack } = navigation;
   const { EDIT_BANI_ORDER } = STRINGS;
-  const { headerStyles } = nightStyles(isNightMode);
 
   const headerLeft = useCallback(
     () => (
@@ -19,12 +17,12 @@ const Header = ({ navigation, setReset }) => {
         name="arrow-back"
         size={30}
         onPress={() => goBack()}
-        color={headerStyles.textColor}
+        color={theme.staticColors.WHITE_COLOR}
         accessibilityLabel="Go back"
         accessibilityRole="button"
       />
     ),
-    [goBack, headerStyles.textColor]
+    [goBack, theme.staticColors.WHITE_COLOR]
   );
 
   const headerRight = useCallback(
@@ -33,20 +31,18 @@ const Header = ({ navigation, setReset }) => {
         name="refresh"
         size={30}
         onPress={() => setReset(true)}
-        color={headerStyles.textColor}
+        color={theme.staticColors.WHITE_COLOR}
         accessibilityLabel="Reset bani order"
         accessibilityRole="button"
       />
     ),
-    [setReset, headerStyles.textColor]
+    [setReset, theme.staticColors.WHITE_COLOR]
   );
 
   return (
-    <View style={[styles.container, { backgroundColor: headerStyles.backgroundColor }]}>
+    <View style={styles.container}>
       <View style={styles.leftContainer}>{headerLeft()}</View>
-      <CustomText style={[styles.title, { color: headerStyles.textColor }]}>
-        {EDIT_BANI_ORDER}
-      </CustomText>
+      <CustomText style={styles.title}>{EDIT_BANI_ORDER}</CustomText>
       <View style={styles.rightContainer}>{headerRight()}</View>
     </View>
   );

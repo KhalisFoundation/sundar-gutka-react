@@ -1,4 +1,90 @@
-import styles from "./styles";
-import { iconNightColor, nightModeStyles, nightModeColor } from "./nightModeStyles";
-
-export { styles, iconNightColor, nightModeColor, nightModeStyles };
+const createStyles = (theme) => ({
+  nightBackColor: { backgroundColor: theme.staticColors.NIGHT_BLACK },
+  iconStyle: { alignSelf: "flex-start" },
+  imageStyle: {},
+  headerView: {
+    backgroundColor: theme.colors.primaryVariant,
+    padding: theme.spacing.lg,
+    height: theme.components.header.height,
+  },
+  settingText: {
+    fontSize: theme.typography.sizes.xl,
+    alignSelf: "center",
+    color: theme.colors.primaryText,
+    position: "absolute",
+    top: theme.spacing.xl,
+    fontWeight: theme.typography.weights.medium,
+  },
+  settingsView: { backgroundColor: theme.colors.primaryVariant },
+  displayOptionsText: {
+    padding: theme.spacing.sm + theme.spacing.xs,
+    backgroundColor: theme.colors.surface,
+    color: theme.colors.primaryText,
+    fontSize: theme.typography.sizes.md,
+    lineHeight: theme.typography.sizes.md * theme.typography.lineHeights.normal,
+  },
+  bottomSheetTitle: {
+    textAlign: "center",
+    fontSize: theme.typography.sizes.xxl,
+    padding: theme.spacing.xl,
+    borderTopLeftRadius: theme.radius.lg + theme.spacing.sm,
+    borderTopRightRadius: theme.radius.lg + theme.spacing.sm,
+    fontWeight: theme.typography.weights.medium,
+  },
+  titleInfoStyle: {
+    fontSize: theme.typography.sizes.sm,
+    color: theme.colors.textDisabled,
+  },
+  end: {
+    padding: theme.spacing.xxl + theme.spacing.md,
+    backgroundColor: theme.colors.surface,
+  },
+  avatarStyle: { width: "100%", height: "100%", resizeMode: "contain" },
+  viewWrapper: {
+    justifyContent: "center",
+    marginTop: "auto",
+    marginLeft: "auto",
+    marginRight: "auto",
+    bottom: 0,
+    borderTopLeftRadius: theme.radius.lg + theme.spacing.sm,
+    borderTopRightRadius: theme.radius.lg + theme.spacing.sm,
+    overflow: "hidden",
+  },
+  width_100: {
+    width: "98%",
+  },
+  width_90: {
+    width: "70%",
+  },
+  blurViewStyle: { position: "absolute", top: 0, bottom: 0, left: 0, right: 0 },
+  androidViewWrapper: {
+    flex: 1,
+    justifyContent: "flex-end",
+    backgroundColor: "transparent",
+    width: "100%",
+  },
+  databaseUpdateBannerWrapper: {
+    flex: 1,
+    flexDirection: "row",
+    backgroundColor: theme.colors.primary,
+    justifyContent: "center",
+    alignItems: "center",
+    padding: theme.spacing.sm,
+  },
+  baniDbImage: {
+    width: theme.spacing.xl,
+    height: theme.spacing.xl,
+    marginRight: theme.spacing.md,
+  },
+  updateText: {
+    color: theme.staticColors.WHITE_COLOR,
+    fontSize: theme.typography.sizes.md,
+  },
+  listItemTitle: {
+    color: theme.colors.primaryText,
+    fontSize: theme.typography.sizes.lg,
+    lineHeight: theme.typography.sizes.lg * theme.typography.lineHeights.normal,
+  },
+  containerNightStyles: { backgroundColor: theme.colors.surfaceGrey },
+});
+export default createStyles;

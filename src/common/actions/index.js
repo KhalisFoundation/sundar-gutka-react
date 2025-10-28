@@ -1,7 +1,7 @@
-import * as actionTypes from "./actionTypes";
-import STRINGS from "../localization";
-import { trackSettingEvent } from "../firebase/analytics";
 import constant from "../constant";
+import { trackSettingEvent } from "../firebase/analytics";
+import STRINGS from "../localization";
+import * as actionTypes from "./actionTypes";
 
 export const toggleNightMode = (value) => {
   trackSettingEvent(constant.NIGHT_MODE, value);
@@ -38,6 +38,31 @@ export const setTheme = (value) => {
 export const toggleAutoScroll = (value) => {
   trackSettingEvent(constant.AUTO_SCROLL, value);
   return { type: actionTypes.TOGGLE_AUTO_SCROLL, value };
+};
+
+export const toggleAudio = (value) => {
+  trackSettingEvent(constant.AUDIO, value);
+  return { type: actionTypes.TOGGLE_AUDIO, value };
+};
+
+export const toggleAudioAutoPlay = (value) => {
+  trackSettingEvent(constant.AUDIO_AUTO_PLAY, value);
+  return { type: actionTypes.TOGGLE_AUDIO_AUTO_PLAY, value };
+};
+
+export const toggleAudioSyncScroll = (value) => {
+  trackSettingEvent(constant.AUDIO_SYNC_SCROLL, value);
+  return { type: actionTypes.TOGGLE_AUDIO_SYNC_SCROLL, value };
+};
+
+export const setDefaultAudio = (audio, shabadId) => {
+  const value = { [shabadId]: audio };
+  return { type: actionTypes.SET_DEFAULT_AUDIO, value };
+};
+
+export const setAudioPlaybackSpeed = (value) => {
+  trackSettingEvent("AUDIO_PLAYBACK_SPEED", value);
+  return { type: actionTypes.SET_AUDIO_PLAYBACK_SPEED, value };
 };
 
 export const toggleStatusBar = (value) => {
@@ -149,4 +174,33 @@ export const toggleHeaderFooter = (value) => {
 
 export const toggleDatabaseUpdateAvailable = (value) => {
   return { type: actionTypes.TOGGLE_DATABASE_UPDATE_AVAILABLE, value };
+};
+
+// Manifest actions
+export const setAudioManifest = (baniId, tracks) => {
+  return {
+    type: actionTypes.SET_AUDIO_MANIFEST,
+    payload: { baniId, tracks },
+  };
+};
+
+export const updateAudioManifest = (baniId, tracks) => {
+  return {
+    type: actionTypes.UPDATE_AUDIO_MANIFEST,
+    payload: { baniId, tracks },
+  };
+};
+
+export const clearAudioManifest = (baniId) => {
+  return {
+    type: actionTypes.CLEAR_AUDIO_MANIFEST,
+    payload: { baniId },
+  };
+};
+
+export const deleteManifestTrack = (baniId, trackId) => {
+  return {
+    type: actionTypes.DELETE_MANIFEST_TRACK,
+    payload: { baniId, trackId },
+  };
 };

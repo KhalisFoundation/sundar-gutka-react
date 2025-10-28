@@ -1,6 +1,6 @@
 import { Platform } from "react-native";
 
-const script = (nightMode, position) => {
+const script = (theme, position) => {
   const listener = Platform.OS === "android" ? "document" : "window";
   const body = Platform.OS === "android" ? "document.body" : "window.document.body";
   return `
@@ -8,12 +8,11 @@ const script = (nightMode, position) => {
 let autoScrollTimeout;
 let autoScrollSpeed = 0;
 let scrollMultiplier = 1.5;
-let dragging = false;
-let holding = false;
-let holdTimer;
 let curPosition = 0;
 let isScrolling;
 let isManuallyScrolling = false;
+let lastHighlightedElement = null;
+let highlightTimeout = null;
 
 const clearScrollTimeout=()=> {
   if (autoScrollTimeout != null) {
@@ -83,21 +82,7 @@ const setAutoScroll=()=> {
   }
 }
 
-const handleTouchEnd = () => {
-  clearTimeout(holdTimer);
-  if (autoScrollSpeed !== 0 && autoScrollTimeout === null) {
-    setTimeout(()=> {
-      window.ReactNativeWebView.postMessage("hide");
-    }, 5000);
-    setAutoScroll();
-  }
-  if (!dragging && !holding) {
-
-    window.ReactNativeWebView.postMessage("toggle");
-  }
-  dragging = false;
-  holding = false;
-}
+// Remove handleTouchEnd since we're handling toggle at React Native level
 const scrollToPosition=()=> {
   let scrollY = (document.body.scrollHeight - window.innerHeight) * ${position};
   window.scrollTo(0, scrollY);
@@ -116,8 +101,8 @@ window.addEventListener(
   false
 );
 
-window.onload = () => {
-  if (${nightMode}) {
+${listener}.onload = () => {
+  if (${theme.mode === "dark"}) {
   //fade event
 fadeInEffect();
 }
@@ -127,7 +112,7 @@ fadeInEffect();
 
 
 //  Listen for scroll events
-window.addEventListener(
+${listener}.addEventListener(
   "scroll",
   (event)=> {
     // Clear our timeout throughout the scroll
@@ -142,23 +127,16 @@ window.addEventListener(
 
 
 
-window.onscroll = scrollFunc;
-window.addEventListener("touchstart", ()=> {
+${listener}.onscroll = scrollFunc;
+// Touch events for auto-scroll handling only
+${listener}.addEventListener("touchstart", ()=> {
   if (autoScrollSpeed !== 0) {
     clearScrollTimeout();
   }
-  dragging = false;
-  holding = false;
-  holdTimer = setTimeout(()=> {
-    holding = true;
-  }, 1000); // Longer than 1 seconds is not a tap
 });
-window.addEventListener("touchmove", ()=> {
+${listener}.addEventListener("touchmove", ()=> {
   isManuallyScrolling = true;
-  dragging = true;
 });
-
-window.addEventListener("touchend", handleTouchEnd);
 
 ${listener}.addEventListener(
   "message",
@@ -179,6 +157,69 @@ ${listener}.addEventListener(
       scrollMultiplier = message.scrollMultiplier;
       if (autoScrollTimeout == null) {
         setAutoScroll();
+      }
+    }
+      // Handle sync scroll to sequence
+    if (message.hasOwnProperty("action") && message.action === "scrollToSequence") {
+      // Sanitize and validate sequence number
+      const sequenceNumber = parseInt(message.sequence, 10);
+      const isParagraphMode = message.isParagraphMode;
+      const timeOut = message.timeout;
+      
+      // Validate that it's a valid positive integer
+      if (!Number.isInteger(sequenceNumber) || sequenceNumber < 1) {
+        return;
+      }
+      
+      let element = null;
+      
+      if (isParagraphMode) {
+        // Use CSS selector trick with pipe delimiters for instant match
+        element = document.querySelector('[data-sequences*="|' + sequenceNumber + '|"]');
+      } else {
+        element = document.getElementById(sequenceNumber);
+      }
+      
+      if (element) {
+        // Check if this is the same element as last time
+        const isSameElement = lastHighlightedElement === element;
+        
+        // Clear previous highlight timeout if exists
+        if (highlightTimeout) {
+          clearTimeout(highlightTimeout);
+          highlightTimeout = null;
+        }
+        
+        // Remove highlight from previous element if different
+        if (lastHighlightedElement && !isSameElement) {
+          lastHighlightedElement.style.backgroundColor = '';
+          lastHighlightedElement.style.transition = '';
+        }
+        
+        // Only scroll if it's a different element
+        if (!isSameElement) {
+          const behavior = message.behavior === "smooth" ? "smooth" : "auto";
+          element.scrollIntoView({
+            behavior: behavior,
+            block: "center",
+            inline: "nearest"
+          });
+        }
+        
+        // Apply highlight
+        const originalBackgroundColor = element.style.backgroundColor;
+        element.style.backgroundColor = "${theme.staticColors.HIGHLIGHT_COLOR}";
+        element.style.borderRadius = "15px";
+        element.style.transition = "background-color 0.3s ease";
+        
+        // Store current element
+        lastHighlightedElement = element;
+        
+        // Remove highlight after timeout
+        highlightTimeout = setTimeout(()=> {
+          element.style.backgroundColor = originalBackgroundColor;
+          highlightTimeout = null;
+        }, timeOut);        
       }
     }
   },

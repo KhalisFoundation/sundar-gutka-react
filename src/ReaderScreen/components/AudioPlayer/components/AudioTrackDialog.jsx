@@ -1,0 +1,199 @@
+import React, { useState } from "react";
+import { View, Text, Pressable, Platform, Linking, ActivityIndicator } from "react-native";
+import { useSelector, useDispatch } from "react-redux";
+import { BlurView } from "@react-native-community/blur";
+import PropTypes from "prop-types";
+import { setDefaultAudio } from "@common/actions";
+import useTheme from "@common/context";
+import useThemedStyles from "@common/hooks/useThemedStyles";
+import { ArrowRightIcon, CloseIcon } from "@common/icons";
+import { STRINGS } from "@common";
+import { useTrackPlayer } from "../hooks";
+import { audioTrackDialogStyles } from "../style";
+import ScrollViewComponent from "./ScrollViewComponent";
+
+const AudioTrackDialog = ({
+  baniID,
+  handleTrackSelect,
+  title = "",
+  tracks = [],
+  onCloseTrackModal,
+  isHeader = true,
+  isFooter = true,
+  isLoading = false,
+}) => {
+  const dispatch = useDispatch();
+  const styles = useThemedStyles(audioTrackDialogStyles);
+  const fontFace = useSelector((state) => state.fontFace);
+  const { theme } = useTheme();
+  const [selectedTrack, setSelectedTrack] = useState(null);
+  const [playingTrack, setPlayingTrack] = useState(null);
+  const { addAndPlayTrack, stop, isPlaying } = useTrackPlayer();
+
+  const handleSelectTrack = async (track) => {
+    setSelectedTrack(track);
+
+    if (!isHeader) {
+      // If in "no header" mode, just select the track
+      handleTrackSelect(track);
+      return;
+    }
+
+    // If clicking the same track that's playing, stop it
+    if (playingTrack && playingTrack.id === track.id && isPlaying) {
+      await stop();
+      setPlayingTrack(null);
+      setSelectedTrack(null);
+      return;
+    }
+
+    // Otherwise, play the selected track
+    try {
+      const trackToPlay = {
+        id: track.id,
+        url: track.audioUrl,
+        title: track.displayName,
+        artist: track.displayName,
+        duration: 0,
+      };
+
+      await addAndPlayTrack(trackToPlay);
+      setPlayingTrack(track);
+    } catch (error) {
+      console.log("Error playing track:", error);
+      // Error handling - track play failed
+      setPlayingTrack(null);
+    }
+  };
+
+  const handlePlay = () => {
+    if (selectedTrack) {
+      handleTrackSelect(selectedTrack);
+      dispatch(setDefaultAudio(selectedTrack, baniID));
+    }
+  };
+
+  if (isLoading) {
+    return (
+      <View style={styles.modalWrapper}>
+        <View style={styles.loadingContainer}>
+          <ActivityIndicator size="large" color={theme.colors.primary} />
+        </View>
+      </View>
+    );
+  }
+
+  return (
+    <View style={styles.modalWrapper}>
+      <View
+        style={[
+          styles.container,
+          Platform.OS === "ios" ? styles.containerIOS : styles.containerAndroid,
+        ]}
+      >
+        {Platform.OS === "ios" && (
+          <BlurView
+            style={styles.blurOverlay}
+            blurType={theme.mode === "dark" ? "dark" : "light"}
+            blurAmount={10}
+            reducedTransparencyFallbackColor={theme.colors.transparentOverlay}
+          />
+        )}
+        <Pressable
+          style={styles.closeButton}
+          onPress={() => {
+            setSelectedTrack(null);
+            onCloseTrackModal();
+          }}
+        >
+          <CloseIcon size={30} color={theme.colors.audioTitleText} />
+        </Pressable>
+        {/* Header */}
+        {isHeader && tracks && tracks.length > 0 && (
+          <View style={styles.header}>
+            <Text style={styles.welcomeText}>{STRINGS.welcome_to_sundar_gutka}</Text>
+            <Text style={styles.subtitleText}>
+              {STRINGS.please_choose_a_track} <Text style={{ fontFamily: fontFace }}>{title}</Text>
+            </Text>
+          </View>
+        )}
+
+        {/* Track Selection List */}
+        {tracks && tracks.length > 0 ? (
+          <ScrollViewComponent
+            tracks={tracks}
+            selectedTrack={selectedTrack}
+            playingTrack={playingTrack}
+            isPlaying={isPlaying}
+            handleSelectTrack={handleSelectTrack}
+          />
+        ) : (
+          <View style={styles.noTracksContainer}>
+            <Text style={styles.noTracksText}>Maafi ji 🙏🏽</Text>
+            <Text style={styles.noTracksSubtext}>
+              We do not have audios for{" "}
+              <Text
+                style={{
+                  fontFamily: fontFace,
+                }}
+              >
+                {title}
+              </Text>{" "}
+              yet.
+            </Text>
+            <Pressable
+              style={styles.joinMailingListButton}
+              onPress={() =>
+                Linking.openURL("https://khalisfoundation.org").catch(() => {
+                  // Fallback to main website if newsletter link fails
+                  Linking.openURL("https://khalisfoundation.org");
+                })
+              }
+            >
+              <Text style={styles.joinMailingListText}>Request audio for this paath.</Text>
+            </Pressable>
+          </View>
+        )}
+
+        {/* Play Button */}
+        {isFooter && tracks && tracks.length > 0 && (
+          <Pressable
+            style={[styles.playButton, !selectedTrack && styles.playButtonDisabled]}
+            onPress={handlePlay}
+            disabled={!selectedTrack}
+            activeOpacity={0.8}
+          >
+            <Text style={styles.playButtonText}>{STRINGS.NEXT}</Text>
+            <ArrowRightIcon size={24} color={theme.staticColors.WHITE_COLOR} />
+          </Pressable>
+        )}
+      </View>
+    </View>
+  );
+};
+
+AudioTrackDialog.defaultProps = {
+  title: "",
+  isHeader: true,
+  isFooter: true,
+  isLoading: false,
+};
+
+AudioTrackDialog.propTypes = {
+  title: PropTypes.string,
+  tracks: PropTypes.arrayOf(
+    PropTypes.shape({
+      id: PropTypes.oneOfType([PropTypes.string, PropTypes.number]).isRequired,
+      name: PropTypes.string.isRequired,
+      selected: PropTypes.bool,
+    })
+  ).isRequired,
+  handleTrackSelect: PropTypes.func.isRequired,
+  isHeader: PropTypes.bool,
+  isFooter: PropTypes.bool,
+  onCloseTrackModal: PropTypes.func.isRequired,
+  baniID: PropTypes.string.isRequired,
+  isLoading: PropTypes.bool,
+};
+
+export default AudioTrackDialog;

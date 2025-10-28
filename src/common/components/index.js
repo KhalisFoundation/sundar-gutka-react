@@ -1,6 +1,17 @@
-import FallBack from "./FallbackComponent";
-import BaniList from "./BaniList/BaniList";
 import BaniLengthSelector from "./BaniLengthSelector";
+import BaniList from "./BaniList/BaniList";
+import BottomNavigation from "./BottomNavigation";
 import CustomText from "./CustomText";
+import FallBack from "./FallbackComponent";
+import SafeArea from "./SafeArea";
+import StatusBarComponent from "./StatusBar";
 
-export { FallBack, BaniList, BaniLengthSelector, CustomText };
+export {
+  FallBack,
+  BaniList,
+  BaniLengthSelector,
+  BottomNavigation,
+  SafeArea,
+  StatusBarComponent,
+  CustomText,
+};

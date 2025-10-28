@@ -1,25 +1,22 @@
 import React, { useEffect } from "react";
 import { Icon } from "@rneui/themed";
-import { colors, STRINGS } from "@common";
-import styles from "../styles";
+import useTheme from "@common/context";
+import useThemedStyles from "@common/hooks/useThemedStyles";
+import { STRINGS } from "@common";
+import createStyles from "../styles";
 
-const useHeader = (navigation, isNightMode) => {
-  const { WHITE_COLOR, NIGHT_BLACK } = colors;
+const useHeader = (navigation) => {
+  const { theme } = useTheme();
+  const styles = useThemedStyles(createStyles);
   const { goBack } = navigation;
-  const { headerStyle, headerTitleStyle } = styles;
   const headerLeft = () => (
-    <Icon
-      name="arrow-back"
-      size={30}
-      onPress={() => goBack()}
-      color={isNightMode ? WHITE_COLOR : NIGHT_BLACK}
-    />
+    <Icon name="arrow-back" size={30} onPress={() => goBack()} color={theme.colors.primaryText} />
   );
   useEffect(() => {
     navigation.setOptions({
       title: STRINGS.databaseUpdate,
-      headerStyle,
-      headerTitleStyle,
+      headerStyle: styles.headerStyle,
+      headerTitleStyle: styles.headerTitleStyle,
       headerLeft,
     });
   }, []);
