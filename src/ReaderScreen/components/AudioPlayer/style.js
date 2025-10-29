@@ -42,6 +42,8 @@ export const audioControlBarStyles = (theme) => ({
     right: 0,
     top: 0,
     borderRadius: BORDER_RADIUS.md,
+    borderColor: theme.colors.separator,
+    borderWidth: 1,
     overflow: "hidden",
   },
   container: {
@@ -56,6 +58,8 @@ export const audioControlBarStyles = (theme) => ({
     marginLeft: "auto",
     marginRight: "auto",
     borderRadius: BORDER_RADIUS.md,
+    borderColor: theme.colors.separator,
+    borderWidth: 1,
     ...SHADOW.light,
     backgroundColor: theme.colors.transparentOverlay,
   },
@@ -80,8 +84,9 @@ export const audioControlBarStyles = (theme) => ({
   },
   moreTracksModalContainer: {
     width: "90%",
-    alignSelf: "center",
-    padding: 10,
+    marginLeft: "auto",
+    marginRight: "auto",
+    marginTop: theme.spacing.lg,
     zIndex: 20,
   },
 
@@ -92,14 +97,14 @@ export const audioControlBarStyles = (theme) => ({
     flexDirection: "row",
     justifyContent: "space-between",
     padding: 5,
-    width: "98%",
+    width: "100%",
     marginLeft: "auto",
     marginRight: "auto",
     zIndex: 1,
   },
   leftControls: {
     flexDirection: "row",
-    gap: theme.spacing.md_12,
+    gap: theme.spacing.sm,
   },
   rightControls: {
     flexDirection: "row",
@@ -112,7 +117,6 @@ export const audioControlBarStyles = (theme) => ({
   },
   actionButtonText: {
     fontSize: theme.typography.sizes.lg,
-    fontWeight: theme.typography.weights.normal,
     fontFamily: theme.typography.fonts.balooPaaji,
   },
   actionButtonContent: {

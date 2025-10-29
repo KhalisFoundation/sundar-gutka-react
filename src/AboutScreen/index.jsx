@@ -1,7 +1,9 @@
 import React from "react";
 import { Linking, Image, View, Text, TouchableHighlight } from "react-native";
-import PropTypes from "prop-types";
 import { getVersion, getBuildNumber } from "react-native-device-info";
+import PropTypes from "prop-types";
+import useTheme from "@common/context";
+import useThemedStyles from "@common/hooks/useThemedStyles";
 import {
   STRINGS,
   constant,
@@ -10,8 +12,6 @@ import {
   StatusBarComponent,
   SafeArea,
 } from "@common";
-import useThemedStyles from "@common/hooks/useThemedStyles";
-import useTheme from "@common/context";
 import useHeader from "./hooks/useHeader";
 import createStyles from "./styles";
 
