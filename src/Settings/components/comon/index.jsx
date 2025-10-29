@@ -1,5 +1,5 @@
 import BottomSheetComponent from "./bottomSheetComponent";
 import ListItemComponent from "./listItemComponent";
-import ListItemWithIcon from "./listItemWithIcon";
+import ListItemWithIcon from "./ListitemWithIcon";
 
 export { ListItemComponent, BottomSheetComponent, ListItemWithIcon };
