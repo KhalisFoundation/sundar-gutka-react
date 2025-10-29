@@ -1,6 +1,7 @@
 import React, { useEffect } from "react";
 import { View, Text, Switch, ScrollView, Pressable } from "react-native";
 import { useSelector, useDispatch } from "react-redux";
+import PropTypes from "prop-types";
 import {
   toggleAudio,
   toggleAudioAutoPlay,
@@ -13,7 +14,7 @@ import { PlusIcon, MinusIcon } from "@common/icons";
 import { useTrackPlayer } from "../hooks";
 import { audioSettingModalStyles } from "../style";
 
-const AudioSettingsModal = () => {
+const AudioSettingsModal = ({ isLyricsAvailable }) => {
   const { theme } = useTheme();
   const styles = useThemedStyles(audioSettingModalStyles);
   const isAudio = useSelector((state) => state.isAudio);
@@ -44,6 +45,7 @@ const AudioSettingsModal = () => {
       onValueChange: () => {
         dispatch(toggleAudio(!isAudio));
       },
+      disabled: false,
     },
     {
       title: "Auto Play",
@@ -51,6 +53,7 @@ const AudioSettingsModal = () => {
       onValueChange: () => {
         dispatch(toggleAudioAutoPlay(!isAudioAutoPlay));
       },
+      disabled: false,
     },
     {
       title: "Sync Auto Scroll",
@@ -58,6 +61,7 @@ const AudioSettingsModal = () => {
       onValueChange: () => {
         dispatch(toggleAudioSyncScroll(!isAudioSyncScroll));
       },
+      disabled: !isLyricsAvailable,
     },
   ];
   return (
@@ -75,6 +79,7 @@ const AudioSettingsModal = () => {
                   thumbColor={setting.defaultValue ? theme.staticColors.WHITE_COLOR : "#f4f3f4"}
                   style={styles.switchStyle}
                   onValueChange={setting.onValueChange}
+                  disabled={setting.disabled}
                 />
               </View>
             </View>
@@ -102,6 +107,10 @@ const AudioSettingsModal = () => {
       </View>
     </ScrollView>
   );
+};
+
+AudioSettingsModal.propTypes = {
+  isLyricsAvailable: PropTypes.bool.isRequired,
 };
 
 export default AudioSettingsModal;

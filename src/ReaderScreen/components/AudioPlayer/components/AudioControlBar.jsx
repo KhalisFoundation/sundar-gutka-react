@@ -1,5 +1,5 @@
 import React, { useState, useEffect, useMemo } from "react";
-import { View, Text, Pressable, Animated, Platform } from "react-native";
+import { View, Text, Pressable, Animated, Platform, ActivityIndicator } from "react-native";
 import { Slider } from "@miblanchard/react-native-slider";
 import { BlurView } from "@react-native-community/blur";
 import PropTypes from "prop-types";
@@ -9,6 +9,7 @@ import { MusicNoteIcon, SettingsIcon, CloseIcon, PlayIcon, PauseIcon } from "@co
 import { STRINGS } from "@common";
 import { useAnimation, useDownloadManager, useAudioManifest } from "../hooks";
 import { audioControlBarStyles } from "../style";
+import checkLyricsFileAvailable from "../utils/checkLRC";
 import ActionComponents from "./ActionComponent";
 import AudioSettingsModal from "./AudioSettingsModal";
 import DownloadBadge from "./DownloadBadge";
@@ -29,8 +30,10 @@ const AudioControlBar = ({
   const styles = useThemedStyles(audioControlBarStyles);
   const [isSettingsModalOpen, setIsSettingsModalOpen] = useState(false);
   const [isMoreTracksModalOpen, setIsMoreTracksModalOpen] = useState(false);
+  const [isLyricsAvailable, setIsLyricsAvailable] = useState(false);
+
   const { modalHeight, modalOpacity } = useAnimation(isSettingsModalOpen, isMoreTracksModalOpen);
-  const { tracks, addTrackToManifest, removeTrackFromManifest, isTrackDownloaded } =
+  const { tracks, addTrackToManifest, removeTrackFromManifest, isTrackDownloaded, isLoading } =
     useAudioManifest(baniID);
   const { isDownloading, isDownloaded, handleDownload } = useDownloadManager(
     currentPlaying,
@@ -96,6 +99,16 @@ const AudioControlBar = ({
     autoDownload();
   }, [currentPlaying?.audioUrl]);
 
+  useEffect(() => {
+    const checkLyrics = async () => {
+      if (currentPlaying?.audioUrl) {
+        const isAvailable = await checkLyricsFileAvailable(currentPlaying.audioUrl);
+        setIsLyricsAvailable(isAvailable);
+      }
+    };
+    checkLyrics();
+  }, [currentPlaying?.audioUrl]);
+
   return (
     <View style={styles.container} pointerEvents="box-none">
       {isDownloading && <DownloadBadge />}
@@ -137,15 +150,21 @@ const AudioControlBar = ({
         <Animated.View
           style={[styles.modalAnimation, { height: modalHeight, opacity: modalOpacity }]}
         >
-          {isSettingsModalOpen && <AudioSettingsModal />}
+          {isSettingsModalOpen && <AudioSettingsModal isLyricsAvailable={isLyricsAvailable} />}
 
           {isMoreTracksModalOpen && (
             <View style={styles.moreTracksModalContainer}>
-              <ScrollViewComponent
-                tracks={tracks}
-                selectedTrack={currentPlaying}
-                handleSelectTrack={handleTrackSelect}
-              />
+              {isLoading ? (
+                <View style={styles.loadingContainer}>
+                  <ActivityIndicator size="large" color={theme.colors.primary} />
+                </View>
+              ) : (
+                <ScrollViewComponent
+                  tracks={tracks}
+                  selectedTrack={currentPlaying}
+                  handleSelectTrack={handleTrackSelect}
+                />
+              )}
             </View>
           )}
         </Animated.View>
@@ -154,8 +173,15 @@ const AudioControlBar = ({
         <View style={[styles.mainSection, styles.mainSectionWithBorder]}>
           <View style={styles.trackInfo}>
             <View style={styles.trackInfoLeft}>
-              {currentPlaying && currentPlaying.displayName && (
-                <Text style={styles.trackName}>{currentPlaying.displayName}</Text>
+              {isLoading ? (
+                <View style={styles.loadingContainer}>
+                  <ActivityIndicator size="large" color={theme.colors.primary} />
+                </View>
+              ) : (
+                currentPlaying &&
+                currentPlaying.displayName && (
+                  <Text style={styles.trackName}>{currentPlaying.displayName}</Text>
+                )
               )}
             </View>
           </View>
