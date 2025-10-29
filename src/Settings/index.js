@@ -51,6 +51,7 @@ const Settings = ({ navigation }) => {
   useEffect(() => {
     navigation.setOptions({
       title: STRINGS.settings,
+      headerTitleStyle: styles.headerTitleStyle,
     });
   }, [language]);
 
