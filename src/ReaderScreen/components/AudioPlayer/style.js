@@ -96,6 +96,7 @@ export const audioControlBarStyles = (theme) => ({
   topControlBar: {
     flexDirection: "row",
     justifyContent: "space-between",
+    height: 40,
     padding: 5,
     width: "100%",
     marginLeft: "auto",
@@ -121,11 +122,13 @@ export const audioControlBarStyles = (theme) => ({
   },
   actionButtonContent: {
     flexDirection: "row",
-    alignItems: "center",
-    justifyContent: "center",
     gap: 4,
     paddingHorizontal: theme.spacing.md,
-    paddingVertical: theme.spacing.sm,
+    height: "100%",
+  },
+  actionButtonIconContainer: {
+    height: "100%",
+    justifyContent: "center",
   },
   separator: {
     height: 2,

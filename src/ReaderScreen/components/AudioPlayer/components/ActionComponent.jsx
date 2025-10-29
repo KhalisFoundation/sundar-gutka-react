@@ -31,7 +31,9 @@ const ActionComponents = ({ selector, toggle, Icon, text }) => {
       onPress={() => toggle((prev) => !prev)}
     >
       <View style={styles.actionButtonContent}>
-        <Icon size={25} color={color} />
+        <View style={styles.actionButtonIconContainer}>
+          <Icon size={20} color={color} />
+        </View>
         <Text
           style={[
             styles.actionButtonText,
