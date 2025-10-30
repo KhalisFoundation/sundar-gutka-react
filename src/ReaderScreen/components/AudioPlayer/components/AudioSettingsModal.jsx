@@ -1,5 +1,5 @@
 import React, { useEffect } from "react";
-import { View, Text, Switch, ScrollView, Pressable } from "react-native";
+import { View, Switch, ScrollView, Pressable } from "react-native";
 import { useSelector, useDispatch } from "react-redux";
 import {
   toggleAudio,
@@ -10,6 +10,7 @@ import {
 import useTheme from "@common/context";
 import useThemedStyles from "@common/hooks/useThemedStyles";
 import { PlusIcon, MinusIcon } from "@common/icons";
+import { CustomText } from "@common";
 import { useTrackPlayer } from "../hooks";
 import { audioSettingModalStyles } from "../style";
 
@@ -66,7 +67,7 @@ const AudioSettingsModal = () => {
         {settings.map((setting) => (
           <View key={setting.title}>
             <View style={styles.modalContainer}>
-              <Text style={styles.settingItemTitle}>{setting.title}</Text>
+              <CustomText style={styles.settingItemTitle}>{setting.title}</CustomText>
               <View>
                 <Switch
                   value={setting.defaultValue}
@@ -82,7 +83,7 @@ const AudioSettingsModal = () => {
           </View>
         ))}
         <View style={styles.modalContainer}>
-          <Text style={styles.settingItemTitle}>Playback Speed</Text>
+          <CustomText style={styles.settingItemTitle}>Playback Speed</CustomText>
           <View right style={styles.speedControlContainer}>
             <Pressable
               onPress={() => handleSpeedChange(audioPlaybackSpeed + 0.1)}
@@ -90,7 +91,9 @@ const AudioSettingsModal = () => {
             >
               <PlusIcon size={24} color={theme.colors.audioSettingsModalText} />
             </Pressable>
-            <Text style={styles.settingItemTitle}>{audioPlaybackSpeed.toFixed(1)}x</Text>
+            <CustomText style={styles.settingItemTitle}>
+              {audioPlaybackSpeed.toFixed(1)}x
+            </CustomText>
             <Pressable
               onPress={() => handleSpeedChange(audioPlaybackSpeed - 0.1)}
               disabled={audioPlaybackSpeed < 1.0}

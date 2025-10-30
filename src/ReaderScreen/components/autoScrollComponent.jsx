@@ -1,12 +1,19 @@
 import React, { useState, useEffect, useCallback } from "react";
-import { View, Text } from "react-native";
+import { View } from "react-native";
 import { useDispatch, useSelector } from "react-redux";
 import Slider from "@react-native-community/slider";
 import { Icon } from "@rneui/themed";
 import PropTypes from "prop-types";
-import useTheme from "@common/context";
-import useThemedStyles from "@common/hooks/useThemedStyles";
-import { colors, constant, actions, trackReaderEvent, logError } from "@common";
+import {
+  useTheme,
+  useThemedStyles,
+  constant,
+  actions,
+  trackReaderEvent,
+  logError,
+  CustomText,
+  colors,
+} from "@common";
 import createStyles from "../styles";
 
 const AutoScrollComponent = ({ shabadID, webViewRef }) => {
@@ -105,7 +112,7 @@ const AutoScrollComponent = ({ shabadID, webViewRef }) => {
           onSlidingComplete={handleSlidingComplete}
           accessibilityLabel="Auto-scroll speed"
         />
-        <Text style={styles.sliderText}>{currentSpeed}</Text>
+        <CustomText style={styles.sliderText}>{currentSpeed}</CustomText>
       </View>
     </View>
   );

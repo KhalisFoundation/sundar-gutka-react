@@ -1,9 +1,8 @@
 import React from "react";
-import PropTypes from "prop-types";
-import { Text, View, Animated } from "react-native";
+import { Animated, View } from "react-native";
 import Svg, { Circle, G } from "react-native-svg";
-import useThemedStyles from "@common/hooks/useThemedStyles";
-import useTheme from "@common/context";
+import PropTypes from "prop-types";
+import { CustomText, useTheme, useThemedStyles } from "@common";
 import createStyles from "../styles";
 
 const AnimatedCircle = Animated.createAnimatedComponent(Circle);
@@ -43,7 +42,7 @@ const DownloadAnimation = ({ progress, progressAnim }) => {
           />
         </G>
       </Svg>
-      <Text style={styles.percentText}>{progress}%</Text>
+      <CustomText style={styles.percentText}>{progress}%</CustomText>
     </View>
   );
 };

@@ -1,5 +1,9 @@
 import React, { useEffect, useState } from "react";
-import { View, Image, Linking, Text, Pressable } from "react-native";
+import { View, Image, Linking, Pressable } from "react-native";
+import { useDispatch } from "react-redux";
+import PropTypes from "prop-types";
+import useTheme from "@common/context";
+import useThemedStyles from "@common/hooks/useThemedStyles";
 import {
   constant,
   logMessage,
@@ -8,13 +12,10 @@ import {
   logError,
   StatusBarComponent,
   SafeArea,
+  CustomText,
 } from "@common";
-import PropTypes from "prop-types";
-import { useDispatch } from "react-redux";
-import useThemedStyles from "@common/hooks/useThemedStyles";
-import useTheme from "@common/context";
-import CheckUpdatesAnimation from "./components/checkUpdate";
 import BaniDBAbout from "./components/baniDBAbout";
+import CheckUpdatesAnimation from "./components/checkUpdate";
 import DownloadComponent from "./components/Download";
 import useHeader from "./hooks/useHeader";
 import createStyles from "./styles";
@@ -55,7 +56,7 @@ const DatabaseUpdateScreen = ({ navigation }) => {
         <Pressable onPress={() => Linking.openURL(constant.BANI_DB_URL)}>
           <View style={styles.baniDBContainer}>
             <Image source={baniDBLogoFull} style={styles.baniDBImage} />
-            <Text style={styles.baniDBText}>BaniDB</Text>
+            <CustomText style={styles.baniDBText}>BaniDB</CustomText>
           </View>
         </Pressable>
         <BaniDBAbout />

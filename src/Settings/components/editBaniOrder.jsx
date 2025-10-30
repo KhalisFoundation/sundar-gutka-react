@@ -1,8 +1,7 @@
 import React from "react";
 import { ListItem, Avatar } from "@rneui/themed";
 import PropTypes from "prop-types";
-import { STRINGS } from "@common";
-import useThemedStyles from "@common/hooks/useThemedStyles";
+import { STRINGS, useThemedStyles, ListItemTitle } from "@common";
 import createStyles from "../styles";
 
 const EditBaniOrder = ({ navigate }) => {
@@ -17,7 +16,7 @@ const EditBaniOrder = ({ navigate }) => {
     >
       <Avatar source={rearrangeIcon} avatarStyle={styles.avatarStyle} />
       <ListItem.Content>
-        <ListItem.Title style={styles.listItemTitle}>{EDIT_BANI_ORDER}</ListItem.Title>
+        <ListItemTitle title={EDIT_BANI_ORDER} style={styles.listItemTitle} />
       </ListItem.Content>
       <ListItem.Chevron />
     </ListItem>

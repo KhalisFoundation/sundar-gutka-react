@@ -1,8 +1,8 @@
 const createStyles = (theme) => ({
   headerTitleStyle: {
     color: theme.colors.primaryText,
-    fontWeight: theme.typography.weights.normal,
     fontSize: theme.typography.sizes.xxl,
+    fontFamily: theme.typography.fonts.balooPaajiSemiBold,
   },
   headerStyle: {
     backgroundColor: theme.colors.surface,

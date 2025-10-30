@@ -3,7 +3,7 @@ import { useSelector, useDispatch } from "react-redux";
 import { ListItem, Icon, Switch } from "@rneui/themed";
 import { toggleScreenAwake, toggleAutoScroll } from "@common/actions";
 import useTheme from "@common/context";
-import { STRINGS } from "@common";
+import { STRINGS, ListItemTitle } from "@common";
 
 const AutoScroll = () => {
   const { theme } = useTheme();
@@ -15,7 +15,7 @@ const AutoScroll = () => {
     <ListItem bottomDivider containerStyle={{ backgroundColor: theme.colors.surfaceGrey }}>
       <Icon color={theme.colors.primaryText} name="auto-fix-high" type="material" />
       <ListItem.Content>
-        <ListItem.Title style={{ color: theme.colors.primaryText }}>{AUTO_SCROLL}</ListItem.Title>
+        <ListItemTitle title={AUTO_SCROLL} style={{ color: theme.colors.primaryText }} />
       </ListItem.Content>
       <Switch
         value={isAutoScroll}
