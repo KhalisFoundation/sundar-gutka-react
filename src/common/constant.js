@@ -33,7 +33,6 @@ export default {
   EXISTS_TAKSAL: "existsTaksal",
   EXISTS_MEDIUM: "existsMedium",
   EXISTS_SGPS: "existsSGPC",
-  Arial: "Arial",
   GURMUKHI: "GURMUKHI",
   TRANSLITERATION: "TRANSLITERATION",
   TRANSLATION: "TRANSLATION",

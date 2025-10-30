@@ -4,7 +4,7 @@ import { ListItem, Icon, Switch } from "@rneui/themed";
 import { toggleAudio, toggleAudioAutoPlay, toggleAudioSyncScroll } from "@common/actions";
 import useTheme from "@common/context";
 import useThemedStyles from "@common/hooks/useThemedStyles";
-import { STRINGS } from "@common";
+import { STRINGS, ListItemTitle } from "@common";
 import createStyles from "../styles";
 
 const Audio = () => {
@@ -57,7 +57,7 @@ const Audio = () => {
       >
         <Icon color={theme.colors.primaryText} name={setting.icon} type="material" />
         <ListItem.Content>
-          <ListItem.Title style={styles.listItemTitle}>{setting.title}</ListItem.Title>
+          <ListItemTitle title={setting.title} style={styles.listItemTitle} />
         </ListItem.Content>
         <Switch
           value={setting.value}

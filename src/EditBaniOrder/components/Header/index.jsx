@@ -1,10 +1,8 @@
 import React, { useCallback } from "react";
-import { View, Text } from "react-native";
+import { View } from "react-native";
 import { Icon } from "@rneui/themed";
 import PropTypes from "prop-types";
-import useTheme from "@common/context";
-import useThemedStyles from "@common/hooks/useThemedStyles";
-import { STRINGS } from "@common";
+import { STRINGS, CustomText, useTheme, useThemedStyles } from "@common";
 import createStyles from "./styles";
 
 const Header = ({ navigation, setReset }) => {
@@ -44,7 +42,7 @@ const Header = ({ navigation, setReset }) => {
   return (
     <View style={styles.container}>
       <View style={styles.leftContainer}>{headerLeft()}</View>
-      <Text style={styles.title}>{EDIT_BANI_ORDER}</Text>
+      <CustomText style={styles.title}>{EDIT_BANI_ORDER}</CustomText>
       <View style={styles.rightContainer}>{headerRight()}</View>
     </View>
   );

@@ -1,8 +1,7 @@
-import PropTypes from "prop-types";
 import React from "react";
-import { Image, Pressable, Text, View } from "react-native";
-import { STRINGS } from "@common";
-import useThemedStyles from "@common/hooks/useThemedStyles";
+import { Image, Pressable, View } from "react-native";
+import PropTypes from "prop-types";
+import { STRINGS, CustomText, useThemedStyles } from "@common";
 import createStyles from "../styles";
 
 const baniDbLogo = require("../../../images/banidblogo.png");
@@ -13,7 +12,7 @@ const DatabaseUpdateBanner = ({ navigate }) => {
     <Pressable onPress={() => navigate("DatabaseUpdate")}>
       <View style={styles.databaseUpdateBannerWrapper}>
         <Image source={baniDbLogo} style={styles.baniDbImage} />
-        <Text style={styles.updateText}>{STRINGS.baniDBBannerText}</Text>
+        <CustomText style={styles.updateText}>{STRINGS.baniDBBannerText}</CustomText>
       </View>
     </Pressable>
   );

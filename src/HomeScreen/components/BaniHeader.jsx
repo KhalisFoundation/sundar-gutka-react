@@ -1,11 +1,9 @@
 import React from "react";
-import { View, Text } from "react-native";
+import { View } from "react-native";
 import { useSelector } from "react-redux";
 import { Icon } from "@rneui/themed";
 import PropTypes from "prop-types";
-import useTheme from "@common/context";
-import useThemedStyles from "@common/hooks/useThemedStyles";
-import { constant, STRINGS } from "@common";
+import { constant, STRINGS, CustomText, useTheme, useThemedStyles } from "@common";
 import createStyles from "../styles";
 
 const BaniHeader = (props) => {
@@ -20,17 +18,17 @@ const BaniHeader = (props) => {
       }}
     >
       <View style={styles.fatehContainer}>
-        <Text style={styles.headerFatehStyle}>
-          <Text style={styles.ikongkar}>{"<>"} </Text>
+        <CustomText style={styles.headerFatehStyle}>
+          <CustomText style={styles.ikongkar}>{"<>"} </CustomText>
           {STRINGS.fateh}
-        </Text>
+        </CustomText>
       </View>
       <View>
-        <Text style={styles.titleContainer}>
-          <Text style={styles.headerDesign}>Œ</Text>
-          <Text style={styles.headerTitle}> {STRINGS.sg_title} </Text>
-          <Text style={styles.headerDesign}>‰</Text>
-        </Text>
+        <CustomText style={styles.titleContainer}>
+          <CustomText style={styles.headerDesign}>Œ</CustomText>
+          <CustomText style={styles.headerTitle}> {STRINGS.sg_title} </CustomText>
+          <CustomText style={styles.headerDesign}>‰</CustomText>
+        </CustomText>
       </View>
       <View style={styles.settingIcon}>
         <Icon
