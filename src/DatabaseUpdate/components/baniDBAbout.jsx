@@ -1,8 +1,6 @@
 import React, { useMemo } from "react";
-import { Text, View, ScrollView, Linking } from "react-native";
-import { STRINGS } from "@common";
-import useThemedStyles from "@common/hooks/useThemedStyles";
-import useTheme from "@common/context";
+import { View, ScrollView, Linking } from "react-native";
+import { STRINGS, CustomText, useTheme, useThemedStyles } from "@common";
 import { baniDBAboutStyles } from "./styles";
 
 const BaniDBAbout = () => {
@@ -22,19 +20,19 @@ const BaniDBAbout = () => {
     <ScrollView contentContainerStyle={styles.container}>
       {highlights.map((highlight) => (
         <View key={highlight} style={styles.listItem}>
-          <Text style={styles.bulletPoint}>•</Text>
-          <Text style={styles.listText}>{highlight}</Text>
+          <CustomText style={styles.bulletPoint}>•</CustomText>
+          <CustomText style={styles.listText}>{highlight}</CustomText>
         </View>
       ))}
-      <Text style={{ color: theme.colors.primaryText }}>
+      <CustomText style={{ color: theme.colors.primaryText }}>
         {STRINGS.baniDBMistakeText}{" "}
-        <Text
+        <CustomText
           style={{ color: theme.colors.primaryText, textDecorationLine: "underline" }}
           onPress={() => Linking.openURL("https://tinyurl.com/banidb-signup")}
         >
           {STRINGS.baniDBSignUp}
-        </Text>
-      </Text>
+        </CustomText>
+      </CustomText>
     </ScrollView>
   );
 };

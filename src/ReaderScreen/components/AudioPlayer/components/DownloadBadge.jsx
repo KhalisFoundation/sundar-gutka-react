@@ -1,9 +1,9 @@
 import React from "react";
-import { View, Text } from "react-native";
+import { View } from "react-native";
 import useTheme from "@common/context";
 import useThemedStyles from "@common/hooks/useThemedStyles";
 import { DownloadIcon } from "@common/icons";
-import { STRINGS } from "@common";
+import { STRINGS, CustomText } from "@common";
 import { downloadBadgeStyles } from "../style";
 
 const DownloadBadge = () => {
@@ -14,7 +14,7 @@ const DownloadBadge = () => {
     <View style={styles.container}>
       <View style={styles.downloadButton}>
         <DownloadIcon size={20} color={theme.colors.primaryHeaderVariant} />
-        <Text style={styles.downloadButtonText}>{STRINGS.DOWNLOADING}</Text>
+        <CustomText style={styles.downloadButtonText}>{STRINGS.DOWNLOADING}</CustomText>
       </View>
     </View>
   );

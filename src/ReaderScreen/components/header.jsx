@@ -1,11 +1,10 @@
 import React, { useEffect, useRef } from "react";
-import { View, Text, Animated, Pressable } from "react-native";
+import { View, Animated, Pressable } from "react-native";
 import LinearGradient from "react-native-linear-gradient";
 import { useSelector } from "react-redux";
 import PropTypes from "prop-types";
-import useTheme from "@common/context";
-import useThemedStyles from "@common/hooks/useThemedStyles";
 import { BackArrowIcon } from "@common/icons";
+import { CustomText, useTheme, useThemedStyles } from "@common";
 import createStyles from "../styles";
 
 const Header = ({ title, handleBackPress, isHeader }) => {
@@ -77,7 +76,9 @@ const Header = ({ title, handleBackPress, isHeader }) => {
         <View style={styles.headerWrapper}>
           <View style={styles.headerLeft}>{headerLeft()}</View>
           <View style={styles.headerCenter}>
-            <Text style={[styles.headerTitleStyle, { fontFamily: fontFace }]}>{title}</Text>
+            <CustomText style={[styles.headerTitleStyle, { fontFamily: fontFace }]}>
+              {title}
+            </CustomText>
           </View>
           <View style={styles.headerRight} />
         </View>

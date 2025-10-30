@@ -35,7 +35,7 @@ const htmlTemplate = (
     }
     .transliteration, .translation {
       padding: 0.2em;
-      font-family: 'Arial';
+      font-family: '${theme.typography.fonts.balooPaaji}';
     }
     * {
       -webkit-user-select: none;

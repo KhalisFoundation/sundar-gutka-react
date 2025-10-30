@@ -1,11 +1,11 @@
 import React, { useState, useEffect } from "react";
-import { ListItem, Avatar, Switch } from "@rneui/themed";
 import { useDispatch, useSelector } from "react-redux";
-import { STRINGS, constant } from "@common";
+import { ListItem, Avatar, Switch } from "@rneui/themed";
 import { setTransliteration, toggleTransliteration } from "@common/actions";
 import useThemedStyles from "@common/hooks/useThemedStyles";
-import { ListItemComponent, BottomSheetComponent } from "./comon";
+import { STRINGS, constant, ListItemTitle } from "@common";
 import createStyles from "../styles";
+import { ListItemComponent, BottomSheetComponent } from "./comon";
 import { getTransliteration } from "./comon/strings";
 
 const TransliterationComponent = () => {
@@ -29,7 +29,7 @@ const TransliterationComponent = () => {
       <ListItem bottomDivider containerStyle={styles.containerNightStyles}>
         <Avatar source={romanizedIcon} avatarStyle={styles.avatarStyle} />
         <ListItem.Content>
-          <ListItem.Title style={styles.listItemTitle}>{STRINGS.transliteration}</ListItem.Title>
+          <ListItemTitle title={STRINGS.transliteration} style={styles.listItemTitle} />
         </ListItem.Content>
         <Switch
           value={isTransliteration}

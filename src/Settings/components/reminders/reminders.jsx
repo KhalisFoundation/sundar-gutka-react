@@ -1,8 +1,10 @@
 import React, { useState } from "react";
 import { Alert, Linking } from "react-native";
-import { ListItem, Icon, Switch } from "@rneui/themed";
 import { useSelector, useDispatch } from "react-redux";
+import { ListItem, Icon, Switch } from "@rneui/themed";
 import PropTypes from "prop-types";
+import useTheme from "@common/context";
+import useThemedStyles from "@common/hooks/useThemedStyles";
 import {
   STRINGS,
   cancelAllReminders,
@@ -11,14 +13,13 @@ import {
   logError,
   logMessage,
   FallBack,
+  ListItemTitle,
 } from "@common";
 import { getBaniList } from "@database";
-import useTheme from "@common/context";
-import useThemedStyles from "@common/hooks/useThemedStyles";
-import { ListItemComponent, BottomSheetComponent } from "../comon";
-import setDefaultReminders from "./ReminderOptions/utils";
-import { getReminderSound } from "../comon/strings";
 import createStyles from "../../styles";
+import { ListItemComponent, BottomSheetComponent } from "../comon";
+import { getReminderSound } from "../comon/strings";
+import setDefaultReminders from "./ReminderOptions/utils";
 
 const RemindersComponent = ({ navigation }) => {
   const { theme } = useTheme();
@@ -80,7 +81,7 @@ const RemindersComponent = ({ navigation }) => {
       <ListItem bottomDivider containerStyle={styles.containerNightStyles}>
         <Icon color={theme.colors.primaryText} name="timer" size={30} />
         <ListItem.Content>
-          <ListItem.Title style={styles.listItemTitle}>{STRINGS.reminders}</ListItem.Title>
+          <ListItemTitle title={STRINGS.reminders} style={styles.listItemTitle} />
         </ListItem.Content>
         <Switch value={isReminders} onValueChange={(value) => handleReminders(value)} />
       </ListItem>
@@ -93,9 +94,7 @@ const RemindersComponent = ({ navigation }) => {
         >
           <Icon name="event" color={theme.colors.primaryText} size={30} />
           <ListItem.Content>
-            <ListItem.Title style={styles.listItemTitle}>
-              {STRINGS.set_reminder_options}
-            </ListItem.Title>
+            <ListItemTitle title={STRINGS.set_reminder_options} style={styles.listItemTitle} />
           </ListItem.Content>
           <ListItem.Chevron />
         </ListItem>

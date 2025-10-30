@@ -1,12 +1,12 @@
 import React, { useState } from "react";
-import { View, TouchableOpacity, Text } from "react-native";
+import { View, TouchableOpacity } from "react-native";
+import { useDispatch, useSelector } from "react-redux";
 import { Icon, Divider } from "@rneui/themed";
 import PropTypes from "prop-types";
-import { useDispatch, useSelector } from "react-redux";
-import { STRINGS } from "@common";
 import { setReminderBanis } from "@common/actions";
 import useTheme from "@common/context";
 import useThemedStyles from "@common/hooks/useThemedStyles";
+import { STRINGS, CustomText } from "@common";
 import LabelModal from "../modals/LabelModal";
 import createStyles from "../styles";
 
@@ -39,7 +39,7 @@ const AccordianContent = ({ section, isActive }) => {
       >
         <View style={styles.accContentWrapper}>
           <Icon name="turned-in-not" color={theme.colors.componentColor} size={30} />
-          <Text style={[styles.accContentText]}>{title}</Text>
+          <CustomText style={[styles.accContentText]}>{title}</CustomText>
         </View>
       </TouchableOpacity>
 
@@ -50,7 +50,7 @@ const AccordianContent = ({ section, isActive }) => {
       >
         <View style={styles.accContentWrapper}>
           <Icon name="delete-outline" color={theme.colors.componentColor} size={30} />
-          <Text style={{ color: theme.colors.componentColor }}>{STRINGS.delete}</Text>
+          <CustomText style={{ color: theme.colors.componentColor }}>{STRINGS.delete}</CustomText>
         </View>
       </TouchableOpacity>
       <Divider color={theme.colors.primaryText} />

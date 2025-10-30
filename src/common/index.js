@@ -1,10 +1,16 @@
 import * as actions from "./actions";
 import colors from "./colors";
-import { FallBack, BaniLengthSelector, BaniList } from "./components";
+import {
+  FallBack,
+  BaniLengthSelector,
+  BaniList,
+  CustomText,
+  ListItemTitle,
+  BottomNavigation,
+  SafeArea,
+  StatusBarComponent,
+} from "./components";
 import orderedBani from "./components/BaniList/baniOrderHelper";
-import BottomNavigation from "./components/BottomNavigation";
-import SafeArea from "./components/SafeArea";
-import StatusBarComponent from "./components/StatusBar";
 import constant from "./constant";
 import useTheme from "./context";
 import defaultBaniOrder from "./defaultBaniOrder";
@@ -69,6 +75,7 @@ export {
   BaniLengthSelector,
   useKeepAwake,
   BaniList,
+  CustomText,
   baseFontSize,
   resetBadgeCount,
   createStore,
@@ -101,4 +108,5 @@ export {
   BottomNavigation,
   useTheme,
   useThemedStyles,
+  ListItemTitle,
 };
