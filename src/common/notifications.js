@@ -9,18 +9,30 @@ import moment from "moment";
 import { FallBack } from "./components";
 import constant from "./constant";
 import { logError, logMessage } from "./firebase/crashlytics";
+import { showErrorToast } from "./toast";
 
 // Utility function to check if BROADCAST_CLOSE_SYSTEM_DIALOGS permission is available
 const checkBroadcastPermission = async () => {
   if (Platform.OS === "android") {
     try {
-      // This will throw an exception if the permission is not available
-      const broadcastPermissionCheck = await PermissionsAndroid.check(
-        PermissionsAndroid.PERMISSIONS.BROADCAST_CLOSE_SYSTEM_DIALOGS
-      );
+      // Use the permission constant if available, otherwise use the string directly
+      const permission =
+        PermissionsAndroid.PERMISSIONS?.BROADCAST_CLOSE_SYSTEM_DIALOGS ??
+        "android.permission.BROADCAST_CLOSE_SYSTEM_DIALOGS";
+
+      // Check if permission is defined before calling check
+      if (!permission) {
+        logMessage("checkBroadcastPermission: Permission string is null/undefined");
+        return false;
+      }
+
+      const broadcastPermissionCheck = await PermissionsAndroid.check(permission);
       return broadcastPermissionCheck;
     } catch (error) {
       // Permission not available on this device/API level
+      showErrorToast("checkBroadcastPermission: Permission check failed");
+      logError(error);
+      logMessage("checkBroadcastPermission: Permission check failed");
       return false;
     }
   }
