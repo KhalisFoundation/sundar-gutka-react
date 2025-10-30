@@ -75,21 +75,23 @@ const createStyles = (theme) => ({
 
   headerLeft: {
     marginLeft: theme.spacing.lg,
-    flex: 1,
     alignItems: "flex-start",
     justifyContent: "center",
+    width: "10%",
   },
 
   headerCenter: {
-    flex: 2,
     alignItems: "center",
     justifyContent: "center",
+    width: "80%",
   },
 
   headerRight: {
     flex: 1,
     alignItems: "flex-end",
     justifyContent: "center",
+    width: "20%",
+    backgroundColor: "green",
   },
 
   footerWrapper: {
@@ -116,6 +118,7 @@ const createStyles = (theme) => ({
   },
   headerStyle: {
     backgroundColor: theme.colors.surface,
+    width: "100%",
   },
   animatedView: {
     position: "absolute",

@@ -6,6 +6,7 @@ import PropTypes from "prop-types";
 import { toggleAudio, logError } from "@common/actions";
 import useThemedStyles from "@common/hooks/useThemedStyles";
 import { showErrorToast } from "@common/toast";
+import { STRINGS } from "@common";
 import { AudioTrackDialog, AudioControlBar } from "./components";
 import { useAudioManifest, useTrackPlayer, useAudioSyncScroll } from "./hooks";
 import createStyles from "./style";
@@ -81,7 +82,7 @@ const AudioPlayer = ({ baniID, title, shouldNavigateBack, webViewRef }) => {
       }
     } catch (error) {
       logError("Error in handlePlayPause:", error);
-      showErrorToast("Unable to play audio. Please try again.");
+      showErrorToast(`${STRINGS.UNABLE_TO_PLAY} ${STRINGS.PLEASE_TRY_AGAIN}`);
     }
   };
 
@@ -111,7 +112,7 @@ const AudioPlayer = ({ baniID, title, shouldNavigateBack, webViewRef }) => {
       await seekTo(value);
     } catch (error) {
       logError("Error seeking:", error);
-      showErrorToast("Unable to seek audio. Please try again.");
+      showErrorToast(`${STRINGS.UNABLE_TO_SEEK} ${STRINGS.PLEASE_TRY_AGAIN}`);
     }
   };
 
@@ -142,7 +143,7 @@ const AudioPlayer = ({ baniID, title, shouldNavigateBack, webViewRef }) => {
       }
     } catch (error) {
       logError("Error switching track:", error);
-      showErrorToast("Unable to switch audio track. Please try again.");
+      showErrorToast(`${STRINGS.UNABLE_TO_SWITCH_TRACK} ${STRINGS.PLEASE_TRY_AGAIN}`);
     }
   };
 

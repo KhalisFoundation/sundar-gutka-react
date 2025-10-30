@@ -156,6 +156,14 @@ const STRINGS = new LocalizedStrings({
     DOWNLOAD: "Download",
     DOWNLOADING: "Downloading",
     NEXT: "Next",
+    PLAYBACK_SPEED: "Playback Speed",
+    UNABLE_TO_PLAY: "Unable to play audio.",
+    PLEASE_TRY_AGAIN: "Please try again.",
+    UNABLE_TO_SEEK: "Unable to seek audio.",
+    UNABLE_TO_SWITCH_TRACK: "Unable to switch audio track.",
+    AUDIO_SYNC_UNAVAILABLE: "Audio sync unavailable. Playback will continue without auto-scroll.",
+    NETWORK_ERROR: "Network error. Audio features temporarily unavailable.",
+    COULD_NOT_LOAD_AUDIO_ARTISTS: "Could not load audio artists. Please check your connection.",
   },
   hi: {
     about: "हमारे बारे",
@@ -310,6 +318,15 @@ const STRINGS = new LocalizedStrings({
     DOWNLOAD: "डाउनलोड",
     DOWNLOADING: "डाउनलोड हो रहा है",
     NEXT: "अगला",
+    PLAYBACK_SPEED: "प्लेबैक स्पीड",
+    UNABLE_TO_PLAY: "ऑडियो चलाने में असमर्थ",
+    PLEASE_TRY_AGAIN: "कृपया पुनः प्रयास करें।",
+    UNABLE_TO_SEEK: "ऑडियो खोजने में असमर्थ",
+    UNABLE_TO_SWITCH_TRACK: "ऑडियो ट्रैक बदलने में असमर्थ",
+    AUDIO_SYNC_UNAVAILABLE: "ऑडियो सिंक अस्वीकृत है। ऑडियो ऑटो स्क्रॉल के बिना चलाया जाएगा।",
+    NETWORK_ERROR: "नेटवर्क त्रुटि। ऑडियो सुविधाओं को अस्थायी रूप से अस्वीकृत कर दिया जाएगा।",
+    COULD_NOT_LOAD_AUDIO_ARTISTS:
+      "ऑडियो कलाकारों को लोड करने में असमर्थ। कृपया अपना कनेक्शन जांचें।",
   },
 
   pa: {
@@ -464,6 +481,15 @@ const STRINGS = new LocalizedStrings({
     DOWNLOAD: "ਡਾਊਨਲੋਡ",
     DOWNLOADING: "ਡਾਊਨਲੋਡ ਹੋ ਰਹਿ ਰਹਾ ਹੈ",
     NEXT: "ਅਗਲਾ",
+    PLAYBACK_SPEED: "ਪਲੇਬੈਕ ਸਪੀਡ",
+    UNABLE_TO_PLAY: "ਆਡੀਓ ਚਲਾਉਣ ਲਈ ਅਸਮਰਥ",
+    PLEASE_TRY_AGAIN: "ਕੀਪਾ ਪੁਨਰਪਾਤ ਕਰੋ।",
+    UNABLE_TO_SEEK: "ਆਡੀਓ ਖੋਜਣ ਲਈ ਅਸਮਰਥ",
+    UNABLE_TO_SWITCH_TRACK: "ਆਡੀਓ ਟਰੈਕ ਬਦਲਣ ਲਈ ਅਸਮਰਥ",
+    AUDIO_SYNC_UNAVAILABLE: "ਆਡੀਓ ਸਿੰਕ ਅਸਵੀਕਰਿਤ ਹੈ। ਆਡੀਓ ਑ਟੋ ਸਕਰੋਲ ਦੇ ਬਿਨਾਂ ਚਲਾਈ ਜਾਵੇਗੀ।",
+    NETWORK_ERROR:
+      "ਨੈੱਟਵਰਕ ਤਰੁੱਟੀ। ਆਡੀਓ ਸੰਸਕਰਨਾਂ ਨੂੰ ਅਸਥਾਈ ਰੂਪ ਸਕਰੋਲ ਦੇ ਬਿਨਾਂ ਅਸਵੀਕਰਿਤ ਕਰ ਦਿੱਤਾ ਜਾਵੇਗਾ।",
+    COULD_NOT_LOAD_AUDIO_ARTISTS: "ਆਡੀਓ ਕਲਾਰਾਰਾਂ ਨੂੰ ਲੋਡ ਕਰਨ ਲਈ ਅਸਮਰਥ। ਕੀਪਾ ਆਪਣਾ ਕਨੈਕਸ਼ਨ ਜਾਂਚੋ।",
   },
   fr: {
     about: "Infos",
@@ -624,6 +650,16 @@ const STRINGS = new LocalizedStrings({
     DOWNLOAD: "Télécharger",
     DOWNLOADING: "Téléchargement en cours",
     NEXT: "Suivant",
+    PLAYBACK_SPEED: "Vitesse de reproduction",
+    UNABLE_TO_PLAY: "Impossible de lire la piste audio.",
+    PLEASE_TRY_AGAIN: "Veuillez réessayer.",
+    UNABLE_TO_SEEK: "Impossible de rechercher la piste audio.",
+    UNABLE_TO_SWITCH_TRACK: "Impossible de changer la piste audio.",
+    AUDIO_SYNC_UNAVAILABLE:
+      "Synchronisation audio non disponible. La lecture continuera sans défilement automatique.",
+    NETWORK_ERROR: "Erreur réseau. Les fonctionnalités audio sont temporairement indisponibles.",
+    COULD_NOT_LOAD_AUDIO_ARTISTS:
+      "Impossible de charger les artistes audio. Veuillez vérifier votre connexion.",
   },
   it: {
     about: "Info",
@@ -775,6 +811,16 @@ const STRINGS = new LocalizedStrings({
     MORE_TRACKS: "Audios",
     AUDIO_SETTINGS: "Opzioni",
     NEXT: "Prossimo",
+    PLAYBACK_SPEED: "Velocidad de reproducción",
+    UNABLE_TO_PLAY: "No se puede reproducir el audio.",
+    PLEASE_TRY_AGAIN: "Por favor, inténtelo de nuevo.",
+    UNABLE_TO_SEEK: "No se puede buscar el audio.",
+    UNABLE_TO_SWITCH_TRACK: "No se puede cambiar el audio.",
+    AUDIO_SYNC_UNAVAILABLE:
+      "Sincronización de audio no disponible. La reproducción continuará sin desplazamiento automático.",
+    NETWORK_ERROR: "Error de red. Las funciones de audio están temporalmente indisponibles.",
+    COULD_NOT_LOAD_AUDIO_ARTISTS:
+      "No se pueden cargar los artistas de audio. Por favor, verifique su conexión.",
   },
   es: {
     about: "Sobre Nosotros",
@@ -933,7 +979,17 @@ const STRINGS = new LocalizedStrings({
     DOWNLOAD: "Descargar",
     DOWNLOADING: "Descargando",
     NEXT: "Siguiente",
+    PLAYBACK_SPEED: "Velocidad de reproducción",
+    UNABLE_TO_PLAY: "No se puede reproducir el audio.",
+    PLEASE_TRY_AGAIN: "Por favor, inténtelo de nuevo.",
+    UNABLE_TO_SEEK: "No se puede buscar el audio.",
+    UNABLE_TO_SWITCH_TRACK: "No se puede cambiar el audio.",
+    AUDIO_SYNC_UNAVAILABLE:
+      "Sincronización de audio no disponible. La reproducción continuará sin desplazamiento automático.",
   },
+  NETWORK_ERROR: "Error de red. Las funciones de audio están temporalmente indisponibles.",
+  COULD_NOT_LOAD_AUDIO_ARTISTS:
+    "No se pueden cargar los artistas de audio. Por favor, verifique su conexión.",
 });
 
 export default STRINGS;
