@@ -111,8 +111,8 @@ export const loadHTML = (
         const paragraphId = item.sequences ? item.sequences[0] : item.sequence;
         const sequencesData = item.sequences
           ? ` data-sequences='|${item.sequences.join("|")}|'`
-          : "";
-        let contentHtml = `<div id="${paragraphId}" class='text-item'${sequencesData}>`;
+          : ` scroll-sequence='${paragraphId}'`;
+        let contentHtml = `<div id="${item.id}" class='text-item'${sequencesData}>`;
         contentHtml += createDiv(
           fontFace === constant.BALOO_PAAJI ? item.gurmukhiUni : item.gurmukhi,
           item.header,
@@ -188,6 +188,8 @@ export const loadHTML = (
       savePosition,
       defaultFontFaceURI
     );
+
+    console.log("htmlContent", htmlContent);
     return htmlContent;
   } catch (error) {
     logError(error);

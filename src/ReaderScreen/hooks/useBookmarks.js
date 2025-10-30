@@ -11,6 +11,7 @@ const useBookmarks = (webViewRef, shabad, bookmarkPosition) => {
       Number(bookmarkPosition) !== -1 &&
       shabad.length > 0
     ) {
+      console.log("bookmarkPosition", bookmarkPosition);
       webViewRef.current.postMessage(JSON.stringify({ bookmark: bookmarkPosition }));
       dispatch(setBookmarkPosition(-1));
     }
