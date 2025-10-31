@@ -7,7 +7,7 @@ const lightTheme = {
   mode: "light",
   colors: {
     primary: "#113979",
-    surface: "#faf9f6",
+    surface: "rgba(255, 255, 255, 1)",
     primaryText: "#121212",
     primaryVariant: "#DEBB0A",
     surfaceGrey: "#faf9f6",

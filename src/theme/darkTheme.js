@@ -7,7 +7,7 @@ const darkTheme = {
   mode: "dark",
   colors: {
     primary: "#113979",
-    surface: "#121212",
+    surface: "rgba(18, 18, 18, 1)",
     primaryText: "#faf9f6",
     primaryVariant: "#99852c",
     surfaceGrey: "#464646",
@@ -31,7 +31,7 @@ const darkTheme = {
     trackBorderColor: "#464646",
     trackBackgroundColor: "rgba(37, 105, 214, 0.2)",
     controlBarBackgroundColor: "#000000",
-    separator: "rgba(255, 255, 255, 0.2)",
+    separator: "rgba(190, 210, 242, 0.23)",
     transparentOverlay: "rgba(18, 18, 18, 0.95)",
     audioSettingsModalText: "#faf9f6",
   },

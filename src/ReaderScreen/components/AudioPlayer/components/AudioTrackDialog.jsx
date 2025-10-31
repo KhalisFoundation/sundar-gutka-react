@@ -73,15 +73,43 @@ const AudioTrackDialog = ({
     }
   };
 
-  if (isLoading) {
-    return (
-      <View style={styles.modalWrapper}>
-        <View style={styles.loadingContainer}>
-          <ActivityIndicator size="large" color={theme.colors.primary} />
-        </View>
+  const renderScrollViewContent = () => {
+    return tracks && tracks.length > 0 ? (
+      <ScrollViewComponent
+        tracks={tracks}
+        selectedTrack={selectedTrack}
+        playingTrack={playingTrack}
+        isPlaying={isPlaying}
+        handleSelectTrack={handleSelectTrack}
+      />
+    ) : (
+      <View style={styles.noTracksContainer}>
+        <CustomText style={styles.noTracksText}>Maafi ji 🙏🏽</CustomText>
+        <CustomText style={styles.noTracksSubtext}>
+          We do not have audios for{" "}
+          <CustomText
+            style={{
+              fontFamily: fontFace,
+            }}
+          >
+            {title}
+          </CustomText>{" "}
+          yet.
+        </CustomText>
+        <Pressable
+          style={styles.joinMailingListButton}
+          onPress={() =>
+            Linking.openURL("https://khalisfoundation.org").catch(() => {
+              // Fallback to main website if newsletter link fails
+              Linking.openURL("https://khalisfoundation.org");
+            })
+          }
+        >
+          <CustomText style={styles.joinMailingListText}>Request audio for this paath.</CustomText>
+        </Pressable>
       </View>
     );
-  }
+  };
 
   return (
     <View style={styles.modalWrapper}>
@@ -119,43 +147,12 @@ const AudioTrackDialog = ({
           </View>
         )}
 
-        {/* Track Selection List */}
-        {tracks && tracks.length > 0 ? (
-          <ScrollViewComponent
-            tracks={tracks}
-            selectedTrack={selectedTrack}
-            playingTrack={playingTrack}
-            isPlaying={isPlaying}
-            handleSelectTrack={handleSelectTrack}
-          />
-        ) : (
-          <View style={styles.noTracksContainer}>
-            <CustomText style={styles.noTracksText}>Maafi ji 🙏🏽</CustomText>
-            <CustomText style={styles.noTracksSubtext}>
-              We do not have audios for{" "}
-              <CustomText
-                style={{
-                  fontFamily: fontFace,
-                }}
-              >
-                {title}
-              </CustomText>{" "}
-              yet.
-            </CustomText>
-            <Pressable
-              style={styles.joinMailingListButton}
-              onPress={() =>
-                Linking.openURL("https://khalisfoundation.org").catch(() => {
-                  // Fallback to main website if newsletter link fails
-                  Linking.openURL("https://khalisfoundation.org");
-                })
-              }
-            >
-              <CustomText style={styles.joinMailingListText}>
-                Request audio for this paath.
-              </CustomText>
-            </Pressable>
+        {isLoading ? (
+          <View style={styles.loadingContainer}>
+            <ActivityIndicator size="large" color={theme.colors.primary} />
           </View>
+        ) : (
+          renderScrollViewContent()
         )}
 
         {/* Play Button */}
