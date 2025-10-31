@@ -12,7 +12,7 @@ import { useAudioManifest, useTrackPlayer, useAudioSyncScroll } from "./hooks";
 import createStyles from "./style";
 import { formatUrlForTrackPlayer } from "./utils/urlHelper";
 
-const AudioPlayer = ({ baniID, title, shouldNavigateBack, webViewRef }) => {
+const AudioPlayer = ({ baniID, title, webViewRef }) => {
   const dispatch = useDispatch();
   const styles = useThemedStyles(createStyles);
   const [showTrackModal, setShowTrackModal] = useState(true);
@@ -38,18 +38,22 @@ const AudioPlayer = ({ baniID, title, shouldNavigateBack, webViewRef }) => {
   // Audio sync scroll hook
   useAudioSyncScroll(progress, isPlaying, webViewRef, currentPlaying?.audioUrl);
 
-  useEffect(() => {
-    if (shouldNavigateBack) {
-      stop();
-    }
-  }, [shouldNavigateBack]);
-
   // Apply saved playback speed when initialized
   useEffect(() => {
     if (isInitialized && audioPlaybackSpeed && setRate) {
       setRate(audioPlaybackSpeed);
     }
   }, [isInitialized, audioPlaybackSpeed, setRate]);
+
+  // Cleanup: stop audio when component unmounts
+  useEffect(() => {
+    return () => {
+      (async () => {
+        dispatch(toggleAudio(false));
+        await stop();
+      })();
+    };
+  }, []);
 
   const handlePlayPause = async () => {
     if (!isInitialized || !isAudioEnabled || !currentPlaying) {
@@ -184,7 +188,6 @@ const AudioPlayer = ({ baniID, title, shouldNavigateBack, webViewRef }) => {
 AudioPlayer.propTypes = {
   baniID: PropTypes.string.isRequired,
   title: PropTypes.string.isRequired,
-  shouldNavigateBack: PropTypes.bool.isRequired,
   webViewRef: PropTypes.shape({
     current: PropTypes.shape({
       postMessage: PropTypes.func,
