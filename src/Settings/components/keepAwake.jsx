@@ -1,9 +1,8 @@
 import React from "react";
-import { ListItem, Switch, Avatar } from "@rneui/themed";
 import { useSelector, useDispatch } from "react-redux";
-import { STRINGS } from "@common";
+import { ListItem, Switch, Avatar } from "@rneui/themed";
 import { toggleScreenAwake } from "@common/actions";
-import useThemedStyles from "@common/hooks/useThemedStyles";
+import { STRINGS, useThemedStyles, ListItemTitle } from "@common";
 import createStyles from "../styles";
 
 const KeepAwake = () => {
@@ -18,7 +17,7 @@ const KeepAwake = () => {
     <ListItem bottomDivider containerStyle={styles.containerNightStyles}>
       <Avatar source={screenIcon} avatarStyle={styles.avatarStyle} />
       <ListItem.Content>
-        <ListItem.Title style={styles.listItemTitle}>{KEEP_AWAKE}</ListItem.Title>
+        <ListItemTitle title={KEEP_AWAKE} style={styles.listItemTitle} />
       </ListItem.Content>
       <Switch
         value={isScreenAwake}

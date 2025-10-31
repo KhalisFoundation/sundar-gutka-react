@@ -1,8 +1,9 @@
 import React from "react";
-import { Text, Pressable, View } from "react-native";
+import { Pressable, View } from "react-native";
 import PropTypes from "prop-types";
 import useTheme from "@common/context";
 import useThemedStyles from "@common/hooks/useThemedStyles";
+import { CustomText } from "@common";
 import { audioControlBarStyles } from "../style";
 
 const ActionComponents = ({ selector, toggle, Icon, text }) => {
@@ -34,7 +35,7 @@ const ActionComponents = ({ selector, toggle, Icon, text }) => {
         <View style={styles.actionButtonIconContainer}>
           <Icon size={20} color={color} />
         </View>
-        <Text
+        <CustomText
           style={[
             styles.actionButtonText,
             {
@@ -43,7 +44,7 @@ const ActionComponents = ({ selector, toggle, Icon, text }) => {
           ]}
         >
           {text}
-        </Text>
+        </CustomText>
       </View>
     </Pressable>
   );

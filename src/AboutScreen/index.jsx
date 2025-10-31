@@ -1,9 +1,7 @@
 import React from "react";
-import { Linking, Image, View, Text, TouchableHighlight } from "react-native";
+import { Linking, Image, View, TouchableHighlight } from "react-native";
 import { getVersion, getBuildNumber } from "react-native-device-info";
 import PropTypes from "prop-types";
-import useTheme from "@common/context";
-import useThemedStyles from "@common/hooks/useThemedStyles";
 import {
   STRINGS,
   constant,
@@ -11,6 +9,9 @@ import {
   logMessage,
   StatusBarComponent,
   SafeArea,
+  CustomText,
+  useTheme,
+  useThemedStyles,
 } from "@common";
 import useHeader from "./hooks/useHeader";
 import createStyles from "./styles";
@@ -42,28 +43,34 @@ const AboutScreen = ({ navigation }) => {
       <View style={styles.mainWrapper}>
         <StatusBarComponent backgroundColor={styles.headerStyle.backgroundColor} />
         <View style={styles.wrapper}>
-          <Text style={styles.titleText}>{SUNDAR_GUTKA}</Text>
-          <Text style={styles.createdByText}>{CREATED_BY}:</Text>
+          <CustomText style={styles.titleText}>{SUNDAR_GUTKA}</CustomText>
+          <CustomText style={styles.createdByText}>{CREATED_BY}:</CustomText>
           <TouchableHighlight onPress={() => Linking.openURL(KHALIS_FOUNDATION_URL)}>
             <Image source={theme.images.khalisLogo} />
           </TouchableHighlight>
-          <Text style={styles.welcomeText}>{ABOUT_WELCOME}</Text>
+          <CustomText style={styles.welcomeText}>{ABOUT_WELCOME}</CustomText>
 
           <View style={styles.margin}>
-            <Text style={styles.helpText}>{ABOUT_HELP}</Text>
-            <Text style={styles.linkText} onPress={() => Linking.openURL(KHALIS_FOUNDATION_URL)}>
+            <CustomText style={styles.helpText}>{ABOUT_HELP}</CustomText>
+            <CustomText
+              style={styles.linkText}
+              onPress={() => Linking.openURL(KHALIS_FOUNDATION_URL)}
+            >
               {KHALIS_FOUNDATION_URL}
-            </Text>
+            </CustomText>
           </View>
 
-          <Text style={styles.respectText}>{ABOUT_RESPECT}</Text>
-          <Text style={styles.sgText}>
+          <CustomText style={styles.respectText}>{ABOUT_RESPECT}</CustomText>
+          <CustomText style={styles.sgText}>
             {ABOUT_SG}{" "}
-            <Text style={styles.linkText} onPress={() => Linking.openURL(constant.BANI_DB_URL)}>
+            <CustomText
+              style={styles.linkText}
+              onPress={() => Linking.openURL(constant.BANI_DB_URL)}
+            >
               {BANI_DB}
-            </Text>
-            <Text> {ABOUT_OPEN_SOURCE}</Text>
-          </Text>
+            </CustomText>
+            <CustomText> {ABOUT_OPEN_SOURCE}</CustomText>
+          </CustomText>
 
           <TouchableHighlight
             style={styles.margin}
@@ -71,17 +78,17 @@ const AboutScreen = ({ navigation }) => {
           >
             <Image source={theme.images.baniDBLogo} style={styles.logo} />
           </TouchableHighlight>
-          <Text style={styles.pardonText}>{ABOUT_PARDON}</Text>
+          <CustomText style={styles.pardonText}>{ABOUT_PARDON}</CustomText>
 
           <View style={styles.singleLine}>
             <View style={styles.leftContainer}>
-              <Text style={styles.footerText}>
+              <CustomText style={styles.footerText}>
                 &copy; {new Date().getFullYear()} {KHALIS_FOUNDATION}
-              </Text>
+              </CustomText>
             </View>
-            <Text style={styles.footerText}>
+            <CustomText style={styles.footerText}>
               {APP_VERSION}: {getVersion()} ({getBuildNumber()})
-            </Text>
+            </CustomText>
           </View>
         </View>
       </View>

@@ -1,12 +1,12 @@
 import React, { useState, useEffect, useMemo } from "react";
-import { View, Text, Pressable, Animated, Platform, ActivityIndicator } from "react-native";
+import { View, Pressable, Animated, Platform, ActivityIndicator } from "react-native";
 import { Slider } from "@miblanchard/react-native-slider";
 import { BlurView } from "@react-native-community/blur";
 import PropTypes from "prop-types";
 import useTheme from "@common/context";
 import useThemedStyles from "@common/hooks/useThemedStyles";
 import { MusicNoteIcon, SettingsIcon, CloseIcon, PlayIcon, PauseIcon } from "@common/icons";
-import { STRINGS } from "@common";
+import { STRINGS, CustomText } from "@common";
 import { useAnimation, useDownloadManager, useAudioManifest } from "../hooks";
 import { audioControlBarStyles } from "../style";
 import checkLyricsFileAvailable from "../utils/checkLRC";
@@ -180,7 +180,7 @@ const AudioControlBar = ({
               ) : (
                 currentPlaying &&
                 currentPlaying.displayName && (
-                  <Text style={styles.trackName}>{currentPlaying.displayName}</Text>
+                  <CustomText style={styles.trackName}>{currentPlaying.displayName}</CustomText>
                 )
               )}
             </View>
@@ -197,9 +197,9 @@ const AudioControlBar = ({
 
             <View style={styles.progressContainer}>
               <View style={styles.progressBar}>
-                <Text style={[styles.timestamp, styles.timestampWithColor]}>
+                <CustomText style={[styles.timestamp, styles.timestampWithColor]}>
                   {formatTime(progress.position)}
-                </Text>
+                </CustomText>
                 <Slider
                   value={progress.position}
                   minimumValue={0}

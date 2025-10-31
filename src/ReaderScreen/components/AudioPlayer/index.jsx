@@ -1,11 +1,12 @@
 import React, { useState, useEffect } from "react";
-import { View, Text } from "react-native";
+import { View } from "react-native";
 import TrackPlayer from "react-native-track-player";
 import { useSelector, useDispatch } from "react-redux";
 import PropTypes from "prop-types";
 import { toggleAudio, logError } from "@common/actions";
 import useThemedStyles from "@common/hooks/useThemedStyles";
 import { showErrorToast } from "@common/toast";
+import { CustomText } from "@common";
 import { AudioTrackDialog, AudioControlBar } from "./components";
 import { useAudioManifest, useTrackPlayer, useAudioSyncScroll } from "./hooks";
 import createStyles from "./style";
@@ -154,7 +155,7 @@ const AudioPlayer = ({ baniID, title, webViewRef }) => {
   if (!isInitialized) {
     return (
       <View style={styles.container}>
-        <Text style={styles.trackTitle}>Initializing audio player...</Text>
+        <CustomText style={styles.trackTitle}>Initializing audio player...</CustomText>
       </View>
     );
   }

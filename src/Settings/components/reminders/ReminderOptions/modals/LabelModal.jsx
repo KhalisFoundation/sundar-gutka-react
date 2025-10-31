@@ -1,11 +1,9 @@
 import React, { useState } from "react";
-import { Modal, Text, TextInput, View, TouchableOpacity } from "react-native";
+import { Modal, TextInput, View, TouchableOpacity } from "react-native";
 import { useDispatch, useSelector } from "react-redux";
 import PropTypes from "prop-types";
 import { setReminderBanis } from "@common/actions";
-import { updateReminders, STRINGS } from "@common";
-import useTheme from "@common/context";
-import useThemedStyles from "@common/hooks/useThemedStyles";
+import { updateReminders, STRINGS, CustomText, useThemedStyles, useTheme } from "@common";
 import createStyles from "../styles";
 
 const LabelModal = ({ section, onHide }) => {
@@ -31,7 +29,7 @@ const LabelModal = ({ section, onHide }) => {
     <Modal visible transparent onRequestClose={onHide}>
       <View style={styles.labelModalWrapper}>
         <View style={styles.labelViewWrapper}>
-          <Text style={styles.labelText}>{STRINGS.notification_text}</Text>
+          <CustomText style={styles.labelText}>{STRINGS.notification_text}</CustomText>
           <TextInput
             style={styles.textInput}
             value={reminderTitle}
@@ -46,7 +44,7 @@ const LabelModal = ({ section, onHide }) => {
               }}
               style={{ marginRight: 30 }}
             >
-              <Text> {STRINGS.cancel}</Text>
+              <CustomText> {STRINGS.cancel}</CustomText>
             </TouchableOpacity>
             <TouchableOpacity
               onPress={() => {
@@ -54,7 +52,7 @@ const LabelModal = ({ section, onHide }) => {
                 onHide();
               }}
             >
-              <Text> {STRINGS.ok}</Text>
+              <CustomText> {STRINGS.ok}</CustomText>
             </TouchableOpacity>
           </View>
         </View>

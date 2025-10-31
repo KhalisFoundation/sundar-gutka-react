@@ -1,7 +1,6 @@
 import React, { useState } from "react";
-import { ListItem, Avatar, Switch } from "@rneui/themed";
 import { useSelector, useDispatch } from "react-redux";
-import { STRINGS } from "@common";
+import { ListItem, Avatar, Switch } from "@rneui/themed";
 import {
   toggleEnglishTranslation,
   togglePunjabiTranslation,
@@ -9,6 +8,7 @@ import {
 } from "@common/actions";
 import useTheme from "@common/context";
 import useThemedStyles from "@common/hooks/useThemedStyles";
+import { STRINGS, ListItemTitle } from "@common";
 import createStyles from "../styles";
 
 const TranslationComponent = () => {
@@ -31,9 +31,10 @@ const TranslationComponent = () => {
         <>
           <Avatar source={translationAvatar} avatarStyle={styles.avatarStyle} />
           <ListItem.Content>
-            <ListItem.Title style={[{ paddingLeft: 16 }, styles.listItemTitle]}>
-              {STRINGS.translations}
-            </ListItem.Title>
+            <ListItemTitle
+              title={STRINGS.translations}
+              style={[{ paddingLeft: 16 }, styles.listItemTitle]}
+            />
           </ListItem.Content>
         </>
       }
@@ -47,7 +48,7 @@ const TranslationComponent = () => {
       <ListItem bottomDivider containerStyle={styles.containerNightStyles}>
         <Avatar />
         <ListItem.Content>
-          <ListItem.Title style={styles.listItemTitle}>{STRINGS.en_translations}</ListItem.Title>
+          <ListItemTitle title={STRINGS.en_translations} style={styles.listItemTitle} />
         </ListItem.Content>
         <Switch
           value={isEnglishTranslation}
@@ -58,7 +59,7 @@ const TranslationComponent = () => {
       <ListItem bottomDivider containerStyle={styles.containerNightStyles}>
         <Avatar />
         <ListItem.Content>
-          <ListItem.Title style={styles.listItemTitle}>{STRINGS.pu_translations}</ListItem.Title>
+          <ListItemTitle title={STRINGS.pu_translations} style={styles.listItemTitle} />
         </ListItem.Content>
         <Switch
           value={isPunjabiTranslation}
@@ -69,7 +70,7 @@ const TranslationComponent = () => {
       <ListItem bottomDivider containerStyle={styles.containerNightStyles}>
         <Avatar />
         <ListItem.Content>
-          <ListItem.Title style={styles.listItemTitle}>{STRINGS.es_translations}</ListItem.Title>
+          <ListItemTitle title={STRINGS.es_translations} style={styles.listItemTitle} />
         </ListItem.Content>
         <Switch
           value={isSpanishTranslation}

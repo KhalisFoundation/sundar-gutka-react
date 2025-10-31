@@ -1,5 +1,5 @@
 import React, { useEffect } from "react";
-import { StatusBar, ScrollView, Text } from "react-native";
+import { StatusBar, ScrollView } from "react-native";
 import { useSelector } from "react-redux";
 import PropTypes from "prop-types";
 import useTheme from "@common/context";
@@ -11,6 +11,7 @@ import {
   logMessage,
   StatusBarComponent,
   SafeArea,
+  CustomText,
 } from "@common";
 import Audio from "./components/audio";
 import AutoScroll from "./components/autoScroll";
@@ -50,6 +51,7 @@ const Settings = ({ navigation }) => {
   useEffect(() => {
     navigation.setOptions({
       title: STRINGS.settings,
+      headerTitleStyle: styles.headerTitleStyle,
     });
   }, [language]);
 
@@ -59,7 +61,7 @@ const Settings = ({ navigation }) => {
 
       {isDatabaseUpdateAvailable && <DatabaseUpdateBanner navigate={navigate} />}
       <ScrollView>
-        <Text style={displayOptionsText}>{DISPLAY_OPTIONS}</Text>
+        <CustomText style={displayOptionsText}>{DISPLAY_OPTIONS}</CustomText>
         <FontSizeComponent />
         <FontFaceComponent />
         <LanguageComponent language={language} />
@@ -72,7 +74,7 @@ const Settings = ({ navigation }) => {
         <KeepAwake />
         <Audio />
         {/* Bani Options */}
-        <Text style={displayOptionsText}>{BANI_OPTIONS}</Text>
+        <CustomText style={displayOptionsText}>{BANI_OPTIONS}</CustomText>
         <EditBaniOrder navigate={navigate} />
         <BaniLengthComponent />
         <LarivaarComponent />
@@ -80,7 +82,7 @@ const Settings = ({ navigation }) => {
         <PadchedSettingsComponent />
         <VishraamComponent />
         <RemindersComponent navigation={navigation} />
-        <Text style={displayOptionsText}>{OTHER_OPTIONS}</Text>
+        <CustomText style={displayOptionsText}>{OTHER_OPTIONS}</CustomText>
         <CollectStatistics />
         <Donate />
         <ListItemWithIcon
@@ -95,7 +97,7 @@ const Settings = ({ navigation }) => {
           navigate={navigate}
           navigationTarget="DatabaseUpdate"
         />
-        <Text style={end} />
+        <CustomText style={end} />
       </ScrollView>
     </SafeArea>
   );

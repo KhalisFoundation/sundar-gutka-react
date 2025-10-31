@@ -1,9 +1,10 @@
 import React from "react";
-import { ScrollView, Pressable, Text } from "react-native";
+import { ScrollView, Pressable } from "react-native";
 import PropTypes from "prop-types";
 import useTheme from "@common/context";
 import useThemedStyles from "@common/hooks/useThemedStyles";
 import { PlayIcon, StopIcon } from "@common/icons";
+import { CustomText } from "@common";
 import { audioTrackDialogStyles } from "../style";
 
 const ScrollViewComponent = ({
@@ -40,7 +41,7 @@ const ScrollViewComponent = ({
           onPress={() => handleSelectTrack(track)}
           activeOpacity={0.7}
         >
-          <Text
+          <CustomText
             style={[
               styles.trackName,
               {
@@ -50,7 +51,7 @@ const ScrollViewComponent = ({
             ]}
           >
             {track.displayName}
-          </Text>
+          </CustomText>
 
           {playingTrack && playingTrack.id === track.id && isPlaying ? (
             <StopIcon
