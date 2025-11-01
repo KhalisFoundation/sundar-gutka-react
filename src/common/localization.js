@@ -156,6 +156,7 @@ const STRINGS = new LocalizedStrings({
     DOWNLOAD: "Download",
     DOWNLOADING: "Downloading",
     NEXT: "Next",
+    PERMISSION_ERROR: "Broadcast permission check failed — missing or denied permission",
   },
   hi: {
     about: "हमारे बारे",
@@ -310,6 +311,7 @@ const STRINGS = new LocalizedStrings({
     DOWNLOAD: "डाउनलोड",
     DOWNLOADING: "डाउनलोड हो रहा है",
     NEXT: "अगला",
+    PERMISSION_ERROR: "प्रसारण अनुमति जाँच विफल - अनुमति अनुपलब्ध या अस्वीकृत",
   },
 
   pa: {
@@ -464,6 +466,7 @@ const STRINGS = new LocalizedStrings({
     DOWNLOAD: "ਡਾਊਨਲੋਡ",
     DOWNLOADING: "ਡਾਊਨਲੋਡ ਹੋ ਰਹਿ ਰਹਾ ਹੈ",
     NEXT: "ਅਗਲਾ",
+    PERMISSION_ERROR: "ਪ੍ਰਸਾਰਣ ਇਜਾਜ਼ਤ ਜਾਂਚ ਅਸਫਲ ਰਹੀ — ਇਜਾਜ਼ਤ ਗੁੰਮ ਹੈ ਜਾਂ ਅਸਵੀਕਾਰ ਕੀਤੀ ਗਈ ਹੈ",
   },
   fr: {
     about: "Infos",
@@ -624,6 +627,8 @@ const STRINGS = new LocalizedStrings({
     DOWNLOAD: "Télécharger",
     DOWNLOADING: "Téléchargement en cours",
     NEXT: "Suivant",
+    PERMISSION_ERROR:
+      "Échec de la vérification de l'autorisation de diffusion : autorisation manquante ou refusée",
   },
   it: {
     about: "Info",
@@ -775,6 +780,8 @@ const STRINGS = new LocalizedStrings({
     MORE_TRACKS: "Audios",
     AUDIO_SETTINGS: "Opzioni",
     NEXT: "Prossimo",
+    PERMISSION_ERROR:
+      "Controllo dell'autorizzazione di trasmissione non riuscito: autorizzazione mancante o negata",
   },
   es: {
     about: "Sobre Nosotros",
@@ -933,6 +940,8 @@ const STRINGS = new LocalizedStrings({
     DOWNLOAD: "Descargar",
     DOWNLOADING: "Descargando",
     NEXT: "Siguiente",
+    PERMISSION_ERROR:
+      "Falló la comprobación de permisos de transmisión: permiso faltante o denegado.",
   },
 });
 

@@ -9,6 +9,7 @@ import moment from "moment";
 import { FallBack } from "./components";
 import constant from "./constant";
 import { logError, logMessage } from "./firebase/crashlytics";
+import STRINGS from "./localization";
 import { showErrorToast } from "./toast";
 
 // Utility function to check if BROADCAST_CLOSE_SYSTEM_DIALOGS permission is available
@@ -30,9 +31,9 @@ const checkBroadcastPermission = async () => {
       return broadcastPermissionCheck;
     } catch (error) {
       // Permission not available on this device/API level
-      showErrorToast("checkBroadcastPermission: Permission check failed");
+      showErrorToast(STRINGS.PERMISSION_ERROR);
       logError(error);
-      logMessage("checkBroadcastPermission: Permission check failed");
+      logMessage(STRINGS.PERMISSION_ERROR);
       return false;
     }
   }
