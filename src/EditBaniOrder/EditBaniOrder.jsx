@@ -1,5 +1,5 @@
 import React, { useState, useCallback, useEffect } from "react";
-import { Pressable, Text, View } from "react-native";
+import { Pressable, View } from "react-native";
 import DraggableFlatList, {
   ShadowDecorator,
   ScaleDecorator,
@@ -16,6 +16,7 @@ import {
   logMessage,
   SafeArea,
   StatusBarComponent,
+  CustomText,
 } from "@common";
 import Header from "./components/Header";
 import { activeColor, createStyles } from "./styles";
@@ -49,7 +50,7 @@ const EditBaniOrder = ({ navigation }) => {
           <ScaleDecorator>
             <Pressable activeOpacity={1} onLongPress={drag} disabled={isActive} style={activeStyle}>
               <View key={item.id} style={rowItem}>
-                <Text style={text}>{item.gurmukhi}</Text>
+                <CustomText style={text}>{item.gurmukhi}</CustomText>
               </View>
             </Pressable>
           </ScaleDecorator>

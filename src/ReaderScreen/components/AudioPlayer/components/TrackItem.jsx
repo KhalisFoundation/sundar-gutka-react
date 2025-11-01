@@ -1,9 +1,10 @@
 import React from "react";
-import { Pressable, Text } from "react-native";
+import { Pressable } from "react-native";
 import PropTypes from "prop-types";
 import useTheme from "@common/context";
 import useThemedStyles from "@common/hooks/useThemedStyles";
 import { PlayIcon } from "@common/icons";
+import { CustomText } from "@common";
 import { audioTrackDialogStyles } from "../style";
 
 const TrackItem = ({ track, selectedTrack, handleSelectTrack }) => {
@@ -22,7 +23,7 @@ const TrackItem = ({ track, selectedTrack, handleSelectTrack }) => {
       onPress={() => handleSelectTrack(track)}
       activeOpacity={0.7}
     >
-      <Text
+      <CustomText
         style={[
           styles.trackName,
           {
@@ -32,7 +33,7 @@ const TrackItem = ({ track, selectedTrack, handleSelectTrack }) => {
         ]}
       >
         {track.displayName}
-      </Text>
+      </CustomText>
 
       <PlayIcon
         size={30}

@@ -1,6 +1,9 @@
 import React, { useEffect, useRef, useState } from "react";
-import { Text, Animated, View } from "react-native";
+import { Animated, View } from "react-native";
 import { downloadFile, exists, unlink, moveFile } from "react-native-fs";
+import { useDispatch } from "react-redux";
+import useTheme from "@common/context";
+import useThemedStyles from "@common/hooks/useThemedStyles";
 import {
   logMessage,
   logError,
@@ -11,14 +14,12 @@ import {
   REMOTE_DB_URL,
   getCurrentDBMD5Hash,
   STRINGS,
+  CustomText,
 } from "@common";
-import { useDispatch } from "react-redux";
-import useTheme from "@common/context";
-import useThemedStyles from "@common/hooks/useThemedStyles";
+import { revertMD5Hash } from "../../common/rnfs";
 import initDB, { closeDatabase } from "../../database/connect";
 import createStyles from "../styles";
 import DownloadAnimation from "./DownloadAnimation";
-import { revertMD5Hash } from "../../common/rnfs";
 import DownloadControls from "./DownloadControls";
 
 const DownloadComponent = () => {
@@ -100,9 +101,9 @@ const DownloadComponent = () => {
   return (
     <View style={styles.container}>
       {downloadSuccess !== null && (
-        <Text style={styles.label}>
+        <CustomText style={styles.label}>
           {downloadSuccess ? STRINGS.downloadSuccessful : STRINGS.downloadFailed}
-        </Text>
+        </CustomText>
       )}
       {!downloadSuccess && (
         <>

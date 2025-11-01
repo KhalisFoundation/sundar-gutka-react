@@ -3,6 +3,7 @@ import { ListItem, Avatar, Icon } from "@rneui/themed";
 import PropTypes from "prop-types";
 import useTheme from "@common/context";
 import useThemedStyles from "@common/hooks/useThemedStyles";
+import { ListItemTitle } from "@common";
 import createStyles from "../../styles";
 
 const ListItemComponent = ({ icon, title, value, isAvatar, actionConstant, onPressAction }) => {
@@ -13,12 +14,13 @@ const ListItemComponent = ({ icon, title, value, isAvatar, actionConstant, onPre
       {isAvatar && <Avatar source={Number(icon)} avatarStyle={styles.avatarStyle} />}
       {!isAvatar && <Icon name={icon} color={theme.colors.primaryText} size={30} />}
       <ListItem.Content>
-        <ListItem.Title style={styles.listItemTitle}>{title}</ListItem.Title>
+        <ListItemTitle title={title} style={styles.listItemTitle} />
       </ListItem.Content>
       {value && (
-        <ListItem.Title style={[styles.titleInfoStyle]}>
-          {actionConstant.filter((item) => item.key === value).map((item) => item.title)[0]}
-        </ListItem.Title>
+        <ListItemTitle
+          title={actionConstant.filter((item) => item.key === value).map((item) => item.title)[0]}
+          style={[styles.titleInfoStyle]}
+        />
       )}
       <ListItem.Chevron />
     </ListItem>

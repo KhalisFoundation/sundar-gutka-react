@@ -4,6 +4,7 @@ const createStyles = (theme) => ({
     backgroundColor: theme.colors.primary,
     height: 80,
     justifyContent: "center",
+    paddingBottom: 10,
   },
   navigationBar: {
     flexDirection: "row",
@@ -14,6 +15,7 @@ const createStyles = (theme) => ({
   },
   iconContainer: {
     flexBasis: 50,
+    height: 50,
     alignItems: "center",
     justifyContent: "center",
   },

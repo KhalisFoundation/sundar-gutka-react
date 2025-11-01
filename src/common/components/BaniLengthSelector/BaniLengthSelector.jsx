@@ -1,13 +1,11 @@
 import React from "react";
-import { View, Text, Pressable, Alert } from "react-native";
+import { View, Pressable, Alert } from "react-native";
 import { SafeAreaProvider, SafeAreaView } from "react-native-safe-area-context";
-import { Icon } from "@rneui/themed";
 import { useDispatch } from "react-redux";
-import useTheme from "@common/context";
-import useThemedStyles from "@common/hooks/useThemedStyles";
-import STRINGS from "../../localization";
-import createStyles from "./style";
+import { Icon } from "@rneui/themed";
+import { CustomText, STRINGS, useThemedStyles, useTheme } from "@common";
 import { setBaniLength } from "../../actions";
+import createStyles from "./style";
 
 const BaniLengthSelector = () => {
   const styles = useThemedStyles(createStyles);
@@ -28,19 +26,19 @@ const BaniLengthSelector = () => {
     <SafeAreaProvider>
       <SafeAreaView style={styles.wrapper}>
         <View style={styles.viewWrapper}>
-          <Text style={styles.heading}>{STRINGS.khalsa_sundar_gutka}</Text>
-          <Text style={styles.baniLengthMessage}>{STRINGS.bani_length_message_1}</Text>
-          <Text style={styles.baniLengthMessage}>{STRINGS.bani_length_message_2}</Text>
-          <Text style={styles.textPreferrence}>{STRINGS.choose_your_preference}</Text>
+          <CustomText style={styles.heading}>{STRINGS.khalsa_sundar_gutka}</CustomText>
+          <CustomText style={styles.baniLengthMessage}>{STRINGS.bani_length_message_1}</CustomText>
+          <CustomText style={styles.baniLengthMessage}>{STRINGS.bani_length_message_2}</CustomText>
+          <CustomText style={styles.textPreferrence}>{STRINGS.choose_your_preference}</CustomText>
           {baniLengths.map((buttonText) => (
             <Pressable key={buttonText} onPress={() => handleOnpress(buttonText)}>
-              <Text style={styles.button}>{buttonText}</Text>
+              <CustomText style={styles.button}>{buttonText}</CustomText>
             </Pressable>
           ))}
           <Pressable style={styles.helpWrapper} onPress={baniLengthInfo}>
             <Icon color={theme.colors.primaryVariant} name="info" size={30} />
-            <Text style={styles.helpText}>{STRINGS.need_help_deciding}</Text>
-            <Text style={styles.moreInfo}>{STRINGS.click_more_info}</Text>
+            <CustomText style={styles.helpText}>{STRINGS.need_help_deciding}</CustomText>
+            <CustomText style={styles.moreInfo}>{STRINGS.click_more_info}</CustomText>
           </Pressable>
         </View>
       </SafeAreaView>

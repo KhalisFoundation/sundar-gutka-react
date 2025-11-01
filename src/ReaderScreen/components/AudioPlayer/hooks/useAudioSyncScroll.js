@@ -36,11 +36,13 @@ const useAudioSyncScroll = (progress, isPlaying, webViewRef, audioUrl) => {
     }
 
     const jsonUrl = audioUrl.replace(".mp3", ".json");
-    fetchLRCData(jsonUrl).then((data) => {
-      if (isMounted) {
-        setBaniLRC(data);
-      }
-    });
+    if (isAudioSyncScroll) {
+      fetchLRCData(jsonUrl).then((data) => {
+        if (isMounted) {
+          setBaniLRC(data);
+        }
+      });
+    }
 
     return () => {
       isMounted = false;

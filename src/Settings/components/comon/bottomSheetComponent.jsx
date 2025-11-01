@@ -1,14 +1,14 @@
 import React, { useEffect, useState } from "react";
-import { View, Modal, Text, Dimensions, Pressable, Platform, StyleSheet } from "react-native";
-import { Divider, Icon, ListItem } from "@rneui/themed";
-import { BlurView } from "@react-native-community/blur";
-import { useDispatch } from "react-redux";
-import { constant } from "@common";
-import PropTypes from "prop-types";
+import { View, Modal, Dimensions, Pressable, Platform, StyleSheet } from "react-native";
 import { SafeAreaProvider, SafeAreaView } from "react-native-safe-area-context";
 import SoundPlayer from "react-native-sound-player";
+import { useDispatch } from "react-redux";
+import { BlurView } from "@react-native-community/blur";
+import { Divider, Icon, ListItem } from "@rneui/themed";
+import PropTypes from "prop-types";
 import useTheme from "@common/context";
 import useThemedStyles from "@common/hooks/useThemedStyles";
+import { constant, CustomText, ListItemTitle } from "@common";
 import createStyles from "../../styles";
 
 const BottomSheetComponent = ({
@@ -65,11 +65,11 @@ const BottomSheetComponent = ({
               enabled
             />
             <View style={bottomStyle}>
-              <Text
+              <CustomText
                 style={[styles.bottomSheetTitle, styles.listItemTitle, styles.containerNightStyles]}
               >
                 {title}
-              </Text>
+              </CustomText>
               <Divider />
               {actionConstant.map((item) => (
                 <ListItem
@@ -86,7 +86,7 @@ const BottomSheetComponent = ({
                   }}
                 >
                   <ListItem.Content>
-                    <ListItem.Title style={styles.listItemTitle}>{item.title}</ListItem.Title>
+                    <ListItemTitle title={item.title} style={styles.listItemTitle} />
                   </ListItem.Content>
                   {value === item.key && <Icon color={theme.colors.primaryText} name="check" />}
                 </ListItem>

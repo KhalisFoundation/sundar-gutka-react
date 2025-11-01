@@ -1,18 +1,17 @@
 import React from "react";
-import { Text, Pressable, View, ActivityIndicator } from "react-native";
-import { STRINGS } from "@common";
+import { Pressable, View, ActivityIndicator } from "react-native";
 import PropTypes from "prop-types";
-import useThemedStyles from "@common/hooks/useThemedStyles";
 import useTheme from "@common/context";
+import useThemedStyles from "@common/hooks/useThemedStyles";
+import { STRINGS, CustomText } from "@common";
 import createStyles from "../styles";
-// Helper Components
 
 const DownloadControls = ({ downloading, onStartDownload, darkModeText }) => {
   const { theme } = useTheme();
   const styles = useThemedStyles(createStyles);
   return (
     <View style={styles.row}>
-      <Text style={[styles.label, darkModeText]}>{STRINGS.newVersionAvailable}</Text>
+      <CustomText style={[styles.label, darkModeText]}>{STRINGS.newVersionAvailable}</CustomText>
       <Pressable
         style={[styles.button, downloading && styles.buttonDisabled]}
         onPress={onStartDownload}
@@ -21,7 +20,7 @@ const DownloadControls = ({ downloading, onStartDownload, darkModeText }) => {
         {downloading ? (
           <ActivityIndicator color={theme.staticColors.WHITE_COLOR} />
         ) : (
-          <Text style={[styles.buttonText, darkModeText]}>{STRINGS.startDownload}</Text>
+          <CustomText style={[styles.buttonText, darkModeText]}>{STRINGS.startDownload}</CustomText>
         )}
       </Pressable>
     </View>

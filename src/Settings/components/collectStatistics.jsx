@@ -1,8 +1,7 @@
 import React from "react";
-import { ListItem, Avatar, Switch } from "@rneui/themed";
 import { useDispatch, useSelector } from "react-redux";
-import { STRINGS, actions } from "@common";
-import useThemedStyles from "@common/hooks/useThemedStyles";
+import { ListItem, Avatar, Switch } from "@rneui/themed";
+import { STRINGS, actions, useThemedStyles, ListItemTitle } from "@common";
 import createStyles from "../styles";
 
 const CollectStatistics = () => {
@@ -15,7 +14,7 @@ const CollectStatistics = () => {
     <ListItem bottomDivider containerStyle={styles.containerNightStyles}>
       <Avatar source={analyticsIcon} avatarStyle={styles.avatarStyle} />
       <ListItem.Content>
-        <ListItem.Title style={styles.listItemTitle}>{COLLECT_STATISTICS}</ListItem.Title>
+        <ListItemTitle title={COLLECT_STATISTICS} style={styles.listItemTitle} />
       </ListItem.Content>
       <Switch
         value={isStatistics}

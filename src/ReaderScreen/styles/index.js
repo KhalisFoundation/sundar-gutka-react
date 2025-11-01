@@ -5,18 +5,18 @@ const createStyles = (theme) => ({
     margin: theme.spacing.sm,
   },
   translit: {
-    fontFamily: theme.typography.fonts.arial,
+    fontFamily: theme.typography.fonts.balooPaaji,
     padding: theme.spacing.xs,
     fontSize: theme.typography.sizes.md,
   },
   englishTranslations: {
     padding: theme.spacing.xs,
-    fontFamily: theme.typography.fonts.arial,
+    fontFamily: theme.typography.fonts.balooPaaji,
     fontSize: theme.typography.sizes.md,
   },
   spanishTranslations: {
     padding: theme.spacing.xs,
-    fontFamily: theme.typography.fonts.arial,
+    fontFamily: theme.typography.fonts.balooPaaji,
     fontSize: theme.typography.sizes.md,
   },
   punjabiTranslations: {

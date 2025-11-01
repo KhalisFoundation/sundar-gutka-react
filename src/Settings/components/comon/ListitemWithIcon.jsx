@@ -1,8 +1,9 @@
 import React from "react";
-import PropTypes from "prop-types";
 import { ListItem, Icon } from "@rneui/themed";
+import PropTypes from "prop-types";
 import useTheme from "@common/context";
 import useThemedStyles from "@common/hooks/useThemedStyles";
+import { ListItemTitle } from "@common";
 import createStyles from "../../styles";
 
 const ListItemWithIcon = ({ iconName, title, navigate, navigationTarget }) => {
@@ -16,7 +17,7 @@ const ListItemWithIcon = ({ iconName, title, navigate, navigationTarget }) => {
     >
       <Icon name={iconName} size={30} color={theme.colors.primaryText} />
       <ListItem.Content>
-        <ListItem.Title style={styles.listItemTitle}>{title}</ListItem.Title>
+        <ListItemTitle title={title} style={styles.listItemTitle} />
       </ListItem.Content>
       <ListItem.Chevron />
     </ListItem>

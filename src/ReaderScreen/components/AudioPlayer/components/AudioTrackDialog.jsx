@@ -1,5 +1,5 @@
 import React, { useState } from "react";
-import { View, Text, Pressable, Platform, Linking, ActivityIndicator } from "react-native";
+import { View, Pressable, Platform, Linking, ActivityIndicator } from "react-native";
 import { useSelector, useDispatch } from "react-redux";
 import { BlurView } from "@react-native-community/blur";
 import PropTypes from "prop-types";
@@ -7,7 +7,7 @@ import { setDefaultAudio } from "@common/actions";
 import useTheme from "@common/context";
 import useThemedStyles from "@common/hooks/useThemedStyles";
 import { ArrowRightIcon, CloseIcon } from "@common/icons";
-import { STRINGS } from "@common";
+import { STRINGS, CustomText } from "@common";
 import { useTrackPlayer } from "../hooks";
 import { audioTrackDialogStyles } from "../style";
 import ScrollViewComponent from "./ScrollViewComponent";
@@ -73,15 +73,43 @@ const AudioTrackDialog = ({
     }
   };
 
-  if (isLoading) {
-    return (
-      <View style={styles.modalWrapper}>
-        <View style={styles.loadingContainer}>
-          <ActivityIndicator size="large" color={theme.colors.primary} />
-        </View>
+  const renderScrollViewContent = () => {
+    return tracks && tracks.length > 0 ? (
+      <ScrollViewComponent
+        tracks={tracks}
+        selectedTrack={selectedTrack}
+        playingTrack={playingTrack}
+        isPlaying={isPlaying}
+        handleSelectTrack={handleSelectTrack}
+      />
+    ) : (
+      <View style={styles.noTracksContainer}>
+        <CustomText style={styles.noTracksText}>Maafi ji 🙏🏽</CustomText>
+        <CustomText style={styles.noTracksSubtext}>
+          We do not have audios for{" "}
+          <CustomText
+            style={{
+              fontFamily: fontFace,
+            }}
+          >
+            {title}
+          </CustomText>{" "}
+          yet.
+        </CustomText>
+        <Pressable
+          style={styles.joinMailingListButton}
+          onPress={() =>
+            Linking.openURL("https://khalisfoundation.org").catch(() => {
+              // Fallback to main website if newsletter link fails
+              Linking.openURL("https://khalisfoundation.org");
+            })
+          }
+        >
+          <CustomText style={styles.joinMailingListText}>Request audio for this paath.</CustomText>
+        </Pressable>
       </View>
     );
-  }
+  };
 
   return (
     <View style={styles.modalWrapper}>
@@ -111,48 +139,20 @@ const AudioTrackDialog = ({
         {/* Header */}
         {isHeader && tracks && tracks.length > 0 && (
           <View style={styles.header}>
-            <Text style={styles.welcomeText}>{STRINGS.welcome_to_sundar_gutka}</Text>
-            <Text style={styles.subtitleText}>
-              {STRINGS.please_choose_a_track} <Text style={{ fontFamily: fontFace }}>{title}</Text>
-            </Text>
+            <CustomText style={styles.welcomeText}>{STRINGS.welcome_to_sundar_gutka}</CustomText>
+            <CustomText style={styles.subtitleText}>
+              {STRINGS.please_choose_a_track}{" "}
+              <CustomText style={{ fontFamily: fontFace }}>{title}</CustomText>
+            </CustomText>
           </View>
         )}
 
-        {/* Track Selection List */}
-        {tracks && tracks.length > 0 ? (
-          <ScrollViewComponent
-            tracks={tracks}
-            selectedTrack={selectedTrack}
-            playingTrack={playingTrack}
-            isPlaying={isPlaying}
-            handleSelectTrack={handleSelectTrack}
-          />
-        ) : (
-          <View style={styles.noTracksContainer}>
-            <Text style={styles.noTracksText}>Maafi ji 🙏🏽</Text>
-            <Text style={styles.noTracksSubtext}>
-              We do not have audios for{" "}
-              <Text
-                style={{
-                  fontFamily: fontFace,
-                }}
-              >
-                {title}
-              </Text>{" "}
-              yet.
-            </Text>
-            <Pressable
-              style={styles.joinMailingListButton}
-              onPress={() =>
-                Linking.openURL("https://khalisfoundation.org").catch(() => {
-                  // Fallback to main website if newsletter link fails
-                  Linking.openURL("https://khalisfoundation.org");
-                })
-              }
-            >
-              <Text style={styles.joinMailingListText}>Request audio for this paath.</Text>
-            </Pressable>
+        {isLoading ? (
+          <View style={styles.loadingContainer}>
+            <ActivityIndicator size="large" color={theme.colors.primary} />
           </View>
+        ) : (
+          renderScrollViewContent()
         )}
 
         {/* Play Button */}
@@ -163,7 +163,7 @@ const AudioTrackDialog = ({
             disabled={!selectedTrack}
             activeOpacity={0.8}
           >
-            <Text style={styles.playButtonText}>{STRINGS.NEXT}</Text>
+            <CustomText style={styles.playButtonText}>{STRINGS.NEXT}</CustomText>
             <ArrowRightIcon size={24} color={theme.staticColors.WHITE_COLOR} />
           </Pressable>
         )}

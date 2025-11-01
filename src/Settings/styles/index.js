@@ -1,4 +1,7 @@
 const createStyles = (theme) => ({
+  headerTitleStyle: {
+    fontFamily: theme.typography.fonts.balooPaajiSemiBold,
+  },
   nightBackColor: { backgroundColor: theme.staticColors.NIGHT_BLACK },
   iconStyle: { alignSelf: "flex-start" },
   imageStyle: {},
@@ -13,7 +16,7 @@ const createStyles = (theme) => ({
     color: theme.colors.primaryText,
     position: "absolute",
     top: theme.spacing.xl,
-    fontWeight: theme.typography.weights.medium,
+    fontFamily: theme.typography.fonts.balooPaaji,
   },
   settingsView: { backgroundColor: theme.colors.primaryVariant },
   displayOptionsText: {
