@@ -483,13 +483,14 @@ const STRINGS = new LocalizedStrings({
     NEXT: "ਅਗਲਾ",
     PLAYBACK_SPEED: "ਪਲੇਬੈਕ ਸਪੀਡ",
     UNABLE_TO_PLAY: "ਆਡੀਓ ਚਲਾਉਣ ਲਈ ਅਸਮਰਥ",
-    PLEASE_TRY_AGAIN: "ਕੀਪਾ ਪੁਨਰਪਾਤ ਕਰੋ।",
-    UNABLE_TO_SEEK: "ਆਡੀਓ ਖੋਜਣ ਲਈ ਅਸਮਰਥ",
+    PLEASE_TRY_AGAIN: "ਕਿਰਪਾ ਕਰਕੇ ਦੁਬਾਰਾ ਕੋਸ਼ਿਸ਼ ਕਰੋ।",
+    UNABLE_TO_SEEK: "ਆਡੀਓ ਦੀ ਸਥਿਤੀ ਬਦਲਣ ਲਈ ਅਸਮਰਥ",
     UNABLE_TO_SWITCH_TRACK: "ਆਡੀਓ ਟਰੈਕ ਬਦਲਣ ਲਈ ਅਸਮਰਥ",
     AUDIO_SYNC_UNAVAILABLE: "ਆਡੀਓ ਸਿੰਕ ਅਸਵੀਕਰਿਤ ਹੈ। ਆਡੀਓ ਑ਟੋ ਸਕਰੋਲ ਦੇ ਬਿਨਾਂ ਚਲਾਈ ਜਾਵੇਗੀ।",
     NETWORK_ERROR:
       "ਨੈੱਟਵਰਕ ਤਰੁੱਟੀ। ਆਡੀਓ ਸੰਸਕਰਨਾਂ ਨੂੰ ਅਸਥਾਈ ਰੂਪ ਸਕਰੋਲ ਦੇ ਬਿਨਾਂ ਅਸਵੀਕਰਿਤ ਕਰ ਦਿੱਤਾ ਜਾਵੇਗਾ।",
-    COULD_NOT_LOAD_AUDIO_ARTISTS: "ਆਡੀਓ ਕਲਾਰਾਰਾਂ ਨੂੰ ਲੋਡ ਕਰਨ ਲਈ ਅਸਮਰਥ। ਕੀਪਾ ਆਪਣਾ ਕਨੈਕਸ਼ਨ ਜਾਂਚੋ।",
+    COULD_NOT_LOAD_AUDIO_ARTISTS:
+      "ਆਡੀਓ ਕਲਾਕਾਰਾਂ ਨੂੰ ਲੋਡ ਕਰਨ ਲਈ ਅਸਮਰਥ। ਕਿਰਪਾ ਕਰਕੇ ਆਪਣਾ ਕਨੈਕਸ਼ਨ ਜਾਂਚੋ।",
   },
   fr: {
     about: "Infos",

@@ -238,7 +238,12 @@ const Reader = ({ navigation, route }) => {
   return (
     <SafeArea backgroundColor={theme.colors.surface}>
       <StatusBarComponent backgroundColor={theme.colors.surface} />
-      <Header title={titleText} handleBackPress={handleBackPress} isHeader={isHeader} />
+      <Header
+        title={titleText}
+        handleBackPress={handleBackPress}
+        handleBookmarkPress={handleBookmarkPress}
+        isHeader={isHeader}
+      />
       {isLoading && <ActivityIndicator size="small" color={theme.colors.primary} />}
       <WebView
         key={webViewKey}

@@ -65,16 +65,14 @@ const createStyles = (theme) => ({
     flexDirection: "row",
     height: 80,
     width: "100%",
-    marginLeft: "auto",
-    marginRight: "auto",
     marginTop: theme.spacing.md,
     marginBottom: theme.spacing.md,
-    alignItems: "flex-end",
     justifyContent: "space-between",
+    alignItems: "flex-end",
   },
 
   headerLeft: {
-    marginLeft: theme.spacing.lg,
+    paddingLeft: theme.spacing.lg,
     alignItems: "flex-start",
     justifyContent: "center",
     width: "10%",
@@ -87,11 +85,8 @@ const createStyles = (theme) => ({
   },
 
   headerRight: {
-    flex: 1,
-    alignItems: "flex-end",
-    justifyContent: "center",
-    width: "20%",
-    backgroundColor: "green",
+    marginRight: theme.spacing.lg,
+    width: "10%",
   },
 
   footerWrapper: {
@@ -118,7 +113,6 @@ const createStyles = (theme) => ({
   },
   headerStyle: {
     backgroundColor: theme.colors.surface,
-    width: "100%",
   },
   animatedView: {
     position: "absolute",
