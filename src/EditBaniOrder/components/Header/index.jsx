@@ -1,7 +1,8 @@
 import React, { useCallback } from "react";
-import { View } from "react-native";
-import { Icon } from "@rneui/themed";
+import { View, Pressable } from "react-native";
 import PropTypes from "prop-types";
+import { BackIconComponent } from "@common/components";
+import { RefreshIcon } from "@common/icons";
 import { STRINGS, CustomText, useTheme, useThemedStyles } from "@common";
 import createStyles from "./styles";
 
@@ -13,13 +14,10 @@ const Header = ({ navigation, setReset }) => {
 
   const headerLeft = useCallback(
     () => (
-      <Icon
-        name="arrow-back"
+      <BackIconComponent
         size={30}
-        onPress={() => goBack()}
+        handleBackPress={() => goBack()}
         color={theme.staticColors.WHITE_COLOR}
-        accessibilityLabel="Go back"
-        accessibilityRole="button"
       />
     ),
     [goBack, theme.staticColors.WHITE_COLOR]
@@ -27,14 +25,9 @@ const Header = ({ navigation, setReset }) => {
 
   const headerRight = useCallback(
     () => (
-      <Icon
-        name="refresh"
-        size={30}
-        onPress={() => setReset(true)}
-        color={theme.staticColors.WHITE_COLOR}
-        accessibilityLabel="Reset bani order"
-        accessibilityRole="button"
-      />
+      <Pressable onPress={() => setReset(true)}>
+        <RefreshIcon size={30} color={theme.staticColors.WHITE_COLOR} />
+      </Pressable>
     ),
     [setReset, theme.staticColors.WHITE_COLOR]
   );

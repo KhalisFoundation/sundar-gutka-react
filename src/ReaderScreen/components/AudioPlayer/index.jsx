@@ -90,9 +90,9 @@ const AudioPlayer = ({ baniID, title, webViewRef }) => {
     }
   };
 
-  const onCloseTrackModal = () => {
+  const onCloseTrackModal = async () => {
     if (isPlaying) {
-      stop();
+      await stop();
     }
     dispatch(toggleAudio(false));
   };
