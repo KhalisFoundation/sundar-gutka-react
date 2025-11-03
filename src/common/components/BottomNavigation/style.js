@@ -8,9 +8,11 @@ const createStyles = (theme) => ({
   },
   navigationBar: {
     flexDirection: "row",
-    justifyContent: "center",
-    alignItems: "center",
-    width: "100%",
+    justifyContent: "space-between",
+    alignItems: "flex-end",
+    width: "80%",
+    marginLeft: "auto",
+    marginRight: "auto",
     gap: 25,
   },
   iconContainer: {
@@ -23,6 +25,11 @@ const createStyles = (theme) => ({
     backgroundColor: theme.staticColors.WHITE_COLOR,
     borderRadius: 15,
     padding: theme.spacing.lg,
+  },
+  iconText: {
+    fontSize: theme.typography.sizes.sm,
+    color: theme.staticColors.WHITE_COLOR,
+    fontFamily: theme.typography.fonts.balooPaaji,
   },
 });
 

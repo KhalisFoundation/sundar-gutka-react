@@ -75,7 +75,7 @@ const ReminderOptions = ({ navigation }) => {
       <SafeAreaView style={styles.flexView}>
         <ScrollView>
           <View>
-            <StatusBarComponent backgroundColor={theme.colors.primaryVariant} />
+            <StatusBarComponent backgroundColor={theme.colors.surface} />
             {stateData.length > 0 && (
               <Accordion
                 activeSections={activeSections}

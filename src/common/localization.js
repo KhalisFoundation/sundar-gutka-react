@@ -156,6 +156,10 @@ const STRINGS = new LocalizedStrings({
     DOWNLOAD: "Download",
     DOWNLOADING: "Downloading",
     NEXT: "Next",
+    HOME: "Home",
+    READ: "Read",
+    MUSIC: "Music",
+    SETTINGS: "Settings",
   },
   hi: {
     about: "हमारे बारे",
@@ -310,6 +314,10 @@ const STRINGS = new LocalizedStrings({
     DOWNLOAD: "डाउनलोड",
     DOWNLOADING: "डाउनलोड हो रहा है",
     NEXT: "अगला",
+    HOME: "होम",
+    READ: "पढ़ें",
+    MUSIC: "संगीत",
+    SETTINGS: "सेटिंग्स",
   },
 
   pa: {
@@ -464,6 +472,10 @@ const STRINGS = new LocalizedStrings({
     DOWNLOAD: "ਡਾਊਨਲੋਡ",
     DOWNLOADING: "ਡਾਊਨਲੋਡ ਹੋ ਰਹਿ ਰਹਾ ਹੈ",
     NEXT: "ਅਗਲਾ",
+    HOME: "ਹੋਮ",
+    READ: "ਰੀਡ",
+    MUSIC: "ਮਿਊਜ਼ਿਕ",
+    SETTINGS: "ਸੈਟਿੰਗਾਂ",
   },
   fr: {
     about: "Infos",
@@ -624,6 +636,10 @@ const STRINGS = new LocalizedStrings({
     DOWNLOAD: "Télécharger",
     DOWNLOADING: "Téléchargement en cours",
     NEXT: "Suivant",
+    HOME: "Accueil",
+    READ: "Lecture",
+    MUSIC: "Musique",
+    SETTINGS: "Paramètres",
   },
   it: {
     about: "Info",
@@ -775,6 +791,10 @@ const STRINGS = new LocalizedStrings({
     MORE_TRACKS: "Audios",
     AUDIO_SETTINGS: "Opzioni",
     NEXT: "Prossimo",
+    HOME: "Home",
+    READ: "Lettura",
+    MUSIC: "Musica",
+    SETTINGS: "Impostazioni",
   },
   es: {
     about: "Sobre Nosotros",
@@ -933,6 +953,10 @@ const STRINGS = new LocalizedStrings({
     DOWNLOAD: "Descargar",
     DOWNLOADING: "Descargando",
     NEXT: "Siguiente",
+    HOME: "Inicio",
+    READ: "Leer",
+    MUSIC: "Música",
+    SETTINGS: "Configuración",
   },
 });
 
