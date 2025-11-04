@@ -15,7 +15,6 @@ import {
   validateBaniOrder,
   StatusBarComponent,
   SafeArea,
-  BottomNavigation,
 } from "@common";
 import { setBaniOrder } from "../common/actions";
 import BaniHeader from "./components/BaniHeader";
@@ -75,7 +74,6 @@ const HomeScreen = React.memo(({ navigation }) => {
         <BaniHeader navigate={navigate} />
         <BaniList data={baniListData} onPress={onPress} />
       </View>
-      <BottomNavigation navigation={navigation} activeKey="Home" />
     </SafeArea>
   );
 });

@@ -72,7 +72,6 @@ const CheckUpdatesAnimation = ({ isLoading, isUpdateAvailable }) => {
       {!isUpdateAvailable && !isLoading && (
         <ListItem containerStyle={styles.mainWrapper}>
           <ListItemTitle title={STRINGS.upToDate} style={styles.header} />
-          <CustomText style={{ color: theme.colors.primaryText }}>{STRINGS.upToDate}</CustomText>
         </ListItem>
       )}
     </View>

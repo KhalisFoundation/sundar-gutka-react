@@ -48,7 +48,7 @@ export const audioControlBarStyles = (theme) => ({
   },
   container: {
     position: "absolute",
-    bottom: 80,
+    bottom: 0,
     left: 0,
     right: 0,
     marginBottom: theme.spacing.md_12,
@@ -190,7 +190,7 @@ export const audioTrackDialogStyles = (theme) => ({
     position: "absolute",
     left: 0,
     right: 0,
-    bottom: 80,
+    bottom: 0,
     zIndex: 1000,
   },
   blurOverlay: {
