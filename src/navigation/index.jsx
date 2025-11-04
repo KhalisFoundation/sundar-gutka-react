@@ -4,6 +4,7 @@ import { createNativeStackNavigator } from "@react-navigation/native-stack";
 import { navigationRef, stopTrace, resetTrace, startPerformanceTrace } from "@common";
 import AboutScreen from "../AboutScreen";
 import Bookmarks from "../Bookmarks";
+import BaniLengthSelector from "../common/components/BaniLengthSelector";
 import DatabaseUpdateScreen from "../DatabaseUpdate";
 import EditBaniOrder from "../EditBaniOrder";
 import FolderScreen from "../FolderScreen";
@@ -37,6 +38,11 @@ const Navigation = () => {
           headerTitleAlign: "center",
         }}
       >
+        <Stack.Screen
+          options={{ headerShown: false }}
+          name="BaniLengthSelector"
+          component={BaniLengthSelector}
+        />
         <Stack.Screen
           options={{
             headerShown: false,

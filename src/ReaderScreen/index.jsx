@@ -154,6 +154,9 @@ const Reader = ({ navigation, route }) => {
     }
     return true;
   }, []);
+  const handleBookmarkPress = useCallback(() => {
+    navigation.navigate(constant.BOOKMARKS, { id });
+  }, [navigation, id]);
 
   useEffect(() => {
     const backHandler = BackHandler.addEventListener("hardwareBackPress", handleBackPress);

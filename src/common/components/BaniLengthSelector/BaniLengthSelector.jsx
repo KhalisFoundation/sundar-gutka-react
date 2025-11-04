@@ -1,16 +1,18 @@
 import React from "react";
 import { View, Pressable, Alert } from "react-native";
 import { SafeAreaProvider, SafeAreaView } from "react-native-safe-area-context";
-import { useDispatch } from "react-redux";
+import { useDispatch, useSelector } from "react-redux";
 import { Icon } from "@rneui/themed";
+import PropTypes from "prop-types";
 import { CustomText, STRINGS, useThemedStyles, useTheme } from "@common";
 import { setBaniLength } from "../../actions";
 import createStyles from "./style";
 
-const BaniLengthSelector = () => {
+const BaniLengthSelector = ({ navigation }) => {
   const styles = useThemedStyles(createStyles);
   const { theme } = useTheme();
   const baniLengths = [STRINGS.short, STRINGS.medium, STRINGS.long, STRINGS.extra_long];
+  const baniLength = useSelector((state) => state.baniLength);
   const dispatch = useDispatch();
 
   const handleOnpress = (length) => {
@@ -22,6 +24,9 @@ const BaniLengthSelector = () => {
       `\n${STRINGS.bani_length_alert_1} \n${STRINGS.bani_length_alert_2} \n${STRINGS.bani_length_alert_3} \n${STRINGS.bani_length_alert_4} \n${STRINGS.bani_length_alert_5} \n${STRINGS.bani_length_alert_6} \n${STRINGS.bani_length_alert_7} \n${STRINGS.bani_length_alert_8} \n${STRINGS.bani_length_alert_9}`
     );
   };
+  if (baniLength !== "") {
+    navigation.navigate("MainTabs");
+  }
   return (
     <SafeAreaProvider>
       <SafeAreaView style={styles.wrapper}>
@@ -46,3 +51,7 @@ const BaniLengthSelector = () => {
   );
 };
 export default BaniLengthSelector;
+
+BaniLengthSelector.propTypes = {
+  navigation: PropTypes.shape().isRequired,
+};
