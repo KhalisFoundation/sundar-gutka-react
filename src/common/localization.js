@@ -164,6 +164,10 @@ const STRINGS = new LocalizedStrings({
     AUDIO_SYNC_UNAVAILABLE: "Audio sync unavailable. Playback will continue without auto-scroll.",
     NETWORK_ERROR: "Network error. Audio features temporarily unavailable.",
     COULD_NOT_LOAD_AUDIO_ARTISTS: "Could not load audio artists. Please check your connection.",
+    HOME: "Home",
+    READ: "Read",
+    MUSIC: "Music",
+    SETTINGS: "Settings",
   },
   hi: {
     about: "हमारे बारे",
@@ -327,6 +331,10 @@ const STRINGS = new LocalizedStrings({
     NETWORK_ERROR: "नेटवर्क त्रुटि। ऑडियो सुविधाओं को अस्थायी रूप से अस्वीकृत कर दिया जाएगा।",
     COULD_NOT_LOAD_AUDIO_ARTISTS:
       "ऑडियो कलाकारों को लोड करने में असमर्थ। कृपया अपना कनेक्शन जांचें।",
+    HOME: "होम",
+    READ: "पढ़ें",
+    MUSIC: "संगीत",
+    SETTINGS: "सेटिंग्स",
   },
 
   pa: {
@@ -491,6 +499,10 @@ const STRINGS = new LocalizedStrings({
       "ਨੈੱਟਵਰਕ ਤਰੁੱਟੀ। ਆਡੀਓ ਸੰਸਕਰਨਾਂ ਨੂੰ ਅਸਥਾਈ ਰੂਪ ਸਕਰੋਲ ਦੇ ਬਿਨਾਂ ਅਸਵੀਕਰਿਤ ਕਰ ਦਿੱਤਾ ਜਾਵੇਗਾ।",
     COULD_NOT_LOAD_AUDIO_ARTISTS:
       "ਆਡੀਓ ਕਲਾਕਾਰਾਂ ਨੂੰ ਲੋਡ ਕਰਨ ਲਈ ਅਸਮਰਥ। ਕਿਰਪਾ ਕਰਕੇ ਆਪਣਾ ਕਨੈਕਸ਼ਨ ਜਾਂਚੋ।",
+    HOME: "ਹੋਮ",
+    READ: "ਰੀਡ",
+    MUSIC: "ਮਿਊਜ਼ਿਕ",
+    SETTINGS: "ਸੈਟਿੰਗਾਂ",
   },
   fr: {
     about: "Infos",
@@ -661,6 +673,10 @@ const STRINGS = new LocalizedStrings({
     NETWORK_ERROR: "Erreur réseau. Les fonctionnalités audio sont temporairement indisponibles.",
     COULD_NOT_LOAD_AUDIO_ARTISTS:
       "Impossible de charger les artistes audio. Veuillez vérifier votre connexion.",
+    HOME: "Accueil",
+    READ: "Lecture",
+    MUSIC: "Musique",
+    SETTINGS: "Paramètres",
   },
   it: {
     about: "Info",
@@ -822,6 +838,10 @@ const STRINGS = new LocalizedStrings({
     NETWORK_ERROR: "Error de red. Las funciones de audio están temporalmente indisponibles.",
     COULD_NOT_LOAD_AUDIO_ARTISTS:
       "No se pueden cargar los artistas de audio. Por favor, verifique su conexión.",
+    HOME: "Home",
+    READ: "Lettura",
+    MUSIC: "Musica",
+    SETTINGS: "Impostazioni",
   },
   es: {
     about: "Sobre Nosotros",
@@ -987,6 +1007,10 @@ const STRINGS = new LocalizedStrings({
     UNABLE_TO_SWITCH_TRACK: "No se puede cambiar el audio.",
     AUDIO_SYNC_UNAVAILABLE:
       "Sincronización de audio no disponible. La reproducción continuará sin desplazamiento automático.",
+    HOME: "Inicio",
+    READ: "Leer",
+    MUSIC: "Música",
+    SETTINGS: "Configuración",
   },
   NETWORK_ERROR: "Error de red. Las funciones de audio están temporalmente indisponibles.",
   COULD_NOT_LOAD_AUDIO_ARTISTS:

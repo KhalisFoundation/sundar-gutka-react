@@ -1,12 +1,9 @@
 import React from "react";
 import { View } from "react-native";
-import PropTypes from "prop-types";
-import { SettingsIconComponent } from "@common/components";
-import { constant, STRINGS, CustomText, useTheme, useThemedStyles } from "@common";
+import { STRINGS, CustomText, useTheme, useThemedStyles } from "@common";
 import createStyles from "../styles";
 
-const BaniHeader = (props) => {
-  const { navigate } = props;
+const BaniHeader = () => {
   const { theme } = useTheme();
   const styles = useThemedStyles(createStyles);
   return (
@@ -28,17 +25,7 @@ const BaniHeader = (props) => {
           <CustomText style={styles.headerDesign}>‰</CustomText>
         </CustomText>
       </View>
-      <View style={styles.settingIcon}>
-        <SettingsIconComponent
-          size={30}
-          handleSettingsPress={() => navigate(constant.SETTINGS)}
-          color={theme.staticColors.WHITE_COLOR}
-        />
-      </View>
     </View>
   );
-};
-BaniHeader.propTypes = {
-  navigate: PropTypes.func.isRequired,
 };
 export default BaniHeader;

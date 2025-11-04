@@ -12,6 +12,7 @@ import {
   StatusBarComponent,
   SafeArea,
   CustomText,
+  BottomNavigation,
 } from "@common";
 import Audio from "./components/audio";
 import AutoScroll from "./components/autoScroll";
@@ -57,7 +58,7 @@ const Settings = ({ navigation }) => {
 
   return (
     <SafeArea backgroundColor={theme.colors.surface}>
-      <StatusBarComponent backgroundColor={theme.colors.primaryVariant} />
+      <StatusBarComponent backgroundColor={theme.colors.surface} />
 
       {isDatabaseUpdateAvailable && <DatabaseUpdateBanner navigate={navigate} />}
       <ScrollView>
@@ -99,6 +100,7 @@ const Settings = ({ navigation }) => {
         />
         <CustomText style={end} />
       </ScrollView>
+      <BottomNavigation navigation={navigation} activeKey="Settings" />
     </SafeArea>
   );
 };

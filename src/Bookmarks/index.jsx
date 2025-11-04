@@ -48,7 +48,7 @@ const Bookmarks = ({ navigation, route }) => {
 
   return (
     <SafeArea backgroundColor={theme.colors.surface}>
-      <StatusBarComponent backgroundColor={theme.colors.primaryVariant} />
+      <StatusBarComponent backgroundColor={theme.colors.surface} />
       <BaniList data={bookmarksData} onPress={onPress} isFolderScreen />
       <BottomNavigation navigationItems={navigationItems} activeKey="Bookmarks" />
     </SafeArea>

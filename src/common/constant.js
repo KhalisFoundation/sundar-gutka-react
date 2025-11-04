@@ -98,4 +98,9 @@ export default {
   MAST_SABH_MAST_TUKK: "smwpq msqu suB msqu",
   MAST_SABH_MAST_TUKK_UNI: "ਸਮਾਪਤ ਮਸਤੁ ਸੁਭ ਮਸਤੁ",
   MINIMUM_BOTTOM_PADDING: 35,
+  defaultBani: {
+    id: 1,
+    title: "gur mMqR",
+    titleUni: "ਗੁਰ ਮੰਤ੍ਰ",
+  },
 };
