@@ -1,4 +1,4 @@
-import { constant, showErrorToast } from "@common";
+import { constant, showErrorToast, STRINGS } from "@common";
 
 // Common API configuration
 const getApiConfig = () => {
@@ -34,7 +34,7 @@ const makeApiRequest = async (endpoint, options = {}) => {
     return data;
   } catch (error) {
     // Network error - show toast and continue without audio features
-    showErrorToast("Network error. Audio features temporarily unavailable.");
+    showErrorToast(STRINGS.NETWORK_ERROR);
     return null;
   }
 };
@@ -63,6 +63,6 @@ export const fetchArtists = async () => {
   if (data?.status === "success" && data.data) {
     return data.data.map(mapArtistData);
   }
-  showErrorToast("Could not load audio artists. Please check your connection.");
+  showErrorToast(STRINGS.COULD_NOT_LOAD_AUDIO_ARTISTS);
   return null;
 };

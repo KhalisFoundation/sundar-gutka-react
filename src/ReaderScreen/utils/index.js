@@ -112,7 +112,8 @@ export const loadHTML = (
         const sequencesData = item.sequences
           ? ` data-sequences='|${item.sequences.join("|")}|'`
           : "";
-        let contentHtml = `<div id="${paragraphId}" class='text-item'${sequencesData}>`;
+        const sequenceData = ` data-sequence='${paragraphId}'`;
+        let contentHtml = `<div id="${item.id}" class='text-item'${sequenceData}${sequencesData}>`;
         contentHtml += createDiv(
           fontFace === constant.BALOO_PAAJI ? item.gurmukhiUni : item.gurmukhi,
           item.header,

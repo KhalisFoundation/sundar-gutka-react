@@ -11,7 +11,7 @@ import {
 import useTheme from "@common/context";
 import useThemedStyles from "@common/hooks/useThemedStyles";
 import { PlusIcon, MinusIcon } from "@common/icons";
-import { CustomText } from "@common";
+import { STRINGS, CustomText } from "@common";
 import { useTrackPlayer } from "../hooks";
 import { audioSettingModalStyles } from "../style";
 
@@ -40,7 +40,7 @@ const AudioSettingsModal = ({ isLyricsAvailable }) => {
 
   const settings = [
     {
-      title: "Audio Player",
+      title: STRINGS.AUDIO,
       description: "Audio Player",
       defaultValue: isAudio,
       onValueChange: () => {
@@ -49,7 +49,7 @@ const AudioSettingsModal = ({ isLyricsAvailable }) => {
       disabled: false,
     },
     {
-      title: "Auto Play",
+      title: STRINGS.AUDIO_AUTO_PLAY,
       defaultValue: isAudioAutoPlay,
       onValueChange: () => {
         dispatch(toggleAudioAutoPlay(!isAudioAutoPlay));
@@ -57,7 +57,7 @@ const AudioSettingsModal = ({ isLyricsAvailable }) => {
       disabled: false,
     },
     {
-      title: "Sync Auto Scroll",
+      title: STRINGS.AUDIO_SYNC_SCROLL,
       defaultValue: isAudioSyncScroll,
       onValueChange: () => {
         dispatch(toggleAudioSyncScroll(!isAudioSyncScroll));
@@ -88,7 +88,7 @@ const AudioSettingsModal = ({ isLyricsAvailable }) => {
           </View>
         ))}
         <View style={styles.modalContainer}>
-          <CustomText style={styles.settingItemTitle}>Playback Speed</CustomText>
+          <CustomText style={styles.settingItemTitle}>{STRINGS.PLAYBACK_SPEED}</CustomText>
           <View right style={styles.speedControlContainer}>
             <Pressable
               onPress={() => handleSpeedChange(audioPlaybackSpeed + 0.1)}

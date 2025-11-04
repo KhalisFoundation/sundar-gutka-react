@@ -177,7 +177,7 @@ ${listener}.addEventListener(
         // Use CSS selector trick with pipe delimiters for instant match
         element = document.querySelector('[data-sequences*="|' + sequenceNumber + '|"]');
       } else {
-        element = document.getElementById(sequenceNumber);
+        element = document.querySelector('[data-sequence="' + sequenceNumber + '"]');
       }
       
       if (element) {
