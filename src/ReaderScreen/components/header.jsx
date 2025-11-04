@@ -3,11 +3,11 @@ import { View, Animated, Pressable } from "react-native";
 import LinearGradient from "react-native-linear-gradient";
 import { useSelector } from "react-redux";
 import PropTypes from "prop-types";
-import { BackArrowIcon } from "@common/icons";
+import { BackArrowIcon, BookmarkIcon } from "@common/icons";
 import { CustomText, useTheme, useThemedStyles } from "@common";
 import createStyles from "../styles";
 
-const Header = ({ title, handleBackPress, isHeader }) => {
+const Header = ({ title, handleBackPress, handleBookmarkPress, isHeader }) => {
   const { theme } = useTheme();
   const styles = useThemedStyles(createStyles);
   const fontFace = useSelector((state) => state.fontFace);
@@ -22,7 +22,17 @@ const Header = ({ title, handleBackPress, isHeader }) => {
         handleBackPress();
       }}
     >
-      <BackArrowIcon size={30} color={theme.colors.primaryHeaderVariant} />
+      <BackArrowIcon size={25} color={theme.colors.primaryHeaderVariant} />
+    </Pressable>
+  );
+
+  const headerRight = () => (
+    <Pressable
+      onPress={() => {
+        handleBookmarkPress();
+      }}
+    >
+      <BookmarkIcon size={25} color={theme.colors.primaryHeaderVariant} />
     </Pressable>
   );
 
@@ -80,7 +90,7 @@ const Header = ({ title, handleBackPress, isHeader }) => {
               {title}
             </CustomText>
           </View>
-          <View style={styles.headerRight} />
+          <View style={styles.headerRight}>{headerRight()}</View>
         </View>
       </View>
       <LinearGradient
@@ -101,6 +111,7 @@ const Header = ({ title, handleBackPress, isHeader }) => {
 Header.propTypes = {
   title: PropTypes.string.isRequired,
   handleBackPress: PropTypes.func.isRequired,
+  handleBookmarkPress: PropTypes.func.isRequired,
   isHeader: PropTypes.bool.isRequired,
 };
 export default Header;

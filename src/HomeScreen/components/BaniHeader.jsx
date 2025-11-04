@@ -1,8 +1,7 @@
 import React from "react";
 import { View } from "react-native";
-import { useSelector } from "react-redux";
-import { Icon } from "@rneui/themed";
 import PropTypes from "prop-types";
+import { SettingsIconComponent } from "@common/components";
 import { constant, STRINGS, CustomText, useTheme, useThemedStyles } from "@common";
 import createStyles from "../styles";
 
@@ -10,7 +9,6 @@ const BaniHeader = (props) => {
   const { navigate } = props;
   const { theme } = useTheme();
   const styles = useThemedStyles(createStyles);
-  const isDatabaseUpdateAvailable = useSelector((state) => state.isDatabaseUpdateAvaliable);
   return (
     <View
       style={{
@@ -31,14 +29,10 @@ const BaniHeader = (props) => {
         </CustomText>
       </View>
       <View style={styles.settingIcon}>
-        <Icon
-          name={isDatabaseUpdateAvailable ? "settings-suggest" : "settings"}
-          type="material"
-          size={35}
+        <SettingsIconComponent
+          size={30}
+          handleSettingsPress={() => navigate(constant.SETTINGS)}
           color={theme.staticColors.WHITE_COLOR}
-          onPress={() => {
-            navigate(constant.SETTINGS);
-          }}
         />
       </View>
     </View>
