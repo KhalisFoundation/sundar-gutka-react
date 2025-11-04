@@ -223,6 +223,31 @@ const scrollPosition = (state = 0, action) => {
   }
 };
 
+// Audio progress reducer - stores progress per bani: { [baniId]: { trackId, position, duration } }
+const audioProgress = (state = {}, action) => {
+  switch (action.type) {
+    case actionTypes.SET_AUDIO_PROGRESS: {
+      const { baniId, trackId, position, duration } = action.payload;
+      return {
+        ...state,
+        [baniId]: {
+          trackId,
+          position,
+          duration,
+        },
+      };
+    }
+    case actionTypes.CLEAR_AUDIO_PROGRESS: {
+      const { baniId } = action.payload;
+      const newState = { ...state };
+      delete newState[baniId];
+      return newState;
+    }
+    default:
+      return state;
+  }
+};
+
 const rootReducer = combineReducers({
   isNightMode,
   fontSize,
@@ -263,5 +288,6 @@ const rootReducer = combineReducers({
   isHeaderFooter,
   isDatabaseUpdateAvailable,
   audioManifest,
+  audioProgress,
 });
 export default rootReducer;

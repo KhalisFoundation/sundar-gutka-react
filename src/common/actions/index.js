@@ -204,3 +204,18 @@ export const deleteManifestTrack = (baniId, trackId) => {
     payload: { baniId, trackId },
   };
 };
+
+// Audio progress actions
+export const setAudioProgress = (baniId, trackId, position, duration) => {
+  return {
+    type: actionTypes.SET_AUDIO_PROGRESS,
+    payload: { baniId, trackId, position, duration },
+  };
+};
+
+export const clearAudioProgress = (baniId) => {
+  return {
+    type: actionTypes.CLEAR_AUDIO_PROGRESS,
+    payload: { baniId },
+  };
+};
