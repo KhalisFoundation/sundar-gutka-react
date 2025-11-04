@@ -164,6 +164,7 @@ const STRINGS = new LocalizedStrings({
     AUDIO_SYNC_UNAVAILABLE: "Audio sync unavailable. Playback will continue without auto-scroll.",
     NETWORK_ERROR: "Network error. Audio features temporarily unavailable.",
     COULD_NOT_LOAD_AUDIO_ARTISTS: "Could not load audio artists. Please check your connection.",
+    PERMISSION_ERROR: "Broadcast permission check failed — missing or denied permission",
   },
   hi: {
     about: "हमारे बारे",
@@ -327,6 +328,7 @@ const STRINGS = new LocalizedStrings({
     NETWORK_ERROR: "नेटवर्क त्रुटि। ऑडियो सुविधाओं को अस्थायी रूप से अस्वीकृत कर दिया जाएगा।",
     COULD_NOT_LOAD_AUDIO_ARTISTS:
       "ऑडियो कलाकारों को लोड करने में असमर्थ। कृपया अपना कनेक्शन जांचें।",
+    PERMISSION_ERROR: "प्रसारण अनुमति जाँच विफल - अनुमति अनुपलब्ध या अस्वीकृत",
   },
 
   pa: {
@@ -491,6 +493,7 @@ const STRINGS = new LocalizedStrings({
       "ਨੈੱਟਵਰਕ ਤਰੁੱਟੀ। ਆਡੀਓ ਸੰਸਕਰਨਾਂ ਨੂੰ ਅਸਥਾਈ ਰੂਪ ਸਕਰੋਲ ਦੇ ਬਿਨਾਂ ਅਸਵੀਕਰਿਤ ਕਰ ਦਿੱਤਾ ਜਾਵੇਗਾ।",
     COULD_NOT_LOAD_AUDIO_ARTISTS:
       "ਆਡੀਓ ਕਲਾਕਾਰਾਂ ਨੂੰ ਲੋਡ ਕਰਨ ਲਈ ਅਸਮਰਥ। ਕਿਰਪਾ ਕਰਕੇ ਆਪਣਾ ਕਨੈਕਸ਼ਨ ਜਾਂਚੋ।",
+    PERMISSION_ERROR: "ਪ੍ਰਸਾਰਣ ਇਜਾਜ਼ਤ ਜਾਂਚ ਅਸਫਲ ਰਹੀ — ਇਜਾਜ਼ਤ ਗੁੰਮ ਹੈ ਜਾਂ ਅਸਵੀਕਾਰ ਕੀਤੀ ਗਈ ਹੈ",
   },
   fr: {
     about: "Infos",
@@ -661,6 +664,8 @@ const STRINGS = new LocalizedStrings({
     NETWORK_ERROR: "Erreur réseau. Les fonctionnalités audio sont temporairement indisponibles.",
     COULD_NOT_LOAD_AUDIO_ARTISTS:
       "Impossible de charger les artistes audio. Veuillez vérifier votre connexion.",
+    PERMISSION_ERROR:
+      "Échec de la vérification de l'autorisation de diffusion : autorisation manquante ou refusée",
   },
   it: {
     about: "Info",
@@ -822,6 +827,8 @@ const STRINGS = new LocalizedStrings({
     NETWORK_ERROR: "Error de red. Las funciones de audio están temporalmente indisponibles.",
     COULD_NOT_LOAD_AUDIO_ARTISTS:
       "No se pueden cargar los artistas de audio. Por favor, verifique su conexión.",
+    PERMISSION_ERROR:
+      "Controllo dell'autorizzazione di trasmissione non riuscito: autorizzazione mancante o negata",
   },
   es: {
     about: "Sobre Nosotros",
@@ -987,6 +994,8 @@ const STRINGS = new LocalizedStrings({
     UNABLE_TO_SWITCH_TRACK: "No se puede cambiar el audio.",
     AUDIO_SYNC_UNAVAILABLE:
       "Sincronización de audio no disponible. La reproducción continuará sin desplazamiento automático.",
+    PERMISSION_ERROR:
+      "Falló la comprobación de permisos de transmisión: permiso faltante o denegado.",
   },
   NETWORK_ERROR: "Error de red. Las funciones de audio están temporalmente indisponibles.",
   COULD_NOT_LOAD_AUDIO_ARTISTS:
