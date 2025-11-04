@@ -1,6 +1,13 @@
 const createStyles = (theme) => ({
   headerTitleStyle: {
     fontFamily: theme.typography.fonts.balooPaajiSemiBold,
+    color: theme.colors.primaryText,
+    fontWeight: "normal",
+  },
+  headerStyle: {
+    backgroundColor: theme.colors.surface,
+    borderBottomWidth: 1,
+    borderBottomColor: theme.colors.separator,
   },
   nightBackColor: { backgroundColor: theme.staticColors.NIGHT_BLACK },
   iconStyle: { alignSelf: "flex-start" },

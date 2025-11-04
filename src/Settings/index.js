@@ -12,7 +12,6 @@ import {
   StatusBarComponent,
   SafeArea,
   CustomText,
-  BottomNavigation,
 } from "@common";
 import Audio from "./components/audio";
 import AutoScroll from "./components/autoScroll";
@@ -49,12 +48,15 @@ const Settings = ({ navigation }) => {
   const { DISPLAY_OPTIONS, BANI_OPTIONS, OTHER_OPTIONS } = STRINGS;
   const language = useSelector((state) => state.language);
   const { about, databaseUpdate } = STRINGS;
+
+  // Update header options when theme or language changes
   useEffect(() => {
     navigation.setOptions({
       title: STRINGS.settings,
       headerTitleStyle: styles.headerTitleStyle,
+      headerStyle: styles.headerStyle,
     });
-  }, [language]);
+  }, [language, theme]);
 
   return (
     <SafeArea backgroundColor={theme.colors.surface}>
@@ -100,13 +102,16 @@ const Settings = ({ navigation }) => {
         />
         <CustomText style={end} />
       </ScrollView>
-      <BottomNavigation navigation={navigation} activeKey="Settings" />
     </SafeArea>
   );
 };
 
 Settings.propTypes = {
-  navigation: PropTypes.shape({ navigate: PropTypes.func, setOptions: PropTypes.func }).isRequired,
+  navigation: PropTypes.shape({
+    navigate: PropTypes.func,
+    setOptions: PropTypes.func,
+    goBack: PropTypes.func,
+  }).isRequired,
 };
 
 export default Settings;

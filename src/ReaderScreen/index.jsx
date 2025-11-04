@@ -10,7 +10,6 @@ import {
   logMessage,
   logError,
   SafeArea,
-  BottomNavigation,
   useTheme,
   useThemedStyles,
   StatusBarComponent,
@@ -248,8 +247,6 @@ const Reader = ({ navigation, route }) => {
       >
         {isAutoScroll && <AutoScrollComponent shabadID={id} webViewRef={webViewRef} />}
       </Animated.View>
-
-      <BottomNavigation navigation={navigation} activeKey={isAudio ? "Music" : "Read"} />
     </SafeArea>
   );
 };
