@@ -63,7 +63,7 @@ const BottomNavigation = ({ navigation, activeKey }) => {
               onPress={item.handlePress}
             >
               <IconComponent
-                size={activeKey === item.key ? 24 : 24}
+                size={24}
                 color={
                   item.key === activeKey ? theme.colors.primary : theme.staticColors.WHITE_COLOR
                 }
