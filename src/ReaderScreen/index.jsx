@@ -43,7 +43,7 @@ const Reader = ({ navigation, route }) => {
 
   const webViewRef = useRef(null);
   const { webView } = styles;
-  const { title, id, titleUni } = route.params.params;
+  const { title, id, titleUni } = route.params.params || {};
   const [isHeader, toggleHeader] = useState(false);
   const [viewLoaded, toggleViewLoaded] = useState(false);
   const [currentPosition, setCurrentPosition] = useState(savePosition[id] || 0);
@@ -65,7 +65,9 @@ const Reader = ({ navigation, route }) => {
   }, [dispatch, id]);
 
   useEffect(() => {
-    setTitleText(fontFace === constant.BALOO_PAAJI ? titleUni : title);
+    // Handle undefined titleUni gracefully - fallback to title if titleUni is not available
+    const displayTitle = fontFace === constant.BALOO_PAAJI ? titleUni || title : title;
+    setTitleText(displayTitle);
   }, [fontFace, titleUni, title]);
 
   // Cleanup on unmount
@@ -186,6 +188,9 @@ const Reader = ({ navigation, route }) => {
       } else if (data.includes("scroll-")) {
         const position = data.split("-")[1];
         positionPointer.current = position;
+      } else if (data.includes("sequenceString-")) {
+        const sequenceStringData = data.split("-")[1];
+        dispatch(actions.setBookmarkSequenceString(sequenceStringData));
       }
     },
     [dispatch, id, navigation, shouldNavigateBack]

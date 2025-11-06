@@ -3,14 +3,13 @@ import { View } from "react-native";
 import TrackPlayer from "react-native-track-player";
 import { useSelector, useDispatch } from "react-redux";
 import PropTypes from "prop-types";
-import { toggleAudio, logError } from "@common/actions";
+import { toggleAudio } from "@common/actions";
 import useThemedStyles from "@common/hooks/useThemedStyles";
 import { showErrorToast } from "@common/toast";
-import { STRINGS, CustomText } from "@common";
+import { STRINGS, CustomText, logError } from "@common";
 import { AudioTrackDialog, AudioControlBar } from "./components";
 import { useAudioManifest, useTrackPlayer, useAudioSyncScroll } from "./hooks";
 import createStyles from "./style";
-import { formatUrlForTrackPlayer } from "./utils/urlHelper";
 
 const AudioPlayer = ({ baniID, title, webViewRef }) => {
   const dispatch = useDispatch();
@@ -19,9 +18,7 @@ const AudioPlayer = ({ baniID, title, webViewRef }) => {
   const isAudioAutoPlay = useSelector((state) => state.isAudioAutoPlay);
   const defaultAudio = useSelector((state) => state.defaultAudio);
   const audioPlaybackSpeed = useSelector((state) => state.audioPlaybackSpeed);
-  // Custom hooks
   const { tracks, currentPlaying, setCurrentPlaying, isLoading } = useAudioManifest(baniID);
-
   const {
     isPlaying,
     progress,
@@ -72,17 +69,13 @@ const AudioPlayer = ({ baniID, title, webViewRef }) => {
           return;
         }
 
-        const formattedUrl = formatUrlForTrackPlayer(currentPlaying.audioUrl);
-
-        const track = {
-          id: currentPlaying.id,
-          url: formattedUrl,
-          title: currentPlaying.displayName,
-          artist: currentPlaying.displayName,
-          duration: 0,
-        };
-
-        await addAndPlayTrack(track);
+        // Track not loaded, add and play it
+        await addAndPlayTrack(
+          currentPlaying.id,
+          currentPlaying.audioUrl,
+          currentPlaying.displayName,
+          currentPlaying.displayName
+        );
       }
     } catch (error) {
       logError("Error in handlePlayPause:", error);
@@ -133,17 +126,12 @@ const AudioPlayer = ({ baniID, title, webViewRef }) => {
 
       // Auto-play the new track if audio is enabled
       if (isAudioEnabled) {
-        const formattedUrl = formatUrlForTrackPlayer(selectedTrack.audioUrl);
-
-        const track = {
-          id: selectedTrack.id,
-          url: formattedUrl,
-          title: selectedTrack.displayName,
-          artist: selectedTrack.displayName,
-          duration: 0,
-        };
-
-        await addAndPlayTrack(track);
+        await addAndPlayTrack(
+          selectedTrack.id,
+          selectedTrack.audioUrl,
+          selectedTrack.displayName,
+          selectedTrack.displayName
+        );
       }
     } catch (error) {
       logError("Error switching track:", error);

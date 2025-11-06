@@ -28,10 +28,12 @@ const App = () => {
   }, []); // The empty array causes this effect to only run on mount
 
   useEffect(() => {
-    initializePerformanceMonitoring();
-    allowTracking();
-    initializeCrashlytics();
-    TrackPlayerSetup();
+    (async () => {
+      await initializePerformanceMonitoring();
+      await allowTracking();
+      await initializeCrashlytics();
+      await TrackPlayerSetup();
+    })();
   }, []);
 
   useEffect(() => {

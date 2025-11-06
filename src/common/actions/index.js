@@ -135,6 +135,10 @@ export const setBookmarkPosition = (value) => {
   trackSettingEvent(constant.BOOKMARKS, value);
   return { type: actionTypes.SET_BOOKMARK_POSITION, value };
 };
+
+export const setBookmarkSequenceString = (value) => {
+  return { type: actionTypes.SET_BOOKMARK_SEQUENCE_STRING, value };
+};
 export const toggleReminders = (value) => {
   trackSettingEvent(constant.REMINDERS, value);
   return { type: actionTypes.TOGGLE_REMINDERS, value };

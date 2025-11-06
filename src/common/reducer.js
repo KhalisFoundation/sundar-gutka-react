@@ -118,6 +118,10 @@ const bookmarkPosition = createReducer(0, {
   [actionTypes.SET_BOOKMARK_POSITION]: (state, action) => action.value,
 });
 
+const bookmarkSequenceString = createReducer(null, {
+  [actionTypes.SET_BOOKMARK_SEQUENCE_STRING]: (state, action) => action.value,
+});
+
 const isReminders = createReducer(false, {
   [actionTypes.TOGGLE_REMINDERS]: (state, action) => action.value,
 });
@@ -277,6 +281,7 @@ const rootReducer = combineReducers({
   isPunjabiTranslation,
   isSpanishTranslation,
   bookmarkPosition,
+  bookmarkSequenceString,
   isReminders,
   reminderBanis,
   reminderSound,
