@@ -2,12 +2,7 @@ import React, { useEffect } from "react";
 import { View, Switch, ScrollView, Pressable } from "react-native";
 import { useSelector, useDispatch } from "react-redux";
 import PropTypes from "prop-types";
-import {
-  toggleAudio,
-  toggleAudioAutoPlay,
-  toggleAudioSyncScroll,
-  setAudioPlaybackSpeed,
-} from "@common/actions";
+import { toggleAudioAutoPlay, toggleAudioSyncScroll, setAudioPlaybackSpeed } from "@common/actions";
 import useTheme from "@common/context";
 import useThemedStyles from "@common/hooks/useThemedStyles";
 import { PlusIcon, MinusIcon } from "@common/icons";
@@ -18,7 +13,6 @@ import { audioSettingModalStyles } from "../style";
 const AudioSettingsModal = ({ isLyricsAvailable }) => {
   const { theme } = useTheme();
   const styles = useThemedStyles(audioSettingModalStyles);
-  const isAudio = useSelector((state) => state.isAudio);
   const isAudioAutoPlay = useSelector((state) => state.isAudioAutoPlay);
   const isAudioSyncScroll = useSelector((state) => state.isAudioSyncScroll);
   const audioPlaybackSpeed = useSelector((state) => state.audioPlaybackSpeed);
@@ -26,7 +20,7 @@ const AudioSettingsModal = ({ isLyricsAvailable }) => {
   const { setRate } = useTrackPlayer();
 
   const handleSpeedChange = async (value) => {
-    if (value < 1.0 || value > 2.0) return;
+    if (value < 0.5 || value > 2.0) return;
     dispatch(setAudioPlaybackSpeed(value));
     await setRate(value);
   };
@@ -39,15 +33,6 @@ const AudioSettingsModal = ({ isLyricsAvailable }) => {
   }, []);
 
   const settings = [
-    {
-      title: STRINGS.AUDIO,
-      description: "Audio Player",
-      defaultValue: isAudio,
-      onValueChange: () => {
-        dispatch(toggleAudio(!isAudio));
-      },
-      disabled: false,
-    },
     {
       title: STRINGS.AUDIO_AUTO_PLAY,
       defaultValue: isAudioAutoPlay,
@@ -101,7 +86,7 @@ const AudioSettingsModal = ({ isLyricsAvailable }) => {
             </CustomText>
             <Pressable
               onPress={() => handleSpeedChange(audioPlaybackSpeed - 0.1)}
-              disabled={audioPlaybackSpeed < 1.0}
+              disabled={audioPlaybackSpeed <= 0.5}
             >
               <MinusIcon size={24} color={theme.colors.audioSettingsModalText} />
             </Pressable>
