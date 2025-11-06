@@ -3,7 +3,7 @@ import { View } from "react-native";
 import TrackPlayer from "react-native-track-player";
 import { useSelector, useDispatch } from "react-redux";
 import PropTypes from "prop-types";
-import { toggleAudio } from "@common/actions";
+import { toggleAudio, setDefaultAudio } from "@common/actions";
 import useThemedStyles from "@common/hooks/useThemedStyles";
 import { showErrorToast } from "@common/toast";
 import { STRINGS, CustomText, logError } from "@common";
@@ -133,6 +133,7 @@ const AudioPlayer = ({ baniID, title, webViewRef }) => {
           selectedTrack.displayName
         );
       }
+      dispatch(setDefaultAudio(selectedTrack, baniID));
     } catch (error) {
       logError("Error switching track:", error);
       showErrorToast(`${STRINGS.UNABLE_TO_SWITCH_TRACK} ${STRINGS.PLEASE_TRY_AGAIN}`);
