@@ -12,10 +12,9 @@ import useTheme from "@common/context";
 import useThemedStyles from "@common/hooks/useThemedStyles";
 import { PlusIcon, MinusIcon } from "@common/icons";
 import { STRINGS, CustomText } from "@common";
-import { useTrackPlayer } from "../hooks";
 import { audioSettingModalStyles } from "../style";
 
-const AudioSettingsModal = ({ isLyricsAvailable }) => {
+const AudioSettingsModal = ({ isLyricsAvailable, setRate }) => {
   const { theme } = useTheme();
   const styles = useThemedStyles(audioSettingModalStyles);
   const isAudio = useSelector((state) => state.isAudio);
@@ -23,7 +22,6 @@ const AudioSettingsModal = ({ isLyricsAvailable }) => {
   const isAudioSyncScroll = useSelector((state) => state.isAudioSyncScroll);
   const audioPlaybackSpeed = useSelector((state) => state.audioPlaybackSpeed);
   const dispatch = useDispatch();
-  const { setRate } = useTrackPlayer();
 
   const handleSpeedChange = async (value) => {
     if (value < 1.0 || value > 2.0) return;
@@ -36,7 +34,7 @@ const AudioSettingsModal = ({ isLyricsAvailable }) => {
     if (audioPlaybackSpeed && setRate) {
       setRate(audioPlaybackSpeed);
     }
-  }, []);
+  }, [audioPlaybackSpeed, setRate]);
 
   const settings = [
     {
@@ -114,6 +112,7 @@ const AudioSettingsModal = ({ isLyricsAvailable }) => {
 
 AudioSettingsModal.propTypes = {
   isLyricsAvailable: PropTypes.bool.isRequired,
+  setRate: PropTypes.func.isRequired,
 };
 
 export default AudioSettingsModal;

@@ -47,7 +47,7 @@ const AudioControlBar = ({
     removeTrackFromManifest,
     isTrackDownloaded
   );
-  const { reset, addAndPlayTrack, isInitialized, seekTo } = useTrackPlayer();
+  const { reset, addAndPlayTrack, isInitialized, seekTo, setRate } = useTrackPlayer();
   useBookmarks(seekTo, currentPlaying?.audioUrl);
   const formatTime = (seconds) => {
     const mins = Math.floor(seconds / 60);
@@ -229,7 +229,9 @@ const AudioControlBar = ({
         <Animated.View
           style={[styles.modalAnimation, { height: modalHeight, opacity: modalOpacity }]}
         >
-          {isSettingsModalOpen && <AudioSettingsModal isLyricsAvailable={isLyricsAvailable} />}
+          {isSettingsModalOpen && (
+            <AudioSettingsModal isLyricsAvailable={isLyricsAvailable} setRate={setRate} />
+          )}
 
           {isMoreTracksModalOpen && (
             <View style={styles.moreTracksModalContainer}>
