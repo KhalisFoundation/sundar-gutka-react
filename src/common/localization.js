@@ -160,6 +160,15 @@ const STRINGS = new LocalizedStrings({
     READ: "Read",
     MUSIC: "Music",
     SETTINGS: "Settings",
+    PLAYBACK_SPEED: "Playback Speed",
+    UNABLE_TO_PLAY: "Unable to play audio.",
+    PLEASE_TRY_AGAIN: "Please try again.",
+    UNABLE_TO_SEEK: "Unable to seek audio.",
+    UNABLE_TO_SWITCH_TRACK: "Unable to switch audio track.",
+    AUDIO_SYNC_UNAVAILABLE: "Audio sync unavailable. Playback will continue without auto-scroll.",
+    NETWORK_ERROR: "Network error. Audio features temporarily unavailable.",
+    COULD_NOT_LOAD_AUDIO_ARTISTS: "Could not load audio artists. Please check your connection.",
+    PERMISSION_ERROR: "Broadcast permission check failed — missing or denied permission",
   },
   hi: {
     about: "हमारे बारे",
@@ -318,6 +327,16 @@ const STRINGS = new LocalizedStrings({
     READ: "पढ़ें",
     MUSIC: "संगीत",
     SETTINGS: "सेटिंग्स",
+    PLAYBACK_SPEED: "प्लेबैक स्पीड",
+    UNABLE_TO_PLAY: "ऑडियो चलाने में असमर्थ",
+    PLEASE_TRY_AGAIN: "कृपया पुनः प्रयास करें।",
+    UNABLE_TO_SEEK: "ऑडियो खोजने में असमर्थ",
+    UNABLE_TO_SWITCH_TRACK: "ऑडियो ट्रैक बदलने में असमर्थ",
+    AUDIO_SYNC_UNAVAILABLE: "ऑडियो सिंक अस्वीकृत है। ऑडियो ऑटो स्क्रॉल के बिना चलाया जाएगा।",
+    NETWORK_ERROR: "नेटवर्क त्रुटि। ऑडियो सुविधाओं को अस्थायी रूप से अस्वीकृत कर दिया जाएगा।",
+    COULD_NOT_LOAD_AUDIO_ARTISTS:
+      "ऑडियो कलाकारों को लोड करने में असमर्थ। कृपया अपना कनेक्शन जांचें।",
+    PERMISSION_ERROR: "प्रसारण अनुमति जाँच विफल - अनुमति अनुपलब्ध या अस्वीकृत",
   },
 
   pa: {
@@ -345,7 +364,7 @@ const STRINGS = new LocalizedStrings({
     bani_length_alert_3:
       "ਏਸੇ ਲਈ ਅਸੀਂ ਇਸ ਐਪ (ਜੁਗਤ) ਵਿੱਚ ਆਮ ਤੌਰ ਤੇ ਚਾਰ ਸੱਭ ਤੋਂ ਵੱਧ ਪੜ੍ਹੀਆਂ ਜਾਣ ਵਾਲੀਆਂ ਬਾਣੀਆਂ ਦੀ ਲੰਬਾਈ ਚੁਣਨ ਦੀ ਸਹੂਲਤ ਦਿੱਤੀ ਹੈ। ਇਹਨਾਂ ਚੋਣਾਂ ਨੂੰ ਬਾਣੀ ਦੀ ਲੰਬਾਈ ਦੇ ਹਿਸਾਬ ਨਾਲ ਤਰਤੀਬ ਦਿੱਤੀ ਗਈ ਹੈ ਪਰ ਸਾਰੀਆਂ ਹੀ ਬਾਣੀਆਂ ਅਕਾਲ ਤਖਤ ਸਾਹਬ ਵੱਲ੍ਹੋਂ ਪ੍ਰਵਾਨਤ ਮਿਆਰਾਂ ਅਨੁਸਾਰ ਹਨ। ਅਸੀਂ ਅਕਾਲ ਤਖਤ ਤੋਂ ਛੇਕੀ ਹੋਈ ਕਿਸੇ ਵੀ ਸੰਪਰਦਾ ਵੱਲ੍ਹੋਂ ਵਰਤੀ ਜਾਂਦੀ ਬਾਣੀ ਦੀ ਕੋਈ ਵੀ ਵੰਨਗੀ ਇਸ ਜੁਗਤ ਵਿੱਚ ਨਹੀਂ ਪਾਈ",
     bani_length_alert_4:
-      "ਜੇ ਤੁਸੀਂ ਇਸ ਉਲਝਣ ਵਿੱਚ ਹੋ ਕੇ ਕਿਸ ਬਾਣੀ ਤੋਂ ਸ਼ੁਰੂ ਕਰੋਂ, ਸਾਡੀ ਸਲਾਹ ਹੈ ਸਭ ਤੋਂ ਲੰਬੀ ਬਾਣੀ ਕਿਕਿ ਜਿੰਨਾ ਜ਼ਿਆਦਾ ਅਸੀਂ ਬਾਣੀ ਅਭਿਆਸ ਕਰਾਂਗੇ, ਸਾਡੀ ਰੂਹ ਲਈ ਉੰਨਾਂ ਹੀ ਵਧੀਆ ਹੈ।  ਜੇ ਤੁਸੀਂ ਬਿਲਕੁਲ ਨਵੇਂ ਹੋ ਤਾਂ ਤੁਸੀਂ ਸਭ ਤੋਂ ਛੋਟੀ ਬਾਣੀ ਤੋਂ ਵੀ ਸ਼ੁਰੂ ਕਰ ਸਕਦੇ ਹੋ ਤੇ ਜਿਵੇਂ ਜਿਵੇਂ ਤੁਹਾਡਾ ਨਾਮ ਅਭਿਆਸ ਵੱਧ ਦਾ ਹੈ, ਤੁਸੀਂ ਜ਼ਿਆਦਾ ਬਾਣੀ ਪੜ੍ਹ ਸਕਦੇ ਓ।",
+      "ਜੇ ਤੁਸੀਂ ਇਸ ਉਲਝਣ ਵਿੱਚ ਹੋ ਕੇ ਕਿਸ ਬਾਣੀ ਤੋਂ ਸ਼ੁਰੂ ਕਰੋਂ, ਸਾਡੀ ਸਲਾਹ ਹੈ ਸਭ ਤੋਂ ਲੰਬੀ ਬਾਣੀ ਕਿਉਂਕਿ ਜਿੰਨਾ ਜ਼ਿਆਦਾ ਅਸੀਂ ਬਾਣੀ ਅਭਿਆਸ ਕਰਾਂਗੇ, ਸਾਡੀ ਰੂਹ ਲਈ ਉੰਨਾਂ ਹੀ ਵਧੀਆ ਹੈ। ਜੇ ਤੁਸੀਂ ਬਿਲਕੁਲ ਨਵੇਂ ਹੋ ਤਾਂ ਤੁਸੀਂ ਸਭ ਤੋਂ ਛੋਟੀ ਬਾਣੀ ਤੋਂ ਵੀ ਸ਼ੁਰੂ ਕਰ ਸਕਦੇ ਹੋ ਤੇ ਜਿਵੇਂ ਜਿਵੇਂ ਤੁਹਾਡਾ ਨਾਮ ਅਭਿਆਸ ਵੱਧ ਦਾ ਹੈ, ਤੁਸੀਂ ਜ਼ਿਆਦਾ ਬਾਣੀ ਪੜ੍ਹ ਸਕਦੇ ਓ।",
     bani_length_alert_5: "ਬਾਣੀਆਂ ਦੀ ਤਰਤੀਬ ਉਨ੍ਹਾਂ ਦੀ  ਲੰਬਾਈ ਅਤੇ ਸੰਪਰਦਾਵਾਂ ਦੇ ਹਿਸਾਬ ਨਾਲ ਕੀਤੀ ਗਈ ਹੈ।",
     bani_length_alert_6: "ਛੋਟੀ - ਇਹ ਬਾਣੀ ਅਕਾਲ ਤਖਤ ਸਾਹਿਬ ਵਲ੍ਹੋ ਘੱਟੋ ਘੱਟ ਪ੍ਰਵਾਣਤ ਮਿਆਰਾਂ ਅਨੁਸਾਰ ਹੈ",
     bani_length_alert_7: "ਮੱਧਮ - ਅਖੰਡ ਕੀਰਤਨੀ ਜਥਾ ਅਤੇ ਹੋਰ।",
@@ -476,6 +495,17 @@ const STRINGS = new LocalizedStrings({
     READ: "ਰੀਡ",
     MUSIC: "ਮਿਊਜ਼ਿਕ",
     SETTINGS: "ਸੈਟਿੰਗਾਂ",
+    PLAYBACK_SPEED: "ਪਲੇਬੈਕ ਸਪੀਡ",
+    UNABLE_TO_PLAY: "ਆਡੀਓ ਚਲਾਉਣ ਲਈ ਅਸਮਰਥ",
+    PLEASE_TRY_AGAIN: "ਕਿਰਪਾ ਕਰਕੇ ਦੁਬਾਰਾ ਕੋਸ਼ਿਸ਼ ਕਰੋ।",
+    UNABLE_TO_SEEK: "ਆਡੀਓ ਦੀ ਸਥਿਤੀ ਬਦਲਣ ਲਈ ਅਸਮਰਥ",
+    UNABLE_TO_SWITCH_TRACK: "ਆਡੀਓ ਟਰੈਕ ਬਦਲਣ ਲਈ ਅਸਮਰਥ",
+    AUDIO_SYNC_UNAVAILABLE: "ਆਡੀਓ ਸਿੰਕ ਅਸਵੀਕਰਿਤ ਹੈ। ਆਡੀਓ ਑ਟੋ ਸਕਰੋਲ ਦੇ ਬਿਨਾਂ ਚਲਾਈ ਜਾਵੇਗੀ।",
+    NETWORK_ERROR:
+      "ਨੈੱਟਵਰਕ ਤਰੁੱਟੀ। ਆਡੀਓ ਸੰਸਕਰਨਾਂ ਨੂੰ ਅਸਥਾਈ ਰੂਪ ਸਕਰੋਲ ਦੇ ਬਿਨਾਂ ਅਸਵੀਕਰਿਤ ਕਰ ਦਿੱਤਾ ਜਾਵੇਗਾ।",
+    COULD_NOT_LOAD_AUDIO_ARTISTS:
+      "ਆਡੀਓ ਕਲਾਕਾਰਾਂ ਨੂੰ ਲੋਡ ਕਰਨ ਲਈ ਅਸਮਰਥ। ਕਿਰਪਾ ਕਰਕੇ ਆਪਣਾ ਕਨੈਕਸ਼ਨ ਜਾਂਚੋ।",
+    PERMISSION_ERROR: "ਪ੍ਰਸਾਰਣ ਇਜਾਜ਼ਤ ਜਾਂਚ ਅਸਫਲ ਰਹੀ — ਇਜਾਜ਼ਤ ਗੁੰਮ ਹੈ ਜਾਂ ਅਸਵੀਕਾਰ ਕੀਤੀ ਗਈ ਹੈ",
   },
   fr: {
     about: "Infos",
@@ -640,6 +670,18 @@ const STRINGS = new LocalizedStrings({
     READ: "Lecture",
     MUSIC: "Musique",
     SETTINGS: "Paramètres",
+    PLAYBACK_SPEED: "Vitesse de reproduction",
+    UNABLE_TO_PLAY: "Impossible de lire la piste audio.",
+    PLEASE_TRY_AGAIN: "Veuillez réessayer.",
+    UNABLE_TO_SEEK: "Impossible de rechercher la piste audio.",
+    UNABLE_TO_SWITCH_TRACK: "Impossible de changer la piste audio.",
+    AUDIO_SYNC_UNAVAILABLE:
+      "Synchronisation audio non disponible. La lecture continuera sans défilement automatique.",
+    NETWORK_ERROR: "Erreur réseau. Les fonctionnalités audio sont temporairement indisponibles.",
+    COULD_NOT_LOAD_AUDIO_ARTISTS:
+      "Impossible de charger les artistes audio. Veuillez vérifier votre connexion.",
+    PERMISSION_ERROR:
+      "Échec de la vérification de l'autorisation de diffusion : autorisation manquante ou refusée",
   },
   it: {
     about: "Info",
@@ -795,6 +837,18 @@ const STRINGS = new LocalizedStrings({
     READ: "Lettura",
     MUSIC: "Musica",
     SETTINGS: "Impostazioni",
+    PLAYBACK_SPEED: "Velocidad de reproducción",
+    UNABLE_TO_PLAY: "No se puede reproducir el audio.",
+    PLEASE_TRY_AGAIN: "Por favor, inténtelo de nuevo.",
+    UNABLE_TO_SEEK: "No se puede buscar el audio.",
+    UNABLE_TO_SWITCH_TRACK: "No se puede cambiar el audio.",
+    AUDIO_SYNC_UNAVAILABLE:
+      "Sincronización de audio no disponible. La reproducción continuará sin desplazamiento automático.",
+    NETWORK_ERROR: "Error de red. Las funciones de audio están temporalmente indisponibles.",
+    COULD_NOT_LOAD_AUDIO_ARTISTS:
+      "No se pueden cargar los artistas de audio. Por favor, verifique su conexión.",
+    PERMISSION_ERROR:
+      "Controllo dell'autorizzazione di trasmissione non riuscito: autorizzazione mancante o negata",
   },
   es: {
     about: "Sobre Nosotros",
@@ -957,7 +1011,19 @@ const STRINGS = new LocalizedStrings({
     READ: "Leer",
     MUSIC: "Música",
     SETTINGS: "Configuración",
+    PLAYBACK_SPEED: "Velocidad de reproducción",
+    UNABLE_TO_PLAY: "No se puede reproducir el audio.",
+    PLEASE_TRY_AGAIN: "Por favor, inténtelo de nuevo.",
+    UNABLE_TO_SEEK: "No se puede buscar el audio.",
+    UNABLE_TO_SWITCH_TRACK: "No se puede cambiar el audio.",
+    AUDIO_SYNC_UNAVAILABLE:
+      "Sincronización de audio no disponible. La reproducción continuará sin desplazamiento automático.",
+    PERMISSION_ERROR:
+      "Falló la comprobación de permisos de transmisión: permiso faltante o denegado.",
   },
+  NETWORK_ERROR: "Error de red. Las funciones de audio están temporalmente indisponibles.",
+  COULD_NOT_LOAD_AUDIO_ARTISTS:
+    "No se pueden cargar los artistas de audio. Por favor, verifique su conexión.",
 });
 
 export default STRINGS;

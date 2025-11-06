@@ -1,9 +1,7 @@
 import React, { useEffect, useCallback } from "react";
-import { Icon } from "@rneui/themed";
 import PropTypes from "prop-types";
-import useTheme from "@common/context";
-import useThemedStyles from "@common/hooks/useThemedStyles";
-import { constant } from "@common";
+import { BackIconComponent, SettingsIconComponent } from "@common/components";
+import { constant, useTheme, useThemedStyles } from "@common";
 import getHeaderStyles from "./styles";
 
 const Header = ({ navigation, title }) => {
@@ -16,21 +14,19 @@ const Header = ({ navigation, title }) => {
   );
   const headerLeft = () => {
     return (
-      <Icon
-        name="arrow-back"
+      <BackIconComponent
         size={30}
-        onPress={handleBackPress}
+        handleBackPress={handleBackPress}
         color={theme.staticColors.WHITE_COLOR}
       />
     );
   };
   const headerRight = () => {
     return (
-      <Icon
-        name="settings"
+      <SettingsIconComponent
+        handleSettingsPress={handleSettingsPress}
         color={theme.staticColors.WHITE_COLOR}
         size={30}
-        onPress={handleSettingsPress}
       />
     );
   };

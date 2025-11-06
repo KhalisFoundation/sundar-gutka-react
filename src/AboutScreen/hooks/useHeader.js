@@ -1,5 +1,5 @@
 import React, { useEffect } from "react";
-import { Icon } from "@rneui/themed";
+import { BackIconComponent } from "@common/components";
 import useTheme from "@common/context";
 import useThemedStyles from "@common/hooks/useThemedStyles";
 import { STRINGS } from "@common";
@@ -10,10 +10,9 @@ const useHeader = (navigation) => {
   const { headerTitleStyle, headerStyle } = useThemedStyles(createStyles);
   const { goBack } = navigation;
   const headerLeft = () => (
-    <Icon
-      name="arrow-back"
+    <BackIconComponent
       size={30}
-      onPress={() => goBack()}
+      handleBackPress={() => goBack()}
       color={theme.staticColors.WHITE_COLOR}
     />
   );

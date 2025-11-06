@@ -3,6 +3,7 @@ import { Pressable } from "react-native";
 import useTheme from "@common/context";
 import useThemedStyles from "@common/hooks/useThemedStyles";
 import { BackArrowIcon } from "@common/icons";
+import { STRINGS } from "@common";
 import createStyles from "../styles";
 
 const useHeader = (navigation) => {
@@ -16,6 +17,7 @@ const useHeader = (navigation) => {
 
   useEffect(() => {
     navigation.setOptions({
+      title: STRINGS.bookmarks,
       headerTitleStyle: styles.headerTitleStyle,
       headerStyle: styles.headerStyle,
       headerLeft,

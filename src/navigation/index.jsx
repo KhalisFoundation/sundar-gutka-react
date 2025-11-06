@@ -1,7 +1,7 @@
 import React from "react";
 import { NavigationContainer } from "@react-navigation/native";
 import { createNativeStackNavigator } from "@react-navigation/native-stack";
-import { Icon } from "@rneui/themed";
+import { BackIconComponent } from "@common/components";
 import useTheme from "@common/context";
 import useThemedStyles from "@common/hooks/useThemedStyles";
 import { navigationRef, stopTrace, resetTrace, startPerformanceTrace } from "@common";
@@ -19,10 +19,9 @@ import SettingsStyle from "./style";
 const Stack = createNativeStackNavigator();
 
 const headerLeft = (navigation, theme) => (
-  <Icon
-    name="arrow-back"
+  <BackIconComponent
     size={30}
-    onPress={() => navigation.goBack()}
+    handleBackPress={() => navigation.goBack()}
     color={theme.colors.primaryText}
   />
 );
