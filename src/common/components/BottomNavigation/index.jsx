@@ -5,7 +5,7 @@ import PropTypes from "prop-types";
 import useTheme from "@common/context";
 import useThemedStyles from "@common/hooks/useThemedStyles";
 import { HomeIcon, SettingsIcon, MusicIcon, ReadIcon } from "@common/icons";
-import { CustomText, actions, constant } from "@common";
+import { CustomText, actions, constant, STRINGS } from "@common";
 import createStyles from "./style";
 
 const BottomNavigation = ({ navigation, activeKey }) => {
@@ -15,7 +15,12 @@ const BottomNavigation = ({ navigation, activeKey }) => {
   const isAudio = useSelector((state) => state.isAudio);
   const currentBani = useSelector((state) => state.currentBani);
   const navigationItems = [
-    { key: "Home", icon: HomeIcon, handlePress: () => navigation.navigate("Home") },
+    {
+      key: "Home",
+      icon: HomeIcon,
+      handlePress: () => navigation.navigate("Home"),
+      text: STRINGS.HOME,
+    },
     {
       key: "Read",
       icon: ReadIcon,
@@ -24,6 +29,7 @@ const BottomNavigation = ({ navigation, activeKey }) => {
           key: `Reader-${currentBani?.id || constant.defaultBani.id}`,
           params: currentBani || constant.defaultBani,
         }),
+      text: STRINGS.READ,
     },
     {
       key: "Music",
@@ -42,11 +48,13 @@ const BottomNavigation = ({ navigation, activeKey }) => {
         dispatch(actions.toggleAutoScroll(false));
         dispatch(actions.toggleAudio(!isAudio));
       },
+      text: STRINGS.MUSIC,
     },
     {
       key: "Settings",
       icon: SettingsIcon,
       handlePress: () => navigation.navigate(constant.SETTINGS),
+      text: STRINGS.SETTINGS,
     },
   ];
 
@@ -69,7 +77,7 @@ const BottomNavigation = ({ navigation, activeKey }) => {
                 }
               />
               {activeKey !== item.key && (
-                <CustomText style={styles.iconText}>{item.key}</CustomText>
+                <CustomText style={styles.iconText}>{item.text}</CustomText>
               )}
             </Pressable>
           );
