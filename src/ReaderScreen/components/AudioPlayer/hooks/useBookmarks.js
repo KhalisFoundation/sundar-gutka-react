@@ -42,12 +42,7 @@ const useBookmarks = (seekTo, url) => {
       }
 
       // Validate sequence number
-      if (
-        !sequenceNumber ||
-        !Number.isInteger(sequenceNumber) ||
-        sequenceNumber < 1 ||
-        Number.isNaN(sequenceNumber)
-      ) {
+      if (!sequenceNumber || !Number.isInteger(sequenceNumber) || sequenceNumber < 1) {
         logError(`Invalid sequence number extracted: ${sequenceString}`);
         return null;
       }
