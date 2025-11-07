@@ -157,7 +157,6 @@ const AudioControlBar = ({
           audioProgress?.[baniID]?.position &&
           currentPlaying?.id === audioProgress?.[baniID]?.trackId
         ) {
-          console.log("audioProgress?.[baniID]?.position", audioProgress?.[baniID]?.position);
           await seekTo(audioProgress?.[baniID]?.position);
         }
       } catch (error) {
@@ -181,7 +180,6 @@ const AudioControlBar = ({
       const currentProgress = progressRef.current;
       const currentTrack = currentPlayingRef.current;
       if (currentTrack?.id && currentProgress?.position != null) {
-        console.log("currentProgress.position", currentProgress.position);
         dispatch(setAudioProgress(baniID, currentTrack.id, currentProgress.position));
         reset();
       }
