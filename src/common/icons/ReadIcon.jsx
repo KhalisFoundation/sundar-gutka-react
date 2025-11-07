@@ -21,7 +21,12 @@ const ReadIcon = ({ size = 24, color = colors.READER_HEADER_COLOR }) => (
 
 export default ReadIcon;
 
+ReadIcon.defaultProps = {
+  size: 24,
+  color: colors.READER_HEADER_COLOR,
+};
+
 ReadIcon.propTypes = {
-  size: PropTypes.number.isRequired,
-  color: PropTypes.string.isRequired,
+  size: PropTypes.number,
+  color: PropTypes.string,
 };

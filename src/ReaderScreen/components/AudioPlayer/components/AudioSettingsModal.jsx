@@ -77,7 +77,7 @@ const AudioSettingsModal = ({ isLyricsAvailable }) => {
           <View right style={styles.speedControlContainer}>
             <Pressable
               onPress={() => handleSpeedChange(audioPlaybackSpeed + 0.1)}
-              disabled={audioPlaybackSpeed > 2.0}
+              disabled={audioPlaybackSpeed >= 2.0}
             >
               <PlusIcon size={24} color={theme.colors.audioSettingsModalText} />
             </Pressable>
