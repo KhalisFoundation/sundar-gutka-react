@@ -55,6 +55,14 @@
           "caseInsensitive": true
         }
       }
+    ],
+    "overrides": [
+      {
+        "files": ["src/**/*.test.jsx"],
+        "rules": {
+          "react/jsx-filename-extension": "off"
+        }
+      }
     ]
   },
   "plugins": ["prettier", "react-native"]

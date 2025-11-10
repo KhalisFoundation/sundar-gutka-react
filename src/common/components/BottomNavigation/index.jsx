@@ -69,6 +69,8 @@ const BottomNavigation = ({ navigation, activeKey }) => {
               key={item.key}
               style={[styles.iconContainer, item.key === activeKey && styles.activeIconContainer]}
               onPress={item.handlePress}
+              accessibilityRole="button"
+              accessibilityLabel={`bottomnav-${item.key}`}
             >
               <IconComponent
                 size={24}
