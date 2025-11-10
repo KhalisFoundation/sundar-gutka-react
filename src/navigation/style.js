@@ -4,7 +4,7 @@ const SettingsStyle = (theme) => ({
     fontWeight: "normal",
   },
   headerStyle: {
-    backgroundColor: theme.colors.primaryVariant,
+    backgroundColor: theme.colors.surface,
   },
 });
 

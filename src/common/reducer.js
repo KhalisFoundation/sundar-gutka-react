@@ -223,6 +223,10 @@ const scrollPosition = (state = 0, action) => {
   }
 };
 
+const currentBani = createReducer(null, {
+  [actionTypes.SET_CURRENT_BANI]: (state, action) => action.value,
+});
+
 const rootReducer = combineReducers({
   isNightMode,
   fontSize,
@@ -263,5 +267,6 @@ const rootReducer = combineReducers({
   isHeaderFooter,
   isDatabaseUpdateAvailable,
   audioManifest,
+  currentBani,
 });
 export default rootReducer;

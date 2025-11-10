@@ -6,7 +6,7 @@ const createStyles = (theme) => ({
   iconStyle: { alignSelf: "flex-start" },
   imageStyle: {},
   headerView: {
-    backgroundColor: theme.colors.primaryVariant,
+    backgroundColor: theme.colors.surface,
     padding: theme.spacing.lg,
     height: theme.components.header.height,
   },
@@ -18,7 +18,7 @@ const createStyles = (theme) => ({
     top: theme.spacing.xl,
     fontFamily: theme.typography.fonts.balooPaaji,
   },
-  settingsView: { backgroundColor: theme.colors.primaryVariant },
+  settingsView: { backgroundColor: theme.colors.surface },
   displayOptionsText: {
     padding: theme.spacing.sm + theme.spacing.xs,
     backgroundColor: theme.colors.surface,
