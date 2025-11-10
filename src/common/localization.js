@@ -169,6 +169,10 @@ const STRINGS = new LocalizedStrings({
     NETWORK_ERROR: "Network error. Audio features temporarily unavailable.",
     COULD_NOT_LOAD_AUDIO_ARTISTS: "Could not load audio artists. Please check your connection.",
     PERMISSION_ERROR: "Broadcast permission check failed — missing or denied permission",
+    MAAFI_JI: "Maafi ji 🙏🏽",
+    WE_DO_NOT_HAVE_AUDIOS_FOR: "We do not have audios for",
+    REQUEST_AUDIO_FOR_THIS_PAATH: "Request audio for this paath.",
+    YET: "yet.",
   },
   hi: {
     about: "हमारे बारे",
@@ -337,6 +341,10 @@ const STRINGS = new LocalizedStrings({
     COULD_NOT_LOAD_AUDIO_ARTISTS:
       "ऑडियो कलाकारों को लोड करने में असमर्थ। कृपया अपना कनेक्शन जांचें।",
     PERMISSION_ERROR: "प्रसारण अनुमति जाँच विफल - अनुमति अनुपलब्ध या अस्वीकृत",
+    MAAFI_JI: "क्षमा करें जी 🙏🏽",
+    WE_DO_NOT_HAVE_AUDIOS_FOR: "हमारे पास ऑडियो नहीं है",
+    REQUEST_AUDIO_FOR_THIS_PAATH: "इस पाठ के लिए ऑडियो का अनुरोध करें",
+    YET: "अभी तक।",
   },
 
   pa: {
@@ -506,6 +514,10 @@ const STRINGS = new LocalizedStrings({
     COULD_NOT_LOAD_AUDIO_ARTISTS:
       "ਆਡੀਓ ਕਲਾਕਾਰਾਂ ਨੂੰ ਲੋਡ ਕਰਨ ਲਈ ਅਸਮਰਥ। ਕਿਰਪਾ ਕਰਕੇ ਆਪਣਾ ਕਨੈਕਸ਼ਨ ਜਾਂਚੋ।",
     PERMISSION_ERROR: "ਪ੍ਰਸਾਰਣ ਇਜਾਜ਼ਤ ਜਾਂਚ ਅਸਫਲ ਰਹੀ — ਇਜਾਜ਼ਤ ਗੁੰਮ ਹੈ ਜਾਂ ਅਸਵੀਕਾਰ ਕੀਤੀ ਗਈ ਹੈ",
+    MAAFI_JI: "ਮਾਫ਼ ਕਰਨਾ ਜੀ 🙏🏽",
+    WE_DO_NOT_HAVE_AUDIOS_FOR: "ਸਾਡੇ ਕੋਲ ਇਹਨਾਂ ਲਈ ਆਡੀਓ ਨਹੀਂ ਹਨ",
+    REQUEST_AUDIO_FOR_THIS_PAATH: "ਇਸ ਪਾਠ ਲਈ ਆਡੀਓ ਦੀ ਬੇਨਤੀ ਕਰੋ।",
+    YET: "",
   },
   fr: {
     about: "Infos",
@@ -682,6 +694,10 @@ const STRINGS = new LocalizedStrings({
       "Impossible de charger les artistes audio. Veuillez vérifier votre connexion.",
     PERMISSION_ERROR:
       "Échec de la vérification de l'autorisation de diffusion : autorisation manquante ou refusée",
+    MAAFI_JI: "Désolé JI🙏🏽",
+    WE_DO_NOT_HAVE_AUDIOS_FOR: "Nous n'avons pas d'audios pour",
+    REQUEST_AUDIO_FOR_THIS_PAATH: "Demander un audio pour ce chemin.",
+    YET: "encore.",
   },
   it: {
     about: "Info",
@@ -849,6 +865,10 @@ const STRINGS = new LocalizedStrings({
       "No se pueden cargar los artistas de audio. Por favor, verifique su conexión.",
     PERMISSION_ERROR:
       "Controllo dell'autorizzazione di trasmissione non riuscito: autorizzazione mancante o negata",
+    MAAFI_JI: "Mi dispiace Ji🙏🏽",
+    WE_DO_NOT_HAVE_AUDIOS_FOR: "Non abbiamo audio per",
+    REQUEST_AUDIO_FOR_THIS_PAATH: "Richiedi audio per questo percorso.",
+    YET: "ancora.",
   },
   es: {
     about: "Sobre Nosotros",
@@ -1024,6 +1044,10 @@ const STRINGS = new LocalizedStrings({
   NETWORK_ERROR: "Error de red. Las funciones de audio están temporalmente indisponibles.",
   COULD_NOT_LOAD_AUDIO_ARTISTS:
     "No se pueden cargar los artistas de audio. Por favor, verifique su conexión.",
+  MAAFI_JI: "Lo siento Ji🙏🏽",
+  WE_DO_NOT_HAVE_AUDIOS_FOR: "No tenemos audios para",
+  REQUEST_AUDIO_FOR_THIS_PAATH: "Solicitar audio para esta ruta.",
+  YET: "aún.",
 });
 
 export default STRINGS;
