@@ -76,9 +76,9 @@ const AudioTrackDialog = ({
       />
     ) : (
       <View style={styles.noTracksContainer}>
-        <CustomText style={styles.noTracksText}>Maafi ji 🙏🏽</CustomText>
+        <CustomText style={styles.noTracksText}>{STRINGS.MAAFI_JI}</CustomText>
         <CustomText style={styles.noTracksSubtext}>
-          We do not have audios for{" "}
+          {STRINGS.WE_DO_NOT_HAVE_AUDIOS_FOR}{" "}
           <CustomText
             style={{
               fontFamily: fontFace,
@@ -86,7 +86,7 @@ const AudioTrackDialog = ({
           >
             {title}
           </CustomText>{" "}
-          yet.
+          {STRINGS.YET}.
         </CustomText>
         <Pressable
           style={styles.joinMailingListButton}
@@ -97,7 +97,9 @@ const AudioTrackDialog = ({
             })
           }
         >
-          <CustomText style={styles.joinMailingListText}>Request audio for this paath.</CustomText>
+          <CustomText style={styles.joinMailingListText}>
+            {STRINGS.REQUST_AUDIO_FOR_THIS_PAATH}
+          </CustomText>
         </Pressable>
       </View>
     );
