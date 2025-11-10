@@ -1,6 +1,7 @@
 import { createNavigationContainerRef } from "@react-navigation/native";
 import { getBaniByID } from "@database";
 import constant from "./constant";
+import { logError } from "./firebase/crashlytics";
 
 export const navigationRef = createNavigationContainerRef();
 
@@ -11,6 +12,11 @@ export const navigate = (name, params) => {
 };
 
 export const navigateTo = async (incoming) => {
+  if (!incoming?.notification?.data) {
+    logError("navigateTo called with invalid notification data");
+    return;
+  }
+
   const { data } = incoming.notification;
 
   // Try to fetch titleUni from database if not provided in notification

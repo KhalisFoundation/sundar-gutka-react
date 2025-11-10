@@ -231,13 +231,12 @@ const scrollPosition = (state = 0, action) => {
 const audioProgress = (state = {}, action) => {
   switch (action.type) {
     case actionTypes.SET_AUDIO_PROGRESS: {
-      const { baniId, trackId, position, duration } = action.payload;
+      const { baniId, trackId, position } = action.payload;
       return {
         ...state,
         [baniId]: {
           trackId,
           position,
-          duration,
         },
       };
     }

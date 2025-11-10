@@ -37,12 +37,18 @@ const App = () => {
   }, []);
 
   useEffect(() => {
-    return notifee.onForegroundEvent(({ type, detail }) => {
+    const unsubscribe = notifee.onForegroundEvent(async ({ type, detail }) => {
       resetBadgeCount();
       if (type === EventType.PRESS) {
-        navigateTo(detail);
+        try {
+          await navigateTo(detail);
+        } catch (error) {
+          logError(error);
+        }
       }
     });
+
+    return unsubscribe;
   }, []);
 
   return (
