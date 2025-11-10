@@ -1,4 +1,3 @@
-import { Platform } from "react-native";
 import { colors, constant, baseFontSize, logError, logMessage } from "@common";
 import htmlTemplate from "./gutkahtml";
 import script from "./gutkaScript";
@@ -86,10 +85,6 @@ export const loadHTML = (
 ) => {
   try {
     const backColor = isNightMode ? colors.NIGHT_BLACK : colors.WHITE_COLOR;
-    const fileUri = Platform.select({
-      ios: `${fontFace}.ttf`,
-      android: `file:///android_asset/fonts/${fontFace}.ttf`,
-    });
 
     const content = shabad
       .map((item) => {
@@ -167,14 +162,7 @@ export const loadHTML = (
         return contentHtml;
       })
       .join("");
-    const htmlContent = htmlTemplate(
-      backColor,
-      fileUri,
-      fontFace,
-      content,
-      isNightMode,
-      savePosition
-    );
+    const htmlContent = htmlTemplate(backColor, fontFace, content, isNightMode, savePosition);
     return htmlContent;
   } catch (error) {
     logError(error);

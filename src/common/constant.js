@@ -7,6 +7,8 @@ export default {
   IPA: "IPA",
   GURBANI_AKHAR_TRUE: "GurbaniAkharTrue",
   GURBANI_AKHAR_THICK_TRUE: "GurbaniAkharThickTrue",
+  GURBANI_AKHAR_HEAVY_TRUE: "GurbaniAkharHeavyTrue",
+  ANMOL_LIPI: "AnmolLipiSG",
   READER: "Reader",
   SETTINGS: "Settings",
   EXTRA_SMALL: "EXTRA_SMALL",
