@@ -15,4 +15,5 @@ export { default as BackArrowIcon } from "./BackArrowIcon";
 export { default as StopIcon } from "./StopIcon";
 export { default as PlusIcon } from "./plusIcon";
 export { default as MinusIcon } from "./minusIcon";
+export { default as ReadIcon } from "./ReadIcon";
 export { default as RefreshIcon } from "./RefreshIcon";
