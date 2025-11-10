@@ -65,6 +65,10 @@ export const setAudioPlaybackSpeed = (value) => {
   return { type: actionTypes.SET_AUDIO_PLAYBACK_SPEED, value };
 };
 
+export const setCurrentBani = (bani) => {
+  return { type: actionTypes.SET_CURRENT_BANI, value: bani };
+};
+
 export const toggleStatusBar = (value) => {
   trackSettingEvent(constant.STATUS_BAR, value);
   return { type: actionTypes.TOGGLE_STATUS_BAR, value };

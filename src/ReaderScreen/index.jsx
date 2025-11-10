@@ -3,7 +3,6 @@ import { ActivityIndicator, BackHandler, AppState, Platform, Animated } from "re
 import { WebView } from "react-native-webview";
 import { useDispatch, useSelector } from "react-redux";
 import PropTypes from "prop-types";
-import { HomeIcon, BookmarkIcon, SettingsIcon, MusicIcon } from "@common/icons";
 import {
   constant,
   actions,
@@ -63,6 +62,10 @@ const Reader = ({ navigation, route }) => {
       dispatch(actions.setPosition(parseFloat(positionPointer.current), id));
     }
   }, [dispatch, id]);
+
+  useEffect(() => {
+    dispatch(actions.setCurrentBani({ id, title, titleUni }));
+  }, [id, title, titleUni]);
 
   useEffect(() => {
     // Handle undefined titleUni gracefully - fallback to title if titleUni is not available
@@ -155,18 +158,14 @@ const Reader = ({ navigation, route }) => {
     return true;
   }, []);
 
-  useEffect(() => {
-    const backHandler = BackHandler.addEventListener("hardwareBackPress", handleBackPress);
-    return () => backHandler.remove();
-  }, [handleBackPress]);
-
   const handleBookmarkPress = useCallback(() => {
     navigation.navigate(constant.BOOKMARKS, { id });
   }, [navigation, id]);
 
-  const handleSettingsPress = useCallback(() => {
-    navigation.navigate(constant.SETTINGS);
-  }, [navigation]);
+  useEffect(() => {
+    const backHandler = BackHandler.addEventListener("hardwareBackPress", handleBackPress);
+    return () => backHandler.remove();
+  }, [handleBackPress]);
 
   const handleMessage = useCallback(
     (message) => {
@@ -218,28 +217,6 @@ const Reader = ({ navigation, route }) => {
     }
   }, []);
 
-  const navigationItems = [
-    { key: "Home", icon: HomeIcon, handlePress: () => navigation.navigate("Home") },
-    {
-      key: "Music",
-      icon: MusicIcon,
-      handlePress: () => {
-        dispatch(actions.toggleAutoScroll(false));
-        dispatch(actions.toggleAudio(!isAudio));
-      },
-    },
-    {
-      key: "Bookmarks",
-      icon: BookmarkIcon,
-      handlePress: () => handleBookmarkPress(),
-    },
-    {
-      key: "Settings",
-      icon: SettingsIcon,
-      handlePress: () => handleSettingsPress(),
-    },
-  ];
-
   return (
     <SafeArea backgroundColor={theme.colors.surface}>
       <StatusBarComponent backgroundColor={theme.colors.surface} />
@@ -286,7 +263,7 @@ const Reader = ({ navigation, route }) => {
         {isAutoScroll && <AutoScrollComponent shabadID={id} webViewRef={webViewRef} />}
       </Animated.View>
 
-      <BottomNavigation navigationItems={navigationItems} activeKey={isAudio ? "Music" : null} />
+      <BottomNavigation navigation={navigation} activeKey={isAudio ? "Music" : "Read"} />
     </SafeArea>
   );
 };

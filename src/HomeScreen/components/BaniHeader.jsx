@@ -5,8 +5,7 @@ import { SettingsIconComponent } from "@common/components";
 import { constant, STRINGS, CustomText, useTheme, useThemedStyles } from "@common";
 import createStyles from "../styles";
 
-const BaniHeader = (props) => {
-  const { navigate } = props;
+const BaniHeader = ({ navigate }) => {
   const { theme } = useTheme();
   const styles = useThemedStyles(createStyles);
   return (
@@ -38,7 +37,8 @@ const BaniHeader = (props) => {
     </View>
   );
 };
+
+export default BaniHeader;
 BaniHeader.propTypes = {
   navigate: PropTypes.func.isRequired,
 };
-export default BaniHeader;

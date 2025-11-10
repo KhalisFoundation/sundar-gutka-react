@@ -250,6 +250,9 @@ const audioProgress = (state = {}, action) => {
       return state;
   }
 };
+const currentBani = createReducer(null, {
+  [actionTypes.SET_CURRENT_BANI]: (state, action) => action.value,
+});
 
 const rootReducer = combineReducers({
   isNightMode,
@@ -293,5 +296,6 @@ const rootReducer = combineReducers({
   isDatabaseUpdateAvailable,
   audioManifest,
   audioProgress,
+  currentBani,
 });
 export default rootReducer;
