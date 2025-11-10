@@ -1,11 +1,11 @@
 // BottomNavigation.test.jsx
 import React from "react";
-import { render, fireEvent } from "@testing-library/react-native";
-import BottomNavigation from "./index";
 
-// --- Mocks ---
-// Import reusable mock factories
+import { render, fireEvent } from "@testing-library/react-native";
+
 import { getMockDispatch, setMockState } from "@common/test-utils/mocks/react-redux";
+
+import BottomNavigation from "./index";
 
 // Mock react-redux hooks (factory functions are called inside jest.mock)
 jest.mock("react-redux", () => {
@@ -44,9 +44,15 @@ jest.mock("./style", () => jest.fn());
 
 const createNavigation = ({ currentRoute = "Home" } = {}) => {
   const navigate = jest.fn();
+  let index = 0;
+  if (currentRoute === "Reader") {
+    index = 1;
+  } else if (currentRoute === "Settings") {
+    index = 2;
+  }
   const getState = jest.fn(() => ({
     routes: [{ name: "Home" }, { name: "Reader" }, { name: "Settings" }],
-    index: currentRoute === "Home" ? 0 : currentRoute === "Reader" ? 1 : 2,
+    index,
   }));
   return { navigate, getState };
 };

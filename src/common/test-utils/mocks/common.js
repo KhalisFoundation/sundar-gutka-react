@@ -8,9 +8,9 @@ export const createCommonMock = (overrides = {}) => {
   const RN = require("react-native");
   const toggleAutoScrollAction = (val) => ({ type: "TOGGLE_AUTO_SCROLL", payload: val });
   const toggleAudioAction = (val) => ({ type: "TOGGLE_AUDIO", payload: val });
-  const CustomText = (props) => {
-    const Text = RN.Text;
-    return React.createElement(Text, props, props.children);
+  const CustomText = ({ children, ...rest }) => {
+    const { Text } = RN;
+    return React.createElement(Text, rest, children);
   };
   return {
     CustomText,

@@ -5,14 +5,12 @@
 
 export const createUseThemedStylesMock = (stylesOverrides = {}) => ({
   __esModule: true,
-  default:
-    (createStyles) =>
-    (...args) => ({
-      container: { padding: 0 },
-      navigationBar: { flexDirection: "row" },
-      iconContainer: { padding: 8 },
-      activeIconContainer: { borderWidth: 1 },
-      iconText: { fontSize: 10 },
-      ...stylesOverrides,
-    }),
+  default: (_createStyles) => () => ({
+    container: { padding: 0 },
+    navigationBar: { flexDirection: "row" },
+    iconContainer: { padding: 8 },
+    activeIconContainer: { borderWidth: 1 },
+    iconText: { fontSize: 10 },
+    ...stylesOverrides,
+  }),
 });

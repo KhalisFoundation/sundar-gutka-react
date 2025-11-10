@@ -55,15 +55,58 @@
           "caseInsensitive": true
         }
       }
-    ],
-    "overrides": [
-      {
-        "files": ["src/**/*.test.jsx"],
-        "rules": {
-          "react/jsx-filename-extension": "off"
-        }
-      }
     ]
   },
+  "overrides": [
+    {
+      "files": ["**/*.test.js", "**/*.test.jsx", "**/__mocks__/**", "**/test-utils/**"],
+      "env": {
+        "jest": true
+      },
+      "rules": {
+        "react/jsx-filename-extension": "off",
+        "import/prefer-default-export": "off",
+        "react/prop-types": "off",
+        "no-unused-vars": ["error", { "argsIgnorePattern": "^_" }],
+        "react/react-in-jsx-scope": "off",
+        "react/jsx-no-useless-fragment": "off",
+        "no-nested-ternary": "off"
+      }
+    },
+    {
+      "files": ["**/*.test.jsx"],
+      "rules": {
+        "import/order": [
+          "error",
+          {
+            "groups": ["builtin", "external", "internal", "parent", "sibling", "index"],
+            "pathGroups": [
+              {
+                "pattern": "react*",
+                "group": "external",
+                "position": "before"
+              },
+              {
+                "pattern": "@common/**",
+                "group": "internal",
+                "position": "before"
+              },
+              {
+                "pattern": "@**",
+                "group": "internal",
+                "position": "before"
+              }
+            ],
+            "pathGroupsExcludedImportTypes": ["builtin"],
+            "newlines-between": "always",
+            "alphabetize": {
+              "order": "asc",
+              "caseInsensitive": true
+            }
+          }
+        ]
+      }
+    }
+  ],
   "plugins": ["prettier", "react-native"]
 }

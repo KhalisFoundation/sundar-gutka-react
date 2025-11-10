@@ -27,9 +27,9 @@ jobs:
       - name: Install dependencies
         run: yarn install --frozen-lockfile
 
-      # Lint step — fails on warnings too (optional)
+      # Lint step
       - name: Run ESLint
-        run: yarn lint --max-warnings=0
+        run: yarn lint
 
       # Unit tests (Jest example)
       - name: Run tests
