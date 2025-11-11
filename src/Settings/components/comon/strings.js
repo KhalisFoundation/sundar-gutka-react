@@ -9,10 +9,10 @@ export const getFontSizes = (strings) => [
 ];
 
 export const getFontFaces = (strings) => [
-  { key: "AnmolLipiSG", title: strings.anmol_lipi },
-  { key: "GurbaniAkharTrue", title: strings.gurbani_akhar_default },
-  { key: "GurbaniAkharHeavyTrue", title: strings.gurbani_akhar_heavy },
-  { key: "GurbaniAkharThickTrue", title: strings.gurbani_akhar_think },
+  { key: constant.ANMOL_LIPI, title: strings.anmol_lipi },
+  { key: constant.GURBANI_AKHAR_TRUE, title: strings.gurbani_akhar_default },
+  { key: constant.GURBANI_AKHAR_HEAVY_TRUE, title: strings.gurbani_akhar_heavy },
+  { key: constant.GURBANI_AKAR_THICK_TRUE, title: strings.gurbani_akhar_think },
 ];
 
 export const getBaniLengths = (strings) => [

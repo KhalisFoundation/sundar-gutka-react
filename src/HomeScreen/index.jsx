@@ -28,6 +28,7 @@ const HomeScreen = React.memo(({ navigation }) => {
   const language = useSelector((state) => state.language);
   const theme = useSelector((state) => state.theme);
   const baniOrder = useSelector((state) => state.baniOrder);
+  const fontFace = useSelector((state) => state.fontFace);
   useDatabaseUpdateCheck();
 
   useKeepAwake();
@@ -41,6 +42,12 @@ const HomeScreen = React.memo(({ navigation }) => {
       dispatch(actions.toggleNightMode(currentColorScheme === "dark"));
     }
   };
+
+  useEffect(() => {
+    if (!fontFace) {
+      dispatch(actions.setFontFace(constant.GURBANI_AKHAR_TRUE));
+    }
+  }, [fontFace]);
 
   useEffect(() => {
     dispatch(actions.setLanguage(language));
