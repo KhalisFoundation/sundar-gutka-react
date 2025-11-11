@@ -35,11 +35,13 @@ import ThemeComponent from "./components/theme";
 import TranslationComponent from "./components/translation";
 import TransliterationComponent from "./components/transliteration";
 import VishraamComponent from "./components/vishraam";
+import useHeader from "./hooks/useHeader";
 import createStyles from "./styles";
 
 const Settings = ({ navigation }) => {
   logMessage(constant.SETTINGS);
   useScreenAnalytics(constant.SETTINGS);
+  useHeader(navigation);
   const isDatabaseUpdateAvailable = useSelector((state) => state.isDatabaseUpdateAvailable);
 
   const { navigate } = navigation;
