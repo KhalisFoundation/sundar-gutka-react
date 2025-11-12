@@ -7,36 +7,6 @@ import { getMockDispatch, setMockState } from "@common/test-utils/mocks/react-re
 
 import BottomNavigation from "./index";
 
-// Mock react-redux hooks (factory functions are called inside jest.mock)
-jest.mock("react-redux", () => {
-  const { createReactReduxMock } = require("@common/test-utils/mocks/react-redux");
-  return createReactReduxMock().mock;
-});
-
-// Mock theme/context - useTheme is the default export
-jest.mock("@common/context", () => {
-  const { createContextMock } = require("@common/test-utils/mocks/context");
-  return createContextMock();
-});
-
-// Mock useThemedStyles to return a stable style object
-jest.mock("@common/hooks/useThemedStyles", () => {
-  const { createUseThemedStylesMock } = require("@common/test-utils/mocks/useThemedStyles");
-  return createUseThemedStylesMock();
-});
-
-// Mock icons to simple components
-jest.mock("@common/icons", () => {
-  const { createIconsMock } = require("@common/test-utils/mocks/icons");
-  return createIconsMock();
-});
-
-// Mock @common exports
-jest.mock("@common", () => {
-  const { createCommonMock } = require("@common/test-utils/mocks/common");
-  return createCommonMock();
-});
-
 // Mock styles module used by useThemedStyles (not strictly necessary because we mock the hook)
 jest.mock("./style", () => jest.fn());
 
@@ -44,6 +14,7 @@ jest.mock("./style", () => jest.fn());
 
 const createNavigation = ({ currentRoute = "Home" } = {}) => {
   const navigate = jest.fn();
+  const routes = [{ name: "Home" }, { name: "Reader" }, { name: "Settings" }];
   let index = 0;
   if (currentRoute === "Reader") {
     index = 1;
@@ -51,7 +22,7 @@ const createNavigation = ({ currentRoute = "Home" } = {}) => {
     index = 2;
   }
   const getState = jest.fn(() => ({
-    routes: [{ name: "Home" }, { name: "Reader" }, { name: "Settings" }],
+    routes,
     index,
   }));
   return { navigate, getState };
@@ -101,13 +72,14 @@ describe("BottomNavigation", () => {
     expect(navigation.navigate).toHaveBeenCalledWith("Home");
   });
 
-  test("pressing Read navigates to Reader with currentBani if present", () => {
+  test("pressing Read navigates to Reader with currentBani if present and toggles audio to false", () => {
     const navigation = createNavigation();
     const { getByLabelText } = render(
       <BottomNavigation navigation={navigation} activeKey="Home" />
     );
 
     fireEvent.press(getByLabelText("bottomnav-Read"));
+    expect(mockDispatch).toHaveBeenCalledWith({ type: "TOGGLE_AUDIO", payload: false });
 
     expect(navigation.navigate).toHaveBeenCalledWith("Reader", {
       key: "Reader-123",
@@ -190,5 +162,20 @@ describe("BottomNavigation", () => {
     expect(mockDispatch).toHaveBeenCalledWith({ type: "TOGGLE_AUTO_SCROLL", payload: false });
     // toggled from true -> false
     expect(mockDispatch).toHaveBeenCalledWith({ type: "TOGGLE_AUDIO", payload: false });
+  });
+
+  test("As a user entering Settings from Home I want irrelevant tabs hidden So that navigation isn't confusing", () => {
+    const navigation = createNavigation({ currentRoute: "Settings" });
+    const { getByLabelText, queryByLabelText } = render(
+      <BottomNavigation navigation={navigation} activeKey="Settings" />
+    );
+
+    // Home and Settings should be visible
+    expect(getByLabelText("bottomnav-Home")).toBeTruthy();
+    expect(getByLabelText("bottomnav-Settings")).toBeTruthy();
+
+    // Read and Music should be hidden on Settings page
+    expect(queryByLabelText("bottomnav-Read")).toBeNull();
+    expect(queryByLabelText("bottomnav-Music")).toBeNull();
   });
 });
