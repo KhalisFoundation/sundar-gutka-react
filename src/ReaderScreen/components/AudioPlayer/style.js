@@ -1,3 +1,4 @@
+import { Platform } from "react-native";
 import { constant } from "@common";
 
 const BORDER_RADIUS = {
@@ -412,7 +413,10 @@ export const audioSettingModalStyles = (theme) => ({
     fontFamily: theme.typography.fonts.balooPaaji,
     color: theme.colors.audioSettingsModalText,
   },
-  switchStyle: { transform: [{ scaleX: 0.7 }, { scaleY: 0.7 }] },
+  switchStyle: Platform.select({
+    android: { transform: [{ scaleX: 1.2 }, { scaleY: 1.2 }] },
+    ios: { transform: [{ scaleX: 1.0 }, { scaleY: 1.0 }] },
+  }),
   speedControlContainer: {
     flexDirection: "row",
     alignItems: "center",
