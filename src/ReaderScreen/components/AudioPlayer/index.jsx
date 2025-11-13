@@ -8,17 +8,24 @@ import useThemedStyles from "@common/hooks/useThemedStyles";
 import { showErrorToast } from "@common/toast";
 import { STRINGS, CustomText, logError } from "@common";
 import { AudioTrackDialog, AudioControlBar } from "./components";
-import { useAudioManifest, useTrackPlayer, useAudioSyncScroll } from "./hooks";
+import { useTrackPlayer, useAudioSyncScroll } from "./hooks";
 import createStyles from "./style";
 
-const AudioPlayer = ({ baniID, title, webViewRef }) => {
+const AudioPlayer = ({
+  baniID,
+  title,
+  webViewRef,
+  tracks,
+  currentPlaying,
+  setCurrentPlaying,
+  isLoading,
+}) => {
   const dispatch = useDispatch();
   const styles = useThemedStyles(createStyles);
   const [showTrackModal, setShowTrackModal] = useState(true);
   const isAudioAutoPlay = useSelector((state) => state.isAudioAutoPlay);
   const defaultAudio = useSelector((state) => state.defaultAudio);
   const audioPlaybackSpeed = useSelector((state) => state.audioPlaybackSpeed);
-  const { tracks, currentPlaying, setCurrentPlaying, isLoading } = useAudioManifest(baniID);
   const {
     isPlaying,
     progress,
@@ -182,6 +189,21 @@ AudioPlayer.propTypes = {
       postMessage: PropTypes.func,
     }),
   }).isRequired,
+  tracks: PropTypes.arrayOf(
+    PropTypes.shape({
+      id: PropTypes.string.isRequired,
+      title: PropTypes.string.isRequired,
+      artist: PropTypes.string.isRequired,
+      audioUrl: PropTypes.string.isRequired,
+    })
+  ).isRequired,
+  currentPlaying: PropTypes.shape({
+    id: PropTypes.string.isRequired,
+    displayName: PropTypes.string.isRequired,
+    audioUrl: PropTypes.string.isRequired,
+  }).isRequired,
+  setCurrentPlaying: PropTypes.func.isRequired,
+  isLoading: PropTypes.bool.isRequired,
 };
 
 export default AudioPlayer;

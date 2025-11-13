@@ -7,7 +7,7 @@ import { fetchManifest } from "@service";
 const useAudioManifest = (baniID) => {
   const [tracks, setTracks] = useState([]);
   const [currentPlaying, setCurrentPlaying] = useState(null);
-  const [isLoading, setIsLoading] = useState(false);
+  const [isTracksLoading, setIsLoading] = useState(false);
   const defaultAudio = useSelector((state) => state.defaultAudio);
 
   const dispatch = useDispatch();
@@ -160,7 +160,7 @@ const useAudioManifest = (baniID) => {
     tracks,
     currentPlaying,
     setCurrentPlaying,
-    isLoading,
+    isTracksLoading,
     addTrackToManifest,
     removeTrackFromManifest,
     isTrackDownloaded,
