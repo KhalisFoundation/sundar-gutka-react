@@ -149,7 +149,15 @@ ${listener}.addEventListener(
     }
 
     if (message.hasOwnProperty("bookmark")) {
+      const element = document.getElementById(message.bookmark);
+      if(!element){
+        return;
+      }
+      const sequenceStringNormal=element.getAttribute("data-sequence");
+      const sequenceStringParagraph=element.getAttribute("data-sequences");
+      const sequenceString = sequenceStringNormal ? sequenceStringNormal : sequenceStringParagraph;
       location.hash = "#" + message.bookmark;
+      window.ReactNativeWebView.postMessage("sequenceString-" + sequenceString);
       window.ReactNativeWebView.postMessage("hide");
     } 
     if (message.hasOwnProperty("autoScroll")) {
