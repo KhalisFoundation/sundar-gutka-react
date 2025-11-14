@@ -12,7 +12,7 @@ export const getFontFaces = (strings) => [
   { key: constant.ANMOL_LIPI, title: strings.anmol_lipi },
   { key: constant.GURBANI_AKHAR_TRUE, title: strings.gurbani_akhar_default },
   { key: constant.GURBANI_AKHAR_HEAVY_TRUE, title: strings.gurbani_akhar_heavy },
-  { key: constant.GURBANI_AKAR_THICK_TRUE, title: strings.gurbani_akhar_think },
+  { key: constant.GURBANI_AKHAR_THICK_TRUE, title: strings.gurbani_akhar_think },
 ];
 
 export const getBaniLengths = (strings) => [
