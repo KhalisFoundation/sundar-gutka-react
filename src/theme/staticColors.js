@@ -8,6 +8,8 @@ const staticColors = {
   TRACK_COLOR: "rgba(17, 57, 121, 0.1)",
   SLIDER_TRACK_COLOR: "rgba(238, 238, 238, 0.93)",
   HIGHLIGHT_COLOR: "rgba(69, 133, 235, 0.1)",
+  SWITCH_BACKGROUND_COLOR: "#3e3e3e",
+  SWITCH_THUMB_COLOR: "#767577",
 };
 
 export default staticColors;
