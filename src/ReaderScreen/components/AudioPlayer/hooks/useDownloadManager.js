@@ -37,7 +37,6 @@ const useDownloadManager = (
       await downloadTrack(
         currentPlaying.audioUrl,
         currentPlaying.displayName,
-        undefined, // onProgress - not needed for this use case
         (local) => {
           // onComplete callback - called when download succeeds
           setIsDownloaded(true);
