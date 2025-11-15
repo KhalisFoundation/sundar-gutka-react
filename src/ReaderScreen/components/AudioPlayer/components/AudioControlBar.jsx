@@ -254,7 +254,7 @@ const AudioControlBar = ({
         </Animated.View>
 
         {/* Main Playback Section */}
-        <View style={[styles.mainSection, styles.mainSectionWithBorder]}>
+        <View style={[styles.mainSection]}>
           <View style={styles.trackInfo}>
             <View style={styles.trackInfoLeft}>
               {isTracksLoading ? (
