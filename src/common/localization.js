@@ -173,7 +173,7 @@ const STRINGS = new LocalizedStrings({
     WE_DO_NOT_HAVE_AUDIOS_FOR: "We do not have audios for",
     REQUEST_AUDIO_FOR_THIS_PAATH: "Request audio for this paath.",
     YET: "yet.",
-    SYNC_UNAVAILABLE: "Sync Unavailable",
+    SYNC_UNAVAILABLE: "Unavailable",
   },
   hi: {
     about: "हमारे बारे",
@@ -346,7 +346,7 @@ const STRINGS = new LocalizedStrings({
     WE_DO_NOT_HAVE_AUDIOS_FOR: "हमारे पास ऑडियो नहीं है",
     REQUEST_AUDIO_FOR_THIS_PAATH: "इस पाठ के लिए ऑडियो का अनुरोध करें",
     YET: "अभी तक।",
-    SYNC_UNAVAILABLE: "सिंक अनुपलब्ध",
+    SYNC_UNAVAILABLE: "अनुपलब्ध",
   },
 
   pa: {
@@ -520,7 +520,7 @@ const STRINGS = new LocalizedStrings({
     WE_DO_NOT_HAVE_AUDIOS_FOR: "ਸਾਡੇ ਕੋਲ ਇਹਨਾਂ ਲਈ ਆਡੀਓ ਨਹੀਂ ਹਨ",
     REQUEST_AUDIO_FOR_THIS_PAATH: "ਇਸ ਪਾਠ ਲਈ ਆਡੀਓ ਦੀ ਬੇਨਤੀ ਕਰੋ।",
     YET: "ਅਜੇ ਤੱਕ।",
-    SYNC_UNAVAILABLE: "ਸਿੰਕ ਉਪਲਬਧ ਨਹੀਂ ਹੈ",
+    SYNC_UNAVAILABLE: "ਉਪਲਬਧ ਨਹੀਂ ਹੈ",
   },
   fr: {
     about: "Infos",
@@ -701,7 +701,7 @@ const STRINGS = new LocalizedStrings({
     WE_DO_NOT_HAVE_AUDIOS_FOR: "Nous n'avons pas d'audios pour",
     REQUEST_AUDIO_FOR_THIS_PAATH: "Demander un audio pour ce chemin.",
     YET: "encore.",
-    SYNC_UNAVAILABLE: "Synchronisation non disponible.",
+    SYNC_UNAVAILABLE: "Non disponible.",
   },
   it: {
     about: "Info",
@@ -873,7 +873,7 @@ const STRINGS = new LocalizedStrings({
     WE_DO_NOT_HAVE_AUDIOS_FOR: "Non abbiamo audio per",
     REQUEST_AUDIO_FOR_THIS_PAATH: "Richiedi audio per questo percorso.",
     YET: "ancora.",
-    SYNC_UNAVAILABLE: "Sincronizzazione non disponibile.",
+    SYNC_UNAVAILABLE: "Non disponibile.",
   },
   es: {
     about: "Sobre Nosotros",
@@ -1053,7 +1053,7 @@ const STRINGS = new LocalizedStrings({
   WE_DO_NOT_HAVE_AUDIOS_FOR: "No tenemos audios para",
   REQUEST_AUDIO_FOR_THIS_PAATH: "Solicitar audio para esta ruta.",
   YET: "aún.",
-  SYNC_UNAVAILABLE: "Sincronización no disponible",
+  SYNC_UNAVAILABLE: "Indisponible",
 });
 
 export default STRINGS;
