@@ -1,15 +1,14 @@
 const createStyles = (theme) => ({
   headerTitleStyle: {
+    color: theme.colors.primaryText,
     fontFamily: theme.typography.fonts.balooPaajiSemiBold,
+  },
+  headerStyle: {
+    backgroundColor: theme.colors.surface,
   },
   nightBackColor: { backgroundColor: theme.staticColors.NIGHT_BLACK },
   iconStyle: { alignSelf: "flex-start" },
   imageStyle: {},
-  headerView: {
-    backgroundColor: theme.colors.surface,
-    padding: theme.spacing.lg,
-    height: theme.components.header.height,
-  },
   settingText: {
     fontSize: theme.typography.sizes.xl,
     alignSelf: "center",
@@ -25,6 +24,8 @@ const createStyles = (theme) => ({
     color: theme.colors.primaryText,
     fontSize: theme.typography.sizes.md,
     lineHeight: theme.typography.sizes.md * theme.typography.lineHeights.normal,
+    borderTopWidth: 1,
+    borderTopColor: theme.colors.separator,
   },
   bottomSheetTitle: {
     textAlign: "center",
