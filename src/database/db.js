@@ -42,6 +42,39 @@ export const getBaniList = (language) => {
   });
 };
 
+export const getBaniByID = async (baniId) => {
+  try {
+    const db = await initDB();
+    return new Promise((resolve, reject) => {
+      db.transaction((tx) => {
+        tx.executeSql(
+          "SELECT ID, Gurmukhi, GurmukhiUni FROM Banis WHERE ID = ?",
+          [baniId],
+          (_tx, results) => {
+            if (results.rows.length > 0) {
+              const row = results.rows.item(0);
+              resolve({
+                id: row.ID,
+                gurmukhi: row.Gurmukhi,
+                gurmukhiUni: row.GurmukhiUni,
+              });
+            } else {
+              resolve(null);
+            }
+          },
+          (error) => {
+            logError("Error fetching bani by ID:", error);
+            reject(error);
+          }
+        );
+      });
+    });
+  } catch (error) {
+    logError("Error in getBaniByID:", error);
+    return null;
+  }
+};
+
 export const getShabadFromID = async (
   shabadID,
   length,

@@ -110,12 +110,6 @@ BaniList.propTypes = {
     })
   ).isRequired,
   onPress: PropTypes.func.isRequired,
-  theme: PropTypes.shape({
-    colors: PropTypes.shape({
-      surface: PropTypes.string.isRequired,
-      primaryText: PropTypes.string.isRequired,
-    }).isRequired,
-  }).isRequired,
 };
 
 export default BaniList;

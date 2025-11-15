@@ -11,6 +11,7 @@ import {
   getTrackPlayerState,
 } from "@common/TrackPlayerUtils";
 import { logError, logMessage } from "@common";
+import { formatUrlForTrackPlayer } from "../utils/urlHelper";
 
 const useTrackPlayer = () => {
   const [isInitialized, setIsInitialized] = useState(false);
@@ -95,20 +96,6 @@ const useTrackPlayer = () => {
     }
   };
 
-  const addAndPlayTrack = async (track) => {
-    if (!isInitialized || !isAudio) {
-      logMessage("Audio is not initialized or disabled in settings");
-      return;
-    }
-    try {
-      await reset();
-      await addTrack(track);
-      await play();
-    } catch (error) {
-      logError("Error adding and playing track:", error);
-    }
-  };
-
   const seekTo = async (position) => {
     if (!isInitialized || !isAudio) {
       logMessage("Audio is not initialized or disabled in settings");
@@ -118,6 +105,31 @@ const useTrackPlayer = () => {
       await TrackPlayer.seekTo(position);
     } catch (error) {
       logError("Error seeking to position:", error);
+    }
+  };
+
+  const addAndPlayTrack = async (id, url, title, artist, shouldPlay = true) => {
+    if (!isInitialized || !isAudio) {
+      logMessage("Audio is not initialized or disabled in settings");
+      return;
+    }
+
+    try {
+      const track = {
+        id,
+        url: formatUrlForTrackPlayer(url),
+        title,
+        artist,
+      };
+
+      await reset();
+      await addTrack(track);
+
+      if (shouldPlay) {
+        await play();
+      }
+    } catch (error) {
+      logError("Error adding and playing track:", error);
     }
   };
 

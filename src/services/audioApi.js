@@ -51,7 +51,7 @@ const mapArtistData = (artist) => ({
 export const fetchManifest = async (baniId) => {
   const data = await makeApiRequest(`/banis/${baniId}`);
 
-  if (!data || data.data.length === 0) {
+  if (!data?.data?.length) {
     return null;
   }
   return data;
