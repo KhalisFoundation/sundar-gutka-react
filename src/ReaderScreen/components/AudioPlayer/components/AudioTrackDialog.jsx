@@ -49,15 +49,7 @@ const AudioTrackDialog = ({
 
     // Otherwise, play the selected track
     try {
-      const trackToPlay = {
-        id: track.id,
-        url: track.audioUrl,
-        title: track.displayName,
-        artist: track.displayName,
-        duration: 0,
-      };
-
-      await addAndPlayTrack(trackToPlay);
+      await addAndPlayTrack(track.id, track.audioUrl, track.displayName, track.displayName, true);
       setPlayingTrack(track);
     } catch (error) {
       console.log("Error playing track:", error);
@@ -106,7 +98,7 @@ const AudioTrackDialog = ({
           }
         >
           <CustomText style={styles.joinMailingListText}>
-            {STRINGS.REQUST_AUDIO_FOR_THIS_PAATH}
+            {STRINGS.REQUEST_AUDIO_FOR_THIS_PAATH}
           </CustomText>
         </Pressable>
       </View>

@@ -28,19 +28,27 @@ const App = () => {
   }, []); // The empty array causes this effect to only run on mount
 
   useEffect(() => {
-    initializePerformanceMonitoring();
-    allowTracking();
-    initializeCrashlytics();
-    TrackPlayerSetup();
+    (async () => {
+      await initializePerformanceMonitoring();
+      await allowTracking();
+      await initializeCrashlytics();
+      await TrackPlayerSetup();
+    })();
   }, []);
 
   useEffect(() => {
-    return notifee.onForegroundEvent(({ type, detail }) => {
+    const unsubscribe = notifee.onForegroundEvent(async ({ type, detail }) => {
       resetBadgeCount();
       if (type === EventType.PRESS) {
-        navigateTo(detail);
+        try {
+          await navigateTo(detail);
+        } catch (error) {
+          logError(error);
+        }
       }
     });
+
+    return unsubscribe;
   }, []);
 
   return (

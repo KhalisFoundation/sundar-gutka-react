@@ -34,23 +34,24 @@ const useDownloadManager = (
       if (downloaded) return;
       setIsDownloading(true);
 
-      const localPath = await downloadTrack(
+      await downloadTrack(
         currentPlaying.audioUrl,
         currentPlaying.displayName,
         (local) => {
-          // Success callback
+          // onComplete callback - called when download succeeds
           setIsDownloaded(true);
           // showDownloadMessage(true, currentPlaying.displayName);
           addTrackToManifest(currentPlaying, local);
         },
         (error) => {
+          // onError callback - called when download fails
           logError("Download error:", error);
-          // Error callback
           // showDownloadMessage(false, currentPlaying.displayName, error.message);
         }
       );
 
-      addTrackToManifest(currentPlaying, localPath);
+      // Note: localPath is returned from downloadTrack, but addTrackToManifest
+      // is already called in the onComplete callback above, so we don't need to call it again here
     } catch (error) {
       logError("Download error:", error);
       // showDownloadMessage(false, currentPlaying.displayName, error.message);
