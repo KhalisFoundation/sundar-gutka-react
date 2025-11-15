@@ -92,7 +92,7 @@ export default {
   BASIC_AUTH_USERNAME: "admin",
   BASIC_AUTH_PASSWORD: "",
   REMOTE_AUDIO_API_URL:
-    "https://sttm-audio-api-v2.salmonriver-80392db4.eastus.azurecontainerapps.io/v1/",
+    "https://sttm-audio-api-v2.salmonriver-80392db4.eastus.azurecontainerapps.io/v1",
   CHOPAYI_SAHIB_ID: 9,
   REHRAAS_SAHIB_ID: 21,
   MAST_SABH_MAST_TUKK: "smwpq msqu suB msqu",

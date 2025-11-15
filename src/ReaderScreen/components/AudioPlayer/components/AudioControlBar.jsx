@@ -39,8 +39,13 @@ const AudioControlBar = ({
   const currentPlayingRef = useRef(currentPlaying);
   const audioProgress = useSelector((state) => state.audioProgress);
   const { modalHeight, modalOpacity } = useAnimation(isSettingsModalOpen, isMoreTracksModalOpen);
-  const { tracks, addTrackToManifest, removeTrackFromManifest, isTrackDownloaded, isLoading } =
-    useAudioManifest(baniID);
+  const {
+    tracks,
+    addTrackToManifest,
+    removeTrackFromManifest,
+    isTrackDownloaded,
+    isTracksLoading,
+  } = useAudioManifest(baniID);
   const { isDownloading, isDownloaded, handleDownload } = useDownloadManager(
     currentPlaying,
     addTrackToManifest,
@@ -233,7 +238,7 @@ const AudioControlBar = ({
 
           {isMoreTracksModalOpen && (
             <View style={styles.moreTracksModalContainer}>
-              {isLoading ? (
+              {isTracksLoading ? (
                 <View style={styles.loadingContainer}>
                   <ActivityIndicator size="large" color={theme.colors.primary} />
                 </View>
@@ -252,7 +257,7 @@ const AudioControlBar = ({
         <View style={[styles.mainSection]}>
           <View style={styles.trackInfo}>
             <View style={styles.trackInfoLeft}>
-              {isLoading ? (
+              {isTracksLoading ? (
                 <View style={styles.loadingContainer}>
                   <ActivityIndicator size="large" color={theme.colors.primary} />
                 </View>
