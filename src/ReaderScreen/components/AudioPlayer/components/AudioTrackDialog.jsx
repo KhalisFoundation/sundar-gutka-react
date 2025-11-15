@@ -98,7 +98,7 @@ const AudioTrackDialog = ({
           }
         >
           <CustomText style={styles.joinMailingListText}>
-            {STRINGS.REQUST_AUDIO_FOR_THIS_PAATH}
+            {STRINGS.REQUEST_AUDIO_FOR_THIS_PAATH}
           </CustomText>
         </Pressable>
       </View>
