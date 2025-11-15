@@ -139,6 +139,10 @@ export const setBookmarkPosition = (value) => {
   trackSettingEvent(constant.BOOKMARKS, value);
   return { type: actionTypes.SET_BOOKMARK_POSITION, value };
 };
+
+export const setBookmarkSequenceString = (value) => {
+  return { type: actionTypes.SET_BOOKMARK_SEQUENCE_STRING, value };
+};
 export const toggleReminders = (value) => {
   trackSettingEvent(constant.REMINDERS, value);
   return { type: actionTypes.TOGGLE_REMINDERS, value };
@@ -206,5 +210,20 @@ export const deleteManifestTrack = (baniId, trackId) => {
   return {
     type: actionTypes.DELETE_MANIFEST_TRACK,
     payload: { baniId, trackId },
+  };
+};
+
+// Audio progress actions
+export const setAudioProgress = (baniId, trackId, position, duration) => {
+  return {
+    type: actionTypes.SET_AUDIO_PROGRESS,
+    payload: { baniId, trackId, position, duration },
+  };
+};
+
+export const clearAudioProgress = (baniId) => {
+  return {
+    type: actionTypes.CLEAR_AUDIO_PROGRESS,
+    payload: { baniId },
   };
 };

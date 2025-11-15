@@ -118,6 +118,10 @@ const bookmarkPosition = createReducer(0, {
   [actionTypes.SET_BOOKMARK_POSITION]: (state, action) => action.value,
 });
 
+const bookmarkSequenceString = createReducer(null, {
+  [actionTypes.SET_BOOKMARK_SEQUENCE_STRING]: (state, action) => action.value,
+});
+
 const isReminders = createReducer(false, {
   [actionTypes.TOGGLE_REMINDERS]: (state, action) => action.value,
 });
@@ -223,6 +227,29 @@ const scrollPosition = (state = 0, action) => {
   }
 };
 
+// Audio progress reducer - stores progress per bani: { [baniId]: { trackId, position, duration } }
+const audioProgress = (state = {}, action) => {
+  switch (action.type) {
+    case actionTypes.SET_AUDIO_PROGRESS: {
+      const { baniId, trackId, position } = action.payload;
+      return {
+        ...state,
+        [baniId]: {
+          trackId,
+          position,
+        },
+      };
+    }
+    case actionTypes.CLEAR_AUDIO_PROGRESS: {
+      const { baniId } = action.payload;
+      const newState = { ...state };
+      delete newState[baniId];
+      return newState;
+    }
+    default:
+      return state;
+  }
+};
 const currentBani = createReducer(null, {
   [actionTypes.SET_CURRENT_BANI]: (state, action) => action.value,
 });
@@ -256,6 +283,7 @@ const rootReducer = combineReducers({
   isPunjabiTranslation,
   isSpanishTranslation,
   bookmarkPosition,
+  bookmarkSequenceString,
   isReminders,
   reminderBanis,
   reminderSound,
@@ -267,6 +295,7 @@ const rootReducer = combineReducers({
   isHeaderFooter,
   isDatabaseUpdateAvailable,
   audioManifest,
+  audioProgress,
   currentBani,
 });
 export default rootReducer;

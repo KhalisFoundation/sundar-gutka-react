@@ -1,13 +1,16 @@
-import React, { useState, useEffect, useMemo } from "react";
+import React, { useState, useEffect, useMemo, useRef } from "react";
 import { View, Pressable, Animated, Platform, ActivityIndicator } from "react-native";
+import { useDispatch, useSelector } from "react-redux";
 import { Slider } from "@miblanchard/react-native-slider";
 import { BlurView } from "@react-native-community/blur";
 import PropTypes from "prop-types";
+import { setAudioProgress } from "@common/actions";
 import useTheme from "@common/context";
 import useThemedStyles from "@common/hooks/useThemedStyles";
 import { MusicNoteIcon, SettingsIcon, CloseIcon, PlayIcon, PauseIcon } from "@common/icons";
-import { STRINGS, CustomText } from "@common";
-import { useAnimation, useDownloadManager, useAudioManifest } from "../hooks";
+import { STRINGS, CustomText, logError } from "@common";
+import { useAnimation, useDownloadManager, useAudioManifest, useTrackPlayer } from "../hooks";
+import useBookmarks from "../hooks/useBookmarks";
 import { audioControlBarStyles } from "../style";
 import checkLyricsFileAvailable from "../utils/checkLRC";
 import ActionComponents from "./ActionComponent";
@@ -26,12 +29,15 @@ const AudioControlBar = ({
   baniID,
   currentPlaying,
 }) => {
+  const dispatch = useDispatch();
   const { theme } = useTheme();
   const styles = useThemedStyles(audioControlBarStyles);
   const [isSettingsModalOpen, setIsSettingsModalOpen] = useState(false);
   const [isMoreTracksModalOpen, setIsMoreTracksModalOpen] = useState(false);
   const [isLyricsAvailable, setIsLyricsAvailable] = useState(false);
-
+  const progressRef = useRef(progress);
+  const currentPlayingRef = useRef(currentPlaying);
+  const audioProgress = useSelector((state) => state.audioProgress);
   const { modalHeight, modalOpacity } = useAnimation(isSettingsModalOpen, isMoreTracksModalOpen);
   const { tracks, addTrackToManifest, removeTrackFromManifest, isTrackDownloaded, isLoading } =
     useAudioManifest(baniID);
@@ -41,7 +47,8 @@ const AudioControlBar = ({
     removeTrackFromManifest,
     isTrackDownloaded
   );
-
+  const { reset, addAndPlayTrack, isInitialized, seekTo, setRate } = useTrackPlayer();
+  useBookmarks(seekTo, currentPlaying?.audioUrl);
   const formatTime = (seconds) => {
     const mins = Math.floor(seconds / 60);
     const secs = Math.floor(seconds % 60);
@@ -53,6 +60,28 @@ const AudioControlBar = ({
     if (!isAudioEnabled) return theme.staticColors.LIGHT_GRAY;
     return theme.colors.primary;
   }, [isAudioEnabled, theme.staticColors.LIGHT_GRAY, theme.colors.primary]);
+
+  // Keep refs updated with latest values
+  useEffect(() => {
+    progressRef.current = progress;
+  }, [progress]);
+
+  useEffect(() => {
+    currentPlayingRef.current = currentPlaying;
+  }, [currentPlaying]);
+
+  // Save progress when user closes the modal
+  const handleClose = () => {
+    const currentProgress = progressRef.current;
+    const currentTrack = currentPlayingRef.current;
+
+    if (currentTrack?.id && currentProgress?.position != null) {
+      dispatch(setAudioProgress(baniID, currentTrack.id, currentProgress.position));
+    }
+
+    onCloseTrackModal();
+  };
+
   const actionComponents = [
     {
       selector: isMoreTracksModalOpen,
@@ -70,9 +99,7 @@ const AudioControlBar = ({
 
   const actionItems = [
     {
-      onPress: () => {
-        onCloseTrackModal();
-      },
+      onPress: handleClose,
       Icon: CloseIcon,
       id: 1,
     },
@@ -108,6 +135,56 @@ const AudioControlBar = ({
     };
     checkLyrics();
   }, [currentPlaying?.audioUrl]);
+
+  // Load the active track when component mounts or currentPlaying changes
+  useEffect(() => {
+    const loadActiveTrack = async () => {
+      if (!isInitialized || !currentPlaying?.id || !currentPlaying?.audioUrl) {
+        return;
+      }
+
+      try {
+        // Load the track (will seek to saved position if available)
+        await addAndPlayTrack(
+          currentPlaying.id,
+          currentPlaying.audioUrl,
+          currentPlaying.displayName,
+          currentPlaying.displayName,
+          false
+        );
+        if (
+          baniID &&
+          audioProgress?.[baniID]?.position &&
+          currentPlaying?.id === audioProgress?.[baniID]?.trackId
+        ) {
+          await seekTo(audioProgress?.[baniID]?.position);
+        }
+      } catch (error) {
+        logError("Error loading active track:", error);
+      }
+    };
+
+    loadActiveTrack();
+  }, [
+    isInitialized,
+    currentPlaying?.id,
+    currentPlaying?.audioUrl,
+    currentPlaying?.displayName,
+    audioProgress,
+    baniID,
+  ]);
+
+  // Save audio progress when component unmounts or user leaves the screen
+  useEffect(() => {
+    return () => {
+      const currentProgress = progressRef.current;
+      const currentTrack = currentPlayingRef.current;
+      if (currentTrack?.id && currentProgress?.position != null) {
+        dispatch(setAudioProgress(baniID, currentTrack.id, currentProgress.position));
+        reset();
+      }
+    };
+  }, [baniID]);
 
   return (
     <View style={styles.container} pointerEvents="box-none">
@@ -150,7 +227,9 @@ const AudioControlBar = ({
         <Animated.View
           style={[styles.modalAnimation, { height: modalHeight, opacity: modalOpacity }]}
         >
-          {isSettingsModalOpen && <AudioSettingsModal isLyricsAvailable={isLyricsAvailable} />}
+          {isSettingsModalOpen && (
+            <AudioSettingsModal isLyricsAvailable={isLyricsAvailable} setRate={setRate} />
+          )}
 
           {isMoreTracksModalOpen && (
             <View style={styles.moreTracksModalContainer}>
