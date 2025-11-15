@@ -1,6 +1,6 @@
 import { useEffect, useRef, useState } from "react";
 import { useSelector } from "react-redux";
-import { showErrorToast, STRINGS } from "@common";
+import fetchLRCData from "../utils/fetchLRC";
 
 const useAudioSyncScroll = (progress, isPlaying, webViewRef, audioUrl) => {
   const isAudioSyncScroll = useSelector((state) => state.isAudioSyncScroll);
@@ -9,22 +9,6 @@ const useAudioSyncScroll = (progress, isPlaying, webViewRef, audioUrl) => {
   const isScrollingRef = useRef(false);
   const scrollTimeoutRef = useRef(null);
   const [baniLRC, setBaniLRC] = useState(null);
-
-  // Function to fetch JSON file content
-  const fetchLRCData = async (jsonUrl) => {
-    try {
-      const response = await fetch(jsonUrl);
-
-      if (response.ok) {
-        const data = await response.json();
-        return data;
-      }
-      return false;
-    } catch (error) {
-      showErrorToast(STRINGS.AUDIO_SYNC_UNAVAILABLE);
-      return false;
-    }
-  };
 
   // Load LRC data when audioUrl changes
   useEffect(() => {
