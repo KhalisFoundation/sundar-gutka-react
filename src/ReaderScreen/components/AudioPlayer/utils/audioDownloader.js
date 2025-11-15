@@ -76,7 +76,7 @@ export const getFullLocalJsonPath = (url) => {
 /**
  * Download audio track with progress tracking
  */
-export const downloadTrack = async (url, trackTitle, onProgress, onComplete, onError) => {
+export const downloadTrack = async (url, trackTitle, onComplete, onError) => {
   try {
     const { artistName, fileName } = generateFilename(url);
     const fullLocalPath = `${AUDIO_DIRECTORY}/${artistName}/${fileName}`;
@@ -127,12 +127,6 @@ export const downloadTrack = async (url, trackTitle, onProgress, onComplete, onE
         begin: () => {
           logMessage(`Audio download started for: ${trackTitle}`);
         },
-        progress: ({ contentLength, bytesWritten }) => {
-          if (contentLength > 0) {
-            const progress = Math.floor((bytesWritten / contentLength) * 50); // Audio is 50% of total
-            onProgress?.(progress);
-          }
-        },
       });
       downloadPromises.push(audioDownloadTask.promise);
     }
@@ -145,12 +139,6 @@ export const downloadTrack = async (url, trackTitle, onProgress, onComplete, onE
         progressDivider: 1,
         begin: () => {
           logMessage(`Lyrics download started for: ${trackTitle}`);
-        },
-        progress: ({ contentLength, bytesWritten }) => {
-          if (contentLength > 0) {
-            const progress = Math.floor((bytesWritten / contentLength) * 50) + 50; // JSON is 50% of total
-            onProgress?.(progress);
-          }
         },
       });
       downloadPromises.push(jsonDownloadTask.promise);
