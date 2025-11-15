@@ -14,6 +14,12 @@ const BottomNavigation = ({ navigation, activeKey }) => {
   const styles = useThemedStyles(createStyles);
   const isAudio = useSelector((state) => state.isAudio);
   const currentBani = useSelector((state) => state.currentBani);
+
+  // Get current route to conditionally hide items
+  const state = navigation.getState();
+  const currentRoute = state?.routes[state?.index]?.name;
+  const isSettings = currentRoute === constant.SETTINGS;
+
   const navigationItems = [
     {
       key: "Home",
@@ -24,20 +30,22 @@ const BottomNavigation = ({ navigation, activeKey }) => {
     {
       key: "Read",
       icon: ReadIcon,
-      handlePress: () =>
+      handlePress: () => {
+        dispatch(actions.toggleAudio(false));
         navigation.navigate(constant.READER, {
           key: `Reader-${currentBani?.id || constant.defaultBani.id}`,
           params: currentBani || constant.defaultBani,
-        }),
+        });
+      },
       text: STRINGS.READ,
     },
     {
       key: "Music",
       icon: MusicIcon,
       handlePress: () => {
-        const state = navigation.getState();
-        const currentRoute = state?.routes[state?.index]?.name;
-        const isReader = currentRoute === constant.READER;
+        const navState = navigation.getState();
+        const currentNavRoute = navState?.routes[navState?.index]?.name;
+        const isReader = currentNavRoute === constant.READER;
 
         if (!isReader) {
           navigation.navigate(constant.READER, {
@@ -58,10 +66,15 @@ const BottomNavigation = ({ navigation, activeKey }) => {
     },
   ];
 
+  // Filter out Read and Music when on Settings page
+  const filteredNavigationItems = isSettings
+    ? navigationItems.filter((item) => item.key !== "Read" && item.key !== "Music")
+    : navigationItems;
+
   return (
     <View style={[styles.container]}>
       <View style={styles.navigationBar}>
-        {navigationItems.map((item) => {
+        {filteredNavigationItems.map((item) => {
           const IconComponent = item.icon;
 
           return (
