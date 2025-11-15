@@ -8,7 +8,7 @@ const createStyles = (theme) => ({
   },
   navigationBar: {
     flexDirection: "row",
-    justifyContent: "space-between",
+    justifyContent: "space-evenly",
     alignItems: "flex-end",
     width: "80%",
     marginLeft: "auto",
