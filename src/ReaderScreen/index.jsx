@@ -16,7 +16,6 @@ import {
   StatusBarComponent,
 } from "@common";
 import { Header, AutoScrollComponent, AudioPlayer } from "./components";
-import { useAudioManifest, useTrackPlayer } from "./components/AudioPlayer/hooks";
 import { useBookmarks, useFetchShabad, useFooterAnimation } from "./hooks";
 import createStyles from "./styles";
 import { loadHTML } from "./utils";
@@ -56,8 +55,6 @@ const Reader = ({ navigation, route }) => {
   const { shabad, isLoading } = useFetchShabad(id);
 
   const { animationPosition } = useFooterAnimation(isHeader);
-  const { tracks, currentPlaying, setCurrentPlaying, isTracksLoading } = useAudioManifest(id);
-  useTrackPlayer();
 
   // Save scroll position when leaving screen or app goes to background
   const saveScrollPosition = useCallback(() => {
@@ -258,17 +255,7 @@ const Reader = ({ navigation, route }) => {
           toggleHeader((prev) => !prev);
         }}
       />
-      {isAudio && (
-        <AudioPlayer
-          baniID={id}
-          title={titleText}
-          webViewRef={webViewRef}
-          tracks={tracks}
-          currentPlaying={currentPlaying}
-          setCurrentPlaying={setCurrentPlaying}
-          isLoading={isTracksLoading}
-        />
-      )}
+      {isAudio && <AudioPlayer baniID={id} title={titleText} webViewRef={webViewRef} />}
       <Animated.View
         style={[{ transform: [{ translateY: animationPosition }] }]}
         pointerEvents="box-none" // Allow touches to pass through to WebView when not hitting child components

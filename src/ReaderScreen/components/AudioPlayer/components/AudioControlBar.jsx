@@ -3,14 +3,14 @@ import { View, Pressable, Animated, Platform, ActivityIndicator } from "react-na
 import { useDispatch, useSelector } from "react-redux";
 import { Slider } from "@miblanchard/react-native-slider";
 import { BlurView } from "@react-native-community/blur";
+import { useNavigation } from "@react-navigation/native";
 import PropTypes from "prop-types";
-import { setAudioProgress } from "@common/actions";
+import { setAudioProgress, toggleAudioSyncScroll } from "@common/actions";
 import useTheme from "@common/context";
 import useThemedStyles from "@common/hooks/useThemedStyles";
 import { MusicNoteIcon, SettingsIcon, CloseIcon, PlayIcon, PauseIcon } from "@common/icons";
 import { STRINGS, CustomText, logError } from "@common";
-import { useAnimation, useDownloadManager, useAudioManifest, useTrackPlayer } from "../hooks";
-import useBookmarks from "../hooks/useBookmarks";
+import { useAnimation, useDownloadManager, useBookmarks } from "../hooks";
 import { audioControlBarStyles } from "../style";
 import checkLyricsFileAvailable from "../utils/checkLRC";
 import ActionComponents from "./ActionComponent";
@@ -28,32 +28,35 @@ const AudioControlBar = ({
   onCloseTrackModal,
   baniID,
   currentPlaying,
+  addTrackToManifest,
+  isTrackDownloaded,
+  isTracksLoading,
+  tracks,
+  seekTo,
+  reset,
+  pause,
+  setRate,
+  isInitialized,
+  addAndPlayTrack,
 }) => {
   const dispatch = useDispatch();
   const { theme } = useTheme();
+  const navigation = useNavigation();
   const styles = useThemedStyles(audioControlBarStyles);
   const [isSettingsModalOpen, setIsSettingsModalOpen] = useState(false);
   const [isMoreTracksModalOpen, setIsMoreTracksModalOpen] = useState(false);
   const [isLyricsAvailable, setIsLyricsAvailable] = useState(false);
+  const isAudioSyncScroll = useSelector((state) => state.isAudioSyncScroll);
   const progressRef = useRef(progress);
   const currentPlayingRef = useRef(currentPlaying);
   const audioProgress = useSelector((state) => state.audioProgress);
   const { modalHeight, modalOpacity } = useAnimation(isSettingsModalOpen, isMoreTracksModalOpen);
-  const {
-    tracks,
-    addTrackToManifest,
-    removeTrackFromManifest,
-    isTrackDownloaded,
-    isTracksLoading,
-  } = useAudioManifest(baniID);
-  const { isDownloading, isDownloaded, handleDownload } = useDownloadManager(
+  const { isDownloading, isDownloaded } = useDownloadManager(
     currentPlaying,
     addTrackToManifest,
-    removeTrackFromManifest,
     isTrackDownloaded
   );
-  const { reset, addAndPlayTrack, isInitialized, seekTo, setRate } = useTrackPlayer();
-  useBookmarks(seekTo, currentPlaying?.audioUrl);
+  useBookmarks(seekTo, currentPlaying?.lyricsUrl);
   const formatTime = (seconds) => {
     const mins = Math.floor(seconds / 60);
     const secs = Math.floor(seconds % 60);
@@ -123,23 +126,18 @@ const AudioControlBar = ({
   }, [isMoreTracksModalOpen]);
 
   useEffect(() => {
-    const autoDownload = async () => {
-      if (currentPlaying && !isDownloaded) {
-        await handleDownload();
-      }
-    };
-    autoDownload();
-  }, [currentPlaying?.audioUrl]);
-
-  useEffect(() => {
     const checkLyrics = async () => {
-      if (currentPlaying?.audioUrl) {
-        const isAvailable = await checkLyricsFileAvailable(currentPlaying.audioUrl);
+      if (currentPlaying?.lyricsUrl) {
+        const isAvailable = await checkLyricsFileAvailable(currentPlaying?.lyricsUrl);
         setIsLyricsAvailable(isAvailable);
+        // If sync scroll is enabled, toggle it based on the availability of the lyrics file
+        if (isAudioSyncScroll) {
+          dispatch(toggleAudioSyncScroll(isAvailable));
+        }
       }
     };
     checkLyrics();
-  }, [currentPlaying?.audioUrl]);
+  }, [currentPlaying?.lyricsUrl]);
 
   // Load the active track when component mounts or currentPlaying changes
   useEffect(() => {
@@ -155,6 +153,9 @@ const AudioControlBar = ({
           currentPlaying.audioUrl,
           currentPlaying.displayName,
           currentPlaying.displayName,
+          currentPlaying.lyricsUrl,
+          currentPlaying.trackLengthSec,
+          currentPlaying.trackSizeMB,
           false
         );
         if (
@@ -191,9 +192,20 @@ const AudioControlBar = ({
     };
   }, [baniID]);
 
+  useEffect(() => {
+    const unsubscribe = navigation.addListener("blur", () => {
+      // This runs whenever you leave the Read screen
+      (async () => {
+        await pause();
+      })();
+    });
+
+    return unsubscribe;
+  }, [navigation]);
+
   return (
     <View style={styles.container} pointerEvents="box-none">
-      {isDownloading && <DownloadBadge />}
+      {isDownloading && !isDownloaded && <DownloadBadge />}
       {/* Full Player with Animation */}
       <View style={[styles.mainContainer, Platform.OS === "ios" && styles.mainContainerIOS]}>
         {Platform.OS === "ios" && (
@@ -330,7 +342,25 @@ AudioControlBar.propTypes = {
     id: PropTypes.string,
     displayName: PropTypes.string,
     audioUrl: PropTypes.string,
+    lyricsUrl: PropTypes.string,
+    trackLengthSec: PropTypes.number,
+    trackSizeMB: PropTypes.number,
   }),
+  addTrackToManifest: PropTypes.func.isRequired,
+  isTrackDownloaded: PropTypes.func.isRequired,
+  isTracksLoading: PropTypes.bool.isRequired,
+  tracks: PropTypes.arrayOf(
+    PropTypes.shape({
+      id: PropTypes.string.isRequired,
+      displayName: PropTypes.string.isRequired,
+    })
+  ).isRequired,
+  seekTo: PropTypes.func.isRequired,
+  reset: PropTypes.func.isRequired,
+  pause: PropTypes.func.isRequired,
+  setRate: PropTypes.func.isRequired,
+  isInitialized: PropTypes.bool.isRequired,
+  addAndPlayTrack: PropTypes.func.isRequired,
 };
 
 export default AudioControlBar;

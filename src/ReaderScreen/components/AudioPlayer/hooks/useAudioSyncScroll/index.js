@@ -1,8 +1,8 @@
 import { useEffect, useRef, useState } from "react";
 import { useSelector } from "react-redux";
-import fetchLRCData from "../utils/fetchLRC";
+import fetchLRCData from "../../utils/fetchLRC";
 
-const useAudioSyncScroll = (progress, isPlaying, webViewRef, audioUrl) => {
+const useAudioSyncScroll = (progress, isPlaying, webViewRef, lyricsUrl) => {
   const isAudioSyncScroll = useSelector((state) => state.isAudioSyncScroll);
   const isParagraphMode = useSelector((state) => state.isParagraphMode);
   const lastSequenceRef = useRef(null);
@@ -14,14 +14,13 @@ const useAudioSyncScroll = (progress, isPlaying, webViewRef, audioUrl) => {
   useEffect(() => {
     let isMounted = true;
 
-    if (!audioUrl) {
+    if (!lyricsUrl || !isAudioSyncScroll) {
       setBaniLRC(null);
       return undefined;
     }
 
-    const jsonUrl = audioUrl.replace(".mp3", ".json");
-    if (isAudioSyncScroll) {
-      fetchLRCData(jsonUrl).then((data) => {
+    if (isAudioSyncScroll && lyricsUrl) {
+      fetchLRCData(lyricsUrl).then((data) => {
         if (isMounted) {
           setBaniLRC(data);
         }
@@ -31,7 +30,7 @@ const useAudioSyncScroll = (progress, isPlaying, webViewRef, audioUrl) => {
     return () => {
       isMounted = false;
     };
-  }, [audioUrl]);
+  }, [lyricsUrl, isAudioSyncScroll]);
 
   // Find current sequence based on audio progress
   const findCurrentSequence = (currentTime) => {

@@ -14,6 +14,7 @@ jest.mock("./style", () => jest.fn());
 
 const createNavigation = ({ currentRoute = "Home" } = {}) => {
   const navigate = jest.fn();
+  const popToTop = jest.fn();
   const routes = [{ name: "Home" }, { name: "Reader" }, { name: "Settings" }];
   let index = 0;
   if (currentRoute === "Reader") {
@@ -25,7 +26,7 @@ const createNavigation = ({ currentRoute = "Home" } = {}) => {
     routes,
     index,
   }));
-  return { navigate, getState };
+  return { navigate, getState, popToTop };
 };
 
 describe("BottomNavigation", () => {
@@ -69,7 +70,7 @@ describe("BottomNavigation", () => {
 
     fireEvent.press(getByLabelText("bottomnav-Home"));
 
-    expect(navigation.navigate).toHaveBeenCalledWith("Home");
+    expect(navigation.popToTop).toHaveBeenCalled();
   });
 
   test("pressing Read navigates to Reader with currentBani if present and toggles audio to false", () => {

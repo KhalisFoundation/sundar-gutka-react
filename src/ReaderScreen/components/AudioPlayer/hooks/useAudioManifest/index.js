@@ -27,21 +27,29 @@ const useAudioManifest = (baniID) => {
       displayName: item.artist_name,
       trackLengthSec: item.track_length_seconds,
       trackSizeMB: item.track_size_mb,
+      lyricsUrl: item?.track_url ? item.track_url.replace(".mp3", ".json") : null,
     }));
   };
 
   // Merge downloaded tracks with API tracks
   const mergeDownloadedTracks = (apiTracks, downloadedTracks) => {
-    if (!apiTracks) {
+    if (!apiTracks || apiTracks.length === 0) {
       // If no API data, use downloaded tracks
+      if (!downloadedTracks || downloadedTracks.length === 0) {
+        return [];
+      }
       return downloadedTracks.map((track) => {
-        const fullLocalPath = `${DocumentDirectoryPath}/audio/${track.localURL}`;
+        const fullLocalPath = `${DocumentDirectoryPath}/audio/${track.audioUrl}`;
+        const lyricsUrlPath = `${DocumentDirectoryPath}/audio/${track.lyricsUrl}`;
         return {
           id: track.id,
+          track_id: track.track_id,
           artistID: track.artistID,
           audioUrl: fullLocalPath,
           displayName: track.displayName,
-          isDownloaded: true,
+          trackLengthSec: track.trackLengthSec,
+          trackSizeMB: track.trackSizeMB,
+          lyricsUrl: track.lyricsUrl ? lyricsUrlPath : null,
         };
       });
     }
@@ -52,11 +60,12 @@ const useAudioManifest = (baniID) => {
 
       if (downloadedTrack) {
         // Use local URL if track is downloaded
-        const fullLocalPath = `${DocumentDirectoryPath}/audio/${downloadedTrack.localURL}`;
+        const fullLocalPath = `${DocumentDirectoryPath}/audio/${downloadedTrack.audioUrl}`;
+        const lyricsUrlPath = `${DocumentDirectoryPath}/audio/${downloadedTrack.lyricsUrl}`;
         return {
           ...apiTrack,
           audioUrl: fullLocalPath,
-          isDownloaded: true,
+          lyricsUrl: downloadedTrack.lyricsUrl ? lyricsUrlPath : null,
         };
       }
       return apiTrack;
@@ -94,15 +103,12 @@ const useAudioManifest = (baniID) => {
 
       // Map API data to tracks
       let mappedData = mapApiDataToTracks(manifest);
-
       // Get downloaded tracks from Redux
       const downloadedTracks = audioManifest[baniID];
-
       // Merge downloaded tracks with API tracks if available
       if (downloadedTracks && downloadedTracks.length > 0) {
         mappedData = mergeDownloadedTracks(mappedData, downloadedTracks);
       }
-
       // Set tracks and default playing track
       if (mappedData && mappedData.length > 0) {
         setTracks(mappedData);
@@ -115,13 +121,16 @@ const useAudioManifest = (baniID) => {
     }
   };
 
-  const addTrackToManifest = (track, localPath) => {
+  const addTrackToManifest = (track, localPath, jsonPath) => {
     const trackData = {
       id: track.id,
+      track_id: track.track_id,
       artistID: track.artistID,
-      remoteURL: track.audioUrl,
-      localURL: localPath,
+      audioUrl: localPath,
       displayName: track.displayName,
+      trackLengthSec: track.trackLengthSec,
+      trackSizeMB: track.trackSizeMB,
+      lyricsUrl: jsonPath,
     };
 
     const existingTracks = audioManifest[baniID] || [];
@@ -132,22 +141,35 @@ const useAudioManifest = (baniID) => {
     }
   };
 
-  const removeTrackFromManifest = (trackId) => {
-    const existingTracks = audioManifest[baniID] || [];
-    const updatedTracks = existingTracks.filter((track) => track.id !== trackId);
-
-    dispatch(actions.setAudioManifest(baniID, updatedTracks));
-  };
-
   const isTrackDownloaded = (trackId) => {
-    const existingTracks = audioManifest[baniID] || [];
-    const track = existingTracks.find((t) => t.id === trackId);
-    if (track && track.localURL) {
-      // Check if the file actually exists
-      // const fullPath = `${DocumentDirectoryPath}/audio/${track.localURL}`;
-      return true;
+    try {
+      const existingTracks = audioManifest[baniID] || [];
+      const track = existingTracks.find((t) => t.id === trackId);
+
+      if (!track) {
+        return false;
+      }
+
+      // Check if audio is downloaded (not a remote URL)
+      const isAudioDownloaded =
+        track.audioUrl &&
+        !track.audioUrl.startsWith("http://") &&
+        !track.audioUrl.startsWith("https://");
+
+      // Check if lyrics are downloaded (lyricsUrl exists and is not a remote URL)
+      // Note: lyricsUrl can be null if lyrics aren't available remotely, which is acceptable
+      const isLyricsDownloaded =
+        track.lyricsUrl &&
+        !track.lyricsUrl.startsWith("http://") &&
+        !track.lyricsUrl.startsWith("https://");
+
+      // Track is considered downloaded if:
+      // 1. Audio is downloaded AND
+      // 2. (Lyrics are downloaded OR lyrics aren't available/needed)
+      return isAudioDownloaded && (isLyricsDownloaded || !track.lyricsUrl);
+    } catch (error) {
+      return false;
     }
-    return false;
   };
 
   useEffect(() => {
@@ -162,7 +184,6 @@ const useAudioManifest = (baniID) => {
     setCurrentPlaying,
     isTracksLoading,
     addTrackToManifest,
-    removeTrackFromManifest,
     isTrackDownloaded,
   };
 };
