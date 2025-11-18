@@ -206,15 +206,6 @@ AudioPlayer.propTypes = {
       postMessage: PropTypes.func,
     }),
   }).isRequired,
-
-  currentPlaying: PropTypes.shape({
-    id: PropTypes.string.isRequired,
-    displayName: PropTypes.string.isRequired,
-    audioUrl: PropTypes.string.isRequired,
-    lyricsUrl: PropTypes.string,
-    trackLengthSec: PropTypes.number,
-    trackSizeMB: PropTypes.number,
-  }).isRequired,
 };
 
 export default AudioPlayer;

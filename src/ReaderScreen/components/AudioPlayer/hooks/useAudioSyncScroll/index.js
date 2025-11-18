@@ -19,13 +19,11 @@ const useAudioSyncScroll = (progress, isPlaying, webViewRef, lyricsUrl) => {
       return undefined;
     }
 
-    if (isAudioSyncScroll && lyricsUrl) {
-      fetchLRCData(lyricsUrl).then((data) => {
-        if (isMounted) {
-          setBaniLRC(data);
-        }
-      });
-    }
+    fetchLRCData(lyricsUrl).then((data) => {
+      if (isMounted) {
+        setBaniLRC(data);
+      }
+    });
 
     return () => {
       isMounted = false;

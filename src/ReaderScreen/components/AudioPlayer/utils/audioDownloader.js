@@ -222,7 +222,7 @@ export const downloadTrack = async (url, trackTitle) => {
 
     const audioResult = await downloadAudioOnly(url, trackTitle, { skipDirectorySetup: true });
     const lyricsResult = await downloadLyricsOnly(url, trackTitle, { skipDirectorySetup: true });
-    const lyricsAvailable = lyricsResult && !lyricsResult.remoteMissing;
+    const lyricsAvailable = !lyricsResult.remoteMissing;
     const lyricsSatisfied = lyricsAvailable
       ? lyricsResult.alreadyExists || lyricsResult.downloaded
       : true;

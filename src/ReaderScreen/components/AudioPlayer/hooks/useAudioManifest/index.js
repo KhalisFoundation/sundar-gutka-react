@@ -19,16 +19,18 @@ const useAudioManifest = (baniID) => {
       return null;
     }
 
-    return manifest.data.map((item) => ({
-      id: item.track_id,
-      track_id: item.track_id,
-      artistID: item.artist_id,
-      audioUrl: item.track_url,
-      displayName: item.artist_name,
-      trackLengthSec: item.track_length_seconds,
-      trackSizeMB: item.track_size_mb,
-      lyricsUrl: item?.track_url ? item.track_url.replace(".mp3", ".json") : null,
-    }));
+    return manifest.data
+      .filter((item) => item != null)
+      .map((item) => ({
+        id: item.track_id,
+        track_id: item.track_id,
+        artistID: item.artist_id,
+        audioUrl: item.track_url,
+        displayName: item.artist_name,
+        trackLengthSec: item.track_length_seconds,
+        trackSizeMB: item.track_size_mb,
+        lyricsUrl: item.track_url ? item.track_url.replace(".mp3", ".json") : null,
+      }));
   };
 
   // Merge downloaded tracks with API tracks
