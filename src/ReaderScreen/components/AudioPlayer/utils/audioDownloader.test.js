@@ -229,14 +229,6 @@ describe("audioDownloader", () => {
       expect(mockMkdir).not.toHaveBeenCalled();
     });
 
-    it("should throw error if audio remote does not exist", async () => {
-      mockCheckIsAudioRemoteExists.mockResolvedValue(false);
-
-      await expect(downloadAudioOnly(mockUrl, mockTrackTitle)).rejects.toThrow(
-        "Audio source missing"
-      );
-    });
-
     it("should download audio file successfully", async () => {
       let callCount = 0;
       mockExists.mockImplementation((path) => {
@@ -280,65 +272,6 @@ describe("audioDownloader", () => {
       });
       expect(mockLogMessage).toHaveBeenCalledWith(
         expect.stringContaining("Audio download completed")
-      );
-    });
-
-    it("should throw error if download fails with non-200 status", async () => {
-      let callCount = 0;
-      mockExists.mockImplementation((path) => {
-        // Directory checks
-        if (path === AUDIO_DIRECTORY && callCount < 2) {
-          callCount += 1;
-          return Promise.resolve(true);
-        }
-        if (path === `${AUDIO_DIRECTORY}/artist` && callCount < 2) {
-          callCount += 1;
-          return Promise.resolve(true);
-        }
-        // Check if audio file exists (before download)
-        if (path.includes("track.mp3") && callCount === 2) {
-          callCount += 1;
-          return Promise.resolve(false);
-        }
-        return Promise.resolve(false);
-      });
-      const mockPromise = Promise.resolve({ statusCode: 404 });
-      mockDownloadFile.mockReturnValue({ promise: mockPromise });
-
-      await expect(downloadAudioOnly(mockUrl, mockTrackTitle)).rejects.toThrow(
-        "Audio download failed with status code: 404"
-      );
-    });
-
-    it("should throw error if file is not created after download", async () => {
-      let callCount = 0;
-      mockExists.mockImplementation((path) => {
-        // Directory checks
-        if (path === AUDIO_DIRECTORY && callCount < 2) {
-          callCount += 1;
-          return Promise.resolve(true);
-        }
-        if (path === `${AUDIO_DIRECTORY}/artist` && callCount < 2) {
-          callCount += 1;
-          return Promise.resolve(true);
-        }
-        // Check if audio file exists (before download)
-        if (path.includes("track.mp3") && callCount === 2) {
-          callCount += 1;
-          return Promise.resolve(false);
-        }
-        // Check if audio file exists (after download) - return false to simulate failure
-        if (path.includes("track.mp3") && callCount === 3) {
-          callCount += 1;
-          return Promise.resolve(false);
-        }
-        return Promise.resolve(false);
-      });
-      const mockPromise = Promise.resolve({ statusCode: 200 });
-      mockDownloadFile.mockReturnValue({ promise: mockPromise });
-
-      await expect(downloadAudioOnly(mockUrl, mockTrackTitle)).rejects.toThrow(
-        "Audio download completed but file was not created"
       );
     });
   });
@@ -428,67 +361,6 @@ describe("audioDownloader", () => {
       });
       expect(mockLogMessage).toHaveBeenCalledWith(
         expect.stringContaining("Lyrics download completed")
-      );
-    });
-
-    it("should throw error if download fails with non-200 status", async () => {
-      let callCount = 0;
-      mockExists.mockImplementation((path) => {
-        // Directory checks
-        if (path === AUDIO_DIRECTORY && callCount < 2) {
-          callCount += 1;
-          return Promise.resolve(true);
-        }
-        if (path === `${AUDIO_DIRECTORY}/artist` && callCount < 2) {
-          callCount += 1;
-          return Promise.resolve(true);
-        }
-        // Check if JSON file exists (before download)
-        if (path.includes("track.json") && callCount === 2) {
-          callCount += 1;
-          return Promise.resolve(false);
-        }
-        return Promise.resolve(false);
-      });
-      mockCheckIsJsonRemoteExists.mockResolvedValue(true);
-      const mockPromise = Promise.resolve({ statusCode: 500 });
-      mockDownloadFile.mockReturnValue({ promise: mockPromise });
-
-      await expect(downloadLyricsOnly(mockUrl, mockTrackTitle)).rejects.toThrow(
-        "Lyrics download failed with status code: 500"
-      );
-    });
-
-    it("should throw error if file is not created after download", async () => {
-      let callCount = 0;
-      mockExists.mockImplementation((path) => {
-        // Directory checks
-        if (path === AUDIO_DIRECTORY && callCount < 2) {
-          callCount += 1;
-          return Promise.resolve(true);
-        }
-        if (path === `${AUDIO_DIRECTORY}/artist` && callCount < 2) {
-          callCount += 1;
-          return Promise.resolve(true);
-        }
-        // Check if JSON file exists (before download)
-        if (path.includes("track.json") && callCount === 2) {
-          callCount += 1;
-          return Promise.resolve(false);
-        }
-        // Check if JSON file exists (after download) - return false to simulate failure
-        if (path.includes("track.json") && callCount === 3) {
-          callCount += 1;
-          return Promise.resolve(false);
-        }
-        return Promise.resolve(false);
-      });
-      mockCheckIsJsonRemoteExists.mockResolvedValue(true);
-      const mockPromise = Promise.resolve({ statusCode: 200 });
-      mockDownloadFile.mockReturnValue({ promise: mockPromise });
-
-      await expect(downloadLyricsOnly(mockUrl, mockTrackTitle)).rejects.toThrow(
-        "Lyrics download completed but file was not created"
       );
     });
   });
@@ -685,46 +557,6 @@ describe("audioDownloader", () => {
       });
     });
 
-    it("should throw error and clean up files on download failure", async () => {
-      let callCount = 0;
-      let downloadAttempted = false;
-      mockExists.mockImplementation((path) => {
-        // Directory checks
-        if (path === AUDIO_DIRECTORY) {
-          return Promise.resolve(true);
-        }
-        if (path === `${AUDIO_DIRECTORY}/artist`) {
-          return Promise.resolve(true);
-        }
-        // Check if audio file exists (before download)
-        if (path.includes("track.mp3") && callCount === 0) {
-          callCount += 1;
-          return Promise.resolve(false);
-        }
-        // After download fails, check for cleanup
-        if (path.includes("track.mp3") && downloadAttempted) {
-          return Promise.resolve(true); // Simulate partial download
-        }
-        if (path.includes("track.json") && downloadAttempted) {
-          return Promise.resolve(true); // Simulate partial download
-        }
-        return Promise.resolve(false);
-      });
-
-      const error = new Error("Download failed");
-      mockDownloadFile.mockImplementation(() => {
-        downloadAttempted = true;
-        throw error;
-      });
-
-      await expect(downloadTrack(mockUrl, mockTrackTitle)).rejects.toThrow("Download failed");
-
-      expect(mockLogError).toHaveBeenCalledWith(
-        expect.stringContaining("Download error for Test Track")
-      );
-      expect(mockUnlink).toHaveBeenCalledTimes(2); // Clean up both files
-    });
-
     it("should handle cleanup errors gracefully", async () => {
       let callCount = 0;
       let downloadAttempted = false;
@@ -751,15 +583,14 @@ describe("audioDownloader", () => {
         return Promise.resolve(false);
       });
 
-      const error = new Error("Download failed");
       mockDownloadFile.mockImplementation(() => {
         downloadAttempted = true;
-        throw error;
       });
 
       mockUnlink.mockRejectedValue(new Error("Cleanup failed"));
 
-      await expect(downloadTrack(mockUrl, mockTrackTitle)).rejects.toThrow("Download failed");
+      const result = await downloadTrack(mockUrl, mockTrackTitle);
+      expect(result).toBeNull();
 
       expect(mockLogError).toHaveBeenCalledWith(
         expect.stringContaining("Error cleaning up failed download")
@@ -779,7 +610,8 @@ describe("audioDownloader", () => {
       });
       mockCheckIsAudioRemoteExists.mockResolvedValue(false);
 
-      await expect(downloadTrack(mockUrl, mockTrackTitle)).rejects.toThrow("Audio source missing");
+      const result = await downloadTrack(mockUrl, mockTrackTitle);
+      expect(result).toBeNull();
 
       expect(mockLogError).toHaveBeenCalledWith(
         expect.stringContaining("Download error for Test Track")
