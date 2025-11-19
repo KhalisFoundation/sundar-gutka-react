@@ -1,9 +1,6 @@
 import React from "react";
 import { NavigationContainer } from "@react-navigation/native";
 import { createNativeStackNavigator } from "@react-navigation/native-stack";
-import { BackIconComponent } from "@common/components";
-import useTheme from "@common/context";
-import useThemedStyles from "@common/hooks/useThemedStyles";
 import { navigationRef, stopTrace, resetTrace, startPerformanceTrace } from "@common";
 import AboutScreen from "../AboutScreen";
 import Bookmarks from "../Bookmarks";
@@ -14,22 +11,11 @@ import HomeScreen from "../HomeScreen";
 import ReaderScreen from "../ReaderScreen";
 import Settings from "../Settings";
 import ReminderOptions from "../Settings/components/reminders/ReminderOptions";
-import SettingsStyle from "./style";
 
 const Stack = createNativeStackNavigator();
 
-const headerLeft = (navigation, theme) => (
-  <BackIconComponent
-    size={30}
-    handleBackPress={() => navigation.goBack()}
-    color={theme.colors.primaryText}
-  />
-);
-
 const Navigation = () => {
   const trace = React.useRef(null);
-  const { theme } = useTheme();
-  const settingStyle = useThemedStyles(SettingsStyle);
 
   const handlingStateChange = async (state) => {
     if (trace.current) {
@@ -61,15 +47,7 @@ const Navigation = () => {
           component={HomeScreen}
         />
         <Stack.Screen name="Reader" component={ReaderScreen} options={{ headerShown: false }} />
-        <Stack.Screen
-          options={({ navigation }) => ({
-            headerLeft: () => headerLeft(navigation, theme),
-            headerTitleStyle: settingStyle.headerTitleStyle,
-            headerStyle: settingStyle.headerStyle,
-          })}
-          name="Settings"
-          component={Settings}
-        />
+        <Stack.Screen name="Settings" component={Settings} />
         <Stack.Screen name="About" component={AboutScreen} />
         <Stack.Screen name="FolderScreen" component={FolderScreen} />
         <Stack.Screen

@@ -9,7 +9,6 @@ import {
   logMessage,
   StatusBarComponent,
   SafeArea,
-  BottomNavigation,
   useTheme,
 } from "@common";
 import useBookmarks from "./hooks/useBookmarks";
@@ -32,7 +31,6 @@ const Bookmarks = ({ navigation, route }) => {
     <SafeArea backgroundColor={theme.colors.surface}>
       <StatusBarComponent backgroundColor={theme.colors.surface} />
       <BaniList data={bookmarksData} onPress={onPress} isFolderScreen />
-      <BottomNavigation navigation={navigation} activeKey="Bookmarks" />
     </SafeArea>
   );
 };

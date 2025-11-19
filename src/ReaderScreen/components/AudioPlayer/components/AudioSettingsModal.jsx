@@ -19,7 +19,7 @@ const AudioSettingsModal = ({ isLyricsAvailable, setRate }) => {
   const dispatch = useDispatch();
 
   const handleSpeedChange = async (value) => {
-    if (value < 0.5 || value > 2.0) return;
+    if (value < 0.5 || value > 1.6) return;
     dispatch(setAudioPlaybackSpeed(value));
     await setRate(value);
   };
@@ -56,19 +56,25 @@ const AudioSettingsModal = ({ isLyricsAvailable, setRate }) => {
           <View key={setting.title}>
             <View style={styles.modalContainer}>
               <CustomText style={styles.settingItemTitle}>{setting.title}</CustomText>
-              <View>
-                <Switch
-                  value={setting.defaultValue}
-                  ios_backgroundColor={theme.staticColors.SWITCH_BACKGROUND_COLOR}
-                  trackColor={{
-                    false: theme.staticColors.SWITCH_THUMB_COLOR,
-                    true: theme.colors.primary,
-                  }}
-                  thumbColor={setting.defaultValue ? theme.staticColors.WHITE_COLOR : "#f4f3f4"}
-                  style={styles.switchStyle}
-                  onValueChange={setting.onValueChange}
-                  disabled={setting.disabled}
-                />
+              <View style={styles.settingHelperTextContainer}>
+                {setting.disabled && !isLyricsAvailable ? (
+                  <CustomText style={styles.settingHelperText}>
+                    {STRINGS.SYNC_UNAVAILABLE}
+                  </CustomText>
+                ) : (
+                  <Switch
+                    value={setting.defaultValue}
+                    ios_backgroundColor={theme.staticColors.SWITCH_BACKGROUND_COLOR}
+                    trackColor={{
+                      false: theme.staticColors.SWITCH_THUMB_COLOR,
+                      true: theme.colors.primary,
+                    }}
+                    thumbColor={setting.defaultValue ? theme.staticColors.WHITE_COLOR : "#f4f3f4"}
+                    style={styles.switchStyle}
+                    onValueChange={setting.onValueChange}
+                    disabled={setting.disabled}
+                  />
+                )}
               </View>
             </View>
             <View style={styles.divider} />
@@ -79,7 +85,7 @@ const AudioSettingsModal = ({ isLyricsAvailable, setRate }) => {
           <View right style={styles.speedControlContainer}>
             <Pressable
               onPress={() => handleSpeedChange(audioPlaybackSpeed + 0.1)}
-              disabled={audioPlaybackSpeed >= 2.0}
+              disabled={audioPlaybackSpeed > 1.6}
             >
               <PlusIcon size={24} color={theme.colors.audioSettingsModalText} />
             </Pressable>

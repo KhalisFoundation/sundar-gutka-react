@@ -433,6 +433,16 @@ export const audioSettingModalStyles = (theme) => ({
     height: 1,
     backgroundColor: theme.colors.separator,
   },
+  settingHelperText: {
+    fontSize: theme.typography.sizes.sm,
+    fontFamily: theme.typography.fonts.balooPaaji,
+    color: theme.colors.textDisabled,
+  },
+  settingHelperTextContainer: {
+    flexDirection: "row",
+    alignItems: "center",
+    justifyContent: "flex-end",
+  },
 });
 
 export default createStyles;
