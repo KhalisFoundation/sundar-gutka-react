@@ -55,16 +55,22 @@ const AudioSettingsModal = ({ isLyricsAvailable, setRate }) => {
           <View key={setting.title}>
             <View style={styles.modalContainer}>
               <CustomText style={styles.settingItemTitle}>{setting.title}</CustomText>
-              <View>
-                <Switch
-                  value={setting.defaultValue}
-                  ios_backgroundColor="#3e3e3e"
-                  trackColor={{ false: "#767577", true: theme.colors.primary }}
-                  thumbColor={setting.defaultValue ? theme.staticColors.WHITE_COLOR : "#f4f3f4"}
-                  style={styles.switchStyle}
-                  onValueChange={setting.onValueChange}
-                  disabled={setting.disabled}
-                />
+              <View style={styles.settingHelperTextContainer}>
+                {setting.disabled && !isLyricsAvailable ? (
+                  <CustomText style={styles.settingHelperText}>
+                    {STRINGS.SYNC_UNAVAILABLE}
+                  </CustomText>
+                ) : (
+                  <Switch
+                    value={setting.defaultValue}
+                    ios_backgroundColor="#3e3e3e"
+                    trackColor={{ false: "#767577", true: theme.colors.primary }}
+                    thumbColor={setting.defaultValue ? theme.staticColors.WHITE_COLOR : "#f4f3f4"}
+                    style={styles.switchStyle}
+                    onValueChange={setting.onValueChange}
+                    disabled={setting.disabled}
+                  />
+                )}
               </View>
             </View>
             <View style={styles.divider} />
