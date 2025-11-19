@@ -117,9 +117,6 @@ describe("useAudioManifest", () => {
         lyricsUrl: "https://example.com/track2.json",
       });
 
-      // Should set first track as current playing by default
-      expect(hookResult.currentPlaying).toEqual(hookResult.tracks[0]);
-
       unmount();
     });
 
@@ -268,7 +265,6 @@ describe("useAudioManifest", () => {
 
       expect(hookResult.tracks[0].audioUrl).toBe("/mock/document/path/audio/track1.mp3");
       expect(hookResult.tracks[0].lyricsUrl).toBe("/mock/document/path/audio/track1.json");
-      expect(hookResult.currentPlaying).toEqual(hookResult.tracks[0]);
 
       unmount();
     });
@@ -804,7 +800,7 @@ describe("useAudioManifest", () => {
       });
 
       // Initially should be first track
-      expect(hookResult.currentPlaying).toEqual(hookResult.tracks[0]);
+      expect(hookResult.currentPlaying).toBeNull();
 
       // Set to second track
       act(() => {

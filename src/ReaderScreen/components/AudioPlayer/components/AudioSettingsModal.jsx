@@ -18,7 +18,7 @@ const AudioSettingsModal = ({ isLyricsAvailable, setRate }) => {
   const dispatch = useDispatch();
 
   const handleSpeedChange = async (value) => {
-    if (value < 0.5 || value > 2.0) return;
+    if (value < 0.5 || value > 1.6) return;
     dispatch(setAudioPlaybackSpeed(value));
     await setRate(value);
   };
@@ -75,7 +75,7 @@ const AudioSettingsModal = ({ isLyricsAvailable, setRate }) => {
           <View right style={styles.speedControlContainer}>
             <Pressable
               onPress={() => handleSpeedChange(audioPlaybackSpeed + 0.1)}
-              disabled={audioPlaybackSpeed >= 2.0}
+              disabled={audioPlaybackSpeed > 1.6}
             >
               <PlusIcon size={24} color={theme.colors.audioSettingsModalText} />
             </Pressable>

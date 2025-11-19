@@ -36,7 +36,7 @@ const createStyles = (theme) => ({
 
 export const audioControlBarStyles = (theme) => ({
   blurOverlay: {
-    position: "absolute",
+    position: "relative",
     bottom: 0,
     left: 0,
     right: 0,
@@ -47,8 +47,8 @@ export const audioControlBarStyles = (theme) => ({
     overflow: "hidden",
   },
   container: {
-    position: "absolute",
-    bottom: 80,
+    position: "relative",
+    bottom: 0,
     left: 0,
     right: 0,
     marginBottom: theme.spacing.md_12,
@@ -187,14 +187,14 @@ export const audioControlBarStyles = (theme) => ({
 
 export const audioTrackDialogStyles = (theme) => ({
   modalWrapper: {
-    position: "absolute",
+    position: "relative",
     left: 0,
     right: 0,
-    bottom: 80,
+    bottom: 0,
     zIndex: 1000,
   },
   blurOverlay: {
-    position: "absolute",
+    position: "relative",
     bottom: 0,
     left: 0,
     right: 0,
