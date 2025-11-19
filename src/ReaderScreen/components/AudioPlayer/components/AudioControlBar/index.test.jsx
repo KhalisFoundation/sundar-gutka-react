@@ -426,7 +426,7 @@ describe("AudioControlBar", () => {
     const props = createProps({
       isInitialized: true,
       addAndPlayTrack: jest.fn().mockResolvedValue(undefined),
-      handlePlayPause: jest.fn().mockResolvedValue(undefined),
+      play: jest.fn().mockResolvedValue(undefined),
     });
 
     render(<AudioControlBar {...props} />);
@@ -437,7 +437,7 @@ describe("AudioControlBar", () => {
       });
     });
 
-    expect(props.handlePlayPause).toHaveBeenCalledTimes(1);
+    expect(props.play).toHaveBeenCalledTimes(1);
   });
 
   it("checks lyrics availability and toggles sync scroll via dispatch", async () => {

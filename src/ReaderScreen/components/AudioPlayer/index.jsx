@@ -171,6 +171,9 @@ const AudioPlayer = ({ baniID, title, webViewRef }) => {
       tracks={tracks}
       isLoading={isTracksLoading}
       onCloseTrackModal={onCloseTrackModal}
+      addAndPlayTrack={addAndPlayTrack}
+      stop={stop}
+      isPlaying={isPlaying}
     />
   ) : (
     <AudioControlBar
@@ -194,6 +197,7 @@ const AudioPlayer = ({ baniID, title, webViewRef }) => {
       setRate={setRate}
       isInitialized={isInitialized}
       addAndPlayTrack={addAndPlayTrack}
+      play={play}
     />
   );
 };

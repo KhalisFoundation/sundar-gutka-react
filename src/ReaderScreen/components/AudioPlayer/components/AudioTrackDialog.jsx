@@ -7,7 +7,6 @@ import useTheme from "@common/context";
 import useThemedStyles from "@common/hooks/useThemedStyles";
 import { ArrowRightIcon, CloseIcon } from "@common/icons";
 import { STRINGS, CustomText } from "@common";
-import { useTrackPlayer } from "../hooks";
 import { audioTrackDialogStyles } from "../style";
 import ScrollViewComponent from "./ScrollViewComponent";
 
@@ -19,20 +18,22 @@ const AudioTrackDialog = ({
   isHeader = true,
   isFooter = true,
   isLoading = false,
+  addAndPlayTrack,
+  stop,
+  isPlaying,
 }) => {
   const styles = useThemedStyles(audioTrackDialogStyles);
   const fontFace = useSelector((state) => state.fontFace);
   const { theme } = useTheme();
   const [selectedTrack, setSelectedTrack] = useState(null);
   const [playingTrack, setPlayingTrack] = useState(null);
-  const { addAndPlayTrack, stop, isPlaying } = useTrackPlayer();
 
   const handleSelectTrack = async (track) => {
     setSelectedTrack(track);
 
     if (!isHeader) {
       // If in "no header" mode, just select the track
-      handleTrackSelect(track);
+      await handleTrackSelect(track);
       return;
     }
 
@@ -64,9 +65,9 @@ const AudioTrackDialog = ({
     }
   };
 
-  const handlePlay = () => {
+  const handlePlay = async () => {
     if (selectedTrack) {
-      handleTrackSelect(selectedTrack);
+      await handleTrackSelect(selectedTrack);
     }
   };
 
@@ -192,6 +193,9 @@ AudioTrackDialog.propTypes = {
   isFooter: PropTypes.bool,
   onCloseTrackModal: PropTypes.func.isRequired,
   isLoading: PropTypes.bool,
+  addAndPlayTrack: PropTypes.func.isRequired,
+  stop: PropTypes.func.isRequired,
+  isPlaying: PropTypes.bool.isRequired,
 };
 
 export default AudioTrackDialog;

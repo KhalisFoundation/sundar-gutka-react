@@ -38,6 +38,7 @@ const AudioControlBar = ({
   setRate,
   isInitialized,
   addAndPlayTrack,
+  play,
 }) => {
   const dispatch = useDispatch();
   const { theme } = useTheme();
@@ -167,7 +168,7 @@ const AudioControlBar = ({
           await seekTo(audioProgress?.[baniID]?.position);
         }
         if (isAudioAutoPlay) {
-          await handlePlayPause();
+          await play();
         }
       } catch (error) {
         logError("Error loading active track:", error);
@@ -365,6 +366,7 @@ AudioControlBar.propTypes = {
   setRate: PropTypes.func.isRequired,
   isInitialized: PropTypes.bool.isRequired,
   addAndPlayTrack: PropTypes.func.isRequired,
+  play: PropTypes.func.isRequired,
 };
 
 export default AudioControlBar;
