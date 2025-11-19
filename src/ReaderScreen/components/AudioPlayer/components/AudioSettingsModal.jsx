@@ -1,6 +1,7 @@
 import React, { useEffect } from "react";
-import { View, Switch, ScrollView, Pressable } from "react-native";
+import { View, ScrollView, Pressable } from "react-native";
 import { useSelector, useDispatch } from "react-redux";
+import { Switch } from "@rneui/themed";
 import PropTypes from "prop-types";
 import { toggleAudioAutoPlay, toggleAudioSyncScroll, setAudioPlaybackSpeed } from "@common/actions";
 import useTheme from "@common/context";
@@ -55,16 +56,25 @@ const AudioSettingsModal = ({ isLyricsAvailable, setRate }) => {
           <View key={setting.title}>
             <View style={styles.modalContainer}>
               <CustomText style={styles.settingItemTitle}>{setting.title}</CustomText>
-              <View>
-                <Switch
-                  value={setting.defaultValue}
-                  ios_backgroundColor="#3e3e3e"
-                  trackColor={{ false: "#767577", true: theme.colors.primary }}
-                  thumbColor={setting.defaultValue ? theme.staticColors.WHITE_COLOR : "#f4f3f4"}
-                  style={styles.switchStyle}
-                  onValueChange={setting.onValueChange}
-                  disabled={setting.disabled}
-                />
+              <View style={styles.settingHelperTextContainer}>
+                {setting.disabled && !isLyricsAvailable ? (
+                  <CustomText style={styles.settingHelperText}>
+                    {STRINGS.SYNC_UNAVAILABLE}
+                  </CustomText>
+                ) : (
+                  <Switch
+                    value={setting.defaultValue}
+                    ios_backgroundColor={theme.staticColors.SWITCH_BACKGROUND_COLOR}
+                    trackColor={{
+                      false: theme.staticColors.SWITCH_THUMB_COLOR,
+                      true: theme.colors.primary,
+                    }}
+                    thumbColor={setting.defaultValue ? theme.staticColors.WHITE_COLOR : "#f4f3f4"}
+                    style={styles.switchStyle}
+                    onValueChange={setting.onValueChange}
+                    disabled={setting.disabled}
+                  />
+                )}
               </View>
             </View>
             <View style={styles.divider} />
