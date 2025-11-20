@@ -59,7 +59,7 @@ const Settings = ({ navigation }) => {
   }, [language]);
 
   return (
-    <SafeArea backgroundColor={theme.colors.surface}>
+    <SafeArea backgroundColor={theme.colors.surface} edges={["left", "right"]}>
       <StatusBarComponent backgroundColor={theme.colors.surface} />
 
       {isDatabaseUpdateAvailable && <DatabaseUpdateBanner navigate={navigate} />}

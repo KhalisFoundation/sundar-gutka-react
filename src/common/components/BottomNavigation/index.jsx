@@ -5,7 +5,7 @@ import PropTypes from "prop-types";
 import useTheme from "@common/context";
 import useThemedStyles from "@common/hooks/useThemedStyles";
 import { HomeIcon, SettingsIcon, MusicIcon, ReadIcon } from "@common/icons";
-import { CustomText, actions, constant, STRINGS } from "@common";
+import { CustomText, actions, constant, STRINGS, SafeArea } from "@common";
 import createStyles from "./style";
 
 const BottomNavigation = ({ navigation, activeKey }) => {
@@ -72,33 +72,35 @@ const BottomNavigation = ({ navigation, activeKey }) => {
     : navigationItems;
 
   return (
-    <View style={[styles.container]}>
-      <View style={styles.navigationBar}>
-        {filteredNavigationItems.map((item) => {
-          const IconComponent = item.icon;
+    <SafeArea backgroundColor={theme.colors.primary} edges={["bottom"]} flex={0}>
+      <View style={[styles.container]}>
+        <View style={styles.navigationBar}>
+          {filteredNavigationItems.map((item) => {
+            const IconComponent = item.icon;
 
-          return (
-            <Pressable
-              key={item.key}
-              style={[styles.iconContainer, item.key === activeKey && styles.activeIconContainer]}
-              onPress={item.handlePress}
-              accessibilityRole="button"
-              accessibilityLabel={`bottomnav-${item.key}`}
-            >
-              <IconComponent
-                size={24}
-                color={
-                  item.key === activeKey ? theme.colors.primary : theme.staticColors.WHITE_COLOR
-                }
-              />
-              {activeKey !== item.key && (
-                <CustomText style={styles.iconText}>{item.text}</CustomText>
-              )}
-            </Pressable>
-          );
-        })}
+            return (
+              <Pressable
+                key={item.key}
+                style={[styles.iconContainer, item.key === activeKey && styles.activeIconContainer]}
+                onPress={item.handlePress}
+                accessibilityRole="button"
+                accessibilityLabel={`bottomnav-${item.key}`}
+              >
+                <IconComponent
+                  size={24}
+                  color={
+                    item.key === activeKey ? theme.colors.primary : theme.staticColors.WHITE_COLOR
+                  }
+                />
+                {activeKey !== item.key && (
+                  <CustomText style={styles.iconText}>{item.text}</CustomText>
+                )}
+              </Pressable>
+            );
+          })}
+        </View>
       </View>
-    </View>
+    </SafeArea>
   );
 };
 
