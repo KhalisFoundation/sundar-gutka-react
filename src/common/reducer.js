@@ -208,16 +208,17 @@ const scrollPosition = (state = 0, action) => {
   }
 };
 
-// Audio progress reducer - stores progress per bani: { [baniId]: { trackId, position, duration } }
+// Audio progress reducer - stores progress per bani: { [baniId]: { trackId, position, sequence } }
 const audioProgress = (state = {}, action) => {
   switch (action.type) {
     case actionTypes.SET_AUDIO_PROGRESS: {
-      const { baniId, trackId, position } = action.payload;
+      const { baniId, trackId, position, sequence } = action.payload;
       return {
         ...state,
         [baniId]: {
           trackId,
           position,
+          ...(sequence !== undefined && { sequence }),
         },
       };
     }
