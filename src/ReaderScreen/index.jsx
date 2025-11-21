@@ -1,5 +1,5 @@
 import React, { useState, useRef, useEffect, useCallback, useMemo } from "react";
-import { ActivityIndicator, BackHandler, AppState, Platform, Animated } from "react-native";
+import { ActivityIndicator, AppState, Platform, Animated } from "react-native";
 import { WebView } from "react-native-webview";
 import { useDispatch, useSelector } from "react-redux";
 import PropTypes from "prop-types";
@@ -14,6 +14,7 @@ import {
   useTheme,
   useThemedStyles,
   StatusBarComponent,
+  useBackHandler,
 } from "@common";
 import { Header, AutoScrollComponent, AudioPlayer } from "./components";
 import { useAudioManifest, useTrackPlayer } from "./components/AudioPlayer/hooks";
@@ -161,14 +162,11 @@ const Reader = ({ navigation, route }) => {
     return true;
   }, []);
 
+  useBackHandler(handleBackPress);
+
   const handleBookmarkPress = useCallback(() => {
     navigation.navigate(constant.BOOKMARKS, { id });
   }, [navigation, id]);
-
-  useEffect(() => {
-    const backHandler = BackHandler.addEventListener("hardwareBackPress", handleBackPress);
-    return () => backHandler.remove();
-  }, [handleBackPress]);
 
   const handleMessage = useCallback(
     (message) => {
@@ -204,6 +202,17 @@ const Reader = ({ navigation, route }) => {
     }, 100);
   }, []);
 
+  const handleLoadEnd = useCallback(() => {
+    // Scroll to saved position after WebView is fully loaded
+    if (webViewRef.current && currentPosition > 0 && currentPosition <= 1) {
+      const scrollMessage = {
+        action: "scrollToPosition",
+        position: currentPosition,
+      };
+      webViewRef.current.postMessage(JSON.stringify(scrollMessage));
+    }
+  }, [currentPosition]);
+
   const handleError = useCallback((syntheticEvent) => {
     const { nativeEvent } = syntheticEvent;
     logError(`Reader web View Error ${nativeEvent}`);
@@ -236,6 +245,7 @@ const Reader = ({ navigation, route }) => {
         javaScriptEnabled
         originWhitelist={["*"]}
         onLoadStart={handleLoadStart}
+        onLoadEnd={handleLoadEnd}
         ref={webViewRef}
         onError={handleError}
         onHttpError={handleHttpError}
