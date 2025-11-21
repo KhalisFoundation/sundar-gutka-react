@@ -7,8 +7,8 @@ import useTheme from "@common/context";
 import useThemedStyles from "@common/hooks/useThemedStyles";
 import { ArrowRightIcon, CloseIcon } from "@common/icons";
 import { STRINGS, CustomText } from "@common";
-import { audioTrackDialogStyles } from "../style";
-import ScrollViewComponent from "./ScrollViewComponent";
+import { audioTrackDialogStyles } from "../../style";
+import ScrollViewComponent from "../ScrollViewComponent";
 
 const AudioTrackDialog = ({
   handleTrackSelect,
@@ -128,6 +128,7 @@ const AudioTrackDialog = ({
           />
         )}
         <Pressable
+          testID="close-button"
           style={styles.closeButton}
           onPress={() => {
             setSelectedTrack(null);
@@ -158,6 +159,7 @@ const AudioTrackDialog = ({
         {/* Play Button */}
         {isFooter && tracks && tracks.length > 0 && (
           <Pressable
+            testID="play-button"
             style={[styles.playButton, !selectedTrack && styles.playButtonDisabled]}
             onPress={handlePlay}
             disabled={!selectedTrack}
