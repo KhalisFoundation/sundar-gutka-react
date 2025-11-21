@@ -3,13 +3,14 @@ import { View } from "react-native";
 import TrackPlayer from "react-native-track-player";
 import { useSelector, useDispatch } from "react-redux";
 import PropTypes from "prop-types";
-import { toggleAudio, setDefaultAudio } from "@common/actions";
+import { toggleAudio, setDefaultAudio, setAudioProgress } from "@common/actions";
 import useThemedStyles from "@common/hooks/useThemedStyles";
 import { showErrorToast } from "@common/toast";
 import { STRINGS, CustomText, logError } from "@common";
 import { AudioTrackDialog, AudioControlBar } from "./components";
 import { useTrackPlayer, useAudioSyncScroll, useAudioManifest } from "./hooks";
 import createStyles from "./style";
+import { getSequenceFromPosition } from "./utils/getSequenceFromPosition";
 
 const AudioPlayer = ({ baniID, title, webViewRef }) => {
   const dispatch = useDispatch();
@@ -126,6 +127,19 @@ const AudioPlayer = ({ baniID, title, webViewRef }) => {
 
   const handleTrackSelect = async (selectedTrack) => {
     try {
+      // Save current sequence before switching artists
+      if (currentPlaying?.lyricsUrl && progress?.position != null) {
+        const currentSequence = await getSequenceFromPosition(
+          currentPlaying.lyricsUrl,
+          progress.position
+        );
+        if (currentSequence != null && currentPlaying?.id) {
+          dispatch(
+            setAudioProgress(baniID, currentPlaying.id, progress.position, null, currentSequence)
+          );
+        }
+      }
+
       // Stop current playback
       await stop();
 
