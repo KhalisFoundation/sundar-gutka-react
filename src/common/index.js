@@ -30,6 +30,7 @@ import {
 } from "./firebase/performance";
 import baseFontSize, { validateBaniOrder } from "./helpers";
 import useKeepAwake from "./hooks/keepAwake";
+import useBackHandler from "./hooks/useBackHandler";
 import useScreenAnalytics from "./hooks/useScreenAnalytics";
 import useThemedStyles from "./hooks/useThemedStyles";
 import STRINGS from "./localization";
@@ -109,4 +110,5 @@ export {
   useTheme,
   useThemedStyles,
   ListItemTitle,
+  useBackHandler,
 };
