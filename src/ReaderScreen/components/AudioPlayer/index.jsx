@@ -102,14 +102,12 @@ const AudioPlayer = ({ baniID, title, webViewRef }) => {
 
   useEffect(() => {
     if (currentPlaying) {
-      console.log("currentPlaying", currentPlaying);
       setShowTrackModal(false);
     }
   }, [currentPlaying]);
 
   useEffect(() => {
     if (defaultAudio[baniID] && defaultAudio[baniID].audioUrl) {
-      console.log("defaultAudio", defaultAudio);
       setShowTrackModal(false);
     }
   }, [defaultAudio, baniID]);

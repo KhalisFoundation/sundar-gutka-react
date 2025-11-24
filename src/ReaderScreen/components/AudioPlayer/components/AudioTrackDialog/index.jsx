@@ -186,8 +186,11 @@ AudioTrackDialog.propTypes = {
   tracks: PropTypes.arrayOf(
     PropTypes.shape({
       id: PropTypes.oneOfType([PropTypes.string, PropTypes.number]).isRequired,
-      name: PropTypes.string.isRequired,
-      selected: PropTypes.bool,
+      displayName: PropTypes.string.isRequired,
+      audioUrl: PropTypes.string.isRequired,
+      lyricsUrl: PropTypes.string.isRequired,
+      trackLengthSec: PropTypes.number.isRequired,
+      trackSizeMB: PropTypes.number.isRequired,
     })
   ).isRequired,
   handleTrackSelect: PropTypes.func.isRequired,
