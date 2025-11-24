@@ -1,9 +1,8 @@
 import React, { useState } from "react";
 import { View, Pressable, Platform, Linking, ActivityIndicator } from "react-native";
-import { useSelector, useDispatch } from "react-redux";
+import { useSelector } from "react-redux";
 import { BlurView } from "@react-native-community/blur";
 import PropTypes from "prop-types";
-import { setDefaultAudio } from "@common/actions";
 import useTheme from "@common/context";
 import useThemedStyles from "@common/hooks/useThemedStyles";
 import { ArrowRightIcon, CloseIcon } from "@common/icons";
@@ -13,7 +12,6 @@ import { audioTrackDialogStyles } from "../style";
 import ScrollViewComponent from "./ScrollViewComponent";
 
 const AudioTrackDialog = ({
-  baniID,
   handleTrackSelect,
   title = "",
   tracks = [],
@@ -22,7 +20,6 @@ const AudioTrackDialog = ({
   isFooter = true,
   isLoading = false,
 }) => {
-  const dispatch = useDispatch();
   const styles = useThemedStyles(audioTrackDialogStyles);
   const fontFace = useSelector((state) => state.fontFace);
   const { theme } = useTheme();
@@ -49,7 +46,16 @@ const AudioTrackDialog = ({
 
     // Otherwise, play the selected track
     try {
-      await addAndPlayTrack(track.id, track.audioUrl, track.displayName, track.displayName, true);
+      await addAndPlayTrack(
+        track.id,
+        track.audioUrl,
+        track.displayName,
+        track.displayName,
+        track.lyricsUrl,
+        track.trackLengthSec,
+        track.trackSizeMB,
+        true
+      );
       setPlayingTrack(track);
     } catch (error) {
       console.log("Error playing track:", error);
@@ -61,7 +67,6 @@ const AudioTrackDialog = ({
   const handlePlay = () => {
     if (selectedTrack) {
       handleTrackSelect(selectedTrack);
-      dispatch(setDefaultAudio(selectedTrack, baniID));
     }
   };
 
@@ -186,7 +191,6 @@ AudioTrackDialog.propTypes = {
   isHeader: PropTypes.bool,
   isFooter: PropTypes.bool,
   onCloseTrackModal: PropTypes.func.isRequired,
-  baniID: PropTypes.string.isRequired,
   isLoading: PropTypes.bool,
 };
 

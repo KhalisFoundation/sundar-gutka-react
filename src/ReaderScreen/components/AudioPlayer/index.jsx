@@ -8,18 +8,10 @@ import useThemedStyles from "@common/hooks/useThemedStyles";
 import { showErrorToast } from "@common/toast";
 import { STRINGS, CustomText, logError } from "@common";
 import { AudioTrackDialog, AudioControlBar } from "./components";
-import { useTrackPlayer, useAudioSyncScroll } from "./hooks";
+import { useTrackPlayer, useAudioSyncScroll, useAudioManifest } from "./hooks";
 import createStyles from "./style";
 
-const AudioPlayer = ({
-  baniID,
-  title,
-  webViewRef,
-  tracks,
-  currentPlaying,
-  setCurrentPlaying,
-  isLoading,
-}) => {
+const AudioPlayer = ({ baniID, title, webViewRef }) => {
   const dispatch = useDispatch();
   const styles = useThemedStyles(createStyles);
   const [showTrackModal, setShowTrackModal] = useState(true);
@@ -37,10 +29,19 @@ const AudioPlayer = ({
     setRate,
     isAudioEnabled,
     isInitialized,
+    reset,
   } = useTrackPlayer();
+  const {
+    tracks,
+    currentPlaying,
+    setCurrentPlaying,
+    isTracksLoading,
+    addTrackToManifest,
+    isTrackDownloaded,
+  } = useAudioManifest(baniID);
 
   // Audio sync scroll hook
-  useAudioSyncScroll(progress, isPlaying, webViewRef, currentPlaying?.audioUrl);
+  useAudioSyncScroll(progress, isPlaying, webViewRef, currentPlaying?.lyricsUrl);
 
   // Apply saved playback speed when initialized
   useEffect(() => {
@@ -81,7 +82,10 @@ const AudioPlayer = ({
           currentPlaying.id,
           currentPlaying.audioUrl,
           currentPlaying.displayName,
-          currentPlaying.displayName
+          currentPlaying.displayName,
+          currentPlaying.lyricsUrl,
+          currentPlaying.trackLengthSec,
+          currentPlaying.trackSizeMB
         );
       }
     } catch (error) {
@@ -137,7 +141,10 @@ const AudioPlayer = ({
           selectedTrack.id,
           selectedTrack.audioUrl,
           selectedTrack.displayName,
-          selectedTrack.displayName
+          selectedTrack.displayName,
+          selectedTrack.lyricsUrl,
+          selectedTrack.trackLengthSec,
+          selectedTrack.trackSizeMB
         );
       }
       dispatch(setDefaultAudio(selectedTrack, baniID));
@@ -162,7 +169,7 @@ const AudioPlayer = ({
       handleTrackSelect={handleTrackSelect}
       title={title}
       tracks={tracks}
-      isLoading={isLoading}
+      isLoading={isTracksLoading}
       onCloseTrackModal={onCloseTrackModal}
     />
   ) : (
@@ -177,6 +184,16 @@ const AudioPlayer = ({
       title={title}
       currentPlaying={currentPlaying}
       onCloseTrackModal={onCloseTrackModal}
+      addTrackToManifest={addTrackToManifest}
+      isTrackDownloaded={isTrackDownloaded}
+      isTracksLoading={isTracksLoading}
+      tracks={tracks}
+      seekTo={seekTo}
+      reset={reset}
+      pause={pause}
+      setRate={setRate}
+      isInitialized={isInitialized}
+      addAndPlayTrack={addAndPlayTrack}
     />
   );
 };
@@ -189,21 +206,6 @@ AudioPlayer.propTypes = {
       postMessage: PropTypes.func,
     }),
   }).isRequired,
-  tracks: PropTypes.arrayOf(
-    PropTypes.shape({
-      id: PropTypes.string.isRequired,
-      title: PropTypes.string.isRequired,
-      artist: PropTypes.string.isRequired,
-      audioUrl: PropTypes.string.isRequired,
-    })
-  ).isRequired,
-  currentPlaying: PropTypes.shape({
-    id: PropTypes.string.isRequired,
-    displayName: PropTypes.string.isRequired,
-    audioUrl: PropTypes.string.isRequired,
-  }).isRequired,
-  setCurrentPlaying: PropTypes.func.isRequired,
-  isLoading: PropTypes.bool.isRequired,
 };
 
 export default AudioPlayer;

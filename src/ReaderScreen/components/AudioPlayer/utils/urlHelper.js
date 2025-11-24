@@ -46,3 +46,21 @@ export const getFileExtension = (url) => {
   const parts = url.split(".");
   return parts.length > 1 ? parts[parts.length - 1].toLowerCase() : "";
 };
+
+export const checkIsRemote = (url) => {
+  return url.startsWith("http://") || url.startsWith("https://");
+};
+
+export const extractFilePath = (lyricsUrl) => {
+  let filePath = lyricsUrl;
+  if (lyricsUrl.startsWith("file://")) {
+    // Remove file:// protocol, handling both file:///path and file://localhost/path
+    // Regex matches: file:// followed by optional localhost/ (with trailing slash)
+    filePath = lyricsUrl.replace(/^file:\/\/(localhost\/)?/, "");
+    // Ensure path starts with / for absolute paths
+    if (!filePath.startsWith("/")) {
+      filePath = `/${filePath}`;
+    }
+  }
+  return filePath;
+};
