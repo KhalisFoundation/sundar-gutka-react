@@ -192,27 +192,6 @@ export const setAudioManifest = (baniId, tracks) => {
   };
 };
 
-export const updateAudioManifest = (baniId, tracks) => {
-  return {
-    type: actionTypes.UPDATE_AUDIO_MANIFEST,
-    payload: { baniId, tracks },
-  };
-};
-
-export const clearAudioManifest = (baniId) => {
-  return {
-    type: actionTypes.CLEAR_AUDIO_MANIFEST,
-    payload: { baniId },
-  };
-};
-
-export const deleteManifestTrack = (baniId, trackId) => {
-  return {
-    type: actionTypes.DELETE_MANIFEST_TRACK,
-    payload: { baniId, trackId },
-  };
-};
-
 // Audio progress actions
 export const setAudioProgress = (baniId, trackId, position, duration) => {
   return {
