@@ -270,8 +270,7 @@ const Reader = ({ navigation, route }) => {
         />
       )}
       <Animated.View
-        style={[{ transform: [{ translateY: animationPosition }] }]}
-        pointerEvents="box-none" // Allow touches to pass through to WebView when not hitting child components
+        style={[styles.autoScrollAnimatedView, { transform: [{ translateY: animationPosition }] }]}
       >
         {isAutoScroll && <AutoScrollComponent shabadID={id} webViewRef={webViewRef} />}
       </Animated.View>
