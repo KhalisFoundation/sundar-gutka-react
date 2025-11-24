@@ -1,18 +1,18 @@
 // Function to fetch JSON file content
 
-import { showErrorToast, STRINGS } from "@common";
+import { readFile } from "react-native-fs";
+import { checkIsRemote, extractFilePath } from "./urlHelper";
 
 const fetchLRCData = async (jsonUrl) => {
   try {
-    const response = await fetch(jsonUrl);
-
-    if (response.ok) {
-      const data = await response.json();
-      return data;
+    const isRemote = checkIsRemote(jsonUrl);
+    if (isRemote) {
+      const response = await fetch(jsonUrl);
+      return response.json();
     }
-    return false;
+    const filePath = extractFilePath(jsonUrl);
+    return JSON.parse(await readFile(filePath, "utf8"));
   } catch (error) {
-    showErrorToast(STRINGS.AUDIO_SYNC_UNAVAILABLE);
     return false;
   }
 };

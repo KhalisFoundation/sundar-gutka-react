@@ -150,25 +150,6 @@ const audioManifest = (state = {}, action) => {
         ...state,
         [action.payload.baniId]: action.payload.tracks,
       };
-    case actionTypes.UPDATE_AUDIO_MANIFEST:
-      return {
-        ...state,
-        [action.payload.baniId]: action.payload.tracks,
-      };
-    case actionTypes.CLEAR_AUDIO_MANIFEST: {
-      const stateCopy = { ...state };
-      delete stateCopy[action.payload.baniId];
-      return stateCopy;
-    }
-    case actionTypes.DELETE_MANIFEST_TRACK: {
-      const { baniId, trackId } = action.payload;
-      const currentTracks = state[baniId] || [];
-      const updatedTracks = currentTracks.filter((track) => track.id !== trackId);
-      return {
-        ...state,
-        [baniId]: updatedTracks,
-      };
-    }
     default:
       return state;
   }
