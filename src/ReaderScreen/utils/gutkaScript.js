@@ -167,6 +167,18 @@ ${listener}.addEventListener(
         setAutoScroll();
       }
     }
+      // Handle scroll to saved position
+    if (message.hasOwnProperty("action") && message.action === "scrollToPosition") {
+      const positionValue = parseFloat(message.position);
+      if (positionValue > 0 && positionValue <= 1) {
+        const maxScrollHeight = document.body.scrollHeight - window.innerHeight;
+        if (maxScrollHeight > 0) {
+          const scrollY = maxScrollHeight * positionValue;
+          window.scrollTo(0, scrollY);
+          curPosition = positionValue;
+        }
+      }
+    }
       // Handle sync scroll to sequence
     if (message.hasOwnProperty("action") && message.action === "scrollToSequence") {
       // Sanitize and validate sequence number
