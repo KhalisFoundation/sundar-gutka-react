@@ -1,5 +1,6 @@
 import React, { useState, useRef, useEffect, useCallback, useMemo } from "react";
 import { ActivityIndicator, AppState, Platform, Animated } from "react-native";
+import { useSafeAreaInsets } from "react-native-safe-area-context";
 import { WebView } from "react-native-webview";
 import { useDispatch, useSelector } from "react-redux";
 import PropTypes from "prop-types";
@@ -54,6 +55,7 @@ const Reader = ({ navigation, route }) => {
 
   const dispatch = useDispatch();
   const { shabad, isLoading } = useFetchShabad(id);
+  const { bottom: insetBottom } = useSafeAreaInsets();
 
   const { animationPosition } = useFooterAnimation(isHeader);
 
@@ -267,7 +269,13 @@ const Reader = ({ navigation, route }) => {
       />
       {isAudio && <AudioPlayer baniID={id} title={titleText} webViewRef={webViewRef} />}
       <Animated.View
-        style={[styles.autoScrollAnimatedView, { transform: [{ translateY: animationPosition }] }]}
+        style={[
+          styles.autoScrollAnimatedView,
+          {
+            bottom: styles.autoScrollAnimatedView.bottom + insetBottom,
+            transform: [{ translateY: animationPosition }],
+          },
+        ]}
       >
         {isAutoScroll && <AutoScrollComponent shabadID={id} webViewRef={webViewRef} />}
       </Animated.View>

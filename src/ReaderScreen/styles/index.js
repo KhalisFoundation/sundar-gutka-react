@@ -123,7 +123,8 @@ const createStyles = (theme) => ({
     position: "absolute",
     left: 0,
     right: 0,
-    bottom: 100,
+    // Base lift above bottom bar; extra inset applied at render time
+    bottom: theme.components.bottomNavigation.height + theme.spacing.lg,
     zIndex: 10,
     elevation: 10,
   },
