@@ -55,11 +55,11 @@ const AudioTrackDialog = ({
         track.lyricsUrl,
         track.trackLengthSec,
         track.trackSizeMB,
-        true
+        true,
+        track.remoteUrl || track.audioUrl
       );
       setPlayingTrack(track);
     } catch (error) {
-      console.log("Error playing track:", error);
       // Error handling - track play failed
       setPlayingTrack(null);
     }

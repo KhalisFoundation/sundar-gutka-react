@@ -158,7 +158,8 @@ const AudioControlBar = ({
           currentPlaying.lyricsUrl,
           currentPlaying.trackLengthSec,
           currentPlaying.trackSizeMB,
-          false
+          false,
+          currentPlaying.remoteUrl || currentPlaying.audioUrl
         );
         if (
           baniID &&
@@ -350,6 +351,7 @@ AudioControlBar.propTypes = {
     lyricsUrl: PropTypes.string,
     trackLengthSec: PropTypes.number,
     trackSizeMB: PropTypes.number,
+    remoteUrl: PropTypes.string,
   }),
   addTrackToManifest: PropTypes.func.isRequired,
   isTrackDownloaded: PropTypes.func.isRequired,

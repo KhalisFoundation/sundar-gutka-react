@@ -213,6 +213,7 @@ const defaultCurrentTrack = {
   displayName: "Test Track",
   audioUrl: "file:///track-1.mp3",
   lyricsUrl: "file:///track-1.lrc",
+  remoteUrl: "https://example.com/track-1.mp3",
   trackLengthSec: 120,
   trackSizeMB: 5,
 };
@@ -391,7 +392,8 @@ describe("AudioControlBar", () => {
       defaultCurrentTrack.lyricsUrl,
       defaultCurrentTrack.trackLengthSec,
       defaultCurrentTrack.trackSizeMB,
-      false
+      false,
+      defaultCurrentTrack.remoteUrl || defaultCurrentTrack.audioUrl
     );
   });
 

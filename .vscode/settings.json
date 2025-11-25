@@ -6,7 +6,7 @@
   "prettier.semi": true,
   "javascript.format.semicolons": "insert",
   "prettier.printWidth": 100,
-  "cSpell.words": ["Pressable"],
+  "cSpell.words": ["Larivaar", "padched", "Pressable", "shabad", "vishraam"],
   "react-native-ide.jsxRuntime": "automatic",
   "react-native-ide.reactVersion": "19.0.0",
   "react-native-ide.reactNativeVersion": "0.78.0",

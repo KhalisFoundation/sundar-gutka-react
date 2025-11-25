@@ -8,6 +8,7 @@ import useAudioManifest from "./index";
 // Mock dependencies
 jest.mock("react-native-fs", () => ({
   DocumentDirectoryPath: "/mock/document/path",
+  exists: jest.fn(() => Promise.resolve(true)),
 }));
 
 jest.mock("@common", () => ({
