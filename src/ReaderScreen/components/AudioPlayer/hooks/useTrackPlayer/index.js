@@ -11,7 +11,7 @@ import {
   getTrackPlayerState,
 } from "@common/TrackPlayerUtils";
 import { logError, logMessage } from "@common";
-import { formatUrlForTrackPlayer } from "../utils/urlHelper";
+import { formatUrlForTrackPlayer } from "../../utils/urlHelper";
 
 const useTrackPlayer = () => {
   const [isInitialized, setIsInitialized] = useState(false);
@@ -70,7 +70,6 @@ const useTrackPlayer = () => {
   };
 
   const pause = async () => {
-    if (!isInitialized) return;
     try {
       await pauseTrack();
     } catch (error) {
@@ -108,7 +107,16 @@ const useTrackPlayer = () => {
     }
   };
 
-  const addAndPlayTrack = async (id, url, title, artist, shouldPlay = true) => {
+  const addAndPlayTrack = async (
+    id,
+    url,
+    title,
+    artist,
+    lyricsUrl,
+    trackLengthSec,
+    trackSizeMB,
+    shouldPlay = true
+  ) => {
     if (!isInitialized || !isAudio) {
       logMessage("Audio is not initialized or disabled in settings");
       return;
@@ -120,6 +128,9 @@ const useTrackPlayer = () => {
         url: formatUrlForTrackPlayer(url),
         title,
         artist,
+        lyricsUrl,
+        trackLengthSec,
+        trackSizeMB,
       };
 
       await reset();

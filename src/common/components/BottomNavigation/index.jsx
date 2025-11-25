@@ -1,4 +1,4 @@
-import React from "react";
+import React, { useState, useEffect } from "react";
 import { View, Pressable } from "react-native";
 import { useDispatch, useSelector } from "react-redux";
 import PropTypes from "prop-types";
@@ -14,17 +14,48 @@ const BottomNavigation = ({ navigation, activeKey }) => {
   const styles = useThemedStyles(createStyles);
   const isAudio = useSelector((state) => state.isAudio);
   const currentBani = useSelector((state) => state.currentBani);
+  const [isSettings, setIsSettings] = useState(false);
 
-  // Get current route to conditionally hide items
-  const state = navigation.getState();
-  const currentRoute = state?.routes[state?.index]?.name;
-  const isSettings = currentRoute === constant.SETTINGS;
+  useEffect(() => {
+    const updateIsSettings = () => {
+      const state = navigation.getState?.();
+      if (!state) return;
+
+      const topRoute = state.routes[state.index];
+      let currentRouteName = topRoute?.name;
+
+      // Handle nested navigators just in case
+      if (topRoute?.state && typeof topRoute.state.index === "number") {
+        const nestedRoute = topRoute.state.routes[topRoute.state.index];
+        currentRouteName = nestedRoute?.name ?? currentRouteName;
+      }
+
+      setIsSettings(currentRouteName === constant.SETTINGS);
+    };
+
+    // Run once on mount
+    updateIsSettings();
+
+    // Subscribe to navigation state changes
+    const unsubscribe =
+      navigation.addListener?.("state", () => {
+        updateIsSettings();
+      }) || undefined;
+
+    return () => {
+      if (unsubscribe) {
+        unsubscribe();
+      }
+    };
+  }, [navigation]);
 
   const navigationItems = [
     {
       key: "Home",
       icon: HomeIcon,
-      handlePress: () => navigation.navigate("Home"),
+      handlePress: () => {
+        navigation.popToTop();
+      },
       text: STRINGS.HOME,
     },
     {
@@ -61,7 +92,9 @@ const BottomNavigation = ({ navigation, activeKey }) => {
     {
       key: "Settings",
       icon: SettingsIcon,
-      handlePress: () => navigation.navigate(constant.SETTINGS),
+      handlePress: () => {
+        navigation.navigate(constant.SETTINGS);
+      },
       text: STRINGS.SETTINGS,
     },
   ];

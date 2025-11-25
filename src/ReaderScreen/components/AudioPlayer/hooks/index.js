@@ -3,3 +3,4 @@ export { default as useDownloadManager } from "./useDownloadManager";
 export { default as useTrackPlayer } from "./useTrackPlayer";
 export { default as useAnimation } from "./useAnimation";
 export { default as useAudioSyncScroll } from "./useAudioSyncScroll";
+export { default as useBookmarks } from "./useBookmarks";
