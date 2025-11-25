@@ -149,14 +149,20 @@ ${listener}.addEventListener(
     }
 
     if (message.hasOwnProperty("bookmark")) {
-      const element = document.getElementById(message.bookmark);
+      const element = document.getElementById(String(message.bookmark));
       if(!element){
         return;
       }
+        // Manually scroll to the bookmarked element because location.hash is unreliable inside WebView HTML
+      element.scrollIntoView({
+        behavior: "smooth",
+        block: "start",
+        inline: "nearest"
+      });
+      curPosition = getScrollPercent();
       const sequenceStringNormal=element.getAttribute("data-sequence");
       const sequenceStringParagraph=element.getAttribute("data-sequences");
       const sequenceString = sequenceStringNormal ? sequenceStringNormal : sequenceStringParagraph;
-      location.hash = "#" + message.bookmark;
       window.ReactNativeWebView.postMessage("sequenceString-" + sequenceString);
       window.ReactNativeWebView.postMessage("hide");
     } 
