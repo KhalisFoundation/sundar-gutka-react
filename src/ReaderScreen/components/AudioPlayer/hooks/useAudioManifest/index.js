@@ -88,12 +88,8 @@ const useAudioManifest = (baniID) => {
       );
       if (defaultTrack && defaultTrack.audioUrl) {
         setCurrentPlaying(defaultTrack);
-        return;
       }
     }
-
-    // Otherwise, use the first track
-    setCurrentPlaying(trackList[0]);
   };
 
   const fetchAudioManifest = async () => {

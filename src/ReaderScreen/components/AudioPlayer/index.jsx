@@ -15,7 +15,6 @@ const AudioPlayer = ({ baniID, title, webViewRef }) => {
   const dispatch = useDispatch();
   const styles = useThemedStyles(createStyles);
   const [showTrackModal, setShowTrackModal] = useState(true);
-  const isAudioAutoPlay = useSelector((state) => state.isAudioAutoPlay);
   const defaultAudio = useSelector((state) => state.defaultAudio);
   const audioPlaybackSpeed = useSelector((state) => state.audioPlaybackSpeed);
   const {
@@ -102,11 +101,10 @@ const AudioPlayer = ({ baniID, title, webViewRef }) => {
   };
 
   useEffect(() => {
-    if (isAudioAutoPlay && currentPlaying) {
+    if (currentPlaying) {
       setShowTrackModal(false);
-      handlePlayPause();
     }
-  }, [isAudioAutoPlay, currentPlaying]);
+  }, [currentPlaying]);
 
   useEffect(() => {
     if (defaultAudio[baniID] && defaultAudio[baniID].audioUrl) {
@@ -171,6 +169,9 @@ const AudioPlayer = ({ baniID, title, webViewRef }) => {
       tracks={tracks}
       isLoading={isTracksLoading}
       onCloseTrackModal={onCloseTrackModal}
+      addAndPlayTrack={addAndPlayTrack}
+      stop={stop}
+      isPlaying={isPlaying}
     />
   ) : (
     <AudioControlBar
@@ -194,6 +195,7 @@ const AudioPlayer = ({ baniID, title, webViewRef }) => {
       setRate={setRate}
       isInitialized={isInitialized}
       addAndPlayTrack={addAndPlayTrack}
+      play={play}
     />
   );
 };

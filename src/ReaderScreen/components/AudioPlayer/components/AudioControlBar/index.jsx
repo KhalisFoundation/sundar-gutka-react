@@ -10,13 +10,13 @@ import useTheme from "@common/context";
 import useThemedStyles from "@common/hooks/useThemedStyles";
 import { MusicNoteIcon, SettingsIcon, CloseIcon, PlayIcon, PauseIcon } from "@common/icons";
 import { STRINGS, CustomText, logError } from "@common";
-import { useAnimation, useDownloadManager, useBookmarks } from "../hooks";
-import { audioControlBarStyles } from "../style";
-import checkLyricsFileAvailable from "../utils/checkLRC";
-import ActionComponents from "./ActionComponent";
-import AudioSettingsModal from "./AudioSettingsModal";
-import DownloadBadge from "./DownloadBadge";
-import ScrollViewComponent from "./ScrollViewComponent";
+import { useAnimation, useDownloadManager, useBookmarks } from "../../hooks";
+import { audioControlBarStyles } from "../../style";
+import checkLyricsFileAvailable from "../../utils/checkLRC";
+import ActionComponents from "../ActionComponent";
+import AudioSettingsModal from "../AudioSettingsModal";
+import DownloadBadge from "../DownloadBadge";
+import ScrollViewComponent from "../ScrollViewComponent";
 
 const AudioControlBar = ({
   isPlaying,
@@ -38,6 +38,7 @@ const AudioControlBar = ({
   setRate,
   isInitialized,
   addAndPlayTrack,
+  play,
 }) => {
   const dispatch = useDispatch();
   const { theme } = useTheme();
@@ -47,6 +48,7 @@ const AudioControlBar = ({
   const [isMoreTracksModalOpen, setIsMoreTracksModalOpen] = useState(false);
   const [isLyricsAvailable, setIsLyricsAvailable] = useState(false);
   const isAudioSyncScroll = useSelector((state) => state.isAudioSyncScroll);
+  const isAudioAutoPlay = useSelector((state) => state.isAudioAutoPlay);
   const progressRef = useRef(progress);
   const currentPlayingRef = useRef(currentPlaying);
   const audioProgress = useSelector((state) => state.audioProgress);
@@ -164,6 +166,9 @@ const AudioControlBar = ({
           currentPlaying?.id === audioProgress?.[baniID]?.trackId
         ) {
           await seekTo(audioProgress?.[baniID]?.position);
+        }
+        if (isAudioAutoPlay) {
+          await play();
         }
       } catch (error) {
         logError("Error loading active track:", error);
@@ -361,6 +366,7 @@ AudioControlBar.propTypes = {
   setRate: PropTypes.func.isRequired,
   isInitialized: PropTypes.bool.isRequired,
   addAndPlayTrack: PropTypes.func.isRequired,
+  play: PropTypes.func.isRequired,
 };
 
 export default AudioControlBar;

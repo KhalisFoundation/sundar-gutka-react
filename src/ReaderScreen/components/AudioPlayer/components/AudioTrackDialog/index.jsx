@@ -7,9 +7,8 @@ import useTheme from "@common/context";
 import useThemedStyles from "@common/hooks/useThemedStyles";
 import { ArrowRightIcon, CloseIcon } from "@common/icons";
 import { STRINGS, CustomText } from "@common";
-import { useTrackPlayer } from "../hooks";
-import { audioTrackDialogStyles } from "../style";
-import ScrollViewComponent from "./ScrollViewComponent";
+import { audioTrackDialogStyles } from "../../style";
+import ScrollViewComponent from "../ScrollViewComponent";
 
 const AudioTrackDialog = ({
   handleTrackSelect,
@@ -19,20 +18,22 @@ const AudioTrackDialog = ({
   isHeader = true,
   isFooter = true,
   isLoading = false,
+  addAndPlayTrack,
+  stop,
+  isPlaying,
 }) => {
   const styles = useThemedStyles(audioTrackDialogStyles);
   const fontFace = useSelector((state) => state.fontFace);
   const { theme } = useTheme();
   const [selectedTrack, setSelectedTrack] = useState(null);
   const [playingTrack, setPlayingTrack] = useState(null);
-  const { addAndPlayTrack, stop, isPlaying } = useTrackPlayer();
 
   const handleSelectTrack = async (track) => {
     setSelectedTrack(track);
 
     if (!isHeader) {
       // If in "no header" mode, just select the track
-      handleTrackSelect(track);
+      await handleTrackSelect(track);
       return;
     }
 
@@ -64,9 +65,9 @@ const AudioTrackDialog = ({
     }
   };
 
-  const handlePlay = () => {
+  const handlePlay = async () => {
     if (selectedTrack) {
-      handleTrackSelect(selectedTrack);
+      await handleTrackSelect(selectedTrack);
     }
   };
 
@@ -127,6 +128,7 @@ const AudioTrackDialog = ({
           />
         )}
         <Pressable
+          testID="close-button"
           style={styles.closeButton}
           onPress={() => {
             setSelectedTrack(null);
@@ -157,6 +159,7 @@ const AudioTrackDialog = ({
         {/* Play Button */}
         {isFooter && tracks && tracks.length > 0 && (
           <Pressable
+            testID="play-button"
             style={[styles.playButton, !selectedTrack && styles.playButtonDisabled]}
             onPress={handlePlay}
             disabled={!selectedTrack}
@@ -183,8 +186,11 @@ AudioTrackDialog.propTypes = {
   tracks: PropTypes.arrayOf(
     PropTypes.shape({
       id: PropTypes.oneOfType([PropTypes.string, PropTypes.number]).isRequired,
-      name: PropTypes.string.isRequired,
-      selected: PropTypes.bool,
+      displayName: PropTypes.string.isRequired,
+      audioUrl: PropTypes.string.isRequired,
+      lyricsUrl: PropTypes.string.isRequired,
+      trackLengthSec: PropTypes.number.isRequired,
+      trackSizeMB: PropTypes.number.isRequired,
     })
   ).isRequired,
   handleTrackSelect: PropTypes.func.isRequired,
@@ -192,6 +198,9 @@ AudioTrackDialog.propTypes = {
   isFooter: PropTypes.bool,
   onCloseTrackModal: PropTypes.func.isRequired,
   isLoading: PropTypes.bool,
+  addAndPlayTrack: PropTypes.func.isRequired,
+  stop: PropTypes.func.isRequired,
+  isPlaying: PropTypes.bool.isRequired,
 };
 
 export default AudioTrackDialog;
