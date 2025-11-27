@@ -33,5 +33,8 @@ const components = {
     borderRadius: 8,
     minHeight: 44,
   },
+  bottomNavigation: {
+    height: 65,
+  },
 };
 export default components;

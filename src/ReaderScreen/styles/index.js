@@ -46,15 +46,13 @@ const createStyles = (theme) => ({
   },
   container: {
     borderRadius: theme.radius.lg + theme.spacing.lg,
-    position: "absolute",
-    bottom: 5,
-    left: 0,
-    right: 0,
-    // paddingTop: 0,
+    width: "100%",
+    zIndex: 100,
     paddingHorizontal: theme.spacing.xl,
     paddingVertical: theme.spacing.sm,
     overflow: "hidden",
     backgroundColor: theme.colors.primary,
+    elevation: 12,
   },
   sliderText: {
     color: theme.staticColors.WHITE_COLOR,
@@ -116,10 +114,19 @@ const createStyles = (theme) => ({
   },
   animatedView: {
     position: "absolute",
-    top: 0,
     left: 0,
     right: 0,
+    top: 0,
     zIndex: 10,
+  },
+  autoScrollAnimatedView: {
+    position: "absolute",
+    left: 0,
+    right: 0,
+    // Base lift above bottom bar; extra inset applied at render time
+    bottom: theme.components.bottomNavigation.height + theme.spacing.lg,
+    zIndex: 10,
+    elevation: 10,
   },
 });
 export default createStyles;
