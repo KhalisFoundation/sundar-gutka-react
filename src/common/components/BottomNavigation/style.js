@@ -2,15 +2,13 @@ const createStyles = (theme) => ({
   container: {
     width: "100%",
     backgroundColor: theme.colors.primary,
-    height: 80,
+    height: 65,
     justifyContent: "center",
-    paddingBottom: 10,
   },
   navigationBar: {
     flexDirection: "row",
     justifyContent: "space-evenly",
-    alignItems: "flex-end",
-    width: "80%",
+    width: "85%",
     marginLeft: "auto",
     marginRight: "auto",
     gap: 25,
