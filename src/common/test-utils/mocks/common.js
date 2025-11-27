@@ -12,8 +12,13 @@ export const createCommonMock = (overrides = {}) => {
     const { Text } = RN;
     return React.createElement(Text, rest, children);
   };
+  const SafeArea = ({ children, ...rest }) => {
+    const { View } = RN;
+    return React.createElement(View, rest, children);
+  };
   return {
     CustomText,
+    SafeArea,
     actions: {
       toggleAutoScroll: jest.fn(toggleAutoScrollAction),
       toggleAudio: jest.fn(toggleAudioAction),

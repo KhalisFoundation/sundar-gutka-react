@@ -1,29 +1,25 @@
 import React from "react";
-import { View } from "react-native";
-import { useSafeAreaInsets } from "react-native-safe-area-context";
+import { SafeAreaView } from "react-native-safe-area-context";
 import PropTypes from "prop-types";
-import { constant } from "@common";
 
-const SafeArea = ({ children, backgroundColor, topPadding = false }) => {
-  const insets = useSafeAreaInsets();
-  const bottomPadding = insets.bottom <= constant.MINIMUM_BOTTOM_PADDING ? 0 : insets.bottom;
-  const top = topPadding ? insets.top : 0;
-
+const SafeArea = ({ children, backgroundColor, edges = [], flex = 1 }) => {
   return (
-    <View style={[{ backgroundColor, flex: 1, paddingBottom: bottomPadding, paddingTop: top }]}>
+    <SafeAreaView style={[{ backgroundColor, flex }]} edges={edges}>
       {children}
-    </View>
+    </SafeAreaView>
   );
 };
 
 SafeArea.propTypes = {
   children: PropTypes.node.isRequired,
   backgroundColor: PropTypes.string.isRequired,
-  topPadding: PropTypes.bool,
+  edges: PropTypes.arrayOf(PropTypes.oneOf(["top", "bottom", "left", "right"])),
+  flex: PropTypes.number,
 };
 
 SafeArea.defaultProps = {
-  topPadding: false,
+  edges: ["left", "right"],
+  flex: 1,
 };
 
 export default SafeArea;

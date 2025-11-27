@@ -1,7 +1,12 @@
 import React from "react";
 import { useSelector, useDispatch } from "react-redux";
 import { ListItem, Icon, Switch } from "@rneui/themed";
-import { toggleAudio, toggleAudioAutoPlay, toggleAudioSyncScroll } from "@common/actions";
+import {
+  toggleAudio,
+  toggleAudioAutoPlay,
+  toggleAudioSyncScroll,
+  toggleAutoScroll,
+} from "@common/actions";
 import useTheme from "@common/context";
 import useThemedStyles from "@common/hooks/useThemedStyles";
 import { STRINGS, ListItemTitle } from "@common";
@@ -13,6 +18,7 @@ const Audio = () => {
   const isAudio = useSelector((state) => state.isAudio);
   const isAudioAutoPlay = useSelector((state) => state.isAudioAutoPlay);
   const isAudioSyncScroll = useSelector((state) => state.isAudioSyncScroll);
+  const isAutoScroll = useSelector((state) => state.isAutoScroll);
   const dispatch = useDispatch();
   const { AUDIO, AUDIO_AUTO_PLAY, AUDIO_SYNC_SCROLL } = STRINGS;
 
@@ -62,6 +68,9 @@ const Audio = () => {
         <Switch
           value={setting.value}
           onValueChange={(value) => {
+            if (isAutoScroll) {
+              dispatch(toggleAutoScroll(false));
+            }
             dispatch(setting.action(value));
           }}
         />

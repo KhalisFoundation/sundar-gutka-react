@@ -227,7 +227,7 @@ const Reader = ({ navigation, route }) => {
   }, []);
 
   return (
-    <SafeArea backgroundColor={theme.colors.surface}>
+    <SafeArea backgroundColor={theme.colors.surface} edges={["left", "right"]}>
       <StatusBarComponent backgroundColor={theme.colors.surface} />
       <Header
         title={titleText}
