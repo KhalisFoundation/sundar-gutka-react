@@ -22,7 +22,7 @@ export default function createStyles(theme) {
       marginBottom: theme.spacing.xl,
     },
 
-    createByText: {
+    createdByText: {
       marginTop: theme.spacing.xl,
       marginBottom: theme.spacing.md,
       color: theme.colors.primaryText,

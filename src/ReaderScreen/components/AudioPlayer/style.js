@@ -1,13 +1,6 @@
 import { Platform } from "react-native";
 import { constant } from "@common";
 
-const BORDER_RADIUS = {
-  sm: 15,
-  md: 20,
-  lg: 30,
-  xl: 40,
-};
-
 const SHADOW = {
   light: {
     shadowOffset: { width: 0, height: 2 },
@@ -29,7 +22,7 @@ const createStyles = (theme) => ({
     bottom: 0,
     left: 0,
     right: 0,
-    borderRadius: BORDER_RADIUS.sm,
+    borderRadius: theme.borderRadius.sm,
     margin: theme.spacing.md_12,
     ...SHADOW.light,
   },
@@ -42,7 +35,7 @@ export const audioControlBarStyles = (theme) => ({
     left: 0,
     right: 0,
     top: 0,
-    borderRadius: BORDER_RADIUS.md,
+    borderRadius: theme.borderRadius.md,
     borderColor: theme.colors.separator,
     borderWidth: 1,
     overflow: "hidden",
@@ -58,7 +51,7 @@ export const audioControlBarStyles = (theme) => ({
     width: "95%",
     marginLeft: "auto",
     marginRight: "auto",
-    borderRadius: BORDER_RADIUS.md,
+    borderRadius: theme.borderRadius.md,
     borderColor: theme.colors.separator,
     borderWidth: 1,
     ...SHADOW.light,
@@ -115,7 +108,7 @@ export const audioControlBarStyles = (theme) => ({
     alignItems: "center",
   },
   actionButton: {
-    borderRadius: BORDER_RADIUS.xl,
+    borderRadius: theme.borderRadius.xl,
   },
   actionButtonText: {
     fontSize: theme.typography.sizes.lg,
@@ -200,12 +193,12 @@ export const audioTrackDialogStyles = (theme) => ({
     left: 0,
     right: 0,
     top: 0,
-    borderRadius: BORDER_RADIUS.md,
+    borderRadius: theme.borderRadius.md,
   },
   container: {
     padding: theme.spacing.xl,
     gap: theme.spacing.md,
-    borderRadius: BORDER_RADIUS.md,
+    borderRadius: theme.borderRadius.md,
     borderWidth: 1,
     borderColor: theme.staticColors.TRACK_COLOR,
     width: "95%",
@@ -249,7 +242,7 @@ export const audioTrackDialogStyles = (theme) => ({
     flexDirection: "row",
     justifyContent: "space-between",
     alignItems: "center",
-    borderRadius: BORDER_RADIUS.xl,
+    borderRadius: theme.borderRadius.xl,
     padding: theme.spacing.md_12,
     paddingHorizontal: theme.spacing.xl_20,
     marginBottom: theme.spacing.md_12,
@@ -273,7 +266,7 @@ export const audioTrackDialogStyles = (theme) => ({
   },
   playButton: {
     backgroundColor: theme.colors.primary,
-    borderRadius: BORDER_RADIUS.lg,
+    borderRadius: theme.borderRadius.lg,
     paddingVertical: theme.spacing.md_12,
     paddingHorizontal: theme.spacing.xl,
     flexDirection: "row",
@@ -326,8 +319,8 @@ export const downloadBadgeStyles = (theme) => ({
     position: "relative",
     zIndex: 10,
     bottom: 0,
-    borderTopLeftRadius: BORDER_RADIUS.xl,
-    borderTopRightRadius: BORDER_RADIUS.xl,
+    borderTopLeftRadius: theme.borderRadius.xl,
+    borderTopRightRadius: theme.borderRadius.xl,
     marginRight: theme.spacing.xl_20,
     backgroundColor: theme.colors.separator,
     width: "35%",
@@ -361,7 +354,7 @@ export const minimizePlayerStyles = (theme) => ({
     right: theme.spacing.xl_20,
     width: "50%",
     maxHeight: 60,
-    borderRadius: BORDER_RADIUS.xl,
+    borderRadius: theme.borderRadius.xl,
     padding: theme.spacing.xl_20,
     flexDirection: "row",
     alignItems: "center",
@@ -373,7 +366,7 @@ export const minimizePlayerStyles = (theme) => ({
   progressContainer: {
     width: 40,
     height: 40,
-    borderRadius: BORDER_RADIUS.lg,
+    borderRadius: theme.borderRadius.lg,
     justifyContent: "center",
     alignItems: "center",
   },
