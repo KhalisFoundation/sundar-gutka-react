@@ -4,7 +4,7 @@ import { Icon, ListItem } from "@rneui/themed";
 import PropTypes from "prop-types";
 import useTheme from "@common/context";
 import useThemedStyles from "@common/hooks/useThemedStyles";
-import { STRINGS, CustomText, ListItemTitle } from "@common";
+import { STRINGS, ListItemTitle } from "@common";
 import { checkUpdateStyles } from "./styles";
 
 const CheckUpdatesAnimation = ({ isLoading, isUpdateAvailable }) => {
@@ -72,7 +72,6 @@ const CheckUpdatesAnimation = ({ isLoading, isUpdateAvailable }) => {
       {!isUpdateAvailable && !isLoading && (
         <ListItem containerStyle={styles.mainWrapper}>
           <ListItemTitle title={STRINGS.upToDate} style={styles.header} />
-          <CustomText style={{ color: theme.colors.primaryText }}>{STRINGS.upToDate}</CustomText>
         </ListItem>
       )}
     </View>
