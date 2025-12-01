@@ -149,14 +149,20 @@ ${listener}.addEventListener(
     }
 
     if (message.hasOwnProperty("bookmark")) {
-      const element = document.getElementById(message.bookmark);
+      const element = document.getElementById(String(message.bookmark));
       if(!element){
         return;
       }
+        // Manually scroll to the bookmarked element because location.hash is unreliable inside WebView HTML
+      element.scrollIntoView({
+        behavior: "smooth",
+        block: "start",
+        inline: "nearest"
+      });
+      curPosition = getScrollPercent();
       const sequenceStringNormal=element.getAttribute("data-sequence");
       const sequenceStringParagraph=element.getAttribute("data-sequences");
       const sequenceString = sequenceStringNormal ? sequenceStringNormal : sequenceStringParagraph;
-      location.hash = "#" + message.bookmark;
       window.ReactNativeWebView.postMessage("sequenceString-" + sequenceString);
       window.ReactNativeWebView.postMessage("hide");
     } 
@@ -165,6 +171,18 @@ ${listener}.addEventListener(
       scrollMultiplier = message.scrollMultiplier;
       if (autoScrollTimeout == null) {
         setAutoScroll();
+      }
+    }
+      // Handle scroll to saved position
+    if (message.hasOwnProperty("action") && message.action === "scrollToPosition") {
+      const positionValue = parseFloat(message.position);
+      if (positionValue > 0 && positionValue <= 1) {
+        const maxScrollHeight = document.body.scrollHeight - window.innerHeight;
+        if (maxScrollHeight > 0) {
+          const scrollY = maxScrollHeight * positionValue;
+          window.scrollTo(0, scrollY);
+          curPosition = positionValue;
+        }
       }
     }
       // Handle sync scroll to sequence

@@ -13,6 +13,7 @@ import {
   SafeArea,
   CustomText,
   BottomNavigation,
+  useBackHandler,
 } from "@common";
 import Audio from "./components/audio";
 import AutoScroll from "./components/autoScroll";
@@ -42,6 +43,7 @@ const Settings = ({ navigation }) => {
   logMessage(constant.SETTINGS);
   useScreenAnalytics(constant.SETTINGS);
   useHeader(navigation);
+  useBackHandler();
   const isDatabaseUpdateAvailable = useSelector((state) => state.isDatabaseUpdateAvailable);
 
   const { navigate } = navigation;
@@ -59,7 +61,7 @@ const Settings = ({ navigation }) => {
   }, [language]);
 
   return (
-    <SafeArea backgroundColor={theme.colors.surface}>
+    <SafeArea backgroundColor={theme.colors.surface} edges={["left", "right"]}>
       <StatusBarComponent backgroundColor={theme.colors.surface} />
 
       {isDatabaseUpdateAvailable && <DatabaseUpdateBanner navigate={navigate} />}

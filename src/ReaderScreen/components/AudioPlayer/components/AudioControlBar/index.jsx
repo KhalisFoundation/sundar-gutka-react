@@ -198,6 +198,9 @@ const AudioControlBar = ({
         if (isAudioAutoPlay) {
           await play();
         }
+        if (isAudioAutoPlay) {
+          await play();
+        }
       } catch (error) {
         logError("Error loading active track:", error);
       }
