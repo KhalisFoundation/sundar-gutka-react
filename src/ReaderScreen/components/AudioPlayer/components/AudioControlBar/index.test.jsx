@@ -50,6 +50,15 @@ jest.mock("@common/context", () => ({
         LIGHT_GRAY: "#CCCCCC",
         SLIDER_TRACK_COLOR: "#EEEEEE",
       },
+      typography: {
+        sizes: {
+          lg: 18,
+          md: 14,
+        },
+      },
+      spacing: {
+        sm: 8,
+      },
     },
   }),
 }));
@@ -72,12 +81,16 @@ jest.mock("@common/hooks/useThemedStyles", () => {
     trackInfo: {},
     trackInfoLeft: {},
     trackName: {},
+    trackSkeletonContainer: {},
     playbackControls: {},
     playButton: {},
+    playButtonSkeleton: {},
     progressContainer: {},
     progressBar: {},
+    progressSkeleton: {},
     timestamp: {},
     timestampWithColor: {},
+    helperText: {},
   };
   return () => () => styles;
 });
@@ -100,6 +113,7 @@ jest.mock("@react-native-community/blur", () => {
 export const STRINGS = {
   MORE_TRACKS: "More Tracks",
   AUDIO_SETTINGS: "Audio Settings",
+  please_choose_a_track: "Please choose a track",
 };
 
 jest.mock("@common", () => {
@@ -108,6 +122,7 @@ jest.mock("@common", () => {
     STRINGS: {
       MORE_TRACKS: "More Tracks",
       AUDIO_SETTINGS: "Audio Settings",
+      please_choose_a_track: "Please choose a track",
     },
     CustomText: (props) => <Text {...props} />,
     logError: jest.fn(),
@@ -139,6 +154,17 @@ jest.mock("@common/icons", () => {
     CloseIcon: (props) => <Text testID="close-icon" {...props} />,
     PlayIcon: (props) => <Text testID="play-icon" {...props} />,
     PauseIcon: (props) => <Text testID="pause-icon" {...props} />,
+  };
+});
+
+// Mock Skeleton component
+jest.mock("@common/components", () => {
+  const { View } = require("react-native");
+  const Skeleton = (props) => <View testID="skeleton" {...props} />;
+  const SkeletonText = (props) => <View testID="skeleton-text" {...props} />;
+  Skeleton.Text = SkeletonText;
+  return {
+    Skeleton,
   };
 });
 
@@ -487,6 +513,55 @@ describe("AudioControlBar", () => {
     await waitFor(() => {
       expect(getByTestId("audio-settings-modal")).toBeTruthy();
       expect(queryByTestId("tracks-list")).toBeNull();
+    });
+  });
+
+  it("shows skeleton when isTracksLoading is true", async () => {
+    const props = createProps({ isTracksLoading: true });
+    const { getAllByTestId, queryByTestId } = render(<AudioControlBar {...props} />);
+
+    await waitFor(() => {
+      expect(getAllByTestId("skeleton-text").length).toBeGreaterThan(0);
+      expect(getAllByTestId("skeleton").length).toBeGreaterThan(0);
+      // Should not show track name when loading
+      expect(queryByTestId("play-icon")).toBeNull();
+      expect(queryByTestId("pause-icon")).toBeNull();
+    });
+  });
+
+  it("shows track name when not loading and currentPlaying exists", async () => {
+    const props = createProps({ isTracksLoading: false });
+    const { getByText, queryByTestId } = render(<AudioControlBar {...props} />);
+
+    await waitFor(() => {
+      expect(getByText("Test Track")).toBeTruthy();
+      // Should not show skeleton when not loading
+      expect(queryByTestId("skeleton-text")).toBeNull();
+    });
+  });
+
+  it("shows helper text when not loading and no currentPlaying", async () => {
+    const props = createProps({
+      isTracksLoading: false,
+      currentPlaying: null,
+    });
+    const { getByText, queryByTestId } = render(<AudioControlBar {...props} />);
+
+    await waitFor(() => {
+      expect(getByText("Please choose a track")).toBeTruthy();
+      // Should not show skeleton when not loading
+      expect(queryByTestId("skeleton-text")).toBeNull();
+    });
+  });
+
+  it("shows skeleton for play button and progress bar when loading", async () => {
+    const props = createProps({ isTracksLoading: true });
+    const { getAllByTestId } = render(<AudioControlBar {...props} />);
+
+    await waitFor(() => {
+      // Should have skeleton for play button and progress bar
+      const skeletons = getAllByTestId("skeleton");
+      expect(skeletons.length).toBeGreaterThan(0);
     });
   });
 });

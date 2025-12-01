@@ -152,8 +152,16 @@ export const audioControlBarStyles = (theme) => ({
     alignItems: "flex-end",
     gap: theme.spacing.md,
   },
+  trackSkeletonContainer: {
+    width: "80%",
+  },
   trackName: {
     fontSize: theme.typography.sizes.xxl,
+    fontFamily: theme.typography.fonts.balooPaaji,
+    color: theme.colors.audioTitleText,
+  },
+  helperText: {
+    fontSize: theme.typography.sizes.md,
     fontFamily: theme.typography.fonts.balooPaaji,
     color: theme.colors.audioTitleText,
   },
@@ -171,10 +179,16 @@ export const audioControlBarStyles = (theme) => ({
     justifyContent: "center",
     alignItems: "center",
   },
+  playButtonSkeleton: {
+    marginRight: theme.spacing.md_12,
+  },
   progressContainer: {
     flex: 1,
     marginTop: 2,
     justifyContent: "center",
+  },
+  progressSkeleton: {
+    width: "100%",
   },
   timestamp: {
     fontSize: theme.typography.sizes.md,
