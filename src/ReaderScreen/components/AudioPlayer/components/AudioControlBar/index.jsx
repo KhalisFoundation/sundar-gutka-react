@@ -6,6 +6,7 @@ import { BlurView } from "@react-native-community/blur";
 import { useNavigation } from "@react-navigation/native";
 import PropTypes from "prop-types";
 import { setAudioProgress, toggleAudioSyncScroll } from "@common/actions";
+import { Skeleton } from "@common/components";
 import useTheme from "@common/context";
 import useThemedStyles from "@common/hooks/useThemedStyles";
 import { MusicNoteIcon, SettingsIcon, CloseIcon, PlayIcon, PauseIcon } from "@common/icons";
@@ -59,6 +60,28 @@ const AudioControlBar = ({
     isTrackDownloaded
   );
   useBookmarks(seekTo, currentPlaying?.lyricsUrl);
+  const canControlPlayback = Boolean(isInitialized && isAudioEnabled && currentPlaying?.audioUrl);
+  const showSkeleton = isTracksLoading;
+  let trackInfoContent = null;
+  if (showSkeleton) {
+    trackInfoContent = (
+      <Skeleton.Text
+        lines={2}
+        widths={["85%", "55%"]}
+        lineHeight={theme.typography?.sizes?.lg}
+        containerStyle={styles.trackSkeletonContainer}
+      />
+    );
+  } else if (currentPlaying?.displayName) {
+    trackInfoContent = (
+      <CustomText style={styles.trackName}>{currentPlaying.displayName}</CustomText>
+    );
+  } else {
+    trackInfoContent = (
+      <CustomText style={styles.helperText}>{STRINGS.please_choose_a_track}</CustomText>
+    );
+  }
+
   const formatTime = (seconds) => {
     const mins = Math.floor(seconds / 60);
     const secs = Math.floor(seconds % 60);
@@ -270,58 +293,70 @@ const AudioControlBar = ({
           )}
         </Animated.View>
 
-        {/* Main Playback Section */}
-        <View style={[styles.mainSection]}>
-          <View style={styles.trackInfo}>
-            <View style={styles.trackInfoLeft}>
-              {isTracksLoading ? (
-                <View style={styles.loadingContainer}>
-                  <ActivityIndicator size="large" color={theme.colors.primary} />
-                </View>
-              ) : (
-                currentPlaying &&
-                currentPlaying.displayName && (
-                  <CustomText style={styles.trackName}>{currentPlaying.displayName}</CustomText>
-                )
-              )}
+        {showSkeleton ? (
+          <View style={styles.mainSection}>
+            <View style={styles.trackInfo}>
+              <View style={styles.trackInfoLeft}>{trackInfoContent}</View>
             </View>
-          </View>
-
-          <View style={styles.playbackControls}>
-            <Pressable style={styles.playButton} onPress={handlePlayPause}>
-              {isPlaying ? (
-                <PauseIcon size={30} color={theme.colors.audioTitleText} />
-              ) : (
-                <PlayIcon size={30} color={theme.colors.audioTitleText} />
-              )}
-            </Pressable>
-
-            <View style={styles.progressContainer}>
-              <View style={styles.progressBar}>
-                <CustomText style={[styles.timestamp, styles.timestampWithColor]}>
-                  {formatTime(progress.position)}
-                </CustomText>
-                <Slider
-                  value={progress.position}
-                  minimumValue={0}
-                  maximumValue={progress.duration}
-                  onSlidingComplete={([v]) => handleSeek(v)}
-                  minimumTrackTintColor={sliderMinTrackColor}
-                  maximumTrackTintColor={theme.staticColors.SLIDER_TRACK_COLOR}
-                  disabled={!isAudioEnabled}
-                  trackStyle={{
-                    height: 6,
-                    borderRadius: 3,
-                  }}
-                  thumbStyle={{
-                    width: 10,
-                    height: 10,
-                  }}
-                />
+            <View style={styles.playbackControls}>
+              <Skeleton
+                width={52}
+                height={52}
+                borderRadius={26}
+                style={styles.playButtonSkeleton}
+              />
+              <View style={styles.progressContainer}>
+                <Skeleton height={24} borderRadius={12} style={styles.progressSkeleton} />
               </View>
             </View>
           </View>
-        </View>
+        ) : (
+          <View style={[styles.mainSection]}>
+            <View style={styles.trackInfo}>
+              <View style={styles.trackInfoLeft}>{trackInfoContent}</View>
+            </View>
+
+            <View style={styles.playbackControls}>
+              <Pressable
+                style={styles.playButton}
+                onPress={handlePlayPause}
+                disabled={!canControlPlayback}
+                accessibilityState={{ disabled: !canControlPlayback }}
+              >
+                {isPlaying ? (
+                  <PauseIcon size={30} color={theme.colors.audioTitleText} />
+                ) : (
+                  <PlayIcon size={30} color={theme.colors.audioTitleText} />
+                )}
+              </Pressable>
+
+              <View style={styles.progressContainer}>
+                <View style={styles.progressBar}>
+                  <CustomText style={[styles.timestamp, styles.timestampWithColor]}>
+                    {formatTime(progress.position)}
+                  </CustomText>
+                  <Slider
+                    value={progress.position}
+                    minimumValue={0}
+                    maximumValue={progress.duration}
+                    onSlidingComplete={([v]) => handleSeek(v)}
+                    minimumTrackTintColor={sliderMinTrackColor}
+                    maximumTrackTintColor={theme.staticColors.SLIDER_TRACK_COLOR}
+                    disabled={!canControlPlayback}
+                    trackStyle={{
+                      height: 6,
+                      borderRadius: 3,
+                    }}
+                    thumbStyle={{
+                      width: 10,
+                      height: 10,
+                    }}
+                  />
+                </View>
+              </View>
+            </View>
+          </View>
+        )}
       </View>
     </View>
   );

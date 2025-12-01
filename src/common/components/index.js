@@ -7,6 +7,7 @@ import FallBack from "./FallbackComponent";
 import ListItemTitle from "./ListItemTitle";
 import SafeArea from "./SafeArea";
 import SettingsIconComponent from "./SettingsIconComponent";
+import Skeleton from "./Skeleton";
 import StatusBarComponent from "./StatusBar";
 
 export {
@@ -18,6 +19,7 @@ export {
   StatusBarComponent,
   CustomText,
   ListItemTitle,
+  Skeleton,
   BackIconComponent,
   SettingsIconComponent,
 };
