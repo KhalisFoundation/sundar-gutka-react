@@ -171,7 +171,7 @@ const AudioPlayer = ({ baniID, title, webViewRef }) => {
   }
 
   if (manifestError) {
-    const manifestErrorMessage = manifestError || STRINGS.NETWORK_ERROR || STRINGS.PLEASE_TRY_AGAIN;
+    const manifestErrorMessage = STRINGS.NETWORK_ERROR || STRINGS.PLEASE_TRY_AGAIN;
     return renderErrorFallback(manifestErrorMessage, refetchManifest);
   }
 
