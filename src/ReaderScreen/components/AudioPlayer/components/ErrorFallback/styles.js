@@ -27,14 +27,16 @@ const createStyles = (theme) => ({
     color: theme.colors.audioTitleText,
   },
   retryButton: {
-    padding: theme.spacing.md_12,
+    padding: theme.spacing.lg,
     backgroundColor: theme.colors.primary,
-    borderRadius: theme.borderRadius.md,
+    borderRadius: theme.borderRadius.lg,
+    alignItems: "center",
+    justifyContent: "center",
   },
   retryButtonText: {
     color: theme.staticColors.WHITE_COLOR,
     fontFamily: theme.typography.fonts.balooPaaji,
-    fontSize: theme.typography.sizes.md_12,
+    fontSize: theme.typography.sizes.lg,
   },
 });
 export default createStyles;

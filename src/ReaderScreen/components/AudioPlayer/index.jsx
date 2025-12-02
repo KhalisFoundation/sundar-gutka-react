@@ -36,6 +36,8 @@ const AudioPlayer = ({ baniID, title, webViewRef }) => {
     isTracksLoading,
     addTrackToManifest,
     isTrackDownloaded,
+    manifestError,
+    refetchManifest,
   } = useAudioManifest(baniID);
 
   // Audio sync scroll hook
@@ -151,18 +153,26 @@ const AudioPlayer = ({ baniID, title, webViewRef }) => {
     }
   };
 
+  const renderErrorFallback = (message, retryFn, isLoading = false) => (
+    <ErrorFallback
+      isInitializing={isLoading}
+      initializationErrorMessage={message}
+      retryInitialization={retryFn}
+      handleClose={onCloseTrackModal}
+    />
+  );
+
+  const initializationErrorMessage =
+    initializationError?.message || STRINGS.NETWORK_ERROR || STRINGS.PLEASE_TRY_AGAIN;
+
   // Don't render if TrackPlayer is not initialized
   if (!isInitialized) {
-    const initializationErrorMessage =
-      initializationError?.message || STRINGS.NETWORK_ERROR || STRINGS.PLEASE_TRY_AGAIN;
-    return (
-      <ErrorFallback
-        isInitializing={isInitializing}
-        initializationErrorMessage={initializationErrorMessage}
-        retryInitialization={retryInitialization}
-        handleClose={onCloseTrackModal}
-      />
-    );
+    return renderErrorFallback(initializationErrorMessage, retryInitialization, isInitializing);
+  }
+
+  if (manifestError) {
+    const manifestErrorMessage = manifestError || STRINGS.NETWORK_ERROR || STRINGS.PLEASE_TRY_AGAIN;
+    return renderErrorFallback(manifestErrorMessage, refetchManifest);
   }
 
   return showTrackModal ? (

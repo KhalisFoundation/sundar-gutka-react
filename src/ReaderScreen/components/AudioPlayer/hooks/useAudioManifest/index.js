@@ -1,13 +1,14 @@
 import { useState, useEffect } from "react";
 import { DocumentDirectoryPath } from "react-native-fs";
 import { useSelector, useDispatch } from "react-redux";
-import { actions, logError } from "@common";
+import { actions, logError, STRINGS } from "@common";
 import { fetchManifest } from "@service";
 
 const useAudioManifest = (baniID) => {
   const [tracks, setTracks] = useState([]);
   const [currentPlaying, setCurrentPlaying] = useState(null);
   const [isTracksLoading, setIsLoading] = useState(false);
+  const [manifestError, setManifestError] = useState(null);
   const defaultAudio = useSelector((state) => state.defaultAudio);
 
   const dispatch = useDispatch();
@@ -95,6 +96,7 @@ const useAudioManifest = (baniID) => {
   const fetchAudioManifest = async () => {
     try {
       setIsLoading(true);
+      setManifestError(null);
 
       // Fetch manifest from API
       const manifest = await fetchManifest(baniID);
@@ -111,9 +113,11 @@ const useAudioManifest = (baniID) => {
       if (mappedData && mappedData.length > 0) {
         setTracks(mappedData);
         setDefaultTrack(mappedData);
+        setManifestError(null);
       }
     } catch (error) {
       logError("Error fetching manifest:", error);
+      setManifestError(error?.message || STRINGS.NETWORK_ERROR || STRINGS.PLEASE_TRY_AGAIN);
     } finally {
       setIsLoading(false);
     }
@@ -183,6 +187,8 @@ const useAudioManifest = (baniID) => {
     isTracksLoading,
     addTrackToManifest,
     isTrackDownloaded,
+    manifestError,
+    refetchManifest: fetchAudioManifest,
   };
 };
 
