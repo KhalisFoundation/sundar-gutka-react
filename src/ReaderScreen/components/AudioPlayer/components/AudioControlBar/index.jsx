@@ -223,19 +223,18 @@ const AudioControlBar = ({
     return () => {
       const currentProgress = progressRef.current;
       const currentTrack = currentPlayingRef.current;
-      if (currentTrack?.id && currentProgress?.position != null) {
+      const trackId = currentTrack?.id;
+      if (trackId && currentProgress?.position != null) {
         // Save sequence along with position
         (async () => {
           let sequence = null;
-          if (currentTrack?.lyricsUrl) {
-            sequence = await getSequenceFromPosition(
-              currentTrack.lyricsUrl,
-              currentProgress.position
-            );
+          const lyricsUrl = currentTrack?.lyricsUrl;
+          if (lyricsUrl) {
+            sequence = await getSequenceFromPosition(lyricsUrl, currentProgress.position);
           }
-          dispatch(setAudioProgress(baniID, currentTrack.id, currentProgress.position, sequence));
+          dispatch(setAudioProgress(baniID, trackId, currentProgress.position, sequence));
+          await reset();
         })();
-        reset();
       }
     };
   }, [baniID]);

@@ -433,9 +433,8 @@ describe("AudioControlBar", () => {
         defaultProgress.position
       );
       expect(mockSetAudioProgress).toHaveBeenCalledWith("bani-1", "track-1", 10, null);
+      expect(props.reset).toHaveBeenCalledTimes(1);
     });
-
-    expect(props.reset).toHaveBeenCalledTimes(1);
   });
 
   it("pauses audio when navigation blur event fires", async () => {
