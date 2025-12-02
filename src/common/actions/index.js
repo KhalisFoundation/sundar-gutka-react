@@ -193,10 +193,10 @@ export const setAudioManifest = (baniId, tracks) => {
 };
 
 // Audio progress actions
-export const setAudioProgress = (baniId, trackId, position, duration) => {
+export const setAudioProgress = (baniId, trackId, position, sequence) => {
   return {
     type: actionTypes.SET_AUDIO_PROGRESS,
-    payload: { baniId, trackId, position, duration },
+    payload: { baniId, trackId, position, sequence },
   };
 };
 

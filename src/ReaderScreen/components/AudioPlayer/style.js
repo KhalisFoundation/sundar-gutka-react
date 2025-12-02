@@ -176,6 +176,10 @@ export const audioControlBarStyles = (theme) => ({
     marginTop: 2,
     justifyContent: "center",
   },
+  progressBar: {
+    position: "relative",
+    justifyContent: "center",
+  },
   timestamp: {
     fontSize: theme.typography.sizes.md,
     fontFamily: theme.typography.fonts.balooPaaji,
@@ -183,6 +187,17 @@ export const audioControlBarStyles = (theme) => ({
     position: "absolute",
     bottom: 25,
     fontWeight: theme.typography.weights.normal,
+  },
+  seekLoadingOverlay: {
+    position: "absolute",
+    right: 0,
+    top: -theme.spacing.sm,
+    paddingHorizontal: theme.spacing.sm,
+    paddingVertical: 2,
+    borderRadius: BORDER_RADIUS.sm,
+    backgroundColor: theme.colors.surface,
+    alignItems: "center",
+    justifyContent: "center",
   },
 });
 
