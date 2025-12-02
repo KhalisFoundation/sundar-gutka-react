@@ -1,3 +1,4 @@
+import borderRadius from "./borderRadius";
 import components from "./components";
 import spacing from "./spacing";
 import staticColors from "./staticColors";
@@ -48,6 +49,7 @@ const lightTheme = {
     khalisLogo: require("../../images/khalislogo150.png"),
     baniDBLogo: require("../../images/banidblogo.png"),
   },
+  borderRadius,
 };
 
 export default lightTheme;

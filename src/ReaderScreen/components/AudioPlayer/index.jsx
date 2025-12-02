@@ -1,19 +1,15 @@
 import React, { useState, useEffect } from "react";
-import { View } from "react-native";
 import TrackPlayer from "react-native-track-player";
 import { useSelector, useDispatch } from "react-redux";
 import PropTypes from "prop-types";
 import { toggleAudio, setDefaultAudio } from "@common/actions";
-import useThemedStyles from "@common/hooks/useThemedStyles";
 import { showErrorToast } from "@common/toast";
-import { STRINGS, CustomText, logError } from "@common";
-import { AudioTrackDialog, AudioControlBar } from "./components";
+import { STRINGS, logError } from "@common";
+import { AudioTrackDialog, AudioControlBar, ErrorFallback } from "./components";
 import { useTrackPlayer, useAudioSyncScroll, useAudioManifest } from "./hooks";
-import createStyles from "./style";
 
 const AudioPlayer = ({ baniID, title, webViewRef }) => {
   const dispatch = useDispatch();
-  const styles = useThemedStyles(createStyles);
   const [showTrackModal, setShowTrackModal] = useState(true);
   const defaultAudio = useSelector((state) => state.defaultAudio);
   const audioPlaybackSpeed = useSelector((state) => state.audioPlaybackSpeed);
@@ -29,6 +25,9 @@ const AudioPlayer = ({ baniID, title, webViewRef }) => {
     isAudioEnabled,
     isInitialized,
     reset,
+    isInitializing,
+    initializationError,
+    retryInitialization,
   } = useTrackPlayer();
   const {
     tracks,
@@ -37,6 +36,8 @@ const AudioPlayer = ({ baniID, title, webViewRef }) => {
     isTracksLoading,
     addTrackToManifest,
     isTrackDownloaded,
+    manifestError,
+    refetchManifest,
   } = useAudioManifest(baniID);
 
   // Audio sync scroll hook
@@ -152,13 +153,26 @@ const AudioPlayer = ({ baniID, title, webViewRef }) => {
     }
   };
 
+  const renderErrorFallback = (message, retryFn, isLoading = false) => (
+    <ErrorFallback
+      isInitializing={isLoading}
+      initializationErrorMessage={message}
+      retryInitialization={retryFn}
+      handleClose={onCloseTrackModal}
+    />
+  );
+
+  const initializationErrorMessage =
+    initializationError?.message || STRINGS.NETWORK_ERROR || STRINGS.PLEASE_TRY_AGAIN;
+
   // Don't render if TrackPlayer is not initialized
   if (!isInitialized) {
-    return (
-      <View style={styles.container}>
-        <CustomText style={styles.trackTitle}>Initializing audio player...</CustomText>
-      </View>
-    );
+    return renderErrorFallback(initializationErrorMessage, retryInitialization, isInitializing);
+  }
+
+  if (manifestError) {
+    const manifestErrorMessage = STRINGS.NETWORK_ERROR || STRINGS.PLEASE_TRY_AGAIN;
+    return renderErrorFallback(manifestErrorMessage, refetchManifest);
   }
 
   return showTrackModal ? (
