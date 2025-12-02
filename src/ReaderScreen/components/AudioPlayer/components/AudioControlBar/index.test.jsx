@@ -78,6 +78,7 @@ jest.mock("@common/hooks/useThemedStyles", () => {
     progressBar: {},
     timestamp: {},
     timestampWithColor: {},
+    seekLoadingOverlay: {},
   };
   return () => () => styles;
 });
@@ -161,6 +162,15 @@ const mockCheckLyricsFileAvailable = jest.fn();
 jest.mock("../../utils/checkLRC", () => ({
   __esModule: true,
   default: (...args) => mockCheckLyricsFileAvailable(...args),
+}));
+
+// Mock sequence utilities
+const mockGetSequenceFromPosition = jest.fn();
+const mockGetPositionFromSequence = jest.fn();
+
+jest.mock("../../utils/getSequenceFromPosition", () => ({
+  getSequenceFromPosition: (...args) => mockGetSequenceFromPosition(...args),
+  getPositionFromSequence: (...args) => mockGetPositionFromSequence(...args),
 }));
 
 // Mock child components
@@ -254,6 +264,9 @@ describe("AudioControlBar", () => {
   beforeEach(() => {
     jest.clearAllMocks();
     blurCallback = undefined;
+    mockCheckLyricsFileAvailable.mockResolvedValue(false);
+    mockGetSequenceFromPosition.mockResolvedValue(null);
+    mockGetPositionFromSequence.mockResolvedValue(null);
 
     mockState = {
       isAudioSyncScroll: true,
@@ -319,6 +332,60 @@ describe("AudioControlBar", () => {
     expect(props.handleSeek).toHaveBeenCalledWith(50);
   });
 
+  it("shows a seek loading indicator and disables slider when loading track with saved progress", async () => {
+    mockState.audioProgress = {
+      "bani-1": {
+        position: 42,
+        trackId: "track-1",
+        sequence: 10,
+      },
+    };
+
+    let seekResolve;
+    const seekPromise = new Promise((resolve) => {
+      seekResolve = resolve;
+    });
+
+    const mockSeekTo = jest.fn().mockReturnValue(seekPromise);
+    const mockAddAndPlayTrack = jest.fn().mockResolvedValue(undefined);
+    mockGetPositionFromSequence.mockResolvedValue(42);
+
+    const props = createProps({
+      isInitialized: true,
+      addAndPlayTrack: mockAddAndPlayTrack,
+      seekTo: mockSeekTo,
+      currentPlaying: defaultCurrentTrack,
+    });
+
+    const { getByTestId } = render(<AudioControlBar {...props} />);
+
+    // Wait for addAndPlayTrack to complete
+    await waitFor(() => {
+      expect(mockAddAndPlayTrack).toHaveBeenCalled();
+    });
+
+    // During seek, the slider should be disabled and loading indicator should appear
+    await waitFor(
+      () => {
+        const slider = getByTestId("slider");
+        expect(slider.props.disabled).toBe(true);
+      },
+      { timeout: 100 }
+    );
+
+    // Resolve the seek promise to complete the loading
+    seekResolve();
+
+    // Wait for loading to complete
+    await waitFor(
+      () => {
+        const slider = getByTestId("slider");
+        expect(slider.props.disabled).toBe(false);
+      },
+      { timeout: 500 }
+    );
+  });
+
   it("saves audio progress and calls onCloseTrackModal when close button is pressed", async () => {
     const props = createProps();
     const { getByTestId } = render(<AudioControlBar {...props} />);
@@ -343,16 +410,31 @@ describe("AudioControlBar", () => {
   });
 
   it("saves audio progress and calls reset on unmount", async () => {
-    const props = createProps();
-    const { unmount } = render(<AudioControlBar {...props} />);
+    mockGetSequenceFromPosition.mockResolvedValue(null);
 
-    await waitFor(() => {
-      // Wait for initial async operations to complete
+    const props = createProps({
+      addAndPlayTrack: jest.fn().mockResolvedValue(undefined),
     });
 
+    const { unmount } = render(<AudioControlBar {...props} />);
+
+    // Wait for initial async operations (addAndPlayTrack) to complete
+    await waitFor(() => {
+      expect(props.addAndPlayTrack).toHaveBeenCalled();
+    });
+
+    // Unmount triggers cleanup effect
     unmount();
 
-    expect(mockSetAudioProgress).toHaveBeenCalledWith("bani-1", "track-1", 10);
+    // Wait for the async cleanup (getSequenceFromPosition and setAudioProgress) to complete
+    await waitFor(() => {
+      expect(mockGetSequenceFromPosition).toHaveBeenCalledWith(
+        defaultCurrentTrack.lyricsUrl,
+        defaultProgress.position
+      );
+      expect(mockSetAudioProgress).toHaveBeenCalledWith("bani-1", "track-1", 10, null);
+    });
+
     expect(props.reset).toHaveBeenCalledTimes(1);
   });
 

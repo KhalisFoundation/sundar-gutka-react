@@ -109,7 +109,6 @@ const AudioPlayer = ({ baniID, title, webViewRef }) => {
 
   useEffect(() => {
     if (defaultAudio[baniID] && defaultAudio[baniID].audioUrl) {
-      console.log("defaultAudio", defaultAudio);
       setShowTrackModal(false);
     }
   }, [defaultAudio, baniID]);
@@ -126,24 +125,21 @@ const AudioPlayer = ({ baniID, title, webViewRef }) => {
 
   const handleTrackSelect = async (selectedTrack) => {
     try {
-      // Save current sequence before switching artists
-      if (currentPlaying?.lyricsUrl && progress?.position != null) {
-        const currentSequence = await getSequenceFromPosition(
-          currentPlaying.lyricsUrl,
-          progress.position
-        );
-        if (currentSequence != null && currentPlaying?.id) {
-          dispatch(
-            setAudioProgress(baniID, currentPlaying.id, progress.position, null, currentSequence)
-          );
-        }
-      }
-
       // Stop current playback
       await stop();
 
       // Set the new track as current
       setCurrentPlaying(selectedTrack);
+      // Save current sequence before switching artists
+      if (selectedTrack?.lyricsUrl && progress?.position != null) {
+        const currentSequence = await getSequenceFromPosition(
+          selectedTrack.lyricsUrl,
+          progress.position
+        );
+        if (currentSequence != null && selectedTrack?.id) {
+          dispatch(setAudioProgress(baniID, selectedTrack.id, progress.position, currentSequence));
+        }
+      }
 
       // Close the modal
       setShowTrackModal(false);

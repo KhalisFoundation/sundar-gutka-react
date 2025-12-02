@@ -56,6 +56,7 @@ const AudioControlBar = ({
   const progressRef = useRef(progress);
   const currentPlayingRef = useRef(currentPlaying);
   const audioProgress = useSelector((state) => state.audioProgress);
+  const [isSeekLoading, setIsSeekLoading] = useState(false);
   const { modalHeight, modalOpacity } = useAnimation(isSettingsModalOpen, isMoreTracksModalOpen);
   const { isDownloading, isDownloaded } = useDownloadManager(
     currentPlaying,
@@ -95,7 +96,7 @@ const AudioControlBar = ({
       if (currentTrack?.lyricsUrl) {
         sequence = await getSequenceFromPosition(currentTrack.lyricsUrl, currentProgress.position);
       }
-      dispatch(setAudioProgress(baniID, currentTrack.id, currentProgress.position, null, sequence));
+      dispatch(setAudioProgress(baniID, currentTrack.id, currentProgress.position, sequence));
     }
 
     onCloseTrackModal();
@@ -169,7 +170,7 @@ const AudioControlBar = ({
           currentPlaying.trackSizeMB,
           false
         );
-
+        setIsSeekLoading(true);
         // Check if we have saved progress for this track
         if (baniID && audioProgress?.[baniID]) {
           const savedProgress = audioProgress[baniID];
@@ -185,6 +186,7 @@ const AudioControlBar = ({
               if (isAudioAutoPlay) {
                 await play();
               }
+              setIsSeekLoading(false);
               return;
             }
           }
@@ -198,11 +200,10 @@ const AudioControlBar = ({
         if (isAudioAutoPlay) {
           await play();
         }
-        if (isAudioAutoPlay) {
-          await play();
-        }
+        setIsSeekLoading(false);
       } catch (error) {
         logError("Error loading active track:", error);
+        setIsSeekLoading(false);
       }
     };
 
@@ -232,9 +233,7 @@ const AudioControlBar = ({
               currentProgress.position
             );
           }
-          dispatch(
-            setAudioProgress(baniID, currentTrack.id, currentProgress.position, null, sequence)
-          );
+          dispatch(setAudioProgress(baniID, currentTrack.id, currentProgress.position, sequence));
         })();
         reset();
       }
@@ -342,6 +341,11 @@ const AudioControlBar = ({
 
             <View style={styles.progressContainer}>
               <View style={styles.progressBar}>
+                {isSeekLoading && (
+                  <View style={styles.seekLoadingOverlay} testID="seek-loading-indicator">
+                    <ActivityIndicator size="small" color={theme.colors.primary} />
+                  </View>
+                )}
                 <CustomText style={[styles.timestamp, styles.timestampWithColor]}>
                   {formatTime(progress.position)}
                 </CustomText>
@@ -352,7 +356,7 @@ const AudioControlBar = ({
                   onSlidingComplete={([v]) => handleSeek(v)}
                   minimumTrackTintColor={sliderMinTrackColor}
                   maximumTrackTintColor={theme.staticColors.SLIDER_TRACK_COLOR}
-                  disabled={!isAudioEnabled}
+                  disabled={!isAudioEnabled || isSeekLoading}
                   trackStyle={{
                     height: 6,
                     borderRadius: 3,
