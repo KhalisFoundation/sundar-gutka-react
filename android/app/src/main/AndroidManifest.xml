@@ -9,6 +9,10 @@
     <application android:name=".MainApplication" android:label="@string/app_name" android:icon="@mipmap/ic_launcher_foreground"
         android:roundIcon="@mipmap/ic_launcher_round" android:allowBackup="false" android:theme="@style/AppTheme" android:supportsRtl="true"
         android:networkSecurityConfig="@xml/network_security_config">
+        <meta-data
+            android:name="firebase_analytics_automatic_screen_reporting_enabled"
+            android:value="false"
+            tools:node="replace" />
         <activity android:name=".MainActivity" android:exported="true" android:label="@string/app_name"
             android:configChanges="keyboard|keyboardHidden|orientation|screenSize|uiMode"
             android:launchMode="singleTask" android:windowSoftInputMode="adjustResize">

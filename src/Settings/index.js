@@ -6,9 +6,6 @@ import useTheme from "@common/context";
 import useThemedStyles from "@common/hooks/useThemedStyles";
 import {
   STRINGS,
-  useScreenAnalytics,
-  constant,
-  logMessage,
   StatusBarComponent,
   SafeArea,
   CustomText,
@@ -40,8 +37,6 @@ import useHeader from "./hooks/useHeader";
 import createStyles from "./styles";
 
 const Settings = ({ navigation }) => {
-  logMessage(constant.SETTINGS);
-  useScreenAnalytics(constant.SETTINGS);
   useHeader(navigation);
   useBackHandler();
   const isDatabaseUpdateAvailable = useSelector((state) => state.isDatabaseUpdateAvailable);

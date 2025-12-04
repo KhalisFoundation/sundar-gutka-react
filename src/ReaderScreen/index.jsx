@@ -6,8 +6,6 @@ import PropTypes from "prop-types";
 import {
   constant,
   actions,
-  useScreenAnalytics,
-  logMessage,
   logError,
   SafeArea,
   BottomNavigation,
@@ -22,7 +20,6 @@ import createStyles from "./styles";
 import { loadHTML } from "./utils";
 
 const Reader = ({ navigation, route }) => {
-  logMessage(constant.READER);
   const { theme } = useTheme();
   const styles = useThemedStyles(createStyles);
   const bookmarkPosition = useSelector((state) => state.bookmarkPosition);
@@ -117,7 +114,6 @@ const Reader = ({ navigation, route }) => {
     currentPosition,
   ]);
 
-  useScreenAnalytics(title);
   useBookmarks(webViewRef, shabad, bookmarkPosition);
 
   // Handle app state changes
