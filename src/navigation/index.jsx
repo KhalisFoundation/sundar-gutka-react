@@ -4,6 +4,7 @@ import { createNativeStackNavigator } from "@react-navigation/native-stack";
 import { navigationRef, stopTrace, resetTrace, startPerformanceTrace } from "@common";
 import AboutScreen from "../AboutScreen";
 import Bookmarks from "../Bookmarks";
+import { trackScreenView } from "../common/firebase/analytics";
 import DatabaseUpdateScreen from "../DatabaseUpdate";
 import EditBaniOrder from "../EditBaniOrder";
 import FolderScreen from "../FolderScreen";
@@ -15,6 +16,7 @@ import ReminderOptions from "../Settings/components/reminders/ReminderOptions";
 const Stack = createNativeStackNavigator();
 
 const Navigation = () => {
+  const routeNameRef = React.useRef();
   const trace = React.useRef(null);
 
   const handlingStateChange = async (state) => {
@@ -29,8 +31,22 @@ const Navigation = () => {
   return (
     <NavigationContainer
       ref={navigationRef}
-      onStateChange={(state) => {
+      onReady={() => {
+        routeNameRef.current = navigationRef.current.getCurrentRoute().name;
+      }}
+      onStateChange={async (state) => {
         handlingStateChange(state);
+        const previousRouteName = routeNameRef.current;
+        const currentRouteName = navigationRef.current.getCurrentRoute().name;
+        const currentRoute = navigationRef.current.getCurrentRoute();
+        if (previousRouteName !== currentRouteName) {
+          await trackScreenView(
+            currentRouteName,
+            currentRoute?.params?.key,
+            currentRoute?.params?.params?.title
+          );
+        }
+        routeNameRef.current = currentRouteName;
       }}
     >
       <Stack.Navigator

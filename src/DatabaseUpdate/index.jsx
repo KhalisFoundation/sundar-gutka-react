@@ -6,7 +6,6 @@ import useTheme from "@common/context";
 import useThemedStyles from "@common/hooks/useThemedStyles";
 import {
   constant,
-  logMessage,
   actions,
   checkForBaniDBUpdate,
   logError,
@@ -21,7 +20,6 @@ import useHeader from "./hooks/useHeader";
 import createStyles from "./styles";
 
 const DatabaseUpdateScreen = ({ navigation }) => {
-  logMessage(constant.DATABASE_UPDATE_SCREEN);
   const { theme } = useTheme();
   const styles = useThemedStyles(createStyles);
   const baniDBLogoFull = require("../../images/banidblogo.png");

@@ -16,7 +16,6 @@ import useTheme from "./context";
 import defaultBaniOrder from "./defaultBaniOrder";
 import {
   allowTracking,
-  trackScreenView,
   trackReaderEvent,
   trackSettingEvent,
   trackReminderEvent,
@@ -31,7 +30,6 @@ import {
 import baseFontSize, { validateBaniOrder } from "./helpers";
 import useKeepAwake from "./hooks/keepAwake";
 import useBackHandler from "./hooks/useBackHandler";
-import useScreenAnalytics from "./hooks/useScreenAnalytics";
 import useThemedStyles from "./hooks/useThemedStyles";
 import STRINGS from "./localization";
 import {
@@ -59,14 +57,12 @@ export {
   colors,
   constant,
   actions,
-  useScreenAnalytics,
   STRINGS,
   logError,
   logMessage,
   initializeCrashlytics,
   allowTracking,
   trackReaderEvent,
-  trackScreenView,
   trackReminderEvent,
   trackSettingEvent,
   updateReminders,

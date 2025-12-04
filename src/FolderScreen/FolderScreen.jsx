@@ -2,22 +2,13 @@ import React from "react";
 import { View } from "react-native";
 import PropTypes from "prop-types";
 import useTheme from "@common/context";
-import {
-  BaniList,
-  constant,
-  useScreenAnalytics,
-  logMessage,
-  StatusBarComponent,
-  SafeArea,
-} from "@common";
+import { BaniList, constant, StatusBarComponent, SafeArea } from "@common";
 import Header from "./header";
 
 const FolderScreen = ({ navigation, route }) => {
   const { theme } = useTheme();
-  logMessage(constant.FOLDERSCREEN);
   const { navigate } = navigation;
   const { data, title } = route.params.params;
-  useScreenAnalytics(constant.FOLDERSCREEN);
 
   const onPress = (row) => {
     const { item } = row;

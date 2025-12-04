@@ -5,8 +5,6 @@ import PropTypes from "prop-types";
 import {
   STRINGS,
   constant,
-  useScreenAnalytics,
-  logMessage,
   StatusBarComponent,
   SafeArea,
   CustomText,
@@ -19,9 +17,7 @@ import createStyles from "./styles";
 const AboutScreen = ({ navigation }) => {
   const styles = useThemedStyles(createStyles);
   const { theme } = useTheme();
-  logMessage(constant.ABOUT_SCREEN);
 
-  useScreenAnalytics(constant.ABOUT_SCREEN);
   useHeader(navigation);
   const {
     CREATED_BY,

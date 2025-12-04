@@ -5,13 +5,11 @@ import PropTypes from "prop-types";
 import useTheme from "@common/context";
 import useThemedStyles from "@common/hooks/useThemedStyles";
 import {
-  useScreenAnalytics,
   actions,
   BaniLengthSelector,
   constant,
   useKeepAwake,
   BaniList,
-  logMessage,
   validateBaniOrder,
   StatusBarComponent,
   SafeArea,
@@ -22,7 +20,6 @@ import { useBaniLength, useBaniList, useDatabaseUpdateCheck } from "./hooks";
 import createStyles from "./styles";
 
 const HomeScreen = React.memo(({ navigation }) => {
-  logMessage(constant.HOME_SCREEN);
   const { theme } = useTheme();
   const styles = useThemedStyles(createStyles);
   const { navigate } = navigation;
@@ -32,7 +29,6 @@ const HomeScreen = React.memo(({ navigation }) => {
   useDatabaseUpdateCheck();
 
   useKeepAwake();
-  useScreenAnalytics(constant.HOME_SCREEN);
   const { baniLengthSelector } = useBaniLength();
   const dispatch = useDispatch();
 
