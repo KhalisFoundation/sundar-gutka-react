@@ -19,6 +19,9 @@ import {
   trackReaderEvent,
   trackSettingEvent,
   trackReminderEvent,
+  trackAudioEvent,
+  trackArtistListeningDuration,
+  trackArtist,
 } from "./firebase/analytics";
 import { logError, initializeCrashlytics, setCustomKey, logMessage } from "./firebase/crashlytics";
 import {
@@ -63,6 +66,7 @@ export {
   initializeCrashlytics,
   allowTracking,
   trackReaderEvent,
+  trackAudioEvent,
   trackReminderEvent,
   trackSettingEvent,
   updateReminders,
@@ -107,4 +111,6 @@ export {
   useThemedStyles,
   ListItemTitle,
   useBackHandler,
+  trackArtistListeningDuration,
+  trackArtist,
 };
