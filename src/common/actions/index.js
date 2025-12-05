@@ -1,5 +1,5 @@
 import constant from "../constant";
-import { trackSettingEvent } from "../firebase/analytics";
+import { trackSettingEvent, trackAudioEvent, trackArtist } from "../firebase/analytics";
 import STRINGS from "../localization";
 import * as actionTypes from "./actionTypes";
 
@@ -46,22 +46,23 @@ export const toggleAudio = (value) => {
 };
 
 export const toggleAudioAutoPlay = (value) => {
-  trackSettingEvent(constant.AUDIO_AUTO_PLAY, value);
+  trackAudioEvent(constant.AUDIO_AUTO_PLAY, value);
   return { type: actionTypes.TOGGLE_AUDIO_AUTO_PLAY, value };
 };
 
 export const toggleAudioSyncScroll = (value) => {
-  trackSettingEvent(constant.AUDIO_SYNC_SCROLL, value);
+  trackAudioEvent(constant.AUDIO_SYNC_SCROLL, value);
   return { type: actionTypes.TOGGLE_AUDIO_SYNC_SCROLL, value };
 };
 
 export const setDefaultAudio = (audio, shabadId) => {
+  trackArtist(shabadId, audio.displayName);
   const value = { [shabadId]: audio };
   return { type: actionTypes.SET_DEFAULT_AUDIO, value };
 };
 
 export const setAudioPlaybackSpeed = (value) => {
-  trackSettingEvent("AUDIO_PLAYBACK_SPEED", value);
+  trackAudioEvent("audioPlaybackSpeed", value);
   return { type: actionTypes.SET_AUDIO_PLAYBACK_SPEED, value };
 };
 
@@ -157,6 +158,7 @@ export const setReminderSound = (value) => {
 };
 
 export const setAutoScrollSpeed = (speed, shabad) => {
+  trackSettingEvent(constant.AUTO_SCROLL_SPEED, speed);
   const value = { [shabad]: speed };
   return { type: actionTypes.SET_AUTO_SCROLL_SPEED, value };
 };

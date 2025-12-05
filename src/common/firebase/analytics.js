@@ -88,6 +88,29 @@ const trackReaderEvent = async (action, label) => {
   await trackEvent("reader", action, label);
 };
 
+const trackAudioEvent = async (action, label) => {
+  await trackEvent("audio", action, label);
+};
+
+const trackArtistListeningDuration = async (baniID, artist, duration) => {
+  const params = {
+    event: "artistListenDuration",
+    baniID,
+    artist,
+    duration,
+  };
+  await logEvent(analytics, "audio", params);
+};
+
+const trackArtist = async (baniID, artist) => {
+  const params = {
+    event: "defaultArtist",
+    baniID,
+    artist,
+  };
+  await logEvent(analytics, "audio", params);
+};
+
 const trackSettingEvent = async (action, label) => {
   await trackEvent("setting", action, label);
 };
@@ -106,4 +129,13 @@ export const safeAnalyticsOperation = (operation) => {
   }
 };
 
-export { allowTracking, trackReaderEvent, trackSettingEvent, trackReminderEvent, trackScreenView };
+export {
+  allowTracking,
+  trackReaderEvent,
+  trackSettingEvent,
+  trackReminderEvent,
+  trackScreenView,
+  trackAudioEvent,
+  trackArtistListeningDuration,
+  trackArtist,
+};

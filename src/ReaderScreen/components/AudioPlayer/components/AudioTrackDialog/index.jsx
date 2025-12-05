@@ -6,7 +6,7 @@ import PropTypes from "prop-types";
 import useTheme from "@common/context";
 import useThemedStyles from "@common/hooks/useThemedStyles";
 import { ArrowRightIcon, CloseIcon } from "@common/icons";
-import { STRINGS, CustomText } from "@common";
+import { STRINGS, CustomText, trackAudioEvent } from "@common";
 import { audioTrackDialogStyles } from "../../style";
 import ScrollViewComponent from "../ScrollViewComponent";
 
@@ -96,12 +96,15 @@ const AudioTrackDialog = ({
         </CustomText>
         <Pressable
           style={styles.joinMailingListButton}
-          onPress={() =>
+          onPress={() => {
+            // Track analytics: user clicked request audio link
+            trackAudioEvent("requestAudioLink", title || "unknown");
+            // Open the link
             Linking.openURL("https://khalisfoundation.org").catch(() => {
               // Fallback to main website if newsletter link fails
               Linking.openURL("https://khalisfoundation.org");
-            })
-          }
+            });
+          }}
         >
           <CustomText style={styles.joinMailingListText}>
             {STRINGS.REQUEST_AUDIO_FOR_THIS_PAATH}
