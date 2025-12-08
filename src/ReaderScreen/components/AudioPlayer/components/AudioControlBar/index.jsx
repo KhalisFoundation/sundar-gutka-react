@@ -8,7 +8,14 @@ import PropTypes from "prop-types";
 import { setAudioProgress, toggleAudioSyncScroll } from "@common/actions";
 import useTheme from "@common/context";
 import useThemedStyles from "@common/hooks/useThemedStyles";
-import { MusicNoteIcon, SettingsIcon, CloseIcon, PlayIcon, PauseIcon } from "@common/icons";
+import {
+  MusicNoteIcon,
+  SettingsIcon,
+  CloseIcon,
+  PlayIcon,
+  PauseIcon,
+  ChevronDownIcon,
+} from "@common/icons";
 import { STRINGS, CustomText, logError } from "@common";
 import { useAnimation, useDownloadManager, useBookmarks } from "../../hooks";
 import { audioControlBarStyles } from "../../style";
@@ -107,13 +114,25 @@ const AudioControlBar = ({
     },
   ];
 
-  const actionItems = [
-    {
-      onPress: handleClose,
-      Icon: CloseIcon,
-      id: 1,
-    },
-  ];
+  const actionItems =
+    isMoreTracksModalOpen || isSettingsModalOpen
+      ? [
+          {
+            onPress: () => {
+              setIsMoreTracksModalOpen(false);
+              setIsSettingsModalOpen(false);
+            },
+            Icon: ChevronDownIcon,
+            id: 1,
+          },
+        ]
+      : [
+          {
+            onPress: handleClose,
+            Icon: CloseIcon,
+            id: 1,
+          },
+        ];
 
   useEffect(() => {
     if (isSettingsModalOpen) {

@@ -6,21 +6,14 @@ import { RefreshIcon } from "@common/icons";
 import { STRINGS, CustomText, useTheme, useThemedStyles } from "@common";
 import createStyles from "./styles";
 
-const Header = ({ navigation, setReset }) => {
+const Header = ({ setReset }) => {
   const { theme } = useTheme();
   const styles = useThemedStyles(createStyles);
-  const { goBack } = navigation;
   const { EDIT_BANI_ORDER } = STRINGS;
 
   const headerLeft = useCallback(
-    () => (
-      <BackIconComponent
-        size={30}
-        handleBackPress={() => goBack()}
-        color={theme.staticColors.WHITE_COLOR}
-      />
-    ),
-    [goBack, theme.staticColors.WHITE_COLOR]
+    () => <BackIconComponent size={30} color={theme.staticColors.WHITE_COLOR} />,
+    [theme.staticColors.WHITE_COLOR]
   );
 
   const headerRight = useCallback(
@@ -42,9 +35,6 @@ const Header = ({ navigation, setReset }) => {
 };
 
 Header.propTypes = {
-  navigation: PropTypes.shape({
-    goBack: PropTypes.func.isRequired,
-  }).isRequired,
   setReset: PropTypes.func.isRequired,
 };
 

@@ -8,14 +8,7 @@ import createStyles from "../styles";
 const useHeader = (navigation) => {
   const { theme } = useTheme();
   const { headerTitleStyle, headerStyle } = useThemedStyles(createStyles);
-  const { goBack } = navigation;
-  const headerLeft = () => (
-    <BackIconComponent
-      size={30}
-      handleBackPress={() => goBack()}
-      color={theme.staticColors.WHITE_COLOR}
-    />
-  );
+  const headerLeft = () => <BackIconComponent size={30} color={theme.staticColors.WHITE_COLOR} />;
   useEffect(() => {
     navigation.setOptions({
       title: STRINGS.about,
