@@ -47,8 +47,22 @@ const useAudioManifest = (baniID) => {
           const lyricsUrlPath = track.lyricsUrl
             ? `${DocumentDirectoryPath}/audio/${track.lyricsUrl}`
             : null;
-          const hasAudio = await exists(fullLocalPath);
-          const hasLyrics = lyricsUrlPath ? await exists(lyricsUrlPath) : true;
+          let hasAudio = false;
+          let hasLyrics = true;
+          try {
+            hasAudio = await exists(fullLocalPath);
+          } catch (error) {
+            // If file existence check fails, treat as missing
+            hasAudio = false;
+          }
+          if (lyricsUrlPath) {
+            try {
+              hasLyrics = await exists(lyricsUrlPath);
+            } catch (error) {
+              // If file existence check fails, treat as missing
+              hasLyrics = false;
+            }
+          }
           if (!hasAudio) {
             return null;
           }
@@ -84,8 +98,24 @@ const useAudioManifest = (baniID) => {
             ? `${DocumentDirectoryPath}/audio/${downloadedTrack.lyricsUrl}`
             : null;
 
-        const hasAudio = fullLocalPath ? await exists(fullLocalPath) : false;
-        const hasLyrics = lyricsUrlPath ? await exists(lyricsUrlPath) : true;
+        let hasAudio = false;
+        let hasLyrics = true;
+        if (fullLocalPath) {
+          try {
+            hasAudio = await exists(fullLocalPath);
+          } catch (error) {
+            // If file existence check fails, treat as missing
+            hasAudio = false;
+          }
+        }
+        if (lyricsUrlPath) {
+          try {
+            hasLyrics = await exists(lyricsUrlPath);
+          } catch (error) {
+            // If file existence check fails, treat as missing
+            hasLyrics = false;
+          }
+        }
 
         if (downloadedTrack && hasAudio) {
           return {
@@ -162,6 +192,7 @@ const useAudioManifest = (baniID) => {
       trackLengthSec: track.trackLengthSec,
       trackSizeMB: track.trackSizeMB,
       lyricsUrl: jsonPath,
+      remoteUrl: track.remoteUrl,
     };
 
     const existingTracks = audioManifest[baniID] || [];
