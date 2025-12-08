@@ -159,6 +159,7 @@ const AudioControlBar = ({
       }
 
       try {
+        setIsSeekLoading(true);
         // Load the track (will seek to saved position if available)
         await addAndPlayTrack(
           currentPlaying.id,
@@ -170,7 +171,7 @@ const AudioControlBar = ({
           currentPlaying.trackSizeMB,
           false
         );
-        setIsSeekLoading(true);
+
         // Check if we have saved progress for this track
         if (baniID && audioProgress?.[baniID]) {
           const savedProgress = audioProgress[baniID];

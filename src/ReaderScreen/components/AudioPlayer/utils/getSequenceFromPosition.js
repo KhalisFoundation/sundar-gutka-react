@@ -1,6 +1,14 @@
 import { logError } from "@common";
 import fetchLRCData from "./fetchLRC";
 
+const loadLRCData = async (lyricsUrl) => {
+  const lrcData = await fetchLRCData(lyricsUrl);
+  if (!lrcData || !Array.isArray(lrcData) || lrcData.length === 0) {
+    return null;
+  }
+  return lrcData;
+};
+
 /**
  * Get the current sequence number from lyrics JSON based on audio position
  * @param {string} lyricsUrl - URL to the lyrics JSON file
@@ -13,11 +21,10 @@ const getSequenceFromPosition = async (lyricsUrl, position) => {
       return null;
     }
 
-    const lrcData = await fetchLRCData(lyricsUrl);
-    if (!lrcData || !Array.isArray(lrcData) || lrcData.length === 0) {
+    const lrcData = await loadLRCData(lyricsUrl);
+    if (!lrcData) {
       return null;
     }
-
     // Find the timestamp entry that contains the current position
     const currentTimestamp = lrcData.find(
       (timestamp) => position >= timestamp.start && position <= timestamp.end
@@ -42,8 +49,8 @@ const getPositionFromSequence = async (lyricsUrl, sequence) => {
       return null;
     }
 
-    const lrcData = await fetchLRCData(lyricsUrl);
-    if (!lrcData || !Array.isArray(lrcData) || lrcData.length === 0) {
+    const lrcData = await loadLRCData(lyricsUrl);
+    if (!lrcData) {
       return null;
     }
 

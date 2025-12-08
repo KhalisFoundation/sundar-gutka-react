@@ -116,9 +116,9 @@ jest.mock("@common", () => {
 });
 
 // Mock actions
-const mockSetAudioProgress = jest.fn((baniID, trackId, position) => ({
+const mockSetAudioProgress = jest.fn((baniID, trackId, position, sequence) => ({
   type: "SET_AUDIO_PROGRESS",
-  payload: { baniID, trackId, position },
+  payload: { baniID, trackId, position, sequence },
 }));
 
 const mockToggleAudioSyncScroll = jest.fn((value) => ({
