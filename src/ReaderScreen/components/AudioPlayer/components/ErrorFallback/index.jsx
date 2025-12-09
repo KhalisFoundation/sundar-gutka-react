@@ -1,16 +1,13 @@
 import React from "react";
 import { View, Pressable } from "react-native";
+import { useSelector } from "react-redux";
 import PropTypes from "prop-types";
 import { CloseIcon } from "@common/icons";
 import { useTheme, useThemedStyles, CustomText, STRINGS } from "@common";
 import createStyles from "./styles";
 
-const ErrorFallback = ({
-  isInitializing,
-  initializationErrorMessage,
-  retryInitialization,
-  handleClose,
-}) => {
+const ErrorFallback = ({ title, buttonText, buttonPress, handleClose, baniTitle }) => {
+  const fontFace = useSelector((state) => state.fontFace);
   const styles = useThemedStyles(createStyles);
   const { theme } = useTheme();
 
@@ -19,30 +16,41 @@ const ErrorFallback = ({
       <Pressable testID="close-button" style={styles.closeButton} onPress={handleClose}>
         <CloseIcon size={30} color={theme.colors.audioTitleText} />
       </Pressable>
-      <CustomText testID="status-title" style={styles.statusTitle}>
-        {STRINGS.PREPARING_AUDIO_PLAYER}
-      </CustomText>
-      {!isInitializing && (
-        <>
-          <CustomText testID="status-subtitle" style={styles.statusSubtitle}>
-            {initializationErrorMessage}
-          </CustomText>
-          <Pressable testID="retry-button" style={styles.retryButton} onPress={retryInitialization}>
-            <CustomText testID="retry-button-text" style={styles.retryButtonText}>
-              {STRINGS.PLEASE_TRY_AGAIN}
-            </CustomText>
-          </Pressable>
-        </>
-      )}
+      <View style={styles.noTracksContainer}>
+        <CustomText style={styles.noTracksText}>{STRINGS.MAAFI_JI}</CustomText>
+        <CustomText style={styles.noTracksSubtext}>
+          {title}{" "}
+          {baniTitle !== "" && baniTitle !== undefined && baniTitle !== null && (
+            <>
+              <CustomText
+                style={{
+                  fontFamily: fontFace,
+                }}
+              >
+                {baniTitle}{" "}
+              </CustomText>
+              {STRINGS.YET}
+            </>
+          )}
+        </CustomText>
+        <Pressable style={styles.joinMailingListButton} onPress={buttonPress}>
+          <CustomText style={styles.joinMailingListText}>{buttonText}</CustomText>
+        </Pressable>
+      </View>
     </View>
   );
 };
 
 ErrorFallback.propTypes = {
-  isInitializing: PropTypes.bool.isRequired,
-  initializationErrorMessage: PropTypes.string.isRequired,
-  retryInitialization: PropTypes.func.isRequired,
+  title: PropTypes.string.isRequired,
+  baniTitle: PropTypes.string,
+  buttonPress: PropTypes.func.isRequired,
+  buttonText: PropTypes.string.isRequired,
   handleClose: PropTypes.func.isRequired,
+};
+
+ErrorFallback.defaultProps = {
+  baniTitle: "",
 };
 
 export default ErrorFallback;

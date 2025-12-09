@@ -12,31 +12,35 @@ const createStyles = (theme) => ({
   },
   closeButton: {
     position: "absolute",
-    top: theme.spacing.sm,
-    right: theme.spacing.sm,
+    top: theme.spacing.md,
+    right: theme.spacing.md,
+    zIndex: 10,
   },
-  statusTitle: {
-    fontFamily: theme.typography.fonts.balooPaajiSemiBold,
-    fontSize: theme.typography.sizes.xl,
-    color: theme.colors.audioTitleText,
-  },
-  statusSubtitle: {
-    textAlign: "center",
-    fontFamily: theme.typography.fonts.balooPaaji,
-    fontSize: theme.typography.sizes.lg,
-    color: theme.colors.audioTitleText,
-  },
-  retryButton: {
-    padding: theme.spacing.lg,
-    backgroundColor: theme.colors.primary,
-    borderRadius: theme.borderRadius.lg,
+  noTracksContainer: {
     alignItems: "center",
     justifyContent: "center",
+    gap: theme.spacing.md,
+    padding: theme.spacing.md,
   },
-  retryButtonText: {
-    color: theme.staticColors.WHITE_COLOR,
+  noTracksText: {
+    fontFamily: theme.typography.fonts.balooPaajiSemiBold,
+    fontSize: theme.typography.sizes.xxl,
+    color: theme.colors.audioTitleText,
+  },
+  noTracksSubtext: {
+    fontFamily: theme.typography.fonts.balooPaajiSemiBold,
+    fontSize: theme.typography.sizes.xxl,
+    color: theme.colors.audioTitleText,
+    textAlign: "center",
+  },
+  joinMailingListButton: {
+    padding: theme.spacing.md_12,
+    paddingHorizontal: theme.spacing.xl,
+  },
+  joinMailingListText: {
+    color: theme.colors.audioTitleText,
+    fontSize: theme.typography.sizes.xxl,
     fontFamily: theme.typography.fonts.balooPaaji,
-    fontSize: theme.typography.sizes.lg,
   },
 });
 export default createStyles;

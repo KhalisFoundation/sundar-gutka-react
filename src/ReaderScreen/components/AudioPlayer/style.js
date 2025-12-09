@@ -286,32 +286,6 @@ export const audioTrackDialogStyles = (theme) => ({
   playButtonDisabled: {
     opacity: 0.5,
   },
-  noTracksContainer: {
-    alignItems: "center",
-    justifyContent: "center",
-    gap: theme.spacing.md,
-    padding: theme.spacing.md,
-  },
-  noTracksText: {
-    fontFamily: theme.typography.fonts.balooPaajiSemiBold,
-    fontSize: theme.typography.sizes.xxl,
-    color: theme.colors.audioTitleText,
-  },
-  noTracksSubtext: {
-    fontFamily: theme.typography.fonts.balooPaajiSemiBold,
-    fontSize: theme.typography.sizes.xxl,
-    color: theme.colors.audioTitleText,
-    textAlign: "center",
-  },
-  joinMailingListButton: {
-    padding: theme.spacing.md_12,
-    paddingHorizontal: theme.spacing.xl,
-  },
-  joinMailingListText: {
-    color: theme.colors.audioTitleText,
-    fontSize: theme.typography.sizes.xxl,
-    fontFamily: theme.typography.fonts.balooPaaji,
-  },
 });
 
 export const downloadBadgeStyles = (theme) => ({

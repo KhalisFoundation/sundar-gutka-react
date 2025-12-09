@@ -1,5 +1,5 @@
 import React, { useState } from "react";
-import { View, Pressable, Platform, Linking, ActivityIndicator } from "react-native";
+import { View, Pressable, Platform } from "react-native";
 import { useSelector } from "react-redux";
 import { BlurView } from "@react-native-community/blur";
 import PropTypes from "prop-types";
@@ -17,7 +17,6 @@ const AudioTrackDialog = ({
   onCloseTrackModal,
   isHeader = true,
   isFooter = true,
-  isLoading = false,
   addAndPlayTrack,
   stop,
   isPlaying,
@@ -71,46 +70,6 @@ const AudioTrackDialog = ({
     }
   };
 
-  const renderScrollViewContent = () => {
-    return tracks && tracks.length > 0 ? (
-      <ScrollViewComponent
-        tracks={tracks}
-        selectedTrack={selectedTrack}
-        playingTrack={playingTrack}
-        isPlaying={isPlaying}
-        handleSelectTrack={handleSelectTrack}
-      />
-    ) : (
-      <View style={styles.noTracksContainer}>
-        <CustomText style={styles.noTracksText}>{STRINGS.MAAFI_JI}</CustomText>
-        <CustomText style={styles.noTracksSubtext}>
-          {STRINGS.WE_DO_NOT_HAVE_AUDIOS_FOR}{" "}
-          <CustomText
-            style={{
-              fontFamily: fontFace,
-            }}
-          >
-            {title}
-          </CustomText>{" "}
-          {STRINGS.YET}.
-        </CustomText>
-        <Pressable
-          style={styles.joinMailingListButton}
-          onPress={() =>
-            Linking.openURL("https://khalisfoundation.org").catch(() => {
-              // Fallback to main website if newsletter link fails
-              Linking.openURL("https://khalisfoundation.org");
-            })
-          }
-        >
-          <CustomText style={styles.joinMailingListText}>
-            {STRINGS.REQUEST_AUDIO_FOR_THIS_PAATH}
-          </CustomText>
-        </Pressable>
-      </View>
-    );
-  };
-
   return (
     <View style={styles.modalWrapper}>
       <View
@@ -148,13 +107,13 @@ const AudioTrackDialog = ({
           </View>
         )}
 
-        {isLoading ? (
-          <View style={styles.loadingContainer}>
-            <ActivityIndicator size="large" color={theme.colors.primary} />
-          </View>
-        ) : (
-          renderScrollViewContent()
-        )}
+        <ScrollViewComponent
+          tracks={tracks}
+          selectedTrack={selectedTrack}
+          playingTrack={playingTrack}
+          isPlaying={isPlaying}
+          handleSelectTrack={handleSelectTrack}
+        />
 
         {/* Play Button */}
         {isFooter && tracks && tracks.length > 0 && (
@@ -178,7 +137,6 @@ AudioTrackDialog.defaultProps = {
   title: "",
   isHeader: true,
   isFooter: true,
-  isLoading: false,
 };
 
 AudioTrackDialog.propTypes = {
@@ -197,7 +155,6 @@ AudioTrackDialog.propTypes = {
   isHeader: PropTypes.bool,
   isFooter: PropTypes.bool,
   onCloseTrackModal: PropTypes.func.isRequired,
-  isLoading: PropTypes.bool,
   addAndPlayTrack: PropTypes.func.isRequired,
   stop: PropTypes.func.isRequired,
   isPlaying: PropTypes.bool.isRequired,

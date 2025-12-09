@@ -1,5 +1,5 @@
 import React, { useState, useEffect, useMemo, useRef } from "react";
-import { View, Pressable, Animated, Platform, ActivityIndicator } from "react-native";
+import { View, Pressable, Animated, Platform } from "react-native";
 import { useDispatch, useSelector } from "react-redux";
 import { Slider } from "@miblanchard/react-native-slider";
 import { BlurView } from "@react-native-community/blur";
@@ -30,7 +30,6 @@ const AudioControlBar = ({
   currentPlaying,
   addTrackToManifest,
   isTrackDownloaded,
-  isTracksLoading,
   tracks,
   seekTo,
   reset,
@@ -255,17 +254,11 @@ const AudioControlBar = ({
 
           {isMoreTracksModalOpen && (
             <View style={styles.moreTracksModalContainer}>
-              {isTracksLoading ? (
-                <View style={styles.loadingContainer}>
-                  <ActivityIndicator size="large" color={theme.colors.primary} />
-                </View>
-              ) : (
-                <ScrollViewComponent
-                  tracks={tracks}
-                  selectedTrack={currentPlaying}
-                  handleSelectTrack={handleTrackSelect}
-                />
-              )}
+              <ScrollViewComponent
+                tracks={tracks}
+                selectedTrack={currentPlaying}
+                handleSelectTrack={handleTrackSelect}
+              />
             </View>
           )}
         </Animated.View>
@@ -274,15 +267,8 @@ const AudioControlBar = ({
         <View style={[styles.mainSection]}>
           <View style={styles.trackInfo}>
             <View style={styles.trackInfoLeft}>
-              {isTracksLoading ? (
-                <View style={styles.loadingContainer}>
-                  <ActivityIndicator size="large" color={theme.colors.primary} />
-                </View>
-              ) : (
-                currentPlaying &&
-                currentPlaying.displayName && (
-                  <CustomText style={styles.trackName}>{currentPlaying.displayName}</CustomText>
-                )
+              {currentPlaying && currentPlaying.displayName && (
+                <CustomText style={styles.trackName}>{currentPlaying.displayName}</CustomText>
               )}
             </View>
           </View>
@@ -353,7 +339,6 @@ AudioControlBar.propTypes = {
   }),
   addTrackToManifest: PropTypes.func.isRequired,
   isTrackDownloaded: PropTypes.func.isRequired,
-  isTracksLoading: PropTypes.bool.isRequired,
   tracks: PropTypes.arrayOf(
     PropTypes.shape({
       id: PropTypes.string.isRequired,

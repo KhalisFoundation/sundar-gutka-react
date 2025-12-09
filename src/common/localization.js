@@ -175,6 +175,8 @@ const STRINGS = new LocalizedStrings({
     REQUEST_AUDIO_FOR_THIS_PAATH: "Request audio for this paath.",
     YET: "yet.",
     SYNC_UNAVAILABLE: "Unavailable",
+    RETRY: "Please try again.",
+    INITIALIZING_AUDIO_PLAYER: "We’re unable to start the Gurbani audio right now.",
   },
   hi: {
     about: "हमारे बारे",
@@ -349,6 +351,8 @@ const STRINGS = new LocalizedStrings({
     REQUEST_AUDIO_FOR_THIS_PAATH: "इस पाठ के लिए ऑडियो का अनुरोध करें",
     YET: "अभी तक।",
     SYNC_UNAVAILABLE: "अनुपलब्ध",
+    RETRY: "पुनः प्रयास करें",
+    INITIALIZING_AUDIO_PLAYER: "हम अभी गुरबानी ऑडियो शुरू नहीं कर पा रहे हैं।",
   },
 
   pa: {
@@ -524,6 +528,8 @@ const STRINGS = new LocalizedStrings({
     REQUEST_AUDIO_FOR_THIS_PAATH: "ਇਸ ਪਾਠ ਲਈ ਆਡੀਓ ਦੀ ਬੇਨਤੀ ਕਰੋ।",
     YET: "ਅਜੇ ਤੱਕ।",
     SYNC_UNAVAILABLE: "ਉਪਲਬਧ ਨਹੀਂ ਹੈ",
+    RETRY: "ਦੁਬਾਰਾ ਕੋਸ਼ਿਸ਼ ਕਰੋ",
+    INITIALIZING_AUDIO_PLAYER: "ਅਸੀਂ ਇਸ ਵੇਲੇ ਗੁਰਬਾਣੀ ਆਡੀਓ ਸ਼ੁਰੂ ਨਹੀਂ ਕਰ ਸਕਦੇ।",
   },
   fr: {
     about: "Infos",
@@ -706,6 +712,9 @@ const STRINGS = new LocalizedStrings({
     REQUEST_AUDIO_FOR_THIS_PAATH: "Demander un audio pour ce chemin.",
     YET: "encore.",
     SYNC_UNAVAILABLE: "Non disponible.",
+    RETRY: "Riavvia",
+    INITIALIZING_AUDIO_PLAYER:
+      "Nous ne sommes pas en mesure de démarrer la lecture audio du Gurbani pour le moment.",
   },
   it: {
     about: "Info",
@@ -879,6 +888,8 @@ const STRINGS = new LocalizedStrings({
     REQUEST_AUDIO_FOR_THIS_PAATH: "Richiedi audio per questo percorso.",
     YET: "ancora.",
     SYNC_UNAVAILABLE: "Non disponibile.",
+    RETRY: "Riavvia",
+    INITIALIZING_AUDIO_PLAYER: "Al momento non è possibile avviare l'audio Gurbani.",
   },
   es: {
     about: "Sobre Nosotros",
@@ -1060,6 +1071,8 @@ const STRINGS = new LocalizedStrings({
   REQUEST_AUDIO_FOR_THIS_PAATH: "Solicitar audio para esta ruta.",
   YET: "aún.",
   SYNC_UNAVAILABLE: "Indisponible",
+  RETRY: "Retry",
+  INITIALIZING_AUDIO_PLAYER: "No podemos iniciar el audio de Gurbani en este momento.",
 });
 
 export default STRINGS;

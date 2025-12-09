@@ -1,11 +1,12 @@
 import React, { useState, useEffect } from "react";
+import { Linking } from "react-native";
 import TrackPlayer from "react-native-track-player";
 import { useSelector, useDispatch } from "react-redux";
 import PropTypes from "prop-types";
 import { toggleAudio, setDefaultAudio } from "@common/actions";
 import { showErrorToast } from "@common/toast";
 import { STRINGS, logError } from "@common";
-import { AudioTrackDialog, AudioControlBar, ErrorFallback } from "./components";
+import { AudioTrackDialog, AudioControlBar, ErrorFallback, Loading } from "./components";
 import { useTrackPlayer, useAudioSyncScroll, useAudioManifest } from "./hooks";
 
 const AudioPlayer = ({ baniID, title, webViewRef }) => {
@@ -26,7 +27,6 @@ const AudioPlayer = ({ baniID, title, webViewRef }) => {
     isInitialized,
     reset,
     isInitializing,
-    initializationError,
     retryInitialization,
   } = useTrackPlayer();
   const {
@@ -153,40 +153,58 @@ const AudioPlayer = ({ baniID, title, webViewRef }) => {
     }
   };
 
-  const renderErrorFallback = (message, retryFn, isLoading = false) => (
+  const renderErrorFallback = (message, retryFn) => (
     <ErrorFallback
-      isInitializing={isLoading}
-      initializationErrorMessage={message}
-      retryInitialization={retryFn}
+      title={message}
+      buttonPress={retryFn}
+      buttonText={STRINGS.RETRY}
       handleClose={onCloseTrackModal}
     />
   );
 
-  const initializationErrorMessage =
-    initializationError?.message || STRINGS.NETWORK_ERROR || STRINGS.PLEASE_TRY_AGAIN;
-
   // Don't render if TrackPlayer is not initialized
   if (!isInitialized) {
-    return renderErrorFallback(initializationErrorMessage, retryInitialization, isInitializing);
+    return renderErrorFallback(STRINGS.INITIALIZING_AUDIO_PLAYER, retryInitialization);
   }
 
   if (manifestError) {
-    const manifestErrorMessage = STRINGS.NETWORK_ERROR || STRINGS.PLEASE_TRY_AGAIN;
+    const manifestErrorMessage = STRINGS.NETWORK_ERROR;
     return renderErrorFallback(manifestErrorMessage, refetchManifest);
   }
 
+  if (isInitializing || isTracksLoading) {
+    return <Loading />;
+  }
+
+  const renderAudioTrackDialog = () =>
+    tracks && tracks.length > 0 ? (
+      <AudioTrackDialog
+        baniID={baniID}
+        handleTrackSelect={handleTrackSelect}
+        title={title}
+        tracks={tracks}
+        onCloseTrackModal={onCloseTrackModal}
+        addAndPlayTrack={addAndPlayTrack}
+        stop={stop}
+        isPlaying={isPlaying}
+      />
+    ) : (
+      <ErrorFallback
+        title={STRINGS.WE_DO_NOT_HAVE_AUDIOS_FOR}
+        baniTitle={title}
+        buttonPress={() => {
+          Linking.openURL("https://khalisfoundation.org").catch(() => {
+            // Fallback to main website if newsletter link fails
+            Linking.openURL("https://khalisfoundation.org");
+          });
+        }}
+        buttonText={STRINGS.REQUEST_AUDIO_FOR_THIS_PAATH}
+        handleClose={onCloseTrackModal}
+      />
+    );
+
   return showTrackModal ? (
-    <AudioTrackDialog
-      baniID={baniID}
-      handleTrackSelect={handleTrackSelect}
-      title={title}
-      tracks={tracks}
-      isLoading={isTracksLoading}
-      onCloseTrackModal={onCloseTrackModal}
-      addAndPlayTrack={addAndPlayTrack}
-      stop={stop}
-      isPlaying={isPlaying}
-    />
+    renderAudioTrackDialog()
   ) : (
     <AudioControlBar
       baniID={baniID}
@@ -201,7 +219,6 @@ const AudioPlayer = ({ baniID, title, webViewRef }) => {
       onCloseTrackModal={onCloseTrackModal}
       addTrackToManifest={addTrackToManifest}
       isTrackDownloaded={isTrackDownloaded}
-      isTracksLoading={isTracksLoading}
       tracks={tracks}
       seekTo={seekTo}
       reset={reset}
