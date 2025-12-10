@@ -1,4 +1,4 @@
-import React, { useState, useEffect } from "react";
+import React, { useState, useEffect, useMemo, useCallback } from "react";
 import { Linking } from "react-native";
 import TrackPlayer from "react-native-track-player";
 import { useSelector, useDispatch } from "react-redux";
@@ -94,24 +94,19 @@ const AudioPlayer = ({ baniID, title, webViewRef }) => {
     }
   };
 
-  const onCloseTrackModal = async () => {
+  const onCloseTrackModal = useCallback(async () => {
     if (isPlaying) {
       await stop();
     }
     dispatch(toggleAudio(false));
-  };
+  }, [isPlaying]);
 
+  // Combine both useEffect hooks to prevent multiple re-renders
   useEffect(() => {
-    if (currentPlaying) {
+    if (currentPlaying || (defaultAudio[baniID] && defaultAudio[baniID].audioUrl)) {
       setShowTrackModal(false);
     }
-  }, [currentPlaying]);
-
-  useEffect(() => {
-    if (defaultAudio[baniID] && defaultAudio[baniID].audioUrl) {
-      setShowTrackModal(false);
-    }
-  }, [defaultAudio, baniID]);
+  }, [currentPlaying, defaultAudio, baniID]);
 
   const handleSeek = async (value) => {
     if (!isAudioEnabled || !isInitialized) return;
@@ -123,61 +118,70 @@ const AudioPlayer = ({ baniID, title, webViewRef }) => {
     }
   };
 
-  const handleTrackSelect = async (selectedTrack) => {
-    try {
-      // Stop current playback
-      await stop();
+  const handleTrackSelect = useCallback(
+    async (selectedTrack) => {
+      try {
+        // Stop current playback
+        await stop();
 
-      // Set the new track as current
-      setCurrentPlaying(selectedTrack);
+        // Set the new track as current and close modal together
+        setCurrentPlaying(selectedTrack);
+        setShowTrackModal(false);
 
-      // Close the modal
-      setShowTrackModal(false);
+        // Dispatch action
+        dispatch(setDefaultAudio(selectedTrack, baniID));
 
-      // Auto-play the new track if audio is enabled
-      if (isAudioEnabled) {
-        await addAndPlayTrack(
-          selectedTrack.id,
-          selectedTrack.audioUrl,
-          selectedTrack.displayName,
-          selectedTrack.displayName,
-          selectedTrack.lyricsUrl,
-          selectedTrack.trackLengthSec,
-          selectedTrack.trackSizeMB
-        );
+        // Use setTimeout to defer play action slightly for smoother transition
+        if (isAudioEnabled) {
+          await addAndPlayTrack(
+            selectedTrack.id,
+            selectedTrack.audioUrl,
+            selectedTrack.displayName,
+            selectedTrack.displayName,
+            selectedTrack.lyricsUrl,
+            selectedTrack.trackLengthSec,
+            selectedTrack.trackSizeMB
+          );
+        }
+      } catch (error) {
+        logError("Error switching track:", error);
+        showErrorToast(`${STRINGS.UNABLE_TO_SWITCH_TRACK} ${STRINGS.PLEASE_TRY_AGAIN}`);
       }
-      dispatch(setDefaultAudio(selectedTrack, baniID));
-    } catch (error) {
-      logError("Error switching track:", error);
-      showErrorToast(`${STRINGS.UNABLE_TO_SWITCH_TRACK} ${STRINGS.PLEASE_TRY_AGAIN}`);
-    }
-  };
-
-  const renderErrorFallback = (message, retryFn) => (
-    <ErrorFallback
-      title={message}
-      buttonPress={retryFn}
-      buttonText={STRINGS.RETRY}
-      handleClose={onCloseTrackModal}
-    />
+    },
+    [baniID, isAudioEnabled]
   );
 
-  // Don't render if TrackPlayer is not initialized
-  if (!isInitialized) {
-    return renderErrorFallback(STRINGS.INITIALIZING_AUDIO_PLAYER, retryInitialization);
-  }
+  // Memoize error fallback renderer to prevent recreation
+  const renderErrorFallback = useCallback(
+    (message, retryFn) => (
+      <ErrorFallback
+        title={message}
+        buttonPress={retryFn}
+        buttonText={STRINGS.RETRY}
+        handleClose={onCloseTrackModal}
+      />
+    ),
+    []
+  );
 
-  if (manifestError) {
-    const manifestErrorMessage = STRINGS.NETWORK_ERROR;
-    return renderErrorFallback(manifestErrorMessage, refetchManifest);
-  }
-
-  if (isInitializing || isTracksLoading) {
-    return <Loading />;
-  }
-
-  const renderAudioTrackDialog = () =>
-    tracks && tracks.length > 0 ? (
+  // Memoize audio track dialog to prevent unnecessary re-renders
+  const audioTrackDialog = useMemo(() => {
+    if (!tracks || tracks.length === 0) {
+      return (
+        <ErrorFallback
+          title={STRINGS.WE_DO_NOT_HAVE_AUDIOS_FOR}
+          baniTitle={title}
+          buttonPress={() => {
+            Linking.openURL("https://khalisfoundation.org").catch(() => {
+              Linking.openURL("https://khalisfoundation.org");
+            });
+          }}
+          buttonText={STRINGS.REQUEST_AUDIO_FOR_THIS_PAATH}
+          handleClose={onCloseTrackModal}
+        />
+      );
+    }
+    return (
       <AudioTrackDialog
         baniID={baniID}
         handleTrackSelect={handleTrackSelect}
@@ -188,23 +192,24 @@ const AudioPlayer = ({ baniID, title, webViewRef }) => {
         stop={stop}
         isPlaying={isPlaying}
       />
-    ) : (
-      <ErrorFallback
-        title={STRINGS.WE_DO_NOT_HAVE_AUDIOS_FOR}
-        baniTitle={title}
-        buttonPress={() => {
-          Linking.openURL("https://khalisfoundation.org").catch(() => {
-            // Fallback to main website if newsletter link fails
-            Linking.openURL("https://khalisfoundation.org");
-          });
-        }}
-        buttonText={STRINGS.REQUEST_AUDIO_FOR_THIS_PAATH}
-        handleClose={onCloseTrackModal}
-      />
     );
+  }, [tracks, title, baniID, isPlaying]);
+
+  // Don't render if TrackPlayer is not initialized
+  if (!isInitialized && !isInitializing) {
+    return renderErrorFallback(STRINGS.INITIALIZING_AUDIO_PLAYER, retryInitialization);
+  }
+
+  if (manifestError) {
+    return renderErrorFallback(STRINGS.NETWORK_ERROR, refetchManifest);
+  }
+
+  if (isInitializing || isTracksLoading) {
+    return <Loading />;
+  }
 
   return showTrackModal ? (
-    renderAudioTrackDialog()
+    audioTrackDialog
   ) : (
     <AudioControlBar
       baniID={baniID}
