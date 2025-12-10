@@ -6,7 +6,6 @@ import useThemedStyles from "@common/hooks/useThemedStyles";
 import { CustomText } from "@common";
 import constant from "../../constant";
 import { trackScreenView } from "../../firebase/analytics";
-import { logMessage } from "../../firebase/crashlytics";
 import STRINGS from "../../localization";
 import createStyles from "./styles";
 
@@ -16,9 +15,7 @@ const FallBack = () => {
 
   useEffect(() => {
     // Track screen view when error fallback is shown
-    trackScreenView("ErrorFallback", null, "Error Boundary Fallback Screen");
-    // Log to Crashlytics
-    logMessage(constant.FALLBACK);
+    trackScreenView(constant.FALLBACK_SCREEN, null, "Error Boundary Fallback Screen");
   }, []);
   return (
     <SafeAreaProvider>

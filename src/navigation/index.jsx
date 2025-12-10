@@ -1,7 +1,7 @@
-import React from "react";
+import React, { useRef } from "react";
 import { NavigationContainer } from "@react-navigation/native";
 import { createNativeStackNavigator } from "@react-navigation/native-stack";
-import { navigationRef, stopTrace, resetTrace, startPerformanceTrace } from "@common";
+import { navigationRef, stopTrace, resetTrace, startPerformanceTrace, logError } from "@common";
 import AboutScreen from "../AboutScreen";
 import Bookmarks from "../Bookmarks";
 import { trackScreenView } from "../common/firebase/analytics";
@@ -16,16 +16,43 @@ import ReminderOptions from "../Settings/components/reminders/ReminderOptions";
 const Stack = createNativeStackNavigator();
 
 const Navigation = () => {
-  const routeNameRef = React.useRef();
-  const trace = React.useRef(null);
+  const routeNameRef = useRef();
+  const trace = useRef(null);
 
   const handlingStateChange = async (state) => {
-    if (trace.current) {
-      await stopTrace(trace.current);
+    try {
+      if (trace.current) {
+        await stopTrace(trace.current);
+        trace.current = resetTrace();
+      }
+      const currentRouteName = state.routes[state.index].name;
+      trace.current = await startPerformanceTrace(currentRouteName);
+    } catch (error) {
+      // Silently fail - performance monitoring should never crash the app
+      logError(
+        new Error(
+          `Performance trace failed for route: ${state.routes[state.index]?.name || "unknown"} - ${
+            error?.message || "Unknown error"
+          }`
+        )
+      );
       trace.current = resetTrace();
     }
-    const currentRouteName = state.routes[state.index].name;
-    trace.current = await startPerformanceTrace(currentRouteName);
+  };
+
+  const handleStateChange = async (state) => {
+    await handlingStateChange(state);
+    const previousRouteName = routeNameRef.current;
+    const currentRouteName = navigationRef.current.getCurrentRoute().name;
+    const currentRoute = navigationRef.current.getCurrentRoute();
+    if (previousRouteName !== currentRouteName) {
+      await trackScreenView(
+        currentRouteName,
+        currentRoute?.params?.key,
+        currentRoute?.params?.params?.title
+      );
+    }
+    routeNameRef.current = currentRouteName;
   };
 
   return (
@@ -35,18 +62,7 @@ const Navigation = () => {
         routeNameRef.current = navigationRef.current.getCurrentRoute().name;
       }}
       onStateChange={async (state) => {
-        handlingStateChange(state);
-        const previousRouteName = routeNameRef.current;
-        const currentRouteName = navigationRef.current.getCurrentRoute().name;
-        const currentRoute = navigationRef.current.getCurrentRoute();
-        if (previousRouteName !== currentRouteName) {
-          await trackScreenView(
-            currentRouteName,
-            currentRoute?.params?.key,
-            currentRoute?.params?.params?.title
-          );
-        }
-        routeNameRef.current = currentRouteName;
+        await handleStateChange(state);
       }}
     >
       <Stack.Navigator
