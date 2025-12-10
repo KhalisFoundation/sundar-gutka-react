@@ -3,11 +3,12 @@ import { Linking } from "react-native";
 import TrackPlayer from "react-native-track-player";
 import { useSelector, useDispatch } from "react-redux";
 import PropTypes from "prop-types";
-import { toggleAudio, setDefaultAudio } from "@common/actions";
+import { toggleAudio, setDefaultAudio, setAudioProgress } from "@common/actions";
 import { showErrorToast } from "@common/toast";
 import { STRINGS, logError } from "@common";
 import { AudioTrackDialog, AudioControlBar, ErrorFallback, Loading } from "./components";
 import { useTrackPlayer, useAudioSyncScroll, useAudioManifest } from "./hooks";
+import { getSequenceFromPosition } from "./utils/getSequenceFromPosition";
 
 const AudioPlayer = ({ baniID, title, webViewRef }) => {
   const dispatch = useDispatch();
@@ -85,7 +86,8 @@ const AudioPlayer = ({ baniID, title, webViewRef }) => {
           currentPlaying.displayName,
           currentPlaying.lyricsUrl,
           currentPlaying.trackLengthSec,
-          currentPlaying.trackSizeMB
+          currentPlaying.trackSizeMB,
+          currentPlaying.remoteUrl || currentPlaying.audioUrl
         );
       }
     } catch (error) {
@@ -127,11 +129,24 @@ const AudioPlayer = ({ baniID, title, webViewRef }) => {
         // Set the new track as current and close modal together
         setCurrentPlaying(selectedTrack);
         setShowTrackModal(false);
+        // Set the new track as current
+        // Save current sequence before switching artists
+        if (selectedTrack?.lyricsUrl && progress?.position != null) {
+          const currentSequence = await getSequenceFromPosition(
+            selectedTrack.lyricsUrl,
+            progress.position
+          );
+          if (currentSequence != null && selectedTrack?.id) {
+            dispatch(
+              setAudioProgress(baniID, selectedTrack.id, progress.position, currentSequence)
+            );
+          }
+        }
 
         // Dispatch action
         dispatch(setDefaultAudio(selectedTrack, baniID));
 
-        // Use setTimeout to defer play action slightly for smoother transition
+        // Auto-play the new track if audio is enabled
         if (isAudioEnabled) {
           await addAndPlayTrack(
             selectedTrack.id,
@@ -140,7 +155,8 @@ const AudioPlayer = ({ baniID, title, webViewRef }) => {
             selectedTrack.displayName,
             selectedTrack.lyricsUrl,
             selectedTrack.trackLengthSec,
-            selectedTrack.trackSizeMB
+            selectedTrack.trackSizeMB,
+            selectedTrack.remoteUrl || selectedTrack.audioUrl
           );
         }
       } catch (error) {

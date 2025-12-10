@@ -1,4 +1,3 @@
-import { Platform } from "react-native";
 import { constant, baseFontSize, logError, logMessage } from "@common";
 import htmlTemplate from "./gutkahtml";
 import script from "./gutkaScript";
@@ -86,15 +85,6 @@ export const loadHTML = (
 ) => {
   try {
     const backColor = theme.colors.surface;
-    const fileUri = Platform.select({
-      ios: `${fontFace}.ttf`,
-      android: `file:///android_asset/fonts/${fontFace}.ttf`,
-    });
-    const defaultFontFaceURI = Platform.select({
-      ios: `${constant.GURBANI_AKHAR_TRUE}.ttf`,
-      android: `file:///android_asset/fonts/${constant.GURBANI_AKHAR_TRUE}.ttf`,
-    });
-
     const content = shabad
       .map((item) => {
         const textAlignMap = {
@@ -180,15 +170,7 @@ export const loadHTML = (
         return contentHtml;
       })
       .join("");
-    const htmlContent = htmlTemplate(
-      backColor,
-      fileUri,
-      fontFace,
-      content,
-      theme,
-      savePosition,
-      defaultFontFaceURI
-    );
+    const htmlContent = htmlTemplate(backColor, fontFace, content, theme, savePosition);
     return htmlContent;
   } catch (error) {
     logError(error);

@@ -115,6 +115,7 @@ const defaultTracks = [
     displayName: "Track One",
     audioUrl: "https://example.com/track-1.mp3",
     lyricsUrl: "https://example.com/track-1.json",
+    remoteUrl: "https://example.com/track-1.mp3",
     trackLengthSec: 100,
     trackSizeMB: 2.5,
   },
@@ -123,6 +124,7 @@ const defaultTracks = [
     displayName: "Track Two",
     audioUrl: "https://example.com/track-2.mp3",
     lyricsUrl: "https://example.com/track-2.json",
+    remoteUrl: "https://example.com/track-2.mp3",
     trackLengthSec: 120,
     trackSizeMB: 3.1,
   },
@@ -184,7 +186,8 @@ describe("AudioTrackDialog", () => {
         defaultTracks[0].lyricsUrl,
         defaultTracks[0].trackLengthSec,
         defaultTracks[0].trackSizeMB,
-        true
+        true,
+        defaultTracks[0].remoteUrl || defaultTracks[0].audioUrl
       );
     });
   });

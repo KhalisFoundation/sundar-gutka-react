@@ -6,7 +6,6 @@ import DraggableFlatList, {
 } from "react-native-draggable-flatlist";
 import { GestureHandlerRootView } from "react-native-gesture-handler";
 import { useSelector, useDispatch, batch } from "react-redux";
-import PropTypes from "prop-types";
 import useTheme from "@common/context";
 import useThemedStyles from "@common/hooks/useThemedStyles";
 import {
@@ -21,7 +20,7 @@ import {
 import Header from "./components/Header";
 import { activeColor, createStyles } from "./styles";
 
-const EditBaniOrder = ({ navigation }) => {
+const EditBaniOrder = () => {
   logMessage(constant.EDIT_BANI_ORDER);
   const { theme } = useTheme();
   const styles = useThemedStyles(createStyles);
@@ -107,7 +106,7 @@ const EditBaniOrder = ({ navigation }) => {
   return (
     <SafeArea backgroundColor={theme.colors.headerVariant}>
       <StatusBarComponent backgroundColor={theme.colors.headerVariant} />
-      <Header navigation={navigation} setReset={setReset} />
+      <Header setReset={setReset} />
       <GestureHandlerRootView style={styles.gestureHandlerRootView}>
         <DraggableFlatList
           data={baniListData}
@@ -119,10 +118,5 @@ const EditBaniOrder = ({ navigation }) => {
     </SafeArea>
   );
 };
-EditBaniOrder.propTypes = {
-  navigation: PropTypes.shape({
-    goBack: PropTypes.func.isRequired,
-    setOptions: PropTypes.func.isRequired,
-  }).isRequired,
-};
+
 export default EditBaniOrder;

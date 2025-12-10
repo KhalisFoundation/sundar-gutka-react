@@ -1,4 +1,5 @@
 import { useState, useEffect, useCallback } from "react";
+import { exists } from "react-native-fs";
 import TrackPlayer, { usePlaybackState, useProgress, State } from "react-native-track-player";
 import { useSelector } from "react-redux";
 import {
@@ -11,7 +12,7 @@ import {
   getTrackPlayerState,
 } from "@common/TrackPlayerUtils";
 import { logError, logMessage } from "@common";
-import { formatUrlForTrackPlayer } from "../../utils/urlHelper";
+import { formatUrlForTrackPlayer, isLocalFile } from "../../utils/urlHelper";
 
 const useTrackPlayer = () => {
   const [isInitialized, setIsInitialized] = useState(false);
@@ -131,7 +132,8 @@ const useTrackPlayer = () => {
     lyricsUrl,
     trackLengthSec,
     trackSizeMB,
-    shouldPlay = true
+    shouldPlay = true,
+    fallbackUrl = null
   ) => {
     if (!isInitialized || !isAudio) {
       logMessage("Audio is not initialized or disabled in settings");
@@ -139,9 +141,25 @@ const useTrackPlayer = () => {
     }
 
     try {
+      let playbackUrl = url;
+
+      // If pointing to a local file, verify it exists; otherwise fall back to remote URL when provided
+      if (isLocalFile(url)) {
+        const filePath = url.startsWith("file://") ? url.replace(/^file:\/\//, "") : url;
+        const fileExists = await exists(filePath);
+        if (!fileExists) {
+          if (fallbackUrl) {
+            playbackUrl = fallbackUrl;
+          } else {
+            logMessage("Local audio missing and no fallback URL available");
+            return;
+          }
+        }
+      }
+
       const track = {
         id,
-        url: formatUrlForTrackPlayer(url),
+        url: formatUrlForTrackPlayer(playbackUrl),
         title,
         artist,
         lyricsUrl,

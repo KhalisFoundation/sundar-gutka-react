@@ -9,6 +9,8 @@ export default {
   GURBANI_AKHAR_THICK_TRUE: "GurbaniAkharThickTrue",
   BALOO_PAAJI: "BalooPaaji2-Regular",
   BALOO_PAAJI_SEMI_BOLD: "BalooPaaji2-SemiBold",
+  GURBANI_AKHAR_HEAVY_TRUE: "GurbaniAkharHeavyTrue",
+  ANMOL_LIPI: "AnmolLipiSG",
   READER: "Reader",
   SETTINGS: "Settings",
   EXTRA_SMALL: "EXTRA_SMALL",

@@ -7,19 +7,12 @@ import getHeaderStyles from "./styles";
 const Header = ({ navigation, title }) => {
   const { theme } = useTheme();
   const styles = useThemedStyles(getHeaderStyles);
-  const handleBackPress = useCallback(() => navigation.goBack(), [navigation]);
   const handleSettingsPress = useCallback(
     () => navigation.navigate(constant.SETTINGS),
     [navigation]
   );
   const headerLeft = () => {
-    return (
-      <BackIconComponent
-        size={30}
-        handleBackPress={handleBackPress}
-        color={theme.staticColors.WHITE_COLOR}
-      />
-    );
+    return <BackIconComponent size={30} color={theme.staticColors.WHITE_COLOR} />;
   };
   const headerRight = () => {
     return (
@@ -41,7 +34,7 @@ const Header = ({ navigation, title }) => {
       headerLeft,
       headerRight,
     });
-  }, [handleBackPress, handleSettingsPress]);
+  }, [handleSettingsPress]);
 
   return null;
 };

@@ -33,7 +33,7 @@ export const createCommonMock = (overrides = {}) => {
     STRINGS: {
       HOME: "Home",
       READ: "Read",
-      MUSIC: "Music",
+      MUSIC: "Audio",
       SETTINGS: "Settings",
       ...overrides.STRINGS,
     },

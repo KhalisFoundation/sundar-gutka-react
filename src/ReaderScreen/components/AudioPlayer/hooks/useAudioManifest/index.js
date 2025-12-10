@@ -1,5 +1,5 @@
 import { useState, useEffect } from "react";
-import { DocumentDirectoryPath } from "react-native-fs";
+import { DocumentDirectoryPath, exists } from "react-native-fs";
 import { useSelector, useDispatch } from "react-redux";
 import { actions, logError, STRINGS } from "@common";
 import { fetchManifest } from "@service";
@@ -21,12 +21,13 @@ const useAudioManifest = (baniID) => {
     }
 
     return manifest.data
-      .filter((item) => item != null)
+      .filter((item) => item != null && item.track_url)
       .map((item) => ({
         id: item.track_id,
         track_id: item.track_id,
         artistID: item.artist_id,
         audioUrl: item.track_url,
+        remoteUrl: item.track_url,
         displayName: item.artist_name,
         trackLengthSec: item.track_length_seconds,
         trackSizeMB: item.track_size_mb,
@@ -35,44 +36,106 @@ const useAudioManifest = (baniID) => {
   };
 
   // Merge downloaded tracks with API tracks
-  const mergeDownloadedTracks = (apiTracks, downloadedTracks) => {
+  const mergeDownloadedTracks = async (apiTracks, downloadedTracks) => {
     if (!apiTracks || apiTracks.length === 0) {
       // If no API data, use downloaded tracks
       if (!downloadedTracks || downloadedTracks.length === 0) {
         return [];
       }
-      return downloadedTracks.map((track) => {
-        const fullLocalPath = `${DocumentDirectoryPath}/audio/${track.audioUrl}`;
-        const lyricsUrlPath = `${DocumentDirectoryPath}/audio/${track.lyricsUrl}`;
-        return {
-          id: track.id,
-          track_id: track.track_id,
-          artistID: track.artistID,
-          audioUrl: fullLocalPath,
-          displayName: track.displayName,
-          trackLengthSec: track.trackLengthSec,
-          trackSizeMB: track.trackSizeMB,
-          lyricsUrl: track.lyricsUrl ? lyricsUrlPath : null,
-        };
-      });
+      const validatedDownloads = await Promise.all(
+        downloadedTracks.map(async (track) => {
+          const fullLocalPath = `${DocumentDirectoryPath}/audio/${track.audioUrl}`;
+          const lyricsUrlPath = track.lyricsUrl
+            ? `${DocumentDirectoryPath}/audio/${track.lyricsUrl}`
+            : null;
+          let hasAudio = false;
+          let hasLyrics = true;
+          try {
+            hasAudio = await exists(fullLocalPath);
+          } catch (error) {
+            // If file existence check fails, treat as missing
+            hasAudio = false;
+          }
+          if (lyricsUrlPath) {
+            try {
+              hasLyrics = await exists(lyricsUrlPath);
+            } catch (error) {
+              // If file existence check fails, treat as missing
+              hasLyrics = false;
+            }
+          }
+          if (!hasAudio) {
+            return null;
+          }
+
+          return {
+            id: track.id,
+            track_id: track.track_id,
+            artistID: track.artistID,
+            audioUrl: fullLocalPath,
+            displayName: track.displayName,
+            trackLengthSec: track.trackLengthSec,
+            trackSizeMB: track.trackSizeMB,
+            lyricsUrl: track.lyricsUrl && hasLyrics ? lyricsUrlPath : null,
+          };
+        })
+      );
+
+      // Filter out any missing/broken downloads
+      return validatedDownloads.filter((track) => track !== null);
     }
 
-    // Merge downloaded tracks with API tracks
-    return apiTracks.map((apiTrack) => {
-      const downloadedTrack = downloadedTracks.find((downloaded) => downloaded.id === apiTrack.id);
+    // Merge downloaded tracks with API tracks, falling back to remote if local file is missing
+    const mergedTracks = await Promise.all(
+      apiTracks.map(async (apiTrack) => {
+        const downloadedTrack = downloadedTracks.find(
+          (downloaded) => downloaded.id === apiTrack.id
+        );
+        const fullLocalPath = downloadedTrack
+          ? `${DocumentDirectoryPath}/audio/${downloadedTrack.audioUrl}`
+          : null;
+        const lyricsUrlPath =
+          downloadedTrack && downloadedTrack.lyricsUrl
+            ? `${DocumentDirectoryPath}/audio/${downloadedTrack.lyricsUrl}`
+            : null;
 
-      if (downloadedTrack) {
-        // Use local URL if track is downloaded
-        const fullLocalPath = `${DocumentDirectoryPath}/audio/${downloadedTrack.audioUrl}`;
-        const lyricsUrlPath = `${DocumentDirectoryPath}/audio/${downloadedTrack.lyricsUrl}`;
+        let hasAudio = false;
+        let hasLyrics = true;
+        if (fullLocalPath) {
+          try {
+            hasAudio = await exists(fullLocalPath);
+          } catch (error) {
+            // If file existence check fails, treat as missing
+            hasAudio = false;
+          }
+        }
+        if (lyricsUrlPath) {
+          try {
+            hasLyrics = await exists(lyricsUrlPath);
+          } catch (error) {
+            // If file existence check fails, treat as missing
+            hasLyrics = false;
+          }
+        }
+
+        if (downloadedTrack && hasAudio) {
+          return {
+            ...apiTrack,
+            audioUrl: fullLocalPath,
+            lyricsUrl: downloadedTrack.lyricsUrl && hasLyrics ? lyricsUrlPath : null,
+            remoteUrl: apiTrack.audioUrl,
+          };
+        }
+
+        // Fallback to remote API track when local file is missing
         return {
           ...apiTrack,
-          audioUrl: fullLocalPath,
-          lyricsUrl: downloadedTrack.lyricsUrl ? lyricsUrlPath : null,
+          remoteUrl: apiTrack.audioUrl,
         };
-      }
-      return apiTrack;
-    });
+      })
+    );
+
+    return mergedTracks;
   };
 
   // Set default track based on user preferences
@@ -107,7 +170,7 @@ const useAudioManifest = (baniID) => {
       const downloadedTracks = audioManifest[baniID];
       // Merge downloaded tracks with API tracks if available
       if (downloadedTracks && downloadedTracks.length > 0) {
-        mappedData = mergeDownloadedTracks(mappedData, downloadedTracks);
+        mappedData = await mergeDownloadedTracks(mappedData, downloadedTracks);
       }
       // Set tracks and default playing track
       if (mappedData && mappedData.length > 0) {
@@ -133,6 +196,7 @@ const useAudioManifest = (baniID) => {
       trackLengthSec: track.trackLengthSec,
       trackSizeMB: track.trackSizeMB,
       lyricsUrl: jsonPath,
+      remoteUrl: track.remoteUrl,
     };
 
     const existingTracks = audioManifest[baniID] || [];

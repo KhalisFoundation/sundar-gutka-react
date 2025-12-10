@@ -29,12 +29,19 @@ const HomeScreen = React.memo(({ navigation }) => {
   const { baniListData } = useBaniList();
   const language = useSelector((state) => state.language);
   const baniOrder = useSelector((state) => state.baniOrder);
+  const fontFace = useSelector((state) => state.fontFace);
   useDatabaseUpdateCheck();
 
   useKeepAwake();
   useScreenAnalytics(constant.HOME_SCREEN);
   const { baniLengthSelector } = useBaniLength();
   const dispatch = useDispatch();
+
+  useEffect(() => {
+    if (!fontFace) {
+      dispatch(actions.setFontFace(constant.GURBANI_AKHAR_TRUE));
+    }
+  }, [fontFace]);
 
   useEffect(() => {
     dispatch(actions.setLanguage(language));
