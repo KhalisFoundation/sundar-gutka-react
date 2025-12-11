@@ -33,6 +33,11 @@ const createStyles = (theme) => ({
     color: theme.colors.audioTitleText,
     textAlign: "center",
   },
+  titleText: {
+    fontFamily: theme.typography.fonts.balooPaajiSemiBold,
+    fontSize: theme.typography.sizes.xxl,
+    color: theme.colors.audioTitleText,
+  },
   joinMailingListButton: {
     padding: theme.spacing.md_12,
     paddingHorizontal: theme.spacing.xl,

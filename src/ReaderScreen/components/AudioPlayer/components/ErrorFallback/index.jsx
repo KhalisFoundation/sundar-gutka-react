@@ -1,4 +1,4 @@
-import React from "react";
+import React, { useMemo } from "react";
 import { View, Pressable } from "react-native";
 import { useSelector } from "react-redux";
 import PropTypes from "prop-types";
@@ -11,6 +11,13 @@ const ErrorFallback = ({ title, buttonText, buttonPress, handleClose, baniTitle 
   const styles = useThemedStyles(createStyles);
   const { theme } = useTheme();
 
+  const fontStyle = useMemo(
+    () => ({
+      fontFamily: fontFace,
+    }),
+    [fontFace]
+  );
+
   return (
     <View testID="error-fallback-container" style={styles.statusContainer}>
       <Pressable testID="close-button" style={styles.closeButton} onPress={handleClose}>
@@ -19,16 +26,10 @@ const ErrorFallback = ({ title, buttonText, buttonPress, handleClose, baniTitle 
       <View style={styles.noTracksContainer}>
         <CustomText style={styles.noTracksText}>{STRINGS.MAAFI_JI}</CustomText>
         <CustomText style={styles.noTracksSubtext}>
-          {title}{" "}
-          {baniTitle !== "" && baniTitle !== undefined && baniTitle !== null && (
+          <CustomText style={styles.titleText}>{title} </CustomText>
+          {!!baniTitle && (
             <>
-              <CustomText
-                style={{
-                  fontFamily: fontFace,
-                }}
-              >
-                {baniTitle}{" "}
-              </CustomText>
+              <CustomText style={fontStyle}>{baniTitle} </CustomText>
               {STRINGS.YET}
             </>
           )}
