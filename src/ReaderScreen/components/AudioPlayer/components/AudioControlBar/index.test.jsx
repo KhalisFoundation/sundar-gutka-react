@@ -246,7 +246,6 @@ const createProps = (overrides = {}) => ({
   currentPlaying: defaultCurrentTrack,
   addTrackToManifest: jest.fn(),
   isTrackDownloaded: jest.fn(),
-  isTracksLoading: false,
   tracks: [
     { id: "track-1", displayName: "Track 1" },
     { id: "track-2", displayName: "Track 2" },
@@ -257,8 +256,17 @@ const createProps = (overrides = {}) => ({
   setRate: jest.fn(),
   isInitialized: true,
   addAndPlayTrack: jest.fn(),
+  play: jest.fn(),
   ...overrides,
 });
+
+const renderComponent = async (props) => {
+  const utils = render(<AudioControlBar {...props} />);
+  await act(async () => {
+    await Promise.resolve();
+  });
+  return utils;
+};
 
 // -------------------- TESTS --------------------
 
@@ -279,11 +287,8 @@ describe("AudioControlBar", () => {
 
   it("renders current track name when not loading", async () => {
     const props = createProps();
-    const { getByText } = render(<AudioControlBar {...props} />);
-
-    await waitFor(() => {
-      expect(getByText("Test Track")).toBeTruthy();
-    });
+    const { getByText } = await renderComponent(props);
+    expect(getByText("Test Track")).toBeTruthy();
   });
 
   it("shows DownloadBadge when track is downloading", async () => {
@@ -292,16 +297,13 @@ describe("AudioControlBar", () => {
       isDownloaded: false,
     }));
     const props = createProps();
-    const { getByTestId } = render(<AudioControlBar {...props} />);
-
-    await waitFor(() => {
-      expect(getByTestId("download-badge")).toBeTruthy();
-    });
+    const { getByTestId } = await renderComponent(props);
+    expect(getByTestId("download-badge")).toBeTruthy();
   });
 
   it("calls handlePlayPause when play button is pressed", async () => {
     const props = createProps();
-    const { getByTestId } = render(<AudioControlBar {...props} />);
+    const { getByTestId } = await renderComponent(props);
 
     await waitFor(() => {
       const playIcon = getByTestId("play-icon");
@@ -314,7 +316,7 @@ describe("AudioControlBar", () => {
 
   it("shows PauseIcon when isPlaying is true", async () => {
     const props = createProps({ isPlaying: true });
-    const { getByTestId, queryByTestId } = render(<AudioControlBar {...props} />);
+    const { getByTestId, queryByTestId } = await renderComponent(props);
 
     await waitFor(() => {
       expect(getByTestId("pause-icon")).toBeTruthy();
@@ -324,7 +326,7 @@ describe("AudioControlBar", () => {
 
   it("calls handleSeek when slider onSlidingComplete is triggered", async () => {
     const props = createProps();
-    const { getByTestId } = render(<AudioControlBar {...props} />);
+    const { getByTestId } = await renderComponent(props);
 
     await waitFor(() => {
       const slider = getByTestId("slider");
@@ -359,7 +361,7 @@ describe("AudioControlBar", () => {
       currentPlaying: defaultCurrentTrack,
     });
 
-    const { getByTestId } = render(<AudioControlBar {...props} />);
+    const { getByTestId } = await renderComponent(props);
 
     // Wait for addAndPlayTrack to complete
     await waitFor(() => {
@@ -390,7 +392,7 @@ describe("AudioControlBar", () => {
 
   it("saves audio progress and calls onCloseTrackModal when close button is pressed", async () => {
     const props = createProps();
-    const { getByTestId } = render(<AudioControlBar {...props} />);
+    const { getByTestId } = await renderComponent(props);
 
     await waitFor(() => {
       // Find the close icon - it's wrapped in a Pressable
@@ -418,7 +420,7 @@ describe("AudioControlBar", () => {
       addAndPlayTrack: jest.fn().mockResolvedValue(undefined),
     });
 
-    const { unmount } = render(<AudioControlBar {...props} />);
+    const { unmount } = await renderComponent(props);
 
     // Wait for initial async operations (addAndPlayTrack) to complete
     await waitFor(() => {
@@ -441,7 +443,7 @@ describe("AudioControlBar", () => {
 
   it("pauses audio when navigation blur event fires", async () => {
     const props = createProps();
-    render(<AudioControlBar {...props} />);
+    await renderComponent(props);
 
     expect(typeof blurCallback).toBe("function");
 
@@ -458,7 +460,7 @@ describe("AudioControlBar", () => {
       addAndPlayTrack: jest.fn().mockResolvedValue(undefined),
     });
 
-    render(<AudioControlBar {...props} />);
+    await renderComponent(props);
 
     await act(async () => {
       await new Promise((resolve) => {
@@ -493,7 +495,7 @@ describe("AudioControlBar", () => {
       seekTo: jest.fn().mockResolvedValue(undefined),
     });
 
-    render(<AudioControlBar {...props} />);
+    await renderComponent(props);
 
     await act(async () => {
       await new Promise((resolve) => {
@@ -513,7 +515,7 @@ describe("AudioControlBar", () => {
       play: jest.fn().mockResolvedValue(undefined),
     });
 
-    render(<AudioControlBar {...props} />);
+    await renderComponent(props);
 
     await act(async () => {
       await new Promise((resolve) => {
@@ -530,7 +532,7 @@ describe("AudioControlBar", () => {
 
     const props = createProps();
 
-    render(<AudioControlBar {...props} />);
+    await renderComponent(props);
 
     await waitFor(
       () => {
@@ -552,7 +554,7 @@ describe("AudioControlBar", () => {
 
   it("opens AudioSettingsModal and closes MoreTracks modal when toggling actions", async () => {
     const props = createProps();
-    const { getByTestId, queryByTestId } = render(<AudioControlBar {...props} />);
+    const { getByTestId, queryByTestId } = await renderComponent(props);
 
     await waitFor(() => {
       // Open More Tracks first
@@ -577,7 +579,7 @@ describe("AudioControlBar", () => {
   describe("actionItems logic", () => {
     it("shows CloseIcon when no modals are open", async () => {
       const props = createProps();
-      const { getByTestId, queryByTestId } = render(<AudioControlBar {...props} />);
+      const { getByTestId, queryByTestId } = await renderComponent(props);
 
       await waitFor(() => {
         expect(getByTestId("close-icon")).toBeTruthy();
@@ -587,7 +589,7 @@ describe("AudioControlBar", () => {
 
     it("calls handleClose when CloseIcon is pressed", async () => {
       const props = createProps();
-      const { getByTestId } = render(<AudioControlBar {...props} />);
+      const { getByTestId } = await renderComponent(props);
 
       await waitFor(() => {
         const closeIcon = getByTestId("close-icon");
@@ -606,7 +608,7 @@ describe("AudioControlBar", () => {
 
     it("shows ChevronDownIcon when isMoreTracksModalOpen is true", async () => {
       const props = createProps();
-      const { getByTestId, queryByTestId } = render(<AudioControlBar {...props} />);
+      const { getByTestId, queryByTestId } = await renderComponent(props);
 
       // Open More Tracks modal
       await waitFor(() => {
@@ -621,7 +623,7 @@ describe("AudioControlBar", () => {
 
     it("shows ChevronDownIcon when isSettingsModalOpen is true", async () => {
       const props = createProps();
-      const { getByTestId, queryByTestId } = render(<AudioControlBar {...props} />);
+      const { getByTestId, queryByTestId } = await renderComponent(props);
 
       // Open Audio Settings modal
       await waitFor(() => {
@@ -636,7 +638,7 @@ describe("AudioControlBar", () => {
 
     it("closes both modals when ChevronDownIcon is pressed", async () => {
       const props = createProps();
-      const { getByTestId, queryByTestId } = render(<AudioControlBar {...props} />);
+      const { getByTestId, queryByTestId } = await renderComponent(props);
 
       // Open More Tracks modal first
       await waitFor(() => {
@@ -669,7 +671,7 @@ describe("AudioControlBar", () => {
 
     it("shows ChevronDownIcon when Settings modal is open (after More Tracks closes)", async () => {
       const props = createProps();
-      const { getByTestId, queryByTestId } = render(<AudioControlBar {...props} />);
+      const { getByTestId, queryByTestId } = await renderComponent(props);
 
       // Open More Tracks modal first
       await waitFor(() => {

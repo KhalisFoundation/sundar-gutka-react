@@ -9,6 +9,10 @@ import ErrorFallback from "./index";
 
 // -------------------- MOCKS --------------------
 
+jest.mock("react-redux", () => ({
+  useSelector: jest.fn(() => "BalooPaaji2-Regular"),
+}));
+
 jest.mock("@common/context", () => ({
   __esModule: true,
   default: () => ({
@@ -40,6 +44,7 @@ jest.mock("@common/context", () => ({
           md_12: 12,
           lg: 16,
           xl: 20,
+          xxl: 24,
         },
       },
       borderRadius: {
@@ -52,10 +57,11 @@ jest.mock("@common/context", () => ({
 const mockStyles = {
   statusContainer: { padding: 24 },
   closeButton: { position: "absolute" },
-  statusTitle: { fontSize: 20 },
-  statusSubtitle: { fontSize: 16 },
-  retryButton: { padding: 12 },
-  retryButtonText: { fontSize: 12 },
+  noTracksContainer: { alignItems: "center" },
+  noTracksText: { fontSize: 24 },
+  noTracksSubtext: { fontSize: 24 },
+  joinMailingListButton: { padding: 12 },
+  joinMailingListText: { fontSize: 24 },
 };
 
 jest.mock("@common/hooks/useThemedStyles", () => () => () => mockStyles);
@@ -71,36 +77,58 @@ jest.mock("@common/icons", () => {
   };
 });
 
+const mockTheme = {
+  colors: {
+    audioTitleText: "#111111",
+  },
+  spacing: {
+    md: 8,
+    md_12: 12,
+    xl: 24,
+  },
+  typography: {
+    fonts: {
+      balooPaaji: "BalooPaaji2-Regular",
+      balooPaajiSemiBold: "BalooPaaji2-SemiBold",
+    },
+    sizes: {
+      xxl: 24,
+    },
+  },
+  borderRadius: {
+    md: 8,
+  },
+  separator: "#CCCCCC",
+  surface: "#FFFFFF",
+};
+
 jest.mock("@common", () => {
   const { Text } = require("react-native");
   return {
     STRINGS: {
-      PREPARING_AUDIO_PLAYER: "Preparing audio player...",
-      PLEASE_TRY_AGAIN: "Please try again.",
+      MAAFI_JI: "Maafi ji 🙏🏽",
+      YET: "yet.",
     },
     CustomText: ({ children, ...props }) => (
       <Text accessibilityRole="text" {...props}>
         {children}
       </Text>
     ),
-    useTheme: () => ({
-      theme: {
-        colors: {
-          audioTitleText: "#111111",
-        },
-      },
-    }),
-    useThemedStyles: () => () => mockStyles,
+    useTheme: jest.fn(() => ({
+      theme: mockTheme,
+    })),
+    useThemedStyles: jest.fn(() => () => mockStyles),
   };
 });
 
 // -------------------- HELPERS --------------------
 
 const createProps = (overrides = {}) => ({
-  isInitializing: false,
-  initializationErrorMessage: "Failed to initialize audio player",
-  retryInitialization: jest.fn(),
+  title: "Failed to initialize audio player",
+  buttonText: "Please try again.",
+  buttonPress: jest.fn(),
   handleClose: jest.fn(),
+  baniTitle: "",
   ...overrides,
 });
 
@@ -111,20 +139,11 @@ describe("ErrorFallback", () => {
     jest.clearAllMocks();
   });
 
-  it("renders correctly when initializing", () => {
-    const props = createProps({ isInitializing: true });
-    const { getByText, queryByText } = render(<ErrorFallback {...props} />);
-
-    expect(getByText("Preparing audio player...")).toBeTruthy();
-    expect(queryByText("Failed to initialize audio player")).toBeNull();
-    expect(queryByText("Please try again.")).toBeNull();
-  });
-
-  it("renders error message and retry button when not initializing", () => {
-    const props = createProps({ isInitializing: false });
+  it("renders error message and button", () => {
+    const props = createProps();
     const { getByText } = render(<ErrorFallback {...props} />);
 
-    expect(getByText("Preparing audio player...")).toBeTruthy();
+    expect(getByText("Maafi ji 🙏🏽")).toBeTruthy();
     expect(getByText("Failed to initialize audio player")).toBeTruthy();
     expect(getByText("Please try again.")).toBeTruthy();
   });
@@ -139,33 +158,22 @@ describe("ErrorFallback", () => {
     expect(props.handleClose).toHaveBeenCalledTimes(1);
   });
 
-  it("calls retryInitialization when retry button is pressed", () => {
-    const props = createProps({ isInitializing: false });
-    const { getByTestId } = render(<ErrorFallback {...props} />);
-
-    const retryButton = getByTestId("retry-button");
-    fireEvent.press(retryButton);
-
-    expect(props.retryInitialization).toHaveBeenCalledTimes(1);
-  });
-
-  it("does not show retry button when initializing", () => {
-    const props = createProps({ isInitializing: true });
-    const { queryByText } = render(<ErrorFallback {...props} />);
-
-    expect(queryByText("Please try again.")).toBeNull();
-    expect(queryByText("Failed to initialize audio player")).toBeNull();
-  });
-
-  it("displays the correct initialization error message", () => {
-    const errorMessage = "Network error occurred";
-    const props = createProps({
-      isInitializing: false,
-      initializationErrorMessage: errorMessage,
-    });
+  it("calls buttonPress when button is pressed", () => {
+    const props = createProps();
     const { getByText } = render(<ErrorFallback {...props} />);
 
-    expect(getByText(errorMessage)).toBeTruthy();
+    const button = getByText("Please try again.");
+    fireEvent.press(button);
+
+    expect(props.buttonPress).toHaveBeenCalledTimes(1);
+  });
+
+  it("displays the correct title message", () => {
+    const title = "Network error occurred";
+    const props = createProps({ title });
+    const { getByText } = render(<ErrorFallback {...props} />);
+
+    expect(getByText(title)).toBeTruthy();
   });
 
   it("renders close icon with correct props", () => {
@@ -184,21 +192,29 @@ describe("ErrorFallback", () => {
     expect(container).toBeTruthy();
   });
 
-  it("renders status title with correct testID", () => {
-    const props = createProps();
-    const { getByTestId } = render(<ErrorFallback {...props} />);
+  it("displays baniTitle when provided", () => {
+    const baniTitle = "Japji Sahib";
+    const props = createProps({ baniTitle });
+    const { getByText } = render(<ErrorFallback {...props} />);
 
-    const statusTitle = getByTestId("status-title");
-    expect(statusTitle).toBeTruthy();
-    expect(statusTitle.props.children).toBe("Preparing audio player...");
+    // Verify baniTitle is rendered
+    expect(getByText(baniTitle)).toBeTruthy();
+    // The "yet." text is nested within the same Text component and will be rendered
+    // when baniTitle is provided, but it's difficult to test directly with getByText
+    // since it's nested. The presence of baniTitle confirms the conditional rendering works.
   });
 
-  it("renders status subtitle with correct testID when not initializing", () => {
-    const props = createProps({ isInitializing: false });
-    const { getByTestId } = render(<ErrorFallback {...props} />);
+  it("does not display baniTitle or YET when baniTitle is empty", () => {
+    const props = createProps({ baniTitle: "" });
+    const { queryByText } = render(<ErrorFallback {...props} />);
 
-    const statusSubtitle = getByTestId("status-subtitle");
-    expect(statusSubtitle).toBeTruthy();
-    expect(statusSubtitle.props.children).toBe("Failed to initialize audio player");
+    expect(queryByText("yet.")).toBeNull();
+  });
+
+  it("does not display baniTitle or YET when baniTitle is undefined", () => {
+    const props = createProps({ baniTitle: undefined });
+    const { queryByText } = render(<ErrorFallback {...props} />);
+
+    expect(queryByText("yet.")).toBeNull();
   });
 });

@@ -1,5 +1,5 @@
 import React, { useState, useEffect, useMemo, useRef } from "react";
-import { View, Pressable, Animated, Platform } from "react-native";
+import { View, Pressable, Animated, Platform, ActivityIndicator } from "react-native";
 import { useDispatch, useSelector } from "react-redux";
 import { Slider } from "@miblanchard/react-native-slider";
 import { BlurView } from "@react-native-community/blur";

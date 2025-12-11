@@ -164,13 +164,6 @@ describe("AudioTrackDialog", () => {
     expect(getByTestId("tracks-list")).toBeTruthy();
   });
 
-  it("shows loading state instead of list when isLoading is true", () => {
-    const props = createProps({ isLoading: true });
-    const { queryByTestId } = render(<AudioTrackDialog {...props} />);
-
-    expect(queryByTestId("tracks-list")).toBeNull();
-  });
-
   it("plays a track when selected in header mode", async () => {
     const props = createProps();
     const { getByTestId } = render(<AudioTrackDialog {...props} />);
@@ -219,19 +212,6 @@ describe("AudioTrackDialog", () => {
     await waitFor(() => {
       expect(props.handleTrackSelect).toHaveBeenCalledWith(defaultTracks[1]);
       expect(props.addAndPlayTrack).not.toHaveBeenCalled();
-    });
-  });
-
-  it("renders empty state and opens request link when no tracks exist", async () => {
-    const props = createProps({ tracks: [] });
-    const { getByText } = render(<AudioTrackDialog {...props} />);
-
-    expect(getByText("Maafi Ji")).toBeTruthy();
-
-    fireEvent.press(getByText("Request audio for this paath"));
-
-    await waitFor(() => {
-      expect(Linking.openURL).toHaveBeenCalledWith("https://khalisfoundation.org");
     });
   });
 
