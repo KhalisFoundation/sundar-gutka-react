@@ -187,7 +187,7 @@ export const audioControlBarStyles = (theme) => ({
     top: -theme.spacing.sm,
     paddingHorizontal: theme.spacing.sm,
     paddingVertical: 2,
-    borderRadius: BORDER_RADIUS.sm,
+    borderRadius: theme.borderRadius.sm,
     backgroundColor: theme.colors.surface,
     alignItems: "center",
     justifyContent: "center",
