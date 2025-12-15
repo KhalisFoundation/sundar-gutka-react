@@ -129,6 +129,11 @@ const AudioPlayer = ({ baniID, title, webViewRef }) => {
   const handleTrackSelect = useCallback(
     async (selectedTrack) => {
       try {
+        // Early return if selectedTrack is null or undefined
+        if (!selectedTrack) {
+          return;
+        }
+
         // Stop current playback
         await stop();
 
