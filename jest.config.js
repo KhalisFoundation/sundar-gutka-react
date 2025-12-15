@@ -12,6 +12,7 @@ module.exports = {
       "|react-native-gesture-handler" +
       "|react-native-safe-area-context" +
       "|react-native-screens" +
+      "|react-native-fs" +
       ")/)",
   ],
   moduleNameMapper: {

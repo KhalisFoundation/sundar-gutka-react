@@ -104,7 +104,7 @@ const Settings = ({ navigation }) => {
         />
         <CustomText style={end} />
       </ScrollView>
-      <BottomNavigation navigation={navigation} activeKey="Settings" />
+      <BottomNavigation activeKey="Settings" />
     </SafeArea>
   );
 };

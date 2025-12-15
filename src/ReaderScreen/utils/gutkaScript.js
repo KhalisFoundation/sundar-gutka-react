@@ -207,6 +207,9 @@ ${listener}.addEventListener(
       }
       
       if (element) {
+        // Find the gurmukhi div within the element
+        const gurmukhiDiv = element.querySelector('.gurmukhi') || element;
+        
         // Check if this is the same element as last time
         const isSameElement = lastHighlightedElement === element;
         
@@ -225,7 +228,7 @@ ${listener}.addEventListener(
         // Only scroll if it's a different element
         if (!isSameElement) {
           const behavior = message.behavior === "smooth" ? "smooth" : "auto";
-          element.scrollIntoView({
+          gurmukhiDiv.scrollIntoView({
             behavior: behavior,
             block: "center",
             inline: "nearest"
