@@ -4,5 +4,5 @@ contact_links:
     url: https://github.com/KhalisFoundation/sundar-gutka-react/blob/master/README.md
     about: Please check our documentation before creating an issue.
   - name: 🐛 Known Issues
-    url: https://github.com/WahegurooNetwork/SundarGutka/issues?q=is%3Aissue+is%3Aopen+label%3Abug
+    url: https://github.com/KhalisFoundation/sundar-gutka-react/issues?q=is%3Aissue+is%3Aopen+label%3Abug
     about: Check if your issue has already been reported.
