@@ -44,6 +44,12 @@ const HomeScreen = React.memo(({ navigation }) => {
   }, [fontFace]);
 
   useEffect(() => {
+    if (!fontFace) {
+      dispatch(actions.setFontFace(constant.GURBANI_AKHAR_TRUE));
+    }
+  }, [fontFace]);
+
+  useEffect(() => {
     dispatch(actions.setLanguage(language));
     const order = validateBaniOrder(baniOrder);
     dispatch(setBaniOrder(order));
