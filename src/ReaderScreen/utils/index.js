@@ -80,8 +80,7 @@ export const loadHTML = (
   isPunjabiTranslation,
   isSpanishTranslation,
   theme,
-  isLarivaar,
-  savePosition
+  isLarivaar
 ) => {
   try {
     const backColor = theme.colors.surface;
@@ -170,7 +169,7 @@ export const loadHTML = (
         return contentHtml;
       })
       .join("");
-    const htmlContent = htmlTemplate(backColor, fontFace, content, theme, savePosition);
+    const htmlContent = htmlTemplate(backColor, fontFace, content, theme);
     return htmlContent;
   } catch (error) {
     logError(error);

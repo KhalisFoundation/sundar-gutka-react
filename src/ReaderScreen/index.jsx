@@ -47,11 +47,11 @@ const Reader = ({ navigation, route }) => {
   const { title, id, titleUni } = route.params.params || {};
   const [isHeader, toggleHeader] = useState(false);
   const [viewLoaded, toggleViewLoaded] = useState(false);
-  const [currentPosition, setCurrentPosition] = useState(savePosition[id] || 0);
+  const [currentElementId, setCurrentElementId] = useState(savePosition[id] || null);
   const [shouldNavigateBack, setShouldNavigateBack] = useState(false);
   const [dateKey, setDateKey] = useState(Date.now().toString());
   const [titleText, setTitleText] = useState(null);
-  const positionPointer = useRef(0);
+  const currentElementIdRef = useRef(null);
 
   const dispatch = useDispatch();
   const { shabad, isLoading } = useFetchShabad(id);
@@ -59,12 +59,14 @@ const Reader = ({ navigation, route }) => {
 
   const { animationPosition } = useFooterAnimation(isHeader);
 
-  // Save scroll position when leaving screen or app goes to background
+  // Save element ID when leaving screen or app goes to background
   const saveScrollPosition = useCallback(() => {
-    if (positionPointer.current > 0) {
-      dispatch(actions.setPosition(parseFloat(positionPointer.current), id));
+    // Prefer element ID if available, otherwise fall back to currentElementId state
+    const elementIdToSave = currentElementIdRef.current || currentElementId;
+    if (elementIdToSave) {
+      dispatch(actions.setPosition(elementIdToSave, id));
     }
-  }, [dispatch, id]);
+  }, [dispatch, id, currentElementId]);
 
   useEffect(() => {
     dispatch(actions.setCurrentBani({ id, title, titleUni }));
@@ -101,8 +103,7 @@ const Reader = ({ navigation, route }) => {
         isPunjabiTranslation,
         isSpanishTranslation,
         theme,
-        isLarivaar,
-        currentPosition
+        isLarivaar
       ),
       baseUrl: Platform.OS === "ios" ? "./" : "",
     };
@@ -116,7 +117,6 @@ const Reader = ({ navigation, route }) => {
     isSpanishTranslation,
     theme,
     isLarivaar,
-    currentPosition,
   ]);
 
   useScreenAnalytics(title);
@@ -142,24 +142,30 @@ const Reader = ({ navigation, route }) => {
     };
   }, [saveScrollPosition]);
 
+  // Set currentElementId from savePosition when it changes
   useEffect(() => {
-    if (savePosition && id) {
-      const position = savePosition[id];
-      if (position > 0.9) {
-        setCurrentPosition(0);
-      } else {
-        setCurrentPosition(position);
+    if (savePosition && id && savePosition[id]) {
+      const savedElementId = savePosition[id];
+      // Check if it's a number (old position format) or string (element ID)
+      if (typeof savedElementId === "string") {
+        setCurrentElementId(savedElementId);
+        currentElementIdRef.current = savedElementId;
+      } else if (typeof savedElementId === "number" && savedElementId > 0.9) {
+        // Old position format - reset to null if at end
+        setCurrentElementId(null);
+        currentElementIdRef.current = null;
       }
     }
   }, [savePosition, id]);
 
   const handleBackPress = useCallback(() => {
+    // Save position before navigating back
+    saveScrollPosition();
     if (webViewRef?.current) {
-      webViewRef.current.postMessage(JSON.stringify({ Back: true }));
-      setShouldNavigateBack(true);
+      navigation.goBack();
     }
     return true;
-  }, []);
+  }, [saveScrollPosition]);
 
   useBackHandler(handleBackPress);
 
@@ -176,17 +182,22 @@ const Reader = ({ navigation, route }) => {
         toggleHeader(true);
       } else if (data === "hide") {
         toggleHeader(false);
-      } else if (data.includes("save")) {
-        const position = data.split("-")[1];
-        setCurrentPosition(position);
-        dispatch(actions.setPosition(position, id));
+      } else if (data.includes("scroll-elementId-")) {
+        // Capture element ID from WebView scroll events
+        const elementId = data.split("scroll-elementId-")[1];
+        setCurrentElementId(elementId);
+        currentElementIdRef.current = elementId;
+        // Save immediately when element ID changes
+        dispatch(actions.setPosition(elementId, id));
         if (shouldNavigateBack) {
           navigation.goBack();
           setShouldNavigateBack(false);
         }
-      } else if (data.includes("scroll-")) {
-        const position = data.split("-")[1];
-        positionPointer.current = position;
+      } else if (data.includes("reached-end")) {
+        // User reached the end - reset saved position
+        setCurrentElementId(null);
+        currentElementIdRef.current = null;
+        dispatch(actions.setPosition(0, id));
       } else if (data.includes("sequenceString-")) {
         const sequenceStringData = data.split("-")[1];
         dispatch(actions.setBookmarkSequenceString(sequenceStringData));
@@ -202,15 +213,15 @@ const Reader = ({ navigation, route }) => {
   }, []);
 
   const handleLoadEnd = useCallback(() => {
-    // Scroll to saved position after WebView is fully loaded
-    if (webViewRef.current && currentPosition > 0 && currentPosition <= 1) {
+    // Scroll to saved element ID after WebView is fully loaded
+    if (webViewRef.current && currentElementId) {
       const scrollMessage = {
         action: "scrollToPosition",
-        position: currentPosition,
+        elementId: currentElementId,
       };
       webViewRef.current.postMessage(JSON.stringify(scrollMessage));
     }
-  }, [currentPosition]);
+  }, [currentElementId]);
 
   const handleError = useCallback((syntheticEvent) => {
     const { nativeEvent } = syntheticEvent;
