@@ -19,18 +19,9 @@ jest.mock("react-redux", () => ({
   useSelector: (selectorFn) => selectorFn(mockState),
 }));
 
-// Mock navigation
-let blurCallback;
-let focusCallback;
-
 const mockNavigation = {
   navigate: jest.fn(),
   goBack: jest.fn(),
-  addListener: jest.fn((event, cb) => {
-    if (event === "blur") blurCallback = cb;
-    if (event === "focus") focusCallback = cb;
-    return jest.fn(); // unsubscribe
-  }),
 };
 
 // Mock route
@@ -359,7 +350,9 @@ describe("Reader", () => {
 
   it("saves scroll position on blur", async () => {
     // Set up element ID so saveScrollPosition will dispatch
-    const { getByTestId, unmount } = render(<Reader navigation={mockNavigation} route={mockRoute} />);
+    const { getByTestId, unmount } = render(
+      <Reader navigation={mockNavigation} route={mockRoute} />
+    );
 
     // Wait for WebView to load
     await waitFor(() => {
@@ -415,7 +408,9 @@ describe("Reader", () => {
     // Wait a bit more to ensure AppState listener is set up with latest saveScrollPosition
     // The effect depends on saveScrollPosition, so when currentElementId changes,
     // saveScrollPosition changes, causing the effect to re-run
-    await new Promise((resolve) => setTimeout(resolve, 200));
+    await new Promise((resolve) => {
+      setTimeout(resolve, 200);
+    });
 
     // Get the most recent background listener (last one added)
     const backgroundListeners = mockAppStateListeners.filter(
@@ -762,7 +757,9 @@ describe("Reader", () => {
   });
 
   it("saves position on unmount", async () => {
-    const { getByTestId, unmount } = render(<Reader navigation={mockNavigation} route={mockRoute} />);
+    const { getByTestId, unmount } = render(
+      <Reader navigation={mockNavigation} route={mockRoute} />
+    );
 
     // Wait for WebView to load
     await waitFor(() => {
