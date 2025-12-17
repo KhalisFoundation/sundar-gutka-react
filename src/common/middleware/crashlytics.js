@@ -22,16 +22,18 @@ const safeStringify = (value) => {
 const summarizeState = (state) => {
   const summary = {};
   let count = 0;
-  Object.entries(state || {}).some(([key, value]) => {
-    if (count >= MAX_STATE_KEYS) return true;
-    if (value === undefined) return false;
+  // eslint-disable-next-line no-restricted-syntax
+  for (const [key, value] of Object.entries(state || {})) {
+    if (count >= MAX_STATE_KEYS) break;
+    // eslint-disable-next-line no-continue
+    if (value === undefined) continue;
+
     if (typeof value === "string" || typeof value === "number" || typeof value === "boolean") {
       const crashlyticsKey = key.replace(/([A-Z])/g, "-$1").toLowerCase();
       summary[crashlyticsKey] = safeStringify(value);
       count += 1;
     }
-    return false;
-  });
+  }
   return summary;
 };
 
