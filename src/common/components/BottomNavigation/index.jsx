@@ -1,4 +1,4 @@
-import React, { useState, useEffect } from "react";
+import React, { useState, useEffect, useCallback } from "react";
 import { View, Pressable } from "react-native";
 import { useDispatch, useSelector } from "react-redux";
 import { useNavigation } from "@react-navigation/native";
@@ -19,10 +19,10 @@ const BottomNavigation = ({ activeKey }) => {
   const [previousRouteName, setPreviousRouteName] = useState(null);
 
   // Helper function to get current route name
-  const getCurrentRouteName = () => {
+  const getCurrentRouteName = useCallback(() => {
     const navState = navigation.getState();
     return navState?.routes[navState?.index]?.name;
-  };
+  }, [navigation]);
 
   useEffect(() => {
     const updateIsSettings = () => {
