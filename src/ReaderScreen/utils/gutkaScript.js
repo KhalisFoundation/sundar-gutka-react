@@ -129,14 +129,26 @@ ${listener}.addEventListener(
 
 ${listener}.onscroll = scrollFunc;
 // Touch events for auto-scroll handling only
+let wasAutoScrolling = false;
+const resumeAutoScroll = () => {
+  isManuallyScrolling = false;
+  // Resume auto-scroll if it was active before touch
+  if (wasAutoScrolling && autoScrollSpeed !== 0 && autoScrollTimeout == null) {
+    wasAutoScrolling = false;
+    setAutoScroll();
+  }
+};
 ${listener}.addEventListener("touchstart", ()=> {
   if (autoScrollSpeed !== 0) {
+    wasAutoScrolling = true;
     clearScrollTimeout();
   }
 });
 ${listener}.addEventListener("touchmove", ()=> {
   isManuallyScrolling = true;
 });
+${listener}.addEventListener("touchend", resumeAutoScroll);
+${listener}.addEventListener("touchcancel", resumeAutoScroll);
 
 ${listener}.addEventListener(
   "message",
