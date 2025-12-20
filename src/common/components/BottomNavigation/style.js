@@ -2,7 +2,7 @@ const createStyles = (theme) => ({
   container: {
     width: "100%",
     backgroundColor: theme.colors.primary,
-    height: 65,
+    height: theme.components.bottomNavigation.height,
     justifyContent: "center",
   },
   navigationBar: {

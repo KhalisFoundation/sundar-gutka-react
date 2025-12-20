@@ -28,6 +28,7 @@ const HomeScreen = React.memo(({ navigation }) => {
   const { baniListData } = useBaniList();
   const language = useSelector((state) => state.language);
   const baniOrder = useSelector((state) => state.baniOrder);
+  const fontFace = useSelector((state) => state.fontFace);
   useDatabaseUpdateCheck();
 
   useKeepAwake();
@@ -42,6 +43,15 @@ const HomeScreen = React.memo(({ navigation }) => {
     if (!language || !isLanguageValid) {
       dispatch(actions.setLanguage("DEFAULT"));
     }
+  }, [language]);
+
+  useEffect(() => {
+    if (!fontFace) {
+      dispatch(actions.setFontFace(constant.GURBANI_AKHAR_TRUE));
+    }
+  }, [fontFace]);
+
+  useEffect(() => {
     const order = validateBaniOrder(baniOrder);
     dispatch(setBaniOrder(order));
   }, []);

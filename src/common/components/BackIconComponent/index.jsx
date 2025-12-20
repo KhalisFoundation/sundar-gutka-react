@@ -1,15 +1,18 @@
-import React from "react";
+import React, { useCallback } from "react";
 import { Pressable } from "react-native";
+import { useNavigation } from "@react-navigation/native";
 import PropTypes from "prop-types";
 import { BackArrowIcon } from "@common/icons";
 
-const BackIconComponent = ({ size, handleBackPress, color }) => {
+const BackIconComponent = ({ size, color }) => {
+  const navigation = useNavigation();
+
+  const handleBackPress = useCallback(() => {
+    navigation.goBack();
+  }, []);
+
   return (
-    <Pressable
-      onPress={() => {
-        handleBackPress();
-      }}
-    >
+    <Pressable onPress={handleBackPress}>
       <BackArrowIcon size={size} color={color} />
     </Pressable>
   );
@@ -20,7 +23,6 @@ BackIconComponent.defaultProps = {
 };
 BackIconComponent.propTypes = {
   size: PropTypes.number,
-  handleBackPress: PropTypes.func.isRequired,
   color: PropTypes.string.isRequired,
 };
 

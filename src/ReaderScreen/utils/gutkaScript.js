@@ -129,14 +129,26 @@ ${listener}.addEventListener(
 
 ${listener}.onscroll = scrollFunc;
 // Touch events for auto-scroll handling only
+let wasAutoScrolling = false;
+const resumeAutoScroll = () => {
+  isManuallyScrolling = false;
+  // Resume auto-scroll if it was active before touch
+  if (wasAutoScrolling && autoScrollSpeed !== 0 && autoScrollTimeout == null) {
+    wasAutoScrolling = false;
+    setAutoScroll();
+  }
+};
 ${listener}.addEventListener("touchstart", ()=> {
   if (autoScrollSpeed !== 0) {
+    wasAutoScrolling = true;
     clearScrollTimeout();
   }
 });
 ${listener}.addEventListener("touchmove", ()=> {
   isManuallyScrolling = true;
 });
+${listener}.addEventListener("touchend", resumeAutoScroll);
+${listener}.addEventListener("touchcancel", resumeAutoScroll);
 
 ${listener}.addEventListener(
   "message",
@@ -207,6 +219,9 @@ ${listener}.addEventListener(
       }
       
       if (element) {
+        // Find the gurmukhi div within the element
+        const gurmukhiDiv = element.querySelector('.gurmukhi') || element;
+        
         // Check if this is the same element as last time
         const isSameElement = lastHighlightedElement === element;
         
@@ -225,7 +240,7 @@ ${listener}.addEventListener(
         // Only scroll if it's a different element
         if (!isSameElement) {
           const behavior = message.behavior === "smooth" ? "smooth" : "auto";
-          element.scrollIntoView({
+          gurmukhiDiv.scrollIntoView({
             behavior: behavior,
             block: "center",
             inline: "nearest"

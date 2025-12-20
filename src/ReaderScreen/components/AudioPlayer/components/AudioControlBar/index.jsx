@@ -8,7 +8,14 @@ import PropTypes from "prop-types";
 import { setAudioProgress, toggleAudioSyncScroll } from "@common/actions";
 import useTheme from "@common/context";
 import useThemedStyles from "@common/hooks/useThemedStyles";
-import { MusicNoteIcon, SettingsIcon, CloseIcon, PlayIcon, PauseIcon } from "@common/icons";
+import {
+  MusicNoteIcon,
+  SettingsIcon,
+  CloseIcon,
+  PlayIcon,
+  PauseIcon,
+  ChevronDownIcon,
+} from "@common/icons";
 import { STRINGS, CustomText, logError } from "@common";
 import {
   useAnimation,
@@ -18,6 +25,10 @@ import {
 } from "../../hooks";
 import { audioControlBarStyles } from "../../style";
 import checkLyricsFileAvailable from "../../utils/checkLRC";
+import {
+  getSequenceFromPosition,
+  getPositionFromSequence,
+} from "../../utils/getSequenceFromPosition";
 import ActionComponents from "../ActionComponent";
 import AudioSettingsModal from "../AudioSettingsModal";
 import DownloadBadge from "../DownloadBadge";
@@ -35,7 +46,6 @@ const AudioControlBar = ({
   currentPlaying,
   addTrackToManifest,
   isTrackDownloaded,
-  isTracksLoading,
   tracks,
   seekTo,
   reset,
@@ -57,6 +67,7 @@ const AudioControlBar = ({
   const progressRef = useRef(progress);
   const currentPlayingRef = useRef(currentPlaying);
   const audioProgress = useSelector((state) => state.audioProgress);
+  const [isSeekLoading, setIsSeekLoading] = useState(false);
   const { modalHeight, modalOpacity } = useAnimation(isSettingsModalOpen, isMoreTracksModalOpen);
   const { isDownloading, isDownloaded } = useDownloadManager(
     currentPlaying,
@@ -87,12 +98,17 @@ const AudioControlBar = ({
   }, [currentPlaying]);
 
   // Save progress when user closes the modal
-  const handleClose = () => {
+  const handleClose = async () => {
     const currentProgress = progressRef.current;
     const currentTrack = currentPlayingRef.current;
 
     if (currentTrack?.id && currentProgress?.position != null) {
-      dispatch(setAudioProgress(baniID, currentTrack.id, currentProgress.position));
+      // Save sequence along with position
+      let sequence = null;
+      if (currentTrack?.lyricsUrl) {
+        sequence = await getSequenceFromPosition(currentTrack.lyricsUrl, currentProgress.position);
+      }
+      dispatch(setAudioProgress(baniID, currentTrack.id, currentProgress.position, sequence));
     }
 
     onCloseTrackModal();
@@ -113,13 +129,25 @@ const AudioControlBar = ({
     },
   ];
 
-  const actionItems = [
-    {
-      onPress: handleClose,
-      Icon: CloseIcon,
-      id: 1,
-    },
-  ];
+  const actionItems =
+    isMoreTracksModalOpen || isSettingsModalOpen
+      ? [
+          {
+            onPress: () => {
+              setIsMoreTracksModalOpen(false);
+              setIsSettingsModalOpen(false);
+            },
+            Icon: ChevronDownIcon,
+            id: 1,
+          },
+        ]
+      : [
+          {
+            onPress: handleClose,
+            Icon: CloseIcon,
+            id: 1,
+          },
+        ];
 
   useEffect(() => {
     if (isSettingsModalOpen) {
@@ -155,6 +183,7 @@ const AudioControlBar = ({
       }
 
       try {
+        setIsSeekLoading(true);
         // Load the track (will seek to saved position if available)
         await addAndPlayTrack(
           currentPlaying.id,
@@ -164,20 +193,43 @@ const AudioControlBar = ({
           currentPlaying.lyricsUrl,
           currentPlaying.trackLengthSec,
           currentPlaying.trackSizeMB,
-          false
+          false,
+          currentPlaying.remoteUrl || currentPlaying.audioUrl
         );
-        if (
-          baniID &&
-          audioProgress?.[baniID]?.position &&
-          currentPlaying?.id === audioProgress?.[baniID]?.trackId
-        ) {
-          await seekTo(audioProgress?.[baniID]?.position);
+
+        // Check if we have saved progress for this track
+        if (baniID && audioProgress?.[baniID]) {
+          const savedProgress = audioProgress[baniID];
+
+          // If we have a saved sequence, try to restore position from sequence first
+          if (savedProgress.sequence != null && currentPlaying?.lyricsUrl) {
+            const sequencePosition = await getPositionFromSequence(
+              currentPlaying.lyricsUrl,
+              savedProgress.sequence
+            );
+            if (sequencePosition != null) {
+              await seekTo(sequencePosition);
+              if (isAudioAutoPlay) {
+                await play();
+              }
+              setIsSeekLoading(false);
+              return;
+            }
+          }
+
+          // Fallback to saved position if sequence not found or not available
+          if (savedProgress.position && currentPlaying?.id === savedProgress.trackId) {
+            await seekTo(savedProgress.position);
+          }
         }
+
         if (isAudioAutoPlay) {
           await play();
         }
+        setIsSeekLoading(false);
       } catch (error) {
         logError("Error loading active track:", error);
+        setIsSeekLoading(false);
       }
     };
 
@@ -187,6 +239,7 @@ const AudioControlBar = ({
     currentPlaying?.id,
     currentPlaying?.audioUrl,
     currentPlaying?.displayName,
+    currentPlaying?.lyricsUrl,
     audioProgress,
     baniID,
   ]);
@@ -196,9 +249,18 @@ const AudioControlBar = ({
     return () => {
       const currentProgress = progressRef.current;
       const currentTrack = currentPlayingRef.current;
-      if (currentTrack?.id && currentProgress?.position != null) {
-        dispatch(setAudioProgress(baniID, currentTrack.id, currentProgress.position));
-        reset();
+      const trackId = currentTrack?.id;
+      if (trackId && currentProgress?.position != null) {
+        // Save sequence along with position
+        (async () => {
+          let sequence = null;
+          const lyricsUrl = currentTrack?.lyricsUrl;
+          if (lyricsUrl) {
+            sequence = await getSequenceFromPosition(lyricsUrl, currentProgress.position);
+          }
+          dispatch(setAudioProgress(baniID, trackId, currentProgress.position, sequence));
+          await reset();
+        })();
       }
     };
   }, [baniID]);
@@ -261,17 +323,11 @@ const AudioControlBar = ({
 
           {isMoreTracksModalOpen && (
             <View style={styles.moreTracksModalContainer}>
-              {isTracksLoading ? (
-                <View style={styles.loadingContainer}>
-                  <ActivityIndicator size="large" color={theme.colors.primary} />
-                </View>
-              ) : (
-                <ScrollViewComponent
-                  tracks={tracks}
-                  selectedTrack={currentPlaying}
-                  handleSelectTrack={handleTrackSelect}
-                />
-              )}
+              <ScrollViewComponent
+                tracks={tracks}
+                selectedTrack={currentPlaying}
+                handleSelectTrack={handleTrackSelect}
+              />
             </View>
           )}
         </Animated.View>
@@ -280,15 +336,8 @@ const AudioControlBar = ({
         <View style={[styles.mainSection]}>
           <View style={styles.trackInfo}>
             <View style={styles.trackInfoLeft}>
-              {isTracksLoading ? (
-                <View style={styles.loadingContainer}>
-                  <ActivityIndicator size="large" color={theme.colors.primary} />
-                </View>
-              ) : (
-                currentPlaying &&
-                currentPlaying.displayName && (
-                  <CustomText style={styles.trackName}>{currentPlaying.displayName}</CustomText>
-                )
+              {currentPlaying && currentPlaying.displayName && (
+                <CustomText style={styles.trackName}>{currentPlaying.displayName}</CustomText>
               )}
             </View>
           </View>
@@ -304,6 +353,11 @@ const AudioControlBar = ({
 
             <View style={styles.progressContainer}>
               <View style={styles.progressBar}>
+                {isSeekLoading && (
+                  <View style={styles.seekLoadingOverlay} testID="seek-loading-indicator">
+                    <ActivityIndicator size="small" color={theme.colors.primary} />
+                  </View>
+                )}
                 <CustomText style={[styles.timestamp, styles.timestampWithColor]}>
                   {formatTime(progress.position)}
                 </CustomText>
@@ -314,7 +368,7 @@ const AudioControlBar = ({
                   onSlidingComplete={([v]) => handleSeek(v)}
                   minimumTrackTintColor={sliderMinTrackColor}
                   maximumTrackTintColor={theme.staticColors.SLIDER_TRACK_COLOR}
-                  disabled={!isAudioEnabled}
+                  disabled={!isAudioEnabled || isSeekLoading}
                   trackStyle={{
                     height: 6,
                     borderRadius: 3,
@@ -356,10 +410,10 @@ AudioControlBar.propTypes = {
     lyricsUrl: PropTypes.string,
     trackLengthSec: PropTypes.number,
     trackSizeMB: PropTypes.number,
+    remoteUrl: PropTypes.string,
   }),
   addTrackToManifest: PropTypes.func.isRequired,
   isTrackDownloaded: PropTypes.func.isRequired,
-  isTracksLoading: PropTypes.bool.isRequired,
   tracks: PropTypes.arrayOf(
     PropTypes.shape({
       id: PropTypes.string.isRequired,

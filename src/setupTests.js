@@ -31,3 +31,18 @@ jest.mock("@common", () => {
   const { createCommonMock } = require("@common/test-utils/mocks/common");
   return createCommonMock();
 });
+
+// Mock react-native-fs to avoid TypeScript parsing issues
+jest.mock("react-native-fs", () => ({
+  DocumentDirectoryPath: "/test/documents",
+  exists: jest.fn(() => Promise.resolve(false)),
+  readFile: jest.fn(() => Promise.resolve("")),
+  writeFile: jest.fn(() => Promise.resolve()),
+  unlink: jest.fn(() => Promise.resolve()),
+  mkdir: jest.fn(() => Promise.resolve()),
+  downloadFile: jest.fn(() => Promise.resolve({ statusCode: 200 })),
+  moveFile: jest.fn(() => Promise.resolve()),
+  copyFile: jest.fn(() => Promise.resolve()),
+  readDir: jest.fn(() => Promise.resolve([])),
+  stat: jest.fn(() => Promise.resolve({ isFile: () => true, size: 0 })),
+}));
