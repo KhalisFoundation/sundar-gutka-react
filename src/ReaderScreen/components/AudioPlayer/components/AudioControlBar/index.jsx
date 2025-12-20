@@ -10,7 +10,12 @@ import useTheme from "@common/context";
 import useThemedStyles from "@common/hooks/useThemedStyles";
 import { MusicNoteIcon, SettingsIcon, CloseIcon, PlayIcon, PauseIcon } from "@common/icons";
 import { STRINGS, CustomText, logError } from "@common";
-import { useAnimation, useDownloadManager, useBookmarks } from "../../hooks";
+import {
+  useAnimation,
+  useDownloadManager,
+  useBookmarks,
+  useArtistListeningDuration,
+} from "../../hooks";
 import { audioControlBarStyles } from "../../style";
 import checkLyricsFileAvailable from "../../utils/checkLRC";
 import ActionComponents from "../ActionComponent";
@@ -59,6 +64,7 @@ const AudioControlBar = ({
     isTrackDownloaded
   );
   useBookmarks(seekTo, currentPlaying?.lyricsUrl);
+  useArtistListeningDuration(baniID, isPlaying, currentPlaying);
   const formatTime = (seconds) => {
     const mins = Math.floor(seconds / 60);
     const secs = Math.floor(seconds % 60);

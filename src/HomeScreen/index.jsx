@@ -13,8 +13,10 @@ import {
   validateBaniOrder,
   StatusBarComponent,
   SafeArea,
+  STRINGS,
 } from "@common";
 import { setBaniOrder } from "../common/actions";
+import { getLanguages } from "../Settings/components/comon/strings";
 import BaniHeader from "./components/BaniHeader";
 import { useBaniLength, useBaniList, useDatabaseUpdateCheck } from "./hooks";
 import createStyles from "./styles";
@@ -33,7 +35,13 @@ const HomeScreen = React.memo(({ navigation }) => {
   const dispatch = useDispatch();
 
   useEffect(() => {
-    dispatch(actions.setLanguage(language));
+    const validLanguages = getLanguages(STRINGS);
+    const validLanguageKeys = validLanguages.map((lang) => lang.key);
+    const isLanguageValid = language && validLanguageKeys.includes(language);
+
+    if (!language || !isLanguageValid) {
+      dispatch(actions.setLanguage("DEFAULT"));
+    }
     const order = validateBaniOrder(baniOrder);
     dispatch(setBaniOrder(order));
   }, []);
