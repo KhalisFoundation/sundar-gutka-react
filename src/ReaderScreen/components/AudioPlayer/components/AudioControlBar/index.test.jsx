@@ -155,6 +155,7 @@ jest.mock("../../hooks", () => ({
     isDownloaded: false,
   })),
   useBookmarks: jest.fn(),
+  useArtistListeningDuration: jest.fn(),
 }));
 
 // Mock LRC check
