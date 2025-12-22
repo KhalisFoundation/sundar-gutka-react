@@ -10,7 +10,7 @@ import {
   toggleAudioSyncScroll,
 } from "@common/actions";
 import { showErrorToast } from "@common/toast";
-import { STRINGS, logError } from "@common";
+import { STRINGS, logError, trackAudioEvent } from "@common";
 import { AudioTrackDialog, AudioControlBar, ErrorFallback, Loading } from "./components";
 import { useTrackPlayer, useAudioSyncScroll, useAudioManifest } from "./hooks";
 import checkLyricsFileAvailable from "./utils/checkLRC";
@@ -202,10 +202,19 @@ const AudioPlayer = ({ baniID, title, webViewRef }) => {
         <ErrorFallback
           title={STRINGS.WE_DO_NOT_HAVE_AUDIOS_FOR}
           baniTitle={title}
-          buttonPress={() => {
-            Linking.openURL("https://khalisfoundation.org").catch(() => {
-              Linking.openURL("https://khalisfoundation.org");
-            });
+          buttonPress={async () => {
+            try {
+              await trackAudioEvent("requestAudioLink", title || "unknown");
+              await Linking.openURL("https://khalisfoundation.org");
+            } catch (error) {
+              // Fallback: try opening the URL again if first attempt fails
+              try {
+                await Linking.openURL("https://khalisfoundation.org");
+              } catch (fallbackError) {
+                // Silently handle error - user may have no browser/app to handle URL
+                console.warn("Failed to open URL:", fallbackError);
+              }
+            }
           }}
           buttonText={STRINGS.REQUEST_AUDIO_FOR_THIS_PAATH}
           handleClose={onCloseTrackModal}
