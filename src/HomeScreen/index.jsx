@@ -14,6 +14,7 @@ import {
   StatusBarComponent,
   SafeArea,
   STRINGS,
+  allowTracking,
 } from "@common";
 import { setBaniOrder } from "../common/actions";
 import { getLanguages } from "../Settings/components/comon/strings";
@@ -29,11 +30,18 @@ const HomeScreen = React.memo(({ navigation }) => {
   const language = useSelector((state) => state.language);
   const baniOrder = useSelector((state) => state.baniOrder);
   const fontFace = useSelector((state) => state.fontFace);
+  const isStatistics = useSelector((state) => state.isStatistics);
   useDatabaseUpdateCheck();
 
   useKeepAwake();
   const { baniLengthSelector } = useBaniLength();
   const dispatch = useDispatch();
+
+  useEffect(() => {
+    (async () => {
+      await allowTracking(isStatistics);
+    })();
+  }, [isStatistics]);
 
   useEffect(() => {
     const validLanguages = getLanguages(STRINGS);

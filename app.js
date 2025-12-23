@@ -16,7 +16,6 @@ import {
   initializePerformanceMonitoring,
 } from "@common";
 import ThemeProvider from "./src/common/context/ThemeProvider";
-import { allowTracking } from "./src/common/firebase/analytics";
 import { TrackPlayerSetup } from "./src/common/TrackPlayerUtils";
 import Navigation from "./src/navigation";
 
@@ -30,7 +29,6 @@ const App = () => {
   useEffect(() => {
     (async () => {
       await initializePerformanceMonitoring();
-      await allowTracking();
       await initializeCrashlytics();
       await TrackPlayerSetup();
     })();

@@ -1,5 +1,4 @@
 import {
-  getAppInstanceId,
   logEvent,
   getAnalytics,
   setAnalyticsCollectionEnabled,
@@ -46,12 +45,9 @@ const trackEvent = async (category, action, label) => {
   }
 };
 
-const allowTracking = async () => {
+const allowTracking = async (isStatistics) => {
   try {
-    const appInstanceId = await getAppInstanceId(analytics);
-    if (!appInstanceId) {
-      await setAnalyticsCollectionEnabled(analytics, true);
-    }
+    await setAnalyticsCollectionEnabled(analytics, isStatistics);
   } catch (error) {
     // Silently fail - analytics initialization should never crash the app
     logError(

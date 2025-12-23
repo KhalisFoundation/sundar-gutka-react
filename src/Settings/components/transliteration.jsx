@@ -1,9 +1,9 @@
-import React, { useState, useEffect } from "react";
+import React, { useState } from "react";
 import { useDispatch, useSelector } from "react-redux";
 import { ListItem, Avatar, Switch } from "@rneui/themed";
 import { setTransliteration, toggleTransliteration } from "@common/actions";
 import useThemedStyles from "@common/hooks/useThemedStyles";
-import { STRINGS, constant, ListItemTitle } from "@common";
+import { STRINGS, ListItemTitle } from "@common";
 import createStyles from "../styles";
 import { ListItemComponent, BottomSheetComponent } from "./comon";
 import { getTransliteration } from "./comon/strings";
@@ -16,13 +16,6 @@ const TransliterationComponent = () => {
   const isTransliteration = useSelector((state) => state.isTransliteration);
   const TRANSLITERATION_LANGUAGES = getTransliteration(STRINGS);
   const dispatch = useDispatch();
-
-  // Set default transliteration to English
-  useEffect(() => {
-    if (!isTransliteration) {
-      dispatch(setTransliteration(constant.ENGLISH));
-    }
-  }, [isTransliteration]);
 
   return (
     <>
