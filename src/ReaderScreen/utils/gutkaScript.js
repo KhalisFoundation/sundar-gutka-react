@@ -12,6 +12,8 @@ let isScrolling;
 let isManuallyScrolling = false;
 let lastHighlightedElement = null;
 let highlightTimeout = null;
+let scrollbar = null;
+let resizeListener = null;
 
 const clearScrollTimeout=()=> {
   if (autoScrollTimeout != null) {
@@ -20,7 +22,25 @@ const clearScrollTimeout=()=> {
   autoScrollTimeout = null;
 }
 
-const scrollFunc=(e)=> {
+const updateScrollbar = () => {
+  if (!scrollbar) return;
+  const maxScrollHeight = Math.max(document.documentElement.scrollHeight, document.body.scrollHeight) - window.innerHeight;
+  if (maxScrollHeight <= 0) {
+    scrollbar.style.display = "none";
+    return;
+  }
+  scrollbar.style.display = "block";
+  const scrollPosition = Math.max(0, Math.min(1, (window.pageYOffset || 0) / maxScrollHeight));
+  const thumbHeight = Math.max(30, (window.innerHeight / maxScrollHeight) * window.innerHeight);
+  const thumbElement = scrollbar.children[0];
+  if (thumbElement) {
+    thumbElement.style.height = thumbHeight + "px";
+    thumbElement.style.top = (scrollPosition * (window.innerHeight - thumbHeight)) + "px";
+  }
+}
+
+const scrollFunc = (event) => {
+  updateScrollbar();
   const elementId = getTopmostElementId();
   if (elementId) {
     window.ReactNativeWebView.postMessage("scroll-elementId-" + elementId);
@@ -161,18 +181,37 @@ window.addEventListener(
   false
 );
 
-${listener}.onload = () => {
+// Use window.onload for Android reliability
+window.onload = () => {
   if (${theme.mode === "dark"}) {
-  //fade event
-fadeInEffect();
-}
+    //fade event
+    fadeInEffect();
+  }
+
+  // Minimal scrollbar - works on Android and iOS
+  scrollbar = document.createElement("div");
+  scrollbar.id = "sb";
+  const scrollbarThumb = document.createElement("div");
+  scrollbarThumb.id = "sb-t";
+  scrollbar.appendChild(scrollbarThumb);
+  document.body.appendChild(scrollbar);
+  // Update scrollbar after a short delay
+  setTimeout(updateScrollbar, 100);
+  
+  if (resizeListener !== null) {
+    window.removeEventListener("resize", resizeListener);
+  }
+  
+  // Store reference to the resize listener
+  resizeListener = updateScrollbar;
+  window.addEventListener("resize", resizeListener);
 }
 
 
 //  Listen for scroll events
 ${listener}.addEventListener(
   "scroll",
-  (event)=> {
+  (scrollEvent) => {
     // Clear our timeout throughout the scroll
     window.clearTimeout(isScrolling);
     // Set a timeout to run after scrolling ends

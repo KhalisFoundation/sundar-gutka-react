@@ -248,6 +248,8 @@ const Reader = ({ navigation, route }) => {
       <WebView
         key={webViewKey}
         webviewDebuggingEnabled
+        showsVerticalScrollIndicator={false}
+        showsHorizontalScrollIndicator={false}
         javaScriptEnabled
         originWhitelist={["*"]}
         onLoadStart={handleLoadStart}
