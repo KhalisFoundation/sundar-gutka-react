@@ -12,6 +12,7 @@ let isScrolling;
 let isManuallyScrolling = false;
 let lastHighlightedElement = null;
 let highlightTimeout = null;
+let hasReachedEnd = false;
 
 const clearScrollTimeout=()=> {
   if (autoScrollTimeout != null) {
@@ -22,12 +23,6 @@ const clearScrollTimeout=()=> {
 
 const scrollFunc=(e)=> {
   const elementId = getTopmostElementId();
-  if (elementId) {
-    window.ReactNativeWebView.postMessage("scroll-elementId-" + elementId);
-  }
-  if (window.scrollY == 0) {
-    window.ReactNativeWebView.postMessage("show");
-  }
 
   // Check if user has reached the end of the document
   const scrollHeight = document.documentElement.scrollHeight;
@@ -36,9 +31,24 @@ const scrollFunc=(e)=> {
   const threshold = 50; // pixels from bottom to consider "at end"
   const isAtEnd = scrollTop + clientHeight >= scrollHeight - threshold;
   
-  if (isAtEnd) {
-    window.ReactNativeWebView.postMessage("reached-end");
+  if (isAtEnd && !hasReachedEnd) {
+    hasReachedEnd = true;
+  } else if (!isAtEnd && hasReachedEnd) {
+    // Reset flag when user scrolls away from the end
+    hasReachedEnd = false;
   }
+  if (elementId && !hasReachedEnd) {
+    window.ReactNativeWebView.postMessage("scroll-elementId-" + elementId);
+  }
+    else if (hasReachedEnd) {
+    window.ReactNativeWebView.postMessage("scroll-elementId-null");
+  }
+
+  
+  if (window.scrollY == 0) {
+    window.ReactNativeWebView.postMessage("show");
+  }
+
 
   if (typeof scrollFunc.y == "undefined") {
     scrollFunc.y = window.pageYOffset;
