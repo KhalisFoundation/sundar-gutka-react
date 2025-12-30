@@ -39,8 +39,7 @@ const scrollFunc=(e)=> {
   }
   if (elementId && !hasReachedEnd) {
     window.ReactNativeWebView.postMessage("scroll-elementId-" + elementId);
-  }
-    else if (hasReachedEnd) {
+  } else if (hasReachedEnd) {
     window.ReactNativeWebView.postMessage("scroll-elementId-null");
   }
 

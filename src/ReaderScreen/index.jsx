@@ -57,12 +57,11 @@ const Reader = ({ navigation, route }) => {
 
   // Save element ID when leaving screen or app goes to background
   const saveScrollPosition = useCallback(() => {
-    // Prefer element ID if available, otherwise fall back to currentElementId state
     const elementIdToSave = currentElementIdRef.current;
     if (elementIdToSave) {
       dispatch(actions.setPosition(elementIdToSave, id));
     }
-  }, [dispatch, id, currentElementIdRef.current]);
+  }, [dispatch, id]);
 
   useEffect(() => {
     dispatch(actions.setCurrentBani({ id, title, titleUni }));
@@ -158,7 +157,7 @@ const Reader = ({ navigation, route }) => {
       navigation.goBack();
     }
     return true;
-  }, [saveScrollPosition]);
+  }, [saveScrollPosition, navigation]);
 
   useBackHandler(handleBackPress);
 
@@ -208,7 +207,7 @@ const Reader = ({ navigation, route }) => {
       };
       webViewRef.current.postMessage(JSON.stringify(scrollMessage));
     }
-  }, [currentElementIdRef.current]);
+  }, []);
 
   const handleError = useCallback((syntheticEvent) => {
     const { nativeEvent } = syntheticEvent;
