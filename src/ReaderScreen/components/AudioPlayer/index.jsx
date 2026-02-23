@@ -116,15 +116,18 @@ const AudioPlayer = ({ baniID, title, webViewRef }) => {
     }
   }, [currentPlaying, defaultAudio, baniID]);
 
-  const handleSeek = async (value) => {
-    if (!isAudioEnabled || !isInitialized) return;
-    try {
-      await seekTo(value);
-    } catch (error) {
-      logError("Error seeking:", error);
-      showErrorToast(`${STRINGS.UNABLE_TO_SEEK} ${STRINGS.PLEASE_TRY_AGAIN}`);
-    }
-  };
+  const handleSeek = useCallback(
+    async (value) => {
+      if (!isAudioEnabled || !isInitialized) return;
+      try {
+        await seekTo(value);
+      } catch (error) {
+        logError("Error seeking:", error);
+        showErrorToast(`${STRINGS.UNABLE_TO_SEEK} ${STRINGS.PLEASE_TRY_AGAIN}`);
+      }
+    },
+    [isAudioEnabled, isInitialized, seekTo]
+  );
 
   const handleTrackSelect = useCallback(
     async (selectedTrack) => {

@@ -375,7 +375,7 @@ describe("AudioControlBar", () => {
         const slider = getByTestId("slider");
         expect(slider.props.disabled).toBe(true);
       },
-      { timeout: 100 }
+      { timeout: 100 },
     );
 
     // Resolve the seek promise to complete the loading
@@ -387,7 +387,7 @@ describe("AudioControlBar", () => {
         const slider = getByTestId("slider");
         expect(slider.props.disabled).toBe(false);
       },
-      { timeout: 500 }
+      { timeout: 500 },
     );
   });
 
@@ -435,7 +435,7 @@ describe("AudioControlBar", () => {
     await waitFor(() => {
       expect(mockGetSequenceFromPosition).toHaveBeenCalledWith(
         defaultCurrentTrack.lyricsUrl,
-        defaultProgress.position
+        defaultProgress.position,
       );
       expect(mockSetAudioProgress).toHaveBeenCalledWith("bani-1", "track-1", 10, null);
       expect(props.reset).toHaveBeenCalledTimes(1);
@@ -478,7 +478,7 @@ describe("AudioControlBar", () => {
       defaultCurrentTrack.trackLengthSec,
       defaultCurrentTrack.trackSizeMB,
       false,
-      defaultCurrentTrack.remoteUrl || defaultCurrentTrack.audioUrl
+      defaultCurrentTrack.remoteUrl || defaultCurrentTrack.audioUrl,
     );
   });
 
@@ -539,17 +539,17 @@ describe("AudioControlBar", () => {
       () => {
         expect(mockCheckLyricsFileAvailable).toHaveBeenCalledWith(defaultCurrentTrack.lyricsUrl);
       },
-      { timeout: 1000 }
+      { timeout: 1000 },
     );
 
     await waitFor(
       () => {
         expect(mockToggleAudioSyncScroll).toHaveBeenCalledWith(true);
         expect(mockDispatch).toHaveBeenCalledWith(
-          expect.objectContaining({ type: "TOGGLE_AUDIO_SYNC_SCROLL" })
+          expect.objectContaining({ type: "TOGGLE_AUDIO_SYNC_SCROLL" }),
         );
       },
-      { timeout: 1000 }
+      { timeout: 1000 },
     );
   });
 

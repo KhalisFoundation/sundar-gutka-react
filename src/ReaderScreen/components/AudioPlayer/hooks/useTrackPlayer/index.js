@@ -21,6 +21,8 @@ const useTrackPlayer = () => {
   const playbackState = usePlaybackState();
   const progress = useProgress();
   const [isPlaying, setIsPlaying] = useState(false);
+  const [isBuffering, setIsBuffering] = useState(false);
+  const [isLoading, setIsLoading] = useState(false);
   const isAudio = useSelector((state) => state.isAudio);
 
   const configurePlayer = useCallback(async () => {
@@ -72,6 +74,8 @@ const useTrackPlayer = () => {
   useEffect(() => {
     if (!isInitialized) return;
     setIsPlaying(playbackState?.state === State.Playing);
+    setIsBuffering(playbackState?.state === State.Buffering);
+    setIsLoading(playbackState?.state === State.Loading);
   }, [playbackState, isInitialized]);
 
   const play = async () => {
@@ -204,6 +208,7 @@ const useTrackPlayer = () => {
     isAudioEnabled: isAudio && isInitialized,
     isInitialized,
     setIsPlaying,
+    isBufferingOrLoading: isBuffering || isLoading,
     isInitializing,
     initializationError,
     retryInitialization,

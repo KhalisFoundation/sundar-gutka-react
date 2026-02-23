@@ -34,7 +34,6 @@ const makeApiRequest = async (endpoint, options = {}) => {
     return data;
   } catch (error) {
     // Network error - show toast and continue without audio features
-    showErrorToast(STRINGS.NETWORK_ERROR);
     return null;
   }
 };

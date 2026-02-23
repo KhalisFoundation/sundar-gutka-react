@@ -8,6 +8,7 @@ const useAudioSyncScroll = (progress, isPlaying, webViewRef, lyricsUrl) => {
   const lastSequenceRef = useRef(null);
   const isScrollingRef = useRef(false);
   const scrollTimeoutRef = useRef(null);
+  const previousPositionRef = useRef(null);
   const [baniLRC, setBaniLRC] = useState(null);
 
   // Load LRC data when audioUrl changes
@@ -47,6 +48,16 @@ const useAudioSyncScroll = (progress, isPlaying, webViewRef, lyricsUrl) => {
     };
   };
 
+  // Reset scroll state (used when seeking)
+  const resetScrollState = () => {
+    lastSequenceRef.current = null;
+    isScrollingRef.current = false;
+    if (scrollTimeoutRef.current) {
+      clearTimeout(scrollTimeoutRef.current);
+      scrollTimeoutRef.current = null;
+    }
+  };
+
   // Scroll to specific sequence in WebView
   const scrollToSequence = (sequence, timeOut) => {
     if (!webViewRef?.current?.postMessage || !sequence) {
@@ -66,9 +77,8 @@ const useAudioSyncScroll = (progress, isPlaying, webViewRef, lyricsUrl) => {
         clearTimeout(scrollTimeoutRef.current);
       }
 
-      // Prevent multiple rapid scroll calls
-      if (isScrollingRef.current) return;
-      isScrollingRef.current = true;
+      // Reset scrolling flag to allow new scrolls (important for rapid seeks)
+      isScrollingRef.current = false;
 
       const scrollMessage = {
         action: "scrollToSequence",
@@ -80,7 +90,8 @@ const useAudioSyncScroll = (progress, isPlaying, webViewRef, lyricsUrl) => {
 
       webViewRef.current.postMessage(JSON.stringify(scrollMessage));
 
-      // Reset scrolling flag after a short delay
+      // Set scrolling flag and reset after a short delay
+      isScrollingRef.current = true;
       scrollTimeoutRef.current = setTimeout(() => {
         isScrollingRef.current = false;
         scrollTimeoutRef.current = null;
@@ -100,7 +111,24 @@ const useAudioSyncScroll = (progress, isPlaying, webViewRef, lyricsUrl) => {
     if (!isAudioSyncScroll || !isPlaying || !progress?.position || !baniLRC) {
       return;
     }
-    const { currentSequence, timeOut } = findCurrentSequence(progress.position);
+
+    const currentPosition = progress.position;
+    const previousPosition = previousPositionRef.current;
+
+    // Detect seek: if position jumps more than 2 seconds, it's likely a seek
+    // Normal playback won't jump more than ~1 second per update
+    if (previousPosition !== null) {
+      const positionDiff = Math.abs(currentPosition - previousPosition);
+      if (positionDiff > 2) {
+        // Reset scroll state when seek is detected
+        resetScrollState();
+      }
+    }
+
+    // Update previous position
+    previousPositionRef.current = currentPosition;
+
+    const { currentSequence, timeOut } = findCurrentSequence(currentPosition);
 
     // Only scroll if sequence changed and we have a valid sequence
     if (currentSequence !== null && currentSequence !== lastSequenceRef.current) {

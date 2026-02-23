@@ -27,6 +27,7 @@ const useDownloadManager = (currentPlaying, addTrackToManifest, isTrackDownloade
     try {
       const downloaded = checkDownloadStatus();
       if (downloaded) {
+        setIsDownloaded(true);
         return;
       }
 
@@ -49,6 +50,7 @@ const useDownloadManager = (currentPlaying, addTrackToManifest, isTrackDownloade
       const isDownloadedStatus = checkDownloadStatus();
 
       if (currentPlaying?.audioUrl && !isDownloadedStatus) {
+        setIsDownloaded(false);
         await handleDownload();
       } else {
         setIsDownloaded(true);

@@ -1,4 +1,4 @@
-import React, { useState, useEffect, useMemo, useRef } from "react";
+import React, { useState, useEffect, useMemo, useRef, useCallback } from "react";
 import { View, Pressable, Animated, Platform, ActivityIndicator } from "react-native";
 import { useDispatch, useSelector } from "react-redux";
 import { Slider } from "@miblanchard/react-native-slider";
@@ -54,6 +54,7 @@ const AudioControlBar = ({
   isInitialized,
   addAndPlayTrack,
   play,
+  isBufferingOrLoading,
 }) => {
   const dispatch = useDispatch();
   const { theme } = useTheme();
@@ -67,7 +68,12 @@ const AudioControlBar = ({
   const progressRef = useRef(progress);
   const currentPlayingRef = useRef(currentPlaying);
   const audioProgress = useSelector((state) => state.audioProgress);
-  const [isSeekLoading, setIsSeekLoading] = useState(false);
+  const [isSeekLoading, setIsSeekLoading] = useState(() => {
+    return !!(isInitialized && currentPlaying?.id && currentPlaying?.audioUrl);
+  });
+  const [isSliding, setIsSliding] = useState(false);
+  const [sliderValue, setSliderValue] = useState(progress.position);
+  const isSeekingRef = useRef(false);
   const { modalHeight, modalOpacity } = useAnimation(isSettingsModalOpen, isMoreTracksModalOpen);
   const { isDownloading, isDownloaded } = useDownloadManager(
     currentPlaying,
@@ -96,6 +102,34 @@ const AudioControlBar = ({
   useEffect(() => {
     currentPlayingRef.current = currentPlaying;
   }, [currentPlaying]);
+
+  useEffect(() => {
+    if (currentPlaying?.id) {
+      setIsSeekLoading(true); // start loading immediately on track change
+    } else {
+      setIsSeekLoading(false);
+    }
+    setSliderValue(0);
+  }, [currentPlaying?.id]);
+
+  // Clear loading once TrackPlayer reports duration and buffering is done
+  useEffect(() => {
+    if (
+      currentPlaying?.id &&
+      progress.duration > 0 &&
+      !isBufferingOrLoading &&
+      !isSeekingRef.current
+    ) {
+      setIsSeekLoading(false);
+    }
+  }, [currentPlaying?.id, progress.duration, isBufferingOrLoading]);
+
+  // Sync slider value with progress when not sliding and not seeking (and not loading)
+  useEffect(() => {
+    if (!isSliding && !isSeekingRef.current && !isSeekLoading) {
+      setSliderValue(progress.position);
+    }
+  }, [progress.position, isSliding, isSeekLoading]);
 
   // Save progress when user closes the modal
   const handleClose = async () => {
@@ -178,10 +212,6 @@ const AudioControlBar = ({
   // Load the active track when component mounts or currentPlaying changes
   useEffect(() => {
     const loadActiveTrack = async () => {
-      if (!isInitialized || !currentPlaying?.id || !currentPlaying?.audioUrl) {
-        return;
-      }
-
       try {
         setIsSeekLoading(true);
         // Load the track (will seek to saved position if available)
@@ -233,16 +263,10 @@ const AudioControlBar = ({
       }
     };
 
-    loadActiveTrack();
-  }, [
-    isInitialized,
-    currentPlaying?.id,
-    currentPlaying?.audioUrl,
-    currentPlaying?.displayName,
-    currentPlaying?.lyricsUrl,
-    audioProgress,
-    baniID,
-  ]);
+    if (isInitialized && currentPlaying?.id && currentPlaying?.audioUrl) {
+      loadActiveTrack();
+    }
+  }, [isInitialized, currentPlaying?.id, currentPlaying?.audioUrl, audioProgress, baniID]);
 
   // Save audio progress when component unmounts or user leaves the screen
   useEffect(() => {
@@ -275,6 +299,51 @@ const AudioControlBar = ({
 
     return unsubscribe;
   }, [navigation]);
+
+  // Handle slider value change during dragging (optimistic update)
+  const handleSliderValueChange = useCallback(
+    (value) => {
+      if (isSliding) {
+        setSliderValue(value[0]);
+      }
+    },
+    [isSliding]
+  );
+
+  // Handle slider drag start
+  const handleSlidingStart = useCallback(() => {
+    setIsSliding(true);
+  }, []);
+
+  // Handle seek completion - non-blocking for smooth UI
+  const handleSeekComplete = useCallback(
+    (value) => {
+      setIsSliding(false);
+      // Prevent concurrent seeks
+      if (isSeekingRef.current || !isAudioEnabled) {
+        return;
+      }
+
+      // Update UI immediately (optimistic update)
+      setSliderValue(value);
+
+      // Perform seek operation asynchronously without blocking UI
+      (async () => {
+        try {
+          isSeekingRef.current = true;
+          setIsSeekLoading(true);
+          await handleSeek(value);
+        } catch (error) {
+          // Error is already handled in handleSeek
+          logError("Error in handleSeekComplete:", error);
+        } finally {
+          isSeekingRef.current = false;
+          setIsSeekLoading(false);
+        }
+      })();
+    },
+    [handleSeek, isAudioEnabled]
+  );
 
   return (
     <View style={styles.container} pointerEvents="box-none">
@@ -343,29 +412,29 @@ const AudioControlBar = ({
           </View>
 
           <View style={styles.playbackControls}>
-            <Pressable style={styles.playButton} onPress={handlePlayPause}>
-              {isPlaying ? (
-                <PauseIcon size={30} color={theme.colors.audioTitleText} />
-              ) : (
-                <PlayIcon size={30} color={theme.colors.audioTitleText} />
-              )}
-            </Pressable>
-
+            {isSeekLoading || isBufferingOrLoading || !currentPlaying?.id ? (
+              <ActivityIndicator size="small" color={theme.colors.primary} />
+            ) : (
+              <Pressable style={styles.playButton} onPress={handlePlayPause}>
+                {isPlaying ? (
+                  <PauseIcon size={30} color={theme.colors.audioTitleText} />
+                ) : (
+                  <PlayIcon size={30} color={theme.colors.audioTitleText} />
+                )}
+              </Pressable>
+            )}
             <View style={styles.progressContainer}>
               <View style={styles.progressBar}>
-                {isSeekLoading && (
-                  <View style={styles.seekLoadingOverlay} testID="seek-loading-indicator">
-                    <ActivityIndicator size="small" color={theme.colors.primary} />
-                  </View>
-                )}
                 <CustomText style={[styles.timestamp, styles.timestampWithColor]}>
-                  {formatTime(progress.position)}
+                  {formatTime(sliderValue)}
                 </CustomText>
                 <Slider
-                  value={progress.position}
+                  value={sliderValue}
                   minimumValue={0}
                   maximumValue={progress.duration}
-                  onSlidingComplete={([v]) => handleSeek(v)}
+                  onSlidingStart={handleSlidingStart}
+                  onValueChange={handleSliderValueChange}
+                  onSlidingComplete={([v]) => handleSeekComplete(v)}
                   minimumTrackTintColor={sliderMinTrackColor}
                   maximumTrackTintColor={theme.staticColors.SLIDER_TRACK_COLOR}
                   disabled={!isAudioEnabled || isSeekLoading}
@@ -427,6 +496,7 @@ AudioControlBar.propTypes = {
   isInitialized: PropTypes.bool.isRequired,
   addAndPlayTrack: PropTypes.func.isRequired,
   play: PropTypes.func.isRequired,
+  isBufferingOrLoading: PropTypes.bool.isRequired,
 };
 
 export default AudioControlBar;
