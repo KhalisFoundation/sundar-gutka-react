@@ -23,7 +23,7 @@ const clearScrollTimeout=()=> {
 }
 
 const scrollFunc=(e)=> {
-  const elementId = getTopmostElementId();
+  const elementId = getBottommostElementId();
 
   // Check if user has reached the end of the document
   const scrollHeight = document.documentElement.scrollHeight;
@@ -131,6 +131,30 @@ const getTopmostElementId=()=> {
   }
   
   return topmostElement ? topmostElement.id : null;
+}
+
+const getBottommostElementId=()=> {
+  const viewportTop = window.pageYOffset;
+  const viewportBottom = viewportTop + window.innerHeight;
+  const textItems = document.querySelectorAll('.text-item[id]');
+  let bottommostElement = null;
+  let maxBottom = viewportTop;
+  for (let i = 0; i < textItems.length; i++) {
+    const element = textItems[i];
+    const rect = element.getBoundingClientRect();
+    const elementTop = rect.top + window.pageYOffset;
+    const elementBottom = elementTop + rect.height;
+    if (elementBottom >= viewportTop && elementTop <= viewportBottom) {
+      if (elementBottom > maxBottom) {
+        maxBottom = elementBottom;
+        bottommostElement = element;
+      }
+    }
+  }
+  if (!bottommostElement && textItems.length > 0) {
+    bottommostElement = textItems[textItems.length - 1];
+  }
+  return bottommostElement ? bottommostElement.id : null;
 }
 
 const fadeInEffect = () => {
@@ -263,18 +287,23 @@ ${listener}.addEventListener(
     }
       // Handle scroll to saved element or position
     if (message.hasOwnProperty("action") && message.action === "scrollToPosition") {
-      // Try element ID first if provided
       if (message.elementId) {
-        const element = document.getElementById(String(message.elementId));
-        if (element) {
-          element.scrollIntoView({
-            behavior: "auto",
-            block: "start",
-            inline: "nearest"
+        const elementId = String(message.elementId);
+        const scrollToElement = () => {
+          const element = document.getElementById(elementId);
+          if (element) {
+            element.scrollIntoView({
+              behavior: "auto",
+              block: "end",
+              inline: "nearest"
+            });
+          }
+        };
+        requestAnimationFrame(() => {
+          requestAnimationFrame(() => {
+            setTimeout(scrollToElement, 100);
           });
-          console.log("No Element Found");
-          return;
-        }
+        });
       }
     }
       // Handle sync scroll to sequence

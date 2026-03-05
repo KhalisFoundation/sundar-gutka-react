@@ -82,10 +82,10 @@ const Reader = ({ navigation, route }) => {
     };
   }, [saveScrollPosition]);
 
-  // Memoize WebView key to prevent unnecessary remounts
+  // Memoize WebView key to prevent unnecessary remounts (include fontSize/theme so we remount on layout changes and restore position)
   const webViewKey = useMemo(() => {
-    return `${id}-${isParagraphMode}-${isLarivaar}-${isLarivaarAssist}-${isVishraam}-${vishraamOption}-${dateKey}`;
-  }, [id, isParagraphMode, isLarivaar, isLarivaarAssist, isVishraam, vishraamOption, dateKey]);
+    return `${id}-${isParagraphMode}-${isLarivaar}-${isLarivaarAssist}-${isVishraam}-${vishraamOption}-${fontSize}-${theme.mode}-${dateKey}`;
+  }, [id, isParagraphMode, isLarivaar, isLarivaarAssist, isVishraam, vishraamOption, fontSize, theme.mode, dateKey]);
 
   // Memoize WebView source to prevent unnecessary remounts
   const webViewSource = useMemo(() => {
@@ -99,7 +99,7 @@ const Reader = ({ navigation, route }) => {
         isPunjabiTranslation,
         isSpanishTranslation,
         theme,
-        isLarivaar
+        isLarivaar,
       ),
       baseUrl: Platform.OS === "ios" ? "./" : "",
     };
@@ -193,7 +193,7 @@ const Reader = ({ navigation, route }) => {
         dispatch(actions.setBookmarkSequenceString(sequenceStringData));
       }
     },
-    [dispatch, id, navigation, shouldNavigateBack]
+    [dispatch, id, navigation, shouldNavigateBack],
   );
 
   const handleLoadStart = useCallback(() => {
