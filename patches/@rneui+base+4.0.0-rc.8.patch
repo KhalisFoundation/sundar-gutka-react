@@ -1,0 +1,16 @@
+diff --git a/node_modules/@rneui/base/dist/ListItem/components/PadView.js b/node_modules/@rneui/base/dist/ListItem/components/PadView.js
+index 0e90243..4cf7281 100644
+--- a/node_modules/@rneui/base/dist/ListItem/components/PadView.js
++++ b/node_modules/@rneui/base/dist/ListItem/components/PadView.js
+@@ -16,8 +16,8 @@ export const PadView = (_a) => {
+     const _root = useRef(null);
+     const length = React.Children.count(children);
+     const Container = Component || View;
+-    return (React.createElement(Container, Object.assign({}, props, { ref: _root, testID: "RNE__LISTITEM__padView" }), React.Children.map(children, (child, index) => child && [
++    return (React.createElement(Container, Object.assign({}, props, { ref: _root, testID: "RNE__LISTITEM__padView" }), React.Children.map(children, (child, index) => child && React.createElement(React.Fragment, { key: index },
+         child,
+-        index !== length - 1 && React.createElement(View, { style: { paddingLeft: pad } }),
+-    ])));
++        index !== length - 1 && React.createElement(View, { style: { paddingLeft: pad } })
++    ))));
+ };
