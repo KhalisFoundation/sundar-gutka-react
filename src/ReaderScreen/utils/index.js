@@ -1,4 +1,4 @@
-import { colors, constant, baseFontSize, logError, logMessage } from "@common";
+import { colors, constant, baseFontSize, logError, logMessage, STRINGS } from "@common";
 import htmlTemplate from "./gutkahtml";
 import script from "./gutkaScript";
 
@@ -71,6 +71,42 @@ export const createDiv = (
   `;
 };
 
+/**
+ * Renders the "Next Bani" button as an HTML string rather than a native React component.
+ *
+ * DESIGN DECISION:
+ * The Gurbani text is rendered inside a scrollable WebView. To ensure the navigation button
+ * scrolls naturally with the text content and only appears at the very bottom of the page
+ * (rather than floating static at the bottom or requiring buggy dynamic WebView height calculations
+ * to resize the wrapper container), we inject it directly into the WebView's HTML body.
+ *
+ * Additionally, we prevent touch propagation (touchstart/touchend) on this button so that
+ * tapping it does not trigger the WebView's global tap gestures (which toggle the screen headers/footers).
+ */
+export const renderNextBaniButton = (nextBani, isTransliteration, fontFace) => {
+  if (!nextBani) return "";
+
+  const label = STRINGS.next_bani;
+  const displayTitle = isTransliteration ? nextBani.translit : nextBani.gurmukhi;
+  const fontClass = isTransliteration ? "transliteration" : "gurmukhi";
+
+  return `
+    <div class="next-bani-container">
+      <button class="next-bani-btn"
+              onclick="window.ReactNativeWebView.postMessage('nextBani')" 
+              ontouchstart="event.stopPropagation()"
+              ontouchend="event.stopPropagation()">
+        <div class="next-bani-label">${label}</div>
+        <div class="next-bani-title ${fontClass}" style="
+          font-family: ${
+            !isTransliteration ? `'${fontFace}', 'GurbaniAkhar'` : "Arial, sans-serif"
+          };
+        ">${displayTitle}</div>
+      </button>
+    </div>
+  `;
+};
+
 export const loadHTML = (
   shabad,
   isTransliteration,
@@ -81,7 +117,8 @@ export const loadHTML = (
   isSpanishTranslation,
   isNightMode,
   isLarivaar,
-  savePosition
+  savePosition,
+  nextBani
 ) => {
   try {
     const backColor = isNightMode ? colors.NIGHT_BLACK : colors.WHITE_COLOR;
@@ -162,7 +199,16 @@ export const loadHTML = (
         return contentHtml;
       })
       .join("");
-    const htmlContent = htmlTemplate(backColor, fontFace, content, isNightMode, savePosition);
+
+    const nextBaniHtml = renderNextBaniButton(nextBani, isTransliteration, fontFace);
+
+    const htmlContent = htmlTemplate(
+      backColor,
+      fontFace,
+      content + nextBaniHtml,
+      isNightMode,
+      savePosition
+    );
     return htmlContent;
   } catch (error) {
     logError(error);

@@ -11,7 +11,9 @@ import {
   logMessage,
   logError,
   SafeArea,
+  orderedBani,
 } from "@common";
+import { getBaniList } from "@database";
 import StatusBarComponent from "@common/components/StatusBar";
 import { Header, AutoScrollComponent } from "./components";
 import { useBookmarks, useFetchShabad } from "./hooks";
@@ -20,6 +22,7 @@ import { loadHTML } from "./utils";
 
 const Reader = ({ navigation, route }) => {
   logMessage(constant.READER);
+  const { title, id } = route.params.params;
   const isNightMode = useSelector((state) => state.isNightMode);
   const bookmarkPosition = useSelector((state) => state.bookmarkPosition);
   const isAutoScroll = useSelector((state) => state.isAutoScroll);
@@ -36,18 +39,55 @@ const Reader = ({ navigation, route }) => {
   const vishraamOption = useSelector((state) => state.vishraamOption);
   const savePosition = useSelector((state) => state.savePosition);
   const theme = useSelector((state) => state.theme);
+  const dispatch = useDispatch();
+  const baniList = useSelector((state) => state.baniList);
+  const transliterationLanguage = useSelector((state) => state.transliterationLanguage);
+  const baniOrder = useSelector((state) => state.baniOrder);
+
+  const nextBani = useMemo(() => {
+    if (!baniList || baniList.length === 0) return null;
+    const flatList = [];
+    baniList.forEach((item) => {
+      if (item.id !== undefined) {
+        flatList.push(item);
+      } else if (item.folder && Array.isArray(item.folder)) {
+        item.folder.forEach((subItem) => {
+          if (subItem.id !== undefined) {
+            flatList.push(subItem);
+          }
+        });
+      }
+    });
+    const currentIndex = flatList.findIndex((item) => Number(item.id) === Number(id));
+    if (currentIndex !== -1 && currentIndex + 1 < flatList.length) {
+      return flatList[currentIndex + 1];
+    }
+    return null;
+  }, [baniList, id]);
+
+  useEffect(() => {
+    const fetchListIfNeeded = async () => {
+      if (!baniList || baniList.length === 0) {
+        try {
+          const transliteratedList = await getBaniList(transliterationLanguage);
+          const orderedData = orderedBani(transliteratedList, baniOrder);
+          dispatch(actions.setBaniList(orderedData));
+        } catch (error) {
+          logError(error);
+        }
+      }
+    };
+    fetchListIfNeeded();
+  }, [baniList, transliterationLanguage, baniOrder, dispatch]);
 
   const webViewRef = useRef(null);
   const { webView } = styles;
-  const { title, id } = route.params.params;
   const [isHeader, toggleHeader] = useState(true);
   const [viewLoaded, toggleViewLoaded] = useState(false);
   const [currentPosition, setCurrentPosition] = useState(savePosition[id] || 0);
   const [shouldNavigateBack, setShouldNavigateBack] = useState(false);
   const [dateKey, setDateKey] = useState(Date.now().toString());
   const positionPointer = useRef(0);
-
-  const dispatch = useDispatch();
   const { shabad, isLoading } = useFetchShabad(id);
   const { backgroundColor, safeAreaViewBack, backViewColor } = nightColors(isNightMode);
   const { READER_STATUS_BAR_COLOR } = colors;
@@ -85,7 +125,8 @@ const Reader = ({ navigation, route }) => {
         isSpanishTranslation,
         isNightMode,
         isLarivaar,
-        currentPosition
+        currentPosition,
+        nextBani
       ),
       baseUrl: Platform.OS === "ios" ? "./" : "",
     };
@@ -100,6 +141,7 @@ const Reader = ({ navigation, route }) => {
     isNightMode,
     isLarivaar,
     currentPosition,
+    nextBani,
   ]);
 
   const updateTheme = useCallback(() => {
@@ -176,6 +218,16 @@ const Reader = ({ navigation, route }) => {
         toggleHeader(true);
       } else if (data === "hide") {
         toggleHeader(false);
+      } else if (data === "nextBani") {
+        if (nextBani) {
+          if (positionPointer.current > 0) {
+            dispatch(actions.setPosition(parseFloat(positionPointer.current), id));
+          }
+          navigation.navigate(constant.READER, {
+            key: `Reader-${nextBani.id}`,
+            params: { id: nextBani.id, title: nextBani.gurmukhi },
+          });
+        }
       } else if (data.includes("save")) {
         const position = data.split("-")[1];
         setCurrentPosition(position);
@@ -189,7 +241,7 @@ const Reader = ({ navigation, route }) => {
         positionPointer.current = position;
       }
     },
-    [dispatch, id, navigation, shouldNavigateBack]
+    [dispatch, id, navigation, shouldNavigateBack, nextBani]
   );
 
   const handleLoadStart = useCallback(() => {
