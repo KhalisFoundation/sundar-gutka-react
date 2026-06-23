@@ -1,4 +1,4 @@
-import { constant } from "@common";
+import { constant, colors } from "@common";
 import { Platform } from "react-native";
 import script from "./gutkaScript";
 
@@ -67,6 +67,45 @@ const htmlTemplate = (backColor, fontFace, content, isNightMode, savePosition) =
     }
     .right{
       text-align:right
+    }
+    .next-bani-container {
+      margin: 40px auto 60px auto;
+      text-align: center;
+      padding: 0 15px;
+      max-width: 500px;
+    }
+    .next-bani-btn {
+      background-color: ${
+        isNightMode ? colors.NEXT_BANI_BTN_BG_DARK : colors.NEXT_BANI_BTN_BG_LIGHT
+      };
+      border: 1px solid ${
+        isNightMode ? colors.NEXT_BANI_BTN_BORDER_DARK : colors.NEXT_BANI_BTN_BORDER_LIGHT
+      };
+      border-radius: 12px;
+      padding: 16px 24px;
+      width: 100%;
+      cursor: pointer;
+      outline: none;
+      box-shadow: 0 4px 6px -1px rgba(0,0,0,0.1), 0 2px 4px -1px rgba(0,0,0,0.06);
+      transition: all 0.2s ease;
+      -webkit-tap-highlight-color: transparent;
+    }
+    .next-bani-btn:active {
+      opacity: 0.8;
+    }
+    .next-bani-label {
+      font-size: 13px;
+      color: ${isNightMode ? colors.NEXT_BANI_BTN_LABEL_DARK : colors.NEXT_BANI_BTN_LABEL_LIGHT};
+      text-transform: uppercase;
+      letter-spacing: 1px;
+      margin-bottom: 6px;
+      font-family: Arial, sans-serif;
+    }
+    .next-bani-title {
+      font-size: 21px;
+      font-weight: 600;
+      color: ${isNightMode ? colors.NEXT_BANI_BTN_TEXT_DARK : colors.NEXT_BANI_BTN_TEXT_LIGHT};
+      line-height: 1.3;
     }
   </style>
   <script>${script(isNightMode, savePosition)}</script>
