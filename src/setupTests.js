@@ -77,6 +77,7 @@ jest.mock("react-native-track-player", () => ({
   },
   RepeatMode: {
     Off: "Off",
+    Track: "Track",
   },
   AppKilledPlaybackBehavior: {
     StopPlaybackAndRemoveNotification: "StopPlaybackAndRemoveNotification",

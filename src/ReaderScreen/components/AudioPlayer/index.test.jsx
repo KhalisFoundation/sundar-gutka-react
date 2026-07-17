@@ -32,6 +32,10 @@ jest.mock("react-native-track-player", () => {
     __esModule: true,
     getActiveTrack,
     default: mockTrackPlayer,
+    RepeatMode: {
+      Off: "Off",
+      Track: "Track",
+    },
   };
 });
 

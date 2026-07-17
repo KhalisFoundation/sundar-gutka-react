@@ -30,6 +30,19 @@ module.exports = async function playbackService() {
     return false;
   };
 
+  const getIsLoopPlayback = async () => {
+    try {
+      const rawState = await AsyncStorage.getItem("persist:root");
+      if (rawState) {
+        const state = JSON.parse(rawState);
+        return JSON.parse(state.isAudioLoopPlayback || "false");
+      }
+    } catch {
+      // Non-critical: AsyncStorage read failure — default to false
+    }
+    return false;
+  };
+
   const safeStopAndReset = async () => {
     try {
       await TrackPlayer.pause();
@@ -208,7 +221,13 @@ module.exports = async function playbackService() {
   // ── Playback lifecycle ──────────────────────────────────────────────────────
   TrackPlayer.addEventListener(Event.PlaybackQueueEnded, async ({ track }) => {
     if (track != null) {
-      await safeStopAndReset();
+      const isLoop = await getIsLoopPlayback();
+      if (isLoop) {
+        await TrackPlayer.seekTo(0);
+        await TrackPlayer.play();
+      } else {
+        await safeStopAndReset();
+      }
     }
   });
 

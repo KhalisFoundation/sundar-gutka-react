@@ -78,6 +78,7 @@ export default {
   AUDIO: "audio",
   AUDIO_AUTO_PLAY: "audioAutoPlay",
   AUDIO_SYNC_SCROLL: "audioSyncScroll",
+  AUDIO_LOOP_PLAYBACK: "audioLoopPlayback",
   DEFAULT_AUDIO: "defaultAudio",
   VISHRAAM: "vishraam",
   VISHRAAM_OPTION: "vishraamOption",

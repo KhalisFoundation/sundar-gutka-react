@@ -60,6 +60,11 @@ export const toggleAudioSyncScroll = (value) => {
   return { type: actionTypes.TOGGLE_AUDIO_SYNC_SCROLL, value };
 };
 
+export const toggleAudioLoopPlayback = (value) => {
+  trackSettingEvent(constant.AUDIO_LOOP_PLAYBACK, value);
+  return { type: actionTypes.TOGGLE_AUDIO_LOOP_PLAYBACK, value };
+};
+
 export const setDefaultAudio = (audio, shabadId) => {
   if (audio?.displayName) {
     trackBaniArtistDefault(shabadId, audio.displayName);

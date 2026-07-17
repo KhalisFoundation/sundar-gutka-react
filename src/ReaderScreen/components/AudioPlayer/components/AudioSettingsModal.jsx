@@ -2,7 +2,12 @@ import React, { useEffect } from "react";
 import { View, ScrollView, Pressable, ActivityIndicator } from "react-native";
 import { useSelector, useDispatch } from "react-redux";
 import PropTypes from "prop-types";
-import { toggleAudioAutoPlay, toggleAudioSyncScroll, setAudioPlaybackSpeed } from "@common/actions";
+import {
+  toggleAudioAutoPlay,
+  toggleAudioSyncScroll,
+  toggleAudioLoopPlayback,
+  setAudioPlaybackSpeed,
+} from "@common/actions";
 import useTheme from "@common/context";
 import useThemedStyles from "@common/hooks/useThemedStyles";
 import { PlusIcon, MinusIcon } from "@common/icons";
@@ -13,6 +18,7 @@ const AudioSettingsModal = ({ isLyricsAvailable, isLyricsChecking, setRate }) =>
   const { theme } = useTheme();
   const styles = useThemedStyles(audioSettingModalStyles);
   const isAudioAutoPlay = useSelector((state) => state.isAudioAutoPlay);
+  const isAudioLoopPlayback = useSelector((state) => state.isAudioLoopPlayback);
   const isAudioSyncScroll = useSelector((state) => state.isAudioSyncScroll);
   const audioPlaybackSpeed = useSelector((state) => state.audioPlaybackSpeed);
   const dispatch = useDispatch();
@@ -36,6 +42,14 @@ const AudioSettingsModal = ({ isLyricsAvailable, isLyricsChecking, setRate }) =>
       defaultValue: isAudioAutoPlay,
       onValueChange: () => {
         dispatch(toggleAudioAutoPlay(!isAudioAutoPlay));
+      },
+      disabled: false,
+    },
+    {
+      title: STRINGS.AUDIO_LOOP_PLAYBACK,
+      defaultValue: isAudioLoopPlayback,
+      onValueChange: () => {
+        dispatch(toggleAudioLoopPlayback(!isAudioLoopPlayback));
       },
       disabled: false,
     },
