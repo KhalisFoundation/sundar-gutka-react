@@ -1,6 +1,11 @@
 import { useState, useEffect, useCallback, useRef } from "react";
 import { exists, stat } from "react-native-fs";
-import TrackPlayer, { usePlaybackState, useProgress, State } from "react-native-track-player";
+import TrackPlayer, {
+  usePlaybackState,
+  useProgress,
+  State,
+  RepeatMode,
+} from "react-native-track-player";
 import { useSelector } from "react-redux";
 import {
   addTrack,
@@ -31,6 +36,7 @@ const useTrackPlayer = () => {
   const isAudio = useSelector((state) => state.isAudio);
   const isAudioFeatureEnabled = useSelector((state) => state.isAudioFeatureEnabled);
   const isAudioFeatureOn = isAudioFeatureEnabled ?? true;
+  const isAudioLoopPlayback = useSelector((state) => state.isAudioLoopPlayback);
   const progressRef = useRef(progress);
   const currentTrackIdRef = useRef(null);
   const prefetchInFlightRef = useRef(new Map());
@@ -156,6 +162,13 @@ const useTrackPlayer = () => {
   useEffect(() => {
     progressRef.current = progress;
   }, [progress]);
+
+  useEffect(() => {
+    if (!isInitialized) return;
+    TrackPlayer.setRepeatMode(isAudioLoopPlayback ? RepeatMode.Track : RepeatMode.Off).catch(
+      () => {}
+    );
+  }, [isInitialized, isAudioLoopPlayback]);
 
   const prefetchForSeek = useCallback(async (track) => {
     if (!track?.id || !track?.url || isLocalFile(track.url)) return null;
@@ -494,6 +507,9 @@ const useTrackPlayer = () => {
 
       await reset();
       await addTrack(track);
+      await TrackPlayer.setRepeatMode(
+        isAudioLoopPlayback ? RepeatMode.Track : RepeatMode.Off
+      ).catch(() => {});
 
       if (shouldPlay) {
         await play();

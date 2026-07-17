@@ -21,6 +21,10 @@ describe("Redux Default State (audio settings)", () => {
     expect(defaultState.isAudioAutoPlay).toBe(false);
   });
 
+  it("Audio Loop Playback is disabled (false) by default", () => {
+    expect(defaultState.isAudioLoopPlayback).toBe(false);
+  });
+
   it("Audio Sync Scroll is disabled (false) by default", () => {
     expect(defaultState.isAudioSyncScroll).toBe(true);
   });
@@ -64,5 +68,13 @@ describe("Redux Default State (audio settings)", () => {
       value: true,
     });
     expect(next.isAudioSyncScroll).toBe(true);
+  });
+
+  it("toggling TOGGLE_AUDIO_LOOP_PLAYBACK to true sets isAudioLoopPlayback to true", () => {
+    const next = rootReducer(defaultState, {
+      type: "TOGGLE_AUDIO_LOOP_PLAYBACK",
+      value: true,
+    });
+    expect(next.isAudioLoopPlayback).toBe(true);
   });
 });
