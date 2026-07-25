@@ -9,7 +9,7 @@ import useTheme from "@common/context";
 import useThemedStyles from "@common/hooks/useThemedStyles";
 import { convertToUnicode, baseFontSize, ListItemTitle } from "@common";
 
-const BaniList = React.memo(({ data, onPress }) => {
+const BaniList = React.memo(({ data, onPress, isFolderScreen }) => {
   const { theme } = useTheme();
   const styles = useThemedStyles(createStyles);
   const fontSize = useSelector((state) => state.fontSize);
@@ -47,11 +47,18 @@ const BaniList = React.memo(({ data, onPress }) => {
 
   const renderBanis = useCallback(
     (row) => {
+      const isDarkMode = theme.mode === "dark";
+      const itemTextColor = isDarkMode ? theme.staticColors.WHITE_COLOR : theme.colors.primary;
+      const displayFont = !isTransliteration ? fontFace : null;
+
       return (
         <ListItem
-          bottomDivider
+          bottomDivider={false}
           containerStyle={{
-            backgroundColor: theme.colors.surface,
+            backgroundColor: isDarkMode
+              ? isFolderScreen ? theme.colors.surface : "#041126"
+              : theme.colors.surface,
+            paddingVertical: 8,
           }}
           onPress={() => onPress(row)}
         >
@@ -65,10 +72,10 @@ const BaniList = React.memo(({ data, onPress }) => {
             <ListItemTitle
               title={getBaniTuk(row)}
               style={[
-                { color: theme.colors.primaryText },
+                { color: itemTextColor },
                 {
                   fontSize: baseFontSize(fontSize, isTransliteration),
-                  fontFamily: !isTransliteration ? fontFace : null,
+                  fontFamily: displayFont,
                 },
               ]}
             />
@@ -76,8 +83,8 @@ const BaniList = React.memo(({ data, onPress }) => {
               <ListItemTitle
                 title={row.item.tukGurmukhi}
                 style={[
-                  { color: theme.colors.primaryText },
-                  { fontFamily: !isTransliteration ? fontFace : null },
+                  { color: isDarkMode ? theme.colors.textDisabled : theme.colors.primaryText },
+                  { fontFamily: displayFont },
                   { fontSize: 17 },
                 ]}
               />
@@ -110,6 +117,7 @@ BaniList.propTypes = {
     })
   ).isRequired,
   onPress: PropTypes.func.isRequired,
+  isFolderScreen: PropTypes.bool,
 };
 
 export default BaniList;

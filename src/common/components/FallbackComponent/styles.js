@@ -22,7 +22,8 @@ const createStyles = (theme) => ({
   text: {
     marginVertical: theme.spacing.lg,
     textAlign: "center",
-    width: 300,
+    maxWidth: 300,
+    alignSelf: "center",
     fontSize: theme.typography.sizes.lg,
     color: theme.colors.primaryText,
   },

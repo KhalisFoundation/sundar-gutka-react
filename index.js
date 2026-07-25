@@ -27,6 +27,9 @@ if (NativeModules.TrackPlayerModule != null) {
 } else {
   // This will never happen on a correctly installed production build, but
   // prevents a full startup crash during development / after a clean install.
+  // Intentional last-resort diagnostic: this runs at index.js load, before the
+  // app's logError/Crashlytics infra exists, so console is the only channel.
+  // eslint-disable-next-line no-console
   console.error(
     "[TrackPlayer] NativeModules.TrackPlayerModule is null. Audio is disabled. Reinstall or rebuild the app."
   );

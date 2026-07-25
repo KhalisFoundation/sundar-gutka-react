@@ -18,6 +18,14 @@ jest.mock("@react-navigation/native", () => ({
   useNavigation: () => mockUseNavigation(),
 }));
 
+// BottomNavigation imports the real sevaConfig via a relative path (bypassing
+// the global @common mock), which transitively loads react-native-localization
+// — whose native module isn't available in Jest and throws on import. The
+// component only needs getSevaConfig() to decide the Seva dot, so mock it.
+jest.mock("../../../services/sevaConfig", () => ({
+  getSevaConfig: jest.fn(() => Promise.resolve({ showSevaDot: false })),
+}));
+
 const mockPauseTrack = jest.fn(() => Promise.resolve());
 const mockStopTrack = jest.fn(() => Promise.resolve());
 const mockResetPlayer = jest.fn(() => Promise.resolve());
@@ -79,8 +87,12 @@ describe("BottomNavigation", () => {
     );
   });
 
+  // The Read/Music tabs live in the reader-context bar (Home/Read/Music/Settings).
+  // The home-context bar is Home/Dashboard/Seva/Settings, so tests that exercise
+  // Read/Music render with context="reader".
+
   test("renders four buttons with correct accessibility labels", () => {
-    const { getByLabelText } = render(<BottomNavigation activeKey="Home" />);
+    const { getByLabelText } = render(<BottomNavigation activeKey="Home" context="reader" />);
 
     expect(getByLabelText("bottomnav-Home")).toBeTruthy();
     expect(getByLabelText("bottomnav-Read")).toBeTruthy();
@@ -89,19 +101,19 @@ describe("BottomNavigation", () => {
   });
 
   test("shows labels for non-active items and hides label for the active item", () => {
-    const { queryByText } = render(<BottomNavigation activeKey="Music" />);
+    const { queryByText } = render(<BottomNavigation activeKey="Music" context="reader" />);
 
     // Active "Music" label should be hidden (component shows label only when NOT active)
-    expect(queryByText("Music")).toBeNull();
+    expect(queryByText("Audio")).toBeNull();
 
-    // Others should be visible
-    expect(queryByText("Home")).not.toBeNull();
+    // Others should be visible (reader bar: Home tab is labelled "All Banis")
+    expect(queryByText("All Banis")).not.toBeNull();
     expect(queryByText("Read")).not.toBeNull();
     expect(queryByText("Settings")).not.toBeNull();
   });
 
   test("pressing Home navigates to Home", () => {
-    const { getByLabelText } = render(<BottomNavigation activeKey="Home" />);
+    const { getByLabelText } = render(<BottomNavigation activeKey="Home" context="reader" />);
 
     fireEvent.press(getByLabelText("bottomnav-Home"));
 
@@ -113,7 +125,7 @@ describe("BottomNavigation", () => {
     mockNavigation = createNavigation({ currentRoute: "Home" });
     mockUseNavigation.mockReturnValue(mockNavigation);
 
-    const { getByLabelText } = render(<BottomNavigation activeKey="Home" />);
+    const { getByLabelText } = render(<BottomNavigation activeKey="Home" context="reader" />);
 
     fireEvent.press(getByLabelText("bottomnav-Read"));
 
@@ -127,7 +139,7 @@ describe("BottomNavigation", () => {
     mockNavigation = createNavigation({ currentRoute: "Home" });
     mockUseNavigation.mockReturnValue(mockNavigation);
 
-    const { getByLabelText } = render(<BottomNavigation activeKey="Home" />);
+    const { getByLabelText } = render(<BottomNavigation activeKey="Home" context="reader" />);
 
     fireEvent.press(getByLabelText("bottomnav-Read"));
 
@@ -141,7 +153,7 @@ describe("BottomNavigation", () => {
     mockNavigation = createNavigation({ currentRoute: "Settings" });
     mockUseNavigation.mockReturnValue(mockNavigation);
 
-    const { getByLabelText } = render(<BottomNavigation activeKey="Settings" />);
+    const { getByLabelText } = render(<BottomNavigation activeKey="Settings" context="reader" />);
 
     fireEvent.press(getByLabelText("bottomnav-Read"));
 
@@ -155,7 +167,7 @@ describe("BottomNavigation", () => {
     mockNavigation = createNavigation({ currentRoute: "Home" });
     mockUseNavigation.mockReturnValue(mockNavigation);
 
-    const { getByLabelText } = render(<BottomNavigation activeKey="Home" />);
+    const { getByLabelText } = render(<BottomNavigation activeKey="Home" context="reader" />);
 
     fireEvent.press(getByLabelText("bottomnav-Music"));
 
@@ -171,7 +183,7 @@ describe("BottomNavigation", () => {
     mockNavigation = createNavigation({ currentRoute: "Reader" });
     mockUseNavigation.mockReturnValue(mockNavigation);
 
-    const { getByLabelText } = render(<BottomNavigation activeKey="Music" />);
+    const { getByLabelText } = render(<BottomNavigation activeKey="Music" context="reader" />);
 
     fireEvent.press(getByLabelText("bottomnav-Music"));
 
@@ -187,7 +199,7 @@ describe("BottomNavigation", () => {
     mockNavigation = createNavigation({ currentRoute: "Settings" });
     mockUseNavigation.mockReturnValue(mockNavigation);
 
-    const { getByLabelText } = render(<BottomNavigation activeKey="Settings" />);
+    const { getByLabelText } = render(<BottomNavigation activeKey="Settings" context="reader" />);
 
     fireEvent.press(getByLabelText("bottomnav-Music"));
 
@@ -205,7 +217,7 @@ describe("BottomNavigation", () => {
     mockNavigation = createNavigation({ currentRoute: "Settings" });
     mockUseNavigation.mockReturnValue(mockNavigation);
 
-    const { getByLabelText } = render(<BottomNavigation activeKey="Settings" />);
+    const { getByLabelText } = render(<BottomNavigation activeKey="Settings" context="reader" />);
 
     fireEvent.press(getByLabelText("bottomnav-Music"));
 
@@ -229,7 +241,7 @@ describe("BottomNavigation", () => {
     mockNavigation = createNavigation({ currentRoute: "Reader" });
     mockUseNavigation.mockReturnValue(mockNavigation);
 
-    const { getByLabelText } = render(<BottomNavigation activeKey="Music" />);
+    const { getByLabelText } = render(<BottomNavigation activeKey="Music" context="reader" />);
 
     fireEvent.press(getByLabelText("bottomnav-Music"));
 
@@ -244,10 +256,8 @@ describe("BottomNavigation", () => {
     });
   });
 
-  test("As a user entering Settings from Home I want irrelevant tabs hidden So that navigation isn't confusing", () => {
-    // Simulate coming from Home (not Reader)
+  test("As a user on the home tab bar I want only home tabs (Read/Music live in the reader bar)", () => {
     mockNavigation = createNavigation({ currentRoute: "Settings" });
-    // Set up navigation state to have Home as previous route
     mockNavigation.getState.mockReturnValue({
       routes: [{ name: "Home" }, { name: "Settings" }],
       index: 1,
@@ -260,24 +270,22 @@ describe("BottomNavigation", () => {
     expect(getByLabelText("bottomnav-Home")).toBeTruthy();
     expect(getByLabelText("bottomnav-Settings")).toBeTruthy();
 
-    // Read and Music should be hidden on Settings page when coming from Home
+    // Read and Music are reader-context tabs — absent from the home bar
     expect(queryByLabelText("bottomnav-Read")).toBeNull();
     expect(queryByLabelText("bottomnav-Music")).toBeNull();
   });
 
-  test("As a user entering Settings from Reader I want Read and Music tabs to stay visible", () => {
-    // Simulate coming from Reader
+  test("As a user on the reader tab bar I want Read and Music tabs visible", () => {
     mockNavigation = createNavigation({ currentRoute: "Settings" });
-    // Set up navigation state to have Reader as previous route
     mockNavigation.getState.mockReturnValue({
       routes: [{ name: "Home" }, { name: "Reader" }, { name: "Settings" }],
       index: 2,
     });
     mockUseNavigation.mockReturnValue(mockNavigation);
 
-    const { getByLabelText } = render(<BottomNavigation activeKey="Settings" />);
+    const { getByLabelText } = render(<BottomNavigation activeKey="Settings" context="reader" />);
 
-    // All tabs should be visible when coming from Reader
+    // All tabs should be visible in the reader context
     expect(getByLabelText("bottomnav-Home")).toBeTruthy();
     expect(getByLabelText("bottomnav-Read")).toBeTruthy();
     expect(getByLabelText("bottomnav-Music")).toBeTruthy();
@@ -289,7 +297,7 @@ describe("BottomNavigation", () => {
     mockNavigation = createNavigation({ currentRoute: "Reader" });
     mockUseNavigation.mockReturnValue(mockNavigation);
 
-    const { getByLabelText } = render(<BottomNavigation activeKey="Read" />);
+    const { getByLabelText } = render(<BottomNavigation activeKey="Read" context="reader" />);
 
     expect(getByLabelText("bottomnav-Home")).toBeTruthy();
     expect(getByLabelText("bottomnav-Read")).toBeTruthy();
@@ -303,7 +311,7 @@ describe("BottomNavigation", () => {
     mockNavigation = createNavigation({ currentRoute: "Reader" });
     mockUseNavigation.mockReturnValue(mockNavigation);
 
-    const { getByLabelText } = render(<BottomNavigation activeKey="Read" />);
+    const { getByLabelText } = render(<BottomNavigation activeKey="Read" context="reader" />);
 
     // Music should NOT be null
     expect(getByLabelText("bottomnav-Music")).toBeTruthy();

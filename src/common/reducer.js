@@ -261,7 +261,19 @@ const currentBani = createReducer(null, {
   [actionTypes.SET_CURRENT_BANI]: (state, action) => action.value,
 });
 
+const donor = createReducer(false, {
+  [actionTypes.SET_DONOR_STATE]: (state, action) => action.value.donor,
+  [actionTypes.CLEAR_DONOR_STATE]: () => false,
+});
+
+const donorType = createReducer(null, {
+  [actionTypes.SET_DONOR_STATE]: (state, action) => action.value.donorType,
+  [actionTypes.CLEAR_DONOR_STATE]: () => null,
+});
+
 const rootReducer = combineReducers({
+  donor,
+  donorType,
   isNightMode,
   fontSize,
   fontFace,

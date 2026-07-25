@@ -120,7 +120,7 @@ const createStyles = (theme) => ({
     fontSize: theme.typography.sizes.lg,
   },
   headerStyle: {
-    backgroundColor: theme.colors.surface,
+    backgroundColor: theme.mode === "dark" ? "rgba(18, 18, 18, 1)" : "#F0F4F8",
   },
   animatedView: {
     position: "absolute",

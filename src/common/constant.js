@@ -13,6 +13,8 @@ export default {
   ANMOL_LIPI: "AnmolLipiSG",
   READER: "Reader",
   SETTINGS: "Settings",
+  DASHBOARD: "Dashboard",
+  SEVA: "Seva",
   EXTRA_SMALL: "EXTRA_SMALL",
   SMALL: "SMALL",
   MEDIUM: "MEDIUM",

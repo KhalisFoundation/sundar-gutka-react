@@ -11,6 +11,7 @@ import {
   trackReaderEvent,
   logError,
   CustomText,
+  STRINGS,
 } from "@common";
 
 import { Slider } from "@miblanchard/react-native-slider";
@@ -100,7 +101,7 @@ const AutoScrollComponent = ({ shabadID, webViewRef, webViewLoadTick, onActivity
         <Pressable
           onPress={isPaused ? handlePlay : handlePause}
           hitSlop={8}
-          accessibilityLabel={isPaused ? "Play auto-scroll" : "Pause auto-scroll"}
+          accessibilityLabel={isPaused ? STRINGS.AUTO_SCROLL_PLAY : STRINGS.AUTO_SCROLL_PAUSE}
         >
           <Icon
             name={isPaused ? "play-arrow" : "pause"}

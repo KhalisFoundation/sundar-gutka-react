@@ -12,6 +12,7 @@ import {
   StatusBarComponent,
   SafeArea,
   CustomText,
+  STRINGS,
 } from "@common";
 import BaniDBAbout from "./components/baniDBAbout";
 import CheckUpdatesAnimation from "./components/checkUpdate";
@@ -55,7 +56,7 @@ const DatabaseUpdateScreen = ({ navigation }) => {
         <Pressable onPress={() => Linking.openURL(constant.BANI_DB_URL)}>
           <View style={styles.baniDBContainer}>
             <Image source={baniDBLogoFull} style={styles.baniDBImage} />
-            <CustomText style={styles.baniDBText}>BaniDB</CustomText>
+            <CustomText style={styles.baniDBText}>{STRINGS.BANI_DB}</CustomText>
           </View>
         </Pressable>
         <BaniDBAbout />

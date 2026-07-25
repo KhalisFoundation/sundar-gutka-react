@@ -423,7 +423,11 @@ const Reader = ({ navigation, route }) => {
       } else if (data.startsWith("scroll-progress-")) {
         const pct = parseFloat(data.split("scroll-progress-")[1]);
         if (Number.isFinite(pct)) {
-          scrollProgressAnim.setValue(pct);
+          Animated.timing(scrollProgressAnim, {
+            toValue: pct,
+            duration: 0,
+            useNativeDriver: true,
+          }).start();
           scrollPercentRef.current = Math.round(pct * 100);
         }
       }
@@ -572,13 +576,7 @@ const Reader = ({ navigation, route }) => {
         <Animated.View
           style={[
             styles.scrollProgressFill,
-            {
-              width: scrollProgressAnim.interpolate({
-                inputRange: [0, 1],
-                outputRange: ["0%", "100%"],
-                extrapolate: "clamp",
-              }),
-            },
+            { transform: [{ scaleX: scrollProgressAnim }] },
           ]}
         />
       </Animated.View>

@@ -43,6 +43,32 @@ const createStyles = (theme) => ({
     color: theme.staticColors.WHITE_COLOR,
     fontSize: theme.typography.sizes.xxl,
   },
+  newHeaderContainer: {
+    backgroundColor: theme.mode === "dark" ? "#041126" : theme.colors.surface,
+    paddingTop: theme.spacing.md,
+    paddingBottom: theme.spacing.sm,
+    alignItems: "center",
+    justifyContent: "center",
+  },
+  newHeaderInvocationText: {
+    fontSize: 15,
+    color: theme.mode === "dark" ? "#8A99AD" : "#718096",
+    fontFamily: theme.typography.fonts.balooPaaji,
+    textAlign: "center",
+    opacity: 0.8,
+  },
+  newHeaderTitleText: {
+    fontSize: 32,
+    fontFamily: theme.typography.fonts.balooPaajiSemiBold,
+    color: theme.mode === "dark" ? theme.staticColors.WHITE_COLOR : theme.colors.primary,
+    textAlign: "center",
+    marginTop: 2,
+  },
+  newHeaderGradientDivider: {
+    height: 2.5,
+    width: "80%",
+    marginTop: theme.spacing.sm,
+  },
 });
 
 export default createStyles;

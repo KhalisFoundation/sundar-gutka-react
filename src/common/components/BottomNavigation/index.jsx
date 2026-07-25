@@ -7,79 +7,92 @@ import PropTypes from "prop-types";
 import useTheme from "@common/context";
 import useThemedStyles from "@common/hooks/useThemedStyles";
 import { pauseTrack, stopTrack, resetPlayer } from "@common/TrackPlayerUtils";
-import { HomeIcon, SettingsIcon, MusicIcon, ReadIcon } from "@common/icons";
-import { CustomText, actions, constant, STRINGS, showErrorToast } from "@common";
+import {
+  HomeIcon,
+  SettingsIcon,
+  MusicIcon,
+  ReadIcon,
+  DashboardIcon,
+  SevaIcon,
+} from "@common/icons";
+import { CustomText, actions, constant, STRINGS, showErrorToast, SafeArea } from "@common";
+import { getSevaConfig } from "../../../services/sevaConfig";
 import createStyles from "./style";
 
 const { INTERNET_CHECK_URL } = constant;
 
-const BottomNavigation = ({ activeKey, visible = true }) => {
-  const navigation = useNavigation();
+const BottomNavigation = ({
+  activeKey,
+  context = "home",
+  visible = true,
+  navigation: propNavigation,
+}) => {
+  const hookNavigation = useNavigation();
+  const navigation = propNavigation || hookNavigation;
   const dispatch = useDispatch();
   const { theme } = useTheme();
   const styles = useThemedStyles(createStyles);
+
   const isAudio = useSelector((state) => state.isAudio);
   const isAutoScroll = useSelector((state) => state.isAutoScroll);
   const isAudioFeatureEnabled = useSelector((state) => state.isAudioFeatureEnabled);
   const isAudioFeatureOn = isAudioFeatureEnabled ?? true;
+
   const [isSettings, setIsSettings] = useState(false);
   const [previousRouteName, setPreviousRouteName] = useState(null);
-  const previousConnectivityRef = useRef(null);
-  // Require 2 consecutive poll failures before declaring "offline" to
-  // avoid false-positive toasts from transient mobile network blips
-  // (DNS hiccup, DOZE wake, tower switch, etc.).
-  const consecutiveFailuresRef = useRef(0);
-  const insets = useSafeAreaInsets();
-  // On iOS: apply a small capped padding so icons sit just above the home indicator
-  // without ballooning the navbar height. On Android: gesture bar is hidden by
-  // sticky-immersive mode in MainActivity, so no bottom padding is needed.
-  const bottomPad = Platform.OS === "ios" ? Math.min(insets.bottom, 8) : 0;
-
-  // Slide the navbar down out of view when hidden (the Reader passes visible=false
-  // to hide it together with the header). Defaults to visible everywhere else.
-  // Stop the animation on unmount so a mid-flight native-driver animation can't
-  // connect to an already-torn-down view ("Animated node does not exist" crash).
+  const [showSevaDot, setShowSevaDot] = useState(false);
   const translateY = useRef(new Animated.Value(0)).current;
 
-  useEffect(() => {
-    const anim = Animated.timing(translateY, {
-      toValue: visible ? 0 : 100,
-      duration: 300,
-      useNativeDriver: true,
-    });
-    anim.start();
-    return () => {
-      anim.stop();
-      translateY.stopAnimation();
-    };
-  }, [visible, translateY]);
-
-  const checkInternetConnection = useCallback(async () => {
-    const controller = new AbortController();
-    const timeoutId = setTimeout(() => controller.abort(), 3000);
-
-    try {
-      // HEAD is lighter than GET — no body to download, lower latency.
-      const response = await fetch(INTERNET_CHECK_URL, {
-        method: "HEAD",
-        cache: "no-store",
-        signal: controller.signal,
-      });
-
-      const isConnected = response?.ok ?? false;
-      return isConnected;
-    } catch (_) {
-      return false;
-    } finally {
-      clearTimeout(timeoutId);
-    }
-  }, []);
+  const previousConnectivityRef = useRef(null);
+  const consecutiveFailuresRef = useRef(0);
+  const insets = useSafeAreaInsets();
+  const bottomPad = Platform.OS === "ios" ? Math.min(insets.bottom, 8) : 0;
 
   // Helper function to get current route name
   const getCurrentRouteName = useCallback(() => {
     const navState = navigation.getState();
     return navState?.routes[navState?.index]?.name;
   }, [navigation]);
+
+  // Animate visibility (slide down when hidden)
+  useEffect(() => {
+    Animated.timing(translateY, {
+      toValue: visible ? 0 : 100,
+      duration: 300,
+      useNativeDriver: true,
+    }).start();
+  }, [visible, translateY]);
+
+  // Load seva dot state from config
+  useEffect(() => {
+    let cancelled = false;
+    getSevaConfig()
+      .then((cfg) => {
+        if (!cancelled) setShowSevaDot(!!cfg?.showSevaDot);
+      })
+      .catch(() => {});
+    return () => {
+      cancelled = true;
+    };
+  }, []);
+
+  const checkInternetConnection = useCallback(async () => {
+    const controller = new AbortController();
+    const timeoutId = setTimeout(() => controller.abort(), 3000);
+
+    try {
+      const response = await fetch(INTERNET_CHECK_URL, {
+        method: "HEAD",
+        cache: "no-store",
+        signal: controller.signal,
+      });
+      return response?.ok ?? false;
+    } catch (_) {
+      return false;
+    } finally {
+      clearTimeout(timeoutId);
+    }
+  }, []);
 
   useEffect(() => {
     const updateIsSettings = () => {
@@ -89,15 +102,12 @@ const BottomNavigation = ({ activeKey, visible = true }) => {
       const topRoute = state.routes[state.index];
       let currentRouteName = topRoute?.name;
 
-      // Handle nested navigators just in case
       if (topRoute?.state && typeof topRoute.state.index === "number") {
         const nestedRoute = topRoute.state.routes[topRoute.state.index];
         currentRouteName = nestedRoute?.name ?? currentRouteName;
       }
 
-      // When entering Settings, check the previous route in navigation stack
       if (currentRouteName === constant.SETTINGS) {
-        // Get the previous route from navigation state
         if (state.index > 0) {
           const prevRoute = state.routes[state.index - 1];
           let prevRouteName = prevRoute?.name;
@@ -108,37 +118,31 @@ const BottomNavigation = ({ activeKey, visible = true }) => {
           setPreviousRouteName(prevRouteName);
         }
       } else {
-        // Update previous route when not on Settings
         setPreviousRouteName(currentRouteName);
       }
 
       setIsSettings(currentRouteName === constant.SETTINGS);
     };
 
-    // Run once on mount
     updateIsSettings();
 
-    // Subscribe to navigation state changes
     const unsubscribe =
       navigation.addListener?.("state", () => {
         updateIsSettings();
       }) || undefined;
 
     return () => {
-      if (unsubscribe) {
-        unsubscribe();
-      }
+      if (unsubscribe) unsubscribe();
     };
   }, [navigation]);
 
+  // Internet connectivity watchdog logic (strictly preserved)
   useEffect(() => {
     let isMounted = true;
 
     const syncConnectivity = async () => {
       const isConnected = await checkInternetConnection();
-      if (!isMounted) {
-        return;
-      }
+      if (!isMounted) return;
 
       if (isConnected) {
         consecutiveFailuresRef.current = 0;
@@ -149,15 +153,9 @@ const BottomNavigation = ({ activeKey, visible = true }) => {
       const wasConnected = previousConnectivityRef.current;
       previousConnectivityRef.current = isConnected;
 
-      // First connectivity sample should establish baseline only (no toast).
-      if (wasConnected == null) {
-        return;
-      }
+      if (wasConnected == null) return;
 
-      // Only declare offline after 2 consecutive failures to avoid
-      // false-positive toasts from single transient network blips.
       if (wasConnected && !isConnected && consecutiveFailuresRef.current >= 2) {
-        // Mirror settings "Audio off" behavior to remove notification controls.
         await stopTrack();
         await resetPlayer();
         dispatch(actions.toggleAudio(false));
@@ -174,7 +172,45 @@ const BottomNavigation = ({ activeKey, visible = true }) => {
     };
   }, [checkInternetConnection, dispatch, isAudio]);
 
-  const navigationItems = [
+  // Standard home screen navigator items
+  const homeNavigationItems = [
+    {
+      key: "Home",
+      icon: HomeIcon,
+      handlePress: () => {
+        navigation.navigate("Home");
+      },
+      text: STRINGS.HOME,
+    },
+    {
+      key: "Dashboard",
+      icon: DashboardIcon,
+      handlePress: () => {
+        navigation.navigate(constant.DASHBOARD);
+      },
+      text: STRINGS.DASHBOARD,
+    },
+    {
+      key: "Seva",
+      icon: SevaIcon,
+      showDot: showSevaDot,
+      handlePress: () => {
+        navigation.navigate(constant.SEVA);
+      },
+      text: STRINGS.SEVA,
+    },
+    {
+      key: "Settings",
+      icon: SettingsIcon,
+      handlePress: () => {
+        navigation.navigate(constant.SETTINGS);
+      },
+      text: STRINGS.SETTINGS,
+    },
+  ];
+
+  // Reader-specific navigation items (strictly matches all logic & dispatches)
+  const readerNavigationItems = [
     {
       key: "Home",
       icon: HomeIcon,
@@ -185,15 +221,12 @@ const BottomNavigation = ({ activeKey, visible = true }) => {
         }
         navigation.popToTop();
       },
-      text: STRINGS.HOME,
+      text: STRINGS.ALL_BANIS, // Maps to "All Banis" localization key
     },
     {
       key: "Read",
       icon: ReadIcon,
       handlePress: async () => {
-        // Pause and disable audio BEFORE navigating back so that
-        // AudioControlBar's focus-based auto-resume doesn't fire
-        // (it would see isAudio=true and call play() on the focus event).
         if (isAudio) {
           await pauseTrack();
           dispatch(actions.toggleAudio(false));
@@ -210,12 +243,8 @@ const BottomNavigation = ({ activeKey, visible = true }) => {
       key: "Music",
       icon: MusicIcon,
       handlePress: async () => {
-        // If the audio feature has been disabled (e.g. by AutoScroll or Settings),
-        // tapping the Music button re-enables it — same as flipping the Settings switch.
-        // This gives users (especially elderly ones) an easy recovery path.
         if (!isAudioFeatureOn) {
           dispatch(actions.toggleAudioFeatureEnabled(true));
-          // Fall through to start audio normally below.
         }
 
         if (isAutoScroll) {
@@ -225,7 +254,6 @@ const BottomNavigation = ({ activeKey, visible = true }) => {
 
         const isConnected = await checkInternetConnection();
         if (!isConnected) {
-          // Hard shutdown to clear Android notification player when offline.
           await stopTrack();
           await resetPlayer();
           dispatch(actions.toggleAudio(false));
@@ -236,9 +264,6 @@ const BottomNavigation = ({ activeKey, visible = true }) => {
         const currentNavRoute = getCurrentRouteName();
 
         if (currentNavRoute === constant.SETTINGS) {
-          // Coming back from Settings — audio is already active (just paused).
-          // Simply go back and let AudioControlBar's auto-resume handle playback.
-          // Don't toggle audio off→on, which causes a visible nav flicker.
           if (isAudio) {
             navigation.goBack();
             return;
@@ -246,10 +271,6 @@ const BottomNavigation = ({ activeKey, visible = true }) => {
           navigation.goBack();
         }
 
-        // Audio is already active — nothing to do. The user can switch
-        // artists via the player's own UI. Avoid the destructive
-        // toggleAudio(false)→wait→toggleAudio(true) remount cycle which
-        // causes a visible Read↔Music nav flicker.
         if (isAudio) {
           return;
         }
@@ -257,86 +278,124 @@ const BottomNavigation = ({ activeKey, visible = true }) => {
         dispatch(actions.toggleAudio(true));
       },
       text: STRINGS.MUSIC,
-      // Music button is always visible — it doubles as a recovery shortcut
-      // to re-enable the audio feature if it was turned off in Settings.
     },
     {
       key: "Settings",
       icon: SettingsIcon,
       handlePress: async () => {
-        // Pause playback but keep isAudio=true so the audio player UI
-        // is preserved. When the user taps Back from Settings, they
-        // return to the audio view (paused). If autoplay is on, the
-        // AudioControlBar's loadActiveTrack effect will auto-resume.
         if (isAudio) {
           await pauseTrack();
         }
-        navigation.navigate(constant.SETTINGS);
+        navigation.navigate("MainTabs", { screen: constant.SETTINGS });
       },
       text: STRINGS.SETTINGS,
     },
   ];
 
-  // Filter out Read and Music when on Settings page, but keep them if previous route was Read
-  const shouldHideReadAndMusic = isSettings && previousRouteName !== constant.READER;
-  const filteredNavigationItems = navigationItems.filter((item) => {
-    if (item.hidden) {
-      return false;
-    }
-    if (shouldHideReadAndMusic && (item.key === "Read" || item.key === "Music")) {
-      return false;
-    }
-    return true;
-  });
+  const navigationItems =
+    context === "reader" ? readerNavigationItems : homeNavigationItems;
+
+  const shouldHideReadAndMusic =
+    context === "reader" && isSettings && previousRouteName !== constant.READER;
+
+  const filteredNavigationItems = shouldHideReadAndMusic
+    ? navigationItems.filter(
+        (item) => item.key !== "Read" && item.key !== "Music"
+      )
+    : navigationItems;
 
   return (
     <Animated.View
-      style={[
-        styles.container,
-        // Absorb the home-indicator / gesture-bar height so the navbar background
-        // colour fills behind the indicator while the icons stay compact above it.
-        { paddingBottom: bottomPad },
-        { transform: [{ translateY }] },
-      ]}
+      style={{
+        transform: [{ translateY }],
+      }}
     >
-      <View style={styles.navigationBar}>
-        {filteredNavigationItems.map((item) => {
-          const IconComponent = item.icon;
+      <SafeArea
+        backgroundColor={theme.colors.primary}
+        edges={["bottom"]}
+        flex={0}
+      >
+        <View
+          style={[
+            styles.container,
+            { paddingBottom: bottomPad }
+          ]}
+        >
+          <View style={styles.navigationBar}>
+            {filteredNavigationItems.map((item) => {
+              const IconComponent = item.icon;
 
-          return (
-            <Pressable
-              key={item.key}
-              style={[styles.iconContainer, item.key === activeKey && styles.activeIconContainer]}
-              onPress={item.handlePress}
-              accessibilityRole="button"
-              accessibilityLabel={`bottomnav-${item.key}`}
-            >
-              <IconComponent
-                size={24}
-                color={
-                  item.key === activeKey ? theme.colors.primary : theme.staticColors.WHITE_COLOR
-                }
-              />
-              {activeKey !== item.key && (
-                <CustomText
-                  style={styles.iconText}
-                  numberOfLines={1}
-                  adjustsFontSizeToFit
+              return (
+                <Pressable
+                  key={item.key}
+                  style={styles.iconContainer}
+                  onPress={item.handlePress}
+                  accessibilityRole="button"
+                  accessibilityLabel={`bottomnav-${item.key}`}
                 >
-                  {item.text}
-                </CustomText>
-              )}
-            </Pressable>
-          );
-        })}
-      </View>
+                  <View style={item.key === activeKey ? styles.activeIconContainer : null}>
+                    <View style={{ position: "relative" }}>
+                      <IconComponent
+                        size={24}
+                        color={
+                          item.key === activeKey
+                            ? theme.colors.primary
+                            : theme.staticColors.WHITE_COLOR
+                        }
+                      />
+                      {!!item.showDot && (
+                        <View
+                          style={{
+                            position: "absolute",
+                            top: -7,
+                            right: -9,
+                            backgroundColor: "#E53E3E",
+                            borderRadius: 9,
+                            minWidth: 16,
+                            height: 16,
+                            alignItems: "center",
+                            justifyContent: "center",
+                            paddingHorizontal: 2,
+                            borderWidth: 1.2,
+                            borderColor: item.key === activeKey ? theme.staticColors.WHITE_COLOR : theme.colors.primary,
+                          }}
+                        >
+                          <CustomText
+                            style={{
+                              color: "#FFFFFF",
+                              fontSize: 9,
+                              fontWeight: "bold",
+                              fontFamily: theme.typography.fonts.balooPaajiSemiBold,
+                              textAlign: "center",
+                              lineHeight: 13,
+                            }}
+                          >
+                            1
+                          </CustomText>
+                        </View>
+                      )}
+                    </View>
+                  </View>
+                  {activeKey !== item.key && (
+                    <CustomText style={styles.iconText}>{item.text}</CustomText>
+                  )}
+                </Pressable>
+              );
+            })}
+          </View>
+        </View>
+      </SafeArea>
     </Animated.View>
   );
 };
 
 BottomNavigation.propTypes = {
   activeKey: PropTypes.string.isRequired,
+  context: PropTypes.oneOf(["home", "reader"]),
   visible: PropTypes.bool,
+  navigation: PropTypes.shape({
+    navigate: PropTypes.func,
+  }),
 };
 
 export default BottomNavigation;

@@ -49,7 +49,7 @@ const BaniLengthSelector = () => {
           <Pressable style={styles.helpWrapper} onPress={baniLengthInfo}>
             <Icon color={theme.colors.primaryVariant} name="info" size={30} />
             <CustomText style={styles.helpText}>{STRINGS.need_help_deciding}</CustomText>
-            <CustomText style={styles.moreInfo}>{STRINGS.click_more_info}</CustomText>
+            <CustomText style={styles.moreInfo}>{STRINGS.tap_more_info}</CustomText>
           </Pressable>
         </View>
       </SafeAreaView>

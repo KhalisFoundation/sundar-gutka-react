@@ -39,7 +39,8 @@ const createStyles = (theme) => ({
   labelViewWrapper: {
     backgroundColor: theme.staticColors.WHITE_COLOR,
     padding: theme.spacing.xl,
-    width: 300,
+    width: "90%",
+    maxWidth: 300,
     borderRadius: theme.radius.lg,
   },
   labelText: {

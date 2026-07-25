@@ -1,46 +1,34 @@
 import React from "react";
 import { View } from "react-native";
-import PropTypes from "prop-types";
-import { SettingsIconComponent } from "@common/components";
-import { constant, STRINGS, CustomText, useTheme, useThemedStyles, SafeArea } from "@common";
+import LinearGradient from "react-native-linear-gradient";
+import { STRINGS, CustomText, useTheme, useThemedStyles, SafeArea } from "@common";
 import createStyles from "../styles";
 
-const BaniHeader = ({ navigate }) => {
+const BaniHeader = () => {
   const { theme } = useTheme();
   const styles = useThemedStyles(createStyles);
   return (
-    <SafeArea backgroundColor={theme.colors.primary} edges={["top"]} flex={0}>
-      <View
-        style={{
-          backgroundColor: theme.colors.primary,
-        }}
-      >
-        <View style={styles.fatehContainer}>
-          <CustomText style={styles.headerFatehStyle}>
-            <CustomText style={styles.ikongkar}>{"<>"} </CustomText>
-            {STRINGS.fateh}
-          </CustomText>
-        </View>
-        <View>
-          <CustomText style={styles.titleContainer}>
-            <CustomText style={styles.headerDesign}>Œ</CustomText>
-            <CustomText style={styles.headerTitle}> {STRINGS.sg_title} </CustomText>
-            <CustomText style={styles.headerDesign}>‰</CustomText>
-          </CustomText>
-        </View>
-        <View style={styles.settingIcon}>
-          <SettingsIconComponent
-            size={30}
-            handleSettingsPress={() => navigate(constant.SETTINGS)}
-            color={theme.staticColors.WHITE_COLOR}
-          />
-        </View>
+    <SafeArea backgroundColor={theme.mode === "dark" ? "#041126" : theme.colors.surface} edges={["top"]} flex={0}>
+      <View style={styles.newHeaderContainer}>
+        <CustomText style={styles.newHeaderInvocationText}>
+          ॥ ੴ ਸ੍ਰੀ ਵਾਹਿਗੁਰੂ ਜੀ ਕੀ ਫਤਹਿ ॥
+        </CustomText>
+        <CustomText style={styles.newHeaderTitleText}>
+          {STRINGS.sg_title}
+        </CustomText>
+        <LinearGradient
+          colors={
+            theme.mode === "dark"
+              ? ["#051C41", "#63B3ED", "#051C41"]
+              : ["#113979", "#90CDF4", "#113979"]
+          }
+          start={{ x: 0, y: 0 }}
+          end={{ x: 1, y: 0 }}
+          style={styles.newHeaderGradientDivider}
+        />
       </View>
     </SafeArea>
   );
 };
 
 export default BaniHeader;
-BaniHeader.propTypes = {
-  navigate: PropTypes.func.isRequired,
-};

@@ -19,6 +19,13 @@ export const createCommonMock = (overrides = {}) => {
   return {
     CustomText,
     SafeArea,
+    showErrorToast: jest.fn(),
+    showInfoToast: jest.fn(),
+    showSuccessToast: jest.fn(),
+    StatusBarComponent: ({ children, ...rest }) => React.createElement(RN.View, rest, children),
+    trackSevaEvent: jest.fn(),
+    openInAppBrowser: jest.fn(() => Promise.resolve()),
+    useBackHandler: jest.fn(),
     actions: {
       toggleAutoScroll: jest.fn(toggleAutoScrollAction),
       toggleAudio: jest.fn(toggleAudioAction),
@@ -40,6 +47,9 @@ export const createCommonMock = (overrides = {}) => {
       READ: "Read",
       MUSIC: "Audio",
       SETTINGS: "Settings",
+      ALL_BANIS: "All Banis",
+      DASHBOARD: "Dashboard",
+      SEVA: "Seva",
       short: "Short",
       medium: "Medium",
       long: "Long",

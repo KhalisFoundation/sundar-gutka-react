@@ -215,3 +215,12 @@ export const clearAudioProgress = (baniId) => {
     payload: { baniId },
   };
 };
+
+// Seva Donor action creators
+export const setDonorState = (value) => {
+  return { type: actionTypes.SET_DONOR_STATE, value };
+};
+
+export const clearDonorState = () => {
+  return { type: actionTypes.CLEAR_DONOR_STATE };
+};
