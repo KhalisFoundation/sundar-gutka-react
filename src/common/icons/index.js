@@ -3,6 +3,8 @@ export { default as SettingsIcon } from "./SettingsIcon";
 export { default as ExpandCollapseIcon } from "./ExpandCollapseIcon";
 export { default as CloseIcon } from "./CloseIcon";
 export { default as PlayIcon } from "./PlayIcon";
+export { default as Replay10Icon } from "./Replay10Icon";
+export { default as Forward10Icon } from "./Forward10Icon";
 export { default as DownloadIcon } from "./DownloadIcon";
 export { default as ArrowRightIcon } from "./ArrowRightIcon";
 export { default as CircleIcon } from "./CircleIcon";
