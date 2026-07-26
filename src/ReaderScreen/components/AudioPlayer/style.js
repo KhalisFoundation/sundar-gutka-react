@@ -93,8 +93,6 @@ export const audioControlBarStyles = (theme) => ({
     height: 40,
     padding: 5,
     width: "100%",
-    marginLeft: "auto",
-    marginRight: "auto",
     zIndex: 1,
   },
   leftControls: {
@@ -155,33 +153,46 @@ export const audioControlBarStyles = (theme) => ({
     fontFamily: theme.typography.fonts.balooPaaji,
     marginBottom: 2,
   },
-  playbackControls: {
-    flexDirection: "row",
-    paddingHorizontal: theme.spacing.md_12,
-    gap: theme.spacing.md_12,
-  },
-  playButton: {
-    justifyContent: "center",
-    alignItems: "center",
-  },
-  playButtonLoadingSpinner: {
-    minWidth: 30,
-  },
-  progressContainer: {
-    flex: 1,
-    marginTop: 2,
-    justifyContent: "center",
-  },
+playbackControls: {
+  flexDirection: "row",
+  alignItems: "center",
+  justifyContent: "center",
+  width: "100%",
+  paddingHorizontal: theme.spacing.md_12,
+},
+progressContainer: {
+  flex: 1,
+},
   progressBar: {
     position: "relative",
     justifyContent: "center",
   },
-  timeRow: {
-    flexDirection: "row",
-    justifyContent: "space-between",
-    alignItems: "center",
-    marginBottom: theme.spacing.xs,
-  },
+timeRow: {
+  flexDirection: "row",
+  alignItems: "center",
+  justifyContent: "space-between",
+},
+centerPlaybackControls: {
+  flexDirection: "row",
+  alignItems: "center",
+  justifyContent: "center",
+  height: 50,
+},
+skipButton: {
+  width: 45,
+  height: 45,
+  justifyContent: "center",
+  alignItems: "center",
+},
+playButton: {
+  justifyContent: "center",
+  alignItems: "center",
+  marginHorizontal: 12,
+},
+playButtonLoadingSpinner: {
+  width: 30,
+  height: 30,
+},
   timestamp: {
     fontSize: theme.typography.sizes.md,
     fontFamily: theme.typography.fonts.balooPaaji,
@@ -199,7 +210,6 @@ export const audioControlBarStyles = (theme) => ({
     justifyContent: "center",
   },
 });
-
 export const audioTrackDialogStyles = (theme) => ({
   modalWrapper: {
     position: "relative",
@@ -325,6 +335,16 @@ export const audioTrackDialogStyles = (theme) => ({
     fontFamily: theme.typography.fonts.balooPaaji,
     fontVariant: ["tabular-nums"],
   },
+centerPlaybackControls: {
+  flexDirection: "row",
+  alignItems: "center",
+  justifyContent: "center",
+},
+skipButton: {
+  justifyContent: "center",
+  alignItems: "center",
+  marginHorizontal: 8,
+},
   nextLoadingSpinner: {
     marginRight: theme.spacing.sm,
   },

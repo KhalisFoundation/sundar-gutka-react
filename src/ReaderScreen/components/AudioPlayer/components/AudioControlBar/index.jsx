@@ -18,6 +18,8 @@ import {
   PlayIcon,
   PauseIcon,
   ChevronDownIcon,
+  Replay10Icon,
+  Forward10Icon,
 } from "@common/icons";
 import { STRINGS, CustomText, logError } from "@common";
 import {
@@ -267,13 +269,43 @@ const AudioControlBar = ({
       }
     };
   }, []);
-
+  //
+  const handleSkip = async (seconds) => {
+    try {
+      const currentPosition = progressRef.current?.position || 0;
+      const duration =
+        sliderMax > 0
+          ? sliderMax
+          : progressRef.current?.duration || 0;
+      // Calculate new position
+      let newPosition = currentPosition + seconds;
+      // Keep within bounds
+      if (newPosition < 0) {
+        newPosition = 0;
+      }
+      if (newPosition > duration) {
+        newPosition = duration;
+      }
+      // Update slider immediately
+      setOptimisticSeekPosition(newPosition);
+      if (optimisticSeekTimerRef.current) {
+        clearTimeout(optimisticSeekTimerRef.current);
+      }
+      optimisticSeekTimerRef.current = setTimeout(() => {
+        setOptimisticSeekPosition(null);
+        optimisticSeekTimerRef.current = null;
+      }, 1500);
+      // Seek player
+      await seekTo(newPosition);
+    } catch (error) {
+      logError("Error skipping audio:", error);
+    }
+  };
   const handleSliderSeekComplete = async (valueArray) => {
     const requested = Array.isArray(valueArray) ? Number(valueArray[0]) : Number(valueArray);
     if (!Number.isFinite(requested)) {
       return;
     }
-
     const bounded = sanitizePosition(requested, sliderMax);
     setOptimisticSeekPosition(bounded);
 
@@ -347,22 +379,22 @@ const AudioControlBar = ({
   const actionItems =
     isMoreTracksModalOpen || isSettingsModalOpen
       ? [
-          {
-            onPress: () => {
-              setIsMoreTracksModalOpen(false);
-              setIsSettingsModalOpen(false);
-            },
-            Icon: ChevronDownIcon,
-            id: 1,
+        {
+          onPress: () => {
+            setIsMoreTracksModalOpen(false);
+            setIsSettingsModalOpen(false);
           },
-        ]
+          Icon: ChevronDownIcon,
+          id: 1,
+        },
+      ]
       : [
-          {
-            onPress: handleClose,
-            Icon: CloseIcon,
-            id: 1,
-          },
-        ];
+        {
+          onPress: handleClose,
+          Icon: CloseIcon,
+          id: 1,
+        },
+      ];
 
   useEffect(() => {
     if (isSettingsModalOpen) {
@@ -560,8 +592,13 @@ const AudioControlBar = ({
   return (
     <View style={styles.container} pointerEvents="box-none">
       {isDownloading && !isDownloaded && <DownloadBadge />}
-      {/* Full Player with Animation */}
-      <View style={[styles.mainContainer, Platform.OS === "ios" && styles.mainContainerIOS]}>
+
+      <View
+        style={[
+          styles.mainContainer,
+          Platform.OS === "ios" && styles.mainContainerIOS,
+        ]}
+      >
         {Platform.OS === "ios" && (
           <BlurView
             style={styles.blurOverlay}
@@ -570,6 +607,7 @@ const AudioControlBar = ({
             reducedTransparencyFallbackColor={theme.colors.transparentOverlay}
           />
         )}
+
         {/* Top Control Bar */}
         <View style={styles.topControlBar}>
           <View style={styles.leftControls}>
@@ -586,17 +624,28 @@ const AudioControlBar = ({
 
           <View style={styles.rightControls}>
             {actionItems.map((item) => (
-              <Pressable key={item.id} style={styles.controlIcon} onPress={item.onPress}>
-                <item.Icon size={30} color={theme.colors.audioTitleText} />
+              <Pressable
+                key={item.id}
+                style={styles.controlIcon}
+                onPress={item.onPress}
+              >
+                <item.Icon
+                  size={30}
+                  color={theme.colors.audioTitleText}
+                />
               </Pressable>
             ))}
           </View>
         </View>
-
-        {/* Separator */}
         <View style={styles.separator} />
         <Animated.View
-          style={[styles.modalAnimation, { maxHeight: modalHeight, opacity: modalOpacity }]}
+          style={[
+            styles.modalAnimation,
+            {
+              maxHeight: modalHeight,
+              opacity: modalOpacity,
+            },
+          ]}
         >
           {isSettingsModalOpen && (
             <AudioSettingsModal
@@ -616,70 +665,103 @@ const AudioControlBar = ({
             </View>
           )}
         </Animated.View>
-
         {/* Main Playback Section */}
-        <View style={[styles.mainSection]}>
+        <View style={styles.mainSection}>
           <View style={styles.trackInfo}>
             <View style={styles.trackInfoLeft}>
-              {currentPlaying && currentPlaying.displayName && (
-                <CustomText style={styles.trackName}>{currentPlaying.displayName}</CustomText>
+              {currentPlaying?.displayName && (
+                <CustomText style={styles.trackName}>
+                  {currentPlaying.displayName}
+                </CustomText>
               )}
             </View>
           </View>
-
           <View style={styles.playbackControls}>
-            <Pressable
-              style={styles.playButton}
-              onPress={handlePlayPause}
-              disabled={!isAudioEnabled || isPlayerActionLoading || isBuffering}
-            >
-              {isPlayerActionLoading || isBuffering ? (
-                <ActivityIndicator
-                  testID="player-action-loading-indicator"
-                  size="small"
-                  color={theme.colors.audioTitleText}
-                  style={styles.playButtonLoadingSpinner}
-                />
-              ) : isPlaying ? (
-                <PauseIcon size={30} color={theme.colors.audioTitleText} />
-              ) : (
-                <PlayIcon size={30} color={theme.colors.audioTitleText} />
-              )}
-            </Pressable>
-
             <View style={styles.progressContainer}>
-              <View style={styles.progressBar}>
-                {isSeekLoading && (
-                  <View style={styles.seekLoadingOverlay} testID="seek-loading-indicator">
-                    <ActivityIndicator size="small" color={theme.colors.primary} />
-                  </View>
-                )}
-                <View style={styles.timeRow}>
-                  <CustomText style={[styles.timestamp, styles.timestampWithColor]}>
-                    {formatTime(safePosition)}
-                  </CustomText>
-                  <CustomText style={[styles.timestamp, styles.timestampWithColor]}>
-                    {sliderMax > 0 ? formatTime(sliderMax) : "0:00"}
-                  </CustomText>
+              <View style={styles.timeRow}>
+                {/* Current Time */}
+                <CustomText
+                  style={[styles.timestamp, styles.timestampWithColor]}
+                >
+                  {formatTime(safePosition)}
+                </CustomText>
+                {/* Center Controls */}
+                <View style={styles.centerPlaybackControls}>
+                  {/* Replay 10 */}
+                  <Pressable
+                    style={styles.skipButton}
+                    onPress={() => handleSkip(-10)}
+                    disabled={!isAudioEnabled || isSeekLoading}
+                  >
+                    <Replay10Icon
+                      size={25}
+                      color={theme.colors.audioTitleText}
+                    />
+                  </Pressable>
+                  {/* Play Pause */}
+                  <Pressable
+                    style={styles.playButton}
+                    onPress={handlePlayPause}
+                    disabled={
+                      !isAudioEnabled ||
+                      isPlayerActionLoading ||
+                      isBuffering
+                    }
+                  >
+                    {isPlayerActionLoading || isBuffering ? (
+                      <ActivityIndicator
+                        size="small"
+                        color={theme.colors.audioTitleText}
+                      />
+                    ) : isPlaying ? (
+                      <PauseIcon
+                        size={40}
+                        color={theme.colors.audioTitleText}
+                      />
+                    ) : (
+                      <PlayIcon
+                        size={40}
+                        color={theme.colors.audioTitleText}
+                      />
+                    )}
+                  </Pressable>
+                  {/* Forward 10 */}
+                  <Pressable
+                    style={styles.skipButton}
+                    onPress={() => handleSkip(10)}
+                    disabled={!isAudioEnabled || isSeekLoading}
+                  >
+                    <Forward10Icon
+                      size={25}
+                      color={theme.colors.audioTitleText}
+                    />
+                  </Pressable>
                 </View>
-                <Slider
-                  value={safePosition}
-                  minimumValue={0}
-                  maximumValue={sliderMax}
-                  onSlidingComplete={handleSliderSeekComplete}
-                  minimumTrackTintColor={sliderMinTrackColor}
-                  maximumTrackTintColor={theme.staticColors.SLIDER_TRACK_COLOR}
-                  disabled={!isAudioEnabled || isSeekLoading}
-                  trackStyle={{
-                    height: 6,
-                    borderRadius: 3,
-                  }}
-                  thumbStyle={{
-                    width: 10,
-                    height: 10,
-                  }}
-                />
+                {/* Total Time */}
+                <CustomText
+                  style={[styles.timestamp, styles.timestampWithColor]}
+                >
+                  {sliderMax > 0 ? formatTime(sliderMax) : "0:00"}
+                </CustomText>
               </View>
+              {/* Progress Slider */}
+              <Slider
+                value={safePosition}
+                minimumValue={0}
+                maximumValue={sliderMax}
+                onSlidingComplete={handleSliderSeekComplete}
+                minimumTrackTintColor={sliderMinTrackColor}
+                maximumTrackTintColor={theme.staticColors.SLIDER_TRACK_COLOR}
+                disabled={!isAudioEnabled || isSeekLoading}
+                trackStyle={{
+                  height: 6,
+                  borderRadius: 3,
+                }}
+                thumbStyle={{
+                  width: 10,
+                  height: 10,
+                }}
+              />
             </View>
           </View>
         </View>
