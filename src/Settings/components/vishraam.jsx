@@ -9,6 +9,7 @@ import { STRINGS, ListItemTitle, ThemedSwitch } from "@common";
 import createStyles from "../styles";
 import { BottomSheetComponent, ListItemComponent } from "./comon";
 import { getVishraamSource, getVishraamOption } from "./comon/strings";
+import ReaderColors from "./ReaderColors";
 
 const VishraamComponent = () => {
   const { theme } = useTheme();
@@ -32,11 +33,15 @@ const VishraamComponent = () => {
         <ListItem.Content>
           <ListItemTitle title={STRINGS.show_vishraams} style={styles.listItemTitle} />
         </ListItem.Content>
-        <ThemedSwitch value={isVishraam} onValueChange={(value) => dispatch(toggleVishraam(value))} />
+        <ThemedSwitch
+          value={isVishraam}
+          onValueChange={(value) => dispatch(toggleVishraam(value))}
+        />
       </ListItem>
 
       {isVishraam && (
         <>
+          <ReaderColors initialColor="vishraamShort" />
           <ListItemComponent
             icon="format-color-fill"
             isAvatar={false}

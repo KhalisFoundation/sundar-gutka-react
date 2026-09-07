@@ -2,6 +2,22 @@ import LocalizedStrings from "react-native-localization";
 
 const STRINGS = new LocalizedStrings({
   "en-US": {
+    reader_colors: "Reader colors",
+    reader_background: "Background",
+    reader_gurmukhi: "Gurmukhi",
+    reader_heading: "Heading",
+    reader_subheading: "Subheading",
+    reader_short_pause: "Short pause",
+    reader_long_pause: "Long pause",
+    reader_save_colors: "Save",
+    reader_colors_mode_hint: "Colors apply to this reading mode:",
+    reader_color_preview: "Gurbani preview with short and long vishraams",
+    reader_hex_color: "Hex color",
+    reader_invalid_color: "Enter # followed by six letters (A–F) or digits.",
+    reader_contrast: "Contrast",
+    reader_low_contrast: "Low contrast. Try another color for easier reading.",
+    reader_contrast_hint: "Aim for at least 4.5:1 for text.",
+    reader_reset_colors: "Reset colors for this mode",
     about: "About",
     ABOUT_WELCOME: "We welcome your comments, suggestions, and corrections!",
     ABOUT_HELP: "For information, suggestions, or help, visit us at",

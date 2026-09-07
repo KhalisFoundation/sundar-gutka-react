@@ -1,4 +1,4 @@
-import { constant, colors } from "@common";
+import constant from "@common/constant";
 
 export const getTranslitText = (translit, language) => {
   const json = JSON.parse(translit);
@@ -32,28 +32,19 @@ export const getWordStyle = (
   { isVishraam, vishraamOption, isLarivar, isLarivarAssist }
 ) => {
   let style = "";
-  const { VISHRAM_LONG, VISHRAM_SHORT, VISHRAM_LONG_GRADIENT, VISHRAM_SHORT_GRADIENT } = colors;
-  const { VISHRAAM_GRADIENT, VISHRAAM_COLORED } = constant;
-  if (isVishraam && vishraamPositions[index]) {
-    switch (vishraamOption) {
-      case VISHRAAM_GRADIENT:
-        style += `border-radius: 5px; background: linear-gradient(to right,rgba(229, 229, 229, 0) 20%, ${
-          vishraamPositions[index] === "v" ? VISHRAM_LONG_GRADIENT : VISHRAM_SHORT_GRADIENT
-        }`;
-        style += "100%);";
-        break;
-      case VISHRAAM_COLORED:
-        style += `color: ${vishraamPositions[index] === "v" ? VISHRAM_LONG : VISHRAM_SHORT};`;
-        break;
-      default:
-        style += "color:";
-        style += vishraamPositions[index] === "v" ? `${VISHRAM_LONG}` : `${VISHRAM_SHORT};`;
-        break;
+  const hasVishraam = isVishraam && vishraamPositions[index];
+  if (hasVishraam) {
+    const token = vishraamPositions[index] === "v" ? "vishraamLong" : "vishraamShort";
+    if (vishraamOption === constant.VISHRAAM_GRADIENT) {
+      style += `border-radius: 5px; background: linear-gradient(to right, transparent 20%, var(--reader-${token}Gradient) 100%);`;
+    } else {
+      style += `color: var(--reader-${token});`;
     }
   }
 
   if (isLarivar && isLarivarAssist && index % 2 !== 0) {
-    style += " opacity: .65;";
+    if (!hasVishraam) style += " color: var(--reader-larivaar, inherit);";
+    style += " opacity: var(--reader-larivaar-opacity, .65);";
   }
 
   return style;

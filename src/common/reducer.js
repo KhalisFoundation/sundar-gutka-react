@@ -1,6 +1,7 @@
 import { combineReducers } from "@reduxjs/toolkit";
 import * as actionTypes from "./actions/actionTypes";
 import constant from "./constant";
+import readerColors from "./readerColorsReducer";
 
 const createReducer =
   (initialState, handlers) =>
@@ -262,6 +263,7 @@ const currentBani = createReducer(null, {
 });
 
 const rootReducer = combineReducers({
+  readerColors,
   isNightMode,
   fontSize,
   fontFace,

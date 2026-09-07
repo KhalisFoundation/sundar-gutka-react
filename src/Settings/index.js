@@ -27,6 +27,7 @@ import LanguageComponent from "./components/language";
 import LarivaarComponent from "./components/larivaar";
 import PadchedSettingsComponent from "./components/padched";
 import ParagraphMode from "./components/paragraphMode";
+import ReaderColors from "./components/ReaderColors";
 import RemindersComponent from "./components/reminders/reminders";
 import HideStatusBar from "./components/statusBar";
 import ThemeComponent from "./components/theme";
@@ -63,6 +64,7 @@ const Settings = ({ navigation }) => {
         <TransliterationComponent />
         <TranslationComponent />
         <ThemeComponent />
+        <ReaderColors />
         <StatusBar />
         <HideStatusBar />
         <AutoScroll />

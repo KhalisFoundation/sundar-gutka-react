@@ -35,6 +35,12 @@ export const setTheme = (value) => {
   return { type: actionTypes.SET_THEME, value };
 };
 
+export const setReaderColors = (mode, value) => ({
+  type: actionTypes.SET_READER_COLORS,
+  mode,
+  value,
+});
+
 export const toggleAutoScroll = (value) => {
   trackSettingEvent(constant.AUTO_SCROLL, value);
   return { type: actionTypes.TOGGLE_AUTO_SCROLL, value };

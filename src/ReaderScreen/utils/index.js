@@ -1,3 +1,4 @@
+import { getReaderColors } from "@theme/readerColors";
 import { constant, baseFontSize, logError, logMessage } from "@common";
 import htmlTemplate from "./gutkahtml";
 import script from "./gutkaScript";
@@ -5,21 +6,19 @@ import script from "./gutkaScript";
 export const fontColorForReader = (header, theme, text) => {
   const { GURMUKHI, TRANSLATION, TRANSLITERATION } = constant;
 
-  const getHeaderColor1 = () => (theme.mode === "dark" ? "#77baff" : "#113979");
-  const getHeaderColor2 = () => theme.colors.primaryText;
-
-  const defaultColor = getHeaderColor2();
+  const palette = getReaderColors(theme);
+  const defaultColor = palette.text;
   const gurmukhiMapping = {
-    1: getHeaderColor1(),
-    2: defaultColor,
+    1: palette.heading,
+    2: palette.subheading,
     6: defaultColor,
     default: defaultColor,
   };
 
   const colorMapping = {
     [GURMUKHI]: gurmukhiMapping,
-    [TRANSLITERATION]: getHeaderColor1(),
-    [TRANSLATION]: defaultColor,
+    [TRANSLITERATION]: palette.transliteration,
+    [TRANSLATION]: palette.translation,
   };
 
   const color = colorMapping[text];
@@ -83,7 +82,7 @@ export const loadHTML = (
   isLarivaar
 ) => {
   try {
-    const backColor = theme.colors.surface;
+    const backColor = getReaderColors(theme).background;
     const content = shabad
       .map((item) => {
         const textAlignMap = {
