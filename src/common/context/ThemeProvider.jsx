@@ -1,6 +1,7 @@
 import React, { useState, useEffect, useMemo } from "react";
 import { Appearance } from "react-native";
 import { useSelector, useDispatch } from "react-redux";
+import { resolveReaderColors } from "@theme/readerColors";
 import PropTypes from "prop-types";
 import { lightTheme, darkTheme } from "@theme";
 import { setTheme } from "../actions";
@@ -10,6 +11,7 @@ import ThemeContext from "./ThemeContext";
 const ThemeProvider = ({ children }) => {
   const dispatch = useDispatch();
   const themeMode = useSelector((state) => state.theme);
+  const readerColors = useSelector((state) => state.readerColors);
   const [systemColorScheme, setSystemColorScheme] = useState(Appearance.getColorScheme());
 
   useEffect(() => {
@@ -20,7 +22,7 @@ const ThemeProvider = ({ children }) => {
   }, []);
 
   // Use useMemo to prevent infinite re-renders
-  const theme = useMemo(() => {
+  const baseTheme = useMemo(() => {
     if (themeMode === constant.Default) {
       return systemColorScheme === "dark" ? darkTheme : lightTheme;
     }
@@ -29,6 +31,14 @@ const ThemeProvider = ({ children }) => {
     }
     return lightTheme;
   }, [themeMode, systemColorScheme]);
+
+  const theme = useMemo(
+    () => ({
+      ...baseTheme,
+      readerColors: resolveReaderColors(baseTheme.mode, readerColors?.[baseTheme.mode]),
+    }),
+    [baseTheme, readerColors]
+  );
 
   const value = useMemo(
     () => ({ theme, setThemeMode: (mode) => dispatch(setTheme(mode)) }),

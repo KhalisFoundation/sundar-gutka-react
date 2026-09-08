@@ -1,4 +1,5 @@
 import { Platform } from "react-native";
+import { readerColorVariables } from "@theme/readerColors";
 import { constant } from "@common";
 import script from "./gutkaScript";
 
@@ -10,12 +11,13 @@ const getFontFaceURL = (fontFace) => {
   return fileUri;
 };
 
-const htmlTemplate = (backColor, fontFace, content, theme) => `<!DOCTYPE html>
+const htmlTemplate = (backColor, fontFace, content, theme, preview = false) => `<!DOCTYPE html>
 <html lang="en">
 <head>
   <meta charset="UTF-8">
   <meta name='viewport' content='width=device-width, user-scalable=no'>
   <style>
+    ${readerColorVariables(theme)}
     body {
       background-color: ${backColor};
       word-break: break-word;
@@ -95,8 +97,13 @@ const htmlTemplate = (backColor, fontFace, content, theme) => `<!DOCTYPE html>
     .right{
       text-align:right
     }
+    ${
+      preview
+        ? "body { margin: 8px; padding: 0; min-height: calc(100vh - 16px); display: flex; flex-direction: column; justify-content: center; } .content-item { font-size: 21px; line-height: 1.6; text-align: center; color: var(--reader-text); }"
+        : ""
+    }
   </style>
-  <script>${script(theme)}</script>
+  ${preview ? "" : `<script>${script(theme)}</script>`}
 </head>
 <body>
   ${content}  

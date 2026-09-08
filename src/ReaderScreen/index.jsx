@@ -4,6 +4,7 @@ import { useSafeAreaInsets } from "react-native-safe-area-context";
 import { WebView } from "react-native-webview";
 import { useDispatch, useSelector } from "react-redux";
 import PropTypes from "prop-types";
+import { getReaderColors } from "@theme/readerColors";
 import {
   constant,
   actions,
@@ -30,6 +31,7 @@ const BARS_IDLE_HIDE_MS = 4000;
 
 const Reader = ({ navigation, route }) => {
   const { theme } = useTheme();
+  const readerBackground = getReaderColors(theme).background;
   const styles = useThemedStyles(createStyles);
   const bookmarkPosition = useSelector((state) => state.bookmarkPosition);
   const isAutoScroll = useSelector((state) => state.isAutoScroll);
@@ -514,11 +516,11 @@ const Reader = ({ navigation, route }) => {
         showsHorizontalScrollIndicator={false}
         onContentProcessDidTerminate={reloadWebView}
         source={webViewSource}
-        backgroundColor={theme.colors.surface}
+        backgroundColor={readerBackground}
         style={[
           webView,
           theme.mode === "dark" && { opacity: viewLoaded ? 1 : 0.1 },
-          { backgroundColor: theme.colors.surface, marginTop: 60 },
+          { backgroundColor: readerBackground, marginTop: 60 },
         ]}
         onMessage={handleMessage}
       />
