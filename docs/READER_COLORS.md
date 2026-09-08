@@ -53,19 +53,32 @@ Before merging, also run `yarn lint` and `yarn test --runInBand`. Windows checko
 
 The full suite reported 319 passing tests across 18 suites. Its process subsequently encountered the same pre-existing after-teardown timer error in `AudioTrackDialog` seen on the baseline (305 tests across 14 suites). The four new suites (14 tests) exit successfully on their own. The unrelated timer cleanup should be addressed separately.
 
-## Device review and Mac continuation
+## Native device validation
 
-Android debug native build succeeded with Node 20, Yarn 1.22, JDK 17, Android SDK 35, and the checked-in Gradle wrapper. A Pixel 5 API 35 x86_64 emulator was used to review light/dark previews, legacy font rendering, translation layout, custom vishraam colors, gradients, and persistence after restarting the app. The iOS production JavaScript bundle also compiled successfully. Platform-specific review remains important because Jest does not render native WebViews.
+Both native debug builds and the complete color-selection workflow were verified on 2026-09-07/08:
 
-Repeat this matrix on Android and iOS before marking device review complete:
+| Platform | Environment | Verified behavior |
+| --- | --- | --- |
+| Android | Pixel 5 API 35 x86_64 emulator; Node 20.20, Yarn 1.22, JDK 17, Android SDK 35, checked-in Gradle wrapper | Gurbani > Home > Settings > Reader colors; live preview; purple short pauses and blue long pauses; Save; return to Gurbani; persistence after terminating and reopening the app. Separate light-mode colors and actual gradient rendering were also checked. |
+| iOS | iPhone 17 Pro, iOS 26.2 simulator on an Intel Mac; Xcode 26.4.1; Node 20.20; Yarn 1.22; CocoaPods 1.15.2 | The same complete navigation, selection, Save, and restart workflow; bundled Gurbani Akhar font and custom pause colors in the native WKWebView preview and reader. Gradient preview, Cancel, and separate light/dark palettes were also checked. |
 
-- Open Settings > Reader colors in Light, Dark, and system theme. Verify the intended mode is shown.
-- Change background, text, headings, translation/transliteration, and both pause colors. Verify the live preview, contrast guidance, and reader agree.
-- Check both colored words and gradients. Previewing a style must not toggle the saved vishraam setting.
-- Test Save, Cancel, invalid hex, per-mode Reset, switching modes, and a full application restart.
-- Test Gurbani Akhar and Baloo Paaji, larivaar assist, paragraph mode, enabled/disabled vishraams, and reading position after returning from Settings.
-- Check narrow portrait, landscape, large system text, keyboard visibility, and VoiceOver/TalkBack. Confirm all controls remain reachable and the preview is legible.
+The PR includes ten actual screenshots per platform covering the entire sequence, with short pauses changed to purple (`#e5a9ff`) and long pauses to blue (`#77baff`). Screenshots are attached to the PR rather than committed as repository assets. The four focused suites also passed on macOS. Lint on the native LF checkout, excluding the ignored `build/` tool cache, reported zero errors and the existing `index.js` console warning.
 
-For a Mac handoff, clone the fork and check out `codex/configurable-reader-colors`. Install the locked JavaScript dependencies with `yarn install --frozen-lockfile`. Use the repository Gemfile for Ruby dependencies (`bundle install`, then `cd ios && bundle exec pod install`). Run `yarn ios` or open `ios/SundarGutka.xcworkspace` in Xcode and choose an installed iOS simulator. Run Metro separately with `yarn start` if needed. Follow the repository's existing Firebase setup when required by a fresh environment.
+These checks establish the main workflow on both platforms. The following broader review remains before marking device review complete:
 
-Native iOS build, WKWebView rendering, and VoiceOver must be validated on a Mac; a successful iOS JavaScript bundle alone does not verify those. Git preserves code and this design note across machines. Local SDKs, dependencies, emulator images, build outputs, and uncommitted work must be set up or transferred separately.
+- System-theme changes, custom heading/translation/transliteration palettes, and all font combinations.
+- Invalid hex entry, per-mode Reset, and editing with the native keyboard open.
+- Larivaar assist, paragraph mode, enabled/disabled vishraams, and reading position after returning from Settings.
+- Narrow portrait, landscape, large system text, and VoiceOver/TalkBack. Confirm all controls remain reachable and the preview is legible.
+
+## Mac setup and environment constraints
+
+Clone the fork and check out `feature/configurable-reader-colors`. Install JavaScript dependencies with `yarn install --frozen-lockfile`, accept the Xcode license, and complete `xcodebuild -runFirstLaunch`. Install Ruby dependencies within the repository Gemfile constraints, then run `bundle exec pod install` in `ios/`. Open `ios/SundarGutka.xcworkspace` in Xcode, select an installed simulator, and start Metro separately if needed. Follow the repository's existing Firebase setup when required by a fresh environment.
+
+The tested Xcode 26.4.1 environment required local setup work that is intentionally excluded from this feature:
+
+- The checked-in Gemfile.lock does not match Gemfile. A local tool bundle used CocoaPods 1.15.2, ActiveSupport 6.1.7, xcodeproj 1.25, and concurrent-ruby below 1.3.4, within the declared Gemfile constraints. CocoaPods regenerated checksum/tool-version entries in Podfile.lock without changing pod versions; that generated lockfile is not part of this PR.
+- Xcode's additional Metal toolchain was installed with `xcodebuild -downloadComponent MetalToolchain`.
+- Xcode 26.4 rejects consteval calls in the installed fmt 11.0.2 pod. The simulator build used a local Pod-header workaround that disables fmt's consteval branch for Apple Clang. See the upstream [React Native report](https://github.com/facebook/react-native/issues/55601) and [fmt report](https://github.com/fmtlib/fmt/issues/4740). This modifies the generated `Pods/fmt/include/fmt/base.h`, not tracked app code. A clean build with this Xcode version needs the workaround or an upstream compatibility fix; the feature does not upgrade unrelated native dependencies.
+
+The native results apply to the environment described above. Tool activation, build commands, workaround script, logs, and simulator flows are saved in the local ignored `build/` directory. Git preserves the feature and this design note across machines; SDKs, dependencies, emulator images, and build outputs require local setup.
