@@ -3,11 +3,33 @@ apply plugin: "org.jetbrains.kotlin.android"
 apply plugin: "com.facebook.react"
 apply plugin: "com.google.gms.google-services"
 apply plugin: "com.google.firebase.crashlytics"
-// firebase-perf plugin removed: the firebase-perf library and @react-native-firebase/perf
-// package are not in the project dependencies. The plugin rewrites OkHttp bytecode to inject
-// FirebasePerfOkHttpClient, which causes a NoClassDefFoundError crash at startup when the
-// library is absent. Re-add both the library and this plugin together if perf monitoring is needed.
+// firebase-perf: @react-native-firebase/perf is installed again, so the native
+// firebase-perf library is on the classpath via autolinking. This plugin rewrites
+// OkHttp bytecode to inject FirebasePerfOkHttpClient and enables automatic
+// instrumentation; classpath is declared in android/build.gradle.
+apply plugin: "com.google.firebase.firebase-perf"
 
+
+/**
+ * Which CPU architectures are built and packaged.
+ *
+ * ARM only. No current consumer Android phone is x86, and shipping the two x86
+ * variants cost more than their audience: on a device that reports BOTH x86_64
+ * and arm64 (a Chromebook, a cloud phone, an emulator with ARM translation),
+ * SoLoader's fallback unpacker can extract the arm64 libraries into a process
+ * running as x86_64, and the linker refuses them —
+ *   UnsatisfiedLinkError: ... is for EM_AARCH64 (183) instead of EM_X86_64 (62)
+ * — which kills the app at launch, before any JS runs, so nothing in the app
+ * can catch it. Those devices now install the ARM build and translate it, which
+ * is self-consistent. It also drops roughly 40% of the universal APK.
+ *
+ * Read from the property rather than hardcoded, so the documented emulator
+ * override still works:  ./gradlew <task> -PreactNativeArchitectures=x86_64
+ */
+def reactNativeArchitectures() {
+    def value = project.getProperties().get("reactNativeArchitectures")
+    return value ? value.split(",").toList() : ["armeabi-v7a", "arm64-v8a"]
+}
 
 /**
  * This is the configuration block to customize your React Native Android app.
@@ -64,7 +86,16 @@ react {
 /**
  * Set this to true to Run Proguard on Release builds to minify the Java bytecode.
  */
-def enableProguardInReleaseBuilds = false
+def enableProguardInReleaseBuilds = true
+
+/**
+ * Upload the R8 mapping file and native symbols to Crashlytics. Only the build that
+ * ships passes -PuploadCrashlyticsSymbols (or =true), so local, PR and QA release
+ * builds do not depend on Firebase being reachable or send it symbols for builds
+ * nobody installs. uploadCrashlyticsSymbols=false leaves uploads off.
+ */
+def uploadCrashlyticsSymbolsValue = project.findProperty("uploadCrashlyticsSymbols")?.toString()?.trim()?.toLowerCase()
+def uploadCrashlyticsSymbols = uploadCrashlyticsSymbolsValue != null && (uploadCrashlyticsSymbolsValue == "" || uploadCrashlyticsSymbolsValue == "true")
 
 /**
  * The preferred build flavor of JavaScriptCore (JSC)
@@ -91,8 +122,8 @@ android {
         targetSdkVersion = rootProject.ext.targetSdkVersion
         versionCode = 170
         versionName = "5.9"
-         ndk {
-            abiFilters "arm64-v8a", "armeabi-v7a", "x86", "x86_64"
+        ndk {
+            abiFilters.addAll(reactNativeArchitectures())
         }
     }
     
@@ -113,12 +144,138 @@ android {
             // see https://reactnative.dev/docs/signed-apk-android.
             signingConfig signingConfigs.debug
             minifyEnabled enableProguardInReleaseBuilds
+            shrinkResources enableProguardInReleaseBuilds
             proguardFiles getDefaultProguardFile("proguard-android.txt"), "proguard-rules.pro"
+
+            // Native crash reporting already works: firebase-crashlytics-ndk is on the
+            // runtime classpath via @react-native-firebase/crashlytics, so a SIGSEGV or
+            // SIGBUS in a .so does reach Crashlytics. What was missing is the symbol
+            // upload, so those reports arrive with no frames at all and read as
+            // "libc.so / unknown" - undiagnosable, and the largest native issue by
+            // affected users. This only produces and uploads a symbol file; it changes
+            // nothing the app does at runtime and nothing a user can see.
+            //
+            // Unlike the R8 mapping file, the plugin does not upload native symbols on
+            // its own, so this is wired up below. Both uploads authenticate from the app
+            // details in google-services.json; nothing extra is configured on the machine
+            // that builds the release. Both happen only with -PuploadCrashlyticsSymbols.
+            firebaseCrashlytics {
+                mappingFileUploadEnabled = uploadCrashlyticsSymbols
+                nativeSymbolUploadEnabled = true
+                // AGP nests this under the merge task name; the shorter path that most
+                // guides quote does not exist here and fails the build.
+                unstrippedNativeLibsDir = "build/intermediates/merged_native_libs/release/mergeReleaseNativeLibs/out/lib"
+            }
         }
     }
     namespace 'com.WahegurooNetwork.SundarGutka'
 
+    // Extract native libs (.so) to /data/app/.../lib at install time instead of
+    // loading them directly, uncompressed, from inside the APK. The modern AGP
+    // default (useLegacyPackaging = false / extractNativeLibs="false") makes
+    // SoLoader mmap the DSOs straight out of the APK; on a subset of Android 11/12
+    // devices and on partial/updated installs that path intermittently fails with
+    //   SoLoaderDSONotFoundError: couldn't find DSO to load: libreactnative.so
+    // crashing the app on startup before any JS runs. Extracting to the standard
+    // native library directory restores the reliable linker search path. Costs a
+    // little install footprint; buys back a whole class of startup crashes.
+    packagingOptions {
+        jniLibs {
+            useLegacyPackaging = true
+        }
+    }
+
 }
+
+// React Native's Android runtime reaches this build as a prebuilt AAR from Maven
+// Central, so nothing under node_modules/react-native/ReactAndroid is ever
+// compiled and a patch-package patch of it can never reach the APK. The guard
+// rewrites the packaged bytecode instead; its javadoc in android/buildSrc says
+// which crashes it addresses and why each one is safe to swallow.
+//
+// Escape hatch for React Native upgrades: -PskipAnimatedCrashGuard (or the same
+// key in gradle.properties) builds without the rewrite and without the version
+// pin below, so an upgrade is not blocked while the guard is re-verified. A build
+// made this way ships WITHOUT the crash fixes, so release tasks refuse it.
+// On for -PskipAnimatedCrashGuard or =true; skipAnimatedCrashGuard=false (e.g.
+// left in gradle.properties) keeps the guard on.
+def skipAnimatedCrashGuardValue = project.findProperty("skipAnimatedCrashGuard")?.toString()?.trim()?.toLowerCase()
+def skipAnimatedCrashGuard = skipAnimatedCrashGuardValue != null && (skipAnimatedCrashGuardValue == "" || skipAnimatedCrashGuardValue == "true")
+if (skipAnimatedCrashGuard) {
+    // Refused for anything that packages or installs the release variant
+    // (assembleRelease, bundleRelease, packageRelease, installRelease, and the
+    // same for any future flavor; plain `assemble`/`build` pull these in too), so
+    // the flag cannot ship a build that lacks the crash fixes this guard exists for.
+    gradle.taskGraph.whenReady { graph ->
+        def releaseTasks = graph.allTasks.findAll {
+            it.project == project && it.name ==~ /(assemble|bundle|package|install)\w*Release/
+        }
+        if (!releaseTasks.isEmpty()) {
+            throw new GradleException(
+                "-PskipAnimatedCrashGuard cannot be used to build a release " +
+                "(${releaseTasks*.name.join(', ')}). Re-verify the guard against the installed " +
+                "React Native instead.")
+        }
+    }
+    logger.warn("AnimatedCrashGuard is DISABLED (-PskipAnimatedCrashGuard). Do not release this build.")
+}
+
+androidComponents {
+    onVariants(selector().all()) { variant ->
+        if (skipAnimatedCrashGuard) return
+        variant.instrumentation.transformClassesWith(
+            com.sundargutka.gradle.AnimatedCrashGuard.class,
+            com.android.build.api.instrumentation.InstrumentationScope.ALL
+        ) { }
+        // The guard adds an exception handler, which changes control flow, so the
+        // stack map frames of the methods it touches have to be recomputed.
+        variant.instrumentation.setAsmFramesComputationMode(
+            com.android.build.api.instrumentation.FramesComputationMode.COMPUTE_FRAMES_FOR_INSTRUMENTED_METHODS
+        )
+    }
+}
+
+// With -PuploadCrashlyticsSymbols, release builds upload the R8 mapping file
+// automatically, which is why Java stack traces come back readable. Native symbols
+// are the one Crashlytics upload the plugin leaves to the caller, so the same flag
+// chains it onto the release build here. Without the flag nothing is uploaded, and
+// a warning says so, because a shipped build without symbols is how the largest
+// native issue ended up with no frames at all.
+if (!uploadCrashlyticsSymbols) {
+    gradle.taskGraph.whenReady { graph ->
+        if (graph.allTasks.any { it.project == project && it.name ==~ /(assemble|bundle)\w*Release/ }) {
+            logger.warn("Crashlytics symbols are NOT uploaded for this release build. " +
+                "Pass -PuploadCrashlyticsSymbols for a build that ships.")
+        }
+    }
+}
+
+tasks.configureEach { task ->
+    if (uploadCrashlyticsSymbols && (task.name == "assembleRelease" || task.name == "bundleRelease")) {
+        task.finalizedBy("uploadCrashlyticsSymbolFileRelease")
+    }
+    // The symbol generator reads merged_native_libs but does not declare it, so
+    // once it is part of the graph Gradle rejects the build rather than risk
+    // reading that directory before the libraries land in it.
+    if (task.name == "generateCrashlyticsSymbolFileRelease") {
+        task.dependsOn("mergeReleaseNativeLibs")
+    }
+}
+
+// The guard is written against one React Native version. A class it can no longer
+// find fails the build from inside the visitor, but a class that moved package
+// would simply never match, so pin the version it was verified against.
+def guardedReactNativeVersion = "0.78.2"
+def installedReactNativeVersion = new groovy.json.JsonSlurper()
+        .parse(file("../../node_modules/react-native/package.json")).version
+if (!skipAnimatedCrashGuard && installedReactNativeVersion != guardedReactNativeVersion) {
+    throw new GradleException(
+        "AnimatedCrashGuard was verified against React Native ${guardedReactNativeVersion} " +
+        "but ${installedReactNativeVersion} is installed. Re-verify the guard against the " +
+        "new runtime, then update guardedReactNativeVersion in android/app/build.gradle " +
+        "(or build with -PskipAnimatedCrashGuard until then; not for release).")
+}
+
 dependencies {
     // The version of react-native is set by the React Native Gradle Plugin
     implementation project(':react-native-splash-screen')

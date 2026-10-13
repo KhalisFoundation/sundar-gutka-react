@@ -1,0 +1,34 @@
+diff --git a/node_modules/react-native-gesture-handler/android/src/main/java/com/swmansion/gesturehandler/react/RNGestureHandlerRootView.kt b/node_modules/react-native-gesture-handler/android/src/main/java/com/swmansion/gesturehandler/react/RNGestureHandlerRootView.kt
+index ebce5f9..d1cd8c1 100644
+--- a/node_modules/react-native-gesture-handler/android/src/main/java/com/swmansion/gesturehandler/react/RNGestureHandlerRootView.kt
++++ b/node_modules/react-native-gesture-handler/android/src/main/java/com/swmansion/gesturehandler/react/RNGestureHandlerRootView.kt
+@@ -32,10 +32,25 @@ class RNGestureHandlerRootView(context: Context?) : ReactViewGroup(context) {
+     rootHelper?.tearDown()
+   }
+ 
+-  override fun dispatchTouchEvent(ev: MotionEvent) = if (rootViewEnabled && rootHelper!!.dispatchTouchEvent(ev)) {
+-    true
+-  } else {
+-    super.dispatchTouchEvent(ev)
++  override fun dispatchTouchEvent(ev: MotionEvent): Boolean = try {
++    if (rootViewEnabled && rootHelper!!.dispatchTouchEvent(ev)) {
++      true
++    } else {
++      super.dispatchTouchEvent(ev)
++    }
++  } catch (e: IllegalArgumentException) {
++    // Android's ScrollView.onTouchEvent (and RN's ReactScrollView) can throw
++    // "pointerIndex out of range" / "invalid pointerIndex -1" during a multi-touch
++    // POINTER_UP, when the active pointer's index resolves to -1 mid-gesture. This
++    // is a framework bug in ScrollView.onTouchEvent that surfaces here because the
++    // exception propagates back up through this dispatchTouchEvent frame. Dropping
++    // the offending touch frame is far better than crashing the whole app.
++    Log.w(
++      ReactConstants.TAG,
++      "[GESTURE HANDLER] Ignoring MotionEvent that ScrollView failed to handle",
++      e,
++    )
++    false
+   }
+ 
+   override fun dispatchGenericMotionEvent(event: MotionEvent) =

@@ -13,6 +13,7 @@ module.exports = {
       "|react-native-safe-area-context" +
       "|react-native-screens" +
       "|react-native-fs" +
+      "|react-native-collapsible" +
       ")/)",
   ],
   moduleNameMapper: {

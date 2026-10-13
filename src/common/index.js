@@ -13,7 +13,7 @@ import {
 } from "./components";
 import orderedBani from "./components/BaniList/baniOrderHelper";
 import constant from "./constant";
-import useTheme from "./context";
+import useTheme, { useNetwork } from "./context";
 import defaultBaniOrder from "./defaultBaniOrder";
 import {
   allowTracking,
@@ -30,7 +30,20 @@ import {
   trackAudioLinkRequest,
   trackScrollProgress,
 } from "./firebase/analytics";
-import { logError, initializeCrashlytics, setCustomKey, logMessage } from "./firebase/crashlytics";
+import {
+  isNetworkFailure,
+  logError,
+  logNetworkError,
+  initializeCrashlytics,
+  setCustomKey,
+  logMessage,
+} from "./firebase/crashlytics";
+import {
+  initializePerformanceMonitoring,
+  startPerformanceTrace,
+  stopTrace,
+  resetTrace,
+} from "./firebase/performance";
 import baseFontSize, { validateBaniOrder } from "./helpers";
 import useKeepAwake from "./hooks/keepAwake";
 import useBackHandler from "./hooks/useBackHandler";
@@ -62,9 +75,15 @@ export {
   constant,
   actions,
   STRINGS,
+  isNetworkFailure,
   logError,
   logMessage,
+  logNetworkError,
   initializeCrashlytics,
+  initializePerformanceMonitoring,
+  startPerformanceTrace,
+  stopTrace,
+  resetTrace,
   allowTracking,
   trackReaderEvent,
   trackNavBar,
@@ -106,6 +125,7 @@ export {
   convertToUnicode,
   BottomNavigation,
   useTheme,
+  useNetwork,
   useThemedStyles,
   ListItemTitle,
   useBackHandler,

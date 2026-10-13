@@ -1,0 +1,9 @@
+<?xml version="1.0" encoding="utf-8"?>
+<!--
+  Resources that are only ever looked up by NAME from JavaScript, which the
+  release resource shrinker cannot see: the playback notification icon
+  (TrackPlayerUtils) and the reminder sounds (notifications.js). Without this,
+  shrinkResources removes ic_notification from release builds.
+-->
+<resources xmlns:tools="http://schemas.android.com/tools"
+    tools:keep="@drawable/ic_notification,@raw/waheguru_soul,@raw/wake_up_jap" />

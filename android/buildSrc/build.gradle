@@ -1,0 +1,31 @@
+// Build logic that runs against the app's own build, not against the app.
+//
+// It exists because React Native's Android runtime reaches this project as a
+// prebuilt AAR from Maven Central, so a patch-package patch of
+// node_modules/react-native/ReactAndroid never compiles and never reaches the
+// APK. See AnimatedCrashGuard for what is rewritten and why.
+plugins {
+    id 'java'
+}
+
+java {
+    sourceCompatibility = JavaVersion.VERSION_17
+    targetCompatibility = JavaVersion.VERSION_17
+}
+
+repositories {
+    google()
+    mavenCentral()
+}
+
+dependencies {
+    implementation gradleApi()
+    // Not compileOnly: buildSrc output loads in the PARENT of the classloader
+    // that holds the root buildscript's Android Gradle Plugin, so a compile-only
+    // dependency here resolves at compile time and then vanishes at runtime.
+    // Parent-first delegation means both classloaders end up on this one copy,
+    // which is why the version must track the plugin in android/build.gradle.
+    implementation 'com.android.tools.build:gradle-api:8.8.2'
+    implementation 'org.ow2.asm:asm:9.6'
+    implementation 'org.ow2.asm:asm-commons:9.6'
+}

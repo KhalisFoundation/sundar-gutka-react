@@ -1454,6 +1454,8 @@ PODS:
     - Yoga
   - react-native-keep-awake (1.3.1):
     - React-Core
+  - react-native-netinfo (12.0.1):
+    - React-Core
   - react-native-restart (0.0.27):
     - React-Core
   - react-native-safe-area-context (5.4.1):
@@ -2081,6 +2083,7 @@ DEPENDENCIES:
   - React-microtasksnativemodule (from `../node_modules/react-native/ReactCommon/react/nativemodule/microtasks`)
   - "react-native-blur (from `../node_modules/@react-native-community/blur`)"
   - "react-native-keep-awake (from `../node_modules/@sayem314/react-native-keep-awake`)"
+  - "react-native-netinfo (from `../node_modules/@react-native-community/netinfo`)"
   - react-native-restart (from `../node_modules/react-native-restart`)
   - react-native-safe-area-context (from `../node_modules/react-native-safe-area-context`)
   - "react-native-slider (from `../node_modules/@react-native-community/slider`)"
@@ -2245,6 +2248,8 @@ EXTERNAL SOURCES:
     :path: "../node_modules/@react-native-community/blur"
   react-native-keep-awake:
     :path: "../node_modules/@sayem314/react-native-keep-awake"
+  react-native-netinfo:
+    :path: "../node_modules/@react-native-community/netinfo"
   react-native-restart:
     :path: "../node_modules/react-native-restart"
   react-native-safe-area-context:
@@ -2418,6 +2423,7 @@ SPEC CHECKSUMS:
   React-microtasksnativemodule: fd98e3e44af51599576705ec7a85a36e35978913
   react-native-blur: 83afb101cb91da465c4ae996b283904ed0683aec
   react-native-keep-awake: 03b74eebe4f2bb5e8478fc8f420651a92463b6f8
+  react-native-netinfo: bed7e7b8f68e22e0862a77d7df28d31faa66375d
   react-native-restart: 0bc732f4461709022a742bb29bcccf6bbc5b4863
   react-native-safe-area-context: dde2052b903c11d677c320b599c3244021c34ce8
   react-native-slider: a44050d3484444f4edcdc09ffafd6437c8dc2701

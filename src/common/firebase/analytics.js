@@ -6,6 +6,7 @@ import {
 import { getApp } from "@react-native-firebase/app";
 import { logError } from "./crashlytics";
 import { sanitizeName } from "./helper";
+import { initializePerformanceMonitoring } from "./performance";
 
 const app = getApp();
 const analytics = getAnalytics(app);
@@ -55,6 +56,8 @@ const trackEvent = async (category, action, label) => {
 };
 
 const allowTracking = async (isStatistics) => {
+  // Performance monitoring follows the same Statistics setting.
+  initializePerformanceMonitoring(isStatistics);
   try {
     await setAnalyticsCollectionEnabled(analytics, isStatistics);
   } catch (error) {

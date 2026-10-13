@@ -8,7 +8,7 @@ import {
   constant,
   actions,
   checkForBaniDBUpdate,
-  logError,
+  logNetworkError,
   StatusBarComponent,
   SafeArea,
   CustomText,
@@ -37,7 +37,9 @@ const DatabaseUpdateScreen = ({ navigation }) => {
       dispatch(actions.toggleDatabaseUpdateAvailable(needUpdate));
     } catch (error) {
       dispatch(actions.toggleDatabaseUpdateAvailable(false));
-      logError(error);
+      // Offline is a breadcrumb; a real fault (e.g. the endpoint answering
+      // 404/500) is recorded once, here.
+      logNetworkError("DatabaseUpdate: update check failed", error);
       setIsLoading(false);
     }
   };

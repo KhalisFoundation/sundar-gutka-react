@@ -16,6 +16,7 @@ import {
   trackScreenView,
 } from "./analytics";
 import { logError } from "./crashlytics";
+import { initializePerformanceMonitoring } from "./performance";
 
 jest.mock("@react-native-firebase/app", () => ({
   getApp: jest.fn(() => ({})),
@@ -29,6 +30,10 @@ jest.mock("@react-native-firebase/analytics", () => ({
 
 jest.mock("./crashlytics", () => ({
   logError: jest.fn(),
+}));
+
+jest.mock("./performance", () => ({
+  initializePerformanceMonitoring: jest.fn(() => Promise.resolve()),
 }));
 
 // Passthrough — lets safeStr/safeInt values reach logEvent unchanged
@@ -57,6 +62,13 @@ describe("allowTracking", () => {
   it("disables analytics collection", async () => {
     await allowTracking(false);
     expect(setAnalyticsCollectionEnabled).toHaveBeenCalledWith(expect.anything(), false);
+  });
+
+  it("switches performance monitoring with the same Statistics setting", async () => {
+    await allowTracking(false);
+    expect(initializePerformanceMonitoring).toHaveBeenLastCalledWith(false);
+    await allowTracking(true);
+    expect(initializePerformanceMonitoring).toHaveBeenLastCalledWith(true);
   });
 
   it("does not throw and calls logError when setAnalyticsCollectionEnabled rejects", async () => {
