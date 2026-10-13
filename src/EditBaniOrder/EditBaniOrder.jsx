@@ -6,8 +6,8 @@ import DraggableFlatList, {
 } from "react-native-draggable-flatlist";
 import { GestureHandlerRootView } from "react-native-gesture-handler";
 import { useSelector, useDispatch, batch } from "react-redux";
-import useTheme from "@common/context";
-import useThemedStyles from "@common/hooks/useThemedStyles";
+import useTokens from "@common/hooks/useTokens";
+import useTokenStyles from "@common/hooks/useTokenStyles";
 import {
   defaultBaniOrder,
   actions,
@@ -22,8 +22,8 @@ import { activeColor, createStyles } from "./styles";
 
 const EditBaniOrder = () => {
   logMessage(constant.EDIT_BANI_ORDER);
-  const { theme } = useTheme();
-  const styles = useThemedStyles(createStyles);
+  const { c } = useTokens();
+  const styles = useTokenStyles(createStyles);
   const baniList = useSelector((state) => state.baniList);
   const baniOrder = useSelector((state) => state.baniOrder);
   const [isReset, setReset] = useState(false);
@@ -41,9 +41,14 @@ const EditBaniOrder = () => {
   const { rowItem, text } = styles;
   const dispatch = useDispatch();
 
+  // Inset hairline between rows, same as the bani list. Never after the last
+  // row, so the list ends on whitespace. Defined with useCallback so the list
+  // is not handed a brand-new component type on every render.
+  const Separator = useCallback(() => <View style={styles.separator} />, [styles]);
+
   const renderItem = useCallback(
     ({ item, drag, isActive }) => {
-      const activeStyle = activeColor(isActive, item.backgroundColor, theme);
+      const activeStyle = activeColor(isActive, item.backgroundColor, c);
       return (
         <ShadowDecorator>
           <ScaleDecorator>
@@ -56,7 +61,7 @@ const EditBaniOrder = () => {
         </ShadowDecorator>
       );
     },
-    [rowItem, text]
+    [rowItem, text, c]
   );
 
   useEffect(() => {
@@ -104,14 +109,15 @@ const EditBaniOrder = () => {
     setOrderData(ids);
   };
   return (
-    <SafeArea backgroundColor={theme.colors.headerVariant}>
-      <StatusBarComponent backgroundColor={theme.colors.headerVariant} />
+    <SafeArea backgroundColor={c.background} edges={["bottom"]}>
+      <StatusBarComponent backgroundColor={c.background} />
       <Header setReset={setReset} />
       <GestureHandlerRootView style={styles.gestureHandlerRootView}>
         <DraggableFlatList
           data={baniListData}
           keyExtractor={(item) => item.id}
           renderItem={renderItem}
+          ItemSeparatorComponent={Separator}
           onDragEnd={handleDragEnd}
         />
       </GestureHandlerRootView>

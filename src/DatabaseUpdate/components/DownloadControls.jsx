@@ -1,6 +1,7 @@
 import React from "react";
-import { Pressable, View, ActivityIndicator } from "react-native";
+import { Pressable, View } from "react-native";
 import PropTypes from "prop-types";
+import { Spinner } from "@common/components/ui";
 import useTheme from "@common/context";
 import useThemedStyles from "@common/hooks/useThemedStyles";
 import { STRINGS, CustomText } from "@common";
@@ -18,7 +19,7 @@ const DownloadControls = ({ downloading, onStartDownload, darkModeText }) => {
         disabled={downloading}
       >
         {downloading ? (
-          <ActivityIndicator color={theme.staticColors.WHITE_COLOR} />
+          <Spinner color={theme.c.onPrimary} />
         ) : (
           <CustomText style={[styles.buttonText, darkModeText]}>{STRINGS.startDownload}</CustomText>
         )}

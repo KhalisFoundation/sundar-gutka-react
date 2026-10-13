@@ -1,33 +1,23 @@
 import React from "react";
-import { View } from "react-native";
 import { useSelector, useDispatch } from "react-redux";
-import { ListItem, Avatar } from "@rneui/themed";
 import { toggleScreenAwake } from "@common/actions";
-import { STRINGS, useThemedStyles, ListItemTitle, ThemedSwitch } from "@common";
-import createStyles from "../styles";
+import { STRINGS } from "@common";
+import { SettingsToggleRow } from "./comon/SettingsRow";
 
 const KeepAwake = () => {
-  const styles = useThemedStyles(createStyles);
   const dispatch = useDispatch();
   const isScreenAwake = useSelector((state) => state.isScreenAwake);
   const isAutoScroll = useSelector((state) => state.isAutoScroll);
 
-  const { KEEP_AWAKE } = STRINGS;
-  const screenIcon = require("../../../images/screenonicon.png");
   return (
-    <ListItem bottomDivider containerStyle={styles.containerNightStyles}>
-      <View style={styles.iconContainerStyle}>
-        <Avatar source={screenIcon} avatarStyle={styles.avatarStyle} />
-      </View>
-      <ListItem.Content>
-        <ListItemTitle title={KEEP_AWAKE} style={styles.listItemTitle} />
-      </ListItem.Content>
-      <ThemedSwitch
-        value={isScreenAwake}
-        disabled={isAutoScroll}
-        onValueChange={(value) => dispatch(toggleScreenAwake(value))}
-      />
-    </ListItem>
+    <SettingsToggleRow
+      title={STRINGS.KEEP_AWAKE}
+      iconImage={require("../../../images/screenonicon.png")}
+      value={isScreenAwake}
+      disabled={isAutoScroll}
+      onValueChange={(value) => dispatch(toggleScreenAwake(value))}
+    />
   );
 };
+
 export default KeepAwake;

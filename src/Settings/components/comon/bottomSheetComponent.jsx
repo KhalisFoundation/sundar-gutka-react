@@ -1,16 +1,12 @@
-import React, { useEffect, useState } from "react";
-import { View, Modal, Dimensions, Pressable, Platform, StyleSheet } from "react-native";
-import { useSafeAreaInsets } from "react-native-safe-area-context";
+import React from "react";
 import SoundPlayer from "react-native-sound-player";
 import { useDispatch } from "react-redux";
-import { BlurView } from "@react-native-community/blur";
-import { Divider, Icon, ListItem } from "@rneui/themed";
 import PropTypes from "prop-types";
-import useTheme from "@common/context";
-import useThemedStyles from "@common/hooks/useThemedStyles";
-import { constant, CustomText, ListItemTitle } from "@common";
-import createStyles from "../../styles";
+import { STRINGS } from "@common";
+import SelectSheet from "./SelectSheet";
 
+// Dispatches a redux action for the chosen option. A thin adapter over
+// `SelectSheet`, which owns the presentation for every chooser in Settings.
 const BottomSheetComponent = ({
   isVisible,
   actionConstant,
@@ -18,85 +14,38 @@ const BottomSheetComponent = ({
   title,
   action,
   toggleVisible,
+  onChange = undefined,
 }) => {
-  const { theme } = useTheme();
-  const styles = useThemedStyles(createStyles);
   const dispatch = useDispatch();
-  const insets = useSafeAreaInsets();
-  const { width, height } = Dimensions.get("window");
 
-  const [orientation, setOrientation] = useState(width < height ? "PORTRAIT" : "LANDSCAPE");
-  useEffect(() => {
-    Dimensions.addEventListener("change", ({ window: { widthDimension, heightDimenstion } }) => {
-      if (widthDimension < heightDimenstion) {
-        setOrientation(constant.PORTRAIT);
-      } else {
-        setOrientation(constant.LANDSCAPE);
-      }
-    });
-  }, []);
-  const bottomStyle = [];
-  if (Platform.OS === "ios") {
-    bottomStyle.push(styles.viewWrapper);
-    bottomStyle.push(orientation === constant.LANDSCAPE ? styles.width_90 : styles.width_100);
-  } else {
-    bottomStyle.push(styles.androidViewWrapper);
-  }
+  const onSelect = (key) => {
+    toggleVisible(false);
+    dispatch(action(key));
+    // Some settings need work doing OUTSIDE the store once the value changes.
+    // The reminder sound is one: the chosen sound is baked into each scheduled
+    // notification when it is scheduled, so storing a new one changes nothing
+    // that is already in the OS queue until the schedule is rewritten.
+    onChange?.(key);
+    // Reminder-sound options are named after their audio file; play a preview
+    // so the choice can be heard rather than guessed from its label.
+    if (key.includes(".mp3")) {
+      SoundPlayer.playSoundFile(key.split(".mp3")[0], ".mp3");
+    }
+  };
 
   return (
-    <Modal
+    <SelectSheet
       visible={isVisible}
-      animationType="fade"
-      transparent
-      statusBarTranslucent
-      supportedOrientations={[
-        "landscape",
-        "landscape-left",
-        "landscape-right",
-        "portrait",
-        "portrait-upside-down",
-      ]}
-    >
-      <Pressable style={StyleSheet.absoluteFill} onPress={() => toggleVisible(false)}>
-        <BlurView
-          reducedTransparencyFallbackColor={theme.staticColors.NIGHT_OPACITY_BLACK}
-          style={styles.blurViewStyle}
-          blurType="dark"
-          enabled
-        />
-        <View style={bottomStyle}>
-          <CustomText
-            style={[styles.bottomSheetTitle, styles.listItemTitle, styles.containerNightStyles]}
-          >
-            {title}
-          </CustomText>
-          <Divider />
-          {actionConstant.map((item) => (
-            <ListItem
-              key={item.key}
-              bottomDivider
-              containerStyle={styles.containerNightStyles}
-              onPress={() => {
-                toggleVisible(false);
-                dispatch(action(item.key));
-                if (item.key.includes(".mp3")) {
-                  const soundTitle = item.key.split(".mp3")[0];
-                  SoundPlayer.playSoundFile(soundTitle, ".mp3");
-                }
-              }}
-            >
-              <ListItem.Content>
-                <ListItemTitle title={item.title} style={styles.listItemTitle} />
-              </ListItem.Content>
-              {value === item.key && <Icon color={theme.colors.primaryText} name="check" />}
-            </ListItem>
-          ))}
-          <View style={[styles.containerNightStyles, { paddingBottom: insets.bottom }]} />
-        </View>
-      </Pressable>
-    </Modal>
+      title={title}
+      options={actionConstant}
+      value={value}
+      onSelect={onSelect}
+      onClose={() => toggleVisible(false)}
+      closeLabel={STRINGS.cancel}
+    />
   );
 };
+
 BottomSheetComponent.propTypes = {
   isVisible: PropTypes.bool.isRequired,
   actionConstant: PropTypes.arrayOf(PropTypes.shape()).isRequired,
@@ -104,5 +53,8 @@ BottomSheetComponent.propTypes = {
   title: PropTypes.string.isRequired,
   action: PropTypes.func.isRequired,
   toggleVisible: PropTypes.func.isRequired,
+  /** Runs after the value is stored, for side effects the store cannot do. */
+  onChange: PropTypes.func,
 };
+
 export default BottomSheetComponent;

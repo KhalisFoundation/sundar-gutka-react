@@ -99,57 +99,25 @@ jest.mock("./hooks", () => ({
   useFooterAnimation: () => ({ animationPosition: { value: 0 } }),
 }));
 
-// Mock theme + styles
-const mockTheme = {
-  mode: "light",
-  colors: {
-    surface: "#FFFFFF",
-    primary: "#123456",
-    primaryHeaderVariant: "#789ABC",
-    primaryText: "#000000",
-  },
-  staticColors: {
-    HIGHLIGHT_COLOR: "#FFFF00",
-    WHITE_COLOR: "#FFFFFF",
-  },
-  spacing: {
-    xs: 2,
-    sm: 4,
-    md: 8,
-    lg: 16,
-    xl: 24,
-    xxl: 32,
-    xxxl: 48,
-  },
-  typography: {
-    sizes: {
-      xs: 10,
-      sm: 12,
-      md: 14,
-      lg: 16,
-      xl: 18,
-      xxl: 20,
-      xxxl: 24,
+// The real light theme: it carries the token layer every style reads, so the
+// test can't drift from what the styles expect.
+const mockTheme = require("@theme/lightTheme").default;
+
+// The Reader page follows the READING theme; the light record's values are
+// stood in here, since this test is about the Reader, not theme resolution.
+jest.mock("@theme/reader", () => ({
+  useReaderTheme: () => ({
+    theme: {
+      base: "light",
+      background: { color: "#FFFFFF" },
+      chrome: { progressTrack: "#E5E5E5", progressFill: "#113979" },
     },
-    fonts: {
-      gurbaniPrimary: "GurbaniAkharTrue",
-      balooPaaji: "BalooPaaji2-Regular",
-    },
-  },
-  radius: {
-    sm: 6,
-    md: 10,
-    lg: 16,
-  },
-  components: {
-    header: {
-      height: 56,
-    },
-    bottomNavigation: {
-      height: 65,
-    },
-  },
-};
+  }),
+}));
+
+jest.mock("@common/webViewAvailability", () => ({
+  useWebViewAvailable: () => ({ available: true, recheck: jest.fn() }),
+}));
 
 jest.mock("@common/context", () => ({
   __esModule: true,
@@ -600,16 +568,21 @@ describe("Reader", () => {
     mockPostMessage.mockClear();
     render(<Reader navigation={mockNavigation} route={mockRoute} />);
 
+    // Other actions (e.g. setBottomInset) also post messages, some before load,
+    // so wait for the scrollToPosition message specifically rather than any call.
+    const findScrollToPosition = () =>
+      mockPostMessage.mock.calls
+        .map((call) => JSON.parse(call[0]))
+        .find((msg) => msg.action === "scrollToPosition");
+
     await waitFor(
       () => {
-        expect(mockPostMessage).toHaveBeenCalled();
+        expect(findScrollToPosition()).toBeTruthy();
       },
       { timeout: 1000 }
     );
 
-    const scrollMessage = JSON.parse(mockPostMessage.mock.calls[0][0]);
-    expect(scrollMessage.action).toBe("scrollToPosition");
-    expect(scrollMessage.elementId).toBe("element456");
+    expect(findScrollToPosition().elementId).toBe("element456");
   });
 
   it("re-scrolls when fontSize changes", async () => {

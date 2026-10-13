@@ -1,7 +1,10 @@
 // BottomNavigation.test.jsx
 import React from "react";
+import { Platform } from "react-native";
+import { useSafeAreaInsets } from "react-native-safe-area-context";
 
 import { render, fireEvent, waitFor } from "@testing-library/react-native";
+import components from "@theme/components";
 
 import { getMockDispatch, setMockState } from "@common/test-utils/mocks/react-redux";
 
@@ -79,8 +82,12 @@ describe("BottomNavigation", () => {
     );
   });
 
+  // The Read/Music tabs live in the reader-context bar (Home/Read/Music/Settings).
+  // The home-context bar is Home/Dashboard/Seva/Settings, so tests that exercise
+  // Read/Music render with context="reader".
+
   test("renders four buttons with correct accessibility labels", () => {
-    const { getByLabelText } = render(<BottomNavigation activeKey="Home" />);
+    const { getByLabelText } = render(<BottomNavigation activeKey="Home" context="reader" />);
 
     expect(getByLabelText("bottomnav-Home")).toBeTruthy();
     expect(getByLabelText("bottomnav-Read")).toBeTruthy();
@@ -89,19 +96,19 @@ describe("BottomNavigation", () => {
   });
 
   test("shows labels for non-active items and hides label for the active item", () => {
-    const { queryByText } = render(<BottomNavigation activeKey="Music" />);
+    const { queryByText } = render(<BottomNavigation activeKey="Music" context="reader" />);
 
     // Active "Music" label should be hidden (component shows label only when NOT active)
-    expect(queryByText("Music")).toBeNull();
+    expect(queryByText("Audio")).toBeNull();
 
-    // Others should be visible
-    expect(queryByText("Home")).not.toBeNull();
+    // Others should be visible (reader bar: Home tab is labelled "All Banis")
+    expect(queryByText("All Banis")).not.toBeNull();
     expect(queryByText("Read")).not.toBeNull();
     expect(queryByText("Settings")).not.toBeNull();
   });
 
   test("pressing Home navigates to Home", () => {
-    const { getByLabelText } = render(<BottomNavigation activeKey="Home" />);
+    const { getByLabelText } = render(<BottomNavigation activeKey="Home" context="reader" />);
 
     fireEvent.press(getByLabelText("bottomnav-Home"));
 
@@ -113,7 +120,7 @@ describe("BottomNavigation", () => {
     mockNavigation = createNavigation({ currentRoute: "Home" });
     mockUseNavigation.mockReturnValue(mockNavigation);
 
-    const { getByLabelText } = render(<BottomNavigation activeKey="Home" />);
+    const { getByLabelText } = render(<BottomNavigation activeKey="Home" context="reader" />);
 
     fireEvent.press(getByLabelText("bottomnav-Read"));
 
@@ -127,7 +134,7 @@ describe("BottomNavigation", () => {
     mockNavigation = createNavigation({ currentRoute: "Home" });
     mockUseNavigation.mockReturnValue(mockNavigation);
 
-    const { getByLabelText } = render(<BottomNavigation activeKey="Home" />);
+    const { getByLabelText } = render(<BottomNavigation activeKey="Home" context="reader" />);
 
     fireEvent.press(getByLabelText("bottomnav-Read"));
 
@@ -141,7 +148,7 @@ describe("BottomNavigation", () => {
     mockNavigation = createNavigation({ currentRoute: "Settings" });
     mockUseNavigation.mockReturnValue(mockNavigation);
 
-    const { getByLabelText } = render(<BottomNavigation activeKey="Settings" />);
+    const { getByLabelText } = render(<BottomNavigation activeKey="Settings" context="reader" />);
 
     fireEvent.press(getByLabelText("bottomnav-Read"));
 
@@ -155,7 +162,7 @@ describe("BottomNavigation", () => {
     mockNavigation = createNavigation({ currentRoute: "Home" });
     mockUseNavigation.mockReturnValue(mockNavigation);
 
-    const { getByLabelText } = render(<BottomNavigation activeKey="Home" />);
+    const { getByLabelText } = render(<BottomNavigation activeKey="Home" context="reader" />);
 
     fireEvent.press(getByLabelText("bottomnav-Music"));
 
@@ -166,12 +173,36 @@ describe("BottomNavigation", () => {
     });
   });
 
+  test("pressing Music offline shuts the player down and says why", async () => {
+    // The player in this build streams every track, so offline there is
+    // nothing to play.
+    const common = jest.requireMock("@common");
+    const online = common.useNetwork;
+    common.useNetwork = () => ({ ...online(), isOffline: true, isOnline: false });
+    try {
+      setMockState({ isAudio: false });
+      const { getByLabelText } = render(<BottomNavigation activeKey="Read" context="reader" />);
+
+      fireEvent.press(getByLabelText("bottomnav-Music"));
+
+      await waitFor(() => {
+        expect(common.showErrorToast).toHaveBeenCalledTimes(1);
+      });
+      expect(mockStopTrack).toHaveBeenCalled();
+      expect(mockResetPlayer).toHaveBeenCalled();
+      expect(mockDispatch).toHaveBeenCalledWith({ type: "TOGGLE_AUDIO", payload: false });
+      expect(mockDispatch).not.toHaveBeenCalledWith({ type: "TOGGLE_AUDIO", payload: true });
+    } finally {
+      common.useNetwork = online;
+    }
+  });
+
   test("pressing Music when ALREADY on Reader dispatches actions", async () => {
     setMockState({ isAudio: false });
     mockNavigation = createNavigation({ currentRoute: "Reader" });
     mockUseNavigation.mockReturnValue(mockNavigation);
 
-    const { getByLabelText } = render(<BottomNavigation activeKey="Music" />);
+    const { getByLabelText } = render(<BottomNavigation activeKey="Music" context="reader" />);
 
     fireEvent.press(getByLabelText("bottomnav-Music"));
 
@@ -187,7 +218,7 @@ describe("BottomNavigation", () => {
     mockNavigation = createNavigation({ currentRoute: "Settings" });
     mockUseNavigation.mockReturnValue(mockNavigation);
 
-    const { getByLabelText } = render(<BottomNavigation activeKey="Settings" />);
+    const { getByLabelText } = render(<BottomNavigation activeKey="Settings" context="reader" />);
 
     fireEvent.press(getByLabelText("bottomnav-Music"));
 
@@ -205,7 +236,7 @@ describe("BottomNavigation", () => {
     mockNavigation = createNavigation({ currentRoute: "Settings" });
     mockUseNavigation.mockReturnValue(mockNavigation);
 
-    const { getByLabelText } = render(<BottomNavigation activeKey="Settings" />);
+    const { getByLabelText } = render(<BottomNavigation activeKey="Settings" context="reader" />);
 
     fireEvent.press(getByLabelText("bottomnav-Music"));
 
@@ -221,7 +252,8 @@ describe("BottomNavigation", () => {
 
     fireEvent.press(getByLabelText("bottomnav-Settings"));
 
-    expect(mockNavigation.navigate).toHaveBeenCalledWith("Settings");
+    // The reader bar opens Settings with its bar kept (Read/Music reachable).
+    expect(mockNavigation.navigate).toHaveBeenCalledWith("Settings", { fromReader: true });
   });
 
   test("pressing Music while already open restarts audio into preview mode", async () => {
@@ -229,7 +261,7 @@ describe("BottomNavigation", () => {
     mockNavigation = createNavigation({ currentRoute: "Reader" });
     mockUseNavigation.mockReturnValue(mockNavigation);
 
-    const { getByLabelText } = render(<BottomNavigation activeKey="Music" />);
+    const { getByLabelText } = render(<BottomNavigation activeKey="Music" context="reader" />);
 
     fireEvent.press(getByLabelText("bottomnav-Music"));
 
@@ -244,40 +276,20 @@ describe("BottomNavigation", () => {
     });
   });
 
-  test("As a user entering Settings from Home I want irrelevant tabs hidden So that navigation isn't confusing", () => {
-    // Simulate coming from Home (not Reader)
+  // The home tab bar (All Banis / Dashboard / Seva / Settings) is tested with
+  // the tab navigator, which arrives with the first of those tabs.
+
+  test("As a user on the reader tab bar I want Read and Music tabs visible", () => {
     mockNavigation = createNavigation({ currentRoute: "Settings" });
-    // Set up navigation state to have Home as previous route
-    mockNavigation.getState.mockReturnValue({
-      routes: [{ name: "Home" }, { name: "Settings" }],
-      index: 1,
-    });
-    mockUseNavigation.mockReturnValue(mockNavigation);
-
-    const { getByLabelText, queryByLabelText } = render(<BottomNavigation activeKey="Settings" />);
-
-    // Home and Settings should be visible
-    expect(getByLabelText("bottomnav-Home")).toBeTruthy();
-    expect(getByLabelText("bottomnav-Settings")).toBeTruthy();
-
-    // Read and Music should be hidden on Settings page when coming from Home
-    expect(queryByLabelText("bottomnav-Read")).toBeNull();
-    expect(queryByLabelText("bottomnav-Music")).toBeNull();
-  });
-
-  test("As a user entering Settings from Reader I want Read and Music tabs to stay visible", () => {
-    // Simulate coming from Reader
-    mockNavigation = createNavigation({ currentRoute: "Settings" });
-    // Set up navigation state to have Reader as previous route
     mockNavigation.getState.mockReturnValue({
       routes: [{ name: "Home" }, { name: "Reader" }, { name: "Settings" }],
       index: 2,
     });
     mockUseNavigation.mockReturnValue(mockNavigation);
 
-    const { getByLabelText } = render(<BottomNavigation activeKey="Settings" />);
+    const { getByLabelText } = render(<BottomNavigation activeKey="Settings" context="reader" />);
 
-    // All tabs should be visible when coming from Reader
+    // All tabs should be visible in the reader context
     expect(getByLabelText("bottomnav-Home")).toBeTruthy();
     expect(getByLabelText("bottomnav-Read")).toBeTruthy();
     expect(getByLabelText("bottomnav-Music")).toBeTruthy();
@@ -289,7 +301,7 @@ describe("BottomNavigation", () => {
     mockNavigation = createNavigation({ currentRoute: "Reader" });
     mockUseNavigation.mockReturnValue(mockNavigation);
 
-    const { getByLabelText } = render(<BottomNavigation activeKey="Read" />);
+    const { getByLabelText } = render(<BottomNavigation activeKey="Read" context="reader" />);
 
     expect(getByLabelText("bottomnav-Home")).toBeTruthy();
     expect(getByLabelText("bottomnav-Read")).toBeTruthy();
@@ -303,9 +315,77 @@ describe("BottomNavigation", () => {
     mockNavigation = createNavigation({ currentRoute: "Reader" });
     mockUseNavigation.mockReturnValue(mockNavigation);
 
-    const { getByLabelText } = render(<BottomNavigation activeKey="Read" />);
+    const { getByLabelText } = render(<BottomNavigation activeKey="Read" context="reader" />);
 
     // Music should NOT be null
     expect(getByLabelText("bottomnav-Music")).toBeTruthy();
+  });
+});
+
+// Who pads the bottom safe-area inset, and how much of it.
+//
+// The bar stood ~99pt tall on iPhone — a 65pt box whose own room below the row
+// was followed by all 34pt of the home indicator — which is the band of nav
+// colour below the icons. iOS now pads a capped inset itself.
+//
+// ANDROID MUST NOT MOVE. Its inset is the system navigation bar, up to 48dp of
+// real back/home/recents keys, and its handling is verified on device; the
+// assertions below are here to prove the iOS cap did not leak into it.
+describe("the bottom inset", () => {
+  const findSafeArea = (node) => {
+    if (!node || typeof node !== "object") return null;
+    if (node.props?.edges) return node;
+    return (node.children || []).reduce((found, child) => found || findSafeArea(child), null);
+  };
+
+  const renderBar = ({ os, bottom }) => {
+    Platform.OS = os;
+    useSafeAreaInsets.mockReturnValue({ top: 0, bottom, left: 0, right: 0 });
+    const safeArea = findSafeArea(render(<BottomNavigation activeKey="Home" />).toJSON());
+    // The container is the SafeArea's only child; its style is the array the
+    // component composes.
+    return { safeArea, containerStyle: [].concat(safeArea.children[0].props.style) };
+  };
+
+  afterEach(() => {
+    Platform.OS = "ios";
+    useSafeAreaInsets.mockReturnValue({ top: 0, bottom: 0, left: 0, right: 0 });
+  });
+
+  test("iOS caps it, and pays for the pad with height rather than the row's own box", () => {
+    const { safeArea, containerStyle } = renderBar({ os: "ios", bottom: 34 });
+
+    // The SafeArea has stopped padding, so the capped pad is the only helping.
+    // Read from the token rather than restated: what the number IS belongs to
+    // bottomNavInset.test.js, what this test cares about is that it is applied,
+    // and that the pad is added to the height instead of taken out of the row.
+    const { height, maxInsetIOS } = components.bottomNavigation;
+    expect(safeArea.props.edges).toEqual([]);
+    expect(containerStyle).toContainEqual({
+      paddingBottom: maxInsetIOS,
+      minHeight: height + maxInsetIOS,
+    });
+  });
+
+  test("iOS adds nothing where there is no indicator to clear", () => {
+    const { safeArea, containerStyle } = renderBar({ os: "ios", bottom: 0 });
+
+    expect(safeArea.props.edges).toEqual([]);
+    expect(containerStyle.filter(Boolean)).not.toContainEqual(
+      expect.objectContaining({ paddingBottom: expect.anything() })
+    );
+  });
+
+  test("Android is left exactly as it was: SafeArea pads the whole navigation bar", () => {
+    const { safeArea, containerStyle } = renderBar({ os: "android", bottom: 48 });
+
+    expect(safeArea.props.edges).toEqual(["bottom"]);
+    // No second pad, and no height bumped out from under it.
+    expect(containerStyle.filter(Boolean)).not.toContainEqual(
+      expect.objectContaining({ paddingBottom: expect.anything() })
+    );
+    expect(containerStyle.filter(Boolean)).not.toContainEqual(
+      expect.objectContaining({ minHeight: expect.anything() })
+    );
   });
 });

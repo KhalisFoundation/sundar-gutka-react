@@ -21,7 +21,7 @@ const RefreshIcon = ({ size = 30, color }) => (
 );
 
 RefreshIcon.propTypes = {
-  size: PropTypes.number.isRequired,
+  size: PropTypes.number,
   color: PropTypes.string.isRequired,
 };
 export default RefreshIcon;

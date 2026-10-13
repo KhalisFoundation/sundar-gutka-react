@@ -1,10 +1,10 @@
 const SettingsStyle = (theme) => ({
   headerTitleStyle: {
-    color: theme.colors.primaryText,
+    color: theme.c.textPrimary,
     fontWeight: "normal",
   },
   headerStyle: {
-    backgroundColor: theme.colors.surface,
+    backgroundColor: theme.c.surface,
   },
 });
 

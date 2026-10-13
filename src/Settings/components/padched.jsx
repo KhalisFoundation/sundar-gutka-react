@@ -1,7 +1,7 @@
 import React, { useState } from "react";
 import { useSelector } from "react-redux";
-import { STRINGS } from "@common";
 import { setPadched } from "@common/actions";
+import { STRINGS } from "@common";
 import { ListItemComponent, BottomSheetComponent } from "./comon";
 import { getPadched } from "./comon/strings";
 
@@ -20,16 +20,14 @@ const PadchedSettingsComponent = () => {
         actionConstant={PADCHED_SETTINGS}
         onPressAction={() => toggleVisible(true)}
       />
-      {isVisible && (
-        <BottomSheetComponent
-          isVisible={isVisible}
-          actionConstant={PADCHED_SETTINGS}
-          value={padched}
-          toggleVisible={toggleVisible}
-          title={STRINGS.padchhed_settings}
-          action={setPadched}
-        />
-      )}
+      <BottomSheetComponent
+        isVisible={isVisible}
+        actionConstant={PADCHED_SETTINGS}
+        value={padched}
+        toggleVisible={toggleVisible}
+        title={STRINGS.padchhed_settings}
+        action={setPadched}
+      />
     </>
   );
 };

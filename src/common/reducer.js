@@ -38,6 +38,27 @@ const theme = createReducer(constant.Default, {
   [actionTypes.SET_THEME]: (state, action) => action.value,
 });
 
+// Theme ids whose suggested translation/transliteration defaults have already
+// been applied once. Persisted, so a theme never re-seeds across launches and a
+// user's later manual toggle is permanent. See applyTheme().
+const readerThemeSeeded = (state = {}, action) =>
+  action.type === actionTypes.MARK_READER_THEME_SEEDED ? { ...state, [action.value]: true } : state;
+
+// The backend's reading-theme catalogue (see services/themes). Persisted, so a
+// theme chosen from it still resolves offline.
+const remoteThemes = (state = { version: 0, fetchedAt: 0, themes: [] }, action) => {
+  switch (action.type) {
+    case actionTypes.SET_REMOTE_THEMES:
+      return {
+        version: Number(action.payload?.version) || 0,
+        fetchedAt: Number(action.payload?.fetchedAt) || 0,
+        themes: Array.isArray(action.payload?.themes) ? action.payload.themes : [],
+      };
+    default:
+      return state;
+  }
+};
+
 const isStatusBar = createReducer(true, {
   [actionTypes.TOGGLE_STATUS_BAR]: (state, action) => action.value,
 });
@@ -269,6 +290,8 @@ const rootReducer = combineReducers({
   transliterationLanguage,
   isTransliteration,
   theme,
+  readerThemeSeeded,
+  remoteThemes,
   isAutoScroll,
   isAudio,
   isAudioFeatureEnabled,

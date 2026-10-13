@@ -24,10 +24,10 @@ const BaniDBAbout = () => {
           <CustomText style={styles.listText}>{highlight}</CustomText>
         </View>
       ))}
-      <CustomText style={{ color: theme.colors.primaryText }}>
+      <CustomText style={{ color: theme.c.textPrimary }}>
         {STRINGS.baniDBMistakeText}{" "}
         <CustomText
-          style={{ color: theme.colors.primaryText, textDecorationLine: "underline" }}
+          style={{ color: theme.c.textPrimary, textDecorationLine: "underline" }}
           onPress={() => Linking.openURL("https://tinyurl.com/banidb-signup")}
         >
           {STRINGS.baniDBSignUp}

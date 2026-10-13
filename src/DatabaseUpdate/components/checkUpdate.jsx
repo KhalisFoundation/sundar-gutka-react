@@ -7,7 +7,12 @@ import useThemedStyles from "@common/hooks/useThemedStyles";
 import { STRINGS, ListItemTitle } from "@common";
 import { checkUpdateStyles } from "./styles";
 
-const CheckUpdatesAnimation = ({ isLoading, isUpdateAvailable }) => {
+const CheckUpdatesAnimation = ({
+  isLoading,
+  isUpdateAvailable,
+  isOffline = false,
+  isFailed = false,
+}) => {
   const { theme } = useTheme();
   const styles = useThemedStyles(checkUpdateStyles);
   const rotateAnim = useRef(new Animated.Value(0)).current;
@@ -61,17 +66,27 @@ const CheckUpdatesAnimation = ({ isLoading, isUpdateAvailable }) => {
     <View style={styles.mainWrapper}>
       {isLoading && (
         <ListItem containerStyle={styles.mainWrapper}>
-          <ListItemTitle title={STRINGS.checkForUpdate} style={styles.header} />
+          <ListItemTitle title={STRINGS.checkForUpdate} style={styles.header} numberOfLines={2} />
           <ListItem.Content>
             <Animated.View style={{ transform: [{ rotate: rotateInterpolate }] }}>
-              <Icon name="refresh" type="material" size={35} color={theme.colors.primaryText} />
+              <Icon name="refresh" type="material" size={35} color={theme.c.textPrimary} />
             </Animated.View>
           </ListItem.Content>
         </ListItem>
       )}
+      {/* Offline and a failed request are their own answers: in neither case
+          was anything checked, so "up to date" would be a guess. */}
       {!isUpdateAvailable && !isLoading && (
         <ListItem containerStyle={styles.mainWrapper}>
-          <ListItemTitle title={STRINGS.upToDate} style={styles.header} />
+          <ListItemTitle
+            title={
+              (isOffline && STRINGS.NO_INTERNET) ||
+              (isFailed && STRINGS.errorTitle) ||
+              STRINGS.upToDate
+            }
+            style={styles.header}
+            numberOfLines={3}
+          />
         </ListItem>
       )}
     </View>
@@ -80,6 +95,8 @@ const CheckUpdatesAnimation = ({ isLoading, isUpdateAvailable }) => {
 CheckUpdatesAnimation.propTypes = {
   isLoading: PropTypes.bool.isRequired,
   isUpdateAvailable: PropTypes.bool.isRequired,
+  isOffline: PropTypes.bool,
+  isFailed: PropTypes.bool,
 };
 
 export default CheckUpdatesAnimation;

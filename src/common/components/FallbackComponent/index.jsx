@@ -25,7 +25,7 @@ const FallBack = () => {
         <View style={btnWrap}>
           <Button onPress={() => RNRestart.Restart()} title={STRINGS.errorReload} />
           <Button
-            onPress={() => Linking.openURL("https://form.jotform.com/222881039684161")}
+            onPress={() => Linking.openURL("https://tally.so/r/obPOg1")}
             title={STRINGS.errorReport}
           />
         </View>
