@@ -1800,6 +1800,8 @@ PODS:
     - React-Core
   - ReactNativeLocalization (2.3.2):
     - React-Core
+  - RNAudioRecorderPlayer (3.6.14):
+    - React-Core
   - RNCAsyncStorage (2.2.0):
     - React-Core
   - RNDateTimePicker (8.4.1):
@@ -2121,6 +2123,7 @@ DEPENDENCIES:
   - ReactCommon/turbomodule/core (from `../node_modules/react-native/ReactCommon`)
   - ReactNativeExceptionHandler (from `../node_modules/react-native-exception-handler`)
   - ReactNativeLocalization (from `../node_modules/react-native-localization`)
+  - RNAudioRecorderPlayer (from `../node_modules/react-native-audio-recorder-player`)
   - "RNCAsyncStorage (from `../node_modules/@react-native-async-storage/async-storage`)"
   - "RNDateTimePicker (from `../node_modules/@react-native-community/datetimepicker`)"
   - RNDeviceInfo (from `../node_modules/react-native-device-info`)
@@ -2324,6 +2327,8 @@ EXTERNAL SOURCES:
     :path: "../node_modules/react-native-exception-handler"
   ReactNativeLocalization:
     :path: "../node_modules/react-native-localization"
+  RNAudioRecorderPlayer:
+    :path: "../node_modules/react-native-audio-recorder-player"
   RNCAsyncStorage:
     :path: "../node_modules/@react-native-async-storage/async-storage"
   RNDateTimePicker:
@@ -2461,6 +2466,7 @@ SPEC CHECKSUMS:
   ReactCommon: 0adf8f24a3415b6815613bad362d390726b33fc7
   ReactNativeExceptionHandler: a23922ca00122b050ae9412f960061791c232c47
   ReactNativeLocalization: 79b100588f6d7a68852b982ccbe57e329e8bb5a7
+  RNAudioRecorderPlayer: 76b1d9ea2b22bf5ece274c0ff99c341daca42dc4
   RNCAsyncStorage: b44e8a4e798c3e1f56bffccd0f591f674fb9198f
   RNDateTimePicker: 60f9e986d61e42169a2716c1b51f1f93dfa82665
   RNDeviceInfo: d863506092aef7e7af3a1c350c913d867d795047

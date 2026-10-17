@@ -1,4 +1,5 @@
 import { combineReducers } from "@reduxjs/toolkit";
+import kidsMode from "../KidsMode/state/kidsModeReducer";
 import * as actionTypes from "./actions/actionTypes";
 import constant from "./constant";
 
@@ -305,5 +306,6 @@ const rootReducer = combineReducers({
   audioManifest,
   audioProgress,
   currentBani,
+  kidsMode,
 });
 export default rootReducer;

@@ -179,6 +179,11 @@ const STRINGS = new LocalizedStrings({
     RETRY: "Please try again.",
     INITIALIZING_AUDIO_PLAYER: "We’re unable to start the Gurbani audio right now.",
     RELOADING_BANI: "Reloading Bani...",
+    KIDS_MODE: "Kids Mode",
+    KIDS_SCORING_OPT_IN: "Check pronunciation online",
+    KIDS_SCORING_OPT_IN_INFO:
+      "Recordings are sent for checking and not kept. Off: nothing is recorded.",
+    KIDS_RECITER: "Reciter",
   },
   hi: {
     about: "हमारे बारे",
