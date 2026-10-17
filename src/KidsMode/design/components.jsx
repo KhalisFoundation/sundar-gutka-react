@@ -11,9 +11,11 @@ import { s } from './styles';
 const UIContext = createContext(null);
 export const UIProvider = UIContext.Provider;
 export function useUI() {const value = useContext(UIContext);if (!value) throw new Error('Shared controls require UIProvider');return value;}
+// Host edit: a no-break space keeps a closing ॥ / || with its last word; the stored text keeps its plain space for tokenizeLine.
+const keepMarker = (text) => typeof text === 'string' ? text.replace(/ ([॥|][॥|੦-੯0-9]*)$/u, '\u00a0$1') : text;
 export function Copy({ children, style }) {
   const { t } = useUI();
-  return <Text style={[s.text, { color: t.text }, style]}>{children}</Text>;
+  return <Text style={[s.text, { color: t.text }, style]}>{keepMarker(children)}</Text>;
 }
 export function Small({ children }) {const { t } = useUI();return <Copy style={[s.small, { color: t.secondary }]}>{children}</Copy>;}
 export function Heading({ children }) {return <Copy style={s.heading}>{children}</Copy>;}
