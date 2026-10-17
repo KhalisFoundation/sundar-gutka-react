@@ -96,6 +96,9 @@ export default {
   AUDIO_BASE_URL: "https://gurbani-audios-c4abhzghhnccd5gj.z01.azurefd.net/audios",
   BASIC_AUTH_USERNAME: "admin",
   BASIC_AUTH_PASSWORD: "",
+  // Kids Mode pronunciation scorer: deployment config, not source. Empty URL keeps scoring off.
+  KIDS_SCORING_URL: "",
+  KIDS_SCORING_API_KEY: "",
   REMOTE_AUDIO_API_URL:
     "https://sttm-audio-api-v2.salmonriver-80392db4.eastus.azurecontainerapps.io/v1",
   CHOPAYI_SAHIB_ID: 9,

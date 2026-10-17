@@ -1,6 +1,8 @@
 import React from "react";
 import { View } from "react-native";
 import PropTypes from "prop-types";
+import { useSelector } from "react-redux";
+import { Icon } from "@rneui/themed";
 import { SettingsIconComponent } from "@common/components";
 import { constant, STRINGS, CustomText, useTheme, useThemedStyles, SafeArea } from "@common";
 import createStyles from "../styles";
@@ -8,6 +10,7 @@ import createStyles from "../styles";
 const BaniHeader = ({ navigate }) => {
   const { theme } = useTheme();
   const styles = useThemedStyles(createStyles);
+  const kidsEnabled = useSelector((state) => state.kidsMode?.enabled);
   return (
     <SafeArea backgroundColor={theme.colors.primary} edges={["top"]} flex={0}>
       <View
@@ -35,6 +38,18 @@ const BaniHeader = ({ navigate }) => {
             color={theme.staticColors.WHITE_COLOR}
           />
         </View>
+        {kidsEnabled && (
+          <View style={styles.kidsIcon}>
+            <Icon
+              name="account-child-outline"
+              type="material-community"
+              size={30}
+              color={theme.staticColors.WHITE_COLOR}
+              accessibilityLabel={STRINGS.KIDS_MODE}
+              onPress={() => navigate("KidsHome")}
+            />
+          </View>
+        )}
       </View>
     </SafeArea>
   );

@@ -7,4 +7,9 @@ export const setKidsScoringOptIn = (value) => ({
   value,
 });
 
+export const setKidsExperience = (value) => ({
+  type: actionTypes.KIDS_MODE_SET_EXPERIENCE,
+  value,
+});
+
 export const setKidsReciter = (id) => ({ type: actionTypes.KIDS_MODE_SET_RECITER, value: id });

@@ -1,0 +1,1408 @@
+{
+  "2": {
+    "title": "One shared order",
+    "image": "japji/pauri-02.jpg",
+    "stops": [
+      {
+        "place": "Young and mature trees",
+        "cue": "Forms and life",
+        "x": 0.0,
+        "start": 0,
+        "end": 1,
+        "reflection": "Young and mature trees is a visual reminder for this passage: forms and life."
+      },
+      {
+        "place": "Low bank and hill",
+        "cue": "Different conditions",
+        "x": 0.3333333333333333,
+        "start": 2,
+        "end": 2,
+        "reflection": "Low bank and hill is a visual reminder for this passage: different conditions."
+      },
+      {
+        "place": "Joining tributaries",
+        "cue": "All within Hukam",
+        "x": 0.6666666666666666,
+        "start": 3,
+        "end": 4,
+        "reflection": "Joining tributaries is a visual reminder for this passage: all within hukam."
+      },
+      {
+        "place": "Modest open path",
+        "cue": "Humility",
+        "x": 1.0,
+        "start": 5,
+        "end": 5,
+        "reflection": "Modest open path is a visual reminder for this passage: humility."
+      }
+    ]
+  },
+  "3": {
+    "title": "Gifts without end",
+    "image": "japji/pauri-03.jpg",
+    "stops": [
+      {
+        "place": "Wind in the grove",
+        "cue": "Many ways of praise",
+        "x": 0.0,
+        "start": 0,
+        "end": 3,
+        "reflection": "Wind in the grove is a visual reminder for this passage: many ways of praise."
+      },
+      {
+        "place": "Seed and fallen leaf",
+        "cue": "Creation and change",
+        "x": 0.3333333333333333,
+        "start": 4,
+        "end": 7,
+        "reflection": "Seed and fallen leaf is a visual reminder for this passage: creation and change."
+      },
+      {
+        "place": "Fruit-bearing tree",
+        "cue": "The Giver's abundance",
+        "x": 0.6666666666666666,
+        "start": 8,
+        "end": 11,
+        "reflection": "Fruit-bearing tree is a visual reminder for this passage: the giver's abundance."
+      },
+      {
+        "place": "Continuing path",
+        "cue": "Walking in Hukam",
+        "x": 1.0,
+        "start": 12,
+        "end": 13,
+        "reflection": "Continuing path is a visual reminder for this passage: walking in hukam."
+      }
+    ]
+  },
+  "4": {
+    "title": "Before dawn",
+    "image": "japji/pauri-04.jpg",
+    "stops": [
+      {
+        "place": "Open orchard",
+        "cue": "Truth and gifts",
+        "x": 0.0,
+        "start": 0,
+        "end": 1,
+        "reflection": "Open orchard is a visual reminder for this passage: truth and gifts."
+      },
+      {
+        "place": "Empty offering bowl",
+        "cue": "The question of an offering",
+        "x": 0.3333333333333333,
+        "start": 2,
+        "end": 3,
+        "reflection": "Empty offering bowl is a visual reminder for this passage: the question of an offering."
+      },
+      {
+        "place": "Dawn horizon",
+        "cue": "Amrit Vela and remembrance",
+        "x": 0.6666666666666666,
+        "start": 4,
+        "end": 4,
+        "reflection": "Dawn horizon is a visual reminder for this passage: amrit vela and remembrance."
+      },
+      {
+        "place": "Open gateway",
+        "cue": "Grace",
+        "x": 1.0,
+        "start": 5,
+        "end": 6,
+        "reflection": "Open gateway is a visual reminder for this passage: grace."
+      }
+    ]
+  },
+  "5": {
+    "title": "Listen with love",
+    "image": "japji/pauri-05.jpg",
+    "stops": [
+      {
+        "place": "Clear spring",
+        "cue": "Beyond making and placing",
+        "x": 0.0,
+        "start": 0,
+        "end": 1,
+        "reflection": "Clear spring is a visual reminder for this passage: beyond making and placing."
+      },
+      {
+        "place": "Quiet courtyard",
+        "cue": "Singing, listening and love",
+        "x": 0.3333333333333333,
+        "start": 2,
+        "end": 5,
+        "reflection": "Quiet courtyard is a visual reminder for this passage: singing, listening and love."
+      },
+      {
+        "place": "Open horizon",
+        "cue": "The limits of description",
+        "x": 0.6666666666666666,
+        "start": 6,
+        "end": 8,
+        "reflection": "Open horizon is a visual reminder for this passage: the limits of description."
+      },
+      {
+        "place": "One flowing spring",
+        "cue": "One Giver",
+        "x": 1.0,
+        "start": 9,
+        "end": 10,
+        "reflection": "One flowing spring is a visual reminder for this passage: one giver."
+      }
+    ]
+  },
+  "6": {
+    "title": "Jewels within",
+    "image": "japji/pauri-06.jpg",
+    "stops": [
+      {
+        "place": "River steps",
+        "cue": "Beyond outward ritual",
+        "x": 0.0,
+        "start": 0,
+        "end": 0,
+        "reflection": "River steps is a visual reminder for this passage: beyond outward ritual."
+      },
+      {
+        "place": "Growing garden",
+        "cue": "Actions",
+        "x": 0.3333333333333333,
+        "start": 1,
+        "end": 1,
+        "reflection": "Growing garden is a visual reminder for this passage: actions."
+      },
+      {
+        "place": "Three river stones",
+        "cue": "The mind's jewels",
+        "x": 0.6666666666666666,
+        "start": 2,
+        "end": 2,
+        "reflection": "Three river stones is a visual reminder for this passage: the mind's jewels."
+      },
+      {
+        "place": "Shared spring",
+        "cue": "One Giver",
+        "x": 1.0,
+        "start": 3,
+        "end": 4,
+        "reflection": "Shared spring is a visual reminder for this passage: one giver."
+      }
+    ]
+  },
+  "7": {
+    "title": "Beyond fame",
+    "image": "japji/pauri-07.jpg",
+    "stops": [
+      {
+        "place": "Old tree",
+        "cue": "Long life",
+        "x": 0.0,
+        "start": 0,
+        "end": 0,
+        "reflection": "Old tree is a visual reminder for this passage: long life."
+      },
+      {
+        "place": "Distant pavilion",
+        "cue": "Reputation",
+        "x": 0.3333333333333333,
+        "start": 1,
+        "end": 2,
+        "reflection": "Distant pavilion is a visual reminder for this passage: reputation."
+      },
+      {
+        "place": "Small seedling",
+        "cue": "Humility",
+        "x": 0.6666666666666666,
+        "start": 3,
+        "end": 4,
+        "reflection": "Small seedling is a visual reminder for this passage: humility."
+      },
+      {
+        "place": "Open garden",
+        "cue": "Grace and virtue",
+        "x": 1.0,
+        "start": 5,
+        "end": 6,
+        "reflection": "Open garden is a visual reminder for this passage: grace and virtue."
+      }
+    ]
+  },
+  "8": {
+    "title": "Listening to the world",
+    "image": "japji/pauri-08.jpg",
+    "stops": [
+      {
+        "place": "Quiet grove",
+        "cue": "Listening",
+        "x": 0.0,
+        "start": 0,
+        "end": 0,
+        "reflection": "Quiet grove is a visual reminder for this passage: listening."
+      },
+      {
+        "place": "Earth and sea",
+        "cue": "The wider creation",
+        "x": 0.3333333333333333,
+        "start": 1,
+        "end": 2,
+        "reflection": "Earth and sea is a visual reminder for this passage: the wider creation."
+      },
+      {
+        "place": "Sheltered path",
+        "cue": "Beyond fear",
+        "x": 0.6666666666666666,
+        "start": 3,
+        "end": 3,
+        "reflection": "Sheltered path is a visual reminder for this passage: beyond fear."
+      },
+      {
+        "place": "Still pool",
+        "cue": "The listening refrain",
+        "x": 1.0,
+        "start": 4,
+        "end": 5,
+        "reflection": "Still pool is a visual reminder for this passage: the listening refrain."
+      }
+    ]
+  },
+  "9": {
+    "title": "Listening and understanding",
+    "image": "japji/pauri-09.jpg",
+    "stops": [
+      {
+        "place": "Open sky",
+        "cue": "Listening beyond names",
+        "x": 0.0,
+        "start": 0,
+        "end": 0,
+        "reflection": "Open sky is a visual reminder for this passage: listening beyond names."
+      },
+      {
+        "place": "Soft reeds",
+        "cue": "Speech transformed",
+        "x": 0.3333333333333333,
+        "start": 1,
+        "end": 1,
+        "reflection": "Soft reeds is a visual reminder for this passage: speech transformed."
+      },
+      {
+        "place": "Reading shelter",
+        "cue": "Learning through listening",
+        "x": 0.6666666666666666,
+        "start": 2,
+        "end": 3,
+        "reflection": "Reading shelter is a visual reminder for this passage: learning through listening."
+      },
+      {
+        "place": "Still pool",
+        "cue": "The listening refrain",
+        "x": 1.0,
+        "start": 4,
+        "end": 5,
+        "reflection": "Still pool is a visual reminder for this passage: the listening refrain."
+      }
+    ]
+  },
+  "10": {
+    "title": "Listening and contentment",
+    "image": "japji/pauri-10.jpg",
+    "stops": [
+      {
+        "place": "Balanced stones",
+        "cue": "Truth and contentment",
+        "x": 0.0,
+        "start": 0,
+        "end": 0,
+        "reflection": "Balanced stones is a visual reminder for this passage: truth and contentment."
+      },
+      {
+        "place": "River steps",
+        "cue": "Cleansing",
+        "x": 0.3333333333333333,
+        "start": 1,
+        "end": 1,
+        "reflection": "River steps is a visual reminder for this passage: cleansing."
+      },
+      {
+        "place": "Quiet alcove",
+        "cue": "Reading and reflection",
+        "x": 0.6666666666666666,
+        "start": 2,
+        "end": 3,
+        "reflection": "Quiet alcove is a visual reminder for this passage: reading and reflection."
+      },
+      {
+        "place": "Still pool",
+        "cue": "The listening refrain",
+        "x": 1.0,
+        "start": 4,
+        "end": 5,
+        "reflection": "Still pool is a visual reminder for this passage: the listening refrain."
+      }
+    ]
+  },
+  "11": {
+    "title": "An ocean of virtue",
+    "image": "japji/pauri-11.jpg",
+    "stops": [
+      {
+        "place": "Deep blue inlet",
+        "cue": "Virtue",
+        "x": 0.0,
+        "start": 0,
+        "end": 0,
+        "reflection": "Deep blue inlet is a visual reminder for this passage: virtue."
+      },
+      {
+        "place": "Open learning court",
+        "cue": "Wisdom",
+        "x": 0.3333333333333333,
+        "start": 1,
+        "end": 1,
+        "reflection": "Open learning court is a visual reminder for this passage: wisdom."
+      },
+      {
+        "place": "Accessible path",
+        "cue": "Finding the way",
+        "x": 0.6666666666666666,
+        "start": 2,
+        "end": 3,
+        "reflection": "Accessible path is a visual reminder for this passage: finding the way."
+      },
+      {
+        "place": "Still pool",
+        "cue": "The listening refrain",
+        "x": 1.0,
+        "start": 4,
+        "end": 5,
+        "reflection": "Still pool is a visual reminder for this passage: the listening refrain."
+      }
+    ]
+  },
+  "12": {
+    "title": "Beyond the page",
+    "image": "japji/pauri-12.jpg",
+    "stops": [
+      {
+        "place": "Open horizon",
+        "cue": "Beyond description",
+        "x": 0.0,
+        "start": 0,
+        "end": 1,
+        "reflection": "Open horizon is a visual reminder for this passage: beyond description."
+      },
+      {
+        "place": "Blank page",
+        "cue": "The limits of recording",
+        "x": 0.3333333333333333,
+        "start": 2,
+        "end": 3,
+        "reflection": "Blank page is a visual reminder for this passage: the limits of recording."
+      },
+      {
+        "place": "Clear pool",
+        "cue": "The Naam refrain",
+        "x": 0.6666666666666666,
+        "start": 4,
+        "end": 4,
+        "reflection": "Clear pool is a visual reminder for this passage: the naam refrain."
+      },
+      {
+        "place": "Quiet path",
+        "cue": "Knowing through faith",
+        "x": 1.0,
+        "start": 5,
+        "end": 5,
+        "reflection": "Quiet path is a visual reminder for this passage: knowing through faith."
+      }
+    ]
+  },
+  "13": {
+    "title": "Awareness and trust",
+    "image": "japji/pauri-13.jpg",
+    "stops": [
+      {
+        "place": "Clear lookout",
+        "cue": "Awareness",
+        "x": 0.0,
+        "start": 0,
+        "end": 0,
+        "reflection": "Clear lookout is a visual reminder for this passage: awareness."
+      },
+      {
+        "place": "Distant hills",
+        "cue": "Worlds and realms",
+        "x": 0.3333333333333333,
+        "start": 1,
+        "end": 1,
+        "reflection": "Distant hills is a visual reminder for this passage: worlds and realms."
+      },
+      {
+        "place": "Sheltered path",
+        "cue": "Freedom from fear",
+        "x": 0.6666666666666666,
+        "start": 2,
+        "end": 3,
+        "reflection": "Sheltered path is a visual reminder for this passage: freedom from fear."
+      },
+      {
+        "place": "Clear pool",
+        "cue": "The Naam refrain",
+        "x": 1.0,
+        "start": 4,
+        "end": 5,
+        "reflection": "Clear pool is a visual reminder for this passage: the naam refrain."
+      }
+    ]
+  },
+  "14": {
+    "title": "A steady path",
+    "image": "japji/pauri-14.jpg",
+    "stops": [
+      {
+        "place": "Open path",
+        "cue": "No obstruction",
+        "x": 0.0,
+        "start": 0,
+        "end": 0,
+        "reflection": "Open path is a visual reminder for this passage: no obstruction."
+      },
+      {
+        "place": "Simple gateway",
+        "cue": "Honor",
+        "x": 0.3333333333333333,
+        "start": 1,
+        "end": 1,
+        "reflection": "Simple gateway is a visual reminder for this passage: honor."
+      },
+      {
+        "place": "Firm stepping stones",
+        "cue": "Dharma",
+        "x": 0.6666666666666666,
+        "start": 2,
+        "end": 3,
+        "reflection": "Firm stepping stones is a visual reminder for this passage: dharma."
+      },
+      {
+        "place": "Clear pool",
+        "cue": "The Naam refrain",
+        "x": 1.0,
+        "start": 4,
+        "end": 5,
+        "reflection": "Clear pool is a visual reminder for this passage: the naam refrain."
+      }
+    ]
+  },
+  "15": {
+    "title": "Crossing together",
+    "image": "japji/pauri-15.jpg",
+    "stops": [
+      {
+        "place": "Open gateway",
+        "cue": "Liberation",
+        "x": 0.0,
+        "start": 0,
+        "end": 0,
+        "reflection": "Open gateway is a visual reminder for this passage: liberation."
+      },
+      {
+        "place": "Joining paths",
+        "cue": "Family and companions",
+        "x": 0.3333333333333333,
+        "start": 1,
+        "end": 1,
+        "reflection": "Joining paths is a visual reminder for this passage: family and companions."
+      },
+      {
+        "place": "Wide bridge",
+        "cue": "Being carried across",
+        "x": 0.6666666666666666,
+        "start": 2,
+        "end": 3,
+        "reflection": "Wide bridge is a visual reminder for this passage: being carried across."
+      },
+      {
+        "place": "Clear pool",
+        "cue": "The Naam refrain",
+        "x": 1.0,
+        "start": 4,
+        "end": 5,
+        "reflection": "Clear pool is a visual reminder for this passage: the naam refrain."
+      }
+    ]
+  },
+  "16": {
+    "title": "Compassion and creation",
+    "image": "japji/pauri-16.jpg",
+    "stops": [
+      {
+        "place": "Quiet gathering place",
+        "cue": "Focused remembrance",
+        "x": 0.0,
+        "start": 0,
+        "end": 3,
+        "reflection": "Quiet gathering place is a visual reminder for this passage: focused remembrance."
+      },
+      {
+        "place": "Supporting roots",
+        "cue": "Compassion and support",
+        "x": 0.3333333333333333,
+        "start": 4,
+        "end": 11,
+        "reflection": "Supporting roots is a visual reminder for this passage: compassion and support."
+      },
+      {
+        "place": "Many river channels",
+        "cue": "Creation's expanse",
+        "x": 0.6666666666666666,
+        "start": 12,
+        "end": 19,
+        "reflection": "Many river channels is a visual reminder for this passage: creation's expanse."
+      },
+      {
+        "place": "Open horizon",
+        "cue": "Beyond description",
+        "x": 1.0,
+        "start": 20,
+        "end": 23,
+        "reflection": "Open horizon is a visual reminder for this passage: beyond description."
+      }
+    ]
+  },
+  "17": {
+    "title": "Countless ways of devotion",
+    "image": "japji/pauri-17.jpg",
+    "stops": [
+      {
+        "place": "Quiet shelter",
+        "cue": "Meditation and study",
+        "x": 0.0,
+        "start": 0,
+        "end": 2,
+        "reflection": "Quiet shelter is a visual reminder for this passage: meditation and study."
+      },
+      {
+        "place": "Shared fruit basket",
+        "cue": "Giving",
+        "x": 0.3333333333333333,
+        "start": 3,
+        "end": 5,
+        "reflection": "Shared fruit basket is a visual reminder for this passage: giving."
+      },
+      {
+        "place": "Steady tree",
+        "cue": "Courage and stillness",
+        "x": 0.6666666666666666,
+        "start": 6,
+        "end": 7,
+        "reflection": "Steady tree is a visual reminder for this passage: courage and stillness."
+      },
+      {
+        "place": "Open horizon",
+        "cue": "Beyond counting",
+        "x": 1.0,
+        "start": 8,
+        "end": 11,
+        "reflection": "Open horizon is a visual reminder for this passage: beyond counting."
+      }
+    ]
+  },
+  "18": {
+    "title": "Losing the way",
+    "image": "japji/pauri-18.jpg",
+    "stops": [
+      {
+        "place": "Obscured path",
+        "cue": "Ignorance and taking",
+        "x": 0.0,
+        "start": 0,
+        "end": 1,
+        "reflection": "Obscured path is a visual reminder for this passage: ignorance and taking."
+      },
+      {
+        "place": "Rough bend",
+        "cue": "Force and harm",
+        "x": 0.3333333333333333,
+        "start": 2,
+        "end": 3,
+        "reflection": "Rough bend is a visual reminder for this passage: force and harm."
+      },
+      {
+        "place": "Heavy stone",
+        "cue": "The burden of wrongdoing",
+        "x": 0.6666666666666666,
+        "start": 4,
+        "end": 7,
+        "reflection": "Heavy stone is a visual reminder for this passage: the burden of wrongdoing."
+      },
+      {
+        "place": "Open horizon",
+        "cue": "Humility",
+        "x": 1.0,
+        "start": 8,
+        "end": 11,
+        "reflection": "Open horizon is a visual reminder for this passage: humility."
+      }
+    ]
+  },
+  "19": {
+    "title": "Words and the world",
+    "image": "japji/pauri-19.jpg",
+    "stops": [
+      {
+        "place": "Branching paths",
+        "cue": "Countless places",
+        "x": 0.0,
+        "start": 0,
+        "end": 2,
+        "reflection": "Branching paths is a visual reminder for this passage: countless places."
+      },
+      {
+        "place": "Blank writing desk",
+        "cue": "Words and expression",
+        "x": 0.3333333333333333,
+        "start": 3,
+        "end": 7,
+        "reflection": "Blank writing desk is a visual reminder for this passage: words and expression."
+      },
+      {
+        "place": "Widespread river",
+        "cue": "Creation and Naam",
+        "x": 0.6666666666666666,
+        "start": 8,
+        "end": 10,
+        "reflection": "Widespread river is a visual reminder for this passage: creation and naam."
+      },
+      {
+        "place": "Open horizon",
+        "cue": "Beyond description",
+        "x": 1.0,
+        "start": 11,
+        "end": 14,
+        "reflection": "Open horizon is a visual reminder for this passage: beyond description."
+      }
+    ]
+  },
+  "20": {
+    "title": "What we cultivate",
+    "image": "japji/pauri-20.jpg",
+    "stops": [
+      {
+        "place": "Water basin",
+        "cue": "Washing the body",
+        "x": 0.0,
+        "start": 0,
+        "end": 1,
+        "reflection": "Water basin is a visual reminder for this passage: washing the body."
+      },
+      {
+        "place": "Clean cloth",
+        "cue": "Washing clothing",
+        "x": 0.3333333333333333,
+        "start": 2,
+        "end": 3,
+        "reflection": "Clean cloth is a visual reminder for this passage: washing clothing."
+      },
+      {
+        "place": "Clear inner pool",
+        "cue": "Remembering Naam",
+        "x": 0.6666666666666666,
+        "start": 4,
+        "end": 5,
+        "reflection": "Clear inner pool is a visual reminder for this passage: remembering naam."
+      },
+      {
+        "place": "Seed and harvest",
+        "cue": "Actions and consequences",
+        "x": 1.0,
+        "start": 6,
+        "end": 9,
+        "reflection": "Seed and harvest is a visual reminder for this passage: actions and consequences."
+      }
+    ]
+  },
+  "21": {
+    "title": "The question of beginnings",
+    "image": "japji/pauri-21.jpg",
+    "stops": [
+      {
+        "place": "Quiet pool",
+        "cue": "Listening and love",
+        "x": 0.0,
+        "start": 0,
+        "end": 3,
+        "reflection": "Quiet pool is a visual reminder for this passage: listening and love."
+      },
+      {
+        "place": "Open flower",
+        "cue": "Virtue",
+        "x": 0.3333333333333333,
+        "start": 4,
+        "end": 7,
+        "reflection": "Open flower is a visual reminder for this passage: virtue."
+      },
+      {
+        "place": "Changing sky",
+        "cue": "The unknown beginning",
+        "x": 0.6666666666666666,
+        "start": 8,
+        "end": 13,
+        "reflection": "Changing sky is a visual reminder for this passage: the unknown beginning."
+      },
+      {
+        "place": "Wide horizon",
+        "cue": "Humility about knowing",
+        "x": 1.0,
+        "start": 14,
+        "end": 17,
+        "reflection": "Wide horizon is a visual reminder for this passage: humility about knowing."
+      }
+    ]
+  },
+  "22": {
+    "title": "Worlds beyond counting",
+    "image": "japji/pauri-22.jpg",
+    "stops": [
+      {
+        "place": "Layered hills",
+        "cue": "Worlds beyond worlds",
+        "x": 0.0,
+        "start": 0,
+        "end": 0,
+        "reflection": "Layered hills is a visual reminder for this passage: worlds beyond worlds."
+      },
+      {
+        "place": "Continuing path",
+        "cue": "Searching",
+        "x": 0.3333333333333333,
+        "start": 1,
+        "end": 1,
+        "reflection": "Continuing path is a visual reminder for this passage: searching."
+      },
+      {
+        "place": "Blank scroll",
+        "cue": "An unfinishable account",
+        "x": 0.46,
+        "start": 2,
+        "end": 3,
+        "reflection": "Blank scroll is a visual reminder for this passage: an unfinishable account."
+      },
+      {
+        "place": "Vast sky",
+        "cue": "Greatness beyond measure",
+        "x": 1.0,
+        "start": 4,
+        "end": 4,
+        "reflection": "Vast sky is a visual reminder for this passage: greatness beyond measure."
+      }
+    ]
+  },
+  "23": {
+    "title": "The river and the ant",
+    "image": "japji/pauri-23.jpg",
+    "stops": [
+      {
+        "place": "Quiet bank",
+        "cue": "Praise and understanding",
+        "x": 0.0,
+        "start": 0,
+        "end": 0,
+        "reflection": "Quiet bank is a visual reminder for this passage: praise and understanding."
+      },
+      {
+        "place": "River mouth",
+        "cue": "The ocean's vastness",
+        "x": 0.3333333333333333,
+        "start": 1,
+        "end": 1,
+        "reflection": "River mouth is a visual reminder for this passage: the ocean's vastness."
+      },
+      {
+        "place": "Distant storehouse",
+        "cue": "Worldly wealth",
+        "x": 0.6666666666666666,
+        "start": 2,
+        "end": 2,
+        "reflection": "Distant storehouse is a visual reminder for this passage: worldly wealth."
+      },
+      {
+        "place": "Small ant",
+        "cue": "Remembrance",
+        "x": 1.0,
+        "start": 3,
+        "end": 3,
+        "reflection": "Small ant is a visual reminder for this passage: remembrance."
+      }
+    ]
+  },
+  "24": {
+    "title": "Without an edge",
+    "image": "japji/pauri-24.jpg",
+    "stops": [
+      {
+        "place": "Fruit tree",
+        "cue": "Endless gifts",
+        "x": 0.0,
+        "start": 0,
+        "end": 1,
+        "reflection": "Fruit tree is a visual reminder for this passage: endless gifts."
+      },
+      {
+        "place": "Ocean horizon",
+        "cue": "Unseen limits",
+        "x": 0.3333333333333333,
+        "start": 2,
+        "end": 5,
+        "reflection": "Ocean horizon is a visual reminder for this passage: unseen limits."
+      },
+      {
+        "place": "Continuing shore",
+        "cue": "Beyond what words can hold",
+        "x": 0.6666666666666666,
+        "start": 6,
+        "end": 9,
+        "reflection": "Continuing shore is a visual reminder for this passage: beyond what words can hold."
+      },
+      {
+        "place": "Open sky",
+        "cue": "Grace",
+        "x": 1.0,
+        "start": 10,
+        "end": 15,
+        "reflection": "Open sky is a visual reminder for this passage: grace."
+      }
+    ]
+  },
+  "25": {
+    "title": "Receiving with gratitude",
+    "image": "japji/pauri-25.jpg",
+    "stops": [
+      {
+        "place": "Open orchard",
+        "cue": "Abundant giving",
+        "x": 0.0,
+        "start": 0,
+        "end": 3,
+        "reflection": "Open orchard is a visual reminder for this passage: abundant giving."
+      },
+      {
+        "place": "Fallen fruit",
+        "cue": "Receiving and forgetting",
+        "x": 0.3333333333333333,
+        "start": 4,
+        "end": 8,
+        "reflection": "Fallen fruit is a visual reminder for this passage: receiving and forgetting."
+      },
+      {
+        "place": "Unlatched gate",
+        "cue": "Freedom and gratitude",
+        "x": 0.6666666666666666,
+        "start": 9,
+        "end": 14,
+        "reflection": "Unlatched gate is a visual reminder for this passage: freedom and gratitude."
+      },
+      {
+        "place": "Quiet singing court",
+        "cue": "Praise",
+        "x": 1.0,
+        "start": 15,
+        "end": 16,
+        "reflection": "Quiet singing court is a visual reminder for this passage: praise."
+      }
+    ]
+  },
+  "26": {
+    "title": "Beyond price",
+    "image": "japji/pauri-26.jpg",
+    "stops": [
+      {
+        "place": "Open market shelter",
+        "cue": "Priceless virtues and love",
+        "x": 0.0,
+        "start": 0,
+        "end": 3,
+        "reflection": "Open market shelter is a visual reminder for this passage: priceless virtues and love."
+      },
+      {
+        "place": "Balanced scale",
+        "cue": "Justice and mercy",
+        "x": 0.3333333333333333,
+        "start": 4,
+        "end": 7,
+        "reflection": "Balanced scale is a visual reminder for this passage: justice and mercy."
+      },
+      {
+        "place": "Open reading court",
+        "cue": "Many voices",
+        "x": 0.6666666666666666,
+        "start": 8,
+        "end": 17,
+        "reflection": "Open reading court is a visual reminder for this passage: many voices."
+      },
+      {
+        "place": "Unmeasured horizon",
+        "cue": "Beyond description",
+        "x": 1.0,
+        "start": 18,
+        "end": 25,
+        "reflection": "Unmeasured horizon is a visual reminder for this passage: beyond description."
+      }
+    ]
+  },
+  "27": {
+    "title": "A world in praise",
+    "image": "japji/pauri-27.jpg",
+    "stops": [
+      {
+        "place": "Open doorway",
+        "cue": "The question of the dwelling",
+        "x": 0.0,
+        "start": 0,
+        "end": 2,
+        "reflection": "Open doorway is a visual reminder for this passage: the question of the dwelling."
+      },
+      {
+        "place": "Wind and water",
+        "cue": "Creation in praise",
+        "x": 0.3333333333333333,
+        "start": 3,
+        "end": 9,
+        "reflection": "Wind and water is a visual reminder for this passage: creation in praise."
+      },
+      {
+        "place": "Quiet instrument court",
+        "cue": "Many voices",
+        "x": 0.6666666666666666,
+        "start": 10,
+        "end": 15,
+        "reflection": "Quiet instrument court is a visual reminder for this passage: many voices."
+      },
+      {
+        "place": "Lasting horizon",
+        "cue": "The True One",
+        "x": 1.0,
+        "start": 16,
+        "end": 21,
+        "reflection": "Lasting horizon is a visual reminder for this passage: the true one."
+      }
+    ]
+  },
+  "28": {
+    "title": "Wear the virtues",
+    "image": "japji/pauri-28.jpg",
+    "stops": [
+      {
+        "place": "Simple bowl",
+        "cue": "Contentment and humility",
+        "x": 0.0,
+        "start": 0,
+        "end": 0,
+        "reflection": "Simple bowl is a visual reminder for this passage: contentment and humility."
+      },
+      {
+        "place": "Walking staff",
+        "cue": "Faith and discipline",
+        "x": 0.3333333333333333,
+        "start": 1,
+        "end": 1,
+        "reflection": "Walking staff is a visual reminder for this passage: faith and discipline."
+      },
+      {
+        "place": "Joining paths",
+        "cue": "Human kinship",
+        "x": 0.6666666666666666,
+        "start": 2,
+        "end": 2,
+        "reflection": "Joining paths is a visual reminder for this passage: human kinship."
+      },
+      {
+        "place": "Open horizon",
+        "cue": "The bowing refrain",
+        "x": 1.0,
+        "start": 3,
+        "end": 4,
+        "reflection": "Open horizon is a visual reminder for this passage: the bowing refrain."
+      }
+    ]
+  },
+  "29": {
+    "title": "Wisdom and compassion",
+    "image": "japji/pauri-29.jpg",
+    "stops": [
+      {
+        "place": "Shared meal place",
+        "cue": "Wisdom and compassion",
+        "x": 0.0,
+        "start": 0,
+        "end": 0,
+        "reflection": "Shared meal place is a visual reminder for this passage: wisdom and compassion."
+      },
+      {
+        "place": "Loose bead string",
+        "cue": "External powers",
+        "x": 0.3333333333333333,
+        "start": 1,
+        "end": 1,
+        "reflection": "Loose bead string is a visual reminder for this passage: external powers."
+      },
+      {
+        "place": "Joining streams",
+        "cue": "Union and separation",
+        "x": 0.6666666666666666,
+        "start": 2,
+        "end": 2,
+        "reflection": "Joining streams is a visual reminder for this passage: union and separation."
+      },
+      {
+        "place": "Open horizon",
+        "cue": "The bowing refrain",
+        "x": 1.0,
+        "start": 3,
+        "end": 4,
+        "reflection": "Open horizon is a visual reminder for this passage: the bowing refrain."
+      }
+    ]
+  },
+  "30": {
+    "title": "The changing garden",
+    "image": "japji/pauri-30.jpg",
+    "stops": [
+      {
+        "place": "Seed bed",
+        "cue": "Origins",
+        "x": 0.0,
+        "start": 0,
+        "end": 0,
+        "reflection": "Seed bed is a visual reminder for this passage: origins."
+      },
+      {
+        "place": "Tree and fallen leaves",
+        "cue": "Creation, sustaining and change",
+        "x": 0.3333333333333333,
+        "start": 1,
+        "end": 1,
+        "reflection": "Tree and fallen leaves is a visual reminder for this passage: creation, sustaining and change."
+      },
+      {
+        "place": "Flowing river",
+        "cue": "Order beyond sight",
+        "x": 0.6666666666666666,
+        "start": 2,
+        "end": 3,
+        "reflection": "Flowing river is a visual reminder for this passage: order beyond sight."
+      },
+      {
+        "place": "Open horizon",
+        "cue": "The bowing refrain",
+        "x": 1.0,
+        "start": 4,
+        "end": 5,
+        "reflection": "Open horizon is a visual reminder for this passage: the bowing refrain."
+      }
+    ]
+  },
+  "31": {
+    "title": "Provision everywhere",
+    "image": "japji/pauri-31.jpg",
+    "stops": [
+      {
+        "place": "Distant gardens",
+        "cue": "Worlds and provision",
+        "x": 0.0,
+        "start": 0,
+        "end": 0,
+        "reflection": "Distant gardens is a visual reminder for this passage: worlds and provision."
+      },
+      {
+        "place": "Simple storehouse",
+        "cue": "Sustaining gifts",
+        "x": 0.3333333333333333,
+        "start": 1,
+        "end": 1,
+        "reflection": "Simple storehouse is a visual reminder for this passage: sustaining gifts."
+      },
+      {
+        "place": "Living field",
+        "cue": "True creation",
+        "x": 0.6666666666666666,
+        "start": 2,
+        "end": 3,
+        "reflection": "Living field is a visual reminder for this passage: true creation."
+      },
+      {
+        "place": "Open horizon",
+        "cue": "The bowing refrain",
+        "x": 1.0,
+        "start": 4,
+        "end": 5,
+        "reflection": "Open horizon is a visual reminder for this passage: the bowing refrain."
+      }
+    ]
+  },
+  "32": {
+    "title": "Steps of remembrance",
+    "image": "japji/pauri-32.jpg",
+    "stops": [
+      {
+        "place": "Echoing valley",
+        "cue": "Repeated remembrance",
+        "x": 0.0,
+        "start": 0,
+        "end": 0,
+        "reflection": "Echoing valley is a visual reminder for this passage: repeated remembrance."
+      },
+      {
+        "place": "Quiet practice shelter",
+        "cue": "Naam",
+        "x": 0.3333333333333333,
+        "start": 1,
+        "end": 1,
+        "reflection": "Quiet practice shelter is a visual reminder for this passage: naam."
+      },
+      {
+        "place": "Broad hillside steps",
+        "cue": "Aspiration",
+        "x": 0.6666666666666666,
+        "start": 2,
+        "end": 3,
+        "reflection": "Broad hillside steps is a visual reminder for this passage: aspiration."
+      },
+      {
+        "place": "Open sky",
+        "cue": "Grace beyond boasting",
+        "x": 1.0,
+        "start": 4,
+        "end": 4,
+        "reflection": "Open sky is a visual reminder for this passage: grace beyond boasting."
+      }
+    ]
+  },
+  "33": {
+    "title": "No one high or low",
+    "image": "japji/pauri-33.jpg",
+    "stops": [
+      {
+        "place": "Empty bowl",
+        "cue": "Giving and asking",
+        "x": 0.0,
+        "start": 0,
+        "end": 1,
+        "reflection": "Empty bowl is a visual reminder for this passage: giving and asking."
+      },
+      {
+        "place": "Old and young trees",
+        "cue": "Life and power",
+        "x": 0.3333333333333333,
+        "start": 2,
+        "end": 3,
+        "reflection": "Old and young trees is a visual reminder for this passage: life and power."
+      },
+      {
+        "place": "Unforced river",
+        "cue": "The limits of control",
+        "x": 0.6666666666666666,
+        "start": 4,
+        "end": 5,
+        "reflection": "Unforced river is a visual reminder for this passage: the limits of control."
+      },
+      {
+        "place": "Level meeting place",
+        "cue": "Equality",
+        "x": 1.0,
+        "start": 6,
+        "end": 7,
+        "reflection": "Level meeting place is a visual reminder for this passage: equality."
+      }
+    ]
+  },
+  "34": {
+    "title": "Earth as a home",
+    "image": "japji/pauri-34.jpg",
+    "stops": [
+      {
+        "place": "Seasonal tree",
+        "cue": "Time and elements",
+        "x": 0.0,
+        "start": 0,
+        "end": 1,
+        "reflection": "Seasonal tree is a visual reminder for this passage: time and elements."
+      },
+      {
+        "place": "Living garden",
+        "cue": "Earth and many beings",
+        "x": 0.3333333333333333,
+        "start": 2,
+        "end": 4,
+        "reflection": "Living garden is a visual reminder for this passage: earth and many beings."
+      },
+      {
+        "place": "Footprints in soil",
+        "cue": "Actions",
+        "x": 0.6666666666666666,
+        "start": 5,
+        "end": 8,
+        "reflection": "Footprints in soil is a visual reminder for this passage: actions."
+      },
+      {
+        "place": "Ripening grain",
+        "cue": "Discernment",
+        "x": 1.0,
+        "start": 9,
+        "end": 10,
+        "reflection": "Ripening grain is a visual reminder for this passage: discernment."
+      }
+    ]
+  },
+  "35": {
+    "title": "A wider understanding",
+    "image": "japji/pauri-35.jpg",
+    "stops": [
+      {
+        "place": "Open learning shelter",
+        "cue": "Wisdom",
+        "x": 0.0,
+        "start": 0,
+        "end": 1,
+        "reflection": "Open learning shelter is a visual reminder for this passage: wisdom."
+      },
+      {
+        "place": "Wind and water",
+        "cue": "Many forms",
+        "x": 0.3333333333333333,
+        "start": 2,
+        "end": 3,
+        "reflection": "Wind and water is a visual reminder for this passage: many forms."
+      },
+      {
+        "place": "Distant worlds",
+        "cue": "Vastness",
+        "x": 0.6666666666666666,
+        "start": 4,
+        "end": 7,
+        "reflection": "Distant worlds is a visual reminder for this passage: vastness."
+      },
+      {
+        "place": "Joining paths",
+        "cue": "Many ways of life",
+        "x": 1.0,
+        "start": 8,
+        "end": 9,
+        "reflection": "Joining paths is a visual reminder for this passage: many ways of life."
+      }
+    ]
+  },
+  "36": {
+    "title": "Being shaped",
+    "image": "japji/pauri-36.jpg",
+    "stops": [
+      {
+        "place": "Quiet music corner",
+        "cue": "Wisdom and joy",
+        "x": 0.0,
+        "start": 0,
+        "end": 1,
+        "reflection": "Quiet music corner is a visual reminder for this passage: wisdom and joy."
+      },
+      {
+        "place": "Simple workshop",
+        "cue": "Beauty taking form",
+        "x": 0.3333333333333333,
+        "start": 2,
+        "end": 3,
+        "reflection": "Simple workshop is a visual reminder for this passage: beauty taking form."
+      },
+      {
+        "place": "Unfinished clay",
+        "cue": "Beyond description",
+        "x": 0.6666666666666666,
+        "start": 4,
+        "end": 5,
+        "reflection": "Unfinished clay is a visual reminder for this passage: beyond description."
+      },
+      {
+        "place": "Smooth vessel",
+        "cue": "Awareness shaped",
+        "x": 1.0,
+        "start": 6,
+        "end": 7,
+        "reflection": "Smooth vessel is a visual reminder for this passage: awareness shaped."
+      }
+    ]
+  },
+  "37": {
+    "title": "Grace and vastness",
+    "image": "japji/pauri-37.jpg",
+    "stops": [
+      {
+        "place": "Steady grove",
+        "cue": "Spiritual strength",
+        "x": 0.0,
+        "start": 0,
+        "end": 3,
+        "reflection": "Steady grove is a visual reminder for this passage: spiritual strength."
+      },
+      {
+        "place": "Open gathering place",
+        "cue": "Fulfillment and joy",
+        "x": 0.3333333333333333,
+        "start": 4,
+        "end": 9,
+        "reflection": "Open gathering place is a visual reminder for this passage: fulfillment and joy."
+      },
+      {
+        "place": "Clear horizon",
+        "cue": "Truth beyond form",
+        "x": 0.6666666666666666,
+        "start": 10,
+        "end": 11,
+        "reflection": "Clear horizon is a visual reminder for this passage: truth beyond form."
+      },
+      {
+        "place": "Night river",
+        "cue": "Worlds without end",
+        "x": 1.0,
+        "start": 12,
+        "end": 17,
+        "reflection": "Night river is a visual reminder for this passage: worlds without end."
+      }
+    ]
+  },
+  "38": {
+    "title": "The workshop of the word",
+    "image": "japji/pauri-38.jpg",
+    "stops": [
+      {
+        "place": "Anvil and tools",
+        "cue": "Discipline and understanding",
+        "x": 0.0,
+        "start": 0,
+        "end": 1,
+        "reflection": "Anvil and tools is a visual reminder for this passage: discipline and understanding."
+      },
+      {
+        "place": "Small furnace",
+        "cue": "Reverence and effort",
+        "x": 0.3333333333333333,
+        "start": 2,
+        "end": 2,
+        "reflection": "Small furnace is a visual reminder for this passage: reverence and effort."
+      },
+      {
+        "place": "Clay crucible",
+        "cue": "Love and the Shabad",
+        "x": 0.6666666666666666,
+        "start": 3,
+        "end": 4,
+        "reflection": "Clay crucible is a visual reminder for this passage: love and the shabad."
+      },
+      {
+        "place": "Open morning path",
+        "cue": "Grace",
+        "x": 1.0,
+        "start": 5,
+        "end": 6,
+        "reflection": "Open morning path is a visual reminder for this passage: grace."
+      }
+    ]
+  }
+}

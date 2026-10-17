@@ -25,6 +25,11 @@ const createStyles = (theme) => ({
     textAlign: "center",
     margin: theme.spacing.sm,
   },
+  kidsIcon: {
+    position: "absolute",
+    bottom: theme.spacing.md,
+    left: theme.spacing.sm,
+  },
   settingIcon: {
     position: "absolute",
     bottom: theme.spacing.md,

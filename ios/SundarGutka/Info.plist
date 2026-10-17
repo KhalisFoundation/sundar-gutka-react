@@ -37,6 +37,8 @@
 		<key>NSAllowsLocalNetworking</key>
 		<true/>
 	</dict>
+	<key>NSMicrophoneUsageDescription</key>
+	<string>Kids Mode records your child's recitation to check pronunciation.</string>
 	<key>NSPrivacyAccessedAPITypes</key>
 	<array>
 		<dict>
@@ -68,6 +70,8 @@
 	<array>
 		<string>AnmolLipiSG.ttf</string>
 		<string>Arial.ttf</string>
+		<string>BalooPaaji2-Regular.ttf</string>
+		<string>BalooPaaji2-SemiBold.ttf</string>
 		<string>GurbaniAkharHeavyTrue.ttf</string>
 		<string>GurbaniAkharThickTrue.ttf</string>
 		<string>GurbaniAkharTrue.ttf</string>

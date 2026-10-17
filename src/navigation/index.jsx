@@ -118,7 +118,11 @@ const Navigation = () => {
         <Stack.Screen name="Bookmarks" component={Bookmarks} />
         <Stack.Screen name="ReminderOptions" component={ReminderOptions} />
         <Stack.Screen name="DatabaseUpdate" component={DatabaseUpdateScreen} />
-        <Stack.Screen name="KidsHome" component={KidsHomeScreen} />
+        <Stack.Screen
+          options={{ headerShown: false }}
+          name="KidsHome"
+          component={KidsHomeScreen}
+        />
       </Stack.Navigator>
     </NavigationContainer>
   );

@@ -1,11 +1,17 @@
-import { setKidsReciter, setKidsScoringOptIn, toggleKidsMode } from "./actions";
+import { setKidsExperience, setKidsReciter, setKidsScoringOptIn, toggleKidsMode } from "./actions";
 import kidsMode from "./kidsModeReducer";
 
 describe("kidsMode reducer", () => {
   const initial = kidsMode(undefined, { type: "@@INIT" });
 
   it("starts off, without consent to send audio", () => {
-    expect(initial).toEqual({ enabled: false, scoringOptIn: false, reciter: null, progress: {} });
+    expect(initial).toEqual({
+      enabled: false,
+      scoringOptIn: false,
+      reciter: null,
+      progress: {},
+      experience: null,
+    });
   });
 
   it("toggles Kids Mode", () => {
@@ -18,5 +24,9 @@ describe("kidsMode reducer", () => {
 
   it("sets the reciter", () => {
     expect(kidsMode(initial, setKidsReciter("bhai-example")).reciter).toBe("bhai-example");
+  });
+
+  it("stores the serialized experience", () => {
+    expect(kidsMode(initial, setKidsExperience('{"v":1}')).experience).toBe('{"v":1}');
   });
 });
