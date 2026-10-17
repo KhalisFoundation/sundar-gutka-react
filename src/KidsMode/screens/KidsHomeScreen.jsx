@@ -38,6 +38,10 @@ const KidsHomeScreen = () => {
     [dispatch]
   );
 
+  // The design saves whenever host.storage changes identity, and a save re-renders this
+  // screen through the store, so storage has to keep its identity across renders.
+  const storage = useMemo(() => ({ load: () => saved, save }), [saved, save]);
+
   const host = useMemo(
     () => ({
       Sheet,
@@ -45,7 +49,7 @@ const KidsHomeScreen = () => {
       HorizontalScroll,
       Icon,
       image,
-      storage: { load: () => saved, save },
+      storage,
       audio,
       clip,
       recitation,
@@ -54,7 +58,7 @@ const KidsHomeScreen = () => {
       statusBarBackground: "#ffffff",
       safeArea: { top: insets.top, bottom: insets.bottom },
     }),
-    [saved, save, audio, clip, recitation, navigation, insets.top, insets.bottom]
+    [storage, audio, clip, recitation, navigation, insets.top, insets.bottom]
   );
 
   return (

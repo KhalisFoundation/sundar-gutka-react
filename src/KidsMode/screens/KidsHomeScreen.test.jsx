@@ -61,6 +61,15 @@ describe("KidsHomeScreen", () => {
     expect(global.lastKidsHost.initialScreen).toBe("world");
   });
 
+  // The design saves whenever host.storage changes identity, and a save re-renders this
+  // screen through the store; a fresh storage object per render would loop forever.
+  it("keeps the storage port stable across renders", () => {
+    const screen = render(<KidsHomeScreen />);
+    const { storage } = global.lastKidsHost;
+    screen.rerender(<KidsHomeScreen />);
+    expect(global.lastKidsHost.storage).toBe(storage);
+  });
+
   it("leaves the journey through the navigator", () => {
     render(<KidsHomeScreen />);
     global.lastKidsHost.exit();
