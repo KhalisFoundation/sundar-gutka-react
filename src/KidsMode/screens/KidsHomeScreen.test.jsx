@@ -1,4 +1,5 @@
 import React from "react";
+import { StatusBar } from "react-native";
 import { useSelector, useDispatch } from "react-redux";
 
 import { render } from "@testing-library/react-native";
@@ -13,7 +14,6 @@ jest.mock("@react-navigation/native", () => ({ useNavigation: () => ({ goBack: m
 jest.mock("react-native-safe-area-context", () => ({
   useSafeAreaInsets: () => ({ top: 10, bottom: 20 }),
 }));
-jest.mock("@common", () => ({ StatusBarComponent: () => null }));
 jest.mock("../design/KidsApp", () => {
   const { Text: MockText } = require("react-native");
   return ({ host, pauris }) => {
@@ -28,16 +28,31 @@ jest.mock("../host/layout", () => ({
 }));
 jest.mock("../host/icons", () => ({ Icon: () => null }));
 jest.mock("../host/images", () => ({ image: () => null }));
+const mockAudio = jest.fn(() => ({}));
+const mockRecitation = jest.fn(() => ({}));
+const mockBani = jest.fn();
 jest.mock("../host/audio", () => ({
-  useReferenceAudio: () => ({}),
+  useReferenceAudio: (...args) => mockAudio(...args),
   useClipPlayer: () => ({}),
-  referenceTrackUrl: (r) => r,
 }));
-jest.mock("../host/recitation", () => ({ useRecordedRecitation: () => ({}) }));
+jest.mock("../host/recitation", () => ({
+  useRecordedRecitation: (...args) => mockRecitation(...args),
+}));
+jest.mock("../host/bani", () => ({ useBani: (...args) => mockBani(...args) }));
+
+const japji = {
+  pauris: [{ number: 1, lines: [{ seq: 5, text: "ਸੋਚੈ", start: 18.3, end: 21.5 }] }],
+  baniId: 2,
+  trackUrl: "https://cdn.example/audios/GianiGurdevSingh/JapjiSahib.m4a",
+  reciter: "ggs",
+  ready: true,
+  error: null,
+};
 
 describe("KidsHomeScreen", () => {
   const dispatch = jest.fn();
   beforeEach(() => {
+    mockBani.mockReturnValue(japji);
     useDispatch.mockReturnValue(dispatch);
     useSelector.mockImplementation((select) =>
       select({ kidsMode: { scoringOptIn: false, reciter: null, experience: null } })
@@ -76,10 +91,60 @@ describe("KidsHomeScreen", () => {
     expect(mockGoBack).toHaveBeenCalled();
   });
 
+  // Kids night mode is separate from the app theme, so a white or theme-driven bar would clash with it.
+  it("lets the status bar follow kids night mode", () => {
+    const bar = () => render(<KidsHomeScreen />).UNSAFE_getByType(StatusBar).props;
+    expect(bar()).toMatchObject({ barStyle: "dark-content", backgroundColor: "transparent" });
+    expect(global.lastKidsHost.statusBarBackground).toBeUndefined();
+    useSelector.mockImplementation((select) =>
+      select({
+        kidsMode: { scoringOptIn: false, experience: { ...freshExperience(), night: true } },
+      })
+    );
+    expect(bar().barStyle).toBe("light-content");
+  });
+
   it("saves the experience through redux", () => {
     render(<KidsHomeScreen />);
     const value = { v: 1 };
     expect(global.lastKidsHost.storage.save(value)).toBe(true);
     expect(dispatch).toHaveBeenCalledWith({ type: "KIDS_MODE_SET_EXPERIENCE", value });
+  });
+
+  it("loads Japji for the parent's reciter, Bhai Jarnail Singh when none is chosen", () => {
+    render(<KidsHomeScreen />);
+    expect(mockBani).toHaveBeenLastCalledWith("japji", "bjs");
+    useSelector.mockImplementation((select) =>
+      select({ kidsMode: { scoringOptIn: false, reciter: "ggs", experience: null } })
+    );
+    render(<KidsHomeScreen />);
+    expect(mockBani).toHaveBeenLastCalledWith("japji", "ggs");
+  });
+
+  it("plays and scores against the loaded bani and the reciter actually heard", () => {
+    const { getByTestId } = render(<KidsHomeScreen />);
+    expect(getByTestId("kids-app").props.children).toBe(1);
+    expect(mockAudio).toHaveBeenLastCalledWith(japji.trackUrl, "ਜਪੁਜੀ ਸਾਹਿਬ");
+    expect(mockRecitation).toHaveBeenLastCalledWith(japji.pauris, {
+      optedIn: false,
+      reciter: "ggs",
+      bani: 2,
+    });
+    expect(global.lastKidsHost.reciterName).toBe("Giani Gurdev Singh");
+  });
+
+  it("waits for the bani before mounting the design", () => {
+    mockBani.mockReturnValue({ ...japji, pauris: [], ready: false });
+    const { queryByTestId } = render(<KidsHomeScreen />);
+    expect(queryByTestId("kids-app")).toBeNull();
+  });
+
+  // parseExperience rejects a saved pauri past 38 and the child would lose all progress.
+  it("never saves a section of a longer bani as the journey's pauri", () => {
+    render(<KidsHomeScreen />);
+    global.lastKidsHost.storage.save({ ...freshExperience(), selected: 120 });
+    expect(dispatch).toHaveBeenLastCalledWith(
+      expect.objectContaining({ value: expect.objectContaining({ selected: 38 }) })
+    );
   });
 });

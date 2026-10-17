@@ -7,29 +7,24 @@
 // re-claims the playback session on reset/add, which is why listen() always resets.
 import { useCallback, useEffect, useRef, useState } from "react";
 import TrackPlayer from "react-native-track-player";
-import constant from "@common/constant";
 import { TrackPlayerSetup } from "@common/TrackPlayerUtils";
 
-// Only Bhai Jarnail Singh's Japji path is confirmed on the CDN; other reciters fall back to it.
-const RECITER_TRACKS = { bjs: "BhaiJarnailSingh/JapjiSahib.m4a" };
-
-export const referenceTrackUrl = (reciter = "bjs") =>
-  `${constant.AUDIO_BASE_URL}/${RECITER_TRACKS[reciter] || RECITER_TRACKS.bjs}`;
-
-export const REFERENCE_AUDIO = referenceTrackUrl("bjs");
+const UNAVAILABLE = "Reference audio is currently unavailable.";
 
 // Worst-case overshoot past a line's end; lines run a few seconds, so it stays small.
 const POLL_MS = 100;
 
-const loadTrack = async (url, id) => {
+// The id carries the URL, so a new bani or reciter replaces the loaded track instead of
+// seeking inside the old one.
+const loadTrack = async (url, id, title = "Kids Mode") => {
   await TrackPlayerSetup();
   const active = await TrackPlayer.getActiveTrack().catch(() => undefined);
   if (active?.id === id) return;
   await TrackPlayer.reset();
-  await TrackPlayer.add({ id, url, title: "Japji Sahib", artist: "Kids Mode" });
+  await TrackPlayer.add({ id, url, title, artist: "Kids Mode" });
 };
 
-export const useReferenceAudio = (trackUrl = REFERENCE_AUDIO) => {
+export const useReferenceAudio = (trackUrl, title) => {
   const [playing, setPlaying] = useState(false);
   const [error, setError] = useState("");
   const endRef = useRef(null);
@@ -59,9 +54,16 @@ export const useReferenceAudio = (trackUrl = REFERENCE_AUDIO) => {
       endRef.current = end;
       clearTimer();
       loadRef.current += 1;
+      // No recording of this bani by any reciter, or the line has no timing in it.
+      if (!trackUrl || start === undefined) {
+        endRef.current = null;
+        setPlaying(false);
+        setError(UNAVAILABLE);
+        return;
+      }
       const load = loadRef.current;
       const current = () => load === loadRef.current;
-      loadTrack(trackUrl, "kids-reference")
+      loadTrack(trackUrl, `kids-reference-${trackUrl}`, title)
         .then(() => current() && TrackPlayer.pause())
         .then(() => current() && TrackPlayer.seekTo(start))
         .then(() => current() && TrackPlayer.setRate(rate))
@@ -87,10 +89,10 @@ export const useReferenceAudio = (trackUrl = REFERENCE_AUDIO) => {
           if (!current()) return;
           endRef.current = null;
           setPlaying(false);
-          setError("Reference audio is currently unavailable.");
+          setError(UNAVAILABLE);
         });
     },
-    [trackUrl]
+    [trackUrl, title]
   );
 
   // Leaving the screen should not leave the ustaad reciting.

@@ -1,8 +1,6 @@
 // One recording, one request: the service aligns a complete recitation, so the app records
 // a line and posts it when the child stops.
 import {
-  BANI,
-  FIRST_PAURI_SEQ,
   REQUEST_TIMEOUT_MS,
   SCORING_API_KEY,
   SCORING_BASE_URL,
@@ -17,16 +15,9 @@ export class ScoringError extends Error {
   }
 }
 
-// BaniDB verse sequences for a pauri's lines, assuming bani.json splits lines as BaniDB does.
-export const seqsForPauri = (pauris, pauriNumber) => {
-  let first = FIRST_PAURI_SEQ;
-  const found = pauris.find((p) => {
-    if (p.number === pauriNumber) return true;
-    first += p.lines.length;
-    return false;
-  });
-  return found ? found.lines.map((_, i) => first + i) : [];
-};
+// BaniDB verse sequences for a pauri's lines, carried on each line from the app's database.
+export const seqsForPauri = (pauris, pauriNumber) =>
+  pauris.find((p) => p.number === pauriNumber)?.lines.map((line) => line.seq) ?? [];
 
 // "5-10" when contiguous, "5,7" otherwise.
 export const formatSeqs = (seqs) => {
@@ -109,29 +100,32 @@ export const toScoreResponse = (body, seqs) => {
 // Absolute URL for a manifest path such as `ggs/5/words/0.wav`.
 export const referenceUrl = (path) => `${SCORING_BASE_URL}/reference/${path}`;
 
-let manifestCache = null;
+const manifests = new Map();
 
-// The reciters, word clips and star bands; fetched once per app session.
-export const fetchManifest = () => {
-  if (!manifestCache) {
-    manifestCache = request(`/v1/manifest?bani=${BANI}`, { method: "GET" })
-      .then(async (response) => {
-        if (!response.ok) {
-          throw new ScoringError(`Manifest unavailable (${response.status})`, response.status);
-        }
-        return response.json();
-      })
-      .catch((caught) => {
-        // A failed fetch is retried next time rather than cached.
-        manifestCache = null;
-        throw caught;
-      });
+// A bani's reciters, word clips and star bands; fetched once per bani per app session.
+export const fetchManifest = (bani) => {
+  if (!manifests.has(bani)) {
+    manifests.set(
+      bani,
+      request(`/v1/manifest?bani=${bani}`, { method: "GET" })
+        .then(async (response) => {
+          if (!response.ok) {
+            throw new ScoringError(`Manifest unavailable (${response.status})`, response.status);
+          }
+          return response.json();
+        })
+        .catch((caught) => {
+          // A failed fetch is retried next time rather than cached.
+          manifests.delete(bani);
+          throw caught;
+        })
+    );
   }
-  return manifestCache;
+  return manifests.get(bani);
 };
 
 // Nothing leaves the device unless the parent turned on "Check pronunciation online".
-export const scoreRecording = async (fileUri, { bani = BANI, reciter, seqs, optedIn = false }) => {
+export const scoreRecording = async (fileUri, { bani, reciter, seqs, optedIn = false }) => {
   if (!optedIn) return { status: "opted_out" };
   const form = new FormData();
   form.append("bani", String(bani));

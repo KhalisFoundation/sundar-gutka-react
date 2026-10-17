@@ -13,8 +13,9 @@ import RNFS from "react-native-fs";
 import { resetPlayer } from "@common/TrackPlayerUtils";
 import { toReviewedLines } from "../design/align";
 import { tokenizeLine } from "../design/wordFeedback";
+import { DEFAULT_RECITER } from "../reciters";
 import { fetchManifest, referenceUrl, scoreRecording, seqsForPauri } from "../scoring/client";
-import { BANI, DEFAULT_RECITER, SCORING_CONFIGURED } from "../scoring/config";
+import { SCORING_CONFIGURED } from "../scoring/config";
 
 export const OPT_IN_MESSAGE =
   'Turn on "Check pronunciation online" in Settings to check your recitation.';
@@ -97,7 +98,7 @@ const toReview = (pauri, response, manifest, reciter, seqs) => {
 
 const removeRecording = () => RNFS.unlink(LINE_PATH).catch(() => {});
 
-export const useRecordedRecitation = (pauris, { optedIn = false, reciter: wanted } = {}) => {
+export const useRecordedRecitation = (pauris, { optedIn = false, reciter: wanted, bani } = {}) => {
   const recorderRef = useRef(null);
   const [granted, setGranted] = useState(Platform.OS !== "android");
   let blocked = null;
@@ -122,13 +123,17 @@ export const useRecordedRecitation = (pauris, { optedIn = false, reciter: wanted
 
   useEffect(() => {
     setError(blocked);
+    setManifest(null);
     // Scoring still works without the manifest; only clips, bands and coverage are lost.
-    if (optedIn) {
-      fetchManifest()
-        .then(setManifest)
-        .catch(() => {});
-    }
-  }, [optedIn, blocked]);
+    if (!optedIn || !bani) return undefined;
+    let live = true;
+    fetchManifest(bani)
+      .then((value) => live && setManifest(value))
+      .catch(() => {});
+    return () => {
+      live = false;
+    };
+  }, [optedIn, blocked, bani]);
 
   useEffect(() => {
     if (Platform.OS !== "android") return;
@@ -223,14 +228,14 @@ export const useRecordedRecitation = (pauris, { optedIn = false, reciter: wanted
     const covered = manifest?.lines?.[reciter];
     if (covered && Object.keys(covered).length > 0 && !covered[String(seq)]) {
       await removeRecording();
-      return { retry: "This line is not ready yet. Try Pauri 1." };
+      return { retry: "This line cannot be checked yet." };
     }
 
     setChecking(true);
     try {
       // Deleted once scored or failed, before the next line reuses the path.
       const response = await scoreRecording(LINE_PATH, {
-        bani: BANI,
+        bani,
         reciter,
         seqs: [seq],
         optedIn,
@@ -283,7 +288,7 @@ export const useRecordedRecitation = (pauris, { optedIn = false, reciter: wanted
     } finally {
       setChecking(false);
     }
-  }, [pauris, manifest, reciter, optedIn, beginRecording]);
+  }, [pauris, manifest, reciter, optedIn, bani, beginRecording]);
 
   useEffect(
     () => () => {
