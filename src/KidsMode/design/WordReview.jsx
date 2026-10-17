@@ -35,7 +35,7 @@ export function WordReview({ pauri, score, textSize, onPractice, measured }) {
   const clipButton = (word) => clip && word.clip ? <Button secondary onPress={() => {audio.stop();clip.play(word.clip);}}>Hear the reciter say {word.text}</Button> : null;
   return <>
     <Heading>Your words</Heading>
-    <Small>{judged ? 'Tap a word to hear it.' : 'Tap a word to hear it.'}</Small>
+    <Small>Tap a word to hear it.</Small>
     {judged ? <View style={[s.wrap, { marginVertical: 4 }]}>
       <Copy style={{ paddingHorizontal: 8 }}>Sounds the same</Copy>
       <Copy style={{ color: t.retryText, backgroundColor: t.retry, paddingHorizontal: 8, textDecorationLine: 'underline' }}>Check</Copy>
