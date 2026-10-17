@@ -9,6 +9,7 @@ import DatabaseUpdateScreen from "../DatabaseUpdate";
 import EditBaniOrder from "../EditBaniOrder";
 import FolderScreen from "../FolderScreen";
 import HomeScreen from "../HomeScreen";
+import KidsHomeScreen from "../KidsMode/screens/KidsHomeScreen";
 import ReaderScreen from "../ReaderScreen";
 import Settings from "../Settings";
 import ReminderOptions from "../Settings/components/reminders/ReminderOptions";
@@ -117,6 +118,7 @@ const Navigation = () => {
         <Stack.Screen name="Bookmarks" component={Bookmarks} />
         <Stack.Screen name="ReminderOptions" component={ReminderOptions} />
         <Stack.Screen name="DatabaseUpdate" component={DatabaseUpdateScreen} />
+        <Stack.Screen name="KidsHome" component={KidsHomeScreen} />
       </Stack.Navigator>
     </NavigationContainer>
   );

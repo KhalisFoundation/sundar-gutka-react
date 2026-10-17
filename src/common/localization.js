@@ -183,6 +183,7 @@ const STRINGS = new LocalizedStrings({
     KIDS_SCORING_OPT_IN: "Check pronunciation online",
     KIDS_SCORING_OPT_IN_INFO:
       "Recordings are sent for checking and not kept. Off: recordings stay on this phone.",
+    KIDS_COMING_SOON: "Coming soon: Japji Sahib practice",
   },
   hi: {
     about: "हमारे बारे",
