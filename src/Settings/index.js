@@ -12,6 +12,7 @@ import {
   BottomNavigation,
   useBackHandler,
 } from "@common";
+import KidsModeSetting from "../KidsMode/KidsModeSetting";
 import Audio from "./components/audio";
 import AutoScroll from "./components/autoScroll";
 import BaniLengthComponent from "./components/baniLength";
@@ -94,6 +95,7 @@ const Settings = ({ navigation }) => {
           navigate={navigate}
           navigationTarget="DatabaseUpdate"
         />
+        <KidsModeSetting />
         <CustomText style={end} />
       </ScrollView>
       <BottomNavigation activeKey="Settings" />

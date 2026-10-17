@@ -215,3 +215,6 @@ export const clearAudioProgress = (baniId) => {
     payload: { baniId },
   };
 };
+
+// Kids Mode actions
+export { toggleKidsMode, setKidsScoringOptIn, setKidsReciter } from "../../KidsMode/state/actions";
