@@ -3,9 +3,13 @@ import { useSelector, useDispatch } from "react-redux";
 
 import { render } from "@testing-library/react-native";
 
+import { freshExperience } from "../design/experience";
+
 import KidsHomeScreen from "./KidsHomeScreen";
 
 jest.mock("react-redux", () => ({ useSelector: jest.fn(), useDispatch: jest.fn() }));
+const mockGoBack = jest.fn();
+jest.mock("@react-navigation/native", () => ({ useNavigation: () => ({ goBack: mockGoBack }) }));
 jest.mock("react-native-safe-area-context", () => ({
   useSafeAreaInsets: () => ({ top: 10, bottom: 20 }),
 }));
@@ -43,6 +47,24 @@ describe("KidsHomeScreen", () => {
   it("mounts KidsApp with a fresh experience when nothing is saved", () => {
     const { getByTestId } = render(<KidsHomeScreen />);
     expect(getByTestId("kids-app")).toBeTruthy();
+  });
+
+  it("opens on the explorer choice first, and on the journey once started", () => {
+    render(<KidsHomeScreen />);
+    expect(global.lastKidsHost.initialScreen).toBe("character");
+    useSelector.mockImplementation((select) =>
+      select({
+        kidsMode: { scoringOptIn: false, experience: { ...freshExperience(), started: true } },
+      })
+    );
+    render(<KidsHomeScreen />);
+    expect(global.lastKidsHost.initialScreen).toBe("world");
+  });
+
+  it("leaves the journey through the navigator", () => {
+    render(<KidsHomeScreen />);
+    global.lastKidsHost.exit();
+    expect(mockGoBack).toHaveBeenCalled();
   });
 
   it("saves the experience through redux", () => {

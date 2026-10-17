@@ -3,16 +3,32 @@
 // this is not automatic speech following.
 import { useCallback, useEffect, useRef, useState } from "react";
 import { PermissionsAndroid, Platform } from "react-native";
-import AudioRecorderPlayer from "react-native-audio-recorder-player";
+import AudioRecorderPlayer, {
+  AudioEncoderAndroidType,
+  AudioSourceAndroidType,
+  AVEncodingOption,
+  OutputFormatAndroidType,
+} from "react-native-audio-recorder-player";
 import RNFS from "react-native-fs";
 import { resetPlayer } from "@common/TrackPlayerUtils";
 import { toReviewedLines } from "../design/align";
 import { tokenizeLine } from "../design/wordFeedback";
 import { fetchManifest, referenceUrl, scoreRecording, seqsForPauri } from "../scoring/client";
-import { BANI, DEFAULT_RECITER } from "../scoring/config";
+import { BANI, DEFAULT_RECITER, SCORING_CONFIGURED } from "../scoring/config";
 
 export const OPT_IN_MESSAGE =
   'Turn on "Check pronunciation online" in Settings to check your recitation.';
+export const NOT_CONFIGURED_MESSAGE = "Pronunciation checking is not set up in this version.";
+
+// AAC mono on both platforms; iOS would otherwise record Apple Lossless, which the service cannot decode.
+const RECORDING = {
+  AVFormatIDKeyIOS: AVEncodingOption.aac,
+  AVNumberOfChannelsKeyIOS: 1,
+  AVSampleRateKeyIOS: 44100,
+  AudioSourceAndroid: AudioSourceAndroidType.MIC,
+  OutputFormatAndroid: OutputFormatAndroidType.MPEG_4,
+  AudioEncoderAndroid: AudioEncoderAndroidType.AAC,
+};
 
 const LINE_PATH = `${RNFS.CachesDirectoryPath}/kids-line.m4a`;
 
@@ -84,7 +100,10 @@ const removeRecording = () => RNFS.unlink(LINE_PATH).catch(() => {});
 export const useRecordedRecitation = (pauris, { optedIn = false, reciter: wanted } = {}) => {
   const recorderRef = useRef(null);
   const [granted, setGranted] = useState(Platform.OS !== "android");
-  const [error, setError] = useState(optedIn ? null : OPT_IN_MESSAGE);
+  let blocked = null;
+  if (!SCORING_CONFIGURED) blocked = NOT_CONFIGURED_MESSAGE;
+  else if (!optedIn) blocked = OPT_IN_MESSAGE;
+  const [error, setError] = useState(blocked);
   const [checking, setChecking] = useState(false);
   const [isRecording, setIsRecording] = useState(false);
   const [level, setLevel] = useState(0);
@@ -102,14 +121,14 @@ export const useRecordedRecitation = (pauris, { optedIn = false, reciter: wanted
   };
 
   useEffect(() => {
-    setError(optedIn ? null : OPT_IN_MESSAGE);
+    setError(blocked);
     // Scoring still works without the manifest; only clips, bands and coverage are lost.
     if (optedIn) {
       fetchManifest()
         .then(setManifest)
         .catch(() => {});
     }
-  }, [optedIn]);
+  }, [optedIn, blocked]);
 
   useEffect(() => {
     if (Platform.OS !== "android") return;
@@ -143,8 +162,8 @@ export const useRecordedRecitation = (pauris, { optedIn = false, reciter: wanted
   };
 
   const beginRecording = useCallback(async () => {
-    if (!optedIn) {
-      setError(OPT_IN_MESSAGE);
+    if (blocked) {
+      setError(blocked);
       return false;
     }
     try {
@@ -162,14 +181,14 @@ export const useRecordedRecitation = (pauris, { optedIn = false, reciter: wanted
         const db = typeof e.currentMetering === "number" ? e.currentMetering : -160;
         setLevel(Math.max(0, Math.min(1, (db + 60) / 60)));
       });
-      await recorder.startRecorder(recorderPath(), undefined, true);
+      await recorder.startRecorder(recorderPath(), RECORDING, true);
       setIsRecording(true);
       return true;
     } catch (caught) {
       setError(caught?.message || "We could not turn on the microphone.");
       return false;
     }
-  }, [optedIn]);
+  }, [blocked]);
 
   const cancel = useCallback(async () => {
     await stopRecorder();
@@ -178,7 +197,7 @@ export const useRecordedRecitation = (pauris, { optedIn = false, reciter: wanted
 
   const start = useCallback(
     async (pauriNumber, lineCount = 0) => {
-      setError(optedIn ? null : OPT_IN_MESSAGE);
+      setError(blocked);
       pauriRef.current = pauriNumber;
       lineCountRef.current = lineCount;
       lineRef.current = 0;
@@ -187,7 +206,7 @@ export const useRecordedRecitation = (pauris, { optedIn = false, reciter: wanted
       setCurrentLine(0);
       return beginRecording();
     },
-    [beginRecording, optedIn]
+    [beginRecording, blocked]
   );
 
   const stop = useCallback(async () => {
@@ -288,7 +307,6 @@ export const useRecordedRecitation = (pauris, { optedIn = false, reciter: wanted
     lineScores,
     error,
     checking,
-    following: true,
     provider: "service",
   };
 };

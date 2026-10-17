@@ -23,6 +23,8 @@ const POLL_MS = 100;
 
 const loadTrack = async (url, id) => {
   await TrackPlayerSetup();
+  const active = await TrackPlayer.getActiveTrack().catch(() => undefined);
+  if (active?.id === id) return;
   await TrackPlayer.reset();
   await TrackPlayer.add({ id, url, title: "Japji Sahib", artist: "Kids Mode" });
 };
@@ -32,6 +34,8 @@ export const useReferenceAudio = (trackUrl = REFERENCE_AUDIO) => {
   const [error, setError] = useState("");
   const endRef = useRef(null);
   const timerRef = useRef(null);
+  // A tap or stop while a load is in flight makes that load a no-op when it lands.
+  const loadRef = useRef(0);
 
   const clearTimer = () => {
     if (timerRef.current) {
@@ -41,6 +45,7 @@ export const useReferenceAudio = (trackUrl = REFERENCE_AUDIO) => {
   };
 
   const stop = useCallback(() => {
+    loadRef.current += 1;
     endRef.current = null;
     clearTimer();
     setPlaying(false);
@@ -53,11 +58,16 @@ export const useReferenceAudio = (trackUrl = REFERENCE_AUDIO) => {
       setError("");
       endRef.current = end;
       clearTimer();
+      loadRef.current += 1;
+      const load = loadRef.current;
+      const current = () => load === loadRef.current;
       loadTrack(trackUrl, "kids-reference")
-        .then(() => TrackPlayer.seekTo(start))
-        .then(() => TrackPlayer.setRate(rate))
-        .then(() => TrackPlayer.play())
+        .then(() => current() && TrackPlayer.pause())
+        .then(() => current() && TrackPlayer.seekTo(start))
+        .then(() => current() && TrackPlayer.setRate(rate))
+        .then(() => current() && TrackPlayer.play())
         .then(() => {
+          if (!current()) return;
           setPlaying(true);
           timerRef.current = setInterval(async () => {
             try {
@@ -74,6 +84,7 @@ export const useReferenceAudio = (trackUrl = REFERENCE_AUDIO) => {
           }, POLL_MS);
         })
         .catch(() => {
+          if (!current()) return;
           endRef.current = null;
           setPlaying(false);
           setError("Reference audio is currently unavailable.");
@@ -85,6 +96,7 @@ export const useReferenceAudio = (trackUrl = REFERENCE_AUDIO) => {
   // Leaving the screen should not leave the ustaad reciting.
   useEffect(
     () => () => {
+      loadRef.current += 1;
       clearTimer();
       TrackPlayer.pause().catch(() => {});
     },

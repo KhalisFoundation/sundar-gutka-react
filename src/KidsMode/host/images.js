@@ -7,14 +7,12 @@ const IMAGES = {
   "khalislogo150.png": require("../../../assets/kids/khalislogo150.png"),
   "prem-character.png": require("../../../assets/kids/prem-character.png"),
   "sehaj-character.png": require("../../../assets/kids/sehaj-character.png"),
-  "pauri-1-story-panorama.png": require("../../../assets/kids/pauri-1-story-panorama.png"),
   "regions/fields-calm.jpg": require("../../../assets/kids/regions/fields-calm.jpg"),
   "regions/grace-calm.jpg": require("../../../assets/kids/regions/grace-calm.jpg"),
   "regions/horizon-calm.jpg": require("../../../assets/kids/regions/horizon-calm.jpg"),
   "regions/paths-calm.jpg": require("../../../assets/kids/regions/paths-calm.jpg"),
   "regions/river-calm.jpg": require("../../../assets/kids/regions/river-calm.jpg"),
   "regions/wonder-calm.jpg": require("../../../assets/kids/regions/wonder-calm.jpg"),
-  "japji/opening.jpg": require("../../../assets/kids/japji/opening.jpg"),
   "japji/pauri-02.jpg": require("../../../assets/kids/japji/pauri-02.jpg"),
   "japji/pauri-03.jpg": require("../../../assets/kids/japji/pauri-03.jpg"),
   "japji/pauri-04.jpg": require("../../../assets/kids/japji/pauri-04.jpg"),
@@ -52,7 +50,6 @@ const IMAGES = {
   "japji/pauri-36.jpg": require("../../../assets/kids/japji/pauri-36.jpg"),
   "japji/pauri-37.jpg": require("../../../assets/kids/japji/pauri-37.jpg"),
   "japji/pauri-38.jpg": require("../../../assets/kids/japji/pauri-38.jpg"),
-  "japji/salok.jpg": require("../../../assets/kids/japji/salok.jpg"),
 };
 
 // Unknown names fall back to the journey art rather than rendering nothing.

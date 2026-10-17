@@ -28,7 +28,7 @@ const FEATHER = {
   star: "star",
 };
 
-export const Icon = ({ name, color, size }) => {
+export const Icon = ({ name, color, size = 22 }) => {
   if (REWARDS[name]) {
     return (
       <Image source={REWARDS[name]} style={{ width: size, height: size, tintColor: color }} />
@@ -45,6 +45,5 @@ Icon.propTypes = {
   color: PropTypes.string.isRequired,
   size: PropTypes.number,
 };
-Icon.defaultProps = { size: 22 };
 
 export default Icon;

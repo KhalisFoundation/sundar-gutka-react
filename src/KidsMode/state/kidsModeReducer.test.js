@@ -26,7 +26,8 @@ describe("kidsMode reducer", () => {
     expect(kidsMode(initial, setKidsReciter("bhai-example")).reciter).toBe("bhai-example");
   });
 
-  it("stores the serialized experience", () => {
-    expect(kidsMode(initial, setKidsExperience('{"v":1}')).experience).toBe('{"v":1}');
+  it("stores the experience object", () => {
+    const experience = { version: 1, started: true };
+    expect(kidsMode(initial, setKidsExperience(experience)).experience).toBe(experience);
   });
 });

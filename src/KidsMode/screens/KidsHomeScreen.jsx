@@ -1,5 +1,6 @@
 import React, { useCallback, useMemo, useState } from "react";
 import { useDispatch, useSelector } from "react-redux";
+import { useNavigation } from "@react-navigation/native";
 import { useSafeAreaInsets } from "react-native-safe-area-context";
 import { StatusBarComponent } from "@common";
 import { setKidsExperience } from "../state/actions";
@@ -17,6 +18,7 @@ import { useRecordedRecitation } from "../host/recitation";
 // once on mount keeps the synchronous load() the design relies on.
 const KidsHomeScreen = () => {
   const dispatch = useDispatch();
+  const navigation = useNavigation();
   const insets = useSafeAreaInsets();
   const optedIn = useSelector((state) => state.kidsMode.scoringOptIn);
   // bani.json timings are Bhai Jarnail Singh's, so the reciter is pinned here.
@@ -48,10 +50,11 @@ const KidsHomeScreen = () => {
       clip,
       recitation,
       initialScreen: saved.started ? "world" : "character",
+      exit: () => navigation.goBack(),
       statusBarBackground: "#ffffff",
       safeArea: { top: insets.top, bottom: insets.bottom },
     }),
-    [saved, save, audio, clip, recitation, insets.top, insets.bottom]
+    [saved, save, audio, clip, recitation, navigation, insets.top, insets.bottom]
   );
 
   return (

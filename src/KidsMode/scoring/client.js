@@ -59,8 +59,8 @@ const request = async (path, init, attempt = 0) => {
       signal: controller.signal,
     });
   } catch (caught) {
-    // A cold replica can be slow, so one failed attempt is retried.
-    if (attempt < 1) return request(path, init, attempt + 1);
+    // A dropped connection is retried once; a timeout is not, as the job may still be running.
+    if (attempt < 1 && !controller.signal.aborted) return request(path, init, attempt + 1);
     throw new ScoringError(
       controller.signal.aborted
         ? "The checking service took too long. Please try again."
@@ -128,10 +128,6 @@ export const fetchManifest = () => {
       });
   }
   return manifestCache;
-};
-
-export const resetManifestCache = () => {
-  manifestCache = null;
 };
 
 // Nothing leaves the device unless the parent turned on "Check pronunciation online".
