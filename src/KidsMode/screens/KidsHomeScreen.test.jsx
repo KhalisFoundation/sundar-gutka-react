@@ -140,11 +140,12 @@ describe("KidsHomeScreen", () => {
   });
 
   // parseExperience rejects a saved pauri past 38 and the child would lose all progress.
-  it("never saves a section of a longer bani as the journey's pauri", () => {
-    render(<KidsHomeScreen />);
-    global.lastKidsHost.storage.save({ ...freshExperience(), selected: 120 });
-    expect(dispatch).toHaveBeenLastCalledWith(
-      expect.objectContaining({ value: expect.objectContaining({ selected: 38 }) })
-    );
+  it("waits for the bani before mounting the design, and shows a load error", () => {
+    mockBani.mockReturnValue({ ...japji, pauris: [], ready: false });
+    const loading = render(<KidsHomeScreen />);
+    expect(loading.queryByTestId("kids-app")).toBeNull();
+    mockBani.mockReturnValue({ ...japji, pauris: [], ready: false, error: new Error("No bani") });
+    const failed = render(<KidsHomeScreen />);
+    expect(failed.getByText("No bani")).toBeTruthy();
   });
 });

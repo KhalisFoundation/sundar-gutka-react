@@ -62,7 +62,7 @@ export function WordReview({ pauri, score, textSize, onPractice, measured }) {
         {clipButton(selected)}
         {clip && clip.error.length > 0 && selected.clip && <Copy style={{ color: t.retryText }}>{clip.error}</Copy>}
         <Button onPress={() => audio.playing ? audio.stop() : audio.listen(currentLine.start, currentLine.end, 0.8)}>{audio.playing ? 'Stop' : 'Hear it again'}</Button>
-        <Small>Bhai Jarnail Singh · Slower playback</Small>
+        <Small>{host.reciterName ?? 'Bhai Jarnail Singh'} · Slower playback</Small>
         <Button secondary onPress={() => {const line = selected.lineIndex;close();onPractice(line);}}>Say this line</Button>
         {flagged.length > 1 && <Button secondary onPress={() => {audio.stop();const index = flagged.findIndex((word) => word.id === selected.id);setSelected(flagged[(index + 1) % flagged.length]);}}>Next word</Button>}
         {audio.error.length > 0 && <Copy style={{ color: t.retryText }}>{audio.error}</Copy>}

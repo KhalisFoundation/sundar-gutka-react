@@ -116,11 +116,13 @@ const loadText = async (token, length, language) => {
   return { baniId: rows[0].Bani, sections: toSections(rows, language, SEQ_RANGE[token]) };
 };
 
-// Without a recording by the chosen reciter for this bani, another reciter's is used, and
-// `reciter` says whose, so scoring compares against the voice the child heard.
+// Without a recording by the chosen reciter for this bani, another known reciter's is used,
+// and `reciter` says whose, so scoring compares against the voice the child heard. A track
+// by a reciter the scorer has no reference for is left out rather than mislabelled.
 const loadTiming = async (baniId, wanted) => {
   const tracks = (await fetchManifest(baniId))?.data ?? [];
-  const track = tracks.find((t) => reciterForUrl(t.track_url)?.key === wanted) ?? tracks[0];
+  const known = tracks.filter((t) => reciterForUrl(t.track_url));
+  const track = known.find((t) => reciterForUrl(t.track_url).key === wanted) ?? known[0];
   const lrc = track?.lyrics_url ? await fetchLRCData(track.lyrics_url) : null;
   return {
     track: track ?? null,
