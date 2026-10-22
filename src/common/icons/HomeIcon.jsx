@@ -1,9 +1,14 @@
 import React from "react";
 import Svg, { Path } from "react-native-svg";
+import { navy } from "@theme/palette";
 import PropTypes from "prop-types";
-import { colors } from "@common";
 
-const HomeIcon = ({ size = 24, color = colors.WHITE }) => (
+// Fallback only — every call site passes an explicit, themed colour. It exists
+// so the stroke is never undefined, which is what the old colors module
+// returned: it never defined the keys these icons referenced.
+const ICON_FALLBACK = navy[800];
+
+const HomeIcon = ({ size = 24, color = ICON_FALLBACK }) => (
   <Svg
     width={size}
     height={size}
@@ -21,8 +26,8 @@ const HomeIcon = ({ size = 24, color = colors.WHITE }) => (
 );
 
 HomeIcon.propTypes = {
-  size: PropTypes.number.isRequired,
-  color: PropTypes.string.isRequired,
+  size: PropTypes.number,
+  color: PropTypes.string,
 };
 
 export default HomeIcon;

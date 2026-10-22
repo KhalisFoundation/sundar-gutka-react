@@ -1,31 +1,16 @@
 import React from "react";
-import { View } from "react-native";
-import { ListItem, Avatar } from "@rneui/themed";
 import PropTypes from "prop-types";
-import { STRINGS, useThemedStyles, ListItemTitle } from "@common";
-import createStyles from "../styles";
+import { STRINGS } from "@common";
+import SettingsRow from "./comon/SettingsRow";
 
-const EditBaniOrder = ({ navigate }) => {
-  const styles = useThemedStyles(createStyles);
-  const { EDIT_BANI_ORDER } = STRINGS;
-  const rearrangeIcon = require("../../../images/rearrangeicon.png");
-  return (
-    <ListItem
-      bottomDivider
-      containerStyle={styles.containerNightStyles}
-      onPress={() => navigate("EditBaniOrder")}
-    >
-      <View style={styles.iconContainerStyle}>
-        <Avatar source={rearrangeIcon} avatarStyle={styles.avatarStyle} />
-      </View>
-      <ListItem.Content>
-        <ListItemTitle title={EDIT_BANI_ORDER} style={styles.listItemTitle} />
-      </ListItem.Content>
-      <ListItem.Chevron />
-    </ListItem>
-  );
-};
-EditBaniOrder.propTypes = {
-  navigate: PropTypes.func.isRequired,
-};
+const EditBaniOrder = ({ navigate }) => (
+  <SettingsRow
+    title={STRINGS.EDIT_BANI_ORDER}
+    iconImage={require("../../../images/rearrangeicon.png")}
+    onPress={() => navigate("EditBaniOrder")}
+  />
+);
+
+EditBaniOrder.propTypes = { navigate: PropTypes.func.isRequired };
+
 export default EditBaniOrder;

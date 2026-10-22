@@ -1,3 +1,6 @@
+// Khalis backend base URL (reading themes today; Seva and Dashboard later).
+const KHALIS_API_BASE = "https://users.khalis.net";
+
 export default {
   DB: "gutka_v01",
   ENGLISH: "ENGLISH",
@@ -40,6 +43,7 @@ export default {
   TRANSLATION: "TRANSLATION",
   REMINDER_OPTIONS: "Reminder Options",
   KHALIS_FOUNDATION_URL: "https://khalisfoundation.org",
+  KHALIS_PRIVACY_POLICY_URL: "https://khalisfoundation.org/about/privacy-policy/",
   BANI_DB_URL: "https://www.banidb.com/",
   sttm: "sttm",
   VISHRAAM_COLORED: "VISHRAAM_COLORED",
@@ -111,4 +115,14 @@ export default {
   },
   INTERNET_CHECK_URL: "https://www.gstatic.com/generate_204",
   ICON_SIZE_SMALL: 18,
+  // My Pothi switch. Off until the My Pothi PR: the Reader's add-to-pothi button
+  // reads it, and there are no pothis to add to yet.
+  POTHI_ENABLED: false,
+  // Reading themes served by the backend (public, no auth), merged over the
+  // bundled set — see theme/reader/registry.
+  THEMES_API_URL: `${KHALIS_API_BASE}/themes`,
+  // How long after launch the reading-theme catalogue may be topped up. It is
+  // ONE small request, read only when the theme picker is opened, so it has no
+  // launch deadline, while the DB seed and the first Home mount do.
+  THEMES_SYNC_DELAY_MS: 8000,
 };

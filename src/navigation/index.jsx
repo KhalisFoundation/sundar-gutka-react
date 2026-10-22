@@ -1,7 +1,19 @@
-import React, { useRef } from "react";
+import React, { useMemo, useRef } from "react";
+import { View } from "react-native";
 import { NavigationContainer } from "@react-navigation/native";
 import { createNativeStackNavigator } from "@react-navigation/native-stack";
-import { navigationRef, logError, startPerformanceTrace, stopTrace, resetTrace } from "@common";
+import { paletteFor } from "@theme/screenPalettes";
+import { withScreenRoles } from "@theme/ScreenRolesProvider";
+import useTheme from "@common/context";
+import { setReaderFocused } from "@common/readerFocus";
+import {
+  navigationRef,
+  constant,
+  logError,
+  startPerformanceTrace,
+  stopTrace,
+  resetTrace,
+} from "@common";
 import AboutScreen from "../AboutScreen";
 import Bookmarks from "../Bookmarks";
 import { trackScreenView } from "../common/firebase/analytics";
@@ -12,10 +24,38 @@ import HomeScreen from "../HomeScreen";
 import ReaderScreen from "../ReaderScreen";
 import Settings from "../Settings";
 import ReminderOptions from "../Settings/components/reminders/ReminderOptions";
+import Themes from "../Settings/Themes";
+import navigationThemeFor from "./navigationTheme";
+
+// Settings and every utility page reachable from it share one palette — the
+// navy hierarchy the bani list already uses — in dark mode. Declared here
+// because the navigation graph is the place that already says which screens
+// belong to which part of the app.
+//
+// Bookmarks is in the list for the same reason the bani list was: its body is
+// a BaniList already drawing the navy ground, so leaving its frame on the
+// semantic one left a dark strip above the content.
+const SettingsScreen = withScreenRoles(Settings, "settings");
+const ReminderOptionsScreen = withScreenRoles(ReminderOptions, "settings");
+const ThemesScreen = withScreenRoles(Themes, "settings");
+const EditBaniOrderScreen = withScreenRoles(EditBaniOrder, "settings");
+const DatabaseUpdate = withScreenRoles(DatabaseUpdateScreen, "settings");
+const About = withScreenRoles(AboutScreen, "settings");
+const BookmarksScreen = withScreenRoles(Bookmarks, "settings");
 
 const Stack = createNativeStackNavigator();
 
 const Navigation = () => {
+  const { theme } = useTheme();
+  // What shows through behind a scene mid-transition. Home's own ground, since
+  // that is the screen nearly every push in the app starts from — so the gap
+  // at the trailing edge of a slide reads as more of the same page, not a
+  // strip of something else. See navigationTheme for why only this changes.
+  const sceneGround = paletteFor("baniList", theme).surface;
+  const navigationTheme = useMemo(
+    () => navigationThemeFor(sceneGround, theme.mode === "dark"),
+    [sceneGround, theme.mode]
+  );
   const routeNameRef = useRef();
   // Holds the in-flight Firebase Performance trace for the current screen.
   const trace = useRef(null);
@@ -69,6 +109,10 @@ const Navigation = () => {
     if (!currentRoute) return;
     const currentRouteName = currentRoute.name;
     routeNameRef.current = currentRouteName;
+    // The root-level overlay hosts (confirm dialog, toast) live outside this
+    // container, so this is the one place that can tell them the Reader is on
+    // screen and their surface should wear the reading theme.
+    setReaderFocused(currentRouteName === constant.READER);
     if (previousRouteName !== currentRouteName) {
       trackScreenView(
         currentRouteName,
@@ -79,46 +123,68 @@ const Navigation = () => {
   };
 
   return (
-    <NavigationContainer
-      ref={navigationRef}
-      onReady={() => {
-        const route = navigationRef.isReady() ? navigationRef.getCurrentRoute() : null;
-        routeNameRef.current = route?.name;
-        // onStateChange doesn't fire for the initial screen, so start its trace
-        // here; otherwise the first screen of every session has no timing.
-        if (navigationRef.isReady()) {
-          queuePerformanceTrace(navigationRef.getRootState());
-        }
-      }}
-      onStateChange={handleStateChange}
-    >
-      <Stack.Navigator
-        screenOptions={{
-          headerShown: true,
-          headerTitleAlign: "center",
+    // The ground UNDER the navigator. The theme and contentStyle paint each
+    // scene, but the stack container that holds the scenes paints nothing of its
+    // own — so during Android's push transition the column between the outgoing
+    // and incoming screens showed the Activity window, which the native theme
+    // leaves light. This View is what lies beneath now, in the scenes' colour.
+    <View style={{ flex: 1, backgroundColor: sceneGround }}>
+      <NavigationContainer
+        ref={navigationRef}
+        theme={navigationTheme}
+        onReady={() => {
+          const route = navigationRef.isReady() ? navigationRef.getCurrentRoute() : null;
+          routeNameRef.current = route?.name;
+          setReaderFocused(route?.name === constant.READER);
+          // onStateChange doesn't fire for the initial screen, so start its trace
+          // here; otherwise the first screen of every session has no timing.
+          if (navigationRef.isReady()) {
+            queuePerformanceTrace(navigationRef.getRootState());
+          }
         }}
+        onStateChange={handleStateChange}
       >
-        <Stack.Screen
-          options={{
-            headerShown: false,
+        <Stack.Navigator
+          screenOptions={{
+            headerShown: true,
+            headerTitleAlign: "center",
+            // The native scene's own background — the View above covers the gap
+            // behind it; this covers the scene itself before its first frame.
+            contentStyle: { backgroundColor: sceneGround },
           }}
-          name="Home"
-          component={HomeScreen}
-        />
-        <Stack.Screen name="Reader" component={ReaderScreen} options={{ headerShown: false }} />
-        <Stack.Screen name="Settings" component={Settings} />
-        <Stack.Screen name="About" component={AboutScreen} />
-        <Stack.Screen name="FolderScreen" component={FolderScreen} />
-        <Stack.Screen
-          options={{ headerShown: false }}
-          name="EditBaniOrder"
-          component={EditBaniOrder}
-        />
-        <Stack.Screen name="Bookmarks" component={Bookmarks} />
-        <Stack.Screen name="ReminderOptions" component={ReminderOptions} />
-        <Stack.Screen name="DatabaseUpdate" component={DatabaseUpdateScreen} />
-      </Stack.Navigator>
-    </NavigationContainer>
+        >
+          <Stack.Screen name="Home" component={HomeScreen} options={{ headerShown: false }} />
+          <Stack.Screen name="Reader" component={ReaderScreen} options={{ headerShown: false }} />
+          {/* Screens that draw their own ScreenHeader opt out of the native one
+              here, not in an effect, so the native bar never paints for a frame
+              first (the stacked double header). */}
+          <Stack.Screen
+            name="Settings"
+            component={SettingsScreen}
+            options={{ headerShown: false }}
+          />
+          <Stack.Screen name="About" component={About} options={{ headerShown: false }} />
+          <Stack.Screen name="FolderScreen" component={FolderScreen} />
+          <Stack.Screen
+            name="EditBaniOrder"
+            component={EditBaniOrderScreen}
+            options={{ headerShown: false }}
+          />
+          <Stack.Screen
+            name="Bookmarks"
+            component={BookmarksScreen}
+            options={{ headerShown: false }}
+          />
+          <Stack.Screen name="ReminderOptions" component={ReminderOptionsScreen} />
+          <Stack.Screen name="Themes" component={ThemesScreen} options={{ headerShown: false }} />
+          <Stack.Screen
+            name="DatabaseUpdate"
+            component={DatabaseUpdate}
+            options={{ headerShown: false }}
+          />
+        </Stack.Navigator>
+      </NavigationContainer>
+    </View>
   );
 };
 

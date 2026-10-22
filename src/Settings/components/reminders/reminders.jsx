@@ -1,10 +1,7 @@
 import React, { useState } from "react";
-import { Alert, Linking, View } from "react-native";
+import { Alert, Linking } from "react-native";
 import { useSelector, useDispatch } from "react-redux";
-import { ListItem, Icon } from "@rneui/themed";
 import PropTypes from "prop-types";
-import useTheme from "@common/context";
-import useThemedStyles from "@common/hooks/useThemedStyles";
 import {
   STRINGS,
   cancelAllReminders,
@@ -13,18 +10,14 @@ import {
   logError,
   logMessage,
   FallBack,
-  ListItemTitle,
-  ThemedSwitch,
 } from "@common";
 import { getBaniList } from "@database";
-import createStyles from "../../styles";
 import { ListItemComponent, BottomSheetComponent } from "../comon";
+import SettingsRow, { SettingsToggleRow } from "../comon/SettingsRow";
 import { getReminderSound } from "../comon/strings";
 import setDefaultReminders from "./ReminderOptions/utils";
 
 const RemindersComponent = ({ navigation }) => {
-  const { theme } = useTheme();
-  const styles = useThemedStyles(createStyles);
   const REMINDER_SOUNDS = getReminderSound(STRINGS);
   const isReminders = useSelector((state) => state.isReminders);
   const reminderSound = useSelector((state) => state.reminderSound);
@@ -79,30 +72,19 @@ const RemindersComponent = ({ navigation }) => {
 
   return (
     <>
-      <ListItem bottomDivider containerStyle={styles.containerNightStyles}>
-        <View style={styles.iconContainerStyle}>
-          <Icon color={theme.colors.primaryText} name="timer" size={26} />
-        </View>
-        <ListItem.Content>
-          <ListItemTitle title={STRINGS.reminders} style={styles.listItemTitle} />
-        </ListItem.Content>
-        <ThemedSwitch value={isReminders} onValueChange={(value) => handleReminders(value)} />
-      </ListItem>
+      <SettingsToggleRow
+        title={STRINGS.reminders}
+        icon="timer"
+        value={isReminders}
+        onValueChange={(value) => handleReminders(value)}
+      />
 
       {isReminders && (
-        <ListItem
-          bottomDivider
-          containerStyle={styles.containerNightStyles}
+        <SettingsRow
+          title={STRINGS.set_reminder_options}
+          icon="event"
           onPress={() => navigate("ReminderOptions")}
-        >
-          <View style={styles.iconContainerStyle}>
-            <Icon name="event" color={theme.colors.primaryText} size={26} />
-          </View>
-          <ListItem.Content>
-            <ListItemTitle title={STRINGS.set_reminder_options} style={styles.listItemTitle} />
-          </ListItem.Content>
-          <ListItem.Chevron />
-        </ListItem>
+        />
       )}
       {isReminders && (
         <ListItemComponent

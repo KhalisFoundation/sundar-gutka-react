@@ -1,27 +1,16 @@
 import React from "react";
-import { View, Linking } from "react-native";
-import { ListItem, Icon } from "@rneui/themed";
-import { STRINGS, useTheme, useThemedStyles, ListItemTitle } from "@common";
-import createStyles from "../styles";
+import { Linking } from "react-native";
+import { STRINGS } from "@common";
+import SettingsRow from "./comon/SettingsRow";
 
-const Donate = () => {
-  const { theme } = useTheme();
-  const styles = useThemedStyles(createStyles);
-  const { donate } = STRINGS;
-  return (
-    <ListItem
-      bottomDivider
-      containerStyle={styles.containerNightStyles}
-      onPress={() => Linking.openURL("https://khalisfoundation.org/donate/")}
-    >
-      <View style={styles.iconContainerStyle}>
-        <Icon color={theme.colors.primaryText} name="volunteer-activism" size={26} />
-      </View>
-      <ListItem.Content>
-        <ListItemTitle title={donate} style={styles.listItemTitle} />
-      </ListItem.Content>
-      <ListItem.Chevron />
-    </ListItem>
-  );
-};
+// Opens the donation page, as before. The in-app Seva screen this row will lead
+// to arrives with the Seva PR, which repoints it there.
+const Donate = () => (
+  <SettingsRow
+    title={STRINGS.donate}
+    icon="volunteer-activism"
+    onPress={() => Linking.openURL("https://khalisfoundation.org/donate/")}
+  />
+);
+
 export default Donate;

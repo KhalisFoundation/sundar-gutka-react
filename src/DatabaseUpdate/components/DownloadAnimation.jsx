@@ -22,7 +22,7 @@ const DownloadAnimation = ({ progress, progressAnim }) => {
             cx="60"
             cy="60"
             r={radius}
-            stroke={theme.colors.surfaceGrey}
+            stroke={theme.c.backgroundAlt}
             strokeWidth={strokeWidth}
             fill="none"
           />
@@ -30,7 +30,7 @@ const DownloadAnimation = ({ progress, progressAnim }) => {
             cx="60"
             cy="60"
             r={radius}
-            stroke={theme.colors.primary}
+            stroke={theme.c.primary}
             strokeWidth={strokeWidth}
             fill="none"
             strokeDasharray={circumference}

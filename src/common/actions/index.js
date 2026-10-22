@@ -1,3 +1,4 @@
+import { mergeThemeRegistry } from "@theme/reader/registry";
 import constant from "../constant";
 import { trackSettingEvent, trackBaniArtistDefault } from "../firebase/analytics";
 import STRINGS from "../localization";
@@ -214,4 +215,53 @@ export const clearAudioProgress = (baniId) => {
     type: actionTypes.CLEAR_AUDIO_PROGRESS,
     payload: { baniId },
   };
+};
+
+// The reading-theme catalogue served by the backend, merged over the bundled
+// set (see theme/reader/registry and services/themes).
+export const setRemoteThemes = ({ version, themes, fetchedAt }) => ({
+  type: actionTypes.SET_REMOTE_THEMES,
+  payload: { version, themes, fetchedAt },
+});
+
+// Which of the user's toggles a reading theme may SUGGEST, and the action that
+// owns each. Going through the real action creators keeps their analytics and
+// cross-toggle rules intact — a theme takes exactly the path a user tapping the
+// switch would. A function, not a module-scope literal, so the action creators
+// above are never read in their temporal dead zone.
+const readerThemeSeedableToggles = () => ({
+  isTransliteration: toggleTransliteration,
+  isEnglishTranslation: toggleEnglishTranslation,
+  isPunjabiTranslation: togglePunjabiTranslation,
+  isSpanishTranslation: toggleSpanishTranslation,
+});
+
+// Applies a theme, plus the one-time "seeding" of the display settings a
+// designed theme suggests.
+//
+// A theme suggests those settings the FIRST time it is chosen and never again:
+// once `readerThemeSeeded[id]` is set, re-selecting that theme leaves the user's
+// toggles alone, so a theme can express an intended reading setup without ever
+// silently undoing a choice the user made by hand. Light, Dark and Default have
+// no `defaults`, so for them this is `setTheme` plus one no-op dispatch.
+export const applyTheme = (value) => (dispatch, getState) => {
+  dispatch(setTheme(value));
+
+  const state = getState();
+  if (state.readerThemeSeeded?.[value]) return;
+
+  // The MERGED registry: a theme served by the backend behaves exactly as a
+  // bundled one does.
+  const record = mergeThemeRegistry(state.remoteThemes).byId[value];
+  const defaults = record?.defaults ?? {};
+  const seedable = readerThemeSeedableToggles();
+  Object.entries(defaults).forEach(([key, desired]) => {
+    const toggle = seedable[key];
+    // Only dispatch a real change, so no misleading analytics event is sent.
+    if (toggle && state[key] !== desired) dispatch(toggle(desired));
+  });
+
+  // Marked even when `defaults` is empty, so the check above short-circuits on
+  // every later selection of this theme.
+  dispatch({ type: actionTypes.MARK_READER_THEME_SEEDED, value });
 };

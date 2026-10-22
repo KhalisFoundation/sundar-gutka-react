@@ -21,7 +21,7 @@ const PlayIcon = ({ size = 24, color }) => {
 };
 
 PlayIcon.propTypes = {
-  size: PropTypes.number.isRequired,
+  size: PropTypes.number,
   color: PropTypes.string.isRequired,
 };
 

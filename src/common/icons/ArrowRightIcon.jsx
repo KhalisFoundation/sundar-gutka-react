@@ -21,7 +21,7 @@ const ArrowRightIcon = ({ size = 24, color }) => {
 };
 
 ArrowRightIcon.propTypes = {
-  size: PropTypes.number.isRequired,
+  size: PropTypes.number,
   color: PropTypes.string.isRequired,
 };
 

@@ -256,7 +256,61 @@ const trackNavBar = async (visible, trigger, mode) => {
   }
 };
 
+// Firebase drops a param that is null, empty or the wrong type, and silently
+// truncates a long one. Shared by every namespaced tracker so they cannot drift
+// on what they consider a safe param.
+const sanitizeParams = (params) => {
+  const safeParams = {};
+  Object.entries(params || {}).forEach(([key, value]) => {
+    if (value == null) {
+      return; // drop null/undefined — never emit an empty param
+    }
+    const paramName = sanitize(key, "param");
+    if (typeof value === "boolean") {
+      safeParams[paramName] = value ? "true" : "false";
+    } else if (typeof value === "number") {
+      if (Number.isFinite(value)) {
+        safeParams[paramName] = safeInt(value);
+      }
+    } else {
+      const str = String(value).trim();
+      if (str !== "") {
+        safeParams[paramName] = str.slice(0, MAX_VALUE_LENGTH);
+      }
+    }
+  });
+  return safeParams;
+};
+
+// One tracker per feature: a known action maps to its event name, anything else
+// to `<prefix>_<action>`.
+const namespacedTracker =
+  (names, prefix) =>
+  async (action, params = {}) => {
+    try {
+      const eventName = names[action] || sanitize(`${prefix}_${action}`, `${prefix}_event`);
+      await logEvent(analytics, eventName, sanitizeParams(params));
+    } catch (error) {
+      logError(
+        new Error(`${prefix} analytics failed for ${action} - ${error?.message || "Unknown error"}`)
+      );
+    }
+  };
+
+// Reading themes. `selected` carries `theme_id`, `previous` and `source`
+// (bundled | remote), so a theme served from the backend is measurable
+// against the shipped ones. `picker_opened` is its denominator — how many
+// people opened the grid against how many changed anything — and carries the
+// theme in force plus how many of the offered options came from the backend.
+const THEME_EVENT_NAMES = {
+  selected: "theme_selected",
+  picker_opened: "theme_picker_opened",
+  remote_loaded: "theme_remote_loaded",
+};
+const trackThemeEvent = namespacedTracker(THEME_EVENT_NAMES, "theme");
+
 export {
+  trackThemeEvent,
   allowTracking,
   trackReaderEvent,
   trackNavBar,

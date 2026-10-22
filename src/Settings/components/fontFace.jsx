@@ -1,7 +1,7 @@
 import React, { useState, useEffect, useRef } from "react";
 import { useSelector } from "react-redux";
-import STRINGS from "@common/localization";
 import { setFontFace } from "@common/actions";
+import STRINGS from "@common/localization";
 import { constant, showInfoToast } from "@common";
 import { BottomSheetComponent, ListItemComponent } from "./comon";
 import { getFontFaces } from "./comon/strings";
@@ -29,16 +29,16 @@ const FontFaceComponent = () => {
         actionConstant={FONT_FACES}
         onPressAction={() => toggleVisible(true)}
       />
-      {isVisible && (
-        <BottomSheetComponent
-          isVisible={isVisible}
-          action={setFontFace}
-          actionConstant={FONT_FACES}
-          value={fontFace}
-          toggleVisible={toggleVisible}
-          title={STRINGS.font_face}
-        />
-      )}
+      {/* Always mounted: the sheet stays rendered when closed so it can slide
+          away, rather than vanishing the instant isVisible flips. */}
+      <BottomSheetComponent
+        isVisible={isVisible}
+        action={setFontFace}
+        actionConstant={FONT_FACES}
+        value={fontFace}
+        toggleVisible={toggleVisible}
+        title={STRINGS.font_face}
+      />
     </>
   );
 };

@@ -3,9 +3,17 @@ import { ActivityIndicator, AppState, Platform, View, Animated, NativeModules } 
 import { useSafeAreaInsets } from "react-native-safe-area-context";
 import { WebView } from "react-native-webview";
 import { useDispatch, useSelector } from "react-redux";
+import { bottomNavInset } from "@theme/components";
+import { useReaderTheme } from "@theme/reader";
 import PropTypes from "prop-types";
+import WebViewUnavailable from "@common/components/WebViewUnavailable";
+import { foldableTopSpace, useFoldableInsetTop } from "@common/deviceForm";
+import { useNavBarSurface } from "@common/systemBars";
+import { pauseTrack } from "@common/TrackPlayerUtils";
+import { useWebViewAvailable } from "@common/webViewAvailability";
 import {
   constant,
+  convertToUnicode,
   actions,
   logError,
   SafeArea,
@@ -23,14 +31,29 @@ import { Header, AutoScrollComponent, AudioPlayer } from "./components";
 import { useBookmarks, useFetchShabad } from "./hooks";
 import createStyles from "./styles";
 import { loadHTML } from "./utils";
-import { pauseTrack } from "@common/TrackPlayerUtils";
+import { readerTopLayout } from "./utils/topLayout";
 
 // How long the bars linger with no interaction before auto-hiding during auto-scroll.
 const BARS_IDLE_HIDE_MS = 4000;
 
+// Window after a bookmark jump during which the iOS focus-restore below stands
+// down, so it cannot scroll the reader back to where it was before Bookmarks
+// was opened.
+const BOOKMARK_JUMP_GRACE_MS = 1500;
+
 const Reader = ({ navigation, route }) => {
   const { theme } = useTheme();
   const styles = useThemedStyles(createStyles);
+  // The page, its ground and the reading chrome follow the READING theme. Its
+  // light/dark records take the ground from `c.backgroundAlt`, so following the
+  // app keeps the Reader matching every other screen.
+  const { theme: readerTheme } = useReaderTheme();
+  const readerBgColor = readerTheme.background.color;
+  // Android cannot always create a WebView (provider disabled, uninstalled or
+  // mid-update); mounting one then kills the process before any boundary sees
+  // it. So the page is mounted only once the probe has said yes, and the notice
+  // takes its place when the answer is no.
+  const { available: webViewAvailable, recheck: recheckWebView } = useWebViewAvailable();
   const bookmarkPosition = useSelector((state) => state.bookmarkPosition);
   const isAutoScroll = useSelector((state) => state.isAutoScroll);
   const isAudio = useSelector((state) => state.isAudio);
@@ -54,6 +77,9 @@ const Reader = ({ navigation, route }) => {
   const { webView } = styles;
   const { title, id, titleUni } = route.params.params || {};
   const [isHeader, toggleHeader] = useState(false);
+  // Chrome up, the system navigation bar sits on the dark bottom bar; chrome
+  // away, it sits on the bani page, whose lightness is the reading theme's.
+  useNavBarSurface(isHeader ? false : readerTheme.base !== "dark");
   const [viewLoaded, toggleViewLoaded] = useState(false);
   const [shouldNavigateBack, setShouldNavigateBack] = useState(false);
   const [dateKey, setDateKey] = useState(Date.now().toString());
@@ -77,22 +103,48 @@ const Reader = ({ navigation, route }) => {
   const dispatch = useDispatch();
   const { shabad, isLoading } = useFetchShabad(id);
   const { bottom: insetBottom } = useSafeAreaInsets();
+  // Where the page starts and how far its first line sits below that. Fixed on
+  // every phone that does not fold; a foldable gives back what its cutout does
+  // not need. See topLayout.js.
+  const foldableInsetTop = useFoldableInsetTop();
+  // How far the floating header covers the page. The header is absolutely
+  // positioned so it can slide away, which means the top of the WebView viewport
+  // sits BEHIND it, and a restore that scrolls a line to "top of viewport" parks
+  // it under the header. Restores offset by this instead. Built from the same
+  // two tokens as the header itself, so they cannot drift.
+  const headerTopClearance =
+    foldableInsetTop === null
+      ? theme.layout.header.topClearance
+      : foldableTopSpace(foldableInsetTop, theme.layout.header.topClearance);
+  const headerOverlayHeight = headerTopClearance + theme.layout.header.minHeight;
+  const { webViewTop, pageTopMargin } = readerTopLayout({
+    foldableInsetTop,
+    headerTopClearance: theme.layout.header.topClearance,
+  });
+  // The margin the HTML is built with, read through a ref so that a change to
+  // it alone does not rebuild the page — see the setTopMargin effect below.
+  const pageTopMarginRef = useRef(pageTopMargin);
+  pageTopMarginRef.current = pageTopMargin;
 
   // Animated progress value — driven by ref to avoid re-renders on every scroll tick
   const scrollProgressAnim = useRef(new Animated.Value(0)).current;
   // Latest scroll % (0-100) for analytics — updated on every WebView scroll message
   const scrollPercentRef = useRef(0);
 
-  // Footprint of the bottom-nav overlay (nav height + the 5px progress track that
-  // sits on top of it). The audio player is lifted by exactly this much when the
-  // bars are shown so it clears the nav.
+  // Bottom-nav overlay footprint (nav height + the 5px progress track on top,
+  // plus the bottom safe-area inset). The audio player is lifted by exactly
+  // this much when the bars show so it clears the nav.
   //
-  // NOTE: the navbar keeps a FIXED height (theme.components.bottomNavigation.height)
-  // on both platforms — the iOS home-indicator padding is applied INSIDE that fixed
-  // height (it nudges the icons up, it does not grow the box). So the nav's real
-  // footprint is exactly that height; adding the safe-area inset here overshot the
-  // lift and left a visible gap between the nav and the reading-progress bar on iOS.
-  const navChromeHeight = theme.components.bottomNavigation.height + 5;
+  // The inset is part of the footprint because `BottomNavigation` pads it, so
+  // the bar on screen is that much taller than its own height token whenever the
+  // system navigation bar is drawn.
+  //
+  // `bottomNavInset` rather than the raw inset: on iOS the bar pads only up to
+  // its cap, so adding all 34pt here would lift this chrome off the bar's top
+  // edge by the 14 the cap trimmed. On Android the helper returns the inset
+  // unchanged.
+  const navChromeHeight =
+    theme.components.bottomNavigation.height + 5 + bottomNavInset(insetBottom);
 
   // The bottom chrome (scroll-progress bar + BottomNavigation) is an absolute
   // overlay pinned to the bottom of the screen. It slides in/out with a single
@@ -148,6 +200,13 @@ const Reader = ({ navigation, route }) => {
   // events both while backgrounded AND during the return transition animation.
   const iPadScrollGuardRef = useRef(false);
 
+  // When the last bookmark jump was posted to the WebView. Tapping a bookmark
+  // dispatches the position and pops back in one go, so the focus listener
+  // below fires on the same commit as the jump — without this it restores the
+  // pre-Bookmarks position and undoes it. iOS only: the whole listener is
+  // skipped on Android.
+  const bookmarkJumpAtRef = useRef(0);
+
   // Auto-hide the bars after a spell of inactivity while auto-scroll is running.
   // Both auto-scroll and audio are hands-off reads, so a tap that reveals the bars
   // should quietly fall away again if the user doesn't follow up — keeping the
@@ -159,10 +218,24 @@ const Reader = ({ navigation, route }) => {
   // handlers and children without stale closures or re-renders on every touch.
   const isHeaderRef = useRef(isHeader);
   isHeaderRef.current = isHeader;
+
+  // How much of the PAGE the header covers right now, for a restore to clear.
+  // The WebView already starts `webViewTop` below the screen's top, so the
+  // header hides only what it reaches past that — and nothing at all while it
+  // is hidden, which is how a bani opens here. Over-clearing parked the line
+  // lower on screen, and the next position report saved the earlier line now
+  // at the top, so every open walked the position back.
+  const restoreTopInset = useCallback(
+    () => (isHeaderRef.current ? Math.max(0, headerOverlayHeight - webViewTop) : 0),
+    [headerOverlayHeight, webViewTop]
+  );
   const isAutoScrollRef = useRef(isAutoScroll);
   isAutoScrollRef.current = isAutoScroll;
   const isAudioActiveRef = useRef(isAudioFeatureOn && isAudio);
   isAudioActiveRef.current = isAudioFeatureOn && isAudio;
+  // True while the page rests at the very top or end of the bani, where the
+  // bars stay up (see the "edge" message) and the idle auto-hide stands down.
+  const atEdgeRef = useRef(false);
 
   // Single funnel for every bar show/hide so each visibility change fires exactly
   // one NAV_BAR_SHOW / NAV_BAR_HIDE analytics event with its trigger, and repeats
@@ -187,7 +260,11 @@ const Reader = ({ navigation, route }) => {
 
   const scheduleBarsIdleHide = useCallback(() => {
     clearBarsIdleTimer();
-    if ((isAutoScrollRef.current || isAudioActiveRef.current) && isHeaderRef.current) {
+    if (
+      (isAutoScrollRef.current || isAudioActiveRef.current) &&
+      isHeaderRef.current &&
+      !atEdgeRef.current
+    ) {
       barsIdleTimerRef.current = setTimeout(() => {
         setBarsVisible(false, "auto_hide_idle");
       }, BARS_IDLE_HIDE_MS);
@@ -223,11 +300,47 @@ const Reader = ({ navigation, route }) => {
     dispatch(actions.setCurrentBani({ id, title, titleUni }));
   }, [id, title, titleUni]);
 
+  // A fresh bani starts away from the edge; the previous bani's state must not
+  // keep the idle auto-hide standing down.
   useEffect(() => {
-    // Handle undefined titleUni gracefully - fallback to title if titleUni is not available
-    const displayTitle = fontFace === constant.BALOO_PAAJI ? titleUni || title : title;
-    setTitleText(displayTitle);
-  }, [fontFace, titleUni, title]);
+    atEdgeRef.current = false;
+  }, [id]);
+
+  // Bottom inset for the WebView content. Whenever the bars are visible they
+  // overlay the bottom navChromeHeight strip of the viewport, hiding the last
+  // few lines, so reserve that much scrollable space at the end of the content
+  // so the last line can scroll clear. Re-applied on webViewLoadTick so it
+  // survives a WebView reload. Driven by message (not baked into the HTML) so it
+  // never reflows/reloads the page.
+  useEffect(() => {
+    if (!webViewRef.current) return;
+    webViewRef.current.postMessage(
+      JSON.stringify({ action: "setBottomInset", value: navChromeHeight })
+    );
+  }, [navChromeHeight, webViewLoadTick]);
+
+  // A foldable's page margin follows its top inset, which changes when it is
+  // folded or unfolded. Sent by message rather than rebuilt into the HTML: a
+  // rebuild reloads the page, and the reload lost the reader's line. Every other
+  // phone's margin never changes, so nothing is ever sent there.
+  useEffect(() => {
+    if (foldableInsetTop === null || !webViewRef.current) return;
+    webViewRef.current.postMessage(
+      JSON.stringify({ action: "setTopMargin", value: pageTopMargin })
+    );
+  }, [foldableInsetTop, pageTopMargin, webViewLoadTick]);
+
+  // The header title, always Unicode. The header draws it in the UI face
+  // (Baloo), which renders Unicode Gurmukhi but not the ASCII-mapped
+  // `gurmukhi` name, so the Unicode name is preferred outright and the ASCII
+  // name is converted when no Unicode name exists.
+  useEffect(() => {
+    setTitleText(titleUni || convertToUnicode(title));
+  }, [titleUni, title]);
+  // The audio player is still dev's until the audio PR: its track dialog draws
+  // the title in the bani font, so it keeps the title it has always had (ASCII
+  // for the ASCII-mapped faces), and its analytics keep the same values.
+  const playerTitle = fontFace === constant.BALOO_PAAJI ? titleUni || title : title;
 
   // Cleanup on unmount
   useEffect(() => {
@@ -240,6 +353,9 @@ const Reader = ({ navigation, route }) => {
 
   useEffect(() => {
     const unsubscribeBlur = navigation.addListener("blur", () => {
+      // The position lives in refs while reading (see handleMessage), so leaving
+      // for Bookmarks, Settings or Home writes it here.
+      saveScrollPosition();
       pauseAudioPlayback();
       trackScrollProgress(id, titleUni || title, scrollPercentRef.current, isAudioSyncScroll);
       // iPad: Activate scroll guard when leaving the screen. WKWebView can
@@ -251,7 +367,7 @@ const Reader = ({ navigation, route }) => {
     });
 
     return unsubscribeBlur;
-  }, [navigation, pauseAudioPlayback, id, titleUni, title, isAudioSyncScroll]);
+  }, [navigation, saveScrollPosition, pauseAudioPlayback, id, titleUni, title, isAudioSyncScroll]);
 
   // iPad: Restore WebView scroll position when returning from Bookmarks.
   // The scroll guard stays active for a grace period after focus so that
@@ -259,15 +375,20 @@ const Reader = ({ navigation, route }) => {
   // blocked. The guard is cleared after the WebView has had time to
   // process the scrollToPosition message.
   useEffect(() => {
-    if (Platform.OS !== "ios") return;
+    if (Platform.OS !== "ios") return undefined;
 
     const unsubscribeFocus = navigation.addListener("focus", () => {
       if (!iPadScrollGuardRef.current) return;
 
+      // A bookmark jump is in flight — it is the position the user just asked
+      // for, so leave it alone.
+      const isBookmarkJump = Date.now() - bookmarkJumpAtRef.current < BOOKMARK_JUMP_GRACE_MS;
+
       // Restore position — the WebView may have scrolled to 0 while backgrounded
-      if (webViewRef.current && currentElementIdRef.current) {
+      if (webViewRef.current && currentElementIdRef.current && !isBookmarkJump) {
         const scrollMessage = {
           action: "scrollToPosition",
+          topInset: restoreTopInset(),
           elementId: currentElementIdRef.current,
           sequence: currentSequenceRef.current,
         };
@@ -282,7 +403,7 @@ const Reader = ({ navigation, route }) => {
     });
 
     return unsubscribeFocus;
-  }, [navigation]);
+  }, [navigation, restoreTopInset]);
 
   // Memoize WebView key to prevent unnecessary remounts
   const webViewKey = useMemo(() => {
@@ -300,8 +421,9 @@ const Reader = ({ navigation, route }) => {
         isEnglishTranslation,
         isPunjabiTranslation,
         isSpanishTranslation,
-        theme,
-        isLarivaar
+        readerTheme,
+        isLarivaar,
+        pageTopMarginRef.current
       ),
       baseUrl: Platform.OS === "ios" ? "./" : "",
     };
@@ -313,11 +435,36 @@ const Reader = ({ navigation, route }) => {
     isEnglishTranslation,
     isPunjabiTranslation,
     isSpanishTranslation,
-    theme,
+    readerTheme,
     isLarivaar,
   ]);
 
-  useBookmarks(webViewRef, shabad, bookmarkPosition);
+  // Called by useBookmarks immediately before the jump is posted to the WebView.
+  //
+  // iOS ONLY, and deliberately so. Everything below exists to stop the focus
+  // listener above — which does not run on Android — from undoing the jump.
+  const handleBookmarkJump = useCallback(
+    (shabadID) => {
+      if (Platform.OS !== "ios") return;
+
+      const elementId = String(shabadID);
+      // Paragraph mode merges several shabads into one row, so not every
+      // bookmark id has an element of its own. If the WebView cannot land on it
+      // there is no jump to protect and no new position to record.
+      if (!shabad.some((item) => String(item.id) === elementId)) return;
+
+      bookmarkJumpAtRef.current = Date.now();
+      // The bookmark IS the new read position, so keep the saved position in
+      // step — otherwise the next restore pulls the reader back to the
+      // paragraph they were on before opening Bookmarks.
+      currentElementIdRef.current = elementId;
+      currentSequenceRef.current = null;
+      dispatch(actions.setPosition(elementId, id, null));
+    },
+    [dispatch, id, shabad]
+  );
+
+  useBookmarks(webViewRef, shabad, bookmarkPosition, handleBookmarkJump);
 
   // Handle app state changes
   useEffect(() => {
@@ -358,9 +505,7 @@ const Reader = ({ navigation, route }) => {
     // Save position before navigating back
     saveScrollPosition();
     pauseAudioPlayback();
-    if (webViewRef?.current) {
-      navigation.goBack();
-    }
+    navigation.goBack();
     return true;
   }, [saveScrollPosition, navigation, pauseAudioPlayback]);
 
@@ -374,6 +519,19 @@ const Reader = ({ navigation, route }) => {
     (message) => {
       // Update last activity timestamp
       const { data } = message.nativeEvent;
+      // Top or end of the bani: the bars come back, whatever else is going on,
+      // and stay there while the page rests at that edge. Checked first, so no
+      // guard below can swallow it.
+      // KNOWN: that includes the iOS scroll guard, so WKWebView's spurious
+      // scroll-to-0 on return from Bookmarks can post "edge" and keep the idle
+      // auto-hide off until the reader scrolls. Fix planned in an upcoming
+      // Reader PR.
+      if (data === "edge") {
+        atEdgeRef.current = true;
+        clearBarsIdleTimer();
+        setBarsVisible(true, "scroll_edge");
+        return;
+      }
 
       // GUARD: On iOS, navigating away (e.g. to Bookmarks) can trigger a WKWebView
       // layout recalculation that resets scrollY to 0. This fires spurious scroll
@@ -385,7 +543,10 @@ const Reader = ({ navigation, route }) => {
           data === "show" ||
           data === "hide" ||
           data.includes("scroll-elementId-") ||
-          data.startsWith("scroll-progress-")
+          // Let the position-restore progress fill through — it reflects an
+          // intentional scrollIntoView after load, not a spurious transition
+          // scroll-to-0, so the bar must still track the restored position.
+          (data.startsWith("scroll-progress-") && !data.startsWith("scroll-progress-restore-"))
         ) {
           return;
         }
@@ -405,14 +566,18 @@ const Reader = ({ navigation, route }) => {
       } else if (data === "hide") {
         setBarsVisible(false, "scroll_down");
       } else if (data.includes("scroll-elementId-")) {
-        // Capture element ID (and optional sequence) from WebView scroll events
+        // Capture element ID (and optional sequence) from WebView scroll events.
+        // Only update refs here — do NOT dispatch to Redux on every scroll tick.
+        // saveScrollPosition() reads these refs and dispatches once on blur,
+        // back, unmount or backgrounding.
+        // KNOWN: a foreground crash or OOM kill skips all four, so that
+        // session's position is lost. `dev` saved on every tick. A debounced
+        // periodic save is planned in an upcoming Reader PR.
         const payload = data.split("scroll-elementId-")[1];
         const [elementId, seqPart] = payload.split("|seq-");
         const sequence = seqPart || null;
         currentElementIdRef.current = elementId;
         currentSequenceRef.current = sequence;
-        // Save immediately when element ID changes
-        dispatch(actions.setPosition(elementId, id, sequence));
         if (shouldNavigateBack) {
           navigation.goBack();
           setShouldNavigateBack(false);
@@ -420,15 +585,33 @@ const Reader = ({ navigation, route }) => {
       } else if (data.includes("sequenceString-")) {
         const sequenceStringData = data.split("-")[1];
         dispatch(actions.setBookmarkSequenceString(sequenceStringData));
+      } else if (data.startsWith("scroll-progress-restore-")) {
+        // Visual-only: fill the bar to the restored scroll position WITHOUT
+        // touching scrollPercentRef. Restoring a prior position must never count
+        // as reading. (Checked before the generic scroll-progress- branch below,
+        // whose prefix this also matches.)
+        const pct = parseFloat(data.split("scroll-progress-restore-")[1]);
+        if (Number.isFinite(pct)) {
+          scrollProgressAnim.setValue(pct);
+        }
       } else if (data.startsWith("scroll-progress-")) {
         const pct = parseFloat(data.split("scroll-progress-")[1]);
         if (Number.isFinite(pct)) {
           scrollProgressAnim.setValue(pct);
           scrollPercentRef.current = Math.round(pct * 100);
+          // Leaving the edge hands the bars back to the idle auto-hide.
+          if (pct > 0 && pct < 1) atEdgeRef.current = false;
         }
       }
     },
-    [dispatch, id, navigation, shouldNavigateBack, scheduleBarsIdleHide, setBarsVisible]
+    [
+      dispatch,
+      navigation,
+      shouldNavigateBack,
+      scheduleBarsIdleHide,
+      setBarsVisible,
+      clearBarsIdleTimer,
+    ]
   );
 
   const handleLoadStart = useCallback(() => {
@@ -438,10 +621,19 @@ const Reader = ({ navigation, route }) => {
   }, []);
 
   const handleLoadEnd = useCallback(() => {
+    // The bottom inset first, so the restore below measures the page at its
+    // full height. Waiting for webViewLoadTick (500ms on) left a position near
+    // the end landing short, with its last lines under the nav.
+    if (webViewRef.current) {
+      webViewRef.current.postMessage(
+        JSON.stringify({ action: "setBottomInset", value: navChromeHeight })
+      );
+    }
     // Scroll to saved element ID after WebView is fully loaded
     if (webViewRef.current && currentElementIdRef.current) {
       const scrollMessage = {
         action: "scrollToPosition",
+        topInset: restoreTopInset(),
         elementId: currentElementIdRef.current,
         sequence: currentSequenceRef.current,
       };
@@ -463,7 +655,7 @@ const Reader = ({ navigation, route }) => {
     setTimeout(() => {
       setWebViewLoadTick((prev) => prev + 1);
     }, 500);
-  }, []);
+  }, [navChromeHeight, restoreTopInset]);
 
   const handleError = useCallback((syntheticEvent) => {
     const { nativeEvent } = syntheticEvent;
@@ -486,42 +678,47 @@ const Reader = ({ navigation, route }) => {
   }, []);
 
   return (
-    <SafeArea backgroundColor={theme.colors.surface} edges={["left", "right"]}>
-      <StatusBarComponent backgroundColor={theme.colors.surface} />
+    <SafeArea backgroundColor={readerBgColor} edges={["left", "right"]}>
+      <StatusBarComponent backgroundColor={readerBgColor} />
       <Header
         title={titleText}
         handleBackPress={handleBackPress}
         handleBookmarkPress={handleBookmarkPress}
         isHeader={isHeader}
       />
-      {isLoading && <ActivityIndicator size="small" color={theme.colors.primary} />}
-      <WebView
-        key={webViewKey}
-        webviewDebuggingEnabled={__DEV__}
-        javaScriptEnabled
-        originWhitelist={["*"]}
-        onLoadStart={handleLoadStart}
-        onLoadEnd={handleLoadEnd}
-        ref={webViewRef}
-        onError={handleError}
-        onHttpError={handleHttpError}
-        decelerationRate={0.998}
-        scrollEnabled
-        bounces={false}
-        overScrollMode="never"
-        nestedScrollEnabled
-        showsVerticalScrollIndicator
-        showsHorizontalScrollIndicator={false}
-        onContentProcessDidTerminate={reloadWebView}
-        source={webViewSource}
-        backgroundColor={theme.colors.surface}
-        style={[
-          webView,
-          theme.mode === "dark" && { opacity: viewLoaded ? 1 : 0.1 },
-          { backgroundColor: theme.colors.surface, marginTop: 60 },
-        ]}
-        onMessage={handleMessage}
-      />
+      {(isLoading || webViewAvailable === null) && (
+        <ActivityIndicator size="small" color={theme.c.primary} />
+      )}
+      {webViewAvailable === false && <WebViewUnavailable onRetry={recheckWebView} />}
+      {webViewAvailable === true && (
+        <WebView
+          key={webViewKey}
+          webviewDebuggingEnabled={__DEV__}
+          javaScriptEnabled
+          originWhitelist={["*"]}
+          onLoadStart={handleLoadStart}
+          onLoadEnd={handleLoadEnd}
+          ref={webViewRef}
+          onError={handleError}
+          onHttpError={handleHttpError}
+          decelerationRate={0.998}
+          scrollEnabled
+          bounces={false}
+          overScrollMode="never"
+          nestedScrollEnabled
+          showsVerticalScrollIndicator
+          showsHorizontalScrollIndicator={false}
+          onContentProcessDidTerminate={reloadWebView}
+          source={webViewSource}
+          backgroundColor={readerBgColor}
+          style={[
+            webView,
+            readerTheme.base === "dark" && { opacity: viewLoaded ? 1 : 0.1 },
+            { backgroundColor: readerBgColor, marginTop: webViewTop },
+          ]}
+          onMessage={handleMessage}
+        />
+      )}
       {isAudioFeatureOn && isAudio && (
         <Animated.View
           style={{ transform: [{ translateY: audioLiftAnim }] }}
@@ -531,15 +728,32 @@ const Reader = ({ navigation, route }) => {
           onTouchStart={scheduleBarsIdleHide}
           onTouchMove={scheduleBarsIdleHide}
         >
-          <AudioPlayer baniID={id} title={titleText} notificationTitle={titleUni || titleText} webViewRef={webViewRef} />
+          <AudioPlayer
+            baniID={id}
+            title={playerTitle}
+            notificationTitle={titleUni || playerTitle}
+            webViewRef={webViewRef}
+          />
         </Animated.View>
       )}
       {isAutoScroll && (
-        <View style={[styles.autoScrollFixedView, { bottom: styles.autoScrollFixedView.bottom + insetBottom, display: isHeader ? "flex" : "none" }]}>
-          <AutoScrollComponent shabadID={id} webViewRef={webViewRef} webViewLoadTick={webViewLoadTick} onActivity={scheduleBarsIdleHide} />
+        <View
+          style={[
+            styles.autoScrollFixedView,
+            {
+              bottom: styles.autoScrollFixedView.bottom + bottomNavInset(insetBottom),
+              display: isHeader ? "flex" : "none",
+            },
+          ]}
+        >
+          <AutoScrollComponent
+            shabadID={id}
+            webViewRef={webViewRef}
+            webViewLoadTick={webViewLoadTick}
+            onActivity={scheduleBarsIdleHide}
+          />
         </View>
       )}
-
 
       {/* Bottom nav overlay — pinned to the bottom and slid out of view via a
           single native-driver transform, so showing/hiding it never resizes the
@@ -567,11 +781,16 @@ const Reader = ({ navigation, route }) => {
           bar never intercepts taps meant for the nav/mini-player beneath it. */}
       <Animated.View
         pointerEvents="none"
-        style={[styles.scrollProgressBar, { transform: [{ translateY: progressLiftAnim }] }]}
+        style={[
+          styles.scrollProgressBar,
+          { backgroundColor: readerTheme.chrome.progressTrack },
+          { transform: [{ translateY: progressLiftAnim }] },
+        ]}
       >
         <Animated.View
           style={[
             styles.scrollProgressFill,
+            { backgroundColor: readerTheme.chrome.progressFill },
             {
               width: scrollProgressAnim.interpolate({
                 inputRange: [0, 1],

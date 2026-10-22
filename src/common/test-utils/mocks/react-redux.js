@@ -21,6 +21,7 @@ export const createReactReduxMock = (initialState = {}) => {
     mock: {
       useDispatch: () => mockDispatch,
       useSelector: (selector) => selector(mockState),
+      useStore: () => ({ getState: () => mockState, dispatch: mockDispatch }),
       Provider: ({ children }) => children,
       connect: (_mapStateToProps, _mapDispatchToProps) => (Component) => Component,
     },

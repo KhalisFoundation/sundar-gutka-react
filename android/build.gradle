@@ -9,6 +9,14 @@ buildscript {
         targetSdkVersion = 36
         ndkVersion = "27.1.12297006"
         kotlinVersion = "2.0.21"
+        // react-native-inappbrowser-reborn otherwise asks for dynamic ranges
+        // (annotation 1.5.+, browser 1.4.+). Resolving a range lists versions
+        // from the legacy oss.sonatype.org snapshots repo, which often 504s and
+        // fails the build. It reads these two names instead, so it asks for
+        // fixed versions; conflict resolution still picks the highest version
+        // any other library requests, so nothing is downgraded.
+        androidXAnnotation = "1.5.0"
+        androidXBrowser = "1.4.0"
     }
     repositories {
         google()

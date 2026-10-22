@@ -1,9 +1,14 @@
 import React from "react";
 import Svg, { Path } from "react-native-svg";
+import { navy } from "@theme/palette";
 import PropTypes from "prop-types";
-import { colors } from "@common";
 
-const ReadIcon = ({ size = 24, color = colors.READER_HEADER_COLOR }) => (
+// Fallback only — every call site passes an explicit, themed colour. It exists
+// so the stroke is never undefined, which is what the old colors module
+// returned: it never defined the keys these icons referenced.
+const ICON_FALLBACK = navy[800];
+
+const ReadIcon = ({ size = 24, color = ICON_FALLBACK }) => (
   <Svg
     width={size}
     height={size}
@@ -20,11 +25,6 @@ const ReadIcon = ({ size = 24, color = colors.READER_HEADER_COLOR }) => (
 );
 
 export default ReadIcon;
-
-ReadIcon.defaultProps = {
-  size: 24,
-  color: colors.READER_HEADER_COLOR,
-};
 
 ReadIcon.propTypes = {
   size: PropTypes.number,

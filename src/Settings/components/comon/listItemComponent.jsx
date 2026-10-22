@@ -1,39 +1,42 @@
 import React from "react";
-import { View } from "react-native";
-import { ListItem, Avatar, Icon } from "@rneui/themed";
 import PropTypes from "prop-types";
-import useTheme from "@common/context";
-import useThemedStyles from "@common/hooks/useThemedStyles";
-import { ListItemTitle } from "@common";
-import createStyles from "../../styles";
+import SettingsRow from "./SettingsRow";
 
-const ListItemComponent = ({ icon, title, value, isAvatar, actionConstant, onPressAction }) => {
-  const { theme } = useTheme();
-  const styles = useThemedStyles(createStyles);
+// A setting that opens a bottom sheet to choose from a list. Now a thin adapter
+// over `SettingsRow`, so it shares its height, padding, divider and press state
+// with every other row in the app.
+//
+// `icon` arrives as a stringified `require()` id (the callers pass
+// `icon.toString()`), so it is coerced back to a number for <Image>.
+const ListItemComponent = ({
+  icon,
+  title,
+  value,
+  isAvatar,
+  tintIcon = true,
+  actionConstant,
+  onPressAction,
+}) => {
+  const selected = actionConstant.find((item) => item.key === value);
+
   return (
-    <ListItem bottomDivider containerStyle={styles.containerNightStyles} onPress={onPressAction}>
-      <View style={styles.iconContainerStyle}>
-        {isAvatar && <Avatar source={Number(icon)} avatarStyle={styles.avatarStyle} />}
-        {!isAvatar && <Icon name={icon} color={theme.colors.primaryText} size={26} />}
-      </View>
-      <ListItem.Content>
-        <ListItemTitle title={title} style={styles.listItemTitle} />
-      </ListItem.Content>
-      {value && (
-        <ListItemTitle
-          title={actionConstant.filter((item) => item.key === value).map((item) => item.title)[0]}
-          style={[styles.titleInfoStyle]}
-        />
-      )}
-      <ListItem.Chevron />
-    </ListItem>
+    <SettingsRow
+      title={title}
+      value={selected?.title}
+      icon={isAvatar ? undefined : icon}
+      iconImage={isAvatar ? Number(icon) : undefined}
+      tintIcon={tintIcon}
+      onPress={onPressAction}
+    />
   );
 };
+
 ListItemComponent.propTypes = {
   icon: PropTypes.string.isRequired,
   title: PropTypes.string.isRequired,
   value: PropTypes.string.isRequired,
   isAvatar: PropTypes.bool.isRequired,
+  tintIcon: PropTypes.bool,
   actionConstant: PropTypes.arrayOf(PropTypes.shape()).isRequired,
   onPressAction: PropTypes.func.isRequired,
 };

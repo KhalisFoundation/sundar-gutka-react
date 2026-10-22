@@ -19,16 +19,14 @@ const LanguageComponent = ({ language }) => {
         actionConstant={LANGUAGES}
         onPressAction={() => toggleVisible(true)}
       />
-      {isVisible && (
-        <BottomSheetComponent
-          isVisible={isVisible}
-          actionConstant={LANGUAGES}
-          value={language}
-          toggleVisible={toggleVisible}
-          title={STRINGS.language}
-          action={setLanguage}
-        />
-      )}
+      <BottomSheetComponent
+        isVisible={isVisible}
+        actionConstant={LANGUAGES}
+        value={language}
+        toggleVisible={toggleVisible}
+        title={STRINGS.language}
+        action={setLanguage}
+      />
     </>
   );
 };
