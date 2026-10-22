@@ -8,3 +8,8 @@
 #   http://developer.android.com/guide/developing/tools/proguard.html
 
 # Add any project specific keep options here:
+
+# react-native-background-downloader supports MMKV as an optional storage
+# backend; this app doesn't depend on com.tencent.mmkv, so the reference is
+# dead code for us. R8 itself generates this exact rule (missing_rules.txt).
+-dontwarn com.tencent.mmkv.MMKV

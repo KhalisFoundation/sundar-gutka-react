@@ -1829,6 +1829,11 @@
     "@jridgewell/resolve-uri" "^3.1.0"
     "@jridgewell/sourcemap-codec" "^1.4.14"
 
+"@kesha-antonov/react-native-background-downloader@^4.5.4":
+  version "4.5.4"
+  resolved "https://registry.npmjs.org/@kesha-antonov/react-native-background-downloader/-/react-native-background-downloader-4.5.4.tgz"
+  integrity sha512-WH9n7Sy8MebWiVZqZYpvP4q2sJeOIiNLrbHB64ue/YYsXnWtdJ3iMQowv/QEmU2Cw9biI1d2k8LFHKV9oACLsw==
+
 "@miblanchard/react-native-slider@^2.6.0":
   version "2.6.0"
   resolved "https://registry.npmjs.org/@miblanchard/react-native-slider/-/react-native-slider-2.6.0.tgz"

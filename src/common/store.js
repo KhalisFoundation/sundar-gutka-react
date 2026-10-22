@@ -7,7 +7,17 @@ import reducer from "./reducer";
 const persistConfig = {
   key: "root",
   storage: AsyncStorage,
-  blacklist: ["navigation", "baniList", "audioManifest"],
+  // The reader tick counters and the player drag flag are momentary UI state.
+  // A persisted `isPlayerDragging: true` (the app killed mid-drag) would have
+  // the Reader ignore every page message on the next launch.
+  blacklist: [
+    "navigation",
+    "baniList",
+    "audioManifest",
+    "readerTapTick",
+    "readerScrollDownTick",
+    "isPlayerDragging",
+  ],
 };
 const persistedReducer = persistReducer(persistConfig, reducer);
 

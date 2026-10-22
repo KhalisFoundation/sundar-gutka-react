@@ -1,21 +1,21 @@
 import React, { useState, useRef, useEffect, useCallback } from "react";
-import { View, Pressable, Platform, ActivityIndicator, useWindowDimensions } from "react-native";
-import { useSelector } from "react-redux";
-import { useIsFocused } from "@react-navigation/native";
+import { View, Pressable, Platform, useWindowDimensions } from "react-native";
 import TrackPlayer, { State } from "react-native-track-player";
+import { useSelector } from "react-redux";
 import { BlurView } from "@react-native-community/blur";
 import PropTypes from "prop-types";
-import useTheme from "@common/context";
-import useThemedStyles from "@common/hooks/useThemedStyles";
+import { Spinner } from "@common/components/ui";
+import { useNetwork } from "@common/context";
 import { ArrowRightIcon, CloseIcon } from "@common/icons";
 import { STRINGS, CustomText } from "@common";
 import { audioTrackDialogStyles } from "../../style";
-import ScrollViewComponent from "../ScrollViewComponent";
+import { useAudioTheme, useAudioThemedStyles } from "../../useAudioTheme";
 import {
   ensurePreviewDownloaded,
   getPreviewRemoteUrl,
   deletePreviewClip,
 } from "../../utils/audioDownloader";
+import ScrollViewComponent, { isOfflineAvailable } from "../ScrollViewComponent";
 
 const PREVIEW_DURATION_MS = 15000;
 const ACTIVE_TRACK_POLL_MS = 150;
@@ -37,21 +37,23 @@ const AudioTrackDialog = ({
   reset,
   isPlaying,
 }) => {
-  const styles = useThemedStyles(audioTrackDialogStyles);
-  const fontFace = useSelector((state) => state.fontFace);
-  const { theme } = useTheme();
-  const isScreenFocused = useIsFocused();
+  const styles = useAudioThemedStyles(audioTrackDialogStyles);
+  const downloadRegistry = useSelector((state) => state.downloadRegistry);
+  const { theme } = useAudioTheme();
   const { height: windowHeight } = useWindowDimensions();
+  // Single source of truth (NetworkProvider): real-time and captive-portal
+  // aware. `isOffline` stays false during the unknown startup window, so tracks
+  // are never falsely greyed.
+  const { isOffline } = useNetwork();
+  // Banner shows only when offline AND at least one track can't be played offline.
+  const hasUnplayableOffline =
+    isOffline && tracks.some((t) => !isOfflineAvailable(t, downloadRegistry));
   const [selectedTrack, setSelectedTrack] = useState(null);
   const selectedTrackRef = useRef(null);
   const [playingTrack, setPlayingTrack] = useState(null);
   const [previewLoadingTrackId, setPreviewLoadingTrackId] = useState(null);
   const [previewActiveTrackId, setPreviewActiveTrackId] = useState(null);
   const [isNextLoading, setIsNextLoading] = useState(false);
-  const [previewProgress, setPreviewProgress] = useState(0);
-  const [previewRemainingSec, setPreviewRemainingSec] = useState(
-    PREVIEW_DURATION_MS / 1000
-  );
   const previewTimeoutRef = useRef(null);
   const previewStartTimeoutRef = useRef(null);
   const previewIntervalRef = useRef(null);
@@ -59,9 +61,10 @@ const AudioTrackDialog = ({
   const previewSessionRef = useRef(0);
   const previewActionInFlightRef = useRef(false);
 
-  const wait = (ms) => new Promise((resolve) => {
-    setTimeout(resolve, ms);
-  });
+  const wait = (ms) =>
+    new Promise((resolve) => {
+      setTimeout(resolve, ms);
+    });
 
   /**
    * Check the track's current load state. Returns:
@@ -76,8 +79,7 @@ const AudioTrackDialog = ({
         TrackPlayer.getPlaybackState(),
       ]);
 
-      const isTargetActive =
-        activeTrack?.id != null && String(activeTrack.id) === String(trackId);
+      const isTargetActive = activeTrack?.id != null && String(activeTrack.id) === String(trackId);
       if (!isTargetActive) {
         return "inactive";
       }
@@ -111,11 +113,7 @@ const AudioTrackDialog = ({
    * so M4A moov atom parsing doesn't get killed prematurely.
    * The timeout only fires when the track is truly inactive (not loading at all).
    */
-  const waitForPlaybackStart = async (
-    trackId,
-    sessionId,
-    { timeoutMs = PREVIEW_LOAD_TIMEOUT_MS, resetOnLoading = true } = {}
-  ) => {
+  const waitForPlaybackStart = async (trackId, sessionId, timeoutMs = PREVIEW_LOAD_TIMEOUT_MS) => {
     let lastProgressAt = Date.now();
     // eslint-disable-next-line no-constant-condition
     while (true) {
@@ -138,11 +136,9 @@ const AudioTrackDialog = ({
         return true; // Audio is audible — start the preview timer now
       }
 
-      if (loadState === "loading" && resetOnLoading) {
-        // Remote track: alive and buffering — reset the timeout so we don't kill
-        // a healthy M4A moov parse that's just slow on mobile network. Disabled
-        // for local clips, where "buffering" that never ends means a bad file
-        // and we want the hard timeout to fire so we can recover.
+      if (loadState === "loading") {
+        // Track is alive and buffering — reset timeout so we don't kill
+        // a healthy M4A moov parse that's just slow on mobile network.
         lastProgressAt = Date.now();
       }
       // If 'inactive': don't reset — let the timeout count down.
@@ -173,11 +169,6 @@ const AudioTrackDialog = ({
     }
   }, []);
 
-  const resetPreviewProgress = useCallback(() => {
-    setPreviewProgress(0);
-    setPreviewRemainingSec(PREVIEW_DURATION_MS / 1000);
-  }, []);
-
   // Restore full notification capabilities after a preview ends.
   // Called after stop()+reset() so there is no queue left to show controls for,
   // but this also guards against any race where the notification lingers.
@@ -200,41 +191,42 @@ const AudioTrackDialog = ({
   }, []);
 
   /**
-   * The preview ticker is the single source of truth for both the visual
-   * countdown AND the 15-second stop. When elapsed reaches PREVIEW_DURATION_MS,
-   * the interval itself stops the audio. This guarantees the countdown shows 0
-   * at exactly the moment audio stops — no separate setTimeout that can drift.
+   * The preview ticker owns stopping the audio at the end of the 15-second
+   * window. It deliberately holds no render state: the on-screen countdown is
+   * drawn by PreviewSweep on the native driver, so this interval never touches
+   * React and never re-renders the track list while a preview runs.
    */
   const startPreviewTicker = useCallback(
     (track, sessionId) => {
       clearPreviewInterval();
       previewStartedAtRef.current = Date.now();
-      setPreviewProgress(0);
-      setPreviewRemainingSec(PREVIEW_DURATION_MS / 1000);
 
       previewIntervalRef.current = setInterval(async () => {
         const elapsed = Date.now() - previewStartedAtRef.current;
         const clampedElapsed = Math.min(elapsed, PREVIEW_DURATION_MS);
-        const remainingMs = Math.max(0, PREVIEW_DURATION_MS - clampedElapsed);
 
-        setPreviewProgress(clampedElapsed / PREVIEW_DURATION_MS);
-        setPreviewRemainingSec(Math.ceil(remainingMs / 1000));
-
-        // Time's up — stop audio from within the same tick that shows 0
+        // Time's up — stop audio
         if (clampedElapsed >= PREVIEW_DURATION_MS) {
           clearPreviewInterval();
           if (previewSessionRef.current !== sessionId) return;
-          try { await stop(); } catch (_) {}
-          try { await reset(); } catch (_) {}
+          try {
+            await stop();
+          } catch (_) {
+            /* nothing was playing to stop */
+          }
+          try {
+            await reset();
+          } catch (_) {
+            /* already reset; a second one is a no-op */
+          }
           await restoreNotificationCapabilities();
-          resetPreviewProgress();
           setPreviewLoadingTrackId(null);
           setPreviewActiveTrackId(null);
           setPlayingTrack((current) => (current?.id === track.id ? null : current));
         }
       }, 250);
     },
-    [clearPreviewInterval, stop, reset, restoreNotificationCapabilities, resetPreviewProgress]
+    [clearPreviewInterval, stop, reset, restoreNotificationCapabilities]
   );
 
   const stopPreview = useCallback(async () => {
@@ -254,7 +246,6 @@ const AudioTrackDialog = ({
     }
     // Restore full capabilities so normal playback keeps its notification controls.
     await restoreNotificationCapabilities();
-    resetPreviewProgress();
     setPreviewLoadingTrackId(null);
     setPreviewActiveTrackId(null);
     setPlayingTrack(null);
@@ -265,7 +256,6 @@ const AudioTrackDialog = ({
     stop,
     reset,
     restoreNotificationCapabilities,
-    resetPreviewProgress,
   ]);
 
   /**
@@ -294,22 +284,6 @@ const AudioTrackDialog = ({
     };
   }, [clearPreviewTimeout, clearPreviewStartTimeout, clearPreviewInterval]);
 
-  // Cancel any in-progress preview when the screen loses focus (e.g. the user
-  // opens Settings mid-preview). The nav bar pauses the native audio on leave,
-  // but the preview ticker is a wall-clock setInterval that would otherwise keep
-  // counting down — so on return the Next-button timer shows progress with no
-  // sound. Stopping the preview resets the timer to a clean state instead.
-  const previewIsActiveRef = useRef(false);
-  previewIsActiveRef.current = Boolean(
-    previewActiveTrackId || previewLoadingTrackId || playingTrack
-  );
-  useEffect(() => {
-    if (isScreenFocused || !previewIsActiveRef.current) {
-      return;
-    }
-    stopPreview();
-  }, [isScreenFocused, stopPreview]);
-
   const handleSelectTrack = async (track) => {
     if (isNextLoading) return;
     if (!track?.id || previewActionInFlightRef.current) {
@@ -321,10 +295,10 @@ const AudioTrackDialog = ({
     previewActionInFlightRef.current = true;
     const sessionId = previewSessionRef.current + 1;
     previewSessionRef.current = sessionId;
-    
+
     selectedTrackRef.current = track;
     setSelectedTrack(track);
-    
+
     setPreviewActiveTrackId(null);
 
     if (!isHeader) {
@@ -340,7 +314,14 @@ const AudioTrackDialog = ({
     }
 
     try {
+      // ── Guaranteed clean slate before every preview ──────────────────────
+      // A previously aborted preview (e.g. tapping Play then instantly Next)
+      // can leave stale in-flight native stop/reset/add calls and preview
+      // state behind, which then wedges the next preview of the same
+      // (downloaded) track. Deterministically clear every piece of preview
+      // state and hard-reset the player so each preview starts from zero.
       setPreviewLoadingTrackId(track.id);
+      setPreviewActiveTrackId(null);
       setPlayingTrack(null);
       clearPreviewTimeout();
       clearPreviewStartTimeout();
@@ -358,6 +339,13 @@ const AudioTrackDialog = ({
         // Best effort reset before starting a new preview.
       }
 
+      // If a newer action (another tap, or Next) superseded this one during
+      // the stop/reset awaits, bail before touching playback further.
+      if (previewSessionRef.current !== sessionId) {
+        setPreviewLoadingTrackId(null);
+        return;
+      }
+
       // Strip all notification-bar controls so the user cannot interact
       // with pause/play/seek from the OS notification during a preview.
       try {
@@ -366,71 +354,80 @@ const AudioTrackDialog = ({
         // Non-critical — preview audio still plays without notification controls.
       }
 
-      // Resolve the dedicated 15-second preview clip: prefer the tiny local
-      // cached clip (instant playback, no full-track moov parse), downloading
-      // it on-demand if the reader-open prefetch hasn't finished. When the CDN
-      // has no preview for this track, fall back to the full track (cut at 15s).
+      // ── Resolve a preloaded 15-second preview clip ───────────────────────
+      // If the trimmed `-preview.m4a` clip is on disk (warmed by prefetchPreviews
+      // on bani open), play it directly — instant start, correct trimmed audio.
+      // Otherwise stream the full track and let the 15s ticker cut it off.
       const canonicalUrl = track.remoteUrl || track.audioUrl;
-      const previewLocalPath = await ensurePreviewDownloaded(canonicalUrl, track.displayName);
-
+      let previewLocalPath = null;
+      try {
+        previewLocalPath = await ensurePreviewDownloaded(canonicalUrl, track.displayName);
+      } catch (_) {
+        previewLocalPath = null;
+      }
       if (previewSessionRef.current !== sessionId) {
+        setPreviewLoadingTrackId(null);
         return;
       }
 
-      // Adds the track and waits for playback. Local clips get a strict short
-      // timeout (they buffer instantly from disk, so anything longer means a bad
-      // file) while remote streaming keeps the generous, buffer-tolerant window.
-      const addAndAwait = async (playUrl, fallbackUrl, isLocalClip) => {
+      // Add a source and wait for playback. Returns true/false, or null if this
+      // action was superseded (a newer tap/Next) while adding/awaiting.
+      const addAndAwait = async (playUrl, remoteFallback) => {
         await addAndPlayTrack(
           track.id,
           playUrl,
           notificationTitle || title,
           track.displayName,
           track.lyricsUrl,
-          // Clips are ~15s; passing the full track length as the duration would
-          // misdescribe the media, so use the clip length for local previews.
-          isLocalClip ? PREVIEW_DURATION_MS / 1000 : track.trackLengthSec,
+          track.trackLengthSec,
           track.trackSizeMB,
           true,
-          fallbackUrl
+          remoteFallback
         );
-        if (previewSessionRef.current !== sessionId) {
-          return false;
-        }
-        return waitForPlaybackStart(
-          track.id,
-          sessionId,
-          isLocalClip ? { timeoutMs: 8000, resetOnLoading: false } : {}
-        );
+        if (previewSessionRef.current !== sessionId) return null;
+        // M4A containers need longer to parse moov atom + buffer on Android.
+        return waitForPlaybackStart(track.id, sessionId);
       };
 
       let playbackStarted = false;
-
       if (previewLocalPath) {
-        playbackStarted = await addAndAwait(
+        const startedLocal = await addAndAwait(
           previewLocalPath,
-          getPreviewRemoteUrl(canonicalUrl) || canonicalUrl,
-          true
+          getPreviewRemoteUrl(canonicalUrl) || canonicalUrl
         );
-        if (previewSessionRef.current !== sessionId) {
+        if (startedLocal === null) {
+          setPreviewLoadingTrackId(null);
           return;
         }
+        playbackStarted = startedLocal;
         if (!playbackStarted) {
-          // The cached clip is unplayable (e.g. a truncated file from an older
-          // build). Delete it so it re-downloads cleanly next time, then fall
-          // back to streaming the full track so the user still gets a preview.
+          // The local clip likely wrote truncated — drop it so it re-downloads
+          // clean next time, and fall through to the full-track stream.
           await deletePreviewClip(canonicalUrl).catch(() => {});
-          try { await stop(); } catch (_) {}
-          try { await reset(); } catch (_) {}
+          try {
+            await stop();
+          } catch (_) {
+            /* nothing was playing to stop */
+          }
+          try {
+            await reset();
+          } catch (_) {
+            /* already reset; a second one is a no-op */
+          }
+          if (previewSessionRef.current !== sessionId) {
+            setPreviewLoadingTrackId(null);
+            return;
+          }
         }
       }
 
       if (!playbackStarted) {
-        playbackStarted = await addAndAwait(track.audioUrl, canonicalUrl, false);
-      }
-
-      if (previewSessionRef.current !== sessionId) {
-        return;
+        const startedFull = await addAndAwait(track.audioUrl, canonicalUrl);
+        if (startedFull === null) {
+          setPreviewLoadingTrackId(null);
+          return;
+        }
+        playbackStarted = startedFull;
       }
 
       if (playbackStarted && previewSessionRef.current === sessionId) {
@@ -443,16 +440,22 @@ const AudioTrackDialog = ({
         setPreviewLoadingTrackId(null);
         setPreviewActiveTrackId(null);
         setPlayingTrack(null);
-        resetPreviewProgress();
-        try { await stop(); } catch (_) {}
-        try { await reset(); } catch (_) {}
+        try {
+          await stop();
+        } catch (_) {
+          /* nothing was playing to stop */
+        }
+        try {
+          await reset();
+        } catch (_) {
+          /* already reset; a second one is a no-op */
+        }
         await restoreNotificationCapabilities();
       }
     } catch (_) {
       clearPreviewTimeout();
       clearPreviewStartTimeout();
       clearPreviewInterval();
-      resetPreviewProgress();
       setPreviewLoadingTrackId(null);
       setPreviewActiveTrackId(null);
       setPlayingTrack(null);
@@ -474,7 +477,9 @@ const AudioTrackDialog = ({
         // so we don't cause a race condition with stopPreview()'s reset().
         while (previewActionInFlightRef.current) {
           // eslint-disable-next-line no-await-in-loop
-          await new Promise((resolve) => setTimeout(resolve, 50));
+          await new Promise((resolve) => {
+            setTimeout(resolve, 50);
+          });
         }
 
         await stopPreview();
@@ -488,9 +493,10 @@ const AudioTrackDialog = ({
   const isPreviewRunning = Boolean(
     selectedTrack && previewActiveTrackId && previewActiveTrackId === selectedTrack?.id
   );
-  const nextButtonLabel = isPreviewRunning
-    ? `${STRINGS.NEXT} (${previewRemainingSec}s)`
-    : STRINGS.NEXT;
+  // The button always reads a bare "Next" and carries no countdown of its own:
+  // progress belongs to the artist row being previewed, not to the control that
+  // advances the wizard.
+  const nextButtonLabel = STRINGS.NEXT;
 
   return (
     <View style={styles.modalWrapper}>
@@ -504,9 +510,9 @@ const AudioTrackDialog = ({
         {Platform.OS === "ios" && (
           <BlurView
             style={styles.blurOverlay}
-            blurType={theme.mode === "dark" ? "dark" : "light"}
+            blurType={theme.chrome.blurType}
             blurAmount={10}
-            reducedTransparencyFallbackColor={theme.colors.transparentOverlay}
+            reducedTransparencyFallbackColor={theme.c.surface}
           />
         )}
 
@@ -519,74 +525,80 @@ const AudioTrackDialog = ({
             onCloseTrackModal();
           }}
         >
-          <CloseIcon size={30} color={theme.colors.audioTitleText} />
+          <CloseIcon size={30} color={theme.c.textBrand} />
         </Pressable>
 
-        {isHeader && tracks.length > 0 && (
-          <View style={styles.header}>
-            <CustomText style={styles.welcomeText}>{STRINGS.welcome_to_sundar_gutka}</CustomText>
-            <CustomText style={styles.subtitleText}>
-              {STRINGS.please_choose_a_track} <CustomText style={{ fontFamily: fontFace }}>{title}</CustomText>
-            </CustomText>
-            <CustomText style={styles.previewHintText}>
-              Tap to preview.
-            </CustomText>
-          </View>
-        )}
-
+        {/* The intro and the offline notice scroll WITH the artist list rather
+            than standing above it. At a raised OS text size they are together
+            taller than the card, and as fixed blocks they pushed the rows and
+            Next off the bottom — all that was left on screen was the welcome
+            line. Next stays pinned below, because it is outside the scroller. */}
         <ScrollViewComponent
           tracks={tracks}
           selectedTrack={selectedTrack}
           playingTrack={playingTrack}
           isPlaying={isPlaying}
           previewLoadingTrackId={previewLoadingTrackId}
+          previewActiveTrackId={isPreviewRunning ? previewActiveTrackId : null}
+          previewDurationMs={PREVIEW_DURATION_MS}
+          isOffline={isOffline}
           handleSelectTrack={handleSelectTrack}
+          header={
+            <>
+              {isHeader && tracks.length > 0 && (
+                <View style={styles.header}>
+                  <CustomText style={styles.welcomeText}>
+                    {STRINGS.welcome_to_sundar_gutka}
+                  </CustomText>
+                  <CustomText style={styles.subtitleText}>
+                    {STRINGS.please_choose_a_track}{" "}
+                    {/* The title is Unicode Gurmukhi (the Reader resolves it so), which
+                        the UI face renders; the bani font may be ASCII-mapped. */}
+                    <CustomText>{title}</CustomText>
+                  </CustomText>
+                  <CustomText style={styles.previewHintText}>
+                    {STRINGS.AUDIO_PREVIEW_HINT}
+                  </CustomText>
+                </View>
+              )}
+              {hasUnplayableOffline && (
+                <View style={styles.offlineBanner}>
+                  <CustomText style={styles.offlineBannerText}>
+                    {STRINGS.OFFLINE_TRACKS_NOTICE}
+                  </CustomText>
+                </View>
+              )}
+            </>
+          }
         />
 
         {isFooter && tracks.length > 0 && (
-          <Pressable
-            testID="play-button"
-            style={[styles.playButton, !selectedTrack && styles.playButtonDisabled]}
-            onPress={handlePlay}
-            disabled={isNextLoading}
-            activeOpacity={0.8}
-          >
-            {isNextLoading && (
-              <ActivityIndicator
-                size="small"
-                color={theme.staticColors.WHITE_COLOR}
-                style={styles.nextLoadingSpinner}
-              />
-            )}
-            {isPreviewRunning && (
-              <View style={styles.previewProgressTrack}>
-                <View
-                  style={[
-                    styles.previewProgressFill,
-                    { width: `${Math.round(previewProgress * 100)}%` },
-                  ]}
-                />
-              </View>
-            )}
-            <CustomText style={styles.playButtonText}>
-              {isNextLoading ? "Opening Player..." : nextButtonLabel}
-            </CustomText>
-            <ArrowRightIcon size={24} color={theme.staticColors.WHITE_COLOR} />
-          </Pressable>
+          <View style={styles.footerRow}>
+            <Pressable
+              testID="play-button"
+              style={[styles.playButton, !selectedTrack && styles.playButtonDisabled]}
+              onPress={handlePlay}
+              disabled={isNextLoading}
+              activeOpacity={0.8}
+            >
+              {isNextLoading && (
+                <Spinner size="small" color={theme.c.onPrimary} style={styles.nextLoadingSpinner} />
+              )}
+              <CustomText style={styles.playButtonText}>
+                {isNextLoading ? STRINGS.OPENING_PLAYER : nextButtonLabel}
+              </CustomText>
+              <ArrowRightIcon size={24} color={theme.c.onPrimary} />
+            </Pressable>
+          </View>
         )}
       </View>
     </View>
   );
 };
 
-AudioTrackDialog.defaultProps = {
-  title: "",
-  isHeader: true,
-  isFooter: true,
-};
-
 AudioTrackDialog.propTypes = {
   title: PropTypes.string,
+  notificationTitle: PropTypes.string,
   tracks: PropTypes.arrayOf(
     PropTypes.shape({
       id: PropTypes.oneOfType([PropTypes.string, PropTypes.number]).isRequired,
@@ -596,7 +608,7 @@ AudioTrackDialog.propTypes = {
       trackLengthSec: PropTypes.number.isRequired,
       trackSizeMB: PropTypes.number.isRequired,
     })
-  ).isRequired,
+  ),
   handleTrackSelect: PropTypes.func.isRequired,
   isHeader: PropTypes.bool,
   isFooter: PropTypes.bool,

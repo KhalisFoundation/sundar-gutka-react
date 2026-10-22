@@ -335,8 +335,6 @@ const htmlTemplate = (
       // every resize could mark a bani read that the user never scrolled.
       // Reported on layout and on resize only (font-size change, translation
       // toggle, rotation); never per scroll event, so scrolling costs nothing.
-      // KNOWN: only ReaderScrollbar reads "scroll-ratio-", and it arrives with
-      // the upcoming audio PR's Reader; until then these messages are dropped.
       function reportViewportRatio() {
         var sh = document.documentElement.scrollHeight;
         var ch = window.innerHeight;

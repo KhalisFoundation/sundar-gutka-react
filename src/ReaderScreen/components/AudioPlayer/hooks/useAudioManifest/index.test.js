@@ -1,13 +1,14 @@
 /* eslint-env jest */
 
 import React from "react";
-import { render, waitFor, act } from "@testing-library/react-native";
+import { render, waitFor } from "@testing-library/react-native";
 import { setMockState, getMockDispatch } from "@common/test-utils/mocks/react-redux";
 // eslint-disable-next-line import/order
-import useAudioManifest, { resetManifestApiCacheForTests } from "./index";
-// Mock dependencies
+import useAudioManifest from "./index";
+
+// react-native-fs — control file existence/size for the downloaded-merge path.
 jest.mock("react-native-fs", () => ({
-  DocumentDirectoryPath: "/mock/document/path",
+  DocumentDirectoryPath: "/test/documents",
   exists: jest.fn(() => Promise.resolve(true)),
   stat: jest.fn(() => Promise.resolve({ size: 5000000 })),
   unlink: jest.fn(() => Promise.resolve()),
@@ -19,1145 +20,419 @@ jest.mock("@common", () => ({
       type: "SET_AUDIO_MANIFEST",
       payload: { baniId, tracks },
     })),
+    setAudioCatalogEntry: jest.fn((baniId, entry) => ({
+      type: "SET_AUDIO_CATALOG_ENTRY",
+      payload: { baniId, entry },
+    })),
+    removeDownloadEntries: jest.fn((keys) => ({ type: "REMOVE_DOWNLOAD_ENTRIES", payload: keys })),
+    updateDownloadEntries: jest.fn((patches) => ({
+      type: "UPDATE_DOWNLOAD_ENTRIES",
+      payload: patches,
+    })),
   },
   logError: jest.fn(),
+  logMessage: jest.fn(),
+  STRINGS: { NETWORK_ERROR: "Network error", PLEASE_TRY_AGAIN: "Please try again" },
+  // Optimistic default (online); individual tests override via mockReturnValue.
+  useNetwork: jest.fn(() => ({ isOnline: true })),
 }));
 
 jest.mock("@service", () => ({
-  fetchManifest: jest.fn(),
+  fetchRawBaniAudio: jest.fn(),
+  selectTracksForBani: jest.fn(),
 }));
 
-const { actions, logError } = require("@common");
-const { fetchManifest } = require("@service");
+// The reconcile pass has its own suite; here it only needs to report "nothing
+// changed" so the merge is not re-run behind the assertions.
+jest.mock("@common/services/audioReconcile", () => ({
+  reconcileDownloads: jest.fn(() => Promise.resolve({ changed: false })),
+}));
 
-// Test component that uses the hook
+const { useNetwork } = require("@common");
+const { fetchRawBaniAudio, selectTracksForBani } = require("@service");
+
+const AUDIO_DIR = "/test/documents/audio";
+
+// One backend "intermediate" track (services/audioApi shape).
+const intermediateTrack = (over = {}) => ({
+  bani_id: 2,
+  track_id: 1002,
+  track_url: "https://cdn.example.net/audios/BhaiJarnailSingh/JapjiSahib.m4a",
+  track_length_seconds: 985.5,
+  track_size_mb: 15.39,
+  artist_name: "Bhai Jarnail Singh",
+  artist_id: 4,
+  lyrics_url: "https://cdn.example.net/audios/BhaiJarnailSingh/japji-sahib.json",
+  ...over,
+});
+
 const TestComponent = ({ baniID, onResult }) => {
   const result = useAudioManifest(baniID);
-
   React.useEffect(() => {
-    if (onResult) {
-      onResult(result);
-    }
+    if (onResult) onResult(result);
   }, [result, onResult]);
-
   return null;
 };
 
-describe("useAudioManifest", () => {
-  const mockBaniID = "test-bani-123";
+const renderHook = (baniID) => {
+  let hookResult;
+  const utils = render(
+    <TestComponent
+      baniID={baniID}
+      onResult={(result) => {
+        hookResult = result;
+      }}
+    />
+  );
+  return { getResult: () => hookResult, ...utils };
+};
 
+describe("useAudioManifest", () => {
   beforeEach(() => {
     jest.clearAllMocks();
-    resetManifestApiCacheForTests();
+    useNetwork.mockReturnValue({ isOnline: true });
     setMockState({
       defaultAudio: {},
       audioManifest: {},
+      audioCatalog: {},
+      baniLength: "LONG",
+      downloadRegistry: {},
       _persist: { rehydrated: true },
     });
   });
 
-  describe("fetchAudioManifest", () => {
-    it("should fetch and map API manifest data to tracks", async () => {
-      const mockManifest = {
-        data: [
-          {
-            track_id: 1,
-            artist_id: 4,
-            track_url: "https://example.com/track1.m4a",
-            artist_name: "Jarnail Singh",
-            track_length_seconds: 300,
-            track_size_mb: 5.2,
-          },
-          {
-            track_id: 2,
-            artist_id: 8,
-            track_url: "https://example.com/track2.m4a",
-            artist_name: "Indermohan Kaur UK",
-            track_length_seconds: 250,
-            track_size_mb: 4.8,
-          },
-        ],
-      };
+  it("fetches from the network when uncached, maps tracks, and persists the catalog entry", async () => {
+    fetchRawBaniAudio.mockResolvedValueOnce({ groups: { long: {} }, baniName: "Japji Sahib" });
+    selectTracksForBani.mockReturnValue([intermediateTrack()]);
 
-      fetchManifest.mockResolvedValueOnce(mockManifest);
+    const { getResult, unmount } = renderHook(2);
 
-      let hookResult;
-      const { unmount } = render(
-        <TestComponent
-          baniID={mockBaniID}
-          onResult={(result) => {
-            hookResult = result;
-          }}
-        />
-      );
+    await waitFor(() => expect(fetchRawBaniAudio).toHaveBeenCalledWith(2));
+    await waitFor(() => expect(getResult()?.isTracksLoading).toBe(false));
 
-      await waitFor(() => {
-        expect(fetchManifest).toHaveBeenCalledWith(mockBaniID);
-      });
-
-      await waitFor(() => {
-        expect(hookResult?.tracks).toHaveLength(2);
-        expect(hookResult?.isTracksLoading).toBe(false);
-      });
-
-      expect(hookResult.tracks[0]).toMatchObject({
-        id: 1,
-        track_id: 1,
-        artistID: 4,
-        audioUrl: "https://example.com/track1.m4a",
-        displayName: "Bhai Jarnail Singh",
-        trackLengthSec: 300,
-        trackSizeMB: 5.2,
-        lyricsUrl: "https://example.com/track1.json",
-      });
-
-      expect(hookResult.tracks[1]).toMatchObject({
-        id: 2,
-        track_id: 2,
-        artistID: 8,
-        audioUrl: "https://example.com/track2.m4a",
-        displayName: "Bibi Indermohan Kaur",
-        trackLengthSec: 250,
-        trackSizeMB: 4.8,
-        lyricsUrl: "https://example.com/track2.json",
-      });
-
-      unmount();
+    expect(getResult().tracks).toHaveLength(1);
+    expect(getResult().tracks[0]).toMatchObject({
+      id: 1002,
+      track_id: 1002,
+      artistID: 4,
+      audioUrl: "https://cdn.example.net/audios/BhaiJarnailSingh/JapjiSahib.m4a",
+      remoteUrl: "https://cdn.example.net/audios/BhaiJarnailSingh/JapjiSahib.m4a",
+      displayName: "Bhai Jarnail Singh",
+      trackLengthSec: 985.5,
+      trackSizeMB: 15.39,
+      lyricsUrl: "https://cdn.example.net/audios/BhaiJarnailSingh/japji-sahib.json",
+      isLocallyDownloaded: false,
     });
 
-    it("should handle empty manifest data", async () => {
-      fetchManifest.mockResolvedValueOnce({ data: [] });
-
-      let hookResult;
-      const { unmount } = render(
-        <TestComponent
-          baniID={mockBaniID}
-          onResult={(result) => {
-            hookResult = result;
-          }}
-        />
-      );
-
-      await waitFor(() => {
-        expect(fetchManifest).toHaveBeenCalledWith(mockBaniID);
-      });
-
-      await waitFor(() => {
-        expect(hookResult?.isTracksLoading).toBe(false);
-      });
-
-      expect(hookResult.tracks).toHaveLength(0);
-      expect(hookResult.currentPlaying).toBeNull();
-
-      unmount();
-    });
-
-    it("should handle null manifest response", async () => {
-      fetchManifest.mockResolvedValueOnce(null);
-
-      let hookResult;
-      const { unmount } = render(
-        <TestComponent
-          baniID={mockBaniID}
-          onResult={(result) => {
-            hookResult = result;
-          }}
-        />
-      );
-
-      await waitFor(() => {
-        expect(fetchManifest).toHaveBeenCalledWith(mockBaniID);
-      });
-
-      await waitFor(() => {
-        expect(hookResult?.isTracksLoading).toBe(false);
-      });
-
-      expect(hookResult.tracks).toHaveLength(0);
-      expect(hookResult.currentPlaying).toBeNull();
-
-      unmount();
-    });
-
-    it("should merge downloaded tracks with API tracks", async () => {
-      const mockManifest = {
-        data: [
-          {
-            track_id: 1,
-            artist_id: 4,
-            track_url: "https://example.com/track1.m4a",
-            artist_name: "Jarnail Singh",
-            track_length_seconds: 300,
-            track_size_mb: 5.2,
-          },
-        ],
-      };
-
-      const downloadedTracks = [
-        {
-          id: 1,
-          track_id: 1,
-          artistID: 4,
-          audioUrl: "track1.m4a",
-          displayName: "Jarnail Singh",
-          trackLengthSec: 300,
-          trackSizeMB: 5.2,
-          lyricsUrl: "track1.json",
-        },
-      ];
-
-      fetchManifest.mockResolvedValueOnce(mockManifest);
-      setMockState({
-        audioManifest: {
-          [mockBaniID]: downloadedTracks,
-        },
-      });
-
-      let hookResult;
-      const { unmount } = render(
-        <TestComponent
-          baniID={mockBaniID}
-          onResult={(result) => {
-            hookResult = result;
-          }}
-        />
-      );
-
-      await waitFor(() => {
-        expect(hookResult?.tracks).toHaveLength(1);
-      });
-
-      expect(hookResult.tracks[0].audioUrl).toBe("/mock/document/path/audio/track1.m4a");
-      expect(hookResult.tracks[0].lyricsUrl).toBe("/mock/document/path/audio/track1.json");
-
-      unmount();
-    });
-
-    it("should use downloaded tracks when API returns no data", async () => {
-      const downloadedTracks = [
-        {
-          id: 1,
-          track_id: 1,
-          artistID: 4,
-          audioUrl: "track1.m4a",
-          displayName: "Jarnail Singh",
-          trackLengthSec: 300,
-          trackSizeMB: 5.2,
-          lyricsUrl: "track1.json",
-        },
-      ];
-
-      fetchManifest.mockResolvedValueOnce(null);
-      setMockState({
-        audioManifest: {
-          [mockBaniID]: downloadedTracks,
-        },
-      });
-
-      let hookResult;
-      const { unmount } = render(
-        <TestComponent
-          baniID={mockBaniID}
-          onResult={(result) => {
-            hookResult = result;
-          }}
-        />
-      );
-
-      await waitFor(() => {
-        expect(hookResult?.tracks).toHaveLength(1);
-      });
-
-      expect(hookResult.tracks[0].audioUrl).toBe("/mock/document/path/audio/track1.m4a");
-      expect(hookResult.tracks[0].lyricsUrl).toBe("/mock/document/path/audio/track1.json");
-
-      unmount();
-    });
-
-    it("should set default track based on user preferences", async () => {
-      const mockManifest = {
-        data: [
-          {
-            track_id: 1,
-            artist_id: 4,
-            track_url: "https://example.com/track1.m4a",
-            artist_name: "Jarnail Singh",
-            track_length_seconds: 300,
-            track_size_mb: 5.2,
-          },
-          {
-            track_id: 2,
-            artist_id: 8,
-            track_url: "https://example.com/track2.m4a",
-            artist_name: "Indermohan Kaur UK",
-            track_length_seconds: 250,
-            track_size_mb: 4.8,
-          },
-        ],
-      };
-
-      fetchManifest.mockResolvedValueOnce(mockManifest);
-      setMockState({
-        defaultAudio: {
-          [mockBaniID]: {
-            artistID: 8,
-          },
-        },
-      });
-
-      let hookResult;
-      const { unmount } = render(
-        <TestComponent
-          baniID={mockBaniID}
-          onResult={(result) => {
-            hookResult = result;
-          }}
-        />
-      );
-
-      await waitFor(() => {
-        expect(hookResult?.tracks).toHaveLength(2);
-      });
-
-      // Should set track-2 as current playing because it matches defaultAudio preference
-      expect(hookResult.currentPlaying).toEqual(hookResult.tracks[1]);
-      expect(hookResult.currentPlaying.artistID).toBe(8);
-
-      unmount();
-    });
-
-    it("should handle fetch errors gracefully", async () => {
-      const error = new Error("Network error");
-      fetchManifest.mockRejectedValueOnce(error);
-
-      let hookResult;
-      const { unmount } = render(
-        <TestComponent
-          baniID={mockBaniID}
-          onResult={(result) => {
-            hookResult = result;
-          }}
-        />
-      );
-
-      await waitFor(() => {
-        expect(fetchManifest).toHaveBeenCalledWith(mockBaniID);
-      });
-
-      await waitFor(() => {
-        expect(hookResult?.isTracksLoading).toBe(false);
-      });
-
-      expect(logError).toHaveBeenCalledWith("Error fetching manifest:", error);
-      expect(hookResult.tracks).toHaveLength(0);
-
-      unmount();
-    });
-
-    it("should set loading state during fetch", async () => {
-      let resolveFetch;
-      const fetchPromise = new Promise((resolve) => {
-        resolveFetch = resolve;
-      });
-
-      fetchManifest.mockReturnValueOnce(fetchPromise);
-
-      let hookResult;
-      const { unmount } = render(
-        <TestComponent
-          baniID={mockBaniID}
-          onResult={(result) => {
-            hookResult = result;
-          }}
-        />
-      );
-
-      // Should be loading initially
-      await waitFor(() => {
-        expect(hookResult?.isTracksLoading).toBe(true);
-      });
-
-      // Resolve the fetch
-      act(() => {
-        resolveFetch({
-          data: [
-            {
-              track_id: 1,
-              artist_id: 4,
-              track_url: "https://example.com/track1.m4a",
-              artist_name: "Jarnail Singh",
-              track_length_seconds: 300,
-              track_size_mb: 5.2,
-            },
-          ],
-        });
-      });
-
-      await waitFor(() => {
-        expect(hookResult?.isTracksLoading).toBe(false);
-      });
-
-      unmount();
-    });
+    // Persisted the raw groups for offline use.
+    const dispatched = getMockDispatch().mock.calls.map(([a]) => a);
+    expect(dispatched).toEqual(
+      expect.arrayContaining([
+        expect.objectContaining({
+          type: "SET_AUDIO_CATALOG_ENTRY",
+          payload: expect.objectContaining({ baniId: 2 }),
+        }),
+      ])
+    );
+    unmount();
   });
 
-  describe("addTrackToManifest", () => {
-    it("should add a new track to manifest", async () => {
-      fetchManifest.mockResolvedValueOnce({ data: [] });
-
-      let hookResult;
-      const { unmount } = render(
-        <TestComponent
-          baniID={mockBaniID}
-          onResult={(result) => {
-            hookResult = result;
-          }}
-        />
-      );
-
-      await waitFor(() => {
-        expect(hookResult).toBeDefined();
-      });
-
-      const mockDispatch = getMockDispatch();
-      const track = {
-        id: 1,
-        track_id: 1,
-        artistID: 1,
-        displayName: "Artist One",
-        trackLengthSec: 300,
-        trackSizeMB: 5.2,
-      };
-
-      act(() => {
-        hookResult.addTrackToManifest(track, "track1.m4a", "track1.json");
-      });
-
-      expect(mockDispatch).toHaveBeenCalledWith(
-        actions.setAudioManifest(mockBaniID, [
-          {
-            id: 1,
-            track_id: 1,
-            artistID: 1,
-            audioUrl: "track1.m4a",
-            displayName: "Artist One",
-            trackLengthSec: 300,
-            trackSizeMB: 5.2,
-            lyricsUrl: "track1.json",
-          },
-        ])
-      );
-
-      unmount();
+  it("uses the persisted cache without any network call when fresh", async () => {
+    setMockState({
+      audioCatalog: { 2: { groups: { long: {} }, baniName: "Japji", fetchedAt: Date.now() } },
     });
+    selectTracksForBani.mockReturnValue([intermediateTrack()]);
 
-    it("should not add duplicate tracks", async () => {
-      const existingTracks = [
-        {
-          id: 1,
-          track_id: 1,
-          artistID: 1,
-          audioUrl: "track1.m4a",
-          displayName: "Artist One",
-          trackLengthSec: 300,
-          trackSizeMB: 5.2,
-          lyricsUrl: "track1.json",
-        },
-      ];
+    const { getResult, unmount } = renderHook(2);
 
-      fetchManifest.mockResolvedValueOnce({ data: [] });
-      setMockState({
-        audioManifest: {
-          [mockBaniID]: existingTracks,
-        },
-      });
-
-      let hookResult;
-      const { unmount } = render(
-        <TestComponent
-          baniID={mockBaniID}
-          onResult={(result) => {
-            hookResult = result;
-          }}
-        />
-      );
-
-      await waitFor(() => {
-        expect(hookResult).toBeDefined();
-      });
-
-      const mockDispatch = getMockDispatch();
-      const track = {
-        id: 1,
-        track_id: 1,
-        artistID: 1,
-        displayName: "Artist One",
-        trackLengthSec: 300,
-        trackSizeMB: 5.2,
-      };
-
-      act(() => {
-        hookResult.addTrackToManifest(track, "track1.m4a", "track1.json");
-      });
-
-      // Should not dispatch since track already exists
-      expect(mockDispatch).not.toHaveBeenCalled();
-
-      unmount();
-    });
-
-    it("should handle null lyricsUrl", async () => {
-      fetchManifest.mockResolvedValueOnce({ data: [] });
-
-      let hookResult;
-      const { unmount } = render(
-        <TestComponent
-          baniID={mockBaniID}
-          onResult={(result) => {
-            hookResult = result;
-          }}
-        />
-      );
-
-      await waitFor(() => {
-        expect(hookResult).toBeDefined();
-      });
-
-      const mockDispatch = getMockDispatch();
-      const track = {
-        id: 1,
-        track_id: 1,
-        artistID: 1,
-        displayName: "Artist One",
-        trackLengthSec: 300,
-        trackSizeMB: 5.2,
-      };
-
-      act(() => {
-        hookResult.addTrackToManifest(track, "track1.m4a", null);
-      });
-
-      expect(mockDispatch).toHaveBeenCalledWith(
-        actions.setAudioManifest(mockBaniID, [
-          {
-            id: 1,
-            track_id: 1,
-            artistID: 1,
-            audioUrl: "track1.m4a",
-            displayName: "Artist One",
-            trackLengthSec: 300,
-            trackSizeMB: 5.2,
-            lyricsUrl: null,
-          },
-        ])
-      );
-
-      unmount();
-    });
+    await waitFor(() => expect(getResult()?.isTracksLoading).toBe(false));
+    expect(getResult().tracks).toHaveLength(1);
+    expect(fetchRawBaniAudio).not.toHaveBeenCalled();
+    unmount();
   });
 
-  describe("isTrackDownloaded", () => {
-    it("should return true for downloaded track with audio and lyrics", async () => {
-      const downloadedTracks = [
-        {
-          id: 1,
-          track_id: 1,
-          artistID: 1,
-          audioUrl: "/local/path/track1.m4a",
-          displayName: "Artist One",
-          trackLengthSec: 300,
-          trackSizeMB: 5.2,
-          lyricsUrl: "/local/path/track1.json",
-        },
-      ];
-
-      fetchManifest.mockResolvedValueOnce({ data: [] });
-      setMockState({
-        audioManifest: {
-          [mockBaniID]: downloadedTracks,
-        },
-      });
-
-      let hookResult;
-      const { unmount } = render(
-        <TestComponent
-          baniID={mockBaniID}
-          onResult={(result) => {
-            hookResult = result;
-          }}
-        />
-      );
-
-      await waitFor(() => {
-        expect(hookResult).toBeDefined();
-      });
-
-      expect(hookResult.isTrackDownloaded(1)).toBe(true);
-
-      unmount();
+  it("refreshes from the network when the cached entry is stale", async () => {
+    setMockState({
+      audioCatalog: { 2: { groups: { long: {} }, baniName: "Japji", fetchedAt: 0 } },
     });
+    fetchRawBaniAudio.mockResolvedValueOnce({ groups: { long: {} }, baniName: "Japji" });
+    selectTracksForBani.mockReturnValue([intermediateTrack()]);
 
-    it("should return true for downloaded track without lyrics", async () => {
-      const downloadedTracks = [
-        {
-          id: 1,
-          track_id: 1,
-          artistID: 1,
-          audioUrl: "/local/path/track1.m4a",
-          displayName: "Artist One",
-          trackLengthSec: 300,
-          trackSizeMB: 5.2,
-          lyricsUrl: null,
-        },
-      ];
+    const { unmount } = renderHook(2);
 
-      fetchManifest.mockResolvedValueOnce({ data: [] });
-      setMockState({
-        audioManifest: {
-          [mockBaniID]: downloadedTracks,
-        },
-      });
-
-      let hookResult;
-      const { unmount } = render(
-        <TestComponent
-          baniID={mockBaniID}
-          onResult={(result) => {
-            hookResult = result;
-          }}
-        />
-      );
-
-      await waitFor(() => {
-        expect(hookResult).toBeDefined();
-      });
-
-      expect(hookResult.isTrackDownloaded(1)).toBe(true);
-
-      unmount();
-    });
-
-    it("should return false for track with remote audio URL", async () => {
-      const tracks = [
-        {
-          id: 1,
-          track_id: 1,
-          artistID: 1,
-          audioUrl: "https://example.com/track1.m4a",
-          displayName: "Artist One",
-          trackLengthSec: 300,
-          trackSizeMB: 5.2,
-          lyricsUrl: "https://example.com/track1.json",
-        },
-      ];
-
-      fetchManifest.mockResolvedValueOnce({ data: [] });
-      setMockState({
-        audioManifest: {
-          [mockBaniID]: tracks,
-        },
-      });
-
-      let hookResult;
-      const { unmount } = render(
-        <TestComponent
-          baniID={mockBaniID}
-          onResult={(result) => {
-            hookResult = result;
-          }}
-        />
-      );
-
-      await waitFor(() => {
-        expect(hookResult).toBeDefined();
-      });
-
-      expect(hookResult.isTrackDownloaded("track-1")).toBe(false);
-
-      unmount();
-    });
-
-    it("should return false for track with remote lyrics URL", async () => {
-      const tracks = [
-        {
-          id: 1,
-          track_id: 1,
-          artistID: 1,
-          audioUrl: "/local/path/track1.m4a",
-          displayName: "Artist One",
-          trackLengthSec: 300,
-          trackSizeMB: 5.2,
-          lyricsUrl: "https://example.com/track1.json",
-        },
-      ];
-
-      fetchManifest.mockResolvedValueOnce({ data: [] });
-      setMockState({
-        audioManifest: {
-          [mockBaniID]: tracks,
-        },
-      });
-
-      let hookResult;
-      const { unmount } = render(
-        <TestComponent
-          baniID={mockBaniID}
-          onResult={(result) => {
-            hookResult = result;
-          }}
-        />
-      );
-
-      await waitFor(() => {
-        expect(hookResult).toBeDefined();
-      });
-
-      expect(hookResult.isTrackDownloaded(1)).toBe(false);
-
-      unmount();
-    });
-
-    it("should return false for non-existent track", async () => {
-      fetchManifest.mockResolvedValueOnce({ data: [] });
-
-      let hookResult;
-      const { unmount } = render(
-        <TestComponent
-          baniID={mockBaniID}
-          onResult={(result) => {
-            hookResult = result;
-          }}
-        />
-      );
-
-      await waitFor(() => {
-        expect(hookResult).toBeDefined();
-      });
-
-      expect(hookResult.isTrackDownloaded("non-existent-track")).toBe(false);
-
-      unmount();
-    });
-
-    it("should handle errors gracefully", async () => {
-      fetchManifest.mockResolvedValueOnce({ data: [] });
-      setMockState({
-        audioManifest: null, // Invalid state to trigger error
-      });
-
-      let hookResult;
-      const { unmount } = render(
-        <TestComponent
-          baniID={mockBaniID}
-          onResult={(result) => {
-            hookResult = result;
-          }}
-        />
-      );
-
-      await waitFor(() => {
-        expect(hookResult).toBeDefined();
-      });
-
-      expect(hookResult.isTrackDownloaded("track-1")).toBe(false);
-
-      unmount();
-    });
+    await waitFor(() => expect(fetchRawBaniAudio).toHaveBeenCalledWith(2));
+    unmount();
   });
 
-  describe("setCurrentPlaying", () => {
-    it("should allow setting current playing track", async () => {
-      const mockManifest = {
-        data: [
-          {
-            track_id: 1,
-            artist_id: 4,
-            track_url: "https://example.com/track1.m4a",
-            artist_name: "Jarnail Singh",
-            track_length_seconds: 300,
-            track_size_mb: 5.2,
-          },
-          {
-            track_id: 2,
-            artist_id: 8,
-            track_url: "https://example.com/track2.m4a",
-            artist_name: "Indermohan Kaur UK",
-            track_length_seconds: 250,
-            track_size_mb: 4.8,
-          },
-        ],
-      };
+  it("offline with nothing cached surfaces a network error and no tracks", async () => {
+    useNetwork.mockReturnValue({ isOnline: false });
 
-      fetchManifest.mockResolvedValueOnce(mockManifest);
+    const { getResult, unmount } = renderHook(2);
 
-      let hookResult;
-      const { unmount } = render(
-        <TestComponent
-          baniID={mockBaniID}
-          onResult={(result) => {
-            hookResult = result;
-          }}
-        />
-      );
-
-      await waitFor(() => {
-        expect(hookResult?.tracks).toHaveLength(2);
-      });
-
-      // Initially should be first track
-      expect(hookResult.currentPlaying).toBeNull();
-
-      // Set to second track
-      act(() => {
-        hookResult.setCurrentPlaying(hookResult.tracks[1]);
-      });
-
-      expect(hookResult.currentPlaying).toEqual(hookResult.tracks[1]);
-
-      unmount();
-    });
+    await waitFor(() => expect(getResult()?.isTracksLoading).toBe(false));
+    expect(getResult().tracks).toEqual([]);
+    expect(getResult().manifestError).toBe("Network error");
+    expect(fetchRawBaniAudio).not.toHaveBeenCalled();
+    unmount();
   });
 
-  describe("edge cases", () => {
-    it("should handle track_url without .m4a extension", async () => {
-      const mockManifest = {
-        data: [
-          {
-            track_id: 1,
-            artist_id: 4,
-            track_url: "https://example.com/track1",
-            artist_name: "Jarnail Singh",
-            track_length_seconds: 300,
-            track_size_mb: 5.2,
-          },
-        ],
-      };
-
-      fetchManifest.mockResolvedValueOnce(mockManifest);
-
-      let hookResult;
-      const { unmount } = render(
-        <TestComponent
-          baniID={mockBaniID}
-          onResult={(result) => {
-            hookResult = result;
-          }}
-        />
-      );
-
-      await waitFor(() => {
-        expect(hookResult?.tracks).toHaveLength(1);
-      });
-
-      // Should still create lyricsUrl by replacing .m4a, but since there's no .m4a, replace returns original
-      expect(hookResult.tracks[0].lyricsUrl).toBe("https://example.com/track1");
-
-      unmount();
+  it("offline WITH a cached entry plays from cache and never hits the network", async () => {
+    useNetwork.mockReturnValue({ isOnline: false });
+    setMockState({
+      audioCatalog: { 2: { groups: { long: {} }, baniName: "Japji", fetchedAt: Date.now() } },
     });
+    selectTracksForBani.mockReturnValue([intermediateTrack()]);
 
-    it("should handle defaultAudio with string artistID matching number", async () => {
-      const mockManifest = {
-        data: [
-          {
-            track_id: 1,
-            artist_id: 4,
-            track_url: "https://example.com/track1.m4a",
-            artist_name: "Jarnail Singh",
-            track_length_seconds: 300,
-            track_size_mb: 5.2,
-          },
-        ],
-      };
+    const { getResult, unmount } = renderHook(2);
 
-      fetchManifest.mockResolvedValueOnce(mockManifest);
-      setMockState({
-        defaultAudio: {
-          [mockBaniID]: {
-            artistID: "4", // String version
-          },
-        },
-      });
-
-      let hookResult;
-      const { unmount } = render(
-        <TestComponent
-          baniID={mockBaniID}
-          onResult={(result) => {
-            hookResult = result;
-          }}
-        />
-      );
-
-      await waitFor(() => {
-        expect(hookResult?.tracks).toHaveLength(1);
-      });
-
-      // Should match even though one is string and one is number
-      expect(hookResult.currentPlaying.artistID).toBe(4);
-
-      unmount();
-    });
-
-    it("should not fetch when baniID is not provided", async () => {
-      let hookResult;
-      const { unmount } = render(
-        <TestComponent
-          baniID={null}
-          onResult={(result) => {
-            hookResult = result;
-          }}
-        />
-      );
-
-      // Wait a bit to ensure useEffect has run
-      await waitFor(
-        () => {
-          expect(hookResult).toBeDefined();
-        },
-        { timeout: 100 }
-      );
-
-      // Should not call fetchManifest
-      expect(fetchManifest).not.toHaveBeenCalled();
-
-      unmount();
-    });
-
-    it("should refetch when baniID changes", async () => {
-      const mockManifest1 = {
-        data: [
-          {
-            track_id: 1,
-            artist_id: 4,
-            track_url: "https://example.com/track1.m4a",
-            artist_name: "Jarnail Singh",
-            track_length_seconds: 300,
-            track_size_mb: 5.2,
-          },
-        ],
-      };
-
-      const mockManifest2 = {
-        data: [
-          {
-            track_id: 2,
-            artist_id: 8,
-            track_url: "https://example.com/track2.m4a",
-            artist_name: "Indermohan Kaur UK",
-            track_length_seconds: 250,
-            track_size_mb: 4.8,
-          },
-        ],
-      };
-
-      fetchManifest.mockResolvedValueOnce(mockManifest1).mockResolvedValueOnce(mockManifest2);
-
-      const { rerender, unmount } = render(<TestComponent baniID="bani-1" />);
-
-      await waitFor(() => {
-        expect(fetchManifest).toHaveBeenCalledWith("bani-1");
-      });
-
-      rerender(<TestComponent baniID="bani-2" />);
-
-      await waitFor(() => {
-        expect(fetchManifest).toHaveBeenCalledWith("bani-2");
-      });
-
-      expect(fetchManifest).toHaveBeenCalledTimes(2);
-
-      unmount();
-    });
+    await waitFor(() => expect(getResult()?.isTracksLoading).toBe(false));
+    expect(getResult().tracks).toHaveLength(1);
+    expect(getResult().manifestError).toBeNull();
+    expect(fetchRawBaniAudio).not.toHaveBeenCalled();
+    unmount();
   });
 
-  // ───────────────────────────────────────────────────────────────────────────
-  // Canonical artist name canonicalization
-  // ───────────────────────────────────────────────────────────────────────────
+  it("online but the bani has no audio yields empty tracks with no error", async () => {
+    fetchRawBaniAudio.mockResolvedValueOnce({ baniId: 2, baniName: "", groups: {}, noAudio: true });
+    // The real selection has nothing to pick from an empty manifest.
+    selectTracksForBani.mockReturnValue([]);
+    const { getResult, unmount } = renderHook(2);
 
-  describe("canonical artist names — API variants are rewritten to approved display names", () => {
-    const CANONICAL_NAMES = ["Bhai Jarnail Singh", "Bibi Indermohan Kaur", "Giani Gurdev Singh"];
+    await waitFor(() => expect(getResult()?.isTracksLoading).toBe(false));
+    expect(getResult().tracks).toEqual([]);
+    expect(getResult().manifestError).toBeNull();
+    unmount();
+  });
 
-    it("canonicalizes artist_id=4 regardless of API artist_name", async () => {
-      fetchManifest.mockResolvedValueOnce({
-        data: [
+  it("online but the request failed, with nothing cached, offers a retry", async () => {
+    // Server error, timeout or captive portal: not the same as "no audio".
+    fetchRawBaniAudio.mockResolvedValueOnce(null);
+    const { getResult, unmount } = renderHook(2);
+
+    await waitFor(() => expect(getResult()?.isTracksLoading).toBe(false));
+    expect(getResult().tracks).toEqual([]);
+    expect(getResult().manifestError).toBeTruthy();
+    unmount();
+  });
+
+  it("flags a length-variant bani with an empty length group as unavailable-for-length", async () => {
+    setMockState({ baniLength: "EXTRA_LONG" });
+    fetchRawBaniAudio.mockResolvedValueOnce({ groups: { short: {} }, baniName: "Chaupai" });
+    selectTracksForBani.mockReturnValue([]); // XL group absent → empty
+
+    const { getResult, unmount } = renderHook(9); // 9 is a length-variant bani
+
+    await waitFor(() => expect(getResult()?.isTracksLoading).toBe(false));
+    expect(getResult().tracks).toEqual([]);
+    expect(getResult().isAudioUnavailableForCurrentLengthOnly).toBe(true);
+    unmount();
+  });
+
+  it("merges a valid downloaded track as locally downloaded", async () => {
+    const rnfs = require("react-native-fs");
+    rnfs.exists.mockResolvedValue(true);
+    rnfs.stat.mockResolvedValue({ size: 16 * 1024 * 1024 }); // >90% of 15.39MB → valid
+
+    setMockState({
+      audioManifest: {
+        2: [
           {
-            track_id: 1,
-            artist_id: 4,
-            track_url: "https://example.com/track1.m4a",
-            artist_name: "Jarnail Singh", // non-canonical API variant
-            track_length_seconds: 300,
-            track_size_mb: 5,
+            id: 1002,
+            track_id: 1002,
+            artistID: 4,
+            audioUrl: "BhaiJarnailSingh/JapjiSahib.m4a",
+            remoteUrl: "https://cdn.example.net/audios/BhaiJarnailSingh/JapjiSahib.m4a",
+            displayName: "Bhai Jarnail Singh",
+            trackLengthSec: 985.5,
+            trackSizeMB: 15.39,
+            lyricsUrl: "BhaiJarnailSingh/japji-sahib.json",
           },
         ],
-      });
-
-      let hookResult;
-      const { unmount } = render(
-        <TestComponent
-          baniID="2"
-          onResult={(r) => {
-            hookResult = r;
-          }}
-        />
-      );
-      await waitFor(() => expect(hookResult?.isTracksLoading).toBe(false));
-
-      expect(hookResult.tracks[0].displayName).toBe("Bhai Jarnail Singh");
-      unmount();
+      },
+      audioCatalog: { 2: { groups: { long: {} }, baniName: "Japji", fetchedAt: Date.now() } },
     });
+    selectTracksForBani.mockReturnValue([intermediateTrack()]);
 
-    it("canonicalizes artist_id=8 regardless of API artist_name", async () => {
-      fetchManifest.mockResolvedValueOnce({
-        data: [
-          {
-            track_id: 2,
-            artist_id: 8,
-            track_url: "https://example.com/track2.m4a",
-            artist_name: "Indermohan Kaur UK", // non-canonical API variant
-            track_length_seconds: 250,
-            track_size_mb: 4,
-          },
-        ],
-      });
+    const { getResult, unmount } = renderHook(2);
 
-      let hookResult;
-      const { unmount } = render(
-        <TestComponent
-          baniID="2"
-          onResult={(r) => {
-            hookResult = r;
-          }}
-        />
-      );
-      await waitFor(() => expect(hookResult?.isTracksLoading).toBe(false));
+    await waitFor(() => expect(getResult()?.isTracksLoading).toBe(false));
+    const track = getResult().tracks[0];
+    expect(track.isLocallyDownloaded).toBe(true);
+    expect(track.audioUrl).toBe(`${AUDIO_DIR}/BhaiJarnailSingh/JapjiSahib.m4a`);
+    expect(track.lyricsUrl).toBe(`${AUDIO_DIR}/BhaiJarnailSingh/japji-sahib.json`);
+    unmount();
+  });
 
-      expect(hookResult.tracks[0].displayName).toBe("Bibi Indermohan Kaur");
-      unmount();
+  it("refetchManifest forces a network fetch even when the cache is fresh", async () => {
+    setMockState({
+      audioCatalog: { 2: { groups: { long: {} }, baniName: "Japji", fetchedAt: Date.now() } },
     });
+    fetchRawBaniAudio.mockResolvedValue({ groups: { long: {} }, baniName: "Japji" });
+    selectTracksForBani.mockReturnValue([intermediateTrack()]);
 
-    it("canonicalizes artist_id=9 regardless of API artist_name", async () => {
-      fetchManifest.mockResolvedValueOnce({
-        data: [
-          {
-            track_id: 3,
-            artist_id: 9,
-            track_url: "https://example.com/track3.m4a",
-            artist_name: "Gurdev Singh", // non-canonical API variant
-            track_length_seconds: 400,
-            track_size_mb: 6,
-          },
-        ],
-      });
+    const { getResult, unmount } = renderHook(2);
+    await waitFor(() => expect(getResult()?.isTracksLoading).toBe(false));
+    expect(fetchRawBaniAudio).not.toHaveBeenCalled(); // fresh cache → no fetch yet
 
-      let hookResult;
-      const { unmount } = render(
-        <TestComponent
-          baniID="2"
-          onResult={(r) => {
-            hookResult = r;
-          }}
-        />
-      );
-      await waitFor(() => expect(hookResult?.isTracksLoading).toBe(false));
+    await getResult().refetchManifest();
+    await waitFor(() => expect(fetchRawBaniAudio).toHaveBeenCalledWith(2));
+    unmount();
+  });
+});
 
-      expect(hookResult.tracks[0].displayName).toBe("Giani Gurdev Singh");
-      unmount();
+// A refetch while a reciter is playing must not disturb that reciter: opening
+// the list refetches whenever the manifest is a few minutes old, so this is a
+// common case.
+describe("refetch while playing", () => {
+  const start = async () => {
+    setMockState({
+      defaultAudio: { 2: { id: 1002, artistID: 4 } },
+      audioManifest: {},
+      audioCatalog: {},
+      baniLength: "LONG",
+      downloadRegistry: {},
+      _persist: { rehydrated: true },
     });
+    fetchRawBaniAudio.mockResolvedValue({ groups: { long: {} }, baniName: "Japji Sahib" });
+    selectTracksForBani.mockReturnValue([intermediateTrack()]);
+    const hook = renderHook(2);
+    await waitFor(() => expect(hook.getResult()?.currentPlaying?.id).toBe(1002));
+    return hook;
+  };
 
-    it("all track displayNames from API are canonical", async () => {
-      fetchManifest.mockResolvedValueOnce({
-        data: [
-          {
-            track_id: 1,
-            artist_id: 4,
-            track_url: "https://example.com/t1.m4a",
-            artist_name: "Jarnail",
-            track_length_seconds: 300,
-            track_size_mb: 5,
-          },
-          {
-            track_id: 2,
-            artist_id: 8,
-            track_url: "https://example.com/t2.m4a",
-            artist_name: "Indermohan Kaur UK",
-            track_length_seconds: 250,
-            track_size_mb: 4,
-          },
-          {
-            track_id: 3,
-            artist_id: 9,
-            track_url: "https://example.com/t3.m4a",
-            artist_name: "Gurdev",
-            track_length_seconds: 400,
-            track_size_mb: 6,
-          },
-        ],
-      });
+  it("keeps the very same playing object when nothing changed", async () => {
+    const { getResult, unmount } = await start();
+    const before = getResult().currentPlaying;
+    const fetchesSoFar = fetchRawBaniAudio.mock.calls.length;
+    await getResult().refreshManifestSilently();
+    await waitFor(() => expect(fetchRawBaniAudio).toHaveBeenCalledTimes(fetchesSoFar + 1));
+    expect(getResult().currentPlaying).toBe(before);
+    unmount();
+  });
 
-      let hookResult;
-      const { unmount } = render(
-        <TestComponent
-          baniID="2"
-          onResult={(r) => {
-            hookResult = r;
-          }}
-        />
-      );
-      await waitFor(() => expect(hookResult?.isTracksLoading).toBe(false));
+  it("takes a corrected reciter name without touching the audio", async () => {
+    const { getResult, unmount } = await start();
+    const before = getResult().currentPlaying;
+    selectTracksForBani.mockReturnValue([
+      intermediateTrack({ artist_name: "Bhai Jarnail Singh Ji" }),
+    ]);
+    await getResult().refreshManifestSilently();
+    await waitFor(() =>
+      expect(getResult().currentPlaying.displayName).toBe("Bhai Jarnail Singh Ji")
+    );
+    expect(getResult().currentPlaying.audioUrl).toBe(before.audioUrl);
+    expect(getResult().currentPlaying.id).toBe(before.id);
+    unmount();
+  });
 
-      expect(hookResult.tracks).toHaveLength(3);
-      hookResult.tracks.forEach((track) => {
-        expect(CANONICAL_NAMES).toContain(track.displayName);
-      });
-      unmount();
+  it("still adopts a different file for the artist (the other length variant)", async () => {
+    const { getResult, unmount } = await start();
+    const other = "https://cdn.example.net/audios/BhaiJarnailSingh/JapjiSahib-trimmed.m4a";
+    selectTracksForBani.mockReturnValue([intermediateTrack({ track_url: other })]);
+    await getResult().refreshManifestSilently();
+    await waitFor(() => expect(getResult().currentPlaying.audioUrl).toBe(other));
+    unmount();
+  });
+
+  it("plays a download the registry knows about after a restart, with its lyrics", async () => {
+    // The session list is empty after a restart; the persisted registry is not.
+    setMockState({
+      defaultAudio: {},
+      audioManifest: {},
+      audioCatalog: { 2: { groups: { long: {} }, fetchedAt: Date.now() } },
+      baniLength: "LONG",
+      downloadRegistry: {
+        "BhaiJarnailSingh/JapjiSahib.m4a": { relativePath: "BhaiJarnailSingh/JapjiSahib.m4a" },
+      },
+      _persist: { rehydrated: true },
     });
+    selectTracksForBani.mockReturnValue([intermediateTrack({ track_size_mb: 0 })]);
 
-    it("no two tracks share a non-canonical duplicate name variant", async () => {
-      fetchManifest.mockResolvedValueOnce({
-        data: [
-          {
-            track_id: 1,
-            artist_id: 4,
-            track_url: "https://example.com/t1.m4a",
-            artist_name: "Bhai Jarnail Singh",
-            track_length_seconds: 300,
-            track_size_mb: 5,
-          },
-          {
-            track_id: 2,
-            artist_id: 8,
-            track_url: "https://example.com/t2.m4a",
-            artist_name: "Bibi Indermohan Kaur",
-            track_length_seconds: 250,
-            track_size_mb: 4,
-          },
-          {
-            track_id: 3,
-            artist_id: 9,
-            track_url: "https://example.com/t3.m4a",
-            artist_name: "Giani Gurdev Singh",
-            track_length_seconds: 400,
-            track_size_mb: 6,
-          },
-        ],
-      });
+    const { getResult, unmount } = renderHook(2);
+    await waitFor(() => expect(getResult()?.isTracksLoading).toBe(false));
 
-      let hookResult;
-      const { unmount } = render(
-        <TestComponent
-          baniID="2"
-          onResult={(r) => {
-            hookResult = r;
-          }}
-        />
-      );
-      await waitFor(() => expect(hookResult?.isTracksLoading).toBe(false));
-
-      const names = hookResult.tracks.map((t) => t.displayName);
-      const uniqueNames = new Set(names);
-      // All 3 tracks have distinct canonical names — no duplicates
-      expect(uniqueNames.size).toBe(3);
-      unmount();
+    expect(getResult().tracks[0]).toMatchObject({
+      audioUrl: `${AUDIO_DIR}/BhaiJarnailSingh/JapjiSahib.m4a`,
+      lyricsUrl: `${AUDIO_DIR}/BhaiJarnailSingh/JapjiSahib.json`,
+      isLocallyDownloaded: true,
     });
+    // Adopted with no bani (a previous-release download): the catalog match
+    // records it, so it can be offered offline later.
+    expect(getMockDispatch()).toHaveBeenCalledWith({
+      type: "UPDATE_DOWNLOAD_ENTRIES",
+      payload: { "BhaiJarnailSingh/JapjiSahib.m4a": { baniId: 2 } },
+    });
+    unmount();
+  });
+
+  it("does not refetch when the list opens with a manifest fetched minutes ago", async () => {
+    setMockState({
+      defaultAudio: {},
+      audioManifest: {},
+      audioCatalog: { 2: { groups: { long: {} }, fetchedAt: Date.now() } },
+      baniLength: "LONG",
+      downloadRegistry: {},
+      _persist: { rehydrated: true },
+    });
+    selectTracksForBani.mockReturnValue([intermediateTrack()]);
+    const { getResult, unmount } = renderHook(2);
+    await waitFor(() => expect(getResult()?.isTracksLoading).toBe(false));
+
+    fetchRawBaniAudio.mockClear();
+    await getResult().refreshManifestSilently();
+    expect(fetchRawBaniAudio).not.toHaveBeenCalled();
+    unmount();
+  });
+
+  it("never lets an older fetch overwrite the tracks of a newer length", async () => {
+    setMockState({
+      defaultAudio: {},
+      audioManifest: {},
+      audioCatalog: {},
+      baniLength: "LONG",
+      downloadRegistry: {},
+      _persist: { rehydrated: true },
+    });
+    const pending = [];
+    fetchRawBaniAudio.mockImplementation(
+      () =>
+        new Promise((resolve) => {
+          pending.push(resolve);
+        })
+    );
+    selectTracksForBani.mockImplementation((_groups, _id, length) => [
+      intermediateTrack({ track_id: length === "SHORT" ? 2 : 1, artist_name: length }),
+    ]);
+
+    let latest;
+    const capture = (result) => {
+      latest = result;
+    };
+    const { rerender, unmount } = render(<TestComponent baniID={2} onResult={capture} />);
+    await waitFor(() => expect(pending).toHaveLength(1));
+
+    setMockState({
+      defaultAudio: {},
+      audioManifest: {},
+      audioCatalog: {},
+      baniLength: "SHORT",
+      downloadRegistry: {},
+      _persist: { rehydrated: true },
+    });
+    rerender(<TestComponent baniID={2} onResult={capture} />);
+    await waitFor(() => expect(pending).toHaveLength(2));
+
+    // The newer (SHORT) fetch finishes first, then the older (LONG) one.
+    pending[1]({ groups: { short: {} } });
+    await waitFor(() => expect(latest?.tracks?.[0]?.displayName).toBe("SHORT"));
+    pending[0]({ groups: { long: {} } });
+    await new Promise((r) => {
+      setTimeout(r, 20);
+    });
+    expect(latest.tracks[0].displayName).toBe("SHORT");
+
+    fetchRawBaniAudio.mockReset();
+    selectTracksForBani.mockReset();
+    unmount();
   });
 });

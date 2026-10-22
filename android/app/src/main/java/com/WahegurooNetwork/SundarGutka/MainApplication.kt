@@ -11,6 +11,7 @@ import com.facebook.react.defaults.DefaultReactHost.getDefaultReactHost
 import com.facebook.react.defaults.DefaultReactNativeHost
 import com.facebook.react.soloader.OpenSourceMergedSoMapping
 import com.facebook.soloader.SoLoader
+import com.google.firebase.crashlytics.FirebaseCrashlytics
  
 class MainApplication : Application(), ReactApplication {
  
@@ -36,6 +37,13 @@ class MainApplication : Application(), ReactApplication {
  
   override fun onCreate() {
     super.onCreate()
+    // The background downloader used to crash when its download service bound
+    // with a cross-process binder. It now reports that instead, and the report
+    // has to reach Crashlytics to be of any use: it carries the process and
+    // device the bind happened on, which is what the cause is still missing.
+    com.eko.Downloader.bindFailureReporter = { failure ->
+      FirebaseCrashlytics.getInstance().recordException(failure)
+    }
     SoLoader.init(this, OpenSourceMergedSoMapping)
     if (BuildConfig.IS_NEW_ARCHITECTURE_ENABLED) {
       // If you opted-in for the New Architecture, we load the native entry point for this app.

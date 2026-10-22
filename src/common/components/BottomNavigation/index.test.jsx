@@ -173,30 +173,6 @@ describe("BottomNavigation", () => {
     });
   });
 
-  test("pressing Music offline shuts the player down and says why", async () => {
-    // The player in this build streams every track, so offline there is
-    // nothing to play.
-    const common = jest.requireMock("@common");
-    const online = common.useNetwork;
-    common.useNetwork = () => ({ ...online(), isOffline: true, isOnline: false });
-    try {
-      setMockState({ isAudio: false });
-      const { getByLabelText } = render(<BottomNavigation activeKey="Read" context="reader" />);
-
-      fireEvent.press(getByLabelText("bottomnav-Music"));
-
-      await waitFor(() => {
-        expect(common.showErrorToast).toHaveBeenCalledTimes(1);
-      });
-      expect(mockStopTrack).toHaveBeenCalled();
-      expect(mockResetPlayer).toHaveBeenCalled();
-      expect(mockDispatch).toHaveBeenCalledWith({ type: "TOGGLE_AUDIO", payload: false });
-      expect(mockDispatch).not.toHaveBeenCalledWith({ type: "TOGGLE_AUDIO", payload: true });
-    } finally {
-      common.useNetwork = online;
-    }
-  });
-
   test("pressing Music when ALREADY on Reader dispatches actions", async () => {
     setMockState({ isAudio: false });
     mockNavigation = createNavigation({ currentRoute: "Reader" });

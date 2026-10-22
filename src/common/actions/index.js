@@ -265,3 +265,120 @@ export const applyTheme = (value) => (dispatch, getState) => {
   // every later selection of this theme.
   dispatch({ type: actionTypes.MARK_READER_THEME_SEEDED, value });
 };
+
+// ── Audio catalog, the floating player and downloads ──────────────────────
+
+export const bumpReaderTap = () => {
+  return { type: actionTypes.BUMP_READER_TAP };
+};
+
+export const bumpReaderScrollDown = () => {
+  return { type: actionTypes.BUMP_READER_SCROLL_DOWN };
+};
+
+// Audio catalog cache actions
+// entry: { groups, baniName, fetchedAt } — the raw length-grouped API response
+// for one bani plus the time it was fetched. Stored verbatim so length-group
+// selection can happen at read time (one cache entry serves every bani length).
+// The whole sweep's worth of entries in ONE action. Each dispatch has the
+// entire persisted store re-serialized behind it, so a per-bani dispatch loop
+// costs one full serialization per bani — this keeps it at one, however many
+// banis the catalog grows to.
+export const setAudioCatalogEntries = (entries) => ({
+  type: actionTypes.SET_AUDIO_CATALOG_ENTRIES,
+  payload: { entries },
+});
+
+export const setAudioCatalogEntry = (baniId, entry) => ({
+  type: actionTypes.SET_AUDIO_CATALOG_ENTRY,
+  payload: { baniId, entry },
+});
+
+// meta: { lastFullSyncAt, appVersion } — bookkeeping for the eager prefetch so
+// it only runs on a fresh install, app update, or once past the TTL.
+export const setAudioCatalogMeta = (meta) => ({
+  type: actionTypes.SET_AUDIO_CATALOG_META,
+  payload: meta,
+});
+
+export const clearAudioCatalog = () => ({
+  type: actionTypes.CLEAR_AUDIO_CATALOG,
+});
+
+export const setPlayerDragging = (value) => {
+  return { type: actionTypes.SET_PLAYER_DRAGGING, value };
+};
+
+// Download queue action creators
+export const enqueueDownload = (payload) => ({
+  type: actionTypes.ENQUEUE_DOWNLOAD,
+  payload,
+});
+
+export const updateDownloadStatus = (trackKey, status, extra = {}) => ({
+  type: actionTypes.UPDATE_DOWNLOAD_STATUS,
+  payload: { trackKey, status, ...extra },
+});
+
+export const updateDownloadProgress = (trackKey, progress) => ({
+  type: actionTypes.UPDATE_DOWNLOAD_PROGRESS,
+  payload: { trackKey, progress },
+});
+
+export const removeDownloadQueueEntry = (trackKey) => ({
+  type: actionTypes.REMOVE_DOWNLOAD_QUEUE_ENTRY,
+  payload: { trackKey },
+});
+
+export const retryDownload = (trackKey) => ({
+  type: actionTypes.RETRY_DOWNLOAD,
+  payload: { trackKey },
+});
+
+export const requeuePausedDownloads = (statuses) => ({
+  type: actionTypes.REQUEUE_PAUSED_DOWNLOADS,
+  payload: { statuses },
+});
+
+// Download registry action creators
+export const addDownloadEntry = (entry) => ({
+  type: actionTypes.ADD_DOWNLOAD_ENTRY,
+  payload: entry,
+});
+
+export const removeDownloadEntries = (keys) => ({
+  type: actionTypes.REMOVE_DOWNLOAD_ENTRIES,
+  payload: keys,
+});
+
+// patches: { [relativePath]: { ...fields to merge } } — one action for however
+// many entries the reconcile pass corrects, so the persisted store is
+// serialized once rather than once per track.
+export const updateDownloadEntries = (patches) => ({
+  type: actionTypes.UPDATE_DOWNLOAD_ENTRIES,
+  payload: patches,
+});
+
+export const setDownloadRegistry = (registry) => ({
+  type: actionTypes.SET_DOWNLOAD_REGISTRY,
+  payload: registry,
+});
+
+export const clearDownloadRegistry = () => ({
+  type: actionTypes.CLEAR_DOWNLOAD_REGISTRY,
+});
+
+// Download settings action creators
+export const toggleDownloadWifiOnly = (value) => ({
+  type: actionTypes.TOGGLE_DOWNLOAD_WIFI_ONLY,
+  value,
+});
+
+export const markAudioStorageMigrated = () => ({
+  type: actionTypes.MARK_AUDIO_STORAGE_MIGRATED,
+});
+
+export const toggleAutoDownload = (value) => ({
+  type: actionTypes.TOGGLE_AUTO_DOWNLOAD,
+  value,
+});

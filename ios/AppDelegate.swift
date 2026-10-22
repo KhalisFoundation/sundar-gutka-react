@@ -3,6 +3,9 @@ import React
 import React_RCTAppDelegate
 import ReactAppDependencyProvider
 import Firebase
+// Background download support (@kesha-antonov/react-native-background-downloader).
+// The pod's Swift module is named after the package, with the npm scope dropped.
+import react_native_background_downloader
  
 @main
 class AppDelegate: RCTAppDelegate {
@@ -19,6 +22,16 @@ class AppDelegate: RCTAppDelegate {
     self.initialProps = [:]
  
     return super.application(application, didFinishLaunchingWithOptions: launchOptions)
+  }
+
+  // Reconnect the background URLSession so downloads that completed while the
+  // app was suspended or terminated can finish flushing to disk.
+  override func application(
+    _ application: UIApplication,
+    handleEventsForBackgroundURLSession identifier: String,
+    completionHandler: @escaping () -> Void
+  ) {
+    RNBackgroundDownloader.setCompletionHandlerWithIdentifier(identifier, completionHandler: completionHandler)
   }
  
   override func sourceURL(for bridge: RCTBridge) -> URL? {

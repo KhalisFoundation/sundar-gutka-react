@@ -299,7 +299,13 @@ describe("trackTrackDownload", () => {
       bani_id: "2",
       artist: "Bhai Jarnail Singh",
       bani_title: "Japji Sahib",
+      network_type: "unknown",
     });
+  });
+
+  it("records the network the download used (wifi / mobile_data)", async () => {
+    await trackTrackDownload("2", "Bhai Jarnail Singh", "Japji Sahib", "wifi");
+    expect(lastParams().network_type).toBe("wifi");
   });
 
   it('sends artist="none" when undefined', async () => {

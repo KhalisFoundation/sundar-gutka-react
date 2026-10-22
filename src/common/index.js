@@ -22,6 +22,7 @@ import {
   allowTracking,
   trackReaderEvent,
   trackNavBar,
+  trackPlayerForm,
   trackSettingEvent,
   trackReminderEvent,
   trackAudioEvent,
@@ -59,6 +60,7 @@ import {
   cancelAllReminders,
   checkPermissions,
   resetBadgeCount,
+  requestNotificationPermission,
 } from "./notifications";
 import {
   ensureDbExists,
@@ -72,7 +74,13 @@ import {
 } from "./rnfs";
 import { navigate, navigateTo, navigationRef } from "./rootNavigation";
 import createStore from "./store";
-import { showToast, showErrorToast, showSuccessToast, showInfoToast } from "./toast";
+import {
+  showToast,
+  showErrorToast,
+  showSuccessToast,
+  showInfoToast,
+  setToastBottomReservation,
+} from "./toast";
 import convertToUnicode from "./utils";
 
 export {
@@ -91,6 +99,7 @@ export {
   allowTracking,
   trackReaderEvent,
   trackNavBar,
+  trackPlayerForm,
   trackAudioEvent,
   trackReminderEvent,
   trackSettingEvent,
@@ -104,6 +113,7 @@ export {
   CustomText,
   baseFontSize,
   resetBadgeCount,
+  requestNotificationPermission,
   createStore,
   orderedBani,
   setCustomKey,
@@ -126,6 +136,7 @@ export {
   showErrorToast,
   showSuccessToast,
   showInfoToast,
+  setToastBottomReservation,
   convertToUnicode,
   BottomNavigation,
   useTheme,

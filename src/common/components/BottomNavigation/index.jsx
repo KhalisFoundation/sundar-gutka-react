@@ -7,16 +7,8 @@ import components, { bottomNavInset } from "@theme/components";
 import { useReaderScopedTheme, useReaderScopedStyles } from "@theme/reader";
 import PropTypes from "prop-types";
 import { ListIcon, SettingsIcon, MusicIcon, ReadIcon } from "@common/icons";
-import { pauseTrack, stopTrack, resetPlayer } from "@common/TrackPlayerUtils";
-import {
-  CustomText,
-  actions,
-  constant,
-  STRINGS,
-  SafeArea,
-  showErrorToast,
-  useNetwork,
-} from "@common";
+import { pauseTrack } from "@common/TrackPlayerUtils";
+import { CustomText, actions, constant, STRINGS, SafeArea } from "@common";
 import createStyles from "./style";
 
 const BottomNavigation = ({
@@ -51,7 +43,6 @@ const BottomNavigation = ({
   const isAutoScroll = useSelector((state) => state.isAutoScroll);
   const isAudioFeatureEnabled = useSelector((state) => state.isAudioFeatureEnabled);
   const isAudioFeatureOn = isAudioFeatureEnabled ?? true;
-  const { isOffline } = useNetwork();
 
   const translateY = useRef(new Animated.Value(0)).current;
 
@@ -81,8 +72,7 @@ const BottomNavigation = ({
   // Connectivity is handled globally and event-driven now: NetworkProvider is
   // the single source of truth, and useOfflinePlaybackGuard (mounted once in
   // GlobalServices) pauses streaming playback when real internet is lost. The
-  // old per-instance polling watchdog that lived here has been removed. The
-  // Music button still checks before starting, below.
+  // old per-instance polling watchdog that lived here has been removed.
 
   // Reader-specific navigation items (strictly matches all logic & dispatches)
   const readerNavigationItems = [
@@ -125,21 +115,6 @@ const BottomNavigation = ({
         if (isAutoScroll) {
           dispatch(actions.toggleAutoScroll(false));
           dispatch(actions.toggleAudioFeatureEnabled(true));
-        }
-
-        // The audio player here streams every track, so there is nothing to
-        // play offline. Hard shutdown to clear the Android notification player,
-        // and say why. (The downloads PR brings offline playback and drops this.)
-        // KNOWN: on iOS `isOffline` means no connection at all: Wi-Fi with no
-        // internet (a captive portal) passes, and playback fails in the player
-        // instead. Deliberate, since the internet probe that caught it reads as
-        // offline wherever its host is blocked (see networkManager.js).
-        if (isOffline) {
-          await stopTrack();
-          await resetPlayer();
-          dispatch(actions.toggleAudio(false));
-          showErrorToast(STRINGS.NETWORK_ERROR);
-          return;
         }
 
         const currentNavRoute = getCurrentRouteName();

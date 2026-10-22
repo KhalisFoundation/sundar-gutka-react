@@ -1,14 +1,15 @@
 import React from "react";
-import { View, ActivityIndicator } from "react-native";
-import { useTheme, useThemedStyles } from "@common";
+import { View } from "react-native";
+import { Spinner } from "@common/components/ui";
+import { useAudioTheme, useAudioThemedStyles } from "../../useAudioTheme";
 import createStyles from "./styles";
 
 const Loading = () => {
-  const { theme } = useTheme();
-  const styles = useThemedStyles(createStyles);
+  const { theme } = useAudioTheme();
+  const styles = useAudioThemedStyles(createStyles);
   return (
     <View style={styles.loadingContainer}>
-      <ActivityIndicator size="large" color={theme.colors.primary} />
+      <Spinner size="large" color={theme.c.textBrand} />
     </View>
   );
 };

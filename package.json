@@ -13,6 +13,7 @@
   "dependencies": {
     "@eslint/eslintrc": "^3.3.0",
     "@eslint/js": "^9.22.0",
+    "@kesha-antonov/react-native-background-downloader": "^4.5.4",
     "@miblanchard/react-native-slider": "^2.6.0",
     "@notifee/react-native": "^9.1.8",
     "@react-native-async-storage/async-storage": "^2.1.2",

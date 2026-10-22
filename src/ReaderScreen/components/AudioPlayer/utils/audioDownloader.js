@@ -10,20 +10,26 @@ import {
   writeFile,
 } from "react-native-fs";
 import { logError, logMessage } from "@common";
-import BUNDLED_LYRICS from "../assets/lyrics/bundledLyrics";
 import { checkIsJsonRemoteExists } from "./checkHelper";
 
-/**
- * Audio Downloader Utility
- *
- * Handles downloading audio tracks with progress tracking and file management
- */
-
-// Audio files directory
+// Downloads live in app-internal storage (DocumentDirectoryPath) — the single
+// canonical location. It's always available at app-init, so the resolved path
+// is deterministic across launches on every OEM.
+//
+// External app-specific storage (ExternalDirectoryPath) was tried but reverted:
+// getExternalFilesDir() isn't reliably mounted at JS-init on some OEMs
+// (Vivo/Realme/Oppo), so `ExternalDirectoryPath ?? DocumentDirectoryPath`
+// resolved differently from launch to launch, flipping the base dir and
+// silently orphaning every download (empty "Manage downloads", re-download on
+// replay). It also gets wiped by "Clear Storage" anyway, so it bought no
+// durability — internal is strictly better here.
 const AUDIO_DIRECTORY = `${DocumentDirectoryPath}/audio`;
+// Prefetch is an ephemeral LRU cache — separate dir so "Clear Data" wipes it.
 const PREFETCH_AUDIO_DIRECTORY = `${DocumentDirectoryPath}/audio_prefetch`;
+export const AUDIO_DIRECTORY_PATH = AUDIO_DIRECTORY;
 const PREFETCH_INDEX_PATH = `${PREFETCH_AUDIO_DIRECTORY}/.prefetch-index.json`;
-// Dedicated cache for the tiny (~200KB) 15-second preview clips. Kept separate
+
+// Dedicated cache for the tiny (~200KB) 15-second preview clips, kept separate
 // from the full-track caches so previews are never evicted by the full-track
 // LRU and vice-versa.
 //
@@ -37,6 +43,10 @@ const PREVIEW_AUDIO_DIRECTORY = `${DocumentDirectoryPath}/audio_preview_v2`;
 // Best-effort one-time cleanup of the abandoned v1 directory (guarded so the
 // unlink is attempted at most once per app session).
 let legacyPreviewCleanupDone = false;
+// In-flight preview downloads, keyed by preview URL, so concurrent callers
+// (reader-open prefetch + an on-tap request for the same clip) share one task
+// instead of racing to write the same file.
+const previewDownloadsInFlight = new Map();
 
 /**
  * Generate safe filename from URL and track info
@@ -54,7 +64,7 @@ const generateFilename = (url) => {
   }
 };
 
-const ensureArtistDirectory = async (artistName, baseDirectory = AUDIO_DIRECTORY) => {
+export const ensureArtistDirectory = async (artistName, baseDirectory = AUDIO_DIRECTORY) => {
   const audioDirectoryExists = await exists(baseDirectory);
 
   if (!audioDirectoryExists) {
@@ -128,45 +138,23 @@ export const getFullPrefetchTrackPath = (url) => {
   return `${PREFETCH_AUDIO_DIRECTORY}/${artistName}/${fileName}`;
 };
 
-/**
- * Preview clips live next to the full track on the CDN, with a `-preview`
- * suffix inserted before the extension (kept AFTER any length variant):
- *   .../AnandSahib.m4a          -> .../AnandSahib-preview.m4a
- *   .../RehrasSahib-trimmed.m4a -> .../RehrasSahib-trimmed-preview.m4a
- * Not every track has a preview clip yet, so the returned URL may 404 — callers
- * must treat a failed download as "no preview" and fall back to the full track.
- */
-export const getPreviewRemoteUrl = (url) => {
-  if (!url || typeof url !== "string") return null;
-  if (!/\.m4a(\?|$)/i.test(url)) return null;
-  // The Anand Sahib "6 Pauri" variant has no dedicated preview clip, so reuse
-  // the full Anand Sahib preview:
-  //   AnandSahib-6-pauri.m4a -> AnandSahib-preview.m4a
-  const normalized = url.replace(/-6-pauri\.m4a(\?|$)/i, ".m4a$1");
-  return normalized.replace(/\.m4a(\?|$)/i, "-preview.m4a$1");
+export const getLocalJsonPath = (url) => {
+  const { artistName, fileName } = generateFilename(url);
+  const jsonFileName = fileName.replace(/\.[^/.]+$/, ".json");
+  return `${artistName}/${jsonFileName}`;
 };
 
-export const getFullPreviewTrackPath = (previewUrl) => {
-  const { artistName, fileName } = generateFilename(previewUrl);
-  return `${PREVIEW_AUDIO_DIRECTORY}/${artistName}/${fileName}`;
+export const getFullLocalJsonPath = (url) => {
+  const { artistName, fileName } = generateFilename(url);
+  const jsonFileName = fileName.replace(/\.[^/.]+$/, ".json");
+  return `${AUDIO_DIRECTORY}/${artistName}/${jsonFileName}`;
 };
-
-// In-flight preview downloads, keyed by preview URL. Ensures the background
-// reader-open prefetch and an on-tap request for the SAME clip share a single
-// download instead of racing two writes to the same file (which is slow and can
-// corrupt the file). A tap landing mid-prefetch simply awaits the ongoing one.
-const previewDownloadsInFlight = new Map();
 
 export const downloadAudioOnly = async (url, trackTitle, options = {}) => {
   const { skipDirectorySetup = false, targetDirectory = "main", expectedSizeMB = 0 } = options;
-  let baseDirectory;
-  if (targetDirectory === "prefetch") {
-    baseDirectory = PREFETCH_AUDIO_DIRECTORY;
-  } else if (targetDirectory === "preview") {
-    baseDirectory = PREVIEW_AUDIO_DIRECTORY;
-  } else {
-    baseDirectory = AUDIO_DIRECTORY;
-  }
+  let baseDirectory = AUDIO_DIRECTORY;
+  if (targetDirectory === "prefetch") baseDirectory = PREFETCH_AUDIO_DIRECTORY;
+  else if (targetDirectory === "preview") baseDirectory = PREVIEW_AUDIO_DIRECTORY;
   const { artistName, fileName, fullAudioPath, audioRelativePath } = buildTrackPaths(
     url,
     baseDirectory
@@ -242,26 +230,39 @@ export const downloadAudioOnly = async (url, trackTitle, options = {}) => {
   return { relativePath: audioRelativePath, alreadyExists: false, downloaded: true, jobId };
 };
 
-/**
- * Ensure the 15-second preview clip for a track is cached on disk. Returns the
- * local file path if available (already cached or freshly downloaded), or null
- * when the track has no preview clip on the CDN (404) or the download fails —
- * the caller then falls back to streaming the full track and cutting at 15s.
- */
+// ── 15-second audio previews ────────────────────────────────────────────────
+// Preview clips live at the canonical track URL with a `-preview` suffix, e.g.
+//   .../BhaiJarnailSingh/RehrasSahib.m4a         -> RehrasSahib-preview.m4a
+//   .../BhaiJarnailSingh/RehrasSahib-trimmed.m4a -> RehrasSahib-trimmed-preview.m4a
+// AnandSahib-6-pauri reuses the full Anand preview (there is no 6-pauri clip).
+// A preview URL may 404 (not yet generated on the CDN) — callers fall back to
+// streaming the full track cut at 15s.
+export const getPreviewRemoteUrl = (url) => {
+  if (!url || typeof url !== "string") return null;
+  if (!/\.m4a(\?|$)/i.test(url)) return null;
+  const normalized = url.replace(/-6-pauri\.m4a(\?|$)/i, ".m4a$1");
+  return normalized.replace(/\.m4a(\?|$)/i, "-preview.m4a$1");
+};
+
+export const getFullPreviewTrackPath = (previewUrl) => {
+  const { artistName, fileName } = generateFilename(previewUrl);
+  return `${PREVIEW_AUDIO_DIRECTORY}/${artistName}/${fileName}`;
+};
+
+// Ensure the preview clip for a track is on disk, returning its local path (or
+// null if there is no preview / the download failed). Concurrent callers for
+// the same clip share a single in-flight task.
 export const ensurePreviewDownloaded = async (canonicalUrl, trackTitle = "Preview") => {
   const previewUrl = getPreviewRemoteUrl(canonicalUrl);
-  // Only remote clips can be fetched; local-only tracks already play instantly.
   if (!previewUrl || !/^https?:\/\//i.test(previewUrl)) {
     return null;
   }
-
-  // Reuse an in-flight download for the same clip. This check and the map set
-  // below MUST run with no await between them — otherwise two concurrent callers
-  // (the reader-open prefetch and an on-tap request for the same clip) could both
-  // pass this check and both kick off a download to the SAME file, whose
-  // interleaved writes truncate it on disk. A truncated clip then wedges
-  // ExoPlayer in Buffering forever on the next play. The exists() fast-path
-  // therefore lives INSIDE the task, after the map is claimed.
+  // This check and the map set below MUST run with no await between them —
+  // otherwise two concurrent callers could both pass the check and both kick
+  // off a download to the SAME file, whose interleaved writes truncate it on
+  // disk. A truncated clip then wedges ExoPlayer in Buffering forever on the
+  // next play. The exists() fast-path therefore lives INSIDE the task, after
+  // the map is claimed.
   if (previewDownloadsInFlight.has(previewUrl)) {
     return previewDownloadsInFlight.get(previewUrl);
   }
@@ -275,8 +276,6 @@ export const ensurePreviewDownloaded = async (canonicalUrl, trackTitle = "Previe
       await downloadAudioOnly(previewUrl, trackTitle, { targetDirectory: "preview" });
       return (await exists(fullPath)) ? fullPath : null;
     } catch (_) {
-      // 404 (no preview) or a network failure. Remove any partial file so a
-      // later attempt re-downloads cleanly instead of playing a truncated clip.
       await unlink(fullPath).catch(() => {});
       return null;
     } finally {
@@ -288,30 +287,19 @@ export const ensurePreviewDownloaded = async (canonicalUrl, trackTitle = "Previe
   return task;
 };
 
-/**
- * Delete a cached preview clip — used to self-heal a clip that failed to play
- * (e.g. a truncated file left by an older build) so the next tap re-downloads it.
- */
+// Self-heal: drop a preview clip so the next ensurePreviewDownloaded re-fetches
+// it (used when a clip plays back as truncated/corrupt).
 export const deletePreviewClip = async (canonicalUrl) => {
   const previewUrl = getPreviewRemoteUrl(canonicalUrl);
-  if (!previewUrl) {
-    return;
-  }
+  if (!previewUrl) return;
   await unlink(getFullPreviewTrackPath(previewUrl)).catch(() => {});
 };
 
-/**
- * Warm the preview cache for an entire bani so tapping any preview in the
- * AudioTrackDialog plays instantly from disk. Preview clips are ~200KB each, so
- * fetching every artist's clip on reader-open costs well under 1MB total. Runs
- * with limited concurrency, dedupes by URL, and never throws.
- */
+// Warm every artist's preview clip for a bani in parallel (deduped) as soon as
+// the track set is known, so tapping an artist plays instantly.
 export const prefetchPreviews = async (tracks) => {
-  if (!Array.isArray(tracks) || tracks.length === 0) {
-    return;
-  }
+  if (!Array.isArray(tracks) || tracks.length === 0) return;
 
-  // Reclaim the abandoned v1 preview directory once per session (best-effort).
   if (!legacyPreviewCleanupDone) {
     legacyPreviewCleanupDone = true;
     unlink(LEGACY_PREVIEW_AUDIO_DIRECTORY).catch(() => {});
@@ -319,39 +307,19 @@ export const prefetchPreviews = async (tracks) => {
 
   const seen = new Set();
   const queue = [];
-  tracks.forEach((track) => {
+  for (const track of tracks) {
     const canonical = track?.remoteUrl || track?.audioUrl;
     const previewUrl = getPreviewRemoteUrl(canonical);
-    if (!previewUrl || !/^https?:\/\//i.test(previewUrl) || seen.has(previewUrl)) {
-      return;
-    }
+    // eslint-disable-next-line no-continue -- skip invalid or duplicate preview URLs
+    if (!previewUrl || !/^https?:\/\//i.test(previewUrl) || seen.has(previewUrl)) continue;
     seen.add(previewUrl);
     queue.push({ canonical, title: track?.displayName || "Preview" });
-  });
-
-  if (queue.length === 0) {
-    return;
   }
+  if (queue.length === 0) return;
 
-  // Clips are tiny (~200KB) and a bani has at most ~3 of them, so fetch the
-  // whole set in parallel — the sooner every clip is on disk, the more likely
-  // it's ready before the user can tap. ensurePreviewDownloaded dedupes, so an
-  // on-tap request shares whichever download is already running here.
   await Promise.all(
     queue.map((item) => ensurePreviewDownloaded(item.canonical, item.title).catch(() => {}))
   );
-};
-
-export const getLocalJsonPath = (url) => {
-  const { artistName, fileName } = generateFilename(url);
-  const jsonFileName = fileName.replace(/\.[^/.]+$/, ".json");
-  return `${artistName}/${jsonFileName}`;
-};
-
-export const getFullLocalJsonPath = (url) => {
-  const { artistName, fileName } = generateFilename(url);
-  const jsonFileName = fileName.replace(/\.[^/.]+$/, ".json");
-  return `${AUDIO_DIRECTORY}/${artistName}/${jsonFileName}`;
 };
 
 const readPrefetchIndex = async () => {
@@ -399,6 +367,11 @@ export const touchPrefetchTrack = async (url) => {
   }
 };
 
+// Keeps the newest `maxTracks` streamed-prefetch copies (each a full 3–20 MB
+// track) and deletes the rest. These are invisible in Manage Downloads, so
+// without a bound the directory grew for as long as the user streamed. (A
+// track the user wants kept offline is downloaded, not prefetched.) Also prunes
+// index entries whose files are gone and removes empty artist directories.
 export const prunePrefetchCache = async (maxTracks = 5) => {
   try {
     const directoryExists = await exists(PREFETCH_AUDIO_DIRECTORY);
@@ -426,27 +399,28 @@ export const prunePrefetchCache = async (maxTracks = 5) => {
     const keepSet = new Set(verifiedEntries.slice(0, maxTracks).map(([fullPath]) => fullPath));
 
     const nextIndex = {};
-    // eslint-disable-next-line no-restricted-syntax
     for (const [fullPath, ts] of verifiedEntries) {
       if (keepSet.has(fullPath)) {
         nextIndex[fullPath] = ts;
-      } else {
-        // eslint-disable-next-line no-await-in-loop
-        await unlink(fullPath).catch(() => {});
+        // eslint-disable-next-line no-continue -- kept entries are not deleted
+        continue;
       }
+      // eslint-disable-next-line no-await-in-loop
+      await unlink(fullPath).catch(() => {});
     }
 
     // Clean up empty artist directories if any were left behind.
     const children = await readDir(PREFETCH_AUDIO_DIRECTORY).catch(() => []);
-    // eslint-disable-next-line no-restricted-syntax
     for (const entry of children) {
-      if (entry.isDirectory && entry.isDirectory()) {
+      if (!entry.isDirectory || !entry.isDirectory()) {
+        // eslint-disable-next-line no-continue -- skip non-directory entries
+        continue;
+      }
+      // eslint-disable-next-line no-await-in-loop
+      const subItems = await readDir(entry.path).catch(() => []);
+      if (subItems.length === 0) {
         // eslint-disable-next-line no-await-in-loop
-        const subItems = await readDir(entry.path).catch(() => []);
-        if (subItems.length === 0) {
-          // eslint-disable-next-line no-await-in-loop
-          await unlink(entry.path).catch(() => {});
-        }
+        await unlink(entry.path).catch(() => {});
       }
     }
 
@@ -456,6 +430,12 @@ export const prunePrefetchCache = async (maxTracks = 5) => {
   }
 };
 
+// KNOWN: the companion lyrics URL is derived from the audio URL (.m4a → .json),
+// as is refreshCompanionJson's in audioReconcile, while the backend catalog
+// also carries a `lyricsUrl` per track. They agree for every track served
+// today; if the backend ever points a track at a different (e.g. shared)
+// lyrics file, both should take that `lyricsUrl` instead. Planned with an
+// upcoming PR, alongside the backend's lyrics layout.
 export const downloadLyricsOnly = async (url, trackTitle, options = {}) => {
   const { skipDirectorySetup = false } = options;
   const { artistName, jsonFileName, jsonUrl, fullJsonPath, jsonRelativePath } =
@@ -477,20 +457,16 @@ export const downloadLyricsOnly = async (url, trackTitle, options = {}) => {
     };
   }
 
-  // ── 2. Bundle lookup — if bundled, we know it's on Azure; skip HEAD ───────
-  // ── 3. HEAD fallback — only for future tracks not yet in the bundle ───────
-  const isBundled = Object.prototype.hasOwnProperty.call(BUNDLED_LYRICS, jsonUrl);
-  if (!isBundled) {
-    const jsonRemoteExists = await checkIsJsonRemoteExists(jsonUrl);
-    if (!jsonRemoteExists) {
-      logMessage(`Lyrics not available for download, skipping: ${jsonFileName}`);
-      return {
-        relativePath: jsonRelativePath,
-        alreadyExists: false,
-        downloaded: false,
-        remoteMissing: true,
-      };
-    }
+  // ── 2. HEAD check — skip the download if the remote JSON doesn't exist ────
+  const jsonRemoteExists = await checkIsJsonRemoteExists(jsonUrl);
+  if (!jsonRemoteExists) {
+    logMessage(`Lyrics not available for download, skipping: ${jsonFileName}`);
+    return {
+      relativePath: jsonRelativePath,
+      alreadyExists: false,
+      downloaded: false,
+      remoteMissing: true,
+    };
   }
 
   const jsonDownloadTask = downloadFile({
@@ -504,13 +480,31 @@ export const downloadLyricsOnly = async (url, trackTitle, options = {}) => {
 
   const jsonResult = await jsonDownloadTask.promise;
 
-  if (jsonResult.statusCode !== 200) {
-    logError(`Lyrics download failed with status code: ${jsonResult.statusCode}`);
-  }
+  // A lyrics file that is not there is an expected state of the catalog, not a
+  // fault in the app — kept out of Crashlytics. RNFS has already written the
+  // response body to disk, so an error page (or a captive portal's 200 HTML)
+  // would sit there as the lyrics: unreadable for sync-scroll, and treated as
+  // "already downloaded" by every later attempt. Only valid JSON is kept.
+  const discard = async (reason) => {
+    logMessage(`Lyrics download discarded (${reason}): ${jsonFileName}`);
+    await unlink(fullJsonPath).catch(() => {});
+    return {
+      relativePath: jsonRelativePath,
+      alreadyExists: false,
+      downloaded: false,
+      remoteMissing: false,
+    };
+  };
+  if (jsonResult.statusCode !== 200) return discard(`status ${jsonResult.statusCode}`);
 
   const finalJsonExists = await exists(fullJsonPath);
   if (!finalJsonExists) {
-    logError("Lyrics download completed but file was not created");
+    logMessage("Lyrics download completed but file was not created");
+  }
+  try {
+    JSON.parse(await readFile(fullJsonPath, "utf8"));
+  } catch (_) {
+    return discard("not JSON");
   }
 
   logMessage(`Lyrics download completed: ${jsonFileName}`);
@@ -520,71 +514,4 @@ export const downloadLyricsOnly = async (url, trackTitle, options = {}) => {
     downloaded: true,
     remoteMissing: false,
   };
-};
-
-/**
- * Download audio track with progress tracking
- */
-export const downloadTrack = async (url, trackTitle, expectedSizeMB = 0) => {
-  try {
-    const { artistName, fileName, jsonFileName } = buildTrackPaths(url);
-
-    await ensureArtistDirectory(artistName);
-
-    const audioResult = await downloadAudioOnly(url, trackTitle, {
-      skipDirectorySetup: true,
-      expectedSizeMB,
-    });
-    const lyricsResult = await downloadLyricsOnly(url, trackTitle, { skipDirectorySetup: true });
-    const lyricsAvailable = !lyricsResult.remoteMissing;
-    const lyricsSatisfied = lyricsAvailable
-      ? lyricsResult.alreadyExists || lyricsResult.downloaded
-      : true;
-
-    if (audioResult.alreadyExists && lyricsSatisfied) {
-      logMessage(`Track already downloaded${lyricsAvailable ? " with lyrics" : ""}: ${fileName}`);
-      const result = {
-        audioRelativePath: audioResult.relativePath,
-        jsonRelativePath: lyricsAvailable ? lyricsResult.relativePath : null,
-      };
-      return result;
-    }
-
-    if (lyricsAvailable) {
-      logMessage(`Download completed: ${fileName} and ${jsonFileName}`);
-    } else {
-      logMessage(`Download completed: ${fileName} (no lyrics available)`);
-    }
-
-    const result = {
-      audioRelativePath:
-        audioResult.alreadyExists || audioResult.downloaded ? audioResult.relativePath : null,
-      jsonRelativePath: lyricsAvailable ? lyricsResult.relativePath : null,
-    };
-    return result;
-  } catch (error) {
-    logError(`Download error for ${trackTitle}: ${error.message}`);
-
-    // Clean up partial downloads if they exist
-    try {
-      const fullLocalPath = getFullLocalTrackPath(url);
-      const { artistName, fileName } = generateFilename(url);
-      const jsonFileName = fileName.replace(/\.[^/.]+$/, ".json");
-      const fullJsonPath = `${AUDIO_DIRECTORY}/${artistName}/${jsonFileName}`;
-
-      const audioFileExists = await exists(fullLocalPath);
-      const jsonFileExists = await exists(fullJsonPath);
-
-      if (audioFileExists) {
-        await unlink(fullLocalPath);
-      }
-      if (jsonFileExists) {
-        await unlink(fullJsonPath);
-      }
-    } catch (cleanupError) {
-      logError(`Error cleaning up failed download: ${cleanupError.message}`);
-    }
-    logError(`Download error for ${trackTitle}: ${error.message}`);
-    return null;
-  }
 };

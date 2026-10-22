@@ -220,8 +220,13 @@ export const getShabadFromID = async (
 
                     paragraphId = ID;
                     paragraphHeader = header;
-                    gurmukhi = curGurmukhi;
-                    gurmukhiUni = curGurmukhiUni;
+                    // Each verse is wrapped in its own marked span: the merged
+                    // paragraph string has no other per-verse boundaries, and the
+                    // WebView's sync-scroll needs them to enlarge/center just the
+                    // sung line (.pline[data-pseq]) instead of the whole paragraph.
+                    // Gurmukhi only — transliteration/translations never enlarge.
+                    gurmukhi = `<span class="pline" data-pseq="${Seq}">${curGurmukhi}</span>`;
+                    gurmukhiUni = `<span class="pline" data-pseq="${Seq}">${curGurmukhiUni}</span>`;
                     transliteration = translit;
                     englishTranslation = English;
                     punjabiTranslation = Punjabi;
@@ -230,8 +235,8 @@ export const getShabadFromID = async (
                     paragraphSequences = [Seq]; // Start new sequence array with first verse ID
                   } else {
                     const space = isLarivar ? "" : " ";
-                    gurmukhi += `${space}${curGurmukhi}`;
-                    gurmukhiUni += `${space}${curGurmukhiUni}`;
+                    gurmukhi += `${space}<span class="pline" data-pseq="${Seq}">${curGurmukhi}</span>`;
+                    gurmukhiUni += `${space}<span class="pline" data-pseq="${Seq}">${curGurmukhiUni}</span>`;
                     transliteration += ` ${translit}`;
                     englishTranslation += ` ${English}`;
                     punjabiTranslation += ` ${Punjabi}`;

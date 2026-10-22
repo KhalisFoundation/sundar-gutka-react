@@ -24,6 +24,10 @@ import {
 import NetworkProvider from "./src/common/context/NetworkProvider";
 import ThemeProvider from "./src/common/context/ThemeProvider";
 import useOfflinePlaybackGuard from "./src/common/hooks/useOfflinePlaybackGuard";
+import usePauseAudioOnExit from "./src/common/hooks/usePauseAudioOnExit";
+import useStorageMigration from "./src/common/hooks/useStorageMigration";
+import useGlobalDownloadManager from "./src/common/services/globalDownloadManager";
+import useAudioCatalogSync from "./src/common/services/useAudioCatalogSync";
 import toastConfig from "./src/common/toastConfig";
 import { TrackPlayerSetup } from "./src/common/TrackPlayerUtils";
 import Navigation from "./src/navigation";
@@ -52,12 +56,22 @@ const handleBeforeLift = () => {
 
 // Redux-dependent background services, mounted once inside the Provider tree.
 const GlobalServices = () => {
+  // Downloads run app-wide, not per screen: the queue keeps going while the
+  // user reads something else, and finished files are adopted on launch.
+  useGlobalDownloadManager();
+  useStorageMigration();
+  usePauseAudioOnExit();
   // Reading themes from the backend, merged over the bundled set on every
   // screen that resolves a theme.
   useRemoteThemesSync();
   // Pauses a streaming track once the connection has been gone for a moment.
   // It replaces the polling watchdog BottomNavigation used to run.
   useOfflinePlaybackGuard();
+  // Offline audio parity: warms the manifest + lyrics caches for every audio
+  // bani, so audio a user never opened online still plays offline. It starts
+  // only after the launch window (see AUDIO_CATALOG_SYNC_DELAY_MS), so it
+  // cannot compete with the fresh-install DB seed.
+  useAudioCatalogSync();
   return null;
 };
 

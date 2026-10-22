@@ -5,6 +5,10 @@
     <uses-permission android:name="android.permission.WAKE_LOCK" />
     <uses-permission android:name="android.permission.FOREGROUND_SERVICE" />
     <uses-permission android:name="android.permission.FOREGROUND_SERVICE_MEDIA_PLAYBACK" />
+    <!-- Android 13+: required so the background-download foreground-service
+         progress notification is visible. Requested at runtime before the first
+         download (requestNotificationPermission). -->
+    <uses-permission android:name="android.permission.POST_NOTIFICATIONS" />
 
     <application android:name=".MainApplication" android:label="@string/app_name" android:icon="@mipmap/ic_launcher_foreground"
         android:roundIcon="@mipmap/ic_launcher_round" android:allowBackup="false" android:theme="@style/AppTheme" android:supportsRtl="true"

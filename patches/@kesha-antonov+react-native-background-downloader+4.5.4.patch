@@ -1,0 +1,259 @@
+diff --git a/node_modules/@kesha-antonov/react-native-background-downloader/android/src/main/java/com/eko/DownloadConstants.kt b/node_modules/@kesha-antonov/react-native-background-downloader/android/src/main/java/com/eko/DownloadConstants.kt
+index 3ad6104..e06473d 100644
+--- a/node_modules/@kesha-antonov/react-native-background-downloader/android/src/main/java/com/eko/DownloadConstants.kt
++++ b/node_modules/@kesha-antonov/react-native-background-downloader/android/src/main/java/com/eko/DownloadConstants.kt
+@@ -24,7 +24,7 @@ object DownloadConstants {
+     // ========== Download Buffer ==========
+ 
+     /** Size of buffer for reading download data (bytes) */
+-    const val BUFFER_SIZE = 8192  // 8KB
++    const val BUFFER_SIZE = 262144  // 256KB (patched; 8KB throttled throughput ~32x)
+ 
+     // ========== Progress Reporting ==========
+ 
+diff --git a/node_modules/@kesha-antonov/react-native-background-downloader/android/src/main/java/com/eko/Downloader.kt b/node_modules/@kesha-antonov/react-native-background-downloader/android/src/main/java/com/eko/Downloader.kt
+index 5b50d9a..f0c6c6a 100644
+--- a/node_modules/@kesha-antonov/react-native-background-downloader/android/src/main/java/com/eko/Downloader.kt
++++ b/node_modules/@kesha-antonov/react-native-background-downloader/android/src/main/java/com/eko/Downloader.kt
+@@ -29,8 +29,39 @@ class Downloader(private val context: Context, private val storageManager: com.e
+ 
+   companion object {
+     private const val TAG = "RNBackgroundDownloader"
++
++    /**
++     * Patched (sundar-gutka): where a failed bind to ResumableDownloadService is
++     * reported. The library has no crash reporter of its own, so the app sets
++     * this to Crashlytics (see MainApplication).
++     */
++    @JvmStatic
++    @Volatile
++    var bindFailureReporter: ((Throwable) -> Unit)? = null
+   }
+ 
++  /**
++   * Patched (sundar-gutka): DownloadManager.enqueue parses the id out of the
++   * downloads provider's insert result without a null check (AOSP
++   * DownloadManager.enqueue), so a provider that is disabled or not answering
++   * throws a NullPointerException. Named, so the caller can fall back to the
++   * resumable downloader for exactly this case and no other.
++   */
++  class DownloadManagerUnavailableException(cause: Throwable) :
++    IllegalStateException("DownloadManager could not enqueue: the downloads provider is unavailable", cause)
++
++  /** The process this code is running in, for the bind-failure report. */
++  private fun currentProcessName(): String =
++    if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.P) {
++      android.app.Application.getProcessName()
++    } else {
++      try {
++        File("/proc/self/cmdline").readText().trim('\u0000').trim()
++      } catch (e: Exception) {
++        "unknown"
++      }
++    }
++
+   val downloadManager: DownloadManager = context.getSystemService(Context.DOWNLOAD_SERVICE) as DownloadManager
+ 
+   // Service for background resumable downloads
+@@ -50,7 +81,34 @@ class Downloader(private val context: Context, private val storageManager: com.e
+   // Service connection
+   private val serviceConnection = object : ServiceConnection {
+     override fun onServiceConnected(name: ComponentName?, service: IBinder?) {
+-      val binder = service as ResumableDownloadService.LocalBinder
++      // Patched (sundar-gutka): the service is declared in this process, so its
++      // binder should always be the local one. A device handed back a
++      // BinderProxy instead — which Android does only across processes — and the
++      // hard cast took the app down. Report what was connected, from which
++      // process, instead of crashing, so the cause can be found. Pending
++      // operations stay queued: no working service is what they already wait on.
++      val binder = service as? ResumableDownloadService.LocalBinder
++      if (binder == null) {
++        val processName = currentProcessName()
++        val failure = IllegalStateException(
++          "ResumableDownloadService bound as ${service?.javaClass?.name} " +
++            "(component $name) in process $processName " +
++            "(main: ${processName == context.packageName}, pid ${android.os.Process.myPid()}, " +
++            "sdk ${Build.VERSION.SDK_INT}, ${Build.MANUFACTURER} ${Build.MODEL})"
++        )
++        Log.w(TAG, failure.message ?: "ResumableDownloadService bound to a non-local binder")
++        try {
++          bindFailureReporter?.invoke(failure)
++        } catch (e: Exception) {
++          // A reporter that throws must not bring back the crash it replaces.
++        }
++        try {
++          context.unbindService(this)
++        } catch (e: Exception) {
++          // Already unbound; nothing to release.
++        }
++        return
++      }
+       downloadService = binder.getService()
+       serviceBound = true
+       RNBackgroundDownloaderModuleImpl.logD(TAG, "ResumableDownloadService connected")
+@@ -139,7 +197,11 @@ class Downloader(private val context: Context, private val storageManager: com.e
+   }
+ 
+   fun download(request: DownloadManager.Request): Long {
+-    return downloadManager.enqueue(request)
++    try {
++      return downloadManager.enqueue(request)
++    } catch (e: NullPointerException) {
++      throw DownloadManagerUnavailableException(e)
++    }
+   }
+ 
+   /**
+diff --git a/node_modules/@kesha-antonov/react-native-background-downloader/android/src/main/java/com/eko/RNBackgroundDownloaderModuleImpl.kt b/node_modules/@kesha-antonov/react-native-background-downloader/android/src/main/java/com/eko/RNBackgroundDownloaderModuleImpl.kt
+index 8e25f50..432d86d 100644
+--- a/node_modules/@kesha-antonov/react-native-background-downloader/android/src/main/java/com/eko/RNBackgroundDownloaderModuleImpl.kt
++++ b/node_modules/@kesha-antonov/react-native-background-downloader/android/src/main/java/com/eko/RNBackgroundDownloaderModuleImpl.kt
+@@ -695,6 +695,19 @@ class RNBackgroundDownloaderModuleImpl(private val reactContext: ReactApplicatio
+       request.setRequiresCharging(false)
+     }
+ 
++    // Patched (sundar-gutka): surface a human-readable title on the system
++    // DownloadManager notification (Android <14 path). The JS layer puts the
++    // "<bani in Punjabi>  •  <artist in English>" string in metadata.groupName;
++    // without setTitle, DownloadManager labels the notification with the raw
++    // file name. Mirrors the UIDT path, which already reads groupName from
++    // metadata, so the title is consistent across Android versions.
++    try {
++      val groupName = JSONObject(metadata ?: "{}").optString("groupName", "")
++      if (groupName.isNotEmpty()) request.setTitle(groupName)
++    } catch (e: Exception) {
++      logW(NAME, "Failed to set download notification title: ${e.message}")
++    }
++
+     // Note: On Android 16+, we use ResumableDownloader with UIDT jobs instead of DownloadManager
+     // for better background execution support. See the Android 16+ check below in download path.
+ 
+@@ -783,6 +796,15 @@ class RNBackgroundDownloaderModuleImpl(private val reactContext: ReactApplicatio
+         logW(NAME, "DownloadManager SecurityException (path not supported): ${e.message}")
+         logD(NAME, "Falling back to ResumableDownloader for download: $id")
+         startWithResumableDownloader()
++      } catch (e: Downloader.DownloadManagerUnavailableException) {
++        // Patched (sundar-gutka): the downloads provider is disabled or not
++        // answering, so DownloadManager cannot take the download. It threw on
++        // the native-modules thread, where nothing caught it and the app died.
++        // Fall back the same way the path failure above does: the resumable
++        // downloader fetches the file itself and does not need the provider.
++        logW(NAME, "DownloadManager unavailable: ${e.cause?.message}")
++        logD(NAME, "Falling back to ResumableDownloader for download: $id")
++        startWithResumableDownloader()
+       }
+     } else {
+       // External files directory path is invalid or null
+@@ -975,7 +997,23 @@ class RNBackgroundDownloaderModuleImpl(private val reactContext: ReactApplicatio
+     }
+   }
+ 
++  // Patched (sundar-gutka): DownloadManager.query is a binder round-trip to the
++  // downloads provider, which some OEM builds start slowly or have disabled.
++  // Run on the bridge's native-modules thread it stalled every other native
++  // call — AsyncStorage, the file system, the player — for as long as the
++  // provider took to answer. The work runs on the module's own pool instead;
++  // the promise already made the call asynchronous for JS.
+   fun getExistingDownloadTasks(promise: Promise) {
++    cachedExecutorPool.execute {
++      try {
++        collectExistingDownloadTasks(promise)
++      } catch (e: Exception) {
++        promise.reject("ERR_GET_EXISTING_TASKS", e.message, e)
++      }
++    }
++  }
++
++  private fun collectExistingDownloadTasks(promise: Promise) {
+     val foundTasks = Arguments.createArray()
+     val processedIds = mutableSetOf<String>()
+ 
+diff --git a/node_modules/@kesha-antonov/react-native-background-downloader/android/src/main/java/com/eko/uidt/UIDTNotificationManager.kt b/node_modules/@kesha-antonov/react-native-background-downloader/android/src/main/java/com/eko/uidt/UIDTNotificationManager.kt
+index 0401372..c1d2497 100644
+--- a/node_modules/@kesha-antonov/react-native-background-downloader/android/src/main/java/com/eko/uidt/UIDTNotificationManager.kt
++++ b/node_modules/@kesha-antonov/react-native-background-downloader/android/src/main/java/com/eko/uidt/UIDTNotificationManager.kt
+@@ -123,7 +123,7 @@ object UIDTNotificationManager {
+                 .build()
+         }
+ 
+-        val title = if (config.groupingEnabled && groupName.isNotEmpty()) {
++        val title = if (groupName.isNotEmpty()) {
+             groupName
+         } else {
+             config.getText("downloadTitle")
+@@ -173,7 +173,7 @@ object UIDTNotificationManager {
+ 
+         val progress = ProgressUtils.calculateProgress(bytesDownloaded, bytesTotal)
+ 
+-        val title = if (config.groupingEnabled && jobState.groupName.isNotEmpty()) {
++        val title = if (jobState.groupName.isNotEmpty()) {
+             jobState.groupName
+         } else {
+             config.getText("downloadTitle")
+@@ -212,7 +212,7 @@ object UIDTNotificationManager {
+         progress: Int,
+         groupName: String
+     ) {
+-        val title = if (config.groupingEnabled && groupName.isNotEmpty()) {
++        val title = if (groupName.isNotEmpty()) {
+             groupName
+         } else {
+             config.getText("downloadTitle")
+@@ -249,7 +249,7 @@ object UIDTNotificationManager {
+         // Update tracking state so next onProgress knows current state
+         jobState.lastNotifiedProgress = progress
+ 
+-        val title = if (config.groupingEnabled && jobState.groupName.isNotEmpty()) {
++        val title = if (jobState.groupName.isNotEmpty()) {
+             jobState.groupName
+         } else {
+             config.getText("downloadTitle")
+diff --git a/node_modules/@kesha-antonov/react-native-background-downloader/ios/RNBackgroundDownloader.mm b/node_modules/@kesha-antonov/react-native-background-downloader/ios/RNBackgroundDownloader.mm
+index 4af2839..948e984 100644
+--- a/node_modules/@kesha-antonov/react-native-background-downloader/ios/RNBackgroundDownloader.mm
++++ b/node_modules/@kesha-antonov/react-native-background-downloader/ios/RNBackgroundDownloader.mm
+@@ -553,7 +553,7 @@ RCT_EXPORT_METHOD(download: (NSDictionary *) options) {
+         DLog(identifier, @"[RNBackgroundDownloader] - [executeDownloadWithRequest]");
+         [self sendDebugLog:@"executeDownloadWithRequest: creating download task" taskId:identifier];
+ 
+-        NSURLSessionDownloadTask __strong *task = [urlSession downloadTaskWithRequest:request];
++        NSURLSessionDownloadTask __strong *task = [self createDownloadTaskWithRequest:request identifier:identifier];
+         if (task == nil) {
+             DLog(identifier, @"[RNBackgroundDownloader] - [Error] failed to create download task");
+             [self sendDebugLog:@"executeDownloadWithRequest: ERROR - failed to create download task" taskId:identifier];
+@@ -582,6 +582,35 @@ RCT_EXPORT_METHOD(download: (NSDictionary *) options) {
+     }
+ }
+ 
++// Patched (sundar-gutka): backport of the upstream 4.5.6 fix for
++// https://github.com/kesha-antonov/react-native-background-downloader/issues/157
++// Creates a download task on the current session. If the session has been
++// invalidated, -downloadTaskWithRequest: raises "Task created in a session
++// that has been invalidated" and the app crashes. Instead, recreate the
++// background session and retry once; if that also fails, return nil, which
++// the caller already handles. Must be called while holding sharedLock.
++- (NSURLSessionDownloadTask *)createDownloadTaskWithRequest:(NSMutableURLRequest *)request identifier:(NSString *)identifier {
++    @try {
++        return [urlSession downloadTaskWithRequest:request];
++    } @catch (NSException *exception) {
++        DLog(identifier, @"[RNBackgroundDownloader] - [createDownloadTask] session invalidated, recreating: %@", exception.reason);
++        [self sendDebugLog:[NSString stringWithFormat:@"createDownloadTask: session invalidated, recreating (%@)", exception.reason] taskId:identifier];
++
++        // Recreate the background session directly (do not call unregisterSession,
++        // which would invalidateAndCancel and drop queued downloads).
++        urlSession = [NSURLSession sessionWithConfiguration:sessionConfig delegate:self delegateQueue:nil];
++        isSessionActivated = YES;
++
++        @try {
++            return [urlSession downloadTaskWithRequest:request];
++        } @catch (NSException *retryException) {
++            DLog(identifier, @"[RNBackgroundDownloader] - [createDownloadTask] retry failed: %@", retryException.reason);
++            [self sendDebugLog:[NSString stringWithFormat:@"createDownloadTask: retry failed (%@)", retryException.reason] taskId:identifier];
++            return nil;
++        }
++    }
++}
++
+ - (void)pauseTaskInternal:(NSString *)identifier resolve:(RCTPromiseResolveBlock)resolve reject:(RCTPromiseRejectBlock)reject {
+     DLog(identifier, @"[RNBackgroundDownloader] - [pauseTask]");
+     @try {

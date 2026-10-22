@@ -21,6 +21,7 @@ import DatabaseUpdateScreen from "../DatabaseUpdate";
 import EditBaniOrder from "../EditBaniOrder";
 import FolderScreen from "../FolderScreen";
 import HomeScreen from "../HomeScreen";
+import ManageDownloads from "../ManageDownloads";
 import ReaderScreen from "../ReaderScreen";
 import Settings from "../Settings";
 import ReminderOptions from "../Settings/components/reminders/ReminderOptions";
@@ -42,6 +43,7 @@ const EditBaniOrderScreen = withScreenRoles(EditBaniOrder, "settings");
 const DatabaseUpdate = withScreenRoles(DatabaseUpdateScreen, "settings");
 const About = withScreenRoles(AboutScreen, "settings");
 const BookmarksScreen = withScreenRoles(Bookmarks, "settings");
+const ManageDownloadsScreen = withScreenRoles(ManageDownloads, "settings");
 
 const Stack = createNativeStackNavigator();
 
@@ -177,6 +179,11 @@ const Navigation = () => {
           />
           <Stack.Screen name="ReminderOptions" component={ReminderOptionsScreen} />
           <Stack.Screen name="Themes" component={ThemesScreen} options={{ headerShown: false }} />
+          <Stack.Screen
+            name="ManageDownloads"
+            component={ManageDownloadsScreen}
+            options={{ headerShown: false }}
+          />
           <Stack.Screen
             name="DatabaseUpdate"
             component={DatabaseUpdate}

@@ -73,10 +73,6 @@ const clearEnlarged = () => {
 // gurmukhi content-item. The div is targeted by data-type, NOT the .gurmukhi
 // class — the Punjabi translation div shares that class for its font.
 // Transliteration/translation lines never enlarge.
-// KNOWN: db.js does not emit the .pline[data-pseq] spans yet (they come with
-// the audio PR's sync-scroll fix), so in paragraph mode this falls back to the
-// whole merged paragraph, and later lines of a long paragraph can scroll off.
-// Fixed by the upcoming audio PR.
 const setEnlarged = (element, sequenceNumber, isParagraphMode) => {
   clearEnlarged();
   if (!element) return null;

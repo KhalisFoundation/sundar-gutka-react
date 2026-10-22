@@ -186,3 +186,31 @@ export const displayNotification = async () => {
     android: { channelId: constant.SOUND, smallIcon: "ic_launcher_foreground" },
   });
 };
+
+// While the permission prompt is on screen. The system dialog takes focus from
+// the app (AppState goes "inactive" on iOS, "background" on Android), which is
+// indistinguishable from the user leaving; usePauseAudioOnExit reads this so
+// the prompt raised by a track's first download does not pause that track.
+// Capped, because on Android 13+ the request below may never settle.
+const PERMISSION_PROMPT_MAX_MS = 10000;
+let permissionPromptOpenUntil = 0;
+
+/** True while the notification permission prompt may be on screen. */
+export const isPermissionPromptOpen = () => Date.now() < permissionPromptOpenUntil;
+
+// Explicitly prompt for notification permission (Android 13+ POST_NOTIFICATIONS /
+// iOS alert). Used before the first download so the foreground-service download
+// notification is actually visible instead of silently denied. Callers bound it
+// with a deadline: on Android 13+ notifee's prompt may never resolve when the
+// permission is already granted (invertase/notifee#609).
+export const requestNotificationPermission = async () => {
+  permissionPromptOpenUntil = Date.now() + PERMISSION_PROMPT_MAX_MS;
+  try {
+    const settings = await notifee.requestPermission();
+    return settings.authorizationStatus >= AuthorizationStatus.AUTHORIZED;
+  } catch (_) {
+    return false;
+  } finally {
+    permissionPromptOpenUntil = 0;
+  }
+};

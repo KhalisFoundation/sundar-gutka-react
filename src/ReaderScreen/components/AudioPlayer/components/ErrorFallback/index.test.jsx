@@ -18,6 +18,12 @@ jest.mock("@common/context", () => ({
   default: () => ({
     theme: {
       mode: "light",
+      // Native-prop enums that the theme decides. This suite stubs `@common`,
+      // so it cannot require the real theme (which reads `constant` for its
+      // font names) and states them directly instead.
+      chrome: { statusBarStyle: "dark-content", scrollIndicator: "black", blurType: "light" },
+      c: require("@theme/semanticColors").light,
+
       colors: {
         audioTitleText: "#111111",
         primary: "#123456",
@@ -83,6 +89,8 @@ jest.mock("@common/icons", () => {
 });
 
 const mockTheme = {
+  c: require("@theme/semanticColors").light,
+
   colors: {
     audioTitleText: "#111111",
   },
@@ -153,7 +161,8 @@ describe("ErrorFallback", () => {
 
     expect(getByText("Maafi ji 🙏🏽")).toBeTruthy();
     expect(getByText("Failed to initialize audio player")).toBeTruthy();
-    expect(getByText("Please try again.")).toBeTruthy();
+    // exact: false — the label now carries a trailing inline arrow ("… →").
+    expect(getByText("Please try again.", { exact: false })).toBeTruthy();
   });
 
   it("calls handleClose when close button is pressed", () => {
@@ -170,7 +179,7 @@ describe("ErrorFallback", () => {
     const props = createProps();
     const { getByText } = render(<ErrorFallback {...props} />);
 
-    const button = getByText("Please try again.");
+    const button = getByText("Please try again.", { exact: false });
     fireEvent.press(button);
 
     expect(props.buttonPress).toHaveBeenCalledTimes(1);

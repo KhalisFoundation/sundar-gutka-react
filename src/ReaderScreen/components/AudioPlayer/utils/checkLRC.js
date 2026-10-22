@@ -1,5 +1,5 @@
 import { exists } from "react-native-fs";
-import BUNDLED_LYRICS from "../assets/lyrics/bundledLyrics";
+import { getCachedLyricsFullPath } from "./lyricsCache";
 import { checkIsRemote, extractFilePath } from "./urlHelper";
 
 const checkLyricsFileAvailable = async (lyricsUrl = null) => {
@@ -14,7 +14,9 @@ const checkLyricsFileAvailable = async (lyricsUrl = null) => {
     const isRemote = checkIsRemote(lyricsUrl);
 
     if (isRemote) {
-      if (Object.prototype.hasOwnProperty.call(BUNDLED_LYRICS, lyricsUrl)) {
+      // Already cached on disk (viewed before or prefetched) → available offline.
+      const cachedPath = getCachedLyricsFullPath(lyricsUrl);
+      if (cachedPath && (await exists(cachedPath))) {
         return true;
       }
 

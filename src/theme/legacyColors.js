@@ -3,7 +3,7 @@
 // These are dev's `theme.colors` maps, verbatim. The design system replaced them
 // with `theme.c` (semantic roles), and every migrated screen reads that instead.
 // A few screens are migrated later, together with the feature they belong to:
-// the audio player, the folder screen and the reminders screen. Until then they
+// the folder screen and the reminders screen. Until then they
 // read these maps, so they look exactly as they did. Delete this file, and the
 // `colors` / `staticColors` entries in lightTheme.js and darkTheme.js, in the PR
 // that migrates the last of them.

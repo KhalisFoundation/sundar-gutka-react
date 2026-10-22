@@ -19,9 +19,17 @@ jest.mock("react-redux", () => ({
 }));
 
 // Mock @react-navigation/native so useIsFocused/useNavigation don't require NavigationContainer
+// The blur handler is captured so a test can leave the screen the way the app
+// does, rather than only unmounting.
+let mockBlurHandler = null;
 jest.mock("@react-navigation/native", () => ({
   useIsFocused: () => true,
-  useNavigation: () => ({ addListener: jest.fn(() => jest.fn()) }),
+  useNavigation: () => ({
+    addListener: jest.fn((event, cb) => {
+      if (event === "blur") mockBlurHandler = cb;
+      return jest.fn();
+    }),
+  }),
 }));
 
 // Mock react-native-track-player
@@ -73,6 +81,7 @@ const mockUseAudioManifest = {
   isTrackDownloaded: jest.fn(() => false),
   manifestError: null,
   refetchManifest: jest.fn(),
+  refreshManifestSilently: jest.fn(),
 };
 
 const mockUseAudioSyncScroll = jest.fn();
@@ -108,9 +117,6 @@ jest.mock("./components", () => {
     AudioControlBar: ({ title, isPlaying, handlePlayPause, handleSeek, ...props }) => (
       <View testID="audio-control-bar" {...props}>
         <Text testID="control-bar-title">{title}</Text>
-        <Pressable testID="audios-button" onPress={props.onReopenPreviewModal}>
-          <Text>Audios</Text>
-        </Pressable>
         <Pressable testID="play-pause-button" onPress={handlePlayPause}>
           <Text>{isPlaying ? "Pause" : "Play"}</Text>
         </Pressable>
@@ -122,6 +128,11 @@ jest.mock("./components", () => {
           onPress={() => props.handleTrackSelect(props.tracks?.[1] || props.tracks?.[0])}
         >
           <Text>Switch</Text>
+        </Pressable>
+        {/* The bar's own X. The real one saves progress first and then calls
+            this, which is the path that dismisses the whole player. */}
+        <Pressable testID="control-bar-close" onPress={props.onCloseTrackModal}>
+          <Text>Close</Text>
         </Pressable>
       </View>
     ),
@@ -189,10 +200,13 @@ jest.mock("@common", () => ({
     EXTRA_LONG: "EXTRA_LONG",
   },
   logError: jest.fn(),
+  logMessage: jest.fn(),
   trackAudioEvent: jest.fn(),
   trackBaniOpen: jest.fn(),
   trackBaniListenCompletion: jest.fn(),
   trackAudioLinkRequest: jest.fn(),
+  trackAudioStarted: jest.fn(() => Promise.resolve()),
+  trackAudioCompleted: jest.fn(() => Promise.resolve()),
 }));
 
 // Mock Linking
@@ -250,6 +264,7 @@ describe("AudioPlayer", () => {
     mockUseTrackPlayer.isInitializing = false;
     mockUseTrackPlayer.isAudioEnabled = true;
     mockUseTrackPlayer.isPlaying = false;
+    mockUseTrackPlayer.progress = { position: 0, duration: 100 };
     mockUseAudioManifest.currentPlaying = null;
     mockUseAudioManifest.isTracksLoading = false;
     mockUseAudioManifest.manifestError = null;
@@ -287,6 +302,31 @@ describe("AudioPlayer", () => {
         null
       );
     });
+  });
+
+  it("gives the Reader its chrome back when the player is closed", async () => {
+    const onShowBars = jest.fn();
+    const props = createProps({ onShowBars });
+    const { getByTestId } = render(<AudioPlayer {...props} />);
+
+    await act(async () => {
+      fireEvent.press(getByTestId("control-bar-close"));
+    });
+
+    // Opening the player hides the bars; dismissing it must not leave the
+    // reader on a bare page with no header and no tab bar.
+    expect(onShowBars).toHaveBeenCalled();
+  });
+
+  it("does not require onShowBars — closing still works without one", async () => {
+    const props = createProps();
+    const { getByTestId } = render(<AudioPlayer {...props} />);
+
+    await act(async () => {
+      fireEvent.press(getByTestId("control-bar-close"));
+    });
+
+    expect(mockDispatch).toHaveBeenCalled();
   });
 
   it("renders loading state when initializing", () => {
@@ -361,26 +401,6 @@ describe("AudioPlayer", () => {
 
     await waitFor(() => {
       expect(getByTestId("audio-control-bar")).toBeTruthy();
-    });
-  });
-
-  it("returns to preview modal when Audios is pressed in full player", async () => {
-    mockUseAudioManifest.currentPlaying = mockUseAudioManifest.tracks[0];
-    const props = createProps();
-    const { getByTestId, queryByTestId } = render(<AudioPlayer {...props} />);
-
-    await waitFor(() => {
-      expect(getByTestId("audio-control-bar")).toBeTruthy();
-    });
-
-    await act(async () => {
-      fireEvent.press(getByTestId("audios-button"));
-    });
-
-    await waitFor(() => {
-      expect(mockUseTrackPlayer.stop).toHaveBeenCalled();
-      expect(mockUseTrackPlayer.reset).toHaveBeenCalled();
-      expect(queryByTestId("audio-track-dialog")).toBeTruthy();
     });
   });
 
@@ -762,5 +782,163 @@ describe("AudioPlayer", () => {
     });
 
     expect(mockUseTrackPlayer.stop).not.toHaveBeenCalled();
+  });
+
+  describe("safe-exit on a refreshed list", () => {
+    const remote = "https://example.com/artist1/track1.m4a";
+    const local = "/data/user/0/app/files/audio/artist1/track1.m4a";
+    const playing = (audioUrl, remoteUrl = remote) => ({
+      id: "track1",
+      artistID: "artist1",
+      audioUrl,
+      remoteUrl,
+      displayName: "Artist 1",
+      lyricsUrl: null,
+      trackLengthSec: 300,
+      trackSizeMB: 5,
+    });
+
+    const settle = async (props, { queryByTestId }) => {
+      await waitFor(() => expect(queryByTestId("audio-control-bar")).toBeTruthy());
+    };
+
+    it("stays in the player when the same file merely turns from remote into local", async () => {
+      const props = createProps();
+      mockState.defaultAudio = { [props.baniID]: { id: "track1", artistID: "artist1" } };
+      mockUseAudioManifest.currentPlaying = playing(remote);
+      mockUseAudioManifest.tracks = [playing(remote)];
+      const utils = render(<AudioPlayer {...props} />);
+      await settle(props, utils);
+
+      // The download got merged in: same file, now a local path.
+      mockUseAudioManifest.tracks = [{ ...playing(local), isLocallyDownloaded: true }];
+      utils.rerender(<AudioPlayer {...props} />);
+      await act(async () => {
+        await new Promise((r) => {
+          setTimeout(r, 50);
+        });
+      });
+      expect(utils.queryByTestId("audio-track-dialog")).toBeNull();
+      expect(mockUseAudioManifest.setCurrentPlaying).not.toHaveBeenCalledWith(null);
+    });
+
+    it("still exits to the list when the artist now points at a different file", async () => {
+      const props = createProps();
+      mockState.defaultAudio = { [props.baniID]: { id: "track1", artistID: "artist1" } };
+      mockUseAudioManifest.currentPlaying = playing(remote);
+      mockUseAudioManifest.tracks = [playing(remote)];
+      const utils = render(<AudioPlayer {...props} />);
+      await settle(props, utils);
+
+      const other = "https://example.com/artist1/track1-trimmed.m4a";
+      mockUseAudioManifest.tracks = [playing(other, other)];
+      utils.rerender(<AudioPlayer {...props} />);
+      await waitFor(() =>
+        expect(mockUseAudioManifest.setCurrentPlaying).toHaveBeenCalledWith(null)
+      );
+    });
+  });
+
+  // bani_listen_completion says how far into a track the reader got. It is only
+  // true if they actually played it, and only meaningful if the position came
+  // from the track it is filed under. It used to check neither, which is how it
+  // ended up with MORE unique users than bani_listen — a strict subset of it.
+  describe("bani_listen_completion", () => {
+    // eslint-disable-next-line global-require
+    const { trackBaniListenCompletion } = require("@common");
+
+    const leave = async () => {
+      const props = createProps();
+      const { unmount } = render(<AudioPlayer {...props} />);
+      await act(async () => {
+        unmount();
+        await new Promise((resolve) => {
+          setTimeout(resolve, 0);
+        });
+      });
+    };
+
+    it("does not report a listen when the position was only restored", async () => {
+      // Reopening a bani SEEKS to where you left off. Nothing has played, so
+      // there is nothing to report — this exact case is what logged people who
+      // never pressed play as having "completed" the track.
+      mockUseAudioManifest.currentPlaying = mockUseAudioManifest.tracks[0];
+      mockUseTrackPlayer.isPlaying = false;
+      mockUseTrackPlayer.progress = { position: 270, duration: 300 };
+
+      await leave();
+
+      expect(trackBaniListenCompletion).not.toHaveBeenCalled();
+    });
+
+    it("reports the position that was actually played, against RNTP own clock", async () => {
+      // The manifest says 300s and RNTP says 301 — close enough to be the same
+      // track, and RNTP is the one that produced the position, so the percentage
+      // has to be computed against ITS duration rather than the estimate.
+      mockUseAudioManifest.currentPlaying = mockUseAudioManifest.tracks[0];
+      mockUseTrackPlayer.isPlaying = true;
+      mockUseTrackPlayer.progress = { position: 150, duration: 301 };
+
+      await leave();
+
+      expect(trackBaniListenCompletion).toHaveBeenCalledWith(
+        "bani123",
+        expect.anything(),
+        "Artist 1",
+        150,
+        301
+      );
+    });
+
+    it("ignores a position still belonging to the previous track", async () => {
+      // While a newly chosen track loads, RNTP keeps reporting the old one.
+      // Its DURATION gives it away: 92s is not this 300s track, so the position
+      // beside it is not this track's either.
+      mockUseAudioManifest.currentPlaying = mockUseAudioManifest.tracks[0];
+      mockUseTrackPlayer.isPlaying = true;
+      mockUseTrackPlayer.progress = { position: 88, duration: 92 };
+
+      await leave();
+
+      expect(trackBaniListenCompletion).not.toHaveBeenCalled();
+    });
+
+    it("reports nothing at all when no track was ever chosen", async () => {
+      mockUseAudioManifest.currentPlaying = null;
+      mockUseTrackPlayer.isPlaying = false;
+      mockUseTrackPlayer.progress = { position: 0, duration: 0 };
+
+      await leave();
+
+      expect(trackBaniListenCompletion).not.toHaveBeenCalled();
+    });
+
+    it("reports ONCE when the reader leaves and audio keeps playing", async () => {
+      // Leaving fires on blur; the unmount safety-net fires again for the case
+      // where blur never came. The guard between them used to be cleared by
+      // every progress tick, so audio still running after the blur re-armed it
+      // and one exit produced two events.
+      mockUseAudioManifest.currentPlaying = mockUseAudioManifest.tracks[0];
+      mockUseTrackPlayer.isPlaying = true;
+      mockUseTrackPlayer.progress = { position: 150, duration: 300 };
+
+      const props = createProps();
+      const { unmount } = render(<AudioPlayer {...props} />);
+
+      await act(async () => {
+        mockBlurHandler(); // navigate away
+        await new Promise((resolve) => {
+          setTimeout(resolve, 0);
+        });
+      });
+      await act(async () => {
+        unmount(); // screen torn down afterwards
+        await new Promise((resolve) => {
+          setTimeout(resolve, 0);
+        });
+      });
+
+      expect(trackBaniListenCompletion).toHaveBeenCalledTimes(1);
+    });
   });
 });

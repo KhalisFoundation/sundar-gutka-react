@@ -49,3 +49,61 @@ export const SET_AUDIO_MANIFEST = "SET_AUDIO_MANIFEST";
 // Audio progress actions
 export const SET_AUDIO_PROGRESS = "SET_AUDIO_PROGRESS";
 export const CLEAR_AUDIO_PROGRESS = "CLEAR_AUDIO_PROGRESS";
+
+// ── Audio catalog, the floating player and downloads ──────────────────────
+
+// Audio catalog cache — the persisted offline copy of the backend /audios
+// manifest, keyed by baniId. Populated by the eager catalog sync and per-bani
+// lazy refresh; read as the offline source for the audio player.
+export const SET_AUDIO_CATALOG_ENTRIES = "SET_AUDIO_CATALOG_ENTRIES";
+
+export const SET_AUDIO_CATALOG_ENTRY = "SET_AUDIO_CATALOG_ENTRY";
+
+export const SET_AUDIO_CATALOG_META = "SET_AUDIO_CATALOG_META";
+
+export const CLEAR_AUDIO_CATALOG = "CLEAR_AUDIO_CATALOG";
+
+// Reader tap signal — incremented on each tap in the bani WebView so the
+// floating mini player can toggle its expanded/collapsed state.
+export const BUMP_READER_TAP = "BUMP_READER_TAP";
+
+// Scroll DOWN in the reader. The counterpart of the tap above: a tap grows the
+// floating audio player back to its pill, scrolling away shrinks it to the
+// circle. See MinimizePlayer.
+export const BUMP_READER_SCROLL_DOWN = "BUMP_READER_SCROLL_DOWN";
+
+// Floating mini-player drag state — used to disable WebView scroll while dragging
+export const SET_PLAYER_DRAGGING = "SET_PLAYER_DRAGGING";
+
+// Download queue
+export const ENQUEUE_DOWNLOAD = "ENQUEUE_DOWNLOAD";
+
+export const UPDATE_DOWNLOAD_STATUS = "UPDATE_DOWNLOAD_STATUS";
+
+// The previous release's downloads have been adopted into the registry. Kept in
+// the store beside the registry, so both are persisted in the same write.
+export const MARK_AUDIO_STORAGE_MIGRATED = "MARK_AUDIO_STORAGE_MIGRATED";
+
+export const UPDATE_DOWNLOAD_PROGRESS = "UPDATE_DOWNLOAD_PROGRESS";
+
+export const REMOVE_DOWNLOAD_QUEUE_ENTRY = "REMOVE_DOWNLOAD_QUEUE_ENTRY";
+
+export const RETRY_DOWNLOAD = "RETRY_DOWNLOAD";
+
+export const REQUEUE_PAUSED_DOWNLOADS = "REQUEUE_PAUSED_DOWNLOADS";
+
+// Download registry
+export const ADD_DOWNLOAD_ENTRY = "ADD_DOWNLOAD_ENTRY";
+
+export const REMOVE_DOWNLOAD_ENTRIES = "REMOVE_DOWNLOAD_ENTRIES";
+
+export const UPDATE_DOWNLOAD_ENTRIES = "UPDATE_DOWNLOAD_ENTRIES";
+
+export const SET_DOWNLOAD_REGISTRY = "SET_DOWNLOAD_REGISTRY";
+
+export const CLEAR_DOWNLOAD_REGISTRY = "CLEAR_DOWNLOAD_REGISTRY";
+
+// Download settings
+export const TOGGLE_DOWNLOAD_WIFI_ONLY = "TOGGLE_DOWNLOAD_WIFI_ONLY";
+
+export const TOGGLE_AUTO_DOWNLOAD = "TOGGLE_AUTO_DOWNLOAD";

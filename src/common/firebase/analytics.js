@@ -186,12 +186,15 @@ const trackBaniArtistDefault = async (baniID, artist) => {
   }
 };
 
-const trackTrackDownload = async (baniID, artist, baniTitle) => {
+const trackTrackDownload = async (baniID, artist, baniTitle, networkType) => {
   try {
     await logEvent(analytics, "track_download", {
       bani_id: safeStr(baniID),
       artist: safeStr(artist, "none"),
       bani_title: safeStr(baniTitle),
+      // Connection used for the download — always "wifi" | "mobile_data" |
+      // "unknown", never blank/null, so this Firebase dimension has no (not set).
+      network_type: safeStr(networkType, "unknown"),
     });
   } catch (error) {
     logError(new Error(`track_download tracking failed - ${error?.message || "Unknown error"}`));
@@ -235,6 +238,27 @@ const trackScrollProgress = async (baniID, baniTitle, scrollPercent, syncScrollE
     });
   } catch (error) {
     logError(new Error(`scroll_progress tracking failed - ${error?.message || "Unknown error"}`));
+  }
+};
+
+// The audio player's form, and every conversion between the three of them:
+//
+//   full  — the whole control bar
+//   mini  — the floating pill: progress circle + track name
+//   micro — the pill collapsed to just the circle
+//
+// One event with a `form` param rather than an event per transition, so the
+// funnel can be read either way round in Firebase: how often each form is
+// reached, and what caused it. `trigger` is one of
+//   reader_tap | scroll_up | scroll_down | idle | mini_tap | pause | control.
+const trackPlayerForm = async (form, trigger) => {
+  try {
+    await logEvent(analytics, "audio_player_form", {
+      form: safeStr(form, "unknown"),
+      trigger: safeStr(trigger, "unknown"),
+    });
+  } catch (error) {
+    logError(new Error(`audio_player_form tracking failed - ${error?.message || "Unknown error"}`));
   }
 };
 
@@ -314,6 +338,7 @@ export {
   allowTracking,
   trackReaderEvent,
   trackNavBar,
+  trackPlayerForm,
   trackSettingEvent,
   trackReminderEvent,
   trackScreenView,

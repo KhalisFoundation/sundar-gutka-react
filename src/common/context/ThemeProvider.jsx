@@ -44,10 +44,10 @@ const ThemeProvider = ({ children }) => {
       // active they would paint their navy straight back over the theme.
       //
       // KNOWN: only `c` is themed. The screens still on the legacy
-      // `theme.colors` / `staticColors` maps (ReminderOptions, FolderScreen,
-      // the Audio settings row — see src/theme/legacyColors.js) keep the plain
-      // light/dark colours under a designed theme, so they don't match it.
-      // Fixed as each screen moves to `c` in its upcoming feature PR.
+      // `theme.colors` / `staticColors` maps (ReminderOptions, FolderScreen —
+      // see src/theme/legacyColors.js) keep the plain light/dark colours under
+      // a designed theme, so they don't match it. Fixed as each screen moves to
+      // `c` in its upcoming feature PR.
       const record = byId[themeMode];
       return { ...base, c: { ...base.c, ...record.app }, designedTheme: themeMode };
     }

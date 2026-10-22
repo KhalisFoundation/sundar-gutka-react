@@ -95,13 +95,6 @@ export default {
   PORTRAIT: "PORTRAIT",
   LANDSCAPE: "LANDSCAPE",
   REMOTE_DB_URL: "https://banidb.blob.core.windows.net/database",
-  // Audio + lyrics assets are served via the Azure Front Door CDN
-  // (origin: banidb.blob.core.windows.net). The database stays on the raw blob.
-  AUDIO_BASE_URL: "https://gurbani-audios-c4abhzghhnccd5gj.z01.azurefd.net/audios",
-  BASIC_AUTH_USERNAME: "admin",
-  BASIC_AUTH_PASSWORD: "",
-  REMOTE_AUDIO_API_URL:
-    "https://sttm-audio-api-v2.salmonriver-80392db4.eastus.azurecontainerapps.io/v1",
   CHOPAYI_SAHIB_ID: 9,
   REHRAAS_SAHIB_ID: 21,
   BANI_IDS_WITH_LENGTH_VARIANTS: [9, 21, 23],
@@ -121,6 +114,33 @@ export default {
   // Reading themes served by the backend (public, no auth), merged over the
   // bundled set — see theme/reader/registry.
   THEMES_API_URL: `${KHALIS_API_BASE}/themes`,
+  // Khalis audio catalog (public, no auth): GET /audios/:baniId. This is the
+  // SINGLE, authoritative source for the audio manifest — reciters, track URLs,
+  // durations, sizes and lyrics URLs all live server-side, so adding/changing a
+  // track is a backend data change, never an app release. The app never falls
+  // back to hardcoded track data; its only offline source is the persisted
+  // audioCatalog cache (see reducer.js) that this endpoint populates.
+  AUDIO_API_BASE: `${KHALIS_API_BASE}/audios`,
+  // Bani IDs known to have audio. Used by the eager catalog prefetch
+  // (useAudioCatalogSync) to warm the offline cache, since the backend has no
+  // bulk "all banis" endpoint yet — GET /audios/:id is per-bani only. Banis the
+  // user opens are also cached lazily on visit regardless of this list, so a
+  // newly audio-enabled bani still works when visited; this list only controls
+  // which banis are PRE-warmed for offline. Replace with a catalog endpoint when
+  // the backend ships one. (Integers only — not URLs or track data.)
+  AUDIO_BANI_IDS: [2, 4, 6, 9, 10, 21, 23, 1000],
+  // A cached bani manifest older than this is refreshed from the network on the
+  // next visit / catalog sync (while online). Stale-but-present cache is always
+  // used immediately; the refresh happens in the background.
+  AUDIO_CATALOG_TTL_MS: 24 * 60 * 60 * 1000,
+  // Max parallel manifest fetches during the eager catalog prefetch, so a cold
+  // sync never fans out ~30 simultaneous requests on a low-end device.
+  AUDIO_CATALOG_SYNC_CONCURRENCY: 4,
+  // How long after launch the eager catalog sweep may begin. The sweep has no
+  // deadline at all — its cache is read on the NEXT visit to a bani — while
+  // everything it competes with at launch does: on a fresh install the bundled
+  // DB seed alone is multiple seconds of I/O. Measured on device.
+  AUDIO_CATALOG_SYNC_DELAY_MS: 12000,
   // How long after launch the reading-theme catalogue may be topped up. It is
   // ONE small request, read only when the theme picker is opened, so it has no
   // launch deadline, while the DB seed and the first Home mount do.

@@ -1,20 +1,21 @@
 import React, { useEffect } from "react";
-import { View, ScrollView, Pressable, ActivityIndicator } from "react-native";
+import { View, ScrollView, Pressable } from "react-native";
 import { useSelector, useDispatch } from "react-redux";
 import PropTypes from "prop-types";
 import { toggleAudioAutoPlay, toggleAudioSyncScroll, setAudioPlaybackSpeed } from "@common/actions";
-import useTheme from "@common/context";
-import useThemedStyles from "@common/hooks/useThemedStyles";
-import { PlusIcon, MinusIcon } from "@common/icons";
-import { STRINGS, CustomText, ThemedSwitch } from "@common";
+import { Spinner } from "@common/components/ui";
+import { PlusIcon, MinusIcon, ChevronRight } from "@common/icons";
+import { STRINGS, CustomText, ThemedSwitch, navigate } from "@common";
 import { audioSettingModalStyles } from "../style";
+import { useAudioTheme, useAudioThemedStyles } from "../useAudioTheme";
 
-const AudioSettingsModal = ({ isLyricsAvailable, isLyricsChecking, setRate }) => {
-  const { theme } = useTheme();
-  const styles = useThemedStyles(audioSettingModalStyles);
+const AudioSettingsModal = ({ isLyricsAvailable, isLyricsChecking = false, setRate }) => {
+  const { theme } = useAudioTheme();
+  const styles = useAudioThemedStyles(audioSettingModalStyles);
   const isAudioAutoPlay = useSelector((state) => state.isAudioAutoPlay);
   const isAudioSyncScroll = useSelector((state) => state.isAudioSyncScroll);
   const audioPlaybackSpeed = useSelector((state) => state.audioPlaybackSpeed);
+  useSelector((state) => state.language); // re-render on language change so STRINGS labels update
   const dispatch = useDispatch();
 
   const handleSpeedChange = async (value) => {
@@ -56,17 +57,28 @@ const AudioSettingsModal = ({ isLyricsAvailable, isLyricsChecking, setRate }) =>
             <View style={styles.modalContainer}>
               <CustomText style={styles.settingItemTitle}>{setting.title}</CustomText>
               <View style={styles.settingHelperTextContainer}>
+                {/* eslint-disable-next-line no-nested-ternary -- unavailable / checking / switch states */}
                 {setting.disabled && !isLyricsAvailable && !isLyricsChecking ? (
                   <CustomText style={styles.settingHelperText}>
                     {STRINGS.SYNC_UNAVAILABLE}
                   </CustomText>
                 ) : setting.disabled && isLyricsChecking ? (
-                  <ActivityIndicator size="small" color={theme.colors.primary} />
+                  <Spinner size="small" color={theme.c.textBrand} />
                 ) : (
                   <ThemedSwitch
                     value={setting.defaultValue}
                     onValueChange={setting.onValueChange}
                     disabled={setting.disabled}
+                    // Passed explicitly because ThemedSwitch reads useTokens(),
+                    // which goes through the APP ThemeContext and never sees the
+                    // reading-theme scope this sheet is built from. Without
+                    // these the toggles stayed the app's blue on a themed panel.
+                    // The thumb takes `surface` — the sheet's own ground — which
+                    // is what both tracks are contrast-checked against.
+                    onTrackColor={theme.c.controlAccent}
+                    offTrackColor={theme.c.controlTrackOff}
+                    onThumbColor={theme.c.surface}
+                    offThumbColor={theme.c.surface}
                   />
                 )}
               </View>
@@ -83,9 +95,9 @@ const AudioSettingsModal = ({ isLyricsAvailable, isLyricsChecking, setRate }) =>
               onPress={() => handleSpeedChange(audioPlaybackSpeed - 0.1)}
               disabled={audioPlaybackSpeed <= 0.5}
             >
-              <MinusIcon size={24} color={theme.colors.audioSettingsModalText} />
+              <MinusIcon size={24} color={theme.c.textSecondary} />
             </Pressable>
-            <CustomText style={styles.settingItemTitle}>
+            <CustomText style={styles.settingValueText}>
               {audioPlaybackSpeed.toFixed(1)}x
             </CustomText>
             <Pressable
@@ -94,10 +106,18 @@ const AudioSettingsModal = ({ isLyricsAvailable, isLyricsChecking, setRate }) =>
               onPress={() => handleSpeedChange(audioPlaybackSpeed + 0.1)}
               disabled={audioPlaybackSpeed > 1.6}
             >
-              <PlusIcon size={24} color={theme.colors.audioSettingsModalText} />
+              <PlusIcon size={24} color={theme.c.textSecondary} />
             </Pressable>
           </View>
         </View>
+        {/* Jump to the Manage Downloads screen — moved here from the track
+            picker footer. Navigates above the Reader; the audio overlay stays
+            mounted so Back returns to the player. */}
+        <View style={styles.divider} />
+        <Pressable style={styles.modalContainer} onPress={() => navigate("ManageDownloads")}>
+          <CustomText style={styles.settingItemTitle}>{STRINGS.MANAGE_DOWNLOADS}</CustomText>
+          <ChevronRight size={22} color={theme.c.textSecondary} />
+        </Pressable>
       </View>
     </ScrollView>
   );
