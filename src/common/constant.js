@@ -1,4 +1,4 @@
-// Khalis backend base URL (reading themes today; Seva and Dashboard later).
+// Khalis backend base URL (reading themes, audio and Seva; Dashboard later).
 const KHALIS_API_BASE = "https://users.khalis.net";
 
 export default {
@@ -16,6 +16,7 @@ export default {
   ANMOL_LIPI: "AnmolLipiSG",
   READER: "Reader",
   SETTINGS: "Settings",
+  SEVA: "Seva",
   EXTRA_SMALL: "EXTRA_SMALL",
   SMALL: "SMALL",
   MEDIUM: "MEDIUM",
@@ -111,6 +112,12 @@ export default {
   // My Pothi switch. Off until the My Pothi PR: the Reader's add-to-pothi button
   // reads it, and there are no pothis to add to yet.
   POTHI_ENABLED: false,
+  SEVA_CONFIG_API_URL: `${KHALIS_API_BASE}/seva/config`,
+  // "Seva by other means" pages (public, no auth). Each returns a translated,
+  // constrained HTML content fragment the app renders natively and caches (per
+  // page + language) for offline use. The path segment matches the page key
+  // sent by services/sevaMeans.js.
+  SEVA_MEANS_API_BASE: KHALIS_API_BASE,
   // Reading themes served by the backend (public, no auth), merged over the
   // bundled set — see theme/reader/registry.
   THEMES_API_URL: `${KHALIS_API_BASE}/themes`,

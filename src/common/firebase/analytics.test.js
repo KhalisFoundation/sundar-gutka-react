@@ -14,6 +14,7 @@ import {
   trackReaderEvent,
   trackReminderEvent,
   trackScreenView,
+  trackSevaEvent,
 } from "./analytics";
 import { logError } from "./crashlytics";
 import { initializePerformanceMonitoring } from "./performance";
@@ -687,5 +688,90 @@ describe("canonical artist names — only approved display names used in events"
     expect(params.artist).toBe("Jarnail Singh");
     // Confirms upstream canonicalization is required; raw API name would be wrong
     expect(CANONICAL_NAMES).not.toContain(params.artist);
+  });
+});
+
+// ─────────────────────────────────────────────────────────────────────────────
+// Seva funnel — in-app observable events only; every param non-null/non-empty
+// ─────────────────────────────────────────────────────────────────────────────
+
+describe("trackSevaEvent — observable funnel", () => {
+  it("maps payment_started to seva_payment_started", async () => {
+    await trackSevaEvent("payment_started", {
+      provider: "qgiv",
+      donation_type: "one_time",
+      amount_bucket: "50_99",
+    });
+    expect(lastEventName()).toBe("seva_payment_started");
+  });
+
+  it("maps payment_success to seva_payment_success (browser-open conversion proxy)", async () => {
+    await trackSevaEvent("payment_success", {
+      provider: "qgiv",
+      donation_type: "recurring",
+      amount_bucket: "50_99",
+    });
+    expect(lastEventName()).toBe("seva_payment_success");
+    expect(lastParams()).toEqual({
+      provider: "qgiv",
+      donation_type: "recurring",
+      amount_bucket: "50_99",
+    });
+  });
+
+  it("maps checkout_abandoned to seva_checkout_abandoned", async () => {
+    await trackSevaEvent("checkout_abandoned", {
+      last_step_reached: "amount_selected",
+      donation_type: "recurring",
+    });
+    expect(lastEventName()).toBe("seva_checkout_abandoned");
+    expect(lastParams()).toEqual({
+      last_step_reached: "amount_selected",
+      donation_type: "recurring",
+    });
+  });
+
+  it("coerces booleans to 'true'/'false' and keeps valid strings", async () => {
+    await trackSevaEvent("amount_selected", {
+      is_custom: false,
+      amount_bucket: "100_249",
+      donation_type: "recurring",
+    });
+    expect(lastEventName()).toBe("seva_amount_selected");
+    expect(lastParams()).toEqual({
+      is_custom: "false",
+      amount_bucket: "100_249",
+      donation_type: "recurring",
+    });
+  });
+
+  it("drops null/undefined/empty params — never emits (not set)", async () => {
+    await trackSevaEvent("payment_started", {
+      provider: "qgiv",
+      donation_type: "one_time",
+      amount_bucket: "100_249",
+      nothing: null,
+      missing: undefined,
+      blank: "   ",
+    });
+    const params = lastParams();
+    expect(params).toEqual({
+      provider: "qgiv",
+      donation_type: "one_time",
+      amount_bucket: "100_249",
+    });
+    Object.values(params).forEach((value) => {
+      expect(value).not.toBeNull();
+      expect(value).not.toBeUndefined();
+      expect(String(value).trim()).not.toBe("");
+    });
+  });
+
+  it("does not throw when logEvent rejects", async () => {
+    logEvent.mockRejectedValueOnce(new Error("err"));
+    await expect(
+      trackSevaEvent("payment_started", { provider: "qgiv", donation_type: "one_time" })
+    ).resolves.toBeUndefined();
+    expect(logError).toHaveBeenCalled();
   });
 });

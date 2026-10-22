@@ -19,8 +19,9 @@ import { NATURAL_LINE_BOX } from "./lineHeight";
 const ROOT = path.join(__dirname, "..");
 
 const GUARDED = [
-  // The Seva, Dashboard and onboarding screens join this list with their own
-  // PRs.
+  // The Dashboard and onboarding screens join this list with their own PRs.
+  "SevaScreen/styles.js",
+  "SevaScreen/sevaMeansStyles.js",
   "DatabaseUpdate/components/styles.jsx",
   "ReaderScreen/components/AudioPlayer/style.js",
   "ManageDownloads/styles.js",

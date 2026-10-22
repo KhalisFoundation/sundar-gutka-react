@@ -321,6 +321,35 @@ const namespacedTracker =
     }
   };
 
+// Seva donation funnel — IN-APP, OBSERVABLE steps only. Funnel:
+//   opened (landing) → frequency_changed (donation type) → amount_selected
+//   → payment_started (Donate tapped) → payment_success (Qgiv handoff opened).
+// On exit before the handoff we emit checkout_abandoned with the furthest step
+// reached. A visit is a FOCUS of the Seva tab, not a mount — the tab stays
+// mounted once visited, so opened/checkout_abandoned are emitted per visit.
+// below_minimum sits off to the side of the funnel: the donor tapped Donate and
+// was refused because the amount was under what Qgiv can charge, so no
+// payment_started follows. Without it those donors are indistinguishable from
+// the ones who simply left, since both end the visit at amount_selected.
+// NOTE on payment_success: real payment confirmation lives on Qgiv, which the
+// app hands off to in the in-app browser and cannot observe. Per product
+// decision, OPENING the Qgiv handoff is counted as a successful donation, so
+// payment_success fires on browser-open — it is a conversion proxy, not a
+// Qgiv-confirmed payment. Donor details, payment failures and locality remain
+// unobservable and are not emitted.
+// Call sites always pass real values for the required dimensions (donation_type,
+// amount_bucket, last_step_reached).
+const SEVA_EVENT_NAMES = {
+  opened: "seva_opened",
+  frequency_changed: "seva_frequency_changed",
+  amount_selected: "seva_amount_selected",
+  below_minimum: "seva_amount_below_minimum",
+  payment_started: "seva_payment_started",
+  payment_success: "seva_payment_success",
+  checkout_abandoned: "seva_checkout_abandoned",
+};
+const trackSevaEvent = namespacedTracker(SEVA_EVENT_NAMES, "seva");
+
 // Reading themes. `selected` carries `theme_id`, `previous` and `source`
 // (bundled | remote), so a theme served from the backend is measurable
 // against the shipped ones. `picker_opened` is its denominator — how many
@@ -335,6 +364,7 @@ const trackThemeEvent = namespacedTracker(THEME_EVENT_NAMES, "theme");
 
 export {
   trackThemeEvent,
+  trackSevaEvent,
   allowTracking,
   trackReaderEvent,
   trackNavBar,

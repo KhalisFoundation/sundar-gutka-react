@@ -39,6 +39,12 @@ const HomeScreen = React.memo(({ navigation }) => {
   const dispatch = useDispatch();
 
   useEffect(() => {
+    navigation.setOptions({
+      tabBarStyle: baniLengthSelector ? { display: "none" } : undefined,
+    });
+  }, [baniLengthSelector, navigation]);
+
+  useEffect(() => {
     (async () => {
       await allowTracking(isStatistics);
     })();
@@ -93,10 +99,14 @@ const HomeScreen = React.memo(({ navigation }) => {
   // strip of the semantic background shows above or behind the header.
   const baniGround = paletteFor("baniList", theme).surface;
 
+  // No "bottom" edge below: this screen is a TAB, and the tab bar the navigator
+  // draws under it is a `BottomNavigation`, which reserves and paints the bottom
+  // inset itself. Reserving it here as well banded the foot of the list with a
+  // second strip of `baniGround` for the rows to disappear behind.
   return baniLengthSelector ? (
     <BaniLengthSelector />
   ) : (
-    <SafeArea backgroundColor={baniGround} edges={["bottom", "left", "right"]}>
+    <SafeArea backgroundColor={baniGround} edges={["left", "right"]}>
       <StatusBarComponent backgroundColor={baniGround} />
       <View style={[{ backgroundColor: baniGround }, styles.container]}>
         <BaniHeader navigate={navigate} />
@@ -107,7 +117,10 @@ const HomeScreen = React.memo(({ navigation }) => {
 });
 
 HomeScreen.propTypes = {
-  navigation: PropTypes.shape({ navigate: PropTypes.func.isRequired }).isRequired,
+  navigation: PropTypes.shape({
+    navigate: PropTypes.func.isRequired,
+    setOptions: PropTypes.func.isRequired,
+  }).isRequired,
 };
 
 export default HomeScreen;

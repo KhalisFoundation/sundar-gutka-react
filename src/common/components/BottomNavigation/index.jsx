@@ -1,14 +1,15 @@
-import React, { useEffect, useCallback, useRef } from "react";
-import { View, Pressable, Animated, Platform } from "react-native";
+import React, { useState, useEffect, useCallback, useRef } from "react";
+import { View, Pressable, Animated, AppState, Platform } from "react-native";
 import { useSafeAreaInsets } from "react-native-safe-area-context";
 import { useDispatch, useSelector } from "react-redux";
 import { useNavigation } from "@react-navigation/native";
 import components, { bottomNavInset } from "@theme/components";
 import { useReaderScopedTheme, useReaderScopedStyles } from "@theme/reader";
 import PropTypes from "prop-types";
-import { ListIcon, SettingsIcon, MusicIcon, ReadIcon } from "@common/icons";
+import { ListIcon, SettingsIcon, MusicIcon, ReadIcon, SevaIcon } from "@common/icons";
 import { pauseTrack } from "@common/TrackPlayerUtils";
 import { CustomText, actions, constant, STRINGS, SafeArea } from "@common";
+import { getSevaConfig, subscribeSevaDot } from "../../../services/sevaConfig";
 import createStyles from "./style";
 
 const BottomNavigation = ({
@@ -26,8 +27,8 @@ const BottomNavigation = ({
   // follows context — but Settings opened from the Reader keeps the reader
   // buttons while explicitly opting out of the theme.
   //
-  // Off the Reader this resolves to false, so screens outside it keep the app
-  // appearance.
+  // Off the Reader this resolves to false, so the Home, Seva and Settings tabs
+  // are untouched and keep the app appearance.
   const wearsReadingTheme = themed ?? context === "reader";
   const { theme } = useReaderScopedTheme("nav", wearsReadingTheme);
   const styles = useReaderScopedStyles(createStyles, "nav", wearsReadingTheme);
@@ -42,7 +43,11 @@ const BottomNavigation = ({
   const isAudio = useSelector((state) => state.isAudio);
   const isAutoScroll = useSelector((state) => state.isAutoScroll);
   const isAudioFeatureEnabled = useSelector((state) => state.isAudioFeatureEnabled);
+  const language = useSelector((state) => state.language); // also drives the Seva content language
   const isAudioFeatureOn = isAudioFeatureEnabled ?? true;
+
+  // 0 = no dot, 1 = plain dot, 2+ = numbered badge (see render below).
+  const [sevaDotCount, setSevaDotCount] = useState(0);
 
   const translateY = useRef(new Animated.Value(0)).current;
 
@@ -69,10 +74,71 @@ const BottomNavigation = ({
     };
   }, [visible, translateY]);
 
+  // Load the seva dot state from config, then stay subscribed: markSevaSeen()
+  // (fired when the user opens the Seva page) pushes an immediate clear here, so
+  // the dot disappears without waiting for the next refetch. Also re-checks on
+  // every foreground, so a version bump pushed while the app was already open
+  // surfaces without a relaunch. Only the home tab bar shows the Seva tab, so
+  // the Reader's bar does not fetch.
+  useEffect(() => {
+    if (context !== "home") return undefined;
+    let cancelled = false;
+    const refresh = () => {
+      getSevaConfig(language)
+        .then((cfg) => {
+          if (!cancelled) setSevaDotCount(cfg?.sevaDotCount ?? 0);
+        })
+        .catch(() => {});
+    };
+    refresh();
+    const unsubscribe = subscribeSevaDot((count) => {
+      if (!cancelled) setSevaDotCount(count);
+    });
+    const appStateSub = AppState.addEventListener("change", (state) => {
+      if (state === "active") refresh();
+    });
+    return () => {
+      cancelled = true;
+      unsubscribe();
+      appStateSub.remove();
+    };
+  }, [context, language]);
+
   // Connectivity is handled globally and event-driven now: NetworkProvider is
   // the single source of truth, and useOfflinePlaybackGuard (mounted once in
   // GlobalServices) pauses streaming playback when real internet is lost. The
   // old per-instance polling watchdog that lived here has been removed.
+
+  // Home tab bar items. The Dashboard tab arrives with the Dashboard.
+  const homeNavigationItems = [
+    {
+      key: "Home",
+      // "All Banis" list tab — a list icon + label instead of the old Home
+      // house icon / "Home" string (the Home tab IS the full Banis list).
+      icon: ListIcon,
+      handlePress: () => {
+        navigation.navigate("Home");
+      },
+      text: STRINGS.ALL_BANIS,
+    },
+    {
+      key: "Seva",
+      icon: SevaIcon,
+      showDot: sevaDotCount,
+      handlePress: () => {
+        navigation.navigate(constant.SEVA);
+      },
+      text: STRINGS.SEVA,
+    },
+    {
+      key: "Settings",
+      icon: SettingsIcon,
+      handlePress: () => {
+        navigation.navigate(constant.SETTINGS);
+      },
+      text: STRINGS.SETTINGS,
+    },
+  ];
 
   // Reader-specific navigation items (strictly matches all logic & dispatches)
   const readerNavigationItems = [
@@ -148,9 +214,7 @@ const BottomNavigation = ({
     },
   ];
 
-  // The home tab bar (All Banis / Dashboard / Seva / Settings) arrives with the
-  // tab navigator, together with the first of those tabs.
-  const navigationItems = readerNavigationItems;
+  const navigationItems = context === "reader" ? readerNavigationItems : homeNavigationItems;
 
   return (
     <Animated.View
@@ -205,6 +269,22 @@ const BottomNavigation = ({
                         size={24}
                         color={item.key === activeKey ? theme.c.primary : theme.c.onPrimary}
                       />
+                      {item.showDot > 0 && (
+                        <View
+                          style={[
+                            item.showDot > 1 ? styles.badgeNumbered : styles.badgeDot,
+                            {
+                              borderColor:
+                                item.key === activeKey ? theme.c.onPrimary : theme.c.primary,
+                            },
+                          ]}
+                        >
+                          {/* 1 = plain dot, no text; 2+ = the real count */}
+                          {item.showDot > 1 && (
+                            <CustomText style={styles.badgeText}>{item.showDot}</CustomText>
+                          )}
+                        </View>
+                      )}
                     </View>
                   </View>
                   {activeKey !== item.key && (
@@ -230,7 +310,7 @@ const BottomNavigation = ({
 
 BottomNavigation.propTypes = {
   activeKey: PropTypes.string.isRequired,
-  context: PropTypes.oneOf(["reader"]),
+  context: PropTypes.oneOf(["home", "reader"]),
   visible: PropTypes.bool,
   navigation: PropTypes.shape({
     navigate: PropTypes.func,

@@ -34,6 +34,7 @@ import {
   trackAudioLinkRequest,
   trackScrollProgress,
   trackThemeEvent,
+  trackSevaEvent,
 } from "./firebase/analytics";
 import {
   isNetworkFailure,
@@ -152,6 +153,7 @@ export {
   trackAudioLinkRequest,
   trackScrollProgress,
   trackThemeEvent,
+  trackSevaEvent,
   ThemedSwitch,
   GradientDivider,
   useCustomScrollbar,

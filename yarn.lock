@@ -2449,51 +2449,64 @@
     invariant "^2.2.4"
     nullthrows "^1.1.1"
 
-"@react-navigation/core@^7.7.0":
-  version "7.12.0"
-  resolved "https://registry.npmjs.org/@react-navigation/core/-/core-7.12.0.tgz"
-  integrity sha512-Ldy0WBoK39F/7uxnfTMefqjw37iU2Hmx6Eh1vn3g2dHkHYnkoxBJQGbqB49QWsFVOgbxr74tt1Dpg7o4ILEiXg==
+"@react-navigation/bottom-tabs@7.18.14":
+  version "7.18.14"
+  resolved "https://registry.yarnpkg.com/@react-navigation/bottom-tabs/-/bottom-tabs-7.18.14.tgz#24fb78948fb06ef7a19b4ff0d596c1d6d643bdbf"
+  integrity sha512-A3V9rDSut459TBPtkD7rb0npUUBlJBfMunyRT5nOGKqPguhuXWk1h91NfQMuqyW2DCUvvFZChzsbLbj42rXTdQ==
   dependencies:
-    "@react-navigation/routers" "^7.4.1"
+    "@react-navigation/elements" "^2.9.36"
+    color "^4.2.3"
+    sf-symbols-typescript "^2.1.0"
+
+"@react-navigation/core@^7.21.11":
+  version "7.21.11"
+  resolved "https://registry.yarnpkg.com/@react-navigation/core/-/core-7.21.11.tgz#dfc9c85f297755fe94c69b34b94df0982c4bf45f"
+  integrity sha512-bCW1PsLA/eOXDOukcJFEzlcL3Zpy8DJuDCfkDDwAQlAgoSZ/J9+ZeDRUMmCUi6xbnFgvFEEIMertaLeErOFP0Q==
+  dependencies:
+    "@react-navigation/routers" "^7.6.4"
     escape-string-regexp "^4.0.0"
+    fast-deep-equal "^3.1.3"
     nanoid "^3.3.11"
     query-string "^7.1.3"
     react-is "^19.1.0"
     use-latest-callback "^0.2.4"
     use-sync-external-store "^1.5.0"
 
-"@react-navigation/elements@^2.3.1":
-  version "2.4.6"
-  resolved "https://registry.npmjs.org/@react-navigation/elements/-/elements-2.4.6.tgz"
-  integrity sha512-G9J9BjR3YNrPbWtjLKBY2pxN9rNYM6Xxyr/LTWK+Ke6UIk2UA4pWFw52WhenWyZw+zFk2wyj1G+VS7UNO40NKQ==
+"@react-navigation/elements@^2.9.36":
+  version "2.9.36"
+  resolved "https://registry.yarnpkg.com/@react-navigation/elements/-/elements-2.9.36.tgz#b060502ed97768f719b604dc9b652031babded1a"
+  integrity sha512-+10x9s5v2Q7FwAYdSmPMgILtxZyC5e4hWJQu8g5o3u4p8DUToTBmGvys/UvmEr+h9xmm0Go42qw9Ff2ape53kQ==
   dependencies:
     color "^4.2.3"
     use-latest-callback "^0.2.4"
     use-sync-external-store "^1.5.0"
 
-"@react-navigation/native-stack@7.3.3":
-  version "7.3.3"
-  resolved "https://registry.npmjs.org/@react-navigation/native-stack/-/native-stack-7.3.3.tgz"
-  integrity sha512-piUO4MzYPrdiolrB/FKU25216MPQHd+90tIE2uwqioRLzEAcv78f0Pugi2Hp7RSOMmNjLIIGk6QMwZqr/ot9KQ==
+"@react-navigation/native-stack@7.18.6":
+  version "7.18.6"
+  resolved "https://registry.yarnpkg.com/@react-navigation/native-stack/-/native-stack-7.18.6.tgz#71ed9d2a28368bd46d8dded050dbffd9d818f090"
+  integrity sha512-KuvvSBddHrbKC4c6yKz+UCFey2xgTuPQHgjf2wJQAvA7JM8jCQa3G1+QzhO6d44nYNKir3y6EounXZvQE/BX6w==
   dependencies:
-    "@react-navigation/elements" "^2.3.1"
+    "@react-navigation/elements" "^2.9.36"
+    color "^4.2.3"
+    sf-symbols-typescript "^2.1.0"
     warn-once "^0.1.1"
 
-"@react-navigation/native@7.0.19":
-  version "7.0.19"
-  resolved "https://registry.npmjs.org/@react-navigation/native/-/native-7.0.19.tgz"
-  integrity sha512-6UDTFVM91FIUaXF5OZ7GHb+XZK6yAktqdTOBOtn3goIyafKz0OUo+ukxe+tPGpr+E9ZQjdZDCseIH6HOI/k8rw==
+"@react-navigation/native@7.3.14":
+  version "7.3.14"
+  resolved "https://registry.yarnpkg.com/@react-navigation/native/-/native-7.3.14.tgz#d846d80b7036fad3a1f1a2f37aa69e020eebe145"
+  integrity sha512-hcKTDNBuuAA1/xW6QeKYmMPVhk5W9dKGQpPmn5dQeeePwMpu5OZ14NOgwKH0w9D3tg2jupojTcVL0tsx5DTFXg==
   dependencies:
-    "@react-navigation/core" "^7.7.0"
+    "@react-navigation/core" "^7.21.11"
     escape-string-regexp "^4.0.0"
     fast-deep-equal "^3.1.3"
-    nanoid "3.3.8"
-    use-latest-callback "^0.2.1"
+    nanoid "^3.3.11"
+    standard-navigation "^0.0.8"
+    use-latest-callback "^0.2.4"
 
-"@react-navigation/routers@^7.4.1":
-  version "7.4.1"
-  resolved "https://registry.npmjs.org/@react-navigation/routers/-/routers-7.4.1.tgz"
-  integrity sha512-42mZrMzQ0LfKxUb5OHIurYrPYyRsXFLolucILrvm21f0O40Sw0Ufh1bnn/jRqnxZZu7wvpUGIGYM8nS9zVE1Aw==
+"@react-navigation/routers@^7.6.4":
+  version "7.6.4"
+  resolved "https://registry.yarnpkg.com/@react-navigation/routers/-/routers-7.6.4.tgz#7b0dfa19f9fef0ab1588c9dbfc7f7616fced3ff8"
+  integrity sha512-GI7eJm8/KsZUQaYcXvEExikKurRZRgEsSzyZ7faENfi65yqJBCXjDMwyN1pF6pNW1MoLH1ErDwDivFxY6BzD3w==
   dependencies:
     nanoid "^3.3.11"
 
@@ -3906,7 +3919,7 @@ decimal.js@^10.4.2:
 
 decode-uri-component@^0.2.2:
   version "0.2.2"
-  resolved "https://registry.npmjs.org/decode-uri-component/-/decode-uri-component-0.2.2.tgz"
+  resolved "https://registry.yarnpkg.com/decode-uri-component/-/decode-uri-component-0.2.2.tgz#e69dbe25d37941171dd540e024c444cd5188e1e9"
   integrity sha512-FqUYQ+8o158GyGTrMFJms9qh3CqTKvAqgqsTnkLI8sKu0028orqBhxNMFkFen0zGyg6epACD32pjVk58ngIErQ==
 
 dedent@^1.0.0:
@@ -4701,7 +4714,7 @@ fill-range@^7.1.1:
 
 filter-obj@^1.1.0:
   version "1.1.0"
-  resolved "https://registry.npmjs.org/filter-obj/-/filter-obj-1.1.0.tgz"
+  resolved "https://registry.yarnpkg.com/filter-obj/-/filter-obj-1.1.0.tgz#9b311112bc6c6127a16e016c6c5d7f19e0805c5b"
   integrity sha512-8rXg1ZnX7xzy2NGDVkBVaAy+lSlPNwad13BtgSlLuxfIslyt5Vg64U7tFcCt4WS1R0hvtnQybT/IyCkGZ3DpXQ==
 
 finalhandler@1.1.2:
@@ -6682,11 +6695,6 @@ ms@2.1.3, ms@^2.1.1, ms@^2.1.3:
   resolved "https://registry.npmjs.org/ms/-/ms-2.1.3.tgz"
   integrity sha512-6FlzubTLZG3J2a/NVCAleEhjzq5oxgHyaCU9yYXvcLsvoVaHJq/s5xXI6/XXP6tz7R9xAOtHnSO/tXtF3WRTlA==
 
-nanoid@3.3.8:
-  version "3.3.8"
-  resolved "https://registry.npmjs.org/nanoid/-/nanoid-3.3.8.tgz"
-  integrity sha512-WNLf5Sd8oZxOm+TzppcYk8gVOgP+l58xNy58D0nbUnOxOWRWvlcCV4kUF7ltmI6PsrLl/BgKEyS4mqsGChFN0w==
-
 nanoid@^3.3.11:
   version "3.3.11"
   resolved "https://registry.npmjs.org/nanoid/-/nanoid-3.3.11.tgz"
@@ -7215,7 +7223,7 @@ pure-rand@^6.0.0:
 
 query-string@^7.1.3:
   version "7.1.3"
-  resolved "https://registry.npmjs.org/query-string/-/query-string-7.1.3.tgz"
+  resolved "https://registry.yarnpkg.com/query-string/-/query-string-7.1.3.tgz#a1cf90e994abb113a325804a972d98276fe02328"
   integrity sha512-hh2WYhq4fi8+b+/2Kg9CEge4fDPvHS534aOOvOZeQ3+Vf2mCFsaFBYj0i+iXcAq6I9Vzp5fjMFBlONvayDC1qg==
   dependencies:
     decode-uri-component "^0.2.2"
@@ -7905,6 +7913,11 @@ setprototypeof@1.2.0:
   resolved "https://registry.npmjs.org/setprototypeof/-/setprototypeof-1.2.0.tgz"
   integrity sha512-E5LDX7Wrp85Kil5bhZv46j8jOeboKq5JMmYM3gVGdGH8xFpPWXUMsNrlODCrkoxMEeNi/XZIwuRvY4XNwYMJpw==
 
+sf-symbols-typescript@^2.1.0:
+  version "2.2.0"
+  resolved "https://registry.yarnpkg.com/sf-symbols-typescript/-/sf-symbols-typescript-2.2.0.tgz#926d6e0715e3d8784cadf7658431e36581254208"
+  integrity sha512-TPbeg0b7ylrswdGCji8FRGFAKuqbpQlLbL8SOle3j1iHSs5Ob5mhvMAxWN2UItOjgALAB5Zp3fmMfj8mbWvXKw==
+
 shallow-clone@^3.0.0:
   version "3.0.1"
   resolved "https://registry.npmjs.org/shallow-clone/-/shallow-clone-3.0.1.tgz"
@@ -8043,7 +8056,7 @@ source-map@^0.6.0, source-map@^0.6.1, source-map@~0.6.1:
 
 split-on-first@^1.0.0:
   version "1.1.0"
-  resolved "https://registry.npmjs.org/split-on-first/-/split-on-first-1.1.0.tgz"
+  resolved "https://registry.yarnpkg.com/split-on-first/-/split-on-first-1.1.0.tgz#f610afeee3b12bce1d0c30425e76398b78249a5f"
   integrity sha512-43ZssAJaMusuKWL8sKUBQXHWOpq8d6CfN/u1p4gUzfJkM05C8rxTmYrkIPTXapZpORA6LkkzcUulJ8FqA7Uudw==
 
 sprintf-js@~1.0.2:
@@ -8094,6 +8107,11 @@ stacktrace-parser@^0.1.10:
   dependencies:
     type-fest "^0.7.1"
 
+standard-navigation@^0.0.8:
+  version "0.0.8"
+  resolved "https://registry.yarnpkg.com/standard-navigation/-/standard-navigation-0.0.8.tgz#aef79bef130ec8ba0a9c070d3a728d96d68df8a8"
+  integrity sha512-TyVbo7INUDWtsUWDFn8RR7kwR87U0S4xHfLfbbnyeC581TmmyqQ+eM+nPw8rQTSD8QitRVcYfPaSHr/QJiUy1g==
+
 statuses@2.0.1:
   version "2.0.1"
   resolved "https://registry.npmjs.org/statuses/-/statuses-2.0.1.tgz"
@@ -8114,7 +8132,7 @@ stop-iteration-iterator@^1.1.0:
 
 strict-uri-encode@^2.0.0:
   version "2.0.0"
-  resolved "https://registry.npmjs.org/strict-uri-encode/-/strict-uri-encode-2.0.0.tgz"
+  resolved "https://registry.yarnpkg.com/strict-uri-encode/-/strict-uri-encode-2.0.0.tgz#b9c7330c7042862f6b142dc274bbcc5866ce3546"
   integrity sha512-QwiXZgpRcKkhTj2Scnn++4PKtWsH0kpzZ62L2R6c/LUVYv7hVnZqcg2+sMuT6R7Jusu1vviK/MFsu6kNJfWlEQ==
 
 string-length@^4.0.1:
@@ -8568,7 +8586,7 @@ url-parse@^1.5.3:
     querystringify "^2.1.1"
     requires-port "^1.0.0"
 
-use-latest-callback@^0.2.1, use-latest-callback@^0.2.4:
+use-latest-callback@^0.2.4:
   version "0.2.4"
   resolved "https://registry.npmjs.org/use-latest-callback/-/use-latest-callback-0.2.4.tgz"
   integrity sha512-LS2s2n1usUUnDq4oVh1ca6JFX9uSqUncTfAm44WMg0v6TxL7POUTk1B044NH8TeLkFbNajIsgDHcgNpNzZucdg==

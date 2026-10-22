@@ -1,9 +1,11 @@
 import React, { useMemo, useRef } from "react";
 import { View } from "react-native";
+import { createBottomTabNavigator } from "@react-navigation/bottom-tabs";
 import { NavigationContainer } from "@react-navigation/native";
 import { createNativeStackNavigator } from "@react-navigation/native-stack";
 import { paletteFor } from "@theme/screenPalettes";
 import { withScreenRoles } from "@theme/ScreenRolesProvider";
+import PropTypes from "prop-types";
 import useTheme from "@common/context";
 import { setReaderFocused } from "@common/readerFocus";
 import {
@@ -16,7 +18,9 @@ import {
 } from "@common";
 import AboutScreen from "../AboutScreen";
 import Bookmarks from "../Bookmarks";
+import BottomNavigation from "../common/components/BottomNavigation";
 import { trackScreenView } from "../common/firebase/analytics";
+import { useNavBarSurface } from "../common/systemBars";
 import DatabaseUpdateScreen from "../DatabaseUpdate";
 import EditBaniOrder from "../EditBaniOrder";
 import FolderScreen from "../FolderScreen";
@@ -26,12 +30,14 @@ import ReaderScreen from "../ReaderScreen";
 import Settings from "../Settings";
 import ReminderOptions from "../Settings/components/reminders/ReminderOptions";
 import Themes from "../Settings/Themes";
+import SevaScreen from "../SevaScreen";
+import SevaMeansScreen from "../SevaScreen/SevaMeansScreen";
 import navigationThemeFor from "./navigationTheme";
 
 // Settings and every utility page reachable from it share one palette — the
-// navy hierarchy the bani list already uses — in dark mode. Declared here
-// because the navigation graph is the place that already says which screens
-// belong to which part of the app.
+// navy hierarchy the bani list and Seva already use — in dark mode. Declared
+// here because the navigation graph is the place that already says which
+// screens belong to which part of the app.
 //
 // Bookmarks is in the list for the same reason the bani list was: its body is
 // a BaniList already drawing the navy ground, so leaving its frame on the
@@ -46,6 +52,75 @@ const BookmarksScreen = withScreenRoles(Bookmarks, "settings");
 const ManageDownloadsScreen = withScreenRoles(ManageDownloads, "settings");
 
 const Stack = createNativeStackNavigator();
+const Tab = createBottomTabNavigator();
+
+// Custom tab bar that uses the refactored context-aware BottomNavigation component
+const CustomTabBar = (props) => {
+  const { state, navigation, descriptors } = props;
+  const currentRoute = state.routes[state.index];
+  const activeKey = currentRoute.name;
+  const currentOptions = descriptors[currentRoute.key]?.options;
+  const isHidden = currentOptions?.tabBarStyle?.display === "none";
+  // The bar is the brand navy, so its glyphs are light. Hidden, it claims
+  // NOTHING — it is still mounted under the Reader and the length screen, and a
+  // hidden bar must not speak for the screen in front of the user. Before the
+  // early return, because hooks cannot run conditionally.
+  useNavBarSurface(isHidden ? null : false);
+
+  if (isHidden) return null;
+
+  return <BottomNavigation activeKey={activeKey} context="home" visible navigation={navigation} />;
+};
+
+CustomTabBar.propTypes = {
+  // Both come from the navigator, keyed by route key, so only the shape this
+  // component actually reads is described. `PropTypes.object` is forbidden and
+  // would say nothing anyway.
+  descriptors: PropTypes.objectOf(
+    PropTypes.shape({ options: PropTypes.shape({ tabBarStyle: PropTypes.shape() }) })
+  ).isRequired,
+  navigation: PropTypes.shape({ navigate: PropTypes.func }).isRequired,
+  state: PropTypes.shape({
+    index: PropTypes.number.isRequired,
+    routes: PropTypes.arrayOf(
+      PropTypes.shape({ key: PropTypes.string.isRequired, name: PropTypes.string.isRequired })
+    ).isRequired,
+  }).isRequired,
+};
+
+// The tab bar is RENDERED as an element rather than handed over as the render
+// prop itself. React Navigation calls `tabBar` as a plain function, so a
+// component passed straight in executes inside BottomTabView's render with no
+// fiber of its own — and any hook it uses is an invalid hook call that takes
+// the app down at launch. Returning an element gives it a fiber. Declared at
+// module scope so it is one stable component type, not a new one per render.
+// eslint-disable-next-line react/jsx-props-no-spreading
+const renderTabBar = (barProps) => <CustomTabBar {...barProps} />;
+
+// Main tab navigator for Home, Seva and Settings. The Dashboard tab arrives
+// with the Dashboard.
+const MainTabs = () => {
+  return (
+    <Tab.Navigator
+      tabBar={renderTabBar}
+      screenOptions={{
+        headerShown: false,
+        tabBarHideOnKeyboard: true,
+      }}
+      // Android back returns to Home from any tab, rather than leaving the app:
+      // with "none" a tab with no back handler of its own (Seva) let the press
+      // fall through to the root stack, which sits at index 0 while the tabs
+      // are showing, and the app exited. "initialRoute" is the platform
+      // convention: back walks toward the start destination, and only Home
+      // itself exits.
+      backBehavior="initialRoute"
+    >
+      <Tab.Screen name="Home" component={HomeScreen} />
+      <Tab.Screen name="Seva" component={SevaScreen} />
+      <Tab.Screen name="Settings" component={SettingsScreen} />
+    </Tab.Navigator>
+  );
+};
 
 const Navigation = () => {
   const { theme } = useTheme();
@@ -155,11 +230,23 @@ const Navigation = () => {
             contentStyle: { backgroundColor: sceneGround },
           }}
         >
-          <Stack.Screen name="Home" component={HomeScreen} options={{ headerShown: false }} />
+          {/* Main tabs - no animation between tabs */}
+          <Stack.Screen
+            name="MainTabs"
+            component={MainTabs}
+            options={{
+              headerShown: false,
+              animation: "none",
+            }}
+          />
+          {/* Stack screens - these push with animation */}
           <Stack.Screen name="Reader" component={ReaderScreen} options={{ headerShown: false }} />
           {/* Screens that draw their own ScreenHeader opt out of the native one
               here, not in an effect, so the native bar never paints for a frame
-              first (the stacked double header). */}
+              first (the stacked double header).
+
+              Settings is also a tab. This stack copy is the one the Reader and
+              a folder push, so Back returns to them. */}
           <Stack.Screen
             name="Settings"
             component={SettingsScreen}
@@ -175,6 +262,11 @@ const Navigation = () => {
           <Stack.Screen
             name="Bookmarks"
             component={BookmarksScreen}
+            options={{ headerShown: false }}
+          />
+          <Stack.Screen
+            name="SevaMeans"
+            component={SevaMeansScreen}
             options={{ headerShown: false }}
           />
           <Stack.Screen name="ReminderOptions" component={ReminderOptionsScreen} />

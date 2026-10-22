@@ -39,6 +39,10 @@ import VishraamComponent from "./components/vishraam";
 
 const Settings = ({ navigation, route = undefined }) => {
   const fromReader = route?.params?.fromReader === true;
+  // The Settings TAB sits on the tab bar; the stack copy pushed from the
+  // Reader shows the Reader's bar. Only the copy pushed from a folder has
+  // neither.
+  const isTab = navigation.getState?.()?.type === "tab";
   // Settings is reachable several ways: pushed onto the root stack (from the
   // Reader OR a Folder) where goBack() pops correctly, OR as a bottom tab from
   // Home where there is no back stack. canGoBack() distinguishes them reliably
@@ -71,11 +75,11 @@ const Settings = ({ navigation, route = undefined }) => {
   const language = useSelector((state) => state.language);
 
   return (
-    // Without the Reader's bottom bar (opened from Home or a folder) nothing
-    // else clears the system navigation bar, so the screen takes that inset.
+    // With no bar below it (opened from a folder) nothing else clears the
+    // system navigation bar, so the screen takes that inset.
     <SafeArea
       backgroundColor={c.backgroundAlt}
-      edges={fromReader ? ["left", "right"] : ["bottom", "left", "right"]}
+      edges={fromReader || isTab ? ["left", "right"] : ["bottom", "left", "right"]}
     >
       <StatusBarComponent backgroundColor={c.backgroundAlt} />
       <ScreenHeader
@@ -153,6 +157,7 @@ const Settings = ({ navigation, route = undefined }) => {
 Settings.propTypes = {
   navigation: PropTypes.shape({
     canGoBack: PropTypes.func,
+    getState: PropTypes.func,
     goBack: PropTypes.func,
     navigate: PropTypes.func,
     setOptions: PropTypes.func,
