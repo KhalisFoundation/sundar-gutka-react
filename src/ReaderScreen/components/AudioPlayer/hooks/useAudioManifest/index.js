@@ -417,10 +417,10 @@ const useAudioManifest = (baniID) => {
     let mappedData = tracksFromGroups(groups);
     const reg = registry || {};
     if ((downloadedTracks && downloadedTracks.length > 0) || Object.keys(reg).length > 0) {
-      mappedData = await mergeDownloadedTracks(mappedData || [], downloadedTracks || [], reg);
+      mappedData = await mergeDownloadedTracks(mappedData, downloadedTracks || [], reg);
     }
 
-    if (mappedData && mappedData.length > 0) {
+    if (mappedData.length > 0) {
       setTracks(mappedData);
       if (currentPlaying) syncCurrentPlaying(mappedData);
       else setDefaultTrack(mappedData);
@@ -532,7 +532,7 @@ const useAudioManifest = (baniID) => {
 
         // Best-effort offline reconstruction: play whatever is already on disk.
         const offlineTracks = audioManifest?.[baniID] || [];
-        if (offlineTracks.length > 0 || Object.keys(downloadRegistry || {}).length > 0) {
+        if (offlineTracks.length > 0 || Object.keys(downloadRegistry).length > 0) {
           try {
             const merged = await mergeDownloadedTracks([], offlineTracks);
             if (merged.length > 0) {
