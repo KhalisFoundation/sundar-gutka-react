@@ -54,6 +54,14 @@ const ManageDownloadsScreen = withScreenRoles(ManageDownloads, "settings");
 const Stack = createNativeStackNavigator();
 const Tab = createBottomTabNavigator();
 
+// The screen actually showing, through nested navigators: the tabs all sit
+// under one root route, so timing that would put Home, Seva and Settings in a
+// single "MainTabs" trace.
+const focusedRouteName = (state) => {
+  const route = state?.routes?.[state.index];
+  return route?.state ? focusedRouteName(route.state) : route?.name;
+};
+
 // Custom tab bar that uses the refactored context-aware BottomNavigation component
 const CustomTabBar = (props) => {
   const { state, navigation, descriptors } = props;
@@ -103,9 +111,10 @@ const MainTabs = () => {
   return (
     <Tab.Navigator
       tabBar={renderTabBar}
+      // No tabBarHideOnKeyboard: it only reaches React Navigation's own bar,
+      // and this one is custom, so the bar stays up over the keyboard.
       screenOptions={{
         headerShown: false,
-        tabBarHideOnKeyboard: true,
       }}
       // Android back returns to Home from any tab, rather than leaving the app:
       // with "none" a tab with no back handler of its own (Seva) let the press
@@ -146,13 +155,12 @@ const Navigation = () => {
         await stopTrace(trace.current);
         trace.current = resetTrace();
       }
-      const currentRouteName = state.routes[state.index].name;
-      trace.current = await startPerformanceTrace(currentRouteName);
+      trace.current = await startPerformanceTrace(focusedRouteName(state));
     } catch (error) {
       // Silently fail - performance monitoring should never crash the app
       logError(
         new Error(
-          `Performance trace failed for route: ${state.routes[state.index]?.name || "unknown"} - ${
+          `Performance trace failed for route: ${focusedRouteName(state) || "unknown"} - ${
             error?.message || "Unknown error"
           }`
         )

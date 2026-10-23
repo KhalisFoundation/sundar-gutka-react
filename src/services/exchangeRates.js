@@ -40,6 +40,13 @@ const REQUIRED = ["CAD", "EUR", "GBP", "AUD", "INR"];
 let liveRates = null;
 let liveFetchedAt = 0;
 let inFlight = null;
+const refreshListeners = new Set();
+
+/** Calls `listener` whenever fresh rates replace the old ones. Returns unsubscribe. */
+export const onRatesRefreshed = (listener) => {
+  refreshListeners.add(listener);
+  return () => refreshListeners.delete(listener);
+};
 
 /**
  * The live rate (local units per USD) for a currency code, or null when we have
@@ -92,6 +99,15 @@ export const refreshExchangeRates = () => {
       liveRates = clean;
       liveFetchedAt = Date.now();
       await persist(clean, liveFetchedAt);
+      // One failing listener must neither starve the others nor turn a
+      // successful refresh into a reported failure.
+      refreshListeners.forEach((listener) => {
+        try {
+          listener(clean);
+        } catch (_) {
+          // a listener's own problem
+        }
+      });
       return clean;
     } catch (_) {
       return null; // offline / aborted / parse error → keep cache + fallback

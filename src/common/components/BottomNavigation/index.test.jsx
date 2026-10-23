@@ -53,7 +53,7 @@ global.fetch = mockFetch;
 
 const createNavigation = ({ currentRoute = "Home" } = {}) => {
   const navigate = jest.fn();
-  const popToTop = jest.fn();
+  const popTo = jest.fn();
   const goBack = jest.fn();
   const addListener = jest.fn(() => jest.fn()); // Returns unsubscribe function
   const routes = [{ name: "Home" }, { name: "Reader" }, { name: "Settings" }];
@@ -67,7 +67,7 @@ const createNavigation = ({ currentRoute = "Home" } = {}) => {
     routes,
     index,
   }));
-  return { navigate, getState, popToTop, goBack, addListener };
+  return { navigate, getState, popTo, goBack, addListener };
 };
 
 describe("BottomNavigation", () => {
@@ -122,7 +122,8 @@ describe("BottomNavigation", () => {
 
     fireEvent.press(getByLabelText("bottomnav-Home"));
 
-    expect(mockNavigation.popToTop).toHaveBeenCalled();
+    // The All Banis tab, whichever tab was showing before the Reader opened.
+    expect(mockNavigation.popTo).toHaveBeenCalledWith("MainTabs", { screen: "Home" });
   });
 
   test("pressing Read when audio is on toggles audio to false", async () => {

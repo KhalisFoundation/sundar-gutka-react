@@ -80,6 +80,13 @@ const BottomNavigation = ({
   // every foreground, so a version bump pushed while the app was already open
   // surfaces without a relaunch. Only the home tab bar shows the Seva tab, so
   // the Reader's bar does not fetch.
+  //
+  // KNOWN: a foreground on the Seva tab can raise the dot over the page being
+  // read, since the page itself refreshes on focus, not on foreground.
+  //
+  // KNOWN: that is the whole config, content included, for a count. A
+  // version-only endpoint is planned in an upcoming PR; until then this is one
+  // request per foreground.
   useEffect(() => {
     if (context !== "home") return undefined;
     let cancelled = false;
@@ -150,7 +157,9 @@ const BottomNavigation = ({
           await pauseTrack();
           dispatch(actions.toggleAudio(false));
         }
-        navigation.popToTop();
+        // To the All Banis TAB, not just the root: popToTop alone lands on
+        // whichever tab was last showing.
+        navigation.popTo("MainTabs", { screen: "Home" });
       },
       text: STRINGS.ALL_BANIS, // Maps to "All Banis" localization key
     },

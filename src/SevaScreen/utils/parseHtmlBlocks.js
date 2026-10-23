@@ -26,8 +26,41 @@ const ENTITY_MAP = {
   "&nbsp;": " ",
 };
 
+// Numeric references cover anything the translated copy carries (&#8217;,
+// &#x27;); the named ones are the few that appear in practice.
+const NAMED = {
+  ...ENTITY_MAP,
+  "&apos;": "'",
+  "&rsquo;": "\u2019",
+  "&lsquo;": "\u2018",
+  "&rdquo;": "\u201D",
+  "&ldquo;": "\u201C",
+  "&hellip;": "\u2026",
+  "&ndash;": "\u2013",
+  "&mdash;": "\u2014",
+};
+const fromCodePoint = (n) => {
+  try {
+    return String.fromCodePoint(n);
+  } catch (_) {
+    return "";
+  }
+};
 const decodeEntities = (text) =>
-  text.replace(/&amp;|&lt;|&gt;|&quot;|&#39;|&nbsp;/g, (m) => ENTITY_MAP[m]);
+  text.replace(/&(?:#(\d+)|#x([0-9a-f]+)|[a-z]+);/gi, (m, dec, hex) => {
+    if (dec) return fromCodePoint(Number(dec));
+    if (hex) return fromCodePoint(parseInt(hex, 16));
+    return NAMED[m.toLowerCase()] ?? m;
+  });
+
+// The inline tags content may carry. Named, not "anything after a <", so copy
+// with a literal "<" (`ages 5<a then 10 > 3`) is left alone.
+const INLINE_TAG = /<\/?(?:strong|b|em|i|u|span|small|sup|sub|mark|br)\b[^>]*>/gi;
+
+// Inline markup (<strong>, <em>, <span>) inside a block is dropped to its text;
+// it would otherwise show as literal tags in the native Text. <br> keeps its
+// line break.
+const toText = (html) => decodeEntities(html.replace(/<br\s*\/?>/gi, "\n").replace(INLINE_TAG, ""));
 
 /**
  * Splits one block's inner HTML into ordered plain-text and link segments —
@@ -42,15 +75,23 @@ const parseInlineSegments = (innerHtml) => {
 
   while (match !== null) {
     const [fullMatch, url, linkText] = match;
-    const before = innerHtml.slice(lastIndex, match.index);
-    if (before) segments.push({ text: decodeEntities(before), link: false });
-    segments.push({ text: decodeEntities(linkText), link: true, url });
+    // Checked after stripping: markup around a link (`<strong><a>`) is text of
+    // its own only once its tags are gone, and usually nothing is left.
+    const before = toText(innerHtml.slice(lastIndex, match.index));
+    // Whitespace alone is kept between segments (the space between two links)
+    // and as a line break, but not as stray spaces ahead of the first link.
+    if (before.trim() || (before && (segments.length || before.includes("\n")))) {
+      segments.push({ text: before, link: false });
+    }
+    // The href is HTML too: an escaped query string (`?a=1&amp;b=2`) must open
+    // as `?a=1&b=2`.
+    segments.push({ text: toText(linkText), link: true, url: decodeEntities(url) });
     lastIndex = match.index + fullMatch.length;
     match = linkRe.exec(innerHtml);
   }
 
-  const remaining = innerHtml.slice(lastIndex);
-  if (remaining.trim()) segments.push({ text: decodeEntities(remaining), link: false });
+  const remaining = toText(innerHtml.slice(lastIndex));
+  if (remaining.trim()) segments.push({ text: remaining, link: false });
 
   return segments;
 };
@@ -59,9 +100,7 @@ const parseInlineSegments = (innerHtml) => {
  * @param {string} html
  * @returns {Array<{tag: string, className: string, segments: Array<{text: string, link: boolean, url?: string}>}>}
  */
-export const parseHtmlBlocks = (html) => {
-  if (!html || typeof html !== "string" || !html.trim()) return [];
-
+const parse = (html) => {
   // Backend content may carry a <style> block (styling is owned by the app's
   // themed StyleSheet instead, so CSS keeps following light/dark mode).
   const withoutStyle = html.replace(/<style[^>]*>[\s\S]*?<\/style>/gi, "");
@@ -84,6 +123,33 @@ export const parseHtmlBlocks = (html) => {
     match = blockRe.exec(withoutStyle);
   }
 
+  return blocks;
+};
+
+// The screens render from the parse on every keystroke in the amount field,
+// and the content only changes with a new config, so parses are kept: least
+// recently used first out, and frozen, since every render shares them.
+const parsed = new Map();
+const MAX_PARSED = 50;
+
+export const parseHtmlBlocks = (html) => {
+  if (!html || typeof html !== "string" || !html.trim()) return [];
+  if (parsed.has(html)) {
+    const hit = parsed.get(html);
+    parsed.delete(html);
+    parsed.set(html, hit);
+    return hit;
+  }
+  const blocks = Object.freeze(
+    parse(html).map((block) =>
+      Object.freeze({
+        ...block,
+        segments: Object.freeze(block.segments.map((seg) => Object.freeze(seg))),
+      })
+    )
+  );
+  if (parsed.size >= MAX_PARSED) parsed.delete(parsed.keys().next().value);
+  parsed.set(html, blocks);
   return blocks;
 };
 

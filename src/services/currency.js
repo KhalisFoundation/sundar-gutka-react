@@ -280,15 +280,19 @@ export const usdToLocal = (usd, currency) => {
 
 /**
  * A locally-entered/displayed figure → the USD amount to hand to Qgiv, converted
- * at the same effective (live) rate and **rounded to whole US dollars** — Qgiv is
- * prefilled with a clean figure, and it matches the donor's ₹1000 → $10 mental
- * model. Floors at $1 so a hand-off can never be $0.
+ * at the same effective (live) rate and **rounded DOWN to whole US dollars** —
+ * Qgiv is prefilled with a clean figure, and it matches the donor's ₹1000 → $10
+ * mental model. Down, never to the nearest: rounding ₹149 to the nearest dollar
+ * charged $2, about ₹192, more than the donor typed. Floors at $1 so a hand-off
+ * can never be $0; amounts that small are refused by minLocalAmount first.
  */
 export const localToUsd = (local, currency) => {
   const c = asCurrency(currency);
   const usd = (Number(local) || 0) / effectiveRate(c);
   if (!(usd > 0)) return 0;
-  return Math.max(1, Math.round(usd));
+  // The epsilon keeps a quotient that lands a hair under a whole dollar in
+  // floating point (4331 / 8.662 = 499.99999999999994) from losing that dollar.
+  return Math.max(1, Math.floor(usd + 1e-9));
 };
 
 /** Rounds UP to a clean figure, with the step growing by magnitude. */
@@ -336,6 +340,11 @@ export const formatCurrency = (amount, currency) => {
 export const localPresets = (usdPresets, currency) =>
   (usdPresets || []).map((usd) => niceRoundLocal(usdToLocal(usd, currency)));
 
+// Small base tiers can nice-round to the same local figure (£1 and £2 both
+// become £5), and a backend override can repeat one. The widget keys and
+// selects tiers by amount, so a ladder never repeats a figure.
+const unique = (list) => [...new Set(list)];
+
 /**
  * The LOCAL preset ladder to display for a currency, resolving in priority order:
  *   1. backend per-currency override — `backendPresets[currency.code]`, used
@@ -352,11 +361,11 @@ export const resolveLocalPresets = (currency, backendAmounts, backendPresets) =>
   const c = asCurrency(currency);
   const override = backendPresets && backendPresets[c.code];
   const cleanOverride = Array.isArray(override)
-    ? override.map((n) => Math.round(Number(n) || 0)).filter((n) => n > 0)
+    ? unique(override.map((n) => Math.round(Number(n) || 0)).filter((n) => n > 0))
     : [];
   if (cleanOverride.length) return cleanOverride;
-  if (Array.isArray(currency.presets) && currency.presets.length) return currency.presets;
+  if (Array.isArray(c.presets) && c.presets.length) return unique(c.presets);
   const base =
     Array.isArray(backendAmounts) && backendAmounts.length ? backendAmounts : [10, 50, 100];
-  return localPresets(base, c);
+  return unique(localPresets(base, c));
 };

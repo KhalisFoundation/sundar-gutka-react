@@ -1,4 +1,4 @@
-import React, { useState, useEffect, useCallback, useRef } from "react";
+import React, { useState, useEffect, useCallback, useMemo, useRef } from "react";
 import {
   View,
   Platform,
@@ -25,7 +25,6 @@ import {
   useTheme,
   useThemedStyles,
   STRINGS,
-  openInAppBrowser,
   trackSevaEvent,
   useCustomScrollbar,
 } from "@common";
@@ -42,17 +41,17 @@ import {
 } from "../common/icons";
 import {
   resolveCurrency,
-  usdToLocal,
   localToUsd,
   minLocalAmount,
   formatCurrency,
   formatNumber,
   resolveLocalPresets,
 } from "../services/currency";
-import { initExchangeRates } from "../services/exchangeRates";
+import { initExchangeRates, onRatesRefreshed } from "../services/exchangeRates";
 import { getSevaConfig, buildQgivUrl, markSevaSeen } from "../services/sevaConfig";
 import { prewarmSevaMeans } from "../services/sevaMeans";
 import createStyles from "./styles";
+import useBrowserOnce from "./useBrowserOnce";
 import { parseHtmlBlocks, blockText } from "./utils/parseHtmlBlocks";
 
 // ─── Seva analytics funnel helpers (in-app, observable steps only) ───────────
@@ -60,8 +59,10 @@ import { parseHtmlBlocks, blockText } from "./utils/parseHtmlBlocks";
 const donationTypeOf = (freq) => (freq === "One Time" ? "one_time" : "recurring");
 
 // amount_bucket is always a non-empty categorical string (never null) so Firebase
-// never records "(not set)". The three presets (10/50/100) fall in distinct
-// buckets, and a not-yet-typed custom amount is reported as "custom".
+// never records "(not set)". It buckets the USD Qgiv is handed, so the USD
+// presets (10/50/100) fall in distinct buckets; a converted tier lands by what it
+// is actually worth (CA$140 is $99, so 50_99). A not-yet-typed custom amount is
+// reported as "custom".
 const bucketAmount = (amount) => {
   const n = Number(amount);
   if (!Number.isFinite(n) || n <= 0) return "unknown";
@@ -137,7 +138,6 @@ const SevaScreen = () => {
   // Seva's own colours, through the same role names — see theme/screenPalettes.
   const { c } = themeForScreen(theme, "seva");
   const palette = paletteFor("seva", theme);
-  const isDarkMode = theme.mode === "dark";
   const styles = useThemedStyles(createStyles);
   // The app-wide themed scrollbar, not the unthemed native one.
   const { scrollViewProps, Indicator } = useCustomScrollbar();
@@ -197,7 +197,9 @@ const SevaScreen = () => {
   // undefined on every render (the useState call hadn't executed yet in that
   // render pass), so it always fell back to the device locale regardless of
   // what the backend actually sent.
-  const currency = resolveCurrency(config?.countryCode);
+  // Memoised: device detection builds an Intl formatter, and this screen
+  // re-renders on every keystroke in the amount field.
+  const currency = useMemo(() => resolveCurrency(config?.countryCode), [config?.countryCode]);
   // Digits ALWAYS render in Baloo Paaji. Only the currency SYMBOL may need a
   // different font: Baloo can't draw ₹ correctly, so INR's symbol uses the
   // system font; every other currency's symbol stays Baloo (they render fine).
@@ -210,9 +212,36 @@ const SevaScreen = () => {
   // font as the digits) and already match → scale 1.
   const symbolFontSize = Math.round(amountFontSize * (currency.code === "INR" ? 0.82 : 1));
 
-  const [selectedAmount, setSelectedAmount] = useState(10);
+  // The preset is remembered by its POSITION in the ladder. A figure would go
+  // stale whenever the ladder changes under it: a later config resolving a
+  // different currency, or fresh exchange rates re-converting the tiers.
+  const [selectedTier, setSelectedTier] = useState(0);
+  // Bumped when fresh exchange rates land, which otherwise re-render nothing:
+  // the figures on screen read the live rate.
+  const [fxVersion, setFxVersion] = useState(0);
+  useEffect(() => onRatesRefreshed(() => setFxVersion((v) => v + 1)), []);
+
+  // Preset tiers, in the LOCAL currency, resolved in priority order: a backend
+  // per-currency override (config.amountPresets[code]), else the currency's own
+  // round ladder (INR → ₹100 / ₹1,000 / ₹5,000), else the backend USD base
+  // amounts × rate. selectedAmount + typedAmount are LOCAL; both convert to USD
+  // only at donate time (Qgiv charges USD).
+  //
+  // Memoised: this renders on every keystroke in the amount field. The FX
+  // version is in the key because the ladder reads the live rate.
+  const amounts = useMemo(
+    () => resolveLocalPresets(currency, config?.amounts, config?.amountPresets),
+    // eslint-disable-next-line react-hooks/exhaustive-deps -- currency is keyed by its code
+    [currency.code, config?.amounts, config?.amountPresets, fxVersion]
+  );
+  const selectedAmount = amounts[Math.min(selectedTier, amounts.length - 1)];
   const [isOtherSelected, setIsOtherSelected] = useState(false);
   const [customAmount, setCustomAmount] = useState("");
+  // A typed amount belongs to the currency it was typed in. If a later config
+  // resolves another currency, the figure means nothing there, so it reads as
+  // not typed yet rather than as ₹10 where $10 was meant.
+  const [customCurrency, setCustomCurrency] = useState(null);
+  const typedAmount = customCurrency === currency.code ? customAmount : "";
   const [frequency, setFrequency] = useState("Monthly");
   // Whether the hidden amount input actually holds focus — NOT the same thing
   // as `isOtherSelected`. The caret is the only visible sign the field is live
@@ -225,9 +254,6 @@ const SevaScreen = () => {
 
   // Explicit focus for the "Other" amount input — see the effect below.
   const otherAmountInputRef = useRef(null);
-
-  // Prevents concurrent open() calls (guards iOS where open() may not resolve on background)
-  const isBrowserOpenRef = useRef(false);
 
   // ─── Analytics funnel (intent only) ────────────────────────────────────────
   // These measure in-app funnel behaviour. Actual payment truth lives on Qgiv —
@@ -280,26 +306,6 @@ const SevaScreen = () => {
           const cfg = await getSevaConfig(language);
           if (!active) return;
           setConfig(cfg);
-          if (isFirstLoad) {
-            // Resolve currency FRESH from cfg?.countryCode here rather than
-            // using the outer `currency` — that outer value was captured when
-            // this effect closure was created (mount time, before cfg existed)
-            // and does not reflect the countryCode that just arrived in cfg.
-            // Using the stale value would default-select an amount in the
-            // wrong currency's ladder for one render, until the next re-render
-            // silently swapped the displayed symbol out from under it.
-            const effectiveCurrency = resolveCurrency(cfg?.countryCode);
-            // Default to the first tier of the resolved LOCAL ladder — backend
-            // per-currency override, else the currency's built-in ladder (INR),
-            // else the backend USD base amounts converted to local. Only on the
-            // first load, so a background re-sync never resets a user's pick.
-            const [defaultLocal] = resolveLocalPresets(
-              effectiveCurrency,
-              cfg?.amounts,
-              cfg?.amountPresets
-            );
-            setSelectedAmount(defaultLocal ?? usdToLocal(10, effectiveCurrency));
-          }
           hasLoadedRef.current = true;
           markSevaSeen();
         } catch (err) {
@@ -324,6 +330,10 @@ const SevaScreen = () => {
   // `opened` once for the whole app session and reached its cleanup, the only
   // place `checkout_abandoned` came from, just about never. Every visit after
   // the first went unrecorded.
+  //
+  // KNOWN: opening a "Seva by other means" sub-page blurs Seva, so it reads as
+  // an abandoned checkout and the return as a new visit. Carrying the visit
+  // across sub-pages is planned in an upcoming PR.
   useFocusEffect(
     useCallback(() => {
       // A visit is the unit of the funnel, so everything the previous visit
@@ -375,10 +385,11 @@ const SevaScreen = () => {
     }, [])
   );
 
-  const handleAmountSelect = (amount, isOther = false) => {
+  const handleAmountSelect = (isOther, tier = 0) => {
+    const amount = amounts[tier];
     setIsOtherSelected(isOther);
     if (!isOther) {
-      setSelectedAmount(amount);
+      setSelectedTier(tier);
       setCustomAmount("");
       // Leaving "Other" unmounts the hidden input, and an unmounting TextInput
       // does not reliably fire onBlur — so clear this by hand. Left stale-true,
@@ -390,7 +401,9 @@ const SevaScreen = () => {
     markStep("amount_selected");
     trackSevaEvent("amount_selected", {
       is_custom: isOther,
-      amount_bucket: isOther ? "custom" : bucketAmount(amount),
+      // USD, like every other step of the funnel, so buckets compare across
+      // steps and regions.
+      amount_bucket: isOther ? "custom" : bucketAmount(localToUsd(amount, currency)),
       donation_type: donationTypeOf(frequency),
     });
   };
@@ -402,6 +415,7 @@ const SevaScreen = () => {
     // that stays exact, and no real donation gets anywhere near it.
     const cleaned = val.replace(/[^0-9]/g, "").slice(0, 15);
     setCustomAmount(cleaned);
+    setCustomCurrency(currency.code);
   };
 
   // The input's `autoFocus` prop only reliably fires on its very first mount —
@@ -439,7 +453,7 @@ const SevaScreen = () => {
       focusOtherAmount();
       return;
     }
-    handleAmountSelect(null, true);
+    handleAmountSelect(true);
   };
 
   const handleFrequencyChange = (freq) => {
@@ -462,15 +476,16 @@ const SevaScreen = () => {
   const effectiveDonationType = donationTypeOf(frequency);
 
   // ─── The one definition of "is there an amount to donate" ──────────────────
-  // The Donate button's disabled state and handleDonate both read `canDonate`,
-  // so the button can never say one thing while the tap does another.
+  // The Donate button's disabled state and handleDonate both read
+  // `donateEnabled` (below), so the button can never say one thing while the
+  // tap does another.
   //
   // `localAmount` is in the DONOR's currency (the typed figure in "Other" mode,
   // else the selected preset tier); `donationUsd` is what Qgiv is prefilled
   // with, because Qgiv charges USD. localToUsd returns 0 for ""/"0"/non-numeric
   // and floors a real amount at $1, so `> 0` is an exact test for "the donor
   // has chosen something" with no second threshold to keep in sync.
-  const localAmount = isOtherSelected ? customAmount : selectedAmount;
+  const localAmount = isOtherSelected ? typedAmount : selectedAmount;
   const donationUsd = localToUsd(localAmount, currency);
   const canDonate = donationUsd > 0;
 
@@ -514,22 +529,7 @@ const SevaScreen = () => {
   }, [belowMinimum]);
 
   // ─── Shared browser helper ─────────────────────────────────────────────────
-  const openBrowserForUrl = useCallback(
-    async (url) => {
-      if (isBrowserOpenRef.current) return;
-
-      const barColor = c.surface;
-      const controlColor = c.textPrimary;
-
-      isBrowserOpenRef.current = true;
-      try {
-        await openInAppBrowser(url, { barColor, controlColor });
-      } finally {
-        isBrowserOpenRef.current = false;
-      }
-    },
-    [isDarkMode, theme]
-  );
+  const { open: openBrowserForUrl, isOpenRef: isBrowserOpenRef } = useBrowserOnce(c);
 
   // There used to be an AppState listener here that re-opened the browser
   // whenever the app came back to the foreground. It is what made the donation
@@ -559,12 +559,6 @@ const SevaScreen = () => {
     // to emit payment_started AND payment_success for a browser that never
     // opened. payment_success is the conversion proxy the whole funnel is read
     // on, so every fast double-tap on Donate booked a second donation.
-    // A tap that cannot reach Qgiv must not enter the funnel. `openBrowserForUrl`
-    // refuses while a tab is already open — it is shared with the content links
-    // on this screen — and it is reached without awaiting, so a refused tap used
-    // to emit payment_started AND payment_success for a browser that never
-    // opened. payment_success is the conversion proxy the whole funnel is read
-    // on, so every fast double-tap on Donate booked a second donation.
     if (isBrowserOpenRef.current) return;
 
     hasDonatedRef.current = true;
@@ -583,7 +577,6 @@ const SevaScreen = () => {
 
     const url = buildQgivUrl({
       amount: donationUsd,
-      isCustomAmount: isOtherSelected,
       donationType: effectiveDonationType,
       frequency,
     });
@@ -615,7 +608,6 @@ const SevaScreen = () => {
     });
   }, [
     donateEnabled,
-    currency,
     donationUsd,
     isOtherSelected,
     effectiveDonationType,
@@ -632,7 +624,10 @@ const SevaScreen = () => {
   // cached (source === "fallback"), the country is a pure guess — so we show NO
   // tax note at all rather than a possibly-wrong US-specific claim (SIO-155).
   const isOfflineFallback = config?.source === "fallback";
-  const isUSDonor = (config?.country ?? "US").toUpperCase() === "US";
+  // The tax note follows the currency the donor is shown as well as the
+  // backend's country: the backend often cannot see the donor's country and
+  // answers US, and "tax-deductible" beside ₹ amounts is a claim for someone else.
+  const isUSDonor = currency.code === "USD" && (config?.country ?? "US").toUpperCase() === "US";
   let taxMessage = null;
   if (!isOfflineFallback) {
     taxMessage = isUSDonor ? content.taxMessage : content.nonUsTaxMessage;
@@ -678,7 +673,10 @@ const SevaScreen = () => {
           else if (page) navigation.navigate("SevaMeans", { page });
         }}
         accessibilityRole={openUrl ? "link" : "button"}
-        accessibilityLabel={`seva-means-${page}`}
+        // What a screen reader says is the row's own translated text; the
+        // page key is only for tests.
+        accessibilityLabel={sub ? `${title}, ${sub}` : title}
+        testID={`seva-means-${page}`}
       >
         {/* The disc behind the icon is the same hue at 13% opacity. */}
         <View style={[styles.meansIconCircle, { backgroundColor: `${meansTint}22` }]}>
@@ -786,15 +784,8 @@ const SevaScreen = () => {
   // its localised, grouped display figure (e.g. $10 → "1,000" for ₹). The
   // currency symbol is rendered separately alongside it.
   const displayAmount = formatNumber(
-    isOtherSelected && customAmount ? customAmount : selectedAmount ?? 0
+    isOtherSelected && typedAmount ? typedAmount : selectedAmount ?? 0
   );
-
-  // Preset tiers, in the LOCAL currency, resolved in priority order: a backend
-  // per-currency override (config.amountPresets[code]), else the currency's own
-  // round ladder (INR → ₹100 / ₹1,000 / ₹5,000), else the backend USD base
-  // amounts × rate. selectedAmount + customAmount are LOCAL; both convert to USD
-  // only at donate time (Qgiv charges USD).
-  const amounts = resolveLocalPresets(currency, config?.amounts, config?.amountPresets);
 
   // Extracted so they can render at their `<!--SLOT:donate_widget-->`
   // / `<!--SLOT:tax_note-->` position within server-driven content — or, when
@@ -842,7 +833,7 @@ const SevaScreen = () => {
               >
                 {`${currency.symbol} `}
               </Text>
-              {isOtherSelected && customAmount === "" ? (
+              {isOtherSelected && typedAmount === "" ? (
                 <Text style={styles.amountPlaceholder}>0</Text>
               ) : (
                 displayAmount
@@ -863,7 +854,7 @@ const SevaScreen = () => {
               <TextInput
                 ref={otherAmountInputRef}
                 style={styles.hiddenInput}
-                value={customAmount}
+                value={typedAmount}
                 onChangeText={handleCustomAmountChange}
                 // The only source of truth for whether this field is live. The
                 // effect above focuses it whenever Other is selected, so the
@@ -891,14 +882,14 @@ const SevaScreen = () => {
 
       {/* Preset amounts */}
       <View style={styles.amountButtons}>
-        {amounts.map((amount) => (
+        {amounts.map((amount, tier) => (
           <Pressable
             key={amount}
             style={[
               styles.amountButton,
               selectedAmount === amount && !isOtherSelected && styles.amountButtonSelected,
             ]}
-            onPress={() => handleAmountSelect(amount)}
+            onPress={() => handleAmountSelect(false, tier)}
           >
             <CustomText
               style={[
@@ -916,7 +907,7 @@ const SevaScreen = () => {
         ))}
         <Pressable
           style={[styles.amountButton, isOtherSelected && styles.amountButtonSelected]}
-          onPress={() => handleAmountSelect(null, true)}
+          onPress={() => handleAmountSelect(true)}
         >
           {/* "Other" is the longest label and the one that used to wrap onto
               its own line on narrow screens — shrink-to-fit keeps the row
@@ -1004,9 +995,9 @@ const SevaScreen = () => {
             paddingVertical: 14,
           }}
         >
-          <DonateIcon size={30} color={canDonate ? c.onControlAccent : c.textDisabled} />
+          <DonateIcon size={30} color={donateEnabled ? c.onControlAccent : c.textDisabled} />
           <CustomText
-            style={[styles.donateButtonText, !canDonate && styles.donateButtonTextDisabled]}
+            style={[styles.donateButtonText, !donateEnabled && styles.donateButtonTextDisabled]}
           >
             {STRINGS.donate}
           </CustomText>
