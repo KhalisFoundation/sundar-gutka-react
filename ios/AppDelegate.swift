@@ -34,6 +34,18 @@ class AppDelegate: RCTAppDelegate {
     RNBackgroundDownloader.setCompletionHandlerWithIdentifier(identifier, completionHandler: completionHandler)
   }
  
+  // Return links opened while the app is running — the Khalis SSO sign-in
+  // (sundargutka://login) when it finishes in the system browser rather than
+  // the in-app one. A link that launched the app arrives in the launch options
+  // instead, which React Native reads for Linking.getInitialURL().
+  override func application(
+    _ app: UIApplication,
+    open url: URL,
+    options: [UIApplication.OpenURLOptionsKey: Any] = [:]
+  ) -> Bool {
+    return RCTLinkingManager.application(app, open: url, options: options)
+  }
+
   override func sourceURL(for bridge: RCTBridge) -> URL? {
     self.bundleURL()
   }

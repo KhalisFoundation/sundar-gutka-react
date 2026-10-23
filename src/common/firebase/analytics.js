@@ -362,9 +362,33 @@ const THEME_EVENT_NAMES = {
 };
 const trackThemeEvent = namespacedTracker(THEME_EVENT_NAMES, "theme");
 
+// Khalis SSO. One event per outcome rather than one event with a status
+// param, so each shows up as its own row in the funnel. Every sign-in event
+// carries `entry_point` (settings today; the Dashboard header arrives with the
+// Dashboard) — the places that can start one convert very differently, and a
+// single total hides that.
+//
+// session_restored and session_expired are the lifecycle either side of the
+// funnel: a session picked up from the Keychain at launch is NOT a sign-in and
+// must not inflate one, and an expiry is the silent way accounts are lost.
+const SSO_EVENT_NAMES = {
+  sign_in_started: "sso_sign_in_started",
+  sign_in_success: "sso_sign_in_success",
+  sign_in_cancelled: "sso_sign_in_cancelled",
+  sign_in_pending: "sso_sign_in_pending",
+  sign_in_failed: "sso_sign_in_failed",
+  sign_out: "sso_sign_out",
+  session_restored: "sso_session_restored",
+  session_expired: "sso_session_expired",
+  account_deleted: "sso_account_deleted",
+  account_delete_failed: "sso_account_delete_failed",
+};
+const trackSsoEvent = namespacedTracker(SSO_EVENT_NAMES, "sso");
+
 export {
   trackThemeEvent,
   trackSevaEvent,
+  trackSsoEvent,
   allowTracking,
   trackReaderEvent,
   trackNavBar,

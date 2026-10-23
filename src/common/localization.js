@@ -264,6 +264,28 @@ const STRINGS = new LocalizedStrings({
     SEVA_TAX_DEDUCTIBLE: "Your donation is tax-deductible. You'll receive a receipt by email.",
     SEVA_NON_US_TAX:
       "Donations made outside the US are not tax-deductible. Thank you for your generous support.",
+    ACCOUNT: "Account",
+    CANCEL: "Cancel",
+    DELETE_ACCOUNT: "Delete Account",
+    DELETE_ACCOUNT_CONFIRM_ACTION: "Delete my account",
+    DELETE_ACCOUNT_CONFIRM_MESSAGE:
+      "You'll be signed out of all Khalis apps and websites. Your reading history and saved shabads will be removed. You have 30 days to contact support if you change your mind.",
+    DELETE_ACCOUNT_CONFIRM_TITLE: "Delete your Khalis account?",
+    DELETE_ACCOUNT_DONE: "Your account has been deleted.",
+    DELETE_ACCOUNT_FAILED: "Could not delete your account. Please try again.",
+    DELETE_ACCOUNT_OFFLINE: "No connection. Check your internet and try again.",
+    SESSION_EXPIRED: "Your session expired. Please sign in again.",
+    SETTINGS_SIGN_IN_HINT:
+      "Sign in to save your settings to the cloud and keep them on every device.",
+    SIGN_IN: "Sign In",
+    SIGN_IN_FAILED: "Sign in failed. Please try again.",
+    SIGN_OUT: "Sign Out",
+    SIGN_OUT_CONFIRM_MESSAGE: "You'll be signed out of your Khalis account on this device.",
+    SIGN_OUT_CONFIRM_TITLE: "Sign out?",
+    SIGN_OUT_LOCAL_ONLY:
+      "Signed out on this device. You may still be signed in with Khalis on the web.",
+    SYNC_OFFLINE_MESSAGE: "Connect to internet to sync your progress",
+    USER: "User",
   },
   hi: {
     about: "हमारे बारे",
@@ -527,6 +549,28 @@ const STRINGS = new LocalizedStrings({
     SEVA_TAX_DEDUCTIBLE: "आपका दान कर-कटौती योग्य है। आपको ईमेल पर रसीद मिलेगी।",
     SEVA_NON_US_TAX:
       "अमेरिका के बाहर किया गया दान कर-कटौती योग्य नहीं है। आपके उदार सहयोग के लिए धन्यवाद।",
+    ACCOUNT: "खाता",
+    CANCEL: "रद्द करें",
+    DELETE_ACCOUNT: "खाता हटाएं",
+    DELETE_ACCOUNT_CONFIRM_ACTION: "मेरा खाता हटाएं",
+    DELETE_ACCOUNT_CONFIRM_MESSAGE:
+      "आपको सभी खालिस ऐप्स और वेबसाइटों से साइन आउट कर दिया जाएगा। आपका पढ़ने का इतिहास और सहेजे गए शबद हटा दिए जाएंगे। यदि आप अपना विचार बदलते हैं तो सहायता से संपर्क करने के लिए आपके पास 30 दिन हैं।",
+    DELETE_ACCOUNT_CONFIRM_TITLE: "अपना खालिस खाता हटाएं?",
+    DELETE_ACCOUNT_DONE: "आपका खाता हटा दिया गया है।",
+    DELETE_ACCOUNT_FAILED: "आपका खाता हटाया नहीं जा सका। कृपया फिर से प्रयास करें।",
+    DELETE_ACCOUNT_OFFLINE: "कोई कनेक्शन नहीं। अपना इंटरनेट जांचें और फिर से प्रयास करें।",
+    SESSION_EXPIRED: "आपका सत्र समाप्त हो गया। कृपया फिर से साइन इन करें।",
+    SETTINGS_SIGN_IN_HINT:
+      "अपनी सेटिंग्स क्लाउड में सहेजने और हर डिवाइस पर रखने के लिए साइन इन करें।",
+    SIGN_IN: "साइन इन करें",
+    SIGN_IN_FAILED: "साइन इन विफल रहा। कृपया पुनः प्रयास करें।",
+    SIGN_OUT: "साइन आउट करें",
+    SIGN_OUT_CONFIRM_MESSAGE: "इस डिवाइस पर आपके खालिस खाते से साइन आउट कर दिया जाएगा।",
+    SIGN_OUT_CONFIRM_TITLE: "साइन आउट करें?",
+    SIGN_OUT_LOCAL_ONLY:
+      "इस डिवाइस पर साइन आउट हो गए। हो सकता है आप वेब पर खालिस में साइन इन रहें।",
+    SYNC_OFFLINE_MESSAGE: "अपनी प्रगति सिंक करने के लिए इंटरनेट से कनेक्ट करें",
+    USER: "उपयोगकर्ता",
   },
 
   pa: {
@@ -790,6 +834,28 @@ const STRINGS = new LocalizedStrings({
     SEVA_TAX_DEDUCTIBLE: "ਤੁਹਾਡਾ ਦਾਨ ਟੈਕਸ-ਕਟੌਤੀ ਯੋਗ ਹੈ। ਤੁਹਾਨੂੰ ਈਮੇਲ ਰਾਹੀਂ ਰਸੀਦ ਮਿਲੇਗੀ।",
     SEVA_NON_US_TAX:
       "ਅਮਰੀਕਾ ਤੋਂ ਬਾਹਰ ਕੀਤਾ ਦਾਨ ਟੈਕਸ-ਕਟੌਤੀ ਯੋਗ ਨਹੀਂ ਹੈ। ਤੁਹਾਡੇ ਖੁੱਲ੍ਹੇ ਸਹਿਯੋਗ ਲਈ ਧੰਨਵਾਦ।",
+    ACCOUNT: "ਖਾਤਾ",
+    CANCEL: "ਰੱਦ ਕਰੋ",
+    DELETE_ACCOUNT: "ਖਾਤਾ ਮਿਟਾਓ",
+    DELETE_ACCOUNT_CONFIRM_ACTION: "ਮੇਰਾ ਖਾਤਾ ਮਿਟਾਓ",
+    DELETE_ACCOUNT_CONFIRM_MESSAGE:
+      "ਤੁਹਾਨੂੰ ਸਾਰੀਆਂ ਖਾਲਿਸ ਐਪਾਂ ਅਤੇ ਵੈੱਬਸਾਈਟਾਂ ਤੋਂ ਸਾਈਨ ਆਊਟ ਕਰ ਦਿੱਤਾ ਜਾਵੇਗਾ। ਤੁਹਾਡਾ ਪੜ੍ਹਨ ਦਾ ਇਤਿਹਾਸ ਅਤੇ ਸੰਭਾਲੇ ਹੋਏ ਸ਼ਬਦ ਹਟਾ ਦਿੱਤੇ ਜਾਣਗੇ। ਜੇ ਤੁਸੀਂ ਆਪਣਾ ਮਨ ਬਦਲਦੇ ਹੋ ਤਾਂ ਸਹਾਇਤਾ ਨਾਲ ਸੰਪਰਕ ਕਰਨ ਲਈ ਤੁਹਾਡੇ ਕੋਲ 30 ਦਿਨ ਹਨ।",
+    DELETE_ACCOUNT_CONFIRM_TITLE: "ਆਪਣਾ ਖਾਲਿਸ ਖਾਤਾ ਮਿਟਾਉਣਾ ਹੈ?",
+    DELETE_ACCOUNT_DONE: "ਤੁਹਾਡਾ ਖਾਤਾ ਮਿਟਾ ਦਿੱਤਾ ਗਿਆ ਹੈ।",
+    DELETE_ACCOUNT_FAILED: "ਤੁਹਾਡਾ ਖਾਤਾ ਮਿਟਾਇਆ ਨਹੀਂ ਜਾ ਸਕਿਆ। ਕਿਰਪਾ ਕਰਕੇ ਦੁਬਾਰਾ ਕੋਸ਼ਿਸ਼ ਕਰੋ।",
+    DELETE_ACCOUNT_OFFLINE: "ਕੋਈ ਕਨੈਕਸ਼ਨ ਨਹੀਂ। ਆਪਣਾ ਇੰਟਰਨੈੱਟ ਜਾਂਚੋ ਅਤੇ ਦੁਬਾਰਾ ਕੋਸ਼ਿਸ਼ ਕਰੋ।",
+    SESSION_EXPIRED: "ਤੁਹਾਡਾ ਸੈਸ਼ਨ ਖਤਮ ਹੋ ਗਿਆ। ਕਿਰਪਾ ਕਰਕੇ ਦੁਬਾਰਾ ਸਾਈਨ ਇਨ ਕਰੋ।",
+    SETTINGS_SIGN_IN_HINT:
+      "ਆਪਣੀਆਂ ਸੈਟਿੰਗਾਂ ਕਲਾਊਡ ਵਿੱਚ ਸੰਭਾਲਣ ਅਤੇ ਹਰ ਡੀਵਾਈਸ ਉੱਤੇ ਰੱਖਣ ਲਈ ਸਾਈਨ ਇਨ ਕਰੋ।",
+    SIGN_IN: "ਸਾਈਨ ਇਨ ਕਰੋ",
+    SIGN_IN_FAILED: "ਸਾਈਨ ਇਨ ਅਸਫਲ ਰਿਹਾ। ਕਿਰਪਾ ਕਰਕੇ ਦੁਬਾਰਾ ਕੋਸ਼ਿਸ਼ ਕਰੋ।",
+    SIGN_OUT: "ਸਾਈਨ ਆਊਟ ਕਰੋ",
+    SIGN_OUT_CONFIRM_MESSAGE: "ਇਸ ਡਿਵਾਈਸ ਉੱਤੇ ਤੁਹਾਡੇ ਖਾਲਿਸ ਖਾਤੇ ਤੋਂ ਸਾਈਨ ਆਊਟ ਕਰ ਦਿੱਤਾ ਜਾਵੇਗਾ।",
+    SIGN_OUT_CONFIRM_TITLE: "ਸਾਈਨ ਆਊਟ ਕਰਨਾ ਹੈ?",
+    SIGN_OUT_LOCAL_ONLY:
+      "ਇਸ ਡਿਵਾਈਸ ਉੱਤੇ ਸਾਈਨ ਆਊਟ ਹੋ ਗਏ। ਹੋ ਸਕਦਾ ਹੈ ਤੁਸੀਂ ਵੈੱਬ ਉੱਤੇ ਖਾਲਿਸ ਵਿੱਚ ਸਾਈਨ ਇਨ ਰਹੋ।",
+    SYNC_OFFLINE_MESSAGE: "ਆਪਣੀ ਤਰੱਕੀ ਸਿੰਕ ਕਰਨ ਲਈ ਇੰਟਰਨੈੱਟ ਨਾਲ ਜੁੜੋ",
+    USER: "ਵਰਤੋਂਕਾਰ",
   },
   fr: {
     about: "Infos",
@@ -1064,6 +1130,28 @@ const STRINGS = new LocalizedStrings({
     SEVA_TAX_DEDUCTIBLE: "Votre don est déductible des impôts. Vous recevrez un reçu par e-mail.",
     SEVA_NON_US_TAX:
       "Les dons effectués hors des États-Unis ne sont pas déductibles des impôts. Merci de votre généreux soutien.",
+    ACCOUNT: "Compte",
+    CANCEL: "Annuler",
+    DELETE_ACCOUNT: "Supprimer le compte",
+    DELETE_ACCOUNT_CONFIRM_ACTION: "Supprimer mon compte",
+    DELETE_ACCOUNT_CONFIRM_MESSAGE:
+      "Vous serez déconnecté de toutes les applications et de tous les sites Khalis. Votre historique de lecture et vos shabads enregistrés seront supprimés. Vous disposez de 30 jours pour contacter l'assistance si vous changez d'avis.",
+    DELETE_ACCOUNT_CONFIRM_TITLE: "Supprimer votre compte Khalis ?",
+    DELETE_ACCOUNT_DONE: "Votre compte a été supprimé.",
+    DELETE_ACCOUNT_FAILED: "Impossible de supprimer votre compte. Veuillez réessayer.",
+    DELETE_ACCOUNT_OFFLINE: "Aucune connexion. Vérifiez votre connexion Internet et réessayez.",
+    SESSION_EXPIRED: "Votre session a expiré. Veuillez vous reconnecter.",
+    SETTINGS_SIGN_IN_HINT:
+      "Connectez-vous pour enregistrer vos réglages dans le cloud et les retrouver sur chaque appareil.",
+    SIGN_IN: "Se connecter",
+    SIGN_IN_FAILED: "Échec de la connexion. Veuillez réessayer.",
+    SIGN_OUT: "Se déconnecter",
+    SIGN_OUT_CONFIRM_MESSAGE: "Vous serez déconnecté de votre compte Khalis sur cet appareil.",
+    SIGN_OUT_CONFIRM_TITLE: "Se déconnecter ?",
+    SIGN_OUT_LOCAL_ONLY:
+      "Déconnecté sur cet appareil. Vous pourriez rester connecté à Khalis sur le web.",
+    SYNC_OFFLINE_MESSAGE: "Connectez-vous à Internet pour synchroniser votre progression",
+    USER: "Utilisateur",
   },
   it: {
     about: "Info",
@@ -1328,6 +1416,29 @@ const STRINGS = new LocalizedStrings({
       "La tua donazione è deducibile dalle tasse. Riceverai una ricevuta via e-mail.",
     SEVA_NON_US_TAX:
       "Le donazioni effettuate fuori dagli Stati Uniti non sono deducibili dalle tasse. Grazie per il tuo generoso sostegno.",
+    ACCOUNT: "Account",
+    CANCEL: "Annulla",
+    DELETE_ACCOUNT: "Elimina account",
+    DELETE_ACCOUNT_CONFIRM_ACTION: "Elimina il mio account",
+    DELETE_ACCOUNT_CONFIRM_MESSAGE:
+      "Verrai disconnesso da tutte le app e da tutti i siti Khalis. La tua cronologia di lettura e gli shabad salvati verranno rimossi. Hai 30 giorni per contattare l'assistenza se cambi idea.",
+    DELETE_ACCOUNT_CONFIRM_TITLE: "Eliminare il tuo account Khalis?",
+    DELETE_ACCOUNT_DONE: "Il tuo account è stato eliminato.",
+    DELETE_ACCOUNT_FAILED: "Impossibile eliminare il tuo account. Riprova.",
+    DELETE_ACCOUNT_OFFLINE:
+      "Nessuna connessione. Controlla la tua connessione a Internet e riprova.",
+    SESSION_EXPIRED: "La tua sessione è scaduta. Accedi di nuovo.",
+    SETTINGS_SIGN_IN_HINT:
+      "Accedi per salvare le impostazioni nel cloud e ritrovarle su ogni dispositivo.",
+    SIGN_IN: "Accedi",
+    SIGN_IN_FAILED: "Accesso non riuscito. Riprova.",
+    SIGN_OUT: "Esci",
+    SIGN_OUT_CONFIRM_MESSAGE: "Verrai disconnesso dal tuo account Khalis su questo dispositivo.",
+    SIGN_OUT_CONFIRM_TITLE: "Uscire?",
+    SIGN_OUT_LOCAL_ONLY:
+      "Disconnesso su questo dispositivo. Potresti essere ancora connesso a Khalis sul web.",
+    SYNC_OFFLINE_MESSAGE: "Connettiti a Internet per sincronizzare i tuoi progressi",
+    USER: "Utente",
   },
   es: {
     about: "Sobre Nosotros",
@@ -1599,6 +1710,28 @@ const STRINGS = new LocalizedStrings({
       "Tu donación es deducible de impuestos. Recibirás un recibo por correo electrónico.",
     SEVA_NON_US_TAX:
       "Las donaciones realizadas fuera de EE. UU. no son deducibles de impuestos. Gracias por tu generoso apoyo.",
+    ACCOUNT: "Cuenta",
+    CANCEL: "Cancelar",
+    DELETE_ACCOUNT: "Eliminar cuenta",
+    DELETE_ACCOUNT_CONFIRM_ACTION: "Eliminar mi cuenta",
+    DELETE_ACCOUNT_CONFIRM_MESSAGE:
+      "Se cerrará tu sesión en todas las aplicaciones y sitios de Khalis. Tu historial de lectura y los shabads guardados se eliminarán. Tienes 30 días para contactar con soporte si cambias de opinión.",
+    DELETE_ACCOUNT_CONFIRM_TITLE: "¿Eliminar tu cuenta Khalis?",
+    DELETE_ACCOUNT_DONE: "Tu cuenta ha sido eliminada.",
+    DELETE_ACCOUNT_FAILED: "No se pudo eliminar tu cuenta. Vuelve a intentarlo.",
+    DELETE_ACCOUNT_OFFLINE: "Sin conexión. Comprueba tu conexión a Internet e inténtalo de nuevo.",
+    SESSION_EXPIRED: "Tu sesión ha expirado. Inicia sesión de nuevo.",
+    SETTINGS_SIGN_IN_HINT:
+      "Inicia sesión para guardar tus ajustes en la nube y tenerlos en todos tus dispositivos.",
+    SIGN_IN: "Iniciar sesión",
+    SIGN_IN_FAILED: "Error al iniciar sesión. Inténtalo de nuevo.",
+    SIGN_OUT: "Cerrar sesión",
+    SIGN_OUT_CONFIRM_MESSAGE: "Se cerrará tu sesión de la cuenta Khalis en este dispositivo.",
+    SIGN_OUT_CONFIRM_TITLE: "¿Cerrar sesión?",
+    SIGN_OUT_LOCAL_ONLY:
+      "Sesión cerrada en este dispositivo. Es posible que sigas conectado a Khalis en la web.",
+    SYNC_OFFLINE_MESSAGE: "Conéctate a Internet para sincronizar tu progreso",
+    USER: "Usuario",
   },
 });
 

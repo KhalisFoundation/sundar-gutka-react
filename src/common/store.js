@@ -10,6 +10,11 @@ const persistConfig = {
   // The reader tick counters and the player drag flag are momentary UI state.
   // A persisted `isPlayerDragging: true` (the app killed mid-drag) would have
   // the Reader ignore every page message on the next launch.
+  //
+  // "auth" is blacklisted deliberately: redux-persist writes plain, unencrypted
+  // AsyncStorage, and the SSO session holds an email + SAML nameID. The session
+  // is rehydrated from the Keychain by useSsoSession instead, which also keeps
+  // status "unknown" until that read resolves.
   blacklist: [
     "navigation",
     "baniList",
@@ -17,6 +22,7 @@ const persistConfig = {
     "readerTapTick",
     "readerScrollDownTick",
     "isPlayerDragging",
+    "auth",
   ],
 };
 const persistedReducer = persistReducer(persistConfig, reducer);

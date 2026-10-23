@@ -107,3 +107,22 @@ export const CLEAR_DOWNLOAD_REGISTRY = "CLEAR_DOWNLOAD_REGISTRY";
 export const TOGGLE_DOWNLOAD_WIFI_ONLY = "TOGGLE_DOWNLOAD_WIFI_ONLY";
 
 export const TOGGLE_AUTO_DOWNLOAD = "TOGGLE_AUTO_DOWNLOAD";
+
+// ─── Khalis SSO session ─────────────────────────────────────────────────────
+// Decoded claims only — the raw JWT lives in the Keychain, never in Redux.
+export const SET_AUTH_SESSION = "SET_AUTH_SESSION";
+export const CLEAR_AUTH_SESSION = "CLEAR_AUTH_SESSION";
+export const SET_AUTH_BUSY = "SET_AUTH_BUSY";
+// Drops every slice belonging to a PERSON rather than to this device. Fired on
+// sign-out and when a DIFFERENT account signs in; see common/sso/accountScope.js
+// and USER_DATA_SLICES in common/reducer.js.
+export const CLEAR_USER_DATA = "CLEAR_USER_DATA";
+
+// Sync outbox — changes to account data waiting to reach the server.
+export const ENQUEUE_SYNC_OP = "ENQUEUE_SYNC_OP";
+export const SYNC_OP_SENDING = "SYNC_OP_SENDING";
+export const SYNC_OP_DONE = "SYNC_OP_DONE";
+export const SYNC_OP_FAILED = "SYNC_OP_FAILED";
+
+// Settings sync bookkeeping: per-key clocks and server bases.
+export const MERGE_SETTINGS_SYNC_META = "MERGE_SETTINGS_SYNC_META";

@@ -1,6 +1,8 @@
 import { combineReducers } from "@reduxjs/toolkit";
 import * as actionTypes from "./actions/actionTypes";
 import constant from "./constant";
+import { emptySettingsSync } from "./settings/syncModel";
+import * as outbox from "./sync/outboxModel";
 
 const createReducer =
   (initialState, handlers) =>
@@ -474,7 +476,74 @@ const audioStorageMigrated = createReducer(false, {
   [actionTypes.MARK_AUDIO_STORAGE_MIGRATED]: () => true,
 });
 
-const rootReducer = combineReducers({
+// Per-setting sync clocks and server bases — see settings/syncModel.
+// Persisted, and reset with the rest of the account's data on a switch
+// (USER_DATA_SLICES), so one person's pending edits never reach another.
+const settingsSync = createReducer(emptySettingsSync(), {
+  [actionTypes.MERGE_SETTINGS_SYNC_META]: (state, action) => {
+    const p = action.payload || {};
+    if (p.replace) return { ...emptySettingsSync(), ...p.replace };
+    const clocks = { ...state.clocks, ...(p.clocks || {}) };
+    const base = { ...state.base, ...(p.base || {}) };
+    (p.removeClocks || []).forEach((key) => delete clocks[key]);
+    return {
+      clocks,
+      base,
+      lastSyncedAt: p.lastSyncedAt ?? state.lastSyncedAt,
+    };
+  },
+});
+
+// Changes to account data not yet at the server — see sync/outboxModel. On
+// rehydrate nothing is in flight any more, so "sending" goes back to the queue.
+const syncOutbox = createReducer(outbox.emptyOutbox(), {
+  "persist/REHYDRATE": (state, action) =>
+    action.payload?.syncOutbox ? outbox.heal(action.payload.syncOutbox) : state,
+  [actionTypes.ENQUEUE_SYNC_OP]: (state, action) => outbox.enqueue(state, action.payload),
+  [actionTypes.SYNC_OP_SENDING]: (state, action) => outbox.markSending(state, action.payload.id),
+  [actionTypes.SYNC_OP_DONE]: (state, action) => outbox.markDone(state, action.payload.id),
+  [actionTypes.SYNC_OP_FAILED]: (state, action) =>
+    outbox.markFailed(state, action.payload.id, { error: action.payload.error }),
+});
+
+// Bumped by every CLEAR_USER_DATA, which is the account boundary. A request
+// made for one account can answer after the boundary has moved even while
+// `auth` still names the same person (sign-out purges before the logout
+// browser closes), so code that must not write one account's answer into the
+// next compares this rather than the session.
+const accountEpoch = createReducer(0, {
+  [actionTypes.CLEAR_USER_DATA]: (state) => state + 1,
+});
+
+// Khalis SSO session state. Blacklisted from redux-persist (see store.js): the
+// claims carry an email + SAML nameID and redux-persist writes unencrypted
+// AsyncStorage. Blacklisting also guarantees "unknown" on cold start, so the UI
+// cannot flash a signed-in state before the Keychain read resolves.
+const auth = createReducer(
+  { status: "unknown", user: null, expiresAt: null, busy: false },
+  {
+    // `busy` is left to the action that set it (useSsoActions clears it when
+    // it finishes). A session event mid-action — a 401 ending the session
+    // during sign-out, the Android return link beginning one while
+    // startLogin still waits — used to clear it, re-enabling the row while
+    // a login browser was still open, and a second tap broke openAuth.
+    [actionTypes.SET_AUTH_SESSION]: (state, action) => ({
+      ...state,
+      status: "signedIn",
+      user: action.value?.user ?? null,
+      expiresAt: action.value?.expiresAt ?? null,
+    }),
+    [actionTypes.CLEAR_AUTH_SESSION]: (state) => ({
+      ...state,
+      status: "signedOut",
+      user: null,
+      expiresAt: null,
+    }),
+    [actionTypes.SET_AUTH_BUSY]: (state, action) => ({ ...state, busy: !!action.value }),
+  }
+);
+
+const appReducer = combineReducers({
   isNightMode,
   fontSize,
   fontFace,
@@ -530,5 +599,48 @@ const rootReducer = combineReducers({
   autoDownloadOnStream,
   audioStorageMigrated,
   currentBani,
+  auth,
+  accountEpoch,
+  settingsSync,
+  syncOutbox,
 });
+
+// Slices holding data that belongs to a PERSON, not to this device.
+//
+// Deliberately NOT here: downloadRegistry (real audio files on disk — dropping
+// the registry orphans them) and every display preference (theme, font size,
+// language). Those describe how this phone is set up, not who is holding it.
+//
+// Only what the account holds a copy of, so a person signing back in gets it
+// all back. Bookmarks and reminders join the list with the PRs that sync them
+// (the Dashboard and Reminders); until then they stay on the phone, as they did
+// before there was any sign-in, rather than being lost for good on sign-out.
+const USER_DATA_SLICES = [
+  // The clocks that go with the synced settings, and every change of the
+  // outgoing account still waiting to be sent — neither may reach the next
+  // account.
+  "settingsSync",
+  "syncOutbox",
+];
+
+// Wrapping combineReducers rather than adding a handler to each slice: this
+// keeps the "what counts as user data" list in one readable place, and a slice
+// added later is opt-in rather than silently surviving an account switch.
+const rootReducer = (state, action) => {
+  if (action.type === actionTypes.CLEAR_USER_DATA && state) {
+    const next = { ...state };
+    // Deleting the key (rather than setting undefined) makes combineReducers
+    // hand each of these reducers `undefined`, so they return their own initial
+    // state — no separate copy of the defaults to drift out of sync.
+    USER_DATA_SLICES.forEach((key) => delete next[key]);
+    const cleared = appReducer(next, action);
+    // The outbox restarts empty but keeps counting: an op from before the
+    // reset may still be in flight, and its late done/failed must not land on
+    // a new op that reused its id (ids end in the sequence number).
+    const seq = state.syncOutbox?.seq ?? cleared.syncOutbox.seq;
+    return { ...cleared, syncOutbox: { ...cleared.syncOutbox, seq } };
+  }
+  return appReducer(state, action);
+};
+
 export default rootReducer;

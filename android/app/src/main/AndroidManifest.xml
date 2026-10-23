@@ -20,6 +20,21 @@
         <activity android:name=".MainActivity" android:exported="true" android:label="@string/app_name"
             android:configChanges="keyboard|keyboardHidden|orientation|screenSize|uiMode"
             android:launchMode="singleTask" android:windowSoftInputMode="adjustResize">
+            <!-- Khalis SSO return deep link. This must live on MainActivity, NOT
+                 SplashActivity: SplashActivity builds a brand-new Intent for
+                 MainActivity and drops the original's data, so a filter there
+                 would silently discard the ?token= payload. MainActivity is also
+                 the ReactActivity, the only one React Native's Linking module can
+                 read the URL from. It has no LAUNCHER category, so this adds no
+                 second launcher icon; singleTask means the warm case is delivered
+                 via onNewIntent and clears the browser tab above it. -->
+            <intent-filter>
+                <action android:name="android.intent.action.VIEW" />
+                <category android:name="android.intent.category.DEFAULT" />
+                <category android:name="android.intent.category.BROWSABLE" />
+                <data android:scheme="sundargutka" android:host="login" />
+                <data android:scheme="sundargutka" android:host="logout" />
+            </intent-filter>
         </activity>
 
         <activity android:name=".SplashActivity" android:exported="true" android:theme="@style/SplashTheme" android:label="@string/app_name">

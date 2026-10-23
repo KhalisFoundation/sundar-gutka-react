@@ -35,6 +35,7 @@ import {
   trackScrollProgress,
   trackThemeEvent,
   trackSevaEvent,
+  trackSsoEvent,
 } from "./firebase/analytics";
 import {
   isNetworkFailure,
@@ -154,6 +155,7 @@ export {
   trackScrollProgress,
   trackThemeEvent,
   trackSevaEvent,
+  trackSsoEvent,
   ThemedSwitch,
   GradientDivider,
   useCustomScrollbar,

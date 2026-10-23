@@ -382,3 +382,39 @@ export const toggleAutoDownload = (value) => ({
   type: actionTypes.TOGGLE_AUTO_DOWNLOAD,
   value,
 });
+
+// Khalis SSO session. `value` is { user, expiresAt } — decoded claims and the
+// token's expiry in epoch ms. The token itself stays in the Keychain.
+export const setAuthSession = (value) => {
+  return { type: actionTypes.SET_AUTH_SESSION, value };
+};
+
+export const clearAuthSession = () => {
+  return { type: actionTypes.CLEAR_AUTH_SESSION };
+};
+
+export const setAuthBusy = (value) => {
+  return { type: actionTypes.SET_AUTH_BUSY, value };
+};
+
+export const clearUserData = () => {
+  // Drops every slice that belongs to a PERSON rather than to this phone.
+  // Dispatched on sign-out and when a different account signs in — see
+  // common/sso/accountScope.js, which owns that decision.
+  return { type: actionTypes.CLEAR_USER_DATA };
+};
+
+// ── Sync outbox ────────────────────────────────────────────────────────────
+// op: { feature, kind, key, payload } — see common/sync/outboxModel.
+export const enqueueSyncOp = (op) => ({ type: actionTypes.ENQUEUE_SYNC_OP, payload: op });
+export const syncOpSending = (id) => ({ type: actionTypes.SYNC_OP_SENDING, payload: { id } });
+export const syncOpDone = (id) => ({ type: actionTypes.SYNC_OP_DONE, payload: { id } });
+export const syncOpFailed = (id, error) => ({
+  type: actionTypes.SYNC_OP_FAILED,
+  payload: { id, error },
+});
+// Settings sync bookkeeping — see settings/syncModel and useSettingsSync.
+export const mergeSettingsSyncMeta = (payload) => ({
+  type: actionTypes.MERGE_SETTINGS_SYNC_META,
+  payload,
+});

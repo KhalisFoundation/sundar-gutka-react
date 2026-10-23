@@ -18,6 +18,7 @@ import {
   allowTracking,
 } from "@common";
 import { setBaniOrder } from "../common/actions";
+import { asAppWrite } from "../common/settings/appWrite";
 import { getLanguages } from "../Settings/components/comon/strings";
 import BaniHeader from "./components/BaniHeader";
 import { useBaniLength, useBaniList, useDatabaseUpdateCheck } from "./hooks";
@@ -56,7 +57,8 @@ const HomeScreen = React.memo(({ navigation }) => {
     const isLanguageValid = language && validLanguageKeys.includes(language);
 
     if (!language || !isLanguageValid) {
-      dispatch(actions.setLanguage("DEFAULT"));
+      // The app resetting a language it does not know, not the person choosing.
+      asAppWrite(() => dispatch(actions.setLanguage("DEFAULT")));
     }
   }, [language]);
 
@@ -68,7 +70,8 @@ const HomeScreen = React.memo(({ navigation }) => {
 
   useEffect(() => {
     const order = validateBaniOrder(baniOrder);
-    dispatch(setBaniOrder(order));
+    // Normalised to this build's banis by the app, not reordered by the person.
+    asAppWrite(() => dispatch(setBaniOrder(order)));
   }, []);
 
   const onPress = (row) => {

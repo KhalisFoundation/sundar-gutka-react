@@ -24,7 +24,9 @@ import {
 import NetworkProvider from "./src/common/context/NetworkProvider";
 import ThemeProvider from "./src/common/context/ThemeProvider";
 import useOfflinePlaybackGuard from "./src/common/hooks/useOfflinePlaybackGuard";
+import useOfflineSyncToast from "./src/common/hooks/useOfflineSyncToast";
 import usePauseAudioOnExit from "./src/common/hooks/usePauseAudioOnExit";
+import useSsoSession from "./src/common/hooks/useSsoSession";
 import useStorageMigration from "./src/common/hooks/useStorageMigration";
 import useGlobalDownloadManager from "./src/common/services/globalDownloadManager";
 import useAudioCatalogSync from "./src/common/services/useAudioCatalogSync";
@@ -32,6 +34,9 @@ import toastConfig from "./src/common/toastConfig";
 import { TrackPlayerSetup } from "./src/common/TrackPlayerUtils";
 import Navigation from "./src/navigation";
 import { reportRecentExits } from "./src/services/diagnostics/exitReasons";
+import useSettingsSync from "./src/services/settings/useSettingsSync";
+import useAccountSync from "./src/services/sync/useAccountSync";
+import useSyncOutbox from "./src/services/sync/useSyncOutbox";
 import useRemoteThemesSync from "./src/services/themes/useRemoteThemesSync";
 
 const { store, persistor } = createStore();
@@ -72,6 +77,20 @@ const GlobalServices = () => {
   // only after the launch window (see AUDIO_CATALOG_SYNC_DELAY_MS), so it
   // cannot compete with the fresh-install DB seed.
   useAudioCatalogSync();
+  // The Khalis account session: restored from the Keychain on launch, the
+  // sign-in redirect caught however it arrives, and dropped on expiry.
+  useSsoSession();
+  // Tells a signed-in user once when a change cannot reach the server yet.
+  useOfflineSyncToast();
+  // The person's preferences, per key, through the persisted outbox. Mounted
+  // here rather than on Settings so a change made anywhere goes up whether or
+  // not Settings stays open. Features register with the sync registry; the
+  // outbox drains them.
+  useSettingsSync();
+  useSyncOutbox();
+  // And takes back what other devices changed: on sign-in, foreground and
+  // connectivity returning.
+  useAccountSync();
   return null;
 };
 

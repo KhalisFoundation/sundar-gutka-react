@@ -1,4 +1,5 @@
-// Khalis backend base URL (reading themes, audio and Seva; Dashboard later).
+// Khalis backend base URL (reading themes, audio, Seva and account settings;
+// Dashboard later).
 const KHALIS_API_BASE = "https://users.khalis.net";
 
 export default {
@@ -112,6 +113,32 @@ export default {
   // My Pothi switch. Off until the My Pothi PR: the Reader's add-to-pothi button
   // reads it, and there are no pothis to add to yet.
   POTHI_ENABLED: false,
+  // ─── Khalis SSO ───────────────────────────────────────────────────────────
+  // The Service Provider fronts a SAML IdP and hands us a plain JWT — this app
+  // never speaks SAML. Point SSO_SERVICE_URL at a staging SP to test against a
+  // non-production IdP.
+  SSO_SERVICE_URL: "https://serviceprovider.khalis.net",
+  // The IdP itself, which owns the ACCOUNT rather than the session. Only
+  // account deletion talks to it: the SP issues and ends sessions, but only
+  // WordPress can schedule the account's removal. It verifies the SP's JWT by
+  // calling the SP's /user, so the app needs no second credential.
+  //
+  // A separate constant rather than a path off SSO_SERVICE_URL because they are
+  // different hosts, and a staging run has to be able to move one without the
+  // other (dev.sso.khalis.net against a production SP, and the reverse).
+  SSO_IDP_URL: "https://sso.khalis.net",
+  // Return deep links, registered in AndroidManifest.xml (on MainActivity) and
+  // ios/SundarGutka/Info.plist. These MUST stay free of any query string: the
+  // SP's success page builds the return URL as `${redirect_url}?token=${token}`
+  // with a hardcoded "?", so appending e.g. "?from=settings" here yields a
+  // malformed two-"?" URL and the token is lost.
+  SSO_LOGIN_REDIRECT: "sundargutka://login",
+  SSO_LOGOUT_REDIRECT: "sundargutka://logout",
+  // Keychain service name the session JWT is stored under.
+  SSO_KEYCHAIN_SERVICE: "khalis_sso",
+  // The Khalis account API (signed-in requests): settings today; dashboard,
+  // pothis and reminders arrive with their features.
+  DASHBOARD_API_BASE_URL: KHALIS_API_BASE,
   SEVA_CONFIG_API_URL: `${KHALIS_API_BASE}/seva/config`,
   // "Seva by other means" pages (public, no auth). Each returns a translated,
   // constrained HTML content fragment the app renders natively and caches (per
