@@ -50,6 +50,9 @@ const DatabaseUpdate = withScreenRoles(DatabaseUpdateScreen, "settings");
 const About = withScreenRoles(AboutScreen, "settings");
 const BookmarksScreen = withScreenRoles(Bookmarks, "settings");
 const ManageDownloadsScreen = withScreenRoles(ManageDownloads, "settings");
+// The pothi detail list, pushed from the Folders tab — same palette as the
+// other pushed utility screens it now looks like.
+const FolderDetail = withScreenRoles(FolderScreen, "settings");
 
 const Stack = createNativeStackNavigator();
 const Tab = createBottomTabNavigator();
@@ -261,7 +264,11 @@ const Navigation = () => {
             options={{ headerShown: false }}
           />
           <Stack.Screen name="About" component={About} options={{ headerShown: false }} />
-          <Stack.Screen name="FolderScreen" component={FolderScreen} />
+          <Stack.Screen
+            name="FolderScreen"
+            component={FolderDetail}
+            options={{ headerShown: false }}
+          />
           <Stack.Screen
             name="EditBaniOrder"
             component={EditBaniOrderScreen}

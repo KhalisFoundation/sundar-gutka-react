@@ -36,6 +36,8 @@ import {
   trackThemeEvent,
   trackSevaEvent,
   trackSsoEvent,
+  trackPothiEvent,
+  trackPunjabiKeyboardEvent,
 } from "./firebase/analytics";
 import {
   isNetworkFailure,
@@ -156,6 +158,8 @@ export {
   trackThemeEvent,
   trackSevaEvent,
   trackSsoEvent,
+  trackPothiEvent,
+  trackPunjabiKeyboardEvent,
   ThemedSwitch,
   GradientDivider,
   useCustomScrollbar,

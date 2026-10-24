@@ -7997,6 +7997,11 @@ signal-exit@^4.0.1:
   resolved "https://registry.npmjs.org/signal-exit/-/signal-exit-4.1.0.tgz"
   integrity sha512-bzyZ1e88w9O1iNJbKnOlvYTrWPDl46O1bG0D3XInv+9tkPrxrN8jUUTiFlDkkmKWgn1M6CfIA13SuGqOa9Korw==
 
+simple-keyboard-layouts@^3.4.249:
+  version "3.4.249"
+  resolved "https://registry.yarnpkg.com/simple-keyboard-layouts/-/simple-keyboard-layouts-3.4.249.tgz#0cec9174b752cbcba7d7d5e26422ca6361e33711"
+  integrity sha512-a7Vzz8wf64acDGT7+XCUv5OnOSugPW0LhLlXk2G2cHheCyPuk5fBsxFOXqm3xtmxjJCXhqHzdWLlkw/87nhaew==
+
 simple-swizzle@^0.2.2:
   version "0.2.2"
   resolved "https://registry.npmjs.org/simple-swizzle/-/simple-swizzle-0.2.2.tgz"

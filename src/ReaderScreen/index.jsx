@@ -28,6 +28,7 @@ import {
   trackScrollProgress,
   trackNavBar,
 } from "@common";
+import AddToPothiSheet from "../Pothi/components/AddToPothiSheet";
 import { Header, AutoScrollComponent, AudioPlayer, ReaderScrollbar } from "./components";
 import { useBookmarks, useFetchShabad } from "./hooks";
 import createStyles from "./styles";
@@ -151,6 +152,8 @@ const Reader = ({ navigation, route }) => {
   // postMessages sent to a stale WebView instance).
   const [webViewLoadTick, setWebViewLoadTick] = useState(0);
   const [titleText, setTitleText] = useState(null);
+  // Whether the add-to-pothi sheet is up.
+  const [filing, setFiling] = useState(false);
   const readSavedPosition = (entry) => {
     if (!entry) return { elementId: null, sequence: null };
     if (typeof entry === "string") return { elementId: entry, sequence: null };
@@ -647,6 +650,20 @@ const Reader = ({ navigation, route }) => {
     navigation.navigate(constant.BOOKMARKS, { id });
   }, [navigation, id]);
 
+  // Open signed out: the pothi the shabad is filed into lives on the device
+  // until there is an account to carry it. See usePothiSync.
+  const handleAddToPothiPress = useCallback(() => setFiling(true), []);
+  const closeFiling = useCallback(() => setFiling(false), []);
+
+  // The bani being read, in the shape the pothi model stores. `id` is coerced
+  // because a route param can arrive as a string and every stored `baaniId` is
+  // a number — a string would never match one and the sheet would show a bani
+  // it already holds as unticked.
+  const filingBani = useMemo(
+    () => ({ id: Number(id), gurmukhi: title, gurmukhiUni: titleUni }),
+    [id, title, titleUni]
+  );
+
   const handleMessage = useCallback(
     (message) => {
       const { data } = message.nativeEvent;
@@ -860,8 +877,14 @@ const Reader = ({ navigation, route }) => {
         title={titleText}
         handleBackPress={handleBackPress}
         handleBookmarkPress={handleBookmarkPress}
+        handleAddToPothiPress={handleAddToPothiPress}
         isHeader={isHeader}
       />
+      {/* The same sheet the Folders tab opens, so filing a bani from the reader
+          and filing one from a list are the one flow — including the "New
+          Pothi" row that creates a pothi and drops this bani straight into it,
+          without leaving the bani being read. */}
+      <AddToPothiSheet visible={filing} onClose={closeFiling} bani={filingBani} />
       {isLoading && <Spinner size="small" color={theme.c.primary} />}
       {/* Don't mount the WebView until the shabad has loaded. Mounting on the
           initial empty shabad ([]) renders a placeholder page whose height equals

@@ -171,6 +171,10 @@ jest.mock("@common/hooks/useThemedStyles", () => {
   return (createStyles) => (theme) => createStyles(theme);
 });
 
+// The Add to Pothi sheet is exercised by its own suite. Stubbed here so this
+// one stays about the Reader and does not have to mock the whole pothi slice.
+jest.mock("../Pothi/components/AddToPothiSheet", () => () => null);
+
 // Mock @common exports
 jest.mock("@common", () => ({
   // The header title is resolved through this, the same way the bani list

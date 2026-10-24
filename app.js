@@ -26,6 +26,7 @@ import ThemeProvider from "./src/common/context/ThemeProvider";
 import useOfflinePlaybackGuard from "./src/common/hooks/useOfflinePlaybackGuard";
 import useOfflineSyncToast from "./src/common/hooks/useOfflineSyncToast";
 import usePauseAudioOnExit from "./src/common/hooks/usePauseAudioOnExit";
+import usePothiSync from "./src/common/hooks/usePothiSync";
 import useSsoSession from "./src/common/hooks/useSsoSession";
 import useStorageMigration from "./src/common/hooks/useStorageMigration";
 import useGlobalDownloadManager from "./src/common/services/globalDownloadManager";
@@ -82,6 +83,10 @@ const GlobalServices = () => {
   useSsoSession();
   // Tells a signed-in user once when a change cannot reach the server yet.
   useOfflineSyncToast();
+  // My Pothi, through the persisted outbox, and the two default pothis seeded.
+  // Mounted here for the same reason as settings: a change made on any screen
+  // goes up whether or not that screen stays open.
+  usePothiSync();
   // The person's preferences, per key, through the persisted outbox. Mounted
   // here rather than on Settings so a change made anywhere goes up whether or
   // not Settings stays open. Features register with the sync registry; the

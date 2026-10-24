@@ -2,13 +2,9 @@
 //
 // The app-wide checks (every sheet, every overlay, every surface) skip these,
 // the same way .eslintrc.json exempts them from the token guard. Each one moves
-// over with its own feature, and its line here goes with it: the folder screen
-// and its AppBar with My Pothi, and the reminders screen with Reminders.
-export const LEGACY_SCREEN_PATHS = [
-  "common/components/AppBar/",
-  "FolderScreen/",
-  "Settings/components/reminders/",
-];
+// over with its own feature, and its line here goes with it: the reminders
+// screen with Reminders.
+export const LEGACY_SCREEN_PATHS = ["Settings/components/reminders/"];
 
 /** True for a src/-relative path that is still on the legacy styling. */
 export const isLegacyScreen = (rel) =>

@@ -110,9 +110,16 @@ export default {
   },
   INTERNET_CHECK_URL: "https://www.gstatic.com/generate_204",
   ICON_SIZE_SMALL: 18,
-  // My Pothi switch. Off until the My Pothi PR: the Reader's add-to-pothi button
-  // reads it, and there are no pothis to add to yet.
-  POTHI_ENABLED: false,
+  // Master switch for My Pothi — the folders a USER makes. While false, Home
+  // has no tab bar at all: it is one bani list with Sundar Gutka's own bundled
+  // folders sitting in it, exactly as it was before My Pothi existed. The
+  // reader's add-to-pothi button is hidden with it, so there is no way to
+  // create, rename, reorder, pin or delete a pothi. The feature stays in the
+  // build: set this back to true to restore it with no other change.
+  //
+  // The pothi SLICE and usePothiSync keep running either way, deliberately:
+  // pothis already on the account must not be lost to a switch flip.
+  POTHI_ENABLED: true,
   // ─── Khalis SSO ───────────────────────────────────────────────────────────
   // The Service Provider fronts a SAML IdP and hands us a plain JWT — this app
   // never speaks SAML. Point SSO_SERVICE_URL at a staging SP to test against a

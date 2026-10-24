@@ -1,6 +1,7 @@
 import { combineReducers } from "@reduxjs/toolkit";
 import * as actionTypes from "./actions/actionTypes";
 import constant from "./constant";
+import * as pothiModel from "./pothi/model";
 import { emptySettingsSync } from "./settings/syncModel";
 import * as outbox from "./sync/outboxModel";
 
@@ -543,6 +544,50 @@ const auth = createReducer(
   }
 );
 
+// My Pothi. Every transition delegates to `pothi/model`, which owns the rules
+// (the pin ceiling, de-duplication, what an unpinned pothi's slot becomes) and
+// is tested without a store. This reducer only routes.
+//
+// REHYDRATE runs the persisted payload through `reconcile` rather than trusting
+// it: it is user data that outlives the build that wrote it, so a pothi deleted
+// in one version, or a pin count from before the ceiling existed, must not come
+// back and put the list into a state the UI cannot render.
+const pothis = createReducer(pothiModel.emptyPothis(), {
+  "persist/REHYDRATE": (state, action) =>
+    action.payload?.pothis ? pothiModel.reconcile(action.payload.pothis) : state,
+  [actionTypes.CREATE_POTHI]: (state, action) => pothiModel.addPothi(state, action.value),
+  [actionTypes.RENAME_POTHI]: (state, action) =>
+    pothiModel.renamePothi(state, action.payload.id, action.payload.name),
+  [actionTypes.DELETE_POTHI]: (state, action) => pothiModel.deletePothi(state, action.value),
+  [actionTypes.ADD_BANI_TO_POTHI]: (state, action) =>
+    pothiModel.addBani(state, action.payload.id, action.payload.item),
+  [actionTypes.REMOVE_BANI_FROM_POTHI]: (state, action) =>
+    pothiModel.removeBani(state, action.payload.id, action.payload.baaniId),
+  [actionTypes.RESTORE_POTHI_ITEMS]: (state, action) =>
+    pothiModel.restoreItems(state, action.payload.id, action.payload.items),
+  [actionTypes.SET_POTHI_ORDER]: (state, action) => pothiModel.setOrder(state, action.value),
+  [actionTypes.TOGGLE_POTHI_PIN]: (state, action) => pothiModel.togglePin(state, action.value),
+  [actionTypes.SEED_DEFAULT_POTHIS]: (state, action) =>
+    pothiModel.seedDefaults(state, action.value ?? []),
+  [actionTypes.MERGE_REMOTE_POTHIS]: (state, action) =>
+    pothiModel.mergeRemote(state, action.value ?? [], Date.now(), action.deletedFolderIds ?? []),
+  [actionTypes.SET_POTHI_SYNC_WATERMARK]: (state, action) => ({
+    ...state,
+    syncWatermark: Number(action.value) || 0,
+  }),
+  // This slice deliberately does NOT handle CLEAR_AUTH_SESSION or
+  // SET_AUTH_SESSION. Reacting to the auth actions coupled My Pothi to the
+  // sign-in/sign-out path, which is not this feature's business — the auth
+  // flow must behave exactly as it did before My Pothi existed.
+  // The account BOUNDARY is still enforced, one level up: `pothis` is in
+  // USER_DATA_SLICES below, so CLEAR_USER_DATA resets it when a different
+  // account signs in.
+  [actionTypes.SET_POTHIS_SYNCED_AT]: (state, action) => ({
+    ...state,
+    lastSyncedAt: action.value ?? null,
+  }),
+});
+
 const appReducer = combineReducers({
   isNightMode,
   fontSize,
@@ -603,6 +648,7 @@ const appReducer = combineReducers({
   accountEpoch,
   settingsSync,
   syncOutbox,
+  pothis,
 });
 
 // Slices holding data that belongs to a PERSON, not to this device.
@@ -616,6 +662,11 @@ const appReducer = combineReducers({
 // (the Dashboard and Reminders); until then they stay on the phone, as they did
 // before there was any sign-in, rather than being lost for good on sign-out.
 const USER_DATA_SLICES = [
+  // A pothi is the clearest case of person-owned data there is: the folders a
+  // user built, synced to THEIR account. Left out, they survived an account
+  // switch and usePothiSync uploaded the previous account's folders into the
+  // new one on its first push.
+  "pothis",
   // The clocks that go with the synced settings, and every change of the
   // outgoing account still waiting to be sent — neither may reach the next
   // account.

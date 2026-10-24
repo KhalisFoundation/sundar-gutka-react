@@ -118,6 +118,25 @@ export const SET_AUTH_BUSY = "SET_AUTH_BUSY";
 // and USER_DATA_SLICES in common/reducer.js.
 export const CLEAR_USER_DATA = "CLEAR_USER_DATA";
 
+// My Pothi — user-made folders of banis, ordered and pinned by the user
+export const CREATE_POTHI = "CREATE_POTHI";
+export const RENAME_POTHI = "RENAME_POTHI";
+export const DELETE_POTHI = "DELETE_POTHI";
+export const ADD_BANI_TO_POTHI = "ADD_BANI_TO_POTHI";
+export const REMOVE_BANI_FROM_POTHI = "REMOVE_BANI_FROM_POTHI";
+// An editor's Discard: the items it opened with, back in their order.
+export const RESTORE_POTHI_ITEMS = "RESTORE_POTHI_ITEMS";
+export const SET_POTHI_ORDER = "SET_POTHI_ORDER";
+export const TOGGLE_POTHI_PIN = "TOGGLE_POTHI_PIN";
+// Seeded once: Morning + Evening Nitnem. Tracked so a user who deletes them
+// does not find them back on the next launch.
+export const SEED_DEFAULT_POTHIS = "SEED_DEFAULT_POTHIS";
+// Cloud sync — folder-level last-write-wins against GET /folders.
+export const MERGE_REMOTE_POTHIS = "MERGE_REMOTE_POTHIS";
+export const SET_POTHIS_SYNCED_AT = "SET_POTHIS_SYNCED_AT";
+// The server watermark from the last folders read, sent back as `since`.
+export const SET_POTHI_SYNC_WATERMARK = "SET_POTHI_SYNC_WATERMARK";
+
 // Sync outbox — changes to account data waiting to reach the server.
 export const ENQUEUE_SYNC_OP = "ENQUEUE_SYNC_OP";
 export const SYNC_OP_SENDING = "SYNC_OP_SENDING";

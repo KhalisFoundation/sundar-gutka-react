@@ -7,11 +7,12 @@
 //
 // What goes is the slices in USER_DATA_SLICES (common/reducer.js): the data the
 // account holds a copy of, so it costs nothing to drop and comes back with the
-// account. Today that is the settings-sync clocks and the unsent changes, so
-// one person's pending edits never reach another's account. Bookmarks and
-// reminders join with the PRs that sync them; until then they belong to the
-// phone, as they always have. A FIRST sign-in is not a change: whatever was
-// set up signed-out is the signing-in person's own, and is claimed.
+// account. Today that is the pothis, the settings-sync clocks and the unsent
+// changes, so one person's folders and pending edits never reach another's
+// account. Bookmarks and reminders join with the PRs that sync them; until then
+// they belong to the phone, as they always have. A FIRST sign-in is not a
+// change: whatever was set up signed-out is the signing-in person's own, and is
+// claimed.
 
 import AsyncStorage from "@react-native-async-storage/async-storage";
 import { clearUserData } from "../actions";
@@ -83,8 +84,8 @@ export const purgeLocalUserData = async (dispatch) => {
  * the delete has gone through — see useSsoActions.
  */
 export const destroyLocalAccountData = async (dispatch) => {
-  // Via CLEAR_USER_DATA's slice list: the sync clocks and the outbox, whose
-  // queued ops would otherwise keep pushing to a dead account.
+  // Via CLEAR_USER_DATA's slice list: the pothis, the sync clocks and the
+  // outbox, whose queued ops would otherwise keep pushing to a dead account.
   await purgeLocalUserData(dispatch);
 
   // No previous account to compare the next sign-in against.

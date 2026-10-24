@@ -1,0 +1,61 @@
+import baniItemTitle from "./itemTitle";
+import {
+  createPothi,
+  EVENING_ID,
+  EVENING_NITNEM_IDS,
+  makeBaniItem,
+  MORNING_ID,
+  MORNING_NITNEM_IDS,
+} from "./model";
+
+// Builds the two pothis every user starts with.
+//
+// The ids and the bani lists live in `model.js` — resolving which folder is
+// Morning Nitnem needs them too, and a second copy here is how the pair would
+// drift apart. This file is only the part that needs the live bani database:
+// turning those ids into items carrying real titles.
+
+/**
+ * The default pothis, built against the live bani list so each item carries the
+ * real title the API requires.
+ *
+ * Seeded ONCE, tracked by `seededDefaults` — a user who deletes or renames them
+ * must not find them back next launch. Returns an empty array when the bani
+ * list has not loaded yet, so the caller retries rather than seeding a pothi
+ * full of numeric placeholder titles.
+ *
+ * @param {Array} baniListData rows from `useBaniList()`.
+ * @param {{morning: string, evening: string}} names localised pothi names.
+ */
+export const buildDefaultPothis = (baniListData, names) => {
+  const byId = new Map();
+  // Folder children too, as resolveBanis does: a reordered list can hold a
+  // Nitnem bani inside a folder, and all-or-nothing would then never seed.
+  (baniListData ?? []).forEach((bani) => {
+    if (bani?.id != null) byId.set(bani.id, bani);
+    (Array.isArray(bani?.folder) ? bani.folder : []).forEach((child) => {
+      if (child?.id != null && !byId.has(child.id)) byId.set(child.id, child);
+    });
+  });
+  const wanted = [...MORNING_NITNEM_IDS, ...EVENING_NITNEM_IDS];
+  // All-or-nothing: a partial database would otherwise produce a Morning Nitnem
+  // missing Anand Sahib, and `seededDefaults` would stop it ever being fixed.
+  if (wanted.some((id) => !byId.has(id))) return [];
+
+  const itemsFor = (ids) =>
+    ids.map((id) => {
+      // The Unicode name — the ASCII one renders as mojibake under Baloo, and
+      // the API stores this verbatim for every client that reads it back.
+      return makeBaniItem({ baaniId: id, title: baniItemTitle(byId.get(id)) });
+    });
+
+  // FIXED ids, not minted ones. addPothi de-duplicates by id, so if this ever
+  // runs twice the second run replaces the pair instead of appending a copy —
+  // which is exactly the bug a random id per call produced.
+  return [
+    createPothi({ id: MORNING_ID, name: names.morning, items: itemsFor(MORNING_NITNEM_IDS) }),
+    createPothi({ id: EVENING_ID, name: names.evening, items: itemsFor(EVENING_NITNEM_IDS) }),
+  ];
+};
+
+export default buildDefaultPothis;

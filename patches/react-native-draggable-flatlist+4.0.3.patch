@@ -1,0 +1,95 @@
+diff --git a/node_modules/react-native-draggable-flatlist/src/components/CellRendererComponent.tsx b/node_modules/react-native-draggable-flatlist/src/components/CellRendererComponent.tsx
+index e4e861a..7ed7265 100644
+--- a/node_modules/react-native-draggable-flatlist/src/components/CellRendererComponent.tsx
++++ b/node_modules/react-native-draggable-flatlist/src/components/CellRendererComponent.tsx
+@@ -55,6 +55,15 @@ function CellRendererComponent<T>(props: Props<T>) {
+ 
+   const isActive = activeKey === key;
+ 
++  // Reset held translate when drag ends, in case onCellLayout doesn't fire
++  // (e.g. when FlatList doesn't detect a geometry change for the cell).
++  // By this point the spring animation has already completed.
++  useEffect(() => {
++    if (!activeKey) {
++      heldTanslate.value = 0;
++    }
++  }, [activeKey]);
++
+   const animStyle = useAnimatedStyle(() => {
+     // When activeKey becomes null at the end of a drag and the list reorders,
+     // the animated style may apply before the next paint, causing a flicker.
+diff --git a/node_modules/react-native-draggable-flatlist/src/components/DraggableFlatList.tsx b/node_modules/react-native-draggable-flatlist/src/components/DraggableFlatList.tsx
+index 7c88afc..9fabe15 100644
+--- a/node_modules/react-native-draggable-flatlist/src/components/DraggableFlatList.tsx
++++ b/node_modules/react-native-draggable-flatlist/src/components/DraggableFlatList.tsx
+@@ -112,17 +112,31 @@ function DraggableFlatListInner<T>(props: DraggableFlatListProps<T>) {
+   });
+ 
+   const dataRef = useRef(props.data);
++  const pendingDataResetRef = useRef(false);
+   const dataHasChanged =
+     dataRef.current.map(keyExtractor).join("") !==
+     props.data.map(keyExtractor).join("");
+   dataRef.current = props.data;
+   if (dataHasChanged) {
+-    // When data changes make sure `activeKey` is nulled out in the same render pass
+-    activeKey = null;
++    // When data changes (and no drag is active) reset animated values.
++    // Guard against activeKey to prevent reset() from racing with the
++    // spring animation callback during an active drag.
++    if (activeKey) {
++      pendingDataResetRef.current = true;
++    } else {
++      InteractionManager.runAfterInteractions(() => {
++        reset();
++      });
++    }
++  }
++
++  useEffect(() => {
++    if (activeKey || !pendingDataResetRef.current) return;
++    pendingDataResetRef.current = false;
+     InteractionManager.runAfterInteractions(() => {
+       reset();
+     });
+-  }
++  }, [activeKey, reset]);
+ 
+   useEffect(() => {
+     if (!propsRef.current.enableLayoutAnimationExperimental) return;
+diff --git a/node_modules/react-native-draggable-flatlist/src/hooks/useCellTranslate.tsx b/node_modules/react-native-draggable-flatlist/src/hooks/useCellTranslate.tsx
+index efea240..7af6416 100644
+--- a/node_modules/react-native-draggable-flatlist/src/hooks/useCellTranslate.tsx
++++ b/node_modules/react-native-draggable-flatlist/src/hooks/useCellTranslate.tsx
+@@ -13,6 +13,7 @@ export function useCellTranslate({ cellIndex, cellSize, cellOffset }: Params) {
+   const {
+     activeIndexAnim,
+     activeCellSize,
++    activeCellOffset,
+     hoverOffset,
+     spacerIndexAnim,
+     placeholderOffset,
+@@ -75,7 +76,22 @@ export function useCellTranslate({ cellIndex, cellSize, cellOffset }: Params) {
+     }
+ 
+     if (result !== -1 && result !== spacerIndexAnim.value) {
+-      spacerIndexAnim.value = result;
++      // Direction-aware guard: during a drag reversal, both a before-active
++      // and after-active cell can match overlap conditions in the same frame.
++      // Only allow the write if the result is on the correct side relative
++      // to the hover direction, preventing the "wrong side" cell from winning.
++      const isHoverBelowOrigin = hoverOffset.value >= activeCellOffset.value;
++      const resultIsAfterActive = result > activeIndexAnim.value;
++      const resultIsBeforeActive = result < activeIndexAnim.value;
++      const resultIsAtActive = result === activeIndexAnim.value;
++
++      const directionMatch =
++        (isHoverBelowOrigin && (resultIsAfterActive || resultIsAtActive)) ||
++        (!isHoverBelowOrigin && (resultIsBeforeActive || resultIsAtActive));
++
++      if (spacerIndexAnim.value < 0 || directionMatch) {
++        spacerIndexAnim.value = result;
++      }
+     }
+ 
+     if (spacerIndexAnim.value === cellIndex) {

@@ -385,10 +385,44 @@ const SSO_EVENT_NAMES = {
 };
 const trackSsoEvent = namespacedTracker(SSO_EVENT_NAMES, "sso");
 
+// My Pothi. One event name per action, so each carries only the params it
+// actually populates — a shared "pothi" umbrella would leave (not set) on every
+// param the other actions do not set, which is why the audio events were split.
+const POTHI_EVENT_NAMES = {
+  created: "pothi_created",
+  bani_added: "pothi_bani_added",
+  bani_removed: "pothi_bani_removed",
+  opened: "pothi_opened",
+  renamed: "pothi_renamed",
+  deleted: "pothi_deleted",
+  reordered: "pothi_reordered",
+  pinned: "pothi_pinned",
+  unpinned: "pothi_unpinned",
+  // A pothi left with no banis in it, reported where the edit is committed —
+  // see Pothi/reportPothiEmptied. `size` is what it held before, `surface`
+  // where it happened. Both are already registered in GA4.
+  emptied: "pothi_emptied",
+};
+const trackPothiEvent = namespacedTracker(POTHI_EVENT_NAMES, "pothi");
+
+// The in-app Punjabi keyboard. `opened` fires each time someone switches it on;
+// GA4's Users metric on it is how many people use the keyboard. `surface` is
+// the field it was opened on: create_pothi_name | create_pothi_search |
+// add_banis_search | rename_pothi.
+const PUNJABI_KEYBOARD_EVENT_NAMES = {
+  opened: "punjabi_keyboard_opened",
+};
+const trackPunjabiKeyboardEvent = namespacedTracker(
+  PUNJABI_KEYBOARD_EVENT_NAMES,
+  "punjabi_keyboard"
+);
+
 export {
   trackThemeEvent,
   trackSevaEvent,
   trackSsoEvent,
+  trackPothiEvent,
+  trackPunjabiKeyboardEvent,
   allowTracking,
   trackReaderEvent,
   trackNavBar,
