@@ -18,6 +18,11 @@ export default {
   READER: "Reader",
   SETTINGS: "Settings",
   SEVA: "Seva",
+  DATABASE_UPDATE: "DatabaseUpdate",
+  // This app's own store identity, so an "update available" push can open
+  // the listing. The iOS id is the App Store's, not the bundle id.
+  APP_ANDROID_PACKAGE: "com.WahegurooNetwork.SundarGutka",
+  APP_IOS_APP_ID: "431446112",
   EXTRA_SMALL: "EXTRA_SMALL",
   SMALL: "SMALL",
   MEDIUM: "MEDIUM",
@@ -146,6 +151,10 @@ export default {
   // The Khalis account API (signed-in requests): settings today; dashboard,
   // pothis and reminders arrive with their features.
   DASHBOARD_API_BASE_URL: KHALIS_API_BASE,
+  // Push device registry (src/push in the API). Registers this device's FCM
+  // token — anonymously before sign-in, attached to the account after — so a
+  // campaign can be aimed at a person, a platform or a language.
+  PUSH_DEVICES_API_URL: `${KHALIS_API_BASE}/push/devices`,
   SEVA_CONFIG_API_URL: `${KHALIS_API_BASE}/seva/config`,
   // "Seva by other means" pages (public, no auth). Each returns a translated,
   // constrained HTML content fragment the app renders natively and caches (per

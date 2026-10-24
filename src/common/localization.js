@@ -332,6 +332,15 @@ const STRINGS = new LocalizedStrings({
       "Your pothis are saved on this device. Sign in to back them up across devices.",
     POTHI_UNPIN: "Unpin",
     SAVE: "Save",
+    ADD_BANI: "Add a bani",
+    ALARM_PERM_BODY:
+      "Android needs permission to alert you at an exact time. Without it your reminders will not go off.",
+    ALARM_PERM_TITLE: "Allow alarms & reminders",
+    HOUR: "Hour",
+    MINUTE: "Minute",
+    OPEN_SETTINGS: "Open settings",
+    REMINDER_TIME: "Time",
+    TIME_EDIT_HINT: "Double tap to type",
   },
   hi: {
     about: "हमारे बारे",
@@ -661,6 +670,15 @@ const STRINGS = new LocalizedStrings({
     POTHI_SIGN_IN_HINT: "आपकी पोथियाँ इसी डिवाइस पर सहेजी जाती हैं। बैकअप के लिए साइन इन करें।",
     POTHI_UNPIN: "पिन हटाएँ",
     SAVE: "सहेजें",
+    ADD_BANI: "बाणी जोड़ें",
+    ALARM_PERM_BODY:
+      "सही समय पर सूचित करने के लिए Android को अनुमति चाहिए। इसके बिना आपके रिमाइंडर नहीं बजेंगे।",
+    ALARM_PERM_TITLE: "अलार्म और रिमाइंडर की अनुमति दें",
+    HOUR: "घंटा",
+    MINUTE: "मिनट",
+    OPEN_SETTINGS: "सेटिंग्स खोलें",
+    REMINDER_TIME: "समय",
+    TIME_EDIT_HINT: "टाइप करने के लिए दो बार टैप करें",
   },
 
   pa: {
@@ -991,6 +1009,15 @@ const STRINGS = new LocalizedStrings({
       "ਤੁਹਾਡੀਆਂ ਪੋਥੀਆਂ ਇਸੇ ਡੀਵਾਈਸ ਉੱਤੇ ਸੰਭਾਲੀਆਂ ਜਾਂਦੀਆਂ ਹਨ। ਬੈਕਅੱਪ ਲਈ ਸਾਈਨ ਇਨ ਕਰੋ।",
     POTHI_UNPIN: "ਪਿੰਨ ਹਟਾਓ",
     SAVE: "ਸੰਭਾਲੋ",
+    ADD_BANI: "ਬਾਣੀ ਸ਼ਾਮਲ ਕਰੋ",
+    ALARM_PERM_BODY:
+      "ਸਹੀ ਸਮੇਂ ਤੇ ਸੂਚਿਤ ਕਰਨ ਲਈ Android ਨੂੰ ਇਜਾਜ਼ਤ ਚਾਹੀਦੀ ਹੈ। ਇਸ ਤੋਂ ਬਿਨਾਂ ਤੁਹਾਡੇ ਰਿਮਾਈਂਡਰ ਨਹੀਂ ਵੱਜਣਗੇ।",
+    ALARM_PERM_TITLE: "ਅਲਾਰਮ ਅਤੇ ਰਿਮਾਈਂਡਰ ਦੀ ਇਜਾਜ਼ਤ ਦਿਓ",
+    HOUR: "ਘੰਟਾ",
+    MINUTE: "ਮਿੰਟ",
+    OPEN_SETTINGS: "ਸੈਟਿੰਗਾਂ ਖੋਲ੍ਹੋ",
+    REMINDER_TIME: "ਸਮਾਂ",
+    TIME_EDIT_HINT: "ਟਾਈਪ ਕਰਨ ਲਈ ਦੋ ਵਾਰ ਟੈਪ ਕਰੋ",
   },
   fr: {
     about: "Infos",
@@ -1333,6 +1360,15 @@ const STRINGS = new LocalizedStrings({
       "Vos pothis sont enregistrés sur cet appareil. Connectez-vous pour les sauvegarder.",
     POTHI_UNPIN: "Détacher",
     SAVE: "Enregistrer",
+    ADD_BANI: "Ajouter une bani",
+    ALARM_PERM_BODY:
+      "Android a besoin d'une autorisation pour vous alerter à l'heure exacte. Sans elle, vos rappels ne se déclencheront pas.",
+    ALARM_PERM_TITLE: "Autoriser alarmes et rappels",
+    HOUR: "Heure",
+    MINUTE: "Minute",
+    OPEN_SETTINGS: "Ouvrir les réglages",
+    REMINDER_TIME: "Heure",
+    TIME_EDIT_HINT: "Appuyez deux fois pour saisir",
   },
   it: {
     about: "Info",
@@ -1666,6 +1702,15 @@ const STRINGS = new LocalizedStrings({
       "I tuoi pothi sono salvati su questo dispositivo. Accedi per farne il backup.",
     POTHI_UNPIN: "Rimuovi dai fissati",
     SAVE: "Salva",
+    ADD_BANI: "Aggiungi una bani",
+    ALARM_PERM_BODY:
+      "Android richiede l'autorizzazione per avvisarti all'ora esatta. Senza, i tuoi promemoria non suoneranno.",
+    ALARM_PERM_TITLE: "Consenti sveglie e promemoria",
+    HOUR: "Ora",
+    MINUTE: "Minuto",
+    OPEN_SETTINGS: "Apri impostazioni",
+    REMINDER_TIME: "Ora",
+    TIME_EDIT_HINT: "Tocca due volte per digitare",
   },
   es: {
     about: "Sobre Nosotros",
@@ -2004,6 +2049,15 @@ const STRINGS = new LocalizedStrings({
       "Tus pothis se guardan en este dispositivo. Inicia sesión para hacer una copia de seguridad.",
     POTHI_UNPIN: "Dejar de fijar",
     SAVE: "Guardar",
+    ADD_BANI: "Agregar una bani",
+    ALARM_PERM_BODY:
+      "Android necesita permiso para avisarte a la hora exacta. Sin él, tus recordatorios no sonarán.",
+    ALARM_PERM_TITLE: "Permitir alarmas y recordatorios",
+    HOUR: "Hora",
+    MINUTE: "Minuto",
+    OPEN_SETTINGS: "Abrir ajustes",
+    REMINDER_TIME: "Hora",
+    TIME_EDIT_HINT: "Toca dos veces para escribir",
   },
 });
 

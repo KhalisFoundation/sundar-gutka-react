@@ -143,5 +143,8 @@ export const SYNC_OP_SENDING = "SYNC_OP_SENDING";
 export const SYNC_OP_DONE = "SYNC_OP_DONE";
 export const SYNC_OP_FAILED = "SYNC_OP_FAILED";
 
+// Reminder sync bookkeeping: per-reminder clocks, tombstones, server bases.
+export const MERGE_REMINDER_SYNC_META = "MERGE_REMINDER_SYNC_META";
+
 // Settings sync bookkeeping: per-key clocks and server bases.
 export const MERGE_SETTINGS_SYNC_META = "MERGE_SETTINGS_SYNC_META";

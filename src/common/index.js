@@ -64,6 +64,10 @@ import {
   cancelAllReminders,
   checkPermissions,
   resetBadgeCount,
+  canScheduleExactAlarms,
+  openExactAlarmSettings,
+  openNotificationSettings,
+  hasNotificationPermission,
   requestNotificationPermission,
 } from "./notifications";
 import {
@@ -77,6 +81,7 @@ import {
   getCurrentDBMD5Hash,
 } from "./rnfs";
 import { navigate, navigateTo, navigationRef } from "./rootNavigation";
+import scheduleReminders from "./scheduleReminders";
 import createStore from "./store";
 import {
   showToast,
@@ -108,6 +113,11 @@ export {
   trackReminderEvent,
   trackSettingEvent,
   updateReminders,
+  scheduleReminders,
+  canScheduleExactAlarms,
+  openExactAlarmSettings,
+  openNotificationSettings,
+  hasNotificationPermission,
   checkPermissions,
   cancelAllReminders,
   FallBack,

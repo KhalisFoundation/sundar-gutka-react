@@ -171,10 +171,7 @@
         "**/*.test.js",
         "**/*.test.jsx",
         "src/theme/**",
-        "src/common/components/ui/Overlay.jsx",
-        // Not on the token layer yet: it moves over with its own feature, and
-        // its line goes with it. Reminders screen: Reminders.
-        "src/Settings/components/reminders/**"
+        "src/common/components/ui/Overlay.jsx"
       ],
       "rules": {
         "no-restricted-syntax": [

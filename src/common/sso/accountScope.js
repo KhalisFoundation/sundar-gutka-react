@@ -7,16 +7,17 @@
 //
 // What goes is the slices in USER_DATA_SLICES (common/reducer.js): the data the
 // account holds a copy of, so it costs nothing to drop and comes back with the
-// account. Today that is the pothis, the settings-sync clocks and the unsent
-// changes, so one person's folders and pending edits never reach another's
-// account. Bookmarks and reminders join with the PRs that sync them; until then
-// they belong to the phone, as they always have. A FIRST sign-in is not a
+// account. Today that is the pothis, the reminders, the sync clocks and the
+// unsent changes, so one person's folders, reminders and pending edits never
+// reach another's account. Bookmarks join with the Dashboard, which syncs them;
+// until then they belong to the phone, as they always have. A FIRST sign-in is not a
 // change: whatever was set up signed-out is the signing-in person's own, and is
 // claimed.
 
 import AsyncStorage from "@react-native-async-storage/async-storage";
 import { clearUserData } from "../actions";
 import { logError } from "../firebase/crashlytics";
+import { cancelAllReminders } from "../notifications";
 import { normaliseEmail } from "./jwt";
 
 // Which account the data currently on this device belongs to. Email, because
@@ -68,6 +69,14 @@ export const isAccountChange = (email, lastAccount) => {
  */
 export const purgeLocalUserData = async (dispatch) => {
   dispatch(clearUserData());
+  // The reminders are already scheduled with the OS. Redux forgetting them
+  // does not stop them firing, so the next person would still be woken for
+  // the previous one's nitnem.
+  try {
+    await cancelAllReminders();
+  } catch (err) {
+    logError(new Error(`SSO accountScope: cancelling reminders failed: ${err?.message || err}`));
+  }
 };
 
 /**

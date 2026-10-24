@@ -5,8 +5,6 @@ import React from "react";
 
 import { render } from "@testing-library/react-native";
 
-import { isLegacyScreen } from "../../test-utils/legacyScreens";
-
 import Overlay from "./Overlay";
 
 // Jest renders the component TREE, not a native window. That gap is exactly
@@ -24,13 +22,7 @@ const walk = (dir, out = []) => {
   fs.readdirSync(dir, { withFileTypes: true }).forEach((e) => {
     const p = path.join(dir, e.name);
     if (e.isDirectory()) walk(p, out);
-    else if (
-      /\.jsx?$/.test(e.name) &&
-      !/\.test\.jsx?$/.test(e.name) &&
-      !isLegacyScreen(path.relative(SRC, p))
-    ) {
-      out.push(p);
-    }
+    else if (/\.jsx?$/.test(e.name) && !/\.test\.jsx?$/.test(e.name)) out.push(p);
   });
   return out;
 };

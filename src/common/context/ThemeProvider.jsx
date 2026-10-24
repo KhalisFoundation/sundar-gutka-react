@@ -42,12 +42,6 @@ const ThemeProvider = ({ children }) => {
       // `designedTheme` is the flag the per-screen palettes read: Dashboard,
       // Seva and Settings each override a dozen roles of their own, and left
       // active they would paint their navy straight back over the theme.
-      //
-      // KNOWN: only `c` is themed. The screen still on the legacy
-      // `theme.colors` / `staticColors` maps (ReminderOptions — see
-      // src/theme/legacyColors.js) keeps the plain light/dark colours under a
-      // designed theme, so it doesn't match it. Fixed when it moves to `c` in
-      // the upcoming Reminders PR.
       const record = byId[themeMode];
       return { ...base, c: { ...base.c, ...record.app }, designedTheme: themeMode };
     }

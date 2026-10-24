@@ -5,8 +5,11 @@
 // clock they would outrank the account's own copy and overwrite it on every
 // device.
 //
-// Wrap the dispatch: useSettingsSync's store watcher runs synchronously
-// inside it and skips what changed while this is set.
+// The same holds for reminders: the app filling an empty list with defaults,
+// or switching them off because THIS phone lost a permission.
+//
+// Wrap the dispatch: the sync watchers (useSettingsSync, useRemindersSync) run
+// synchronously inside it and skip what changed while this is set.
 
 let depth = 0;
 

@@ -150,14 +150,31 @@ describe("CLEAR_USER_DATA", () => {
     expect(after.syncOutbox.ops).toEqual(fresh.syncOutbox.ops);
   });
 
-  // No account copy of these exists yet, so dropping them on sign-out lost
-  // them for good — even for the same person signing straight back in. They
-  // join the purge with the PRs that sync them.
-  it("keeps bookmarks and reminders, which nothing syncs yet", () => {
-    const before = populated();
+  // Reminders sync to the account now, so they go with it — and their clocks
+  // with them, or the next account's first sync would carry the previous one's.
+  it("clears the reminders and their sync clocks", () => {
+    let before = populated();
+    before = rootReducer(before, {
+      type: actionTypes.SET_REMINDER_BANIS,
+      value: JSON.stringify([{ key: 2, id: 2, time: "5:00 AM", enabled: true }]),
+    });
+    before = rootReducer(before, {
+      type: actionTypes.MERGE_REMINDER_SYNC_META,
+      payload: { clocks: { 2: 9 }, lastSyncedAt: 7 },
+    });
     const after = rootReducer(before, clearUserData());
+    const fresh = rootReducer(undefined, { type: "@@INIT" });
+    expect(after.isReminders).toBe(false);
+    expect(after.reminderBanis).toBe(fresh.reminderBanis);
+    expect(after.remindersSync).toEqual(fresh.remindersSync);
+  });
+
+  // No account copy of bookmarks exists yet, so dropping them on sign-out lost
+  // them for good — even for the same person signing straight back in. They
+  // join the purge with the Dashboard, which syncs them.
+  it("keeps bookmarks, which nothing syncs yet", () => {
+    const after = rootReducer(populated(), clearUserData());
     expect(after.bookmarkPosition).toBe(1234);
-    expect(after.isReminders).toBe(true);
   });
 
   // An op sent before the reset can still answer after it. Ids end in the

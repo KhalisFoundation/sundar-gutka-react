@@ -25,6 +25,10 @@ jest.mock("../actions", () => ({
   clearUserData: () => ({ type: "CLEAR_USER_DATA" }),
 }));
 jest.mock("../firebase/crashlytics", () => ({ logError: jest.fn() }));
+const mockCancelAllReminders = jest.fn(() => Promise.resolve());
+jest.mock("../notifications", () => ({
+  cancelAllReminders: (...a) => mockCancelAllReminders(...a),
+}));
 
 beforeEach(async () => {
   jest.clearAllMocks();
@@ -74,6 +78,19 @@ describe("purgeLocalUserData", () => {
 
   it("dispatches CLEAR_USER_DATA", async () => {
     await purgeLocalUserData(dispatch);
+    expect(dispatch).toHaveBeenCalledWith({ type: "CLEAR_USER_DATA" });
+  });
+
+  // Redux forgetting the reminders does not stop the OS firing them, so the
+  // next person would be woken for the previous one's nitnem.
+  it("cancels the reminders already scheduled with the OS", async () => {
+    await purgeLocalUserData(dispatch);
+    expect(mockCancelAllReminders).toHaveBeenCalledTimes(1);
+  });
+
+  it("still purges when cancelling the schedule fails", async () => {
+    mockCancelAllReminders.mockRejectedValueOnce(new Error("notifee"));
+    await expect(purgeLocalUserData(dispatch)).resolves.toBeUndefined();
     expect(dispatch).toHaveBeenCalledWith({ type: "CLEAR_USER_DATA" });
   });
 });

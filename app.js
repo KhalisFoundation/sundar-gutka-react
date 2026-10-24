@@ -8,6 +8,11 @@ import SplashScreen from "react-native-splash-screen";
 import Toast from "react-native-toast-message";
 import { Provider } from "react-redux";
 import notifee, { EventType } from "@notifee/react-native";
+import {
+  getInitialNotification,
+  getMessaging,
+  onNotificationOpenedApp,
+} from "@react-native-firebase/messaging";
 import { PersistGate } from "redux-persist/integration/react";
 import {
   createStore,
@@ -27,6 +32,7 @@ import useOfflinePlaybackGuard from "./src/common/hooks/useOfflinePlaybackGuard"
 import useOfflineSyncToast from "./src/common/hooks/useOfflineSyncToast";
 import usePauseAudioOnExit from "./src/common/hooks/usePauseAudioOnExit";
 import usePothiSync from "./src/common/hooks/usePothiSync";
+import useReminderRearm from "./src/common/hooks/useReminderRearm";
 import useSsoSession from "./src/common/hooks/useSsoSession";
 import useStorageMigration from "./src/common/hooks/useStorageMigration";
 import useGlobalDownloadManager from "./src/common/services/globalDownloadManager";
@@ -35,6 +41,8 @@ import toastConfig from "./src/common/toastConfig";
 import { TrackPlayerSetup } from "./src/common/TrackPlayerUtils";
 import Navigation from "./src/navigation";
 import { reportRecentExits } from "./src/services/diagnostics/exitReasons";
+import usePushRegistration from "./src/services/push/usePushRegistration";
+import useRemindersSync from "./src/services/reminders/useRemindersSync";
 import useSettingsSync from "./src/services/settings/useSettingsSync";
 import useAccountSync from "./src/services/sync/useAccountSync";
 import useSyncOutbox from "./src/services/sync/useSyncOutbox";
@@ -67,6 +75,12 @@ const GlobalServices = () => {
   useGlobalDownloadManager();
   useStorageMigration();
   usePauseAudioOnExit();
+  // Reminders already handed to the OS are re-armed, so they keep firing.
+  useReminderRearm();
+  // Push: registers this device's FCM token with the account, keeps its
+  // topics current, and shows foreground messages. Mounted here so it runs
+  // on every screen and before the user has opened anything.
+  usePushRegistration();
   // Reading themes from the backend, merged over the bundled set on every
   // screen that resolves a theme.
   useRemoteThemesSync();
@@ -87,6 +101,8 @@ const GlobalServices = () => {
   // Mounted here for the same reason as settings: a change made on any screen
   // goes up whether or not that screen stays open.
   usePothiSync();
+  // Reminders, per reminder, through the same outbox and the same sync moments.
+  useRemindersSync();
   // The person's preferences, per key, through the persisted outbox. Mounted
   // here rather than on Settings so a change made anywhere goes up whether or
   // not Settings stays open. Features register with the sync registry; the
@@ -145,6 +161,21 @@ const App = () => {
   }, []);
 
   useEffect(() => {
+    // A reminder tapped while the app was fully closed is what launched it.
+    // On Android notifee hands that tap over here; on iOS it arrives as a PRESS
+    // on the foreground handler below, which is why notifee deprecates this
+    // call there. navigateTo holds the destination until the navigator is ready.
+    if (Platform.OS === "android") {
+      notifee
+        .getInitialNotification()
+        .then((initial) => {
+          if (!initial) return undefined;
+          resetBadgeCount();
+          return navigateTo(initial);
+        })
+        .catch(logError);
+    }
+
     const unsubscribe = notifee.onForegroundEvent(async ({ type, detail }) => {
       resetBadgeCount();
       if (type === EventType.PRESS) {
@@ -157,6 +188,30 @@ const App = () => {
     });
 
     return unsubscribe;
+  }, []);
+
+  // Taps on a notification the SYSTEM drew, rather than the app.
+  //
+  // notifee only reports presses on notifications it posted itself. A campaign
+  // that carries a `notification` block is drawn by FCM while the app is away,
+  // so notifee never sees it and its route was simply lost — the app opened
+  // wherever it had been left. These two are the only handlers that hear about
+  // it: `getInitialNotification` for a tap that launched the app from cold, and
+  // `onNotificationOpenedApp` for one that brought it back from the background.
+  //
+  // The payload is reshaped into the notifee detail that navigateTo reads, so
+  // one router serves every source: reminders, app-drawn campaigns and these.
+  useEffect(() => {
+    const messaging = getMessaging();
+    const open = (remoteMessage) => {
+      if (remoteMessage) {
+        resetBadgeCount();
+        navigateTo({ notification: { data: remoteMessage.data } }).catch(logError);
+      }
+    };
+
+    getInitialNotification(messaging).then(open).catch(logError);
+    return onNotificationOpenedApp(messaging, open);
   }, []);
 
   return (

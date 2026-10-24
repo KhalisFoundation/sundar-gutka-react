@@ -472,6 +472,14 @@ export const syncOpFailed = (id, error) => ({
   type: actionTypes.SYNC_OP_FAILED,
   payload: { id, error },
 });
+// Reminder sync bookkeeping — see reminders/syncModel and useRemindersSync.
+// patch: { clocks?, tombstones?, base?, removeTombstones?, removeClocks?,
+//          settingsUpdatedAt?, settingsBase?, lastSyncedAt?, replace? }
+export const mergeReminderSyncMeta = (patch) => ({
+  type: actionTypes.MERGE_REMINDER_SYNC_META,
+  payload: patch,
+});
+
 // Settings sync bookkeeping — see settings/syncModel and useSettingsSync.
 export const mergeSettingsSyncMeta = (payload) => ({
   type: actionTypes.MERGE_SETTINGS_SYNC_META,

@@ -6,8 +6,6 @@ import { Modal, Platform, Text } from "react-native";
 
 import { act, render, screen } from "@testing-library/react-native";
 
-import { isLegacyScreen } from "../../test-utils/legacyScreens";
-
 import Sheet from "./Sheet";
 
 // Every sheet slides up to open and back down to close, whichever way it is
@@ -119,8 +117,7 @@ describe("every sheet in the app", () => {
         const full = path.join(dir, entry.name);
         if (entry.isDirectory()) walk(full);
         else if (/\.jsx?$/.test(entry.name) && !/\.test\.jsx?$/.test(entry.name)) {
-          const rel = path.relative(SRC, full);
-          if (!isLegacyScreen(rel)) out.push({ rel, text: fs.readFileSync(full, "utf8") });
+          out.push({ rel: path.relative(SRC, full), text: fs.readFileSync(full, "utf8") });
         }
       });
     };

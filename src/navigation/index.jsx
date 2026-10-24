@@ -8,6 +8,7 @@ import { withScreenRoles } from "@theme/ScreenRolesProvider";
 import PropTypes from "prop-types";
 import useTheme from "@common/context";
 import { setReaderFocused } from "@common/readerFocus";
+import { flushPendingNotificationRoute } from "@common/rootNavigation";
 import {
   navigationRef,
   constant,
@@ -229,6 +230,8 @@ const Navigation = () => {
           if (navigationRef.isReady()) {
             queuePerformanceTrace(navigationRef.getRootState());
           }
+          // A notification that launched the app is taken only now.
+          flushPendingNotificationRoute();
         }}
         onStateChange={handleStateChange}
       >
@@ -284,7 +287,11 @@ const Navigation = () => {
             component={SevaMeansScreen}
             options={{ headerShown: false }}
           />
-          <Stack.Screen name="ReminderOptions" component={ReminderOptionsScreen} />
+          <Stack.Screen
+            name="ReminderOptions"
+            component={ReminderOptionsScreen}
+            options={{ headerShown: false }}
+          />
           <Stack.Screen name="Themes" component={ThemesScreen} options={{ headerShown: false }} />
           <Stack.Screen
             name="ManageDownloads"

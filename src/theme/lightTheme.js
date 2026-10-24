@@ -2,7 +2,6 @@ import borderRadius from "./borderRadius";
 import components from "./components";
 import { light as lightElevation } from "./elevation";
 import layout from "./layout";
-import { legacyLight, staticColors } from "./legacyColors";
 import palette from "./palette";
 import radii from "./radii";
 import { light as lightColors } from "./semanticColors";
@@ -44,9 +43,6 @@ const lightTheme = {
     /** Decorative photograph behind a card. */
     backdropImage: 0.16,
   },
-  // LEGACY (see legacyColors.js): only for screens not yet on the token layer.
-  colors: legacyLight,
-  staticColors,
   typography,
   spacing,
   components,

@@ -17,6 +17,21 @@
             android:name="firebase_analytics_automatic_screen_reporting_enabled"
             android:value="false"
             tools:node="replace" />
+        <!-- Push notifications FCM shows by itself (app in the background,
+             message carrying a notification block). Without these it draws a
+             grey square for the icon and posts to the "Miscellaneous" channel;
+             the channel id must match PUSH_CHANNEL_ID in services/push, which
+             creates it, and firebase.json, which tells FCM to use it. -->
+        <meta-data
+            android:name="com.google.firebase.messaging.default_notification_icon"
+            android:resource="@drawable/ic_notification" />
+        <meta-data
+            android:name="com.google.firebase.messaging.default_notification_color"
+            android:resource="@color/primary_dark"
+            tools:replace="android:resource" />
+        <meta-data
+            android:name="com.google.firebase.messaging.default_notification_channel_id"
+            android:value="general_v2" />
         <activity android:name=".MainActivity" android:exported="true" android:label="@string/app_name"
             android:configChanges="keyboard|keyboardHidden|orientation|screenSize|uiMode"
             android:launchMode="singleTask" android:windowSoftInputMode="adjustResize">

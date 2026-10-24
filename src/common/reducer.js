@@ -2,6 +2,7 @@ import { combineReducers } from "@reduxjs/toolkit";
 import * as actionTypes from "./actions/actionTypes";
 import constant from "./constant";
 import * as pothiModel from "./pothi/model";
+import { emptyRemindersSync } from "./reminders/syncModel";
 import { emptySettingsSync } from "./settings/syncModel";
 import * as outbox from "./sync/outboxModel";
 
@@ -167,6 +168,32 @@ const reminderBanis = createReducer(JSON.stringify([]), {
 
 const reminderSound = createReducer(constant.Default.toLowerCase(), {
   [actionTypes.SET_REMINDER_SOUND]: (state, action) => action.value,
+});
+
+// Per-reminder sync clocks, tombstones and server bases — see
+// reminders/syncModel. Persisted, and reset with the reminders themselves on
+// an account switch (USER_DATA_SLICES).
+const remindersSync = createReducer(emptyRemindersSync(), {
+  [actionTypes.MERGE_REMINDER_SYNC_META]: (state, action) => {
+    const p = action.payload || {};
+    if (p.replace) return { ...emptyRemindersSync(), ...p.replace };
+    const clocks = { ...state.clocks, ...(p.clocks || {}) };
+    const tombstones = { ...state.tombstones, ...(p.tombstones || {}) };
+    const base = { ...state.base, ...(p.base || {}) };
+    (p.removeTombstones || []).forEach((id) => delete tombstones[id]);
+    (p.removeClocks || []).forEach((id) => {
+      delete clocks[id];
+      delete base[id];
+    });
+    return {
+      clocks,
+      tombstones,
+      base,
+      settingsUpdatedAt: p.settingsUpdatedAt ?? state.settingsUpdatedAt,
+      settingsBase: p.settingsBase ?? state.settingsBase,
+      lastSyncedAt: p.lastSyncedAt ?? state.lastSyncedAt,
+    };
+  },
 });
 
 const isHeaderFooter = createReducer(false, {
@@ -649,6 +676,7 @@ const appReducer = combineReducers({
   settingsSync,
   syncOutbox,
   pothis,
+  remindersSync,
 });
 
 // Slices holding data that belongs to a PERSON, not to this device.
@@ -658,15 +686,22 @@ const appReducer = combineReducers({
 // language). Those describe how this phone is set up, not who is holding it.
 //
 // Only what the account holds a copy of, so a person signing back in gets it
-// all back. Bookmarks and reminders join the list with the PRs that sync them
-// (the Dashboard and Reminders); until then they stay on the phone, as they did
-// before there was any sign-in, rather than being lost for good on sign-out.
+// all back. Bookmarks join the list with the Dashboard, which syncs them; until
+// then they stay on the phone, as they did before there was any sign-in,
+// rather than being lost for good on sign-out.
 const USER_DATA_SLICES = [
   // A pothi is the clearest case of person-owned data there is: the folders a
   // user built, synced to THEIR account. Left out, they survived an account
   // switch and usePothiSync uploaded the previous account's folders into the
   // new one on its first push.
   "pothis",
+  // The reminders and their switches sync to the account too, so they go with
+  // it — and so do the clocks that go with them. The schedule already handed
+  // to the OS is cancelled with them (accountScope.purgeLocalUserData).
+  "isReminders",
+  "reminderBanis",
+  "reminderSound",
+  "remindersSync",
   // The clocks that go with the synced settings, and every change of the
   // outgoing account still waiting to be sent — neither may reach the next
   // account.
