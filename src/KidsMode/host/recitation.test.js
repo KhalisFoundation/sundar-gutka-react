@@ -3,6 +3,7 @@ import RNFS from "react-native-fs";
 import { act, renderHook, waitFor } from "@testing-library/react-native";
 import { logError } from "@common/firebase/crashlytics";
 import { fetchManifest, scoreRecording } from "../scoring/client";
+import { NOT_CAUGHT_MESSAGE } from "../scoring/messages";
 import { useRecordedRecitation } from "./recitation";
 
 const mockRecorder = {
