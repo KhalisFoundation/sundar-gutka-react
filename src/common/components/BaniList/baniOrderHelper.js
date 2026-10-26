@@ -2,7 +2,19 @@ import constant from "../../constant";
 import defaultBaniOrder from "../../defaultBaniOrder";
 import { validateBaniOrder } from "../../helpers";
 
-const findBaniById = (baniList, id) => baniList.find((item) => item.id === id);
+// One pass over the bani list instead of a scan per lookup.
+//
+// Every entry in the order — and every bani inside every folder in it — used to
+// run `baniList.find`, so building the list was a scan of the whole list per
+// bani. The first match wins here exactly as it did with `find`, which is what
+// keeps a duplicated id resolving to the same row as before.
+const indexBaniList = (baniList) => {
+  const byId = new Map();
+  baniList.forEach((item) => {
+    if (!byId.has(item.id)) byId.set(item.id, item);
+  });
+  return byId;
+};
 const extractBaniDetails = (baniItem) => {
   return {
     id: baniItem.id,
@@ -47,12 +59,14 @@ const orderedBani = (baniList, baniOrder, language) => {
     return [];
   }
 
+  const byId = indexBaniList(baniList);
+
   return (
     order.baniOrder
       .map((element) => {
         // If there's a direct `id`, we find that Bani and extract
         if (element.id) {
-          const baniItem = findBaniById(baniList, element.id);
+          const baniItem = byId.get(element.id);
           return baniItem ? extractBaniDetails(baniItem) : null;
         }
 
@@ -60,7 +74,7 @@ const orderedBani = (baniList, baniOrder, language) => {
 
         // Otherwise, we're dealing with a folder. Map over each item in `element.folder`
         const folder = element.folder.reduce((acc, item) => {
-          const bani = findBaniById(baniList, item.id);
+          const bani = byId.get(item.id);
           if (bani) acc.push(extractBaniDetails(bani));
           return acc;
         }, []);

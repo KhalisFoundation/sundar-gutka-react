@@ -21,7 +21,7 @@ const PlusIcon = ({ size = 24, color }) => {
 };
 
 PlusIcon.propTypes = {
-  size: PropTypes.number.isRequired,
+  size: PropTypes.number,
   color: PropTypes.string.isRequired,
 };
 

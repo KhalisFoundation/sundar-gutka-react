@@ -1,44 +1,28 @@
-import React, { useState, useEffect } from "react";
+import React, { useState } from "react";
 import { useSelector, useDispatch } from "react-redux";
-import { ListItem, Avatar, Divider, Icon } from "@rneui/themed";
 import {
   toggleEnglishTranslation,
   togglePunjabiTranslation,
   toggleSpanishTranslation,
 } from "@common/actions";
-import useTheme from "@common/context";
-import useThemedStyles from "@common/hooks/useThemedStyles";
-import { STRINGS, ListItemTitle, CustomText, constant } from "@common";
-import { Modal, View, Pressable, Platform, StyleSheet, Dimensions } from "react-native";
-import { useSafeAreaInsets } from "react-native-safe-area-context";
-import { BlurView } from "@react-native-community/blur";
-import createStyles from "../styles";
+import { STRINGS } from "@common";
+import { Row, Sheet } from "../../common/components/ui";
+import { SelectedMark } from "./comon/SelectSheet";
+import SettingsRow from "./comon/SettingsRow";
 
+// Translations is multi-select, so it uses `Sheet` directly rather than
+// `SelectSheet` (which is single-choice). It previously carried its own Modal,
+// BlurView and a hand-rolled orientation listener duplicating
+// `useWindowDimensions`; the shared Sheet sizes itself from the live window.
 const TranslationComponent = () => {
-  const { theme } = useTheme();
-  const styles = useThemedStyles(createStyles);
-  const translationAvatar = require("../../../images/englishicon.png");
+  const dispatch = useDispatch();
+  const [isVisible, setIsVisible] = useState(false);
+
   const isEnglishTranslation = useSelector((state) => state.isEnglishTranslation);
   const isSpanishTranslation = useSelector((state) => state.isSpanishTranslation);
   const isPunjabiTranslation = useSelector((state) => state.isPunjabiTranslation);
 
-  const dispatch = useDispatch();
-  const [isVisible, setIsVisible] = useState(false);
-  const insets = useSafeAreaInsets();
-
-  // Orientation-aware width — mirrors BottomSheetComponent logic
-  const { width, height } = Dimensions.get("window");
-  const [orientation, setOrientation] = useState(
-    width < height ? constant.PORTRAIT : constant.LANDSCAPE
-  );
-  useEffect(() => {
-    const sub = Dimensions.addEventListener("change", ({ window: { width: w, height: h } }) => {
-      setOrientation(w < h ? constant.PORTRAIT : constant.LANDSCAPE);
-    });
-    return () => sub?.remove?.();
-  }, []);
-
-  const translationOptions = [
+  const options = [
     {
       key: "en",
       title: STRINGS.en_translations,
@@ -59,11 +43,13 @@ const TranslationComponent = () => {
     },
   ];
 
-  const selectedCount = translationOptions.filter((item) => item.value).length;
+  const selectedCount = options.filter((item) => item.value).length;
   const isAllOff = selectedCount === 0;
-
-  const selectedSummary =
-    isAllOff ? "None" : `${selectedCount} selected (multiple allowed)`;
+  // Was a hardcoded English string ("N selected (multiple allowed)"), which
+  // shipped untranslated to five of the six languages.
+  const selectedSummary = isAllOff
+    ? STRINGS.none
+    : STRINGS.N_SELECTED.replace("{count}", String(selectedCount));
 
   const handleTurnAllOff = () => {
     if (isEnglishTranslation) dispatch(toggleEnglishTranslation(false));
@@ -74,89 +60,42 @@ const TranslationComponent = () => {
 
   return (
     <>
-      <ListItem
-        bottomDivider
-        containerStyle={styles.containerNightStyles}
+      <SettingsRow
+        title={STRINGS.translations}
+        value={selectedSummary}
+        iconImage={require("../../../images/englishicon.png")}
         onPress={() => setIsVisible(true)}
-      >
-        <View style={styles.iconContainerStyle}>
-          <Avatar source={translationAvatar} avatarStyle={styles.avatarStyle} />
-        </View>
-        <ListItem.Content>
-          <ListItemTitle title={STRINGS.translations} style={styles.listItemTitle} />
-        </ListItem.Content>
-        <CustomText style={styles.titleInfoStyle}>{selectedSummary}</CustomText>
-        <ListItem.Chevron />
-      </ListItem>
+      />
 
-      {isVisible && (
-        <Modal
-          visible={isVisible}
-          animationType="fade"
-          transparent
-          statusBarTranslucent
-          supportedOrientations={[
-            "landscape",
-            "landscape-left",
-            "landscape-right",
-            "portrait",
-            "portrait-upside-down",
-          ]}
-        >
-          <Pressable style={StyleSheet.absoluteFill} onPress={() => setIsVisible(false)}>
-            <BlurView
-              reducedTransparencyFallbackColor={theme.staticColors.NIGHT_OPACITY_BLACK}
-              style={styles.blurViewStyle}
-              blurType="dark"
-              enabled
-            />
-            <View
-              style={[
-                Platform.OS === "ios" ? styles.viewWrapper : styles.androidViewWrapper,
-                Platform.OS === "ios" &&
-                  (orientation === constant.LANDSCAPE ? styles.width_90 : styles.width_100),
-              ]}
-            >
-              <CustomText
-                style={[
-                  styles.bottomSheetTitle,
-                  styles.listItemTitle,
-                  styles.containerNightStyles,
-                ]}
-              >
-                {STRINGS.translations}
-              </CustomText>
-              <Divider />
-              {/* Off option — turns all translations off */}
-              <ListItem
-                key="off"
-                bottomDivider
-                containerStyle={styles.containerNightStyles}
-                onPress={handleTurnAllOff}
-              >
-                <ListItem.Content>
-                  <ListItemTitle title={STRINGS.off || "Off"} style={styles.listItemTitle} />
-                </ListItem.Content>
-                {isAllOff && <Icon color={theme.colors.primaryText} name="check" />}
-              </ListItem>
-              {translationOptions.map((item) => (
-                <ListItem
-                  key={item.key}
-                  bottomDivider
-                  containerStyle={styles.containerNightStyles}
-                  onPress={() => dispatch(item.action(!item.value))}
-                >
-                  <ListItem.Content>
-                    <ListItemTitle title={item.title} style={styles.listItemTitle} />
-                  </ListItem.Content>
-                  {item.value && <Icon color={theme.colors.primaryText} name="check" />}
-                </ListItem>
-              ))}
-              <View style={[styles.containerNightStyles, { paddingBottom: insets.bottom }]} />
-            </View>
-          </Pressable>
-        </Modal>
-      )}
+      <Sheet
+        visible={isVisible}
+        onClose={() => setIsVisible(false)}
+        title={STRINGS.translations}
+        closeAccessibilityLabel={STRINGS.cancel}
+        // Multi-select, so it cannot use SelectSheet — but it is still a
+        // Settings chooser and must look like every other one.
+        variant="flush"
+      >
+        <Row
+          title={STRINGS.off}
+          onPress={handleTurnAllOff}
+          accessibilityRole="radio"
+          accessibilityState={{ selected: isAllOff }}
+          showDivider
+          trailing={isAllOff ? <SelectedMark /> : null}
+        />
+        {options.map((item) => (
+          <Row
+            key={item.key}
+            title={item.title}
+            onPress={() => dispatch(item.action(!item.value))}
+            accessibilityRole="checkbox"
+            accessibilityState={{ checked: item.value }}
+            showDivider
+            trailing={item.value ? <SelectedMark /> : null}
+          />
+        ))}
+      </Sheet>
     </>
   );
 };

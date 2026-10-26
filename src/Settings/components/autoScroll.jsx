@@ -1,48 +1,39 @@
 import React from "react";
-import { View } from "react-native";
 import { useSelector, useDispatch } from "react-redux";
-import { ListItem, Icon } from "@rneui/themed";
 import { toggleScreenAwake, toggleAutoScroll } from "@common/actions";
 import { stopTrack, resetPlayer } from "@common/TrackPlayerUtils";
-import useTheme from "@common/context";
-import useThemedStyles from "@common/hooks/useThemedStyles";
-import { STRINGS, ListItemTitle, ThemedSwitch } from "@common";
-import createStyles from "../styles";
+import { STRINGS } from "@common";
+import { SettingsToggleRow } from "./comon/SettingsRow";
 
 const AutoScroll = () => {
-  const { theme } = useTheme();
-  const styles = useThemedStyles(createStyles);
-  const isAutoScroll = useSelector((state) => state.isAutoScroll);
   const dispatch = useDispatch();
-  const { AUTO_SCROLL } = STRINGS;
+  const isAutoScroll = useSelector((state) => state.isAutoScroll);
+
+  const onValueChange = (value) => {
+    /* The screen should remain active whenever Auto Scroll is enabled. */
+    dispatch(toggleScreenAwake(value));
+    dispatch(toggleAutoScroll(value));
+    if (value) {
+      // Fire-and-forget native cleanup; reducer mutex already flipped audio state.
+      (async () => {
+        try {
+          await stopTrack();
+          await resetPlayer();
+        } catch (_) {
+          // Best effort cleanup
+        }
+      })();
+    }
+  };
+
   return (
-    <ListItem bottomDivider containerStyle={{ backgroundColor: theme.colors.surfaceGrey }}>
-      <View style={styles.iconContainerStyle}>
-        <Icon color={theme.colors.primaryText} name="auto-fix-high" type="material" size={26} />
-      </View>
-      <ListItem.Content>
-        <ListItemTitle title={AUTO_SCROLL} style={{ color: theme.colors.primaryText }} />
-      </ListItem.Content>
-      <ThemedSwitch
-        value={isAutoScroll}
-        onValueChange={(value) => {
-          /* The screen should remain active whenever Auto Scroll is enabled. */
-          dispatch(toggleScreenAwake(value));
-          dispatch(toggleAutoScroll(value));
-          if (value) {
-            // Fire-and-forget native cleanup; reducer mutex already flipped audio state.
-            (async () => {
-              try {
-                await stopTrack();
-                await resetPlayer();
-              } catch (_) {
-                // Best effort cleanup
-              }
-            })();
-          }
-        }}
-      />
-    </ListItem>
+    <SettingsToggleRow
+      title={STRINGS.AUTO_SCROLL}
+      icon="auto-fix-high"
+      value={isAutoScroll}
+      onValueChange={onValueChange}
+    />
   );
 };
+
 export default AutoScroll;

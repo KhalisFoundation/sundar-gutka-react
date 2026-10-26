@@ -27,8 +27,3 @@ ChevronDownIcon.propTypes = {
   size: PropTypes.number,
   color: PropTypes.string,
 };
-
-ChevronDownIcon.defaultProps = {
-  size: 24,
-  color: constant.READER_HEADER_COLOR,
-};

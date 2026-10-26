@@ -199,4 +199,35 @@ describe("useBackHandler", () => {
 
     expect(secondGoBack).toHaveBeenCalledTimes(1);
   });
+
+  // A screen stays mounted under the one pushed over it. Only the focused
+  // screen may answer Back; otherwise the screen underneath pops itself out.
+  it("leaves Back to the screen on top when this one is not focused", () => {
+    const handleBackPress = jest.fn(() => true);
+    mockUseNavigation.mockReturnValue({ goBack: mockGoBack, isFocused: () => false });
+
+    render(<TestComponent handleBackPress={handleBackPress} />);
+
+    let handled;
+    act(() => {
+      handled = backPressHandler();
+    });
+
+    expect(handled).toBe(false);
+    expect(handleBackPress).not.toHaveBeenCalled();
+    expect(mockGoBack).not.toHaveBeenCalled();
+  });
+
+  it("answers Back while focused", () => {
+    const handleBackPress = jest.fn(() => true);
+    mockUseNavigation.mockReturnValue({ goBack: mockGoBack, isFocused: () => true });
+
+    render(<TestComponent handleBackPress={handleBackPress} />);
+
+    act(() => {
+      backPressHandler();
+    });
+
+    expect(handleBackPress).toHaveBeenCalledTimes(1);
+  });
 });

@@ -1,5 +1,10 @@
 {
-  "extends": ["airbnb", "prettier", "plugin:prettier/recommended", "eslint-config-prettier"],
+  "extends": [
+    "airbnb",
+    "prettier",
+    "plugin:prettier/recommended",
+    "eslint-config-prettier"
+  ],
   "parser": "@babel/eslint-parser",
   "rules": {
     "react-native/no-unused-styles": 2,
@@ -9,15 +14,34 @@
     "react/jsx-no-bind": 0,
     "default-param-last": "off",
     "import/no-extraneous-dependencies": "off",
-    "prefer-destructuring": ["error", { "object": true, "array": false }],
+    "prefer-destructuring": [
+      "error",
+      {
+        "object": true,
+        "array": false
+      }
+    ],
+    "react/require-default-props": [
+      "error",
+      {
+        "forbidDefaultForRequired": true,
+        "functions": "defaultArguments"
+      }
+    ],
     "react/function-component-definition": [
       1,
-      { "namedComponents": "arrow-function", "unnamedComponents": "arrow-function" }
+      {
+        "namedComponents": "arrow-function",
+        "unnamedComponents": "arrow-function"
+      }
     ],
     "react/jsx-filename-extension": [
       1,
       {
-        "extensions": [".js", ".jsx"]
+        "extensions": [
+          ".js",
+          ".jsx"
+        ]
       }
     ],
     "prettier/prettier": [
@@ -31,7 +55,14 @@
     "import/order": [
       "error",
       {
-        "groups": ["builtin", "external", "internal", "parent", "sibling", "index"],
+        "groups": [
+          "builtin",
+          "external",
+          "internal",
+          "parent",
+          "sibling",
+          "index"
+        ],
         "pathGroups": [
           {
             "pattern": "react*",
@@ -49,7 +80,9 @@
             "position": "before"
           }
         ],
-        "pathGroupsExcludedImportTypes": ["builtin"],
+        "pathGroupsExcludedImportTypes": [
+          "builtin"
+        ],
         "newlines-between": "never",
         "alphabetize": {
           "order": "asc",
@@ -60,7 +93,12 @@
   },
   "overrides": [
     {
-      "files": ["**/*.test.js", "**/*.test.jsx", "**/__mocks__/**", "**/test-utils/**"],
+      "files": [
+        "**/*.test.js",
+        "**/*.test.jsx",
+        "**/__mocks__/**",
+        "**/test-utils/**"
+      ],
       "env": {
         "jest": true
       },
@@ -68,19 +106,33 @@
         "react/jsx-filename-extension": "off",
         "import/prefer-default-export": "off",
         "react/prop-types": "off",
-        "no-unused-vars": ["error", { "argsIgnorePattern": "^_" }],
+        "no-unused-vars": [
+          "error",
+          {
+            "argsIgnorePattern": "^_"
+          }
+        ],
         "react/react-in-jsx-scope": "off",
         "react/jsx-no-useless-fragment": "off",
         "no-nested-ternary": "off"
       }
     },
     {
-      "files": ["**/*.test.jsx"],
+      "files": [
+        "**/*.test.jsx"
+      ],
       "rules": {
         "import/order": [
           "error",
           {
-            "groups": ["builtin", "external", "internal", "parent", "sibling", "index"],
+            "groups": [
+              "builtin",
+              "external",
+              "internal",
+              "parent",
+              "sibling",
+              "index"
+            ],
             "pathGroups": [
               {
                 "pattern": "react*",
@@ -98,7 +150,9 @@
                 "position": "before"
               }
             ],
-            "pathGroupsExcludedImportTypes": ["builtin"],
+            "pathGroupsExcludedImportTypes": [
+              "builtin"
+            ],
             "newlines-between": "always",
             "alphabetize": {
               "order": "asc",
@@ -107,9 +161,59 @@
           }
         ]
       }
+    },
+    {
+      "files": [
+        "src/**/*.js",
+        "src/**/*.jsx"
+      ],
+      "excludedFiles": [
+        "**/*.test.js",
+        "**/*.test.jsx",
+        "src/theme/**",
+        "src/common/components/ui/Overlay.jsx",
+        // Not on the token layer yet: each moves over with its own feature, and
+        // its line goes with it. Audio player: the audio PR. Folder screen and
+        // its AppBar: My Pothi. Reminders screen: Reminders. Audio settings row:
+        // Downloads.
+        "src/ReaderScreen/components/AudioPlayer/**",
+        "src/common/components/AppBar/**",
+        "src/FolderScreen/**",
+        "src/Settings/components/reminders/**",
+        "src/Settings/components/audio.jsx"
+      ],
+      "rules": {
+        "no-restricted-syntax": [
+          "error",
+          {
+            "selector": "Literal[value=/^#(?:[0-9a-fA-F]{3,4}|[0-9a-fA-F]{6}|[0-9a-fA-F]{8})$/]",
+            "message": "No raw hex. Colours come from theme.c / useTokens(); only src/theme/palette.js holds literals."
+          },
+          {
+            "selector": "Literal[value=/^rgba?\\(/]",
+            "message": "No raw rgb()/rgba(). Use a semantic role, or withAlpha() from src/theme/colorUtils.js for a genuine ramp."
+          },
+          {
+            "selector": "MemberExpression[property.name=\"colors\"]",
+            "message": "Use theme.c (the semantic role layer). The deprecated theme.colors map has been deleted."
+          },
+          {
+            "selector": "MemberExpression[property.name=\"staticColors\"]",
+            "message": "Use theme.c. staticColors was fixed in both themes, so it could not follow light/dark. It has been deleted."
+          },
+          {
+            "selector": "JSXOpeningElement[name.name=\"Modal\"]",
+            "message": "Render through common/components/ui/Overlay. It is the one place the modal window is configured — both translucency flags for edge-to-edge, and onShow so entrance animations start when the native view exists. Six of eight modals were missing a flag before it existed."
+          }
+        ]
+      }
     }
   ],
-  "plugins": ["prettier", "react-native", "react-hooks"],
+  "plugins": [
+    "prettier",
+    "react-native",
+    "react-hooks"
+  ],
   "globals": {
     "__DEV__": "readonly"
   }

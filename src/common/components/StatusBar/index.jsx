@@ -7,7 +7,7 @@ import useTheme from "@common/context";
 const StatusBarComponent = ({ backgroundColor }) => {
   const isStatusBar = useSelector((state) => state.isStatusBar);
   const { theme } = useTheme();
-  const barStyle = theme.mode === "dark" ? "light-content" : "dark-content";
+  const barStyle = theme.chrome.statusBarStyle;
 
   return <StatusBar hidden={isStatusBar} barStyle={barStyle} backgroundColor={backgroundColor} />;
 };

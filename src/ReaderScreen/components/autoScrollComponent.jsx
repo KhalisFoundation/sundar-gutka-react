@@ -1,8 +1,10 @@
 import React, { useState, useEffect, useCallback } from "react";
 import { View, Pressable, StyleSheet } from "react-native";
 import { useDispatch, useSelector } from "react-redux";
-import { Icon } from "@rneui/themed";
+import { Slider } from "@miblanchard/react-native-slider";
 import { useIsFocused } from "@react-navigation/native";
+import { Icon } from "@rneui/themed";
+import { withAlpha } from "@theme/colorUtils";
 import PropTypes from "prop-types";
 import {
   useTheme,
@@ -11,11 +13,60 @@ import {
   trackReaderEvent,
   logError,
   CustomText,
+  STRINGS,
 } from "@common";
 
-import { Slider } from "@miblanchard/react-native-slider";
+const localStyles = StyleSheet.create({
+  outerContainer: {
+    width: "100%",
+    maxWidth: 500,
+    borderRadius: 24,
+    paddingHorizontal: 20,
+    paddingVertical: 14,
+    shadowOffset: { width: 0, height: 4 },
+    shadowOpacity: 0.25,
+    shadowRadius: 8,
+    elevation: 8,
+  },
+  row: {
+    flexDirection: "row",
+    alignItems: "center",
+    height: 48,
+  },
+  sliderWrapper: {
+    flex: 1,
+    marginHorizontal: 16,
+    justifyContent: "center",
+  },
+  sliderTrack: {
+    height: 2,
+    borderRadius: 1,
+  },
+  sliderThumb: {
+    width: 12,
+    height: 12,
+    borderRadius: 6,
+    // No shadow, and the fill comes from the theme at the call site.
+    //
+    // The dot and the filled track are the SAME white (`c.onPrimary`), but a
+    // black shadow under a 12pt dot darkened its edges enough that it read as a
+    // duller grey than the track it sits on. There is nothing for it to lift off
+    // either — the bar behind it is one solid fill.
+  },
+  currentValueText: {
+    fontSize: 16,
+    fontWeight: "normal",
+    minWidth: 36,
+    textAlign: "right",
+  },
+});
 
-const AutoScrollComponent = ({ shabadID, webViewRef, webViewLoadTick, onActivity }) => {
+const AutoScrollComponent = ({
+  shabadID,
+  webViewRef,
+  webViewLoadTick = 0,
+  onActivity = undefined,
+}) => {
   const { theme } = useTheme();
   const isFocused = useIsFocused();
   const [isPaused, togglePaused] = useState(true);
@@ -30,9 +81,7 @@ const AutoScrollComponent = ({ shabadID, webViewRef, webViewLoadTick, onActivity
   const sendStopSignal = useCallback(() => {
     if (webViewRef?.current?.postMessage) {
       try {
-        webViewRef.current.postMessage(
-          JSON.stringify({ autoScroll: 0, scrollMultiplier: 1.5 })
-        );
+        webViewRef.current.postMessage(JSON.stringify({ autoScroll: 0, scrollMultiplier: 1.5 }));
       } catch (error) {
         logError("Error sending auto-scroll stop:", error);
       }
@@ -59,7 +108,6 @@ const AutoScrollComponent = ({ shabadID, webViewRef, webViewLoadTick, onActivity
         logError("Error sending auto-scroll message:", error);
       }
     }
-  // eslint-disable-next-line react-hooks/exhaustive-deps
   }, [isPaused, sliderValue, isFocused, isAutoScroll, webViewLoadTick]);
 
   // Send stop signal on unmount so the WebView doesn't keep scrolling
@@ -90,23 +138,21 @@ const AutoScrollComponent = ({ shabadID, webViewRef, webViewLoadTick, onActivity
     onActivity?.();
   }, [onActivity]);
 
-  const barBg = theme.colors.primary;
-  const textColor = theme.staticColors.WHITE_COLOR;
+  const barBg = theme.c.primary;
+  const textColor = theme.c.onPrimary;
 
   return (
-    <View style={[localStyles.outerContainer, { backgroundColor: barBg }]}>
+    <View
+      style={[localStyles.outerContainer, { backgroundColor: barBg, shadowColor: theme.c.shadow }]}
+    >
       <View style={localStyles.row}>
         {/* Play/Pause */}
         <Pressable
           onPress={isPaused ? handlePlay : handlePause}
           hitSlop={8}
-          accessibilityLabel={isPaused ? "Play auto-scroll" : "Pause auto-scroll"}
+          accessibilityLabel={isPaused ? STRINGS.AUTO_SCROLL_PLAY : STRINGS.AUTO_SCROLL_PAUSE}
         >
-          <Icon
-            name={isPaused ? "play-arrow" : "pause"}
-            color={textColor}
-            size={24}
-          />
+          <Icon name={isPaused ? "play-arrow" : "pause"} color={textColor} size={24} />
         </Pressable>
 
         {/* Slider */}
@@ -122,9 +168,20 @@ const AutoScrollComponent = ({ shabadID, webViewRef, webViewLoadTick, onActivity
             }}
             onSlidingComplete={handleSlidingComplete}
             thumbStyle={localStyles.sliderThumb}
+            // The library's own prop, NOT a backgroundColor in `thumbStyle`.
+
+            // It renders the thumb as { backgroundColor: thumbTintColor, ...thumbStyle },
+
+            // so an ARRAY passed as thumbStyle spreads to { 0: ..., 1: ... } and the
+
+            // colour inside it is silently dropped — leaving the default #343434,
+
+            // which is why the dot stayed blackish grey.
+
+            thumbTintColor={textColor}
             trackStyle={localStyles.sliderTrack}
             minimumTrackTintColor={textColor}
-            maximumTrackTintColor="rgba(255, 255, 255, 0.3)"
+            maximumTrackTintColor={withAlpha(theme.c.onPrimary, 0.3)}
           />
         </View>
 
@@ -137,52 +194,6 @@ const AutoScrollComponent = ({ shabadID, webViewRef, webViewLoadTick, onActivity
   );
 };
 
-const localStyles = StyleSheet.create({
-  outerContainer: {
-    width: "100%",
-    maxWidth: 500,
-    borderRadius: 24,
-    paddingHorizontal: 20,
-    paddingVertical: 14,
-    shadowColor: "#000",
-    shadowOffset: { width: 0, height: 4 },
-    shadowOpacity: 0.25,
-    shadowRadius: 8,
-    elevation: 8,
-  },
-  row: {
-    flexDirection: "row",
-    alignItems: "center",
-    height: 48,
-  },
-  sliderWrapper: {
-    flex: 1,
-    marginHorizontal: 16,
-    justifyContent: "center",
-  },
-  sliderTrack: {
-    height: 2,
-    borderRadius: 1,
-  },
-  sliderThumb: {
-    width: 12,
-    height: 12,
-    borderRadius: 6,
-    backgroundColor: "#fff",
-    shadowColor: "#000",
-    shadowOffset: { width: 0, height: 2 },
-    shadowOpacity: 0.3,
-    shadowRadius: 3,
-    elevation: 4,
-  },
-  currentValueText: {
-    fontSize: 16,
-    fontWeight: "normal",
-    minWidth: 36,
-    textAlign: "right",
-  },
-});
-
 AutoScrollComponent.propTypes = {
   shabadID: PropTypes.number.isRequired,
   webViewRef: PropTypes.shape({
@@ -192,11 +203,6 @@ AutoScrollComponent.propTypes = {
   }).isRequired,
   webViewLoadTick: PropTypes.number,
   onActivity: PropTypes.func,
-};
-
-AutoScrollComponent.defaultProps = {
-  webViewLoadTick: 0,
-  onActivity: undefined,
 };
 
 export default React.memo(AutoScrollComponent);

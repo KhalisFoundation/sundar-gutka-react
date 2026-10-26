@@ -1,41 +1,51 @@
 import borderRadius from "./borderRadius";
 import components from "./components";
+import { light as lightElevation } from "./elevation";
+import layout from "./layout";
+import { legacyLight, staticColors } from "./legacyColors";
+import palette from "./palette";
+import radii from "./radii";
+import { light as lightColors } from "./semanticColors";
+import space from "./space";
 import spacing from "./spacing";
-import staticColors from "./staticColors";
+import type from "./type";
 import typography from "./typography";
 
 const lightTheme = {
   mode: "light",
-  colors: {
-    primary: "#113979",
-    surface: "rgba(255, 255, 255, 1)",
-    primaryText: "#121212",
-    primaryVariant: "#DEBB0A",
-    surfaceGrey: "#faf9f6",
-    textDisabled: "#a3a3a3",
-    underlayColor: "#009bff",
-    headerVariant: "#003436",
-    baniDB: "#eaa040",
-    shadow: "#000",
-    highlightTuk: "#0066ff",
-    activeView: "#C7C7D7",
-    inactiveView: "#e9e9ee",
-    componentColor: "#232323",
-    enabledText: "#0066ff",
-    disabledText: "#a3a3a3",
-    primaryHeader: "#113979",
-    primaryHeaderVariant: "#113979",
-    actionButton: "#D3E1F7",
-    audioPlayer: "rgba(17, 57, 121, 0.5)",
-    overlay: staticColors.SEMI_TRANSPARENT,
-    audioTitleText: "#113979",
-    trackBorderColor: staticColors.TRACK_COLOR,
-    trackBackgroundColor: staticColors.TRACK_COLOR,
-    controlBarBackgroundColor: "#ffffff",
-    separator: "#eeeeee",
-    transparentOverlay: "rgba(255, 255, 255, 0.95)",
-    audioSettingsModalText: "#666666",
+  // ── The design system ──────────────────────────────────────────────────
+  // `c` is the semantic colour layer — the only colour surface components read.
+  c: lightColors,
+  palette,
+  space,
+  radii,
+  type,
+  layout,
+  elevation: lightElevation,
+
+  // ── Native chrome ──────────────────────────────────────────────────────
+  // Theme values that are not colours: platform enums whose correct setting is
+  // decided by the theme. They live here so a component reads a token instead of
+  // branching on the mode itself — the same rule as `c`, applied to the handful
+  // of native props that take a keyword rather than a colour.
+  chrome: {
+    /** Status bar glyphs. Dark glyphs on the light ground. */
+    statusBarStyle: "dark-content",
+    /** Native scroll indicator. */
+    scrollIndicator: "black",
+    /** BlurView tint, where a native blur is still used. */
+    blurType: "light",
   },
+  // ── Opacity ────────────────────────────────────────────────────────────
+  // Theme-dependent opacities. A decorative image needs to sit back further on a
+  // dark ground, where the same value reads brighter against less light behind
+  // it.
+  opacity: {
+    /** Decorative photograph behind a card. */
+    backdropImage: 0.16,
+  },
+  // LEGACY (see legacyColors.js): only for screens not yet on the token layer.
+  colors: legacyLight,
   staticColors,
   typography,
   spacing,

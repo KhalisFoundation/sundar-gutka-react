@@ -37,6 +37,7 @@ const typography = {
   fonts: {
     gurbaniPrimary: constant.GURBANI_AKHAR_TRUE,
     gurbaniThick: constant.GURBANI_AKHAR_THICK_TRUE,
+    gurbaniHeavy: constant.GURBANI_AKHAR_HEAVY_TRUE,
     balooPaaji: constant.BALOO_PAAJI,
     balooPaajiSemiBold: constant.BALOO_PAAJI_SEMI_BOLD,
     // Additional fonts can be added as constants are defined

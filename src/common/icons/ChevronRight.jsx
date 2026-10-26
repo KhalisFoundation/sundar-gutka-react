@@ -23,11 +23,6 @@ const ChevronRight = ({ size = 24, color = constant.READER_HEADER_COLOR }) => {
 
 export default ChevronRight;
 
-ChevronRight.defaultProps = {
-  size: 24,
-  color: constant.READER_HEADER_COLOR,
-};
-
 ChevronRight.propTypes = {
   size: PropTypes.number,
   color: PropTypes.string,

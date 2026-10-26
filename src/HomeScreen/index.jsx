@@ -1,6 +1,7 @@
 import React, { useEffect } from "react";
 import { View } from "react-native";
 import { useDispatch, useSelector } from "react-redux";
+import { paletteFor } from "@theme/screenPalettes";
 import PropTypes from "prop-types";
 import useTheme from "@common/context";
 import useThemedStyles from "@common/hooks/useThemedStyles";
@@ -88,12 +89,16 @@ const HomeScreen = React.memo(({ navigation }) => {
     }
   };
 
+  // The bani list keeps its own ground on every surface of this screen, so no
+  // strip of the semantic background shows above or behind the header.
+  const baniGround = paletteFor("baniList", theme).surface;
+
   return baniLengthSelector ? (
     <BaniLengthSelector />
   ) : (
-    <SafeArea backgroundColor={theme.colors.surface} edges={["bottom", "left", "right"]}>
-      <StatusBarComponent backgroundColor={theme.colors.primary} />
-      <View style={[{ backgroundColor: theme.colors.surface }, styles.container]}>
+    <SafeArea backgroundColor={baniGround} edges={["bottom", "left", "right"]}>
+      <StatusBarComponent backgroundColor={baniGround} />
+      <View style={[{ backgroundColor: baniGround }, styles.container]}>
         <BaniHeader navigate={navigate} />
         <BaniList data={baniListData} onPress={onPress} />
       </View>

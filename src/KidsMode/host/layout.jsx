@@ -1,14 +1,16 @@
 // The prototype simulated a phone inside a browser with its own scrollers and sheet;
 // on a device those are platform widgets.
 import React from "react";
-import { Modal, Pressable, ScrollView, StyleSheet, Text, View } from "react-native";
+import { Pressable, ScrollView, StyleSheet, Text, View } from "react-native";
 import PropTypes from "prop-types";
+import useTokens from "@common/hooks/useTokens";
+import Overlay from "../../common/components/ui/Overlay";
 import { useUI } from "../design/components";
 
 const styles = StyleSheet.create({
   flex: { flex: 1 },
   scrollContent: { paddingBottom: 32 },
-  backdrop: { flex: 1, backgroundColor: "rgba(0,0,0,0.35)" },
+  backdrop: { flex: 1 },
   sheet: {
     maxHeight: "86%",
     borderTopLeftRadius: 20,
@@ -33,7 +35,7 @@ const styles = StyleSheet.create({
   close: { fontSize: 16, fontWeight: "600" },
 });
 
-export const Scroll = ({ children }) => (
+export const Scroll = ({ children = null }) => (
   <ScrollView
     style={styles.flex}
     contentContainerStyle={styles.scrollContent}
@@ -43,24 +45,24 @@ export const Scroll = ({ children }) => (
   </ScrollView>
 );
 
-export const HorizontalScroll = ({ children }) => (
+export const HorizontalScroll = ({ children = null }) => (
   <ScrollView horizontal showsHorizontalScrollIndicator={false}>
     {children}
   </ScrollView>
 );
 
 // Rendered inside the design's UIProvider, so the sheet takes the night/day palette from it.
-export const Sheet = ({ open, onOpenChange, title, children }) => {
+export const Sheet = ({ open, onOpenChange, title, children = null }) => {
   const { t } = useUI();
+  // The scrim is the app's own, so every overlay dims the screen the same way.
+  const { c } = useTokens();
   return (
-    <Modal
-      visible={open}
-      transparent
-      animationType="slide"
-      onRequestClose={() => onOpenChange(false)}
-    >
+    <Overlay visible={open} animationType="slide" onRequestClose={() => onOpenChange(false)}>
       {/* Tapping the dimmed area closes, matching the prototype's sheet. */}
-      <Pressable style={styles.backdrop} onPress={() => onOpenChange(false)} />
+      <Pressable
+        style={[styles.backdrop, { backgroundColor: c.scrim }]}
+        onPress={() => onOpenChange(false)}
+      />
       <View style={[styles.sheet, { backgroundColor: t.surface }]}>
         <View style={[styles.grabber, { backgroundColor: t.separator }]} />
         <View style={styles.sheetHeader}>
@@ -75,19 +77,16 @@ export const Sheet = ({ open, onOpenChange, title, children }) => {
         </View>
         <ScrollView contentContainerStyle={styles.scrollContent}>{children}</ScrollView>
       </View>
-    </Modal>
+    </Overlay>
   );
 };
 
 const childrenType = PropTypes.node;
 Scroll.propTypes = { children: childrenType };
-Scroll.defaultProps = { children: null };
 HorizontalScroll.propTypes = { children: childrenType };
-HorizontalScroll.defaultProps = { children: null };
 Sheet.propTypes = {
   open: PropTypes.bool.isRequired,
   onOpenChange: PropTypes.func.isRequired,
   title: PropTypes.string.isRequired,
   children: childrenType,
 };
-Sheet.defaultProps = { children: null };

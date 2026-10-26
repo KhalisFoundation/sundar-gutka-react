@@ -1,6 +1,8 @@
 import { Platform } from "react-native";
 
-const script = (theme) => {
+// `readerTheme` is a resolved reading-theme record (src/theme/reader), not the
+// app theme — this script styles only the Bani reading surface.
+const script = (readerTheme) => {
   const listener = Platform.OS === "android" ? "document" : "window";
   const body = Platform.OS === "android" ? "document.body" : "window.document.body";
   return `
@@ -12,16 +14,93 @@ let scrollMultiplier = 1.5;
 let isScrolling;
 let isManuallyScrolling = false;
 let lastHighlightedElement = null;
+// The node currently carrying .sync-enlarged (a .pline span in paragraph mode,
+// a content-item div in line mode). Tracked separately from
+// lastHighlightedElement so a line change WITHIN one paragraph still scrolls.
+let lastEnlargedTarget = null;
 let highlightTimeout = null;
 let hasReachedEnd = false;
 let accumulatedScroll = 0;
 let lastFrameTime = 0;
+// Timestamp until which programmatic (audio sync) scrolls suppress the show/hide
+// header messages. Without this, an audio-driven scrollIntoView fires the scroll
+// handler, which mistakes it for a user scroll-down and collapses the nav bar —
+// repeatedly and fast on banis with 1–2 word lines — even after the user tapped
+// to keep it visible. Audio sync-scroll's resulting scroll-progress messages are
+// intentionally NOT suppressed — listening via synced scroll should count toward
+// completion the same as manual reading.
+let syncScrollUntil = 0;
+// Timestamp until which the "resume where you left off" position-restore jump
+// suppresses scroll-progress reporting specifically. Separate from
+// syncScrollUntil above: that jump must NOT count toward read-completion (it's
+// not the user reading this session, just the WebView re-scrolling to a
+// previously-saved position on load/refocus), whereas audio sync-scroll must.
+let restoreScrollUntil = 0;
+
+// Whether the page was last seen resting at the very top or the very end of
+// the bani. Arriving at either edge brings the bars back ("edge"), once per
+// arrival: this is what makes it an arrival rather than every tick spent there.
+let wasAtEdge = false;
+
+// Where the reader was before the last reflow: the line at the top of the
+// viewport, and how far down the viewport it sat. Captured by the scroll
+// handler while the layout is stable, and used by the resize handler to put
+// the page back after a rotation.
+let lastViewportWidth = window.innerWidth;
+let anchorElementId = null;
+let anchorViewportTop = 0;
+let reflowRestoreTimer = null;
+
+// The active (sync-scroll) line is rendered slightly larger than the rest of
+// the bani via the .sync-enlarged class — the scale itself lives in CSS
+// (gutkahtml.js), derived from each line's own base size, so the text still
+// re-wraps naturally and never clips. Class toggling is deliberate: the
+// previous implementation read getComputedStyle(...).fontSize and wrote the
+// value back as absolute px, and under Android's textZoom (computed =
+// specified × system font scale) every highlight/restore cycle multiplied the
+// line by the font scale — lines drifted permanently smaller (scale < 100%)
+// or larger (> 100%). A class add/remove has no read-back, so it cannot
+// drift, and any stale state is removable by a document-wide sweep.
+const clearEnlarged = () => {
+  const prev = document.querySelectorAll('.sync-enlarged');
+  for (let i = 0; i < prev.length; i++) {
+    prev[i].classList.remove('sync-enlarged');
+  }
+};
+
+// Enlarge ONLY the sung Gurmukhi line: the verse's own .pline span inside a
+// merged paragraph (db.js wraps each verse when merging), else the main
+// gurmukhi content-item. The div is targeted by data-type, NOT the .gurmukhi
+// class — the Punjabi translation div shares that class for its font.
+// Transliteration/translation lines never enlarge.
+// KNOWN: db.js does not emit the .pline[data-pseq] spans yet (they come with
+// the audio PR's sync-scroll fix), so in paragraph mode this falls back to the
+// whole merged paragraph, and later lines of a long paragraph can scroll off.
+// Fixed by the upcoming audio PR.
+const setEnlarged = (element, sequenceNumber, isParagraphMode) => {
+  clearEnlarged();
+  if (!element) return null;
+  let target = isParagraphMode
+    ? element.querySelector('.pline[data-pseq="' + sequenceNumber + '"]')
+    : null;
+  if (!target) {
+    target = element.querySelector('.content-item[data-type="gurmukhi"]');
+  }
+  if (target) {
+    target.classList.add('sync-enlarged');
+  }
+  return target;
+};
 
 const clearAllHighlights = () => {
   if (highlightTimeout != null) {
     clearTimeout(highlightTimeout);
     highlightTimeout = null;
   }
+  // Sweep the whole document, independent of lastHighlightedElement
+  // bookkeeping — no line can survive a reset enlarged.
+  clearEnlarged();
+  lastEnlargedTarget = null;
   if (lastHighlightedElement) {
     lastHighlightedElement.style.backgroundColor = lastHighlightedElement.dataset.origBg || '';
     lastHighlightedElement.style.width = lastHighlightedElement.dataset.origWidth || '';
@@ -48,92 +127,26 @@ let lastScrollFuncTime = 0;
 // treated as a tap.
 let scrolledDuringTouch = false;
 let lastScrollTime = 0;
-// Throttle the expensive topmost-element scan on manual scroll. Reading the bar
-// direction is cheap and runs every tick (so the bars stay responsive), but
-// scanning every text-item with getBoundingClientRect is far too heavy to run
-// 60x/sec on low-end devices — 150ms position-save granularity is plenty.
-let lastElementIdTime = 0;
-const ELEMENT_ID_THROTTLE = 150;
-// Programmatic-scroll guard: audio sync-scroll, seek, position-restore and
-// bookmark jumps all call scrollIntoView, which fires the same scroll events a
-// user swipe does. Without this window those scrolls would be read as a swipe
-// direction and flicker the bars — e.g. seeking back/forth toggles them. We stamp
-// a short window whenever we scroll the page ourselves and skip direction
-// detection until it elapses (each new programmatic scroll re-arms it).
-let programmaticScrollUntil = 0;
-const PROGRAMMATIC_SCROLL_WINDOW = 600;
+// Timestamp of the last programmatic auto-scroll step. Auto-scroll's scrollBy
+// fires scroll events just like a finger drag; without excluding them the tap
+// gate below sees a "recent scroll" every frame and rejects every tap, so the
+// screen can't be tapped while auto-scrolling.
+let lastAutoScrollTime = 0;
 
 const scrollFunc=(e)=> {
-  // Tap-detection bookkeeping — user scrolls only. While auto-scroll runs it
-  // drives the page itself every frame; if those frames stamped lastScrollTime,
-  // the touchend guard (now - lastScrollTime > 200) would treat every tap as
-  // "tapping a moving page" and refuse to toggle the bars. Gating on
-  // autoScrollSpeed keeps that guard working for real fling momentum (auto-scroll
-  // off) while letting a tap toggle the bars during auto-scroll.
-  if (autoScrollSpeed == 0) {
+  // Only user-driven scrolls disqualify a following touch from being a tap.
+  // A scroll event fires within a frame of the scrollBy that caused it, so a
+  // fresh lastAutoScrollTime means this event is auto-scroll's own motion.
+  if (Date.now() - lastAutoScrollTime > 100) {
     scrolledDuringTouch = true;
     lastScrollTime = Date.now();
   }
-
-  // ── Bar direction detection — FIRST, before any expensive DOM work ──────
-  // Scroll direction drives the bars: scrolling down hides them, scrolling up
-  // shows them (a tap toggles — see the touch handlers below). This runs on
-  // every scroll tick so the bars react the instant the user changes direction,
-  // even on slow devices where the element scan further down is costly. The bars
-  // are an RN overlay that no longer resizes the WebView, so a toggle can never
-  // feed a spurious scroll back into here — no cooldown is needed.
-  if (typeof scrollFunc.y == "undefined") {
-    scrollFunc.y = window.pageYOffset;
-  }
-  if (autoScrollSpeed == 0) {
-    const currentY = window.pageYOffset;
-    const diffY = scrollFunc.y - currentY; // > 0 scrolling up, < 0 scrolling down
-    // The anchor (scrollFunc.y) only advances once a direction commits, so slow
-    // scrolls keep accumulating past the threshold instead of the reference
-    // resetting on every event and swallowing the movement.
-    if (Date.now() < programmaticScrollUntil) {
-      // A programmatic scroll (audio sync / seek / restore / bookmark) is still
-      // settling — keep the anchor in sync but don't toggle. Otherwise seeking
-      // back/forth reads as a swipe and flickers the bars.
-      scrollFunc.y = currentY;
-    } else if (diffY < -3) {
-      window.ReactNativeWebView.postMessage("hide");
-      scrollFunc.y = currentY;
-    } else if (diffY > 3) {
-      window.ReactNativeWebView.postMessage("show");
-      scrollFunc.y = currentY;
-    }
-  } else {
-    // Auto-scrolling: keep the anchor pinned to the live position so the first
-    // manual scroll afterwards is measured from where the reader actually is.
-    scrollFunc.y = window.pageYOffset;
-  }
-
-  // During auto-scroll, throttle the remaining (expensive) work to every 300ms
-  // to prevent the 60fps RAF from triggering 60 DOM queries/sec.
+  // During auto-scroll, throttle this handler to every 300ms
+  // to prevent 60fps RAF from triggering 60 expensive DOM queries/sec
   if (autoScrollSpeed > 0) {
     const now = Date.now();
     if (now - lastScrollFuncTime < 300) return;
     lastScrollFuncTime = now;
-  }
-
-  // ── Scroll progress — cheap arithmetic, posted every tick for a smooth bar ──
-  var sh = document.documentElement.scrollHeight;
-  var ch = window.innerHeight;
-  var maxScroll = sh - ch;
-  if (maxScroll > 0) {
-    var pct = (window.scrollY || window.pageYOffset) / maxScroll;
-    if (pct < 0) pct = 0;
-    if (pct > 1) pct = 1;
-    window.ReactNativeWebView.postMessage("scroll-progress-" + pct.toFixed(4));
-  }
-
-  // ── Topmost element (position save) — heavy DOM scan, throttled on manual
-  // scroll so it stays off the hot path on low-end devices. ────────────────
-  if (autoScrollSpeed == 0) {
-    const nowId = Date.now();
-    if (nowId - lastElementIdTime < ELEMENT_ID_THROTTLE) return;
-    lastElementIdTime = nowId;
   }
 
   // Check if user has reached the end of the document
@@ -142,7 +155,7 @@ const scrollFunc=(e)=> {
   const clientHeight = window.innerHeight;
   const threshold = 50; // pixels from bottom to consider "at end"
   const isAtEnd = scrollTop + clientHeight >= scrollHeight - threshold;
-
+  
   if (isAtEnd && !hasReachedEnd) {
     hasReachedEnd = true;
   } else if (!isAtEnd && hasReachedEnd) {
@@ -150,16 +163,110 @@ const scrollFunc=(e)=> {
     hasReachedEnd = false;
   }
 
+  // A rotation resizes the WebView and Chromium reflows the text underneath
+  // the scroll offset, so every scroll event between the resize and the
+  // restore below describes a position the user never chose. Reporting those
+  // overwrote the saved reading position — and near the bottom saved "end",
+  // which reopens the bani at the top. Nothing is reported, and no anchor
+  // captured, until the new layout is final.
+  const reflowing = window.innerWidth !== lastViewportWidth;
+
   // Report topmost element on both manual and auto-scroll so read context
-  // survives background/terminate mid-auto-scroll.
-  const elementId = getTopmostElementId();
-  if (elementId && !hasReachedEnd) {
-    const topEl = document.getElementById(String(elementId));
-    const seq = topEl ? (topEl.getAttribute("data-sequence") || "") : "";
-    window.ReactNativeWebView.postMessage("scroll-elementId-" + elementId + "|seq-" + seq);
-  } else if (hasReachedEnd) {
-    window.ReactNativeWebView.postMessage("scroll-elementId-null");
+  // survives background/terminate mid-auto-scroll. The 300ms throttle above
+  // keeps this off the 60fps RAF hot path during auto-scroll.
+  // KNOWN: manual scrolling is no longer throttled (the old 150ms
+  // ELEMENT_ID_THROTTLE), so a fling runs this scan and posts a message on every
+  // tick. The Reader no longer writes Redux per tick, but low-end Android may
+  // still stutter on long banis. Restoring a time gate on this scan is planned
+  // in an upcoming Reader PR.
+  const elementId = reflowing ? null : getTopmostElementId();
+  const topEl = elementId ? document.getElementById(String(elementId)) : null;
+  if (topEl) {
+    // WHERE on screen that line sits, so a rotation can put it back in the
+    // same place (see the resize handler).
+    anchorElementId = String(elementId);
+    anchorViewportTop = topEl.getBoundingClientRect().top;
   }
+  if (!reflowing) {
+    if (elementId && !hasReachedEnd) {
+      const seq = topEl ? (topEl.getAttribute("data-sequence") || "") : "";
+      window.ReactNativeWebView.postMessage("scroll-elementId-" + elementId + "|seq-" + seq);
+    } else if (hasReachedEnd) {
+      window.ReactNativeWebView.postMessage("scroll-elementId-null");
+    }
+  }
+
+  // ── Scroll progress — bridge message on every scroll tick, except during a
+  // position-restore jump (see restoreScrollUntil) which isn't genuine reading ──
+  var arrivedAtEdge = false;
+  if (!reflowing && Date.now() > restoreScrollUntil) {
+    var sh = document.documentElement.scrollHeight;
+    var ch = window.innerHeight;
+    // Exclude the artificial bottom inset (body padding-bottom) from the reading
+    // range: it exists only to give the last line room to scroll clear of the
+    // nav/audio chrome, not to represent unread content. Without this, a bani
+    // whose real content fits on one screen becomes 65px "scrollable" and a
+    // stray nudge would report pct 0, undoing its auto-100%; and a longer bani
+    // would reach 100% only after scrolling through the blank inset.
+    var pb = parseFloat(getComputedStyle(document.body).paddingBottom) || 0;
+    var maxScroll = sh - ch - pb;
+    if (maxScroll > 0) {
+      var pct = (window.scrollY || window.pageYOffset) / maxScroll;
+      if (pct < 0) pct = 0;
+      if (pct > 1) pct = 1;
+      window.ReactNativeWebView.postMessage("scroll-progress-" + pct.toFixed(4));
+      // Measured here, behind the same guard as progress, so a position-restore
+      // jump or a reflow never counts as reaching the top or the end.
+      //
+      // The END is where the page can scroll no further, not where pct hits 1.
+      // pct stops counting at the bottom inset, so it reaches 1 the moment the
+      // last line touches the bottom of the screen — and the nav bar, brought
+      // back there, landed on those last lines instead of the blank inset left
+      // under them for it. Waiting for the inset to be fully in view puts the
+      // returning bars over that gap. 2px of slack for a fractional scrollY, the
+      // same the auto-scroll stop uses.
+      var y = window.scrollY || window.pageYOffset;
+      var atEdge = y <= 0 || y + ch >= sh - 2;
+      arrivedAtEdge = atEdge && !wasAtEdge;
+      wasAtEdge = atEdge;
+    }
+  }
+
+  if (typeof scrollFunc.y == "undefined") {
+    scrollFunc.y = window.pageYOffset;
+  }
+  // A reflow moves the page under the reader without them touching it, and the
+  // delta it produces reads as a deliberate scroll up — which brought the bars
+  // back every time the phone was rotated, and took the progress track up with
+  // them onto a nav bar the reader had hidden.
+  if (arrivedAtEdge) {
+    // Reaching the top or the end of the bani shows the header and nav bar,
+    // in place of this tick's hide or show — scrolling down onto the last line
+    // would otherwise hide them at exactly the moment the reader is done.
+    // Posted during auto-scroll too, which stops at the end with the bars up.
+    window.ReactNativeWebView.postMessage("edge");
+  } else if (!reflowing && autoScrollSpeed == 0 && Date.now() > syncScrollUntil) {
+    let diffY = scrollFunc.y - window.pageYOffset;
+    // Scroll direction drives the bars: scrolling DOWN hides them, scrolling UP
+    // restores them together. (A tap also toggles — see the touch handlers
+    // below.) The syncScrollUntil guard keeps audio-sync/position-restore
+    // scrolls from flickering the bars.
+    if (diffY < -3) {
+      // Scroll down — except while resting at the end, where a last settling
+      // tick would take away the bars "edge" has just brought back. Scrolling
+      // through the bottom inset on the way there still hides them: the bars
+      // come back only once the inset is fully in view.
+      if (!wasAtEdge) window.ReactNativeWebView.postMessage("hide");
+    } else if (diffY > 3) {
+      // Scroll up
+      window.ReactNativeWebView.postMessage("show");
+    }
+  }
+  // KNOWN: the anchor moves on every tick, so a slow drag of under 3px per
+  // event never crosses the threshold and the bars ignore it. The old code
+  // moved it only once a direction committed. Fix planned in an upcoming
+  // Reader PR.
+  scrollFunc.y = window.pageYOffset;
 }
 
 const getTopmostElementId=()=> {
@@ -248,6 +355,12 @@ const setAutoScroll=()=> {
     const clientHeight = window.innerHeight;
     if (scrollTop + clientHeight >= scrollHeight - 2) {
       autoScrollRAF = null;
+      // scrollFunc is throttled to every 300ms while auto-scrolling, and the
+      // loop stopping here means no further scroll event comes. Run it once
+      // for the final position, so the end is reported: progress, the read
+      // position, and the "edge" that brings the bars back.
+      lastScrollFuncTime = 0;
+      scrollFunc();
       return;
     }
 
@@ -262,6 +375,9 @@ const setAutoScroll=()=> {
 
       if (accumulatedScroll >= 0.5) {
         const px = accumulatedScroll;
+        // Mark this as a programmatic scroll so scrollFunc doesn't count the
+        // resulting scroll event as user activity that would block tap-to-toggle.
+        lastAutoScrollTime = Date.now();
         window.scrollBy(0, px);
         accumulatedScroll = 0;
       }
@@ -274,29 +390,66 @@ const setAutoScroll=()=> {
   autoScrollRAF = requestAnimationFrame(scrollStep);
 }
 
+// Rotation: put the reader back where they were.
+//
+// Nothing reloads on rotation — the WebView is resized and Chromium reflows
+// the text, so the document's height changes (landscape lines are about twice
+// as wide, so the page is roughly half as tall) while the scroll offset in
+// pixels stays as it was. That offset means a different place in the new
+// layout, which is what threw the page down the bani.
+//
+// This used to run off "orientationchange" with a 50ms timeout, which fires
+// BEFORE the new geometry exists: it measured the top line against a viewport
+// mid-resize and smooth-scrolled to a target computed from the old layout. So
+// each rotation displaced the page by a different amount — sometimes none,
+// which is why it looked intermittent — and repeated rotations compounded it.
+//
+// The reflow is done when "resize" reports a new width. The anchor was
+// captured by the scroll handler BEFORE it, so it describes where the user
+// actually was. The restore is an instant scroll, not a smooth one: an
+// animation runs over a layout that is still settling and lands elsewhere
+// again.
+const restoreAfterReflow = () => {
+  reflowRestoreTimer = null;
+  lastViewportWidth = window.innerWidth;
+  const element = anchorElementId ? document.getElementById(anchorElementId) : null;
+  if (!element) return;
+  // The captured offset belongs to the old viewport; landscape is much
+  // shorter, so clamp it into the new one. A line that began above the
+  // viewport (offset < 0) is put at the top rather than scrolled past.
+  const limit = Math.max(window.innerHeight - 40, 0);
+  const offset = Math.min(Math.max(anchorViewportTop, 0), limit);
+  const documentTop =
+    element.getBoundingClientRect().top + (window.scrollY || window.pageYOffset);
+  // Same suppressions as the load-time restore: this jump is not the user
+  // reading, and must not toggle the nav bars.
+  syncScrollUntil = Date.now() + 700;
+  restoreScrollUntil = Date.now() + 700;
+  window.scrollTo(0, Math.max(documentTop - offset, 0));
+};
+
 window.addEventListener(
-  "orientationchange",
-   ()=> {
-    setTimeout(()=> {
-      const elementId = getTopmostElementId();
-      if (elementId) {
-        const element = document.getElementById(String(elementId));
-        if (element) {
-          programmaticScrollUntil = Date.now() + PROGRAMMATIC_SCROLL_WINDOW;
-          element.scrollIntoView({
-            behavior: "smooth",
-            block: "start",
-            inline: "nearest"
-          });
-        }
-      }
-    }, 50);
+  "resize",
+  () => {
+    // Only a width change re-wraps the text. Height alone changes for reasons
+    // that reflow nothing.
+    if (window.innerWidth === lastViewportWidth) return;
+    if (reflowRestoreTimer) clearTimeout(reflowRestoreTimer);
+    // Debounced: a rotation fires several resize events. Two frames after the
+    // last one, the new layout is final.
+    reflowRestoreTimer = setTimeout(() => {
+      requestAnimationFrame(() => {
+        requestAnimationFrame(restoreAfterReflow);
+      });
+    }, 120);
   },
   false
 );
 
 ${listener}.onload = () => {
-  if (${theme.mode === "dark"}) {
+  // Gated on the READING theme's base, not the app's: a dark reading theme needs
+  // the same first-paint fade whether or not the app itself is in light mode.
+  if (${readerTheme.base === "dark"}) {
   //fade event
 fadeInEffect();
 }
@@ -320,6 +473,7 @@ ${listener}.addEventListener(
 
 
 ${listener}.onscroll = scrollFunc;
+
 // Touch events for auto-scroll handling + tap detection.
 let wasAutoScrolling = false;
 // Tap detection: a touch that ends without meaningful movement is a tap and
@@ -340,14 +494,13 @@ const resumeAutoScroll = () => {
   }
 };
 ${listener}.addEventListener("touchstart", (e)=> {
+  // Any touch on the reading area is "activity" — restarts the idle countdown
+  // that auto-hides the bars during auto-scroll / audio playback.
+  window.ReactNativeWebView.postMessage("activity");
   if (autoScrollSpeed !== 0) {
     wasAutoScrolling = true;
     clearScrollTimeout();
   }
-  // Signal user activity so RN can restart its inactivity auto-hide countdown for
-  // the bars. RN only acts on it while auto-scroll or audio is active; harmless
-  // otherwise.
-  window.ReactNativeWebView.postMessage("activity");
   tapMoved = false;
   scrolledDuringTouch = false;
   tapStartTime = Date.now();
@@ -394,7 +547,9 @@ ${listener}.addEventListener(
         return;
       }
         // Manually scroll to the bookmarked element because location.hash is unreliable inside WebView HTML
-      programmaticScrollUntil = Date.now() + PROGRAMMATIC_SCROLL_WINDOW;
+      // Programmatic: keep scrollFunc's show/hide out of the smooth scroll, or
+      // the bars hidden below pop back up on the way.
+      syncScrollUntil = Date.now() + 700;
       element.scrollIntoView({
         behavior: "smooth",
         block: "start",
@@ -405,6 +560,36 @@ ${listener}.addEventListener(
       const sequenceString = sequenceStringNormal ? sequenceStringNormal : sequenceStringParagraph;
       window.ReactNativeWebView.postMessage("sequenceString-" + sequenceString);
       window.ReactNativeWebView.postMessage("hide");
+    }
+    if (message.hasOwnProperty("action") && message.action === "setBottomInset") {
+      // Bottom inset so the last line can scroll clear of the audio player / nav
+      // bar, which overlay the bottom of the WebView viewport when the bars are
+      // visible. Applied as body padding-bottom (in CSS px ~= dp) rather than
+      // baked into the HTML, so toggling audio never reloads/reflows the page.
+      var inset = parseFloat(message.value);
+      if (!isNaN(inset) && inset >= 0) {
+        document.body.style.paddingBottom = inset + "px";
+      }
+      return;
+    }
+    if (message.hasOwnProperty("action") && message.action === "setTopMargin") {
+      // A foldable's page margin follows the top inset, which changes when the
+      // phone is folded or unfolded. Applied here rather than baked into the
+      // HTML, because rebuilding the HTML reloads the page and loses the
+      // reader's line. The margin sits above every line, so the page scrolls by
+      // the same amount it grew and the text stays exactly where it was.
+      var nextMargin = parseFloat(message.value);
+      var prevMargin = parseFloat(getComputedStyle(document.body).marginTop) || 0;
+      if (!isNaN(nextMargin) && nextMargin >= 0 && nextMargin !== prevMargin) {
+        document.body.style.marginTop = nextMargin + "px";
+        if ((window.scrollY || window.pageYOffset) > 0) {
+          // Not the user reading, and must not toggle the nav bars.
+          syncScrollUntil = Date.now() + 700;
+          restoreScrollUntil = Date.now() + 700;
+          window.scrollBy(0, nextMargin - prevMargin);
+        }
+      }
+      return;
     }
     if (message.hasOwnProperty("resetHighlight")) {
       clearAllHighlights();
@@ -438,11 +623,40 @@ ${listener}.addEventListener(
         }
       }
       if (element) {
-        programmaticScrollUntil = Date.now() + PROGRAMMATIC_SCROLL_WINDOW;
+        // Programmatic position-restore — suppress the show/hide nav toggle
+        // AND (separately) the scroll-progress completion tracking, since this
+        // jump reflects a PREVIOUS session's position, not genuine reading now.
+        syncScrollUntil = Date.now() + 700;
+        restoreScrollUntil = Date.now() + 700;
         element.scrollIntoView({
           behavior: "auto",
           block: "start",
           inline: "nearest"
+        });
+        // The header FLOATS over the page, so "top of the viewport" is behind it.
+        // Without this the restored line landed underneath the header and the
+        // only way to see it was to scroll back up — which is what made a bani
+        // look like it had opened part-scrolled.
+        if (message.topInset) {
+          window.scrollBy(0, -message.topInset);
+        }
+        // The normal scroll-progress report above is suppressed during
+        // restoreScrollUntil (a restore isn't genuine reading), which also leaves
+        // the visual progress bar empty despite the restored scroll position.
+        // Emit the restored position on a SEPARATE channel so RN fills the bar to
+        // match WITHOUT counting it toward completion. rAF lets the jump settle
+        // so scrollY is accurate.
+        requestAnimationFrame(function () {
+          var sh = document.documentElement.scrollHeight;
+          var ch = window.innerHeight;
+          var pb = parseFloat(getComputedStyle(document.body).paddingBottom) || 0;
+          var maxScroll = sh - ch - pb;
+          if (maxScroll > 0) {
+            var rpct = (window.scrollY || window.pageYOffset) / maxScroll;
+            if (rpct < 0) rpct = 0;
+            if (rpct > 1) rpct = 1;
+            window.ReactNativeWebView.postMessage("scroll-progress-restore-" + rpct.toFixed(4));
+          }
         });
       }
       return;
@@ -481,25 +695,15 @@ ${listener}.addEventListener(
           highlightTimeout = null;
         }
         
-        // Remove highlight from previous element if different
+        // Remove highlight from previous element if different (its enlarged
+        // line is cleared by the sweep inside setEnlarged below)
         if (lastHighlightedElement && !isSameElement) {
           lastHighlightedElement.style.backgroundColor = lastHighlightedElement.dataset.origBg || '';
           lastHighlightedElement.style.width = lastHighlightedElement.dataset.origWidth || '';
           lastHighlightedElement.style.margin = lastHighlightedElement.dataset.origMargin || '';
           lastHighlightedElement.style.transition = '';
         }
-        
-        // Only scroll if it's a different element
-        if (!isSameElement) {
-          const behavior = message.behavior === "smooth" ? "smooth" : "auto";
-          programmaticScrollUntil = Date.now() + PROGRAMMATIC_SCROLL_WINDOW;
-          gurmukhiDiv.scrollIntoView({
-            behavior: behavior,
-            block: "center",
-            inline: "nearest"
-          });
-        }
-        
+
         // Only snapshot original styles the first time this element is highlighted.
         // Re-highlighting the same element (e.g. multiple sequences in one paragraph)
         // must NOT overwrite origBg — it would capture the highlight colour and make
@@ -514,7 +718,7 @@ ${listener}.addEventListener(
         const originalMargin = element.dataset.origMargin || '';
 
         // Apply highlight
-        element.style.backgroundColor = "${theme.staticColors.HIGHLIGHT_COLOR}";
+        element.style.backgroundColor = "${readerTheme.highlight.color}";
         element.style.borderRadius = "15px";
         element.style.width = "fit-content";
 
@@ -527,16 +731,39 @@ ${listener}.addEventListener(
           element.style.marginRight = "0";
         }
 
+        // Enlarge ONLY the sung line — BEFORE scrolling, so the centering math
+        // sees the final (highlighted + enlarged) layout.
+        const enlarged = setEnlarged(element, sequenceNumber, isParagraphMode);
+        const scrollTarget = enlarged || gurmukhiDiv;
+
+        // Scroll whenever the SUNG LINE changes — including line changes within
+        // one merged paragraph (.pline target). The old element-level check
+        // centered a long paragraph once and later lines could sit off-screen.
+        if (scrollTarget !== lastEnlargedTarget) {
+          // Programmatic sync-scroll — suppress scrollFunc's show/hide so the
+          // nav bar the user chose to keep visible isn't collapsed by it.
+          syncScrollUntil = Date.now() + 700;
+          const behavior = message.behavior === "smooth" ? "smooth" : "auto";
+          scrollTarget.scrollIntoView({
+            behavior: behavior,
+            block: "center",
+            inline: "nearest"
+          });
+        }
+        lastEnlargedTarget = scrollTarget;
+
         // Store current element
         lastHighlightedElement = element;
 
         // Remove highlight after timeout
         highlightTimeout = setTimeout(()=> {
+          clearEnlarged();
+          lastEnlargedTarget = null;
           element.style.backgroundColor = originalBackgroundColor;
           element.style.width = originalWidth;
           element.style.margin = originalMargin;
           highlightTimeout = null;
-        }, timeOut);        
+        }, timeOut);
       }
     }
   },

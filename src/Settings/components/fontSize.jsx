@@ -1,7 +1,7 @@
 import React, { useState } from "react";
 import { useSelector } from "react-redux";
-import { STRINGS } from "@common";
 import { setFontSize } from "@common/actions";
+import { STRINGS } from "@common";
 import { BottomSheetComponent, ListItemComponent } from "./comon";
 import { getFontSizes } from "./comon/strings";
 
@@ -21,16 +21,14 @@ const FontSizeComponent = () => {
         actionConstant={FONT_SIZES}
         onPressAction={() => toggleVisible(true)}
       />
-      {isVisible && (
-        <BottomSheetComponent
-          isVisible={isVisible}
-          actionConstant={FONT_SIZES}
-          value={fontSize}
-          toggleVisible={toggleVisible}
-          title={STRINGS.font_size}
-          action={setFontSize}
-        />
-      )}
+      <BottomSheetComponent
+        isVisible={isVisible}
+        actionConstant={FONT_SIZES}
+        value={fontSize}
+        toggleVisible={toggleVisible}
+        title={STRINGS.font_size}
+        action={setFontSize}
+      />
     </>
   );
 };

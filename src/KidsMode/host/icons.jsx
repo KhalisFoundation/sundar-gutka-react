@@ -30,9 +30,7 @@ const FEATHER = {
 
 export const Icon = ({ name, color, size = 22 }) => {
   if (REWARDS[name]) {
-    return (
-      <Image source={REWARDS[name]} style={{ width: size, height: size, tintColor: color }} />
-    );
+    return <Image source={REWARDS[name]} style={{ width: size, height: size, tintColor: color }} />;
   }
   if (name === "coins") {
     return <FontAwesome5 name="coins" color={color} size={size * 0.9} />;

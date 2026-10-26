@@ -19,6 +19,36 @@ export const createCommonMock = (overrides = {}) => {
   return {
     CustomText,
     SafeArea,
+    showErrorToast: jest.fn(),
+    showInfoToast: jest.fn(),
+    showSuccessToast: jest.fn(),
+    showConfirm: jest.fn(),
+    navigate: jest.fn(),
+    StatusBarComponent: ({ children, ...rest }) => React.createElement(RN.View, rest, children),
+    trackSevaEvent: jest.fn(),
+    trackDashboardEvent: jest.fn(),
+    trackThemeEvent: jest.fn(),
+    trackSsoEvent: jest.fn(),
+    openInAppBrowser: jest.fn(() => Promise.resolve()),
+    useBackHandler: jest.fn(),
+    useCustomScrollbar: () => ({ scrollViewProps: {}, Indicator: null, ownedScrollProps: {} }),
+    trackTourEvent: jest.fn(),
+    logError: jest.fn(),
+    logMessage: jest.fn(),
+    logNetworkError: jest.fn(),
+    // Online by default, matching DEFAULT_NETWORK_STATE: a consumer outside a
+    // NetworkProvider must never falsely degrade.
+    useNetwork: () => ({
+      isConnected: true,
+      isInternetReachable: true,
+      type: "wifi",
+      isWifi: true,
+      isCellular: false,
+      isExpensive: false,
+      isOffline: false,
+      isOnline: true,
+    }),
+    OnboardingCarousel: () => null,
     actions: {
       toggleAutoScroll: jest.fn(toggleAutoScrollAction),
       toggleAudio: jest.fn(toggleAudioAction),
@@ -33,6 +63,23 @@ export const createCommonMock = (overrides = {}) => {
       LONG: "LONG",
       EXTRA_LONG: "EXTRA_LONG",
       ICON_SIZE_SMALL: 16,
+      // Real values, because sectionRegistry.js reads
+      // `constant.DASHBOARD_SECTIONS` at MODULE scope — so an absent key here
+      // is not a missing field, it is a TypeError while the module body runs,
+      // and every consumer of that registry fails to load. Keep in step with
+      // constant.js.
+      DASHBOARD_SECTIONS: {
+        STREAK: "streak",
+        NITNEM: "nitnem",
+        EXPLORE: "explore",
+        PRACTICE: "practice",
+        CALENDAR: "calendar",
+        WEEK_CHART: "weekChart",
+        DISCOVER: "discover",
+        REMINDERS: "reminders",
+        SHABAD_VAAK: "shabadVaak",
+      },
+      DASHBOARD_MIN_VISIBLE: 4,
       ...overrides.constant,
     },
     STRINGS: {
@@ -40,6 +87,9 @@ export const createCommonMock = (overrides = {}) => {
       READ: "Read",
       MUSIC: "Audio",
       SETTINGS: "Settings",
+      ALL_BANIS: "All Banis",
+      DASHBOARD: "Dashboard",
+      SEVA: "Seva",
       short: "Short",
       medium: "Medium",
       long: "Long",

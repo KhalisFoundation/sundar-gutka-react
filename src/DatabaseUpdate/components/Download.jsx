@@ -93,7 +93,7 @@ const DownloadComponent = () => {
       // (no .download file yet when the update CHECK is what failed, or no saved
       // checksum to restore), and it must not swallow the report or leave the
       // screen without a failure state.
-      logNetworkError(`updateDatabaseIfNeeded error: ${err.message}`, err);
+      logNetworkError(`updateDatabaseIfNeeded error: ${err?.message || err}`, err);
       setDownloadSuccess(false);
       const tmpPath = `${LOCAL_DB_PATH}.download`;
       try {
@@ -124,7 +124,7 @@ const DownloadComponent = () => {
           <DownloadControls
             downloading={downloading}
             onStartDownload={startDownload}
-            darkModeText={{ color: theme.colors.primaryText }}
+            darkModeText={{ color: theme.c.textPrimary }}
           />
         </>
       )}

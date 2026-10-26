@@ -23,6 +23,12 @@ const JOURNEY = "japji";
 
 const LOAD_FAILED = "Kids Mode could not load. Please try again.";
 
+const styles = StyleSheet.create({
+  center: { flex: 1, alignItems: "center", justifyContent: "center" },
+  message: { margin: 24, textAlign: "center" },
+  link: { padding: 12 },
+});
+
 // Builds the HostPorts the design screens expect from this app's own stack.
 // Storage goes through redux so redux-persist does the disk write; reading it
 // once on mount keeps the synchronous load() the design relies on.
@@ -117,11 +123,5 @@ const KidsHomeScreen = () => {
     </>
   );
 };
-
-const styles = StyleSheet.create({
-  center: { flex: 1, alignItems: "center", justifyContent: "center" },
-  message: { margin: 24, textAlign: "center" },
-  link: { padding: 12 },
-});
 
 export default KidsHomeScreen;

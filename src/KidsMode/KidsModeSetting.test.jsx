@@ -8,7 +8,6 @@ import KidsModeSetting from "./KidsModeSetting";
 import { setKidsReciter, setKidsScoringOptIn, toggleKidsMode } from "./state/actions";
 
 jest.mock("@common", () => {
-  const { Switch, Text } = require("react-native");
   const { createCommonMock } = require("@common/test-utils/mocks/common");
   return createCommonMock({
     STRINGS: {
@@ -17,20 +16,28 @@ jest.mock("@common", () => {
       KIDS_SCORING_OPT_IN_INFO: "Recordings are sent for checking and not kept.",
       KIDS_RECITER: "Reciter",
     },
-    ListItemTitle: ({ title }) => <Text>{title}</Text>,
-    // The real switch animates on mount, which logs act() warnings and keeps timers alive.
-    ThemedSwitch: ({ value, onValueChange }) => (
-      <Switch accessibilityRole="switch" value={value} onValueChange={onValueChange} />
-    ),
   });
 });
 
-// @rneui/themed ships untranspiled ESM, which this Jest config does not transform.
-jest.mock("@rneui/themed", () => {
-  const { View } = require("react-native");
-  const ListItem = ({ children }) => <View>{children}</View>;
-  ListItem.Content = ({ children }) => <View>{children}</View>;
-  return { ListItem, Icon: () => null };
+// The real rows pull in the token hooks and an animated switch; this keeps their contract:
+// a section with a title, and a toggle row that is a switch with a title and subtitle.
+jest.mock("@settings/components/comon/SettingsRow", () => {
+  const { Switch, Text, View } = require("react-native");
+  return {
+    SettingsSection: ({ title, children }) => (
+      <View>
+        <Text>{title}</Text>
+        {children}
+      </View>
+    ),
+    SettingsToggleRow: ({ title, subtitle, value, onValueChange }) => (
+      <View>
+        <Text>{title}</Text>
+        {subtitle ? <Text>{subtitle}</Text> : null}
+        <Switch accessibilityRole="switch" value={value} onValueChange={onValueChange} />
+      </View>
+    ),
+  };
 });
 
 // The real sheet pulls in blur and sound-player natives; this keeps its contract: one row per
@@ -44,8 +51,9 @@ jest.mock("@settings/components/comon", () => {
         <Text>{actionConstant.find((item) => item.key === value).title}</Text>
       </Pressable>
     ),
-    BottomSheetComponent: ({ actionConstant, action }) => {
+    BottomSheetComponent: ({ isVisible, actionConstant, action }) => {
       const dispatch = useDispatch();
+      if (!isVisible) return null;
       return (
         <View>
           {actionConstant.map((item) => (

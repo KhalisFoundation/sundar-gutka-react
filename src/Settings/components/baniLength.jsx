@@ -19,16 +19,14 @@ const BaniLengthComponent = () => {
         actionConstant={BANI_LENGTHS}
         onPressAction={() => toggleVisible(true)}
       />
-      {isVisible && (
-        <BottomSheetComponent
-          isVisible={isVisible}
-          actionConstant={BANI_LENGTHS}
-          value={baniLength}
-          toggleVisible={toggleVisible}
-          title={STRINGS.bani_length}
-          action={actions.setBaniLength}
-        />
-      )}
+      <BottomSheetComponent
+        isVisible={isVisible}
+        actionConstant={BANI_LENGTHS}
+        value={baniLength}
+        toggleVisible={toggleVisible}
+        title={STRINGS.bani_length}
+        action={actions.setBaniLength}
+      />
     </>
   );
 };

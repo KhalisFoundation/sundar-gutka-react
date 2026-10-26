@@ -1,9 +1,14 @@
 import React from "react";
 import Svg, { Path } from "react-native-svg";
+import { navy } from "@theme/palette";
 import PropTypes from "prop-types";
-import { colors } from "@common";
 
-export const MusicIcon = ({ size = 28, color = colors.READER_HEADER_COLOR, strokeWidth = 1.5 }) => (
+// Fallback only — every call site passes an explicit, themed colour. It exists
+// so the stroke is never undefined, which is what the old colors module
+// returned: it never defined the keys these icons referenced.
+const ICON_FALLBACK = navy[800];
+
+export const MusicIcon = ({ size = 28, color = ICON_FALLBACK, strokeWidth = 1.5 }) => (
   <Svg
     width={size}
     height={size}
@@ -21,9 +26,9 @@ export const MusicIcon = ({ size = 28, color = colors.READER_HEADER_COLOR, strok
 );
 
 MusicIcon.propTypes = {
-  size: PropTypes.number.isRequired,
-  color: PropTypes.string.isRequired,
-  strokeWidth: PropTypes.number.isRequired,
+  size: PropTypes.number,
+  color: PropTypes.string,
+  strokeWidth: PropTypes.number,
 };
 
 export default MusicIcon;
