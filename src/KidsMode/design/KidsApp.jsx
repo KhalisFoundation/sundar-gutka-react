@@ -176,10 +176,9 @@ export default function KidsApp({ pauris, host }) {
           <Button onPress={() => openPauri(selected)}>Continue with Pauri {selected}  →</Button>
         </View>
         {regions.map((chapter, index) => <View key={chapter.name}>
-          <View style={[s.pad, { backgroundColor: t.subtle }]}>
+          <View style={[s.pad, { backgroundColor: t.subtle, paddingBottom: 6 }]}>
             <Small>Region {index + 1} · Pauris {chapter.start}–{chapter.end}</Small>
             <Heading>{chapter.name}</Heading>
-            <Small>{chapter.place}</Small>
           </View>
           <View style={[s.map, { aspectRatio: chapter.aspectRatio }]}>
             <Image source={host.image(chapter.image)} accessibilityLabel={chapter.description} style={s.fill} resizeMode="cover" />
@@ -188,8 +187,8 @@ export default function KidsApp({ pauris, host }) {
                     const count = progress.best[String(n)] ?? 0;
                     // Follow the painted clearings from top to bottom as the child scrolls.
                     const position = chapter.nodes[chapter.nodes.length - 1 - i];
-                    return <Pressable key={n} accessibilityRole="button" accessibilityLabel={`Pauri ${n}, ${count} of 3 stars`} onPress={() => openPauri(n)} style={[s.mapNode, { left: `${position[0]}%`, top: `${position[1]}%`, marginLeft: -30, marginTop: -24 }]}>
-                <View style={[s.nodeDisc, { backgroundColor: n === selected ? t.primary : count ? '#426a46' : '#fff', borderColor: '#fff' }]}><Text style={[s.text, { fontFamily: bold, fontSize: 23, lineHeight: lineFor(23), color: count || n === selected ? '#fff' : light.primary }]}>{n}</Text></View>
+                    return <Pressable key={n} accessibilityRole="button" accessibilityLabel={`Pauri ${n}, ${count} of 3 stars`} onPress={() => openPauri(n)} style={[s.mapNode, { left: `${position[0]}%`, top: `${position[1]}%`, marginLeft: -30, marginTop: -28 }]}>
+                <View style={[s.nodeDisc, { backgroundColor: 'transparent', borderColor: n === selected ? '#cba51e' : 'transparent', shadowOpacity: 0, elevation: 0 }]}><Text style={[s.text, { fontFamily: bold, fontSize: 23, lineHeight: lineFor(23), color: n === selected ? '#cba51e' : count ? '#426a46' : light.primary }]}>{n}</Text></View>
                 <View style={s.nodeStars}><Stars count={count} /></View>
               </Pressable>;
                   })}
