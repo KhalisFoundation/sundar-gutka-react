@@ -13,7 +13,6 @@ import {
   GradientDivider,
   constant,
 } from "@common";
-import { IconAction } from "../../common/components/ui";
 import KidsIcon from "../../KidsMode/KidsIcon";
 import createStyles from "../styles";
 
@@ -50,12 +49,7 @@ const BaniHeader = ({ navigate }) => {
               when on, takes this slot. */}
           <View style={styles.settingsWrap}>
             {kidsEnabled && (
-              <IconAction
-                icon={KidsIcon}
-                label={STRINGS.KIDS_MODE}
-                color={iconColor}
-                onPress={() => navigate("KidsHome")}
-              />
+              <KidsIcon size={26} color={iconColor} onPress={() => navigate("KidsHome")} />
             )}
           </View>
           {/* The ornaments are SIBLINGS of the title, not children of it.
