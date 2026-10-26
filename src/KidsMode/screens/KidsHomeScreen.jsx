@@ -1,4 +1,4 @@
-import React, { useCallback, useMemo, useState } from "react";
+import React, { useCallback, useEffect, useMemo, useState } from "react";
 import { ActivityIndicator, StatusBar, StyleSheet, Text, View } from "react-native";
 import { useSafeAreaInsets } from "react-native-safe-area-context";
 import { useDispatch, useSelector } from "react-redux";
@@ -80,10 +80,13 @@ const KidsHomeScreen = () => {
     [storage, audio, clip, recitation, navigation, insets.top, insets.bottom, bani.reciter]
   );
 
+  useEffect(() => {
+    if (bani.error) logError("Kids Mode could not load the bani", bani.error);
+  }, [bani.error]);
+
   const palette = night ? dark : light;
   let body;
   if (bani.error) {
-    logError("Kids Mode could not load the bani", bani.error);
     body = (
       <View style={[styles.center, { backgroundColor: palette.subtle }]}>
         <Text style={[styles.message, { color: palette.text }]}>{LOAD_FAILED}</Text>
