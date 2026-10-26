@@ -114,10 +114,8 @@ const createStyles = (theme) => ({
     flexDirection: "row",
     alignItems: "center",
   },
-  // Mirrors settingsWrap on the left so the centre column is truly centred.
-  titleSpacer: {
-    width: 48,
-  },
+  // One slot each side (settings on the right, Kids Mode on the left when it is on),
+  // so the centre column is truly centred.
   settingsWrap: {
     width: 48,
     alignItems: "center",

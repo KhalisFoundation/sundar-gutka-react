@@ -14,6 +14,7 @@ import {
   constant,
 } from "@common";
 import { ScreenHeader } from "../common/components/ui";
+import KidsModeSetting from "../KidsMode/KidsModeSetting";
 import Audio from "./components/audio";
 import AutoScroll from "./components/autoScroll";
 import BaniLengthComponent from "./components/baniLength";
@@ -137,6 +138,8 @@ const Settings = ({ navigation, route = undefined }) => {
               navigationTarget="DatabaseUpdate"
             />
           </SettingsSection>
+
+          <KidsModeSetting />
         </Animated.ScrollView>
         {Indicator}
       </View>

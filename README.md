@@ -55,6 +55,14 @@ Sundar Gutka is a feature-rich mobile application that provides access to Gurban
 - **Statistics**: Optional usage statistics collection
 - **Donation Support**: Support the Khalis Foundation
 
+## Kids Mode
+
+A guided path through Japji Sahib for children, off until a parent turns it on in Settings. The code is under `src/KidsMode/`: `design/` holds the screens, `host/` what they need from this app (audio, recording, icons, art), and `scoring/` the client for the pronunciation service.
+
+The service does not transcribe. It aligns the recording to the known text and scores each word against the reciter the child heard, in the recited form (terminal sihari and aunkar are written but not spoken). A word comes back as `like`, `check` or `unclear`, and a recording that cannot be aligned returns `unclear` with no score.
+
+Two constants in `src/common/constant.js` point the app at a service: `KIDS_SCORING_URL` (empty keeps the online check off) and `KIDS_SCORING_API_KEY` (set at release, never commit it). Nothing is uploaded unless the parent also turns on "Check pronunciation online". Service code and method: https://github.com/Gurjaapk1/Ucharaan-2026.
+
 ## 🚀 Getting Started
 
 ### Prerequisites

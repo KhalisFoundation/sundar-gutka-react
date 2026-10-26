@@ -1,5 +1,6 @@
 import React from "react";
 import { View } from "react-native";
+import { useSelector } from "react-redux";
 import { paletteFor } from "@theme/screenPalettes";
 import PropTypes from "prop-types";
 import { SettingsIconComponent } from "@common/components";
@@ -12,6 +13,7 @@ import {
   GradientDivider,
   constant,
 } from "@common";
+import KidsIcon from "../../KidsMode/KidsIcon";
 import createStyles from "../styles";
 
 // The title carries NO explicit lineHeight — see the note on the name below.
@@ -26,6 +28,7 @@ const BaniHeader = ({ navigate }) => {
   // ground — on the semantic background it drew a dark band above the
   // invocation line.
   const ground = paletteFor("baniList", theme).surface;
+  const kidsEnabled = useSelector((state) => state.kidsMode?.enabled);
   return (
     <SafeArea backgroundColor={ground} edges={["top"]} flex={0}>
       <View style={styles.newHeaderContainer}>
@@ -42,8 +45,13 @@ const BaniHeader = ({ navigate }) => {
         </CustomText>
         <View style={styles.titleRow}>
           {/* Balances the settings slot on the right, so the title sits on the
-              header's true centre rather than being nudged left by it. */}
-          <View style={styles.titleSpacer} />
+              header's true centre rather than being nudged left by it. Kids Mode,
+              when on, takes this slot. */}
+          <View style={styles.settingsWrap}>
+            {kidsEnabled && (
+              <KidsIcon size={26} color={iconColor} onPress={() => navigate("KidsHome")} />
+            )}
+          </View>
           {/* The ornaments are SIBLINGS of the title, not children of it.
               Nested inside one Text they shared its truncation, so the moment
               the line did not fit the ellipsis ate the closing flower and the

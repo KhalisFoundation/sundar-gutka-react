@@ -199,6 +199,11 @@ const STRINGS = new LocalizedStrings({
     WEBVIEW_UPDATE: "Update WebView",
     TRY_AGAIN: "Try again",
     CLOSE: "Close",
+    KIDS_MODE: "Kids Mode",
+    KIDS_SCORING_OPT_IN: "Check pronunciation online",
+    KIDS_SCORING_OPT_IN_INFO:
+      "Recordings are sent for checking and not kept. Off: nothing is recorded.",
+    KIDS_RECITER: "Reciter",
   },
   hi: {
     about: "हमारे बारे",

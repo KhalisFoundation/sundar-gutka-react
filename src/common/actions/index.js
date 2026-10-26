@@ -265,3 +265,11 @@ export const applyTheme = (value) => (dispatch, getState) => {
   // every later selection of this theme.
   dispatch({ type: actionTypes.MARK_READER_THEME_SEEDED, value });
 };
+
+// Kids Mode actions
+export {
+  toggleKidsMode,
+  setKidsScoringOptIn,
+  setKidsReciter,
+  setKidsExperience,
+} from "../../KidsMode/state/actions";

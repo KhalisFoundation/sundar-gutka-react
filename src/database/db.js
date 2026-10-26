@@ -354,3 +354,42 @@ export const getBookmarksForID = (baniId, length, language) => {
       });
   });
 };
+
+// Every verse of a bani by its token, with its paragraph, for the chosen length. Headers
+// and relocated mangal lines are left out, as the reader leaves them out.
+export const getBaniLinesByToken = async (token, length) => {
+  let baniLength;
+  switch (length) {
+    case constant.EXTRA_LONG:
+      baniLength = constant.EXISTS_BUDDHA_DAL;
+      break;
+    case constant.LONG:
+      baniLength = constant.EXISTS_TAKSAL;
+      break;
+    case constant.SHORT:
+      baniLength = constant.EXISTS_SGPS;
+      break;
+    default:
+      baniLength = constant.EXISTS_MEDIUM;
+  }
+  try {
+    const db = await initDB();
+    return await new Promise((resolve, reject) => {
+      db.transaction((tx) => {
+        tx.executeSql(
+          `SELECT s.Bani, s.Seq, s.Paragraph, s.GurmukhiUni, s.Transliterations, s.Translations
+           FROM mv_Banis_Shabad s JOIN Banis b ON b.ID = s.Bani
+           WHERE b.Token = ? AND s.header = 0 AND s.${baniLength} = 1
+             AND (s.MangalPosition IS NULL OR s.MangalPosition = 'current')
+           ORDER BY s.Seq ASC;`,
+          [token],
+          (_tx, { rows }) => resolve(Array.from({ length: rows.length }, (_, i) => rows.item(i))),
+          (_tx, error) => reject(error)
+        );
+      });
+    });
+  } catch (error) {
+    logError("Error fetching bani lines by token:", error);
+    throw error;
+  }
+};
