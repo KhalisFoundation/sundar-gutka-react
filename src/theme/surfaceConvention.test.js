@@ -25,9 +25,6 @@ import lightTheme from "./lightTheme";
 //
 // Asserted as EQUALITY between roles rather than against hex values, so retuning
 // the ladder cannot make this pass while the screens disagree.
-//
-// The Dashboard joins these checks with its own PR, once it is on the token
-// layer.
 
 const themes = [
   ["light", lightTheme],
@@ -109,5 +106,48 @@ describe("one blue per theme", () => {
     // The navy measures ~1.3:1 on the dark ground — fine behind white on a
     // filled bar, far too quiet for a control the user is meant to spot.
     expect(darkTheme.c.accent).not.toBe(darkTheme.c.primary);
+  });
+});
+
+// Dashboard section headings all take one treatment. The week range used to be
+// the only one styled like a heading — it passed its own colour, size and case
+// inline — so every other section read as a small grey caption beside it.
+describe("dashboard section headings are one treatment", () => {
+  const sectionLabel = require("../DashboardScreen/components/SectionLabel");
+
+  it("only the week range opts out of the caption treatment", () => {
+    const fs = require("fs");
+    const path = require("path");
+    const dir = path.join(__dirname, "..", "DashboardScreen", "components");
+    const offenders = fs
+      .readdirSync(dir)
+      .filter((f) => /\.jsx$/.test(f) && !/\.test\./.test(f))
+      .filter((f) => {
+        const src = fs.readFileSync(path.join(dir, f), "utf8");
+        if (!src.includes("<SectionLabel")) return false;
+        // The week range is a title in its own right, not a section heading.
+        // Any SECTION setting its own size, case or colour is drift — Reminders
+        // used to take a quieter accent, which left one heading in the stack
+        // looking faded next to Explore, Discover and Insights.
+        return /<SectionLabel[^>]*(titleStyle|uppercase|color)=/s.test(src);
+      });
+    expect(offenders.sort()).toEqual(["WeekChart.jsx"]);
+  });
+
+  it("defaults to the small uppercase caption", () => {
+    const fs = require("fs");
+    const path = require("path");
+    const src = fs.readFileSync(
+      path.join(__dirname, "..", "DashboardScreen", "components", "SectionLabel.jsx"),
+      "utf8"
+    );
+    expect(src).toContain("uppercase = true");
+    expect(src).toContain("fontSize: 12");
+    // The muted role, so each theme's own value applies rather than a literal.
+    expect(src).toContain("c.textSecondary");
+  });
+
+  it("is exported as a component, so the treatment has one home", () => {
+    expect(typeof (sectionLabel.default ?? sectionLabel)).toBe("function");
   });
 });

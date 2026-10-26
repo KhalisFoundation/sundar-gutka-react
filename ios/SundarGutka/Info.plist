@@ -39,6 +39,39 @@
 	<false/>
 	<key>LSApplicationCategoryType</key>
 	<string>public.app-category.education</string>
+	<key>LSApplicationQueriesSchemes</key>
+	<array>
+		<string>instagram</string>
+		<string>youtube</string>
+		<string>tiktok</string>
+		<string>snssdk1233</string>
+		<string>linkedin</string>
+		<string>twitter</string>
+		<string>fb</string>
+		<string>slack</string>
+		<string>notion</string>
+		<string>github</string>
+		<string>substack</string>
+		<string>barcelona</string>
+		<string>whatsapp</string>
+		<string>tg</string>
+		<string>snapchat</string>
+		<string>pinterest</string>
+		<string>reddit</string>
+		<string>discord</string>
+		<string>medium</string>
+		<string>spotify</string>
+		<string>twitch</string>
+		<string>vimeo</string>
+		<string>soundcloud</string>
+		<string>tumblr</string>
+		<string>quora</string>
+		<string>bluesky</string>
+		<string>mastodon</string>
+		<string>telegram</string>
+		<string>fb-messenger</string>
+		<string>sgnl</string>
+	</array>
 	<key>LSRequiresIPhoneOS</key>
 	<true/>
 	<key>NSAppTransportSecurity</key>

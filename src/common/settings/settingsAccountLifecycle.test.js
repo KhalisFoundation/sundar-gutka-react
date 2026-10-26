@@ -33,13 +33,16 @@ describe("signing out pushes before it clears", () => {
     const body = signOutSource();
     expect(body.indexOf("syncAll({ fresh: true })")).toBeLessThan(body.indexOf("endSession()"));
     expect(body.indexOf("syncAll({ fresh: true })")).toBeLessThan(
-      body.indexOf("destroyLocalAccountData(dispatch)")
+      body.indexOf("leaveLocalAccount(dispatch)")
     );
   });
 
   it("gives up on the push rather than trapping anyone in a spinner", () => {
     // A phone with no signal must still be able to sign out.
-    expect(signOutSource()).toContain("withDeadline(syncAll({ fresh: true })");
+    const body = signOutSource();
+    expect(body).toMatch(
+      /withDeadline\(\s*Promise\.all\(\[syncAll\(\{ fresh: true \}\), requestFlush\(/
+    );
   });
 });
 

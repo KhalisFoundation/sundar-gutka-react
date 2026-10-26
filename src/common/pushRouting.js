@@ -8,6 +8,7 @@
 //   route=reader        id=<baniId> [gurmukhi=<title>]   open a bani
 //   route=seva                                            the Seva page
 //   route=update                                          Database Update
+//   route=dashboard                                       the Dashboard
 //   route=settings                                        Settings
 //   route=url           url=<https://…>                   the in-app browser
 //   route=store                                           this app's store page
@@ -21,6 +22,7 @@
 export const ROUTE_READER = "reader";
 export const ROUTE_SEVA = "seva";
 export const ROUTE_UPDATE = "update";
+export const ROUTE_DASHBOARD = "dashboard";
 export const ROUTE_SETTINGS = "settings";
 export const ROUTE_URL = "url";
 export const ROUTE_STORE = "store";
@@ -47,7 +49,7 @@ export const routeForNotification = (data) => {
     const url = str(data.url);
     return HTTPS.test(url) ? { route: ROUTE_URL, url } : null;
   }
-  if ([ROUTE_SEVA, ROUTE_UPDATE, ROUTE_SETTINGS, ROUTE_STORE].includes(route)) {
+  if ([ROUTE_SEVA, ROUTE_UPDATE, ROUTE_DASHBOARD, ROUTE_SETTINGS, ROUTE_STORE].includes(route)) {
     return { route };
   }
   return null;

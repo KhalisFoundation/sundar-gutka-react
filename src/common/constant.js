@@ -1,5 +1,5 @@
-// Khalis backend base URL (reading themes, audio, Seva and account settings;
-// Dashboard later).
+// Khalis backend base URL (reading themes, audio, Seva, account sync and the
+// Dashboard).
 const KHALIS_API_BASE = "https://users.khalis.net";
 
 export default {
@@ -17,6 +17,7 @@ export default {
   ANMOL_LIPI: "AnmolLipiSG",
   READER: "Reader",
   SETTINGS: "Settings",
+  DASHBOARD: "Dashboard",
   SEVA: "Seva",
   DATABASE_UPDATE: "DatabaseUpdate",
   // This app's own store identity, so an "update available" push can open
@@ -113,7 +114,6 @@ export default {
     title: "gur mMqR",
     titleUni: "ਗੁਰ ਮੰਤ੍ਰ",
   },
-  INTERNET_CHECK_URL: "https://www.gstatic.com/generate_204",
   ICON_SIZE_SMALL: 18,
   // Master switch for My Pothi — the folders a USER makes. While false, Home
   // has no tab bar at all: it is one bani list with Sundar Gutka's own bundled
@@ -125,6 +125,38 @@ export default {
   // The pothi SLICE and usePothiSync keep running either way, deliberately:
   // pothis already on the account must not be lost to a switch flip.
   POTHI_ENABLED: true,
+  // A day counts toward the streak when reading and listening COMBINED reach
+  // this many seconds. The two channels POOL — 3 min read + 3 min listened is
+  // an active day. They were previously judged separately (>=240 in EITHER
+  // channel), which silently failed anyone who split their time between them.
+  MIN_DAILY_ACTIVE_SECONDS: 240,
+
+  // ─── Dashboard redesign ───────────────────────────────────────────────────
+  // Section keys for the customizable dashboard layout (order below = default order).
+  DASHBOARD_SECTIONS: {
+    STREAK: "streak",
+    NITNEM: "nitnem",
+    EXPLORE: "explore",
+    PRACTICE: "practice",
+    CALENDAR: "calendar",
+    WEEK_CHART: "weekChart",
+    DISCOVER: "discover",
+    REMINDERS: "reminders",
+    // Combined tabbed card (Today's Vaak + Random Shabad). Replaces the former
+    // standalone RANDOM_SHABAD ("randomShabad") and VAAK ("vaak") sections; those
+    // legacy keys are migrated/stripped on rehydrate (see reducer.js).
+    SHABAD_VAAK: "shabadVaak",
+  },
+  // Minimum number of visible sections the user must keep when customizing layout.
+  DASHBOARD_MIN_VISIBLE: 4,
+  // Earliest month history browsing (calendar arrows, week nav, date picker) is
+  // allowed to reach — there is no activity data before this, by product
+  // decision, regardless of what a device's local SQLite table might contain.
+  DASHBOARD_HISTORY_FLOOR: { year: 2026, month: 7 },
+  // There is no default Nitnem bani set here any more. Today's Nitnem is the
+  // Morning Nitnem pothi, so the list lives with the pothi that owns it —
+  // `MORNING_NITNEM_IDS` in `common/pothi/model.js`.
+
   // ─── Khalis SSO ───────────────────────────────────────────────────────────
   // The Service Provider fronts a SAML IdP and hands us a plain JWT — this app
   // never speaks SAML. Point SSO_SERVICE_URL at a staging SP to test against a
@@ -148,8 +180,33 @@ export default {
   SSO_LOGOUT_REDIRECT: "sundargutka://logout",
   // Keychain service name the session JWT is stored under.
   SSO_KEYCHAIN_SERVICE: "khalis_sso",
-  // The Khalis account API (signed-in requests): settings today; dashboard,
-  // pothis and reminders arrive with their features.
+  // Whether /dashboard/cache is keyed on the SSO account.
+  //
+  // TRUE: the backend keys snapshots on the account (userId_syncDate), so the
+  // account-switch purge CLEARS the restore marker and the signing-in account
+  // pulls its OWN snapshot back.
+  //
+  // It must not be flipped ahead of the server. While the backend still keyed
+  // on deviceId, restoring after a switch fetched this DEVICE's latest
+  // snapshot — handing the new account the previous one's data, the exact bug
+  // the purge exists to fix.
+  SSO_ACCOUNT_SCOPED_SYNC: true,
+  // Show the TECHNICAL reason a sync did not happen under the dashboard date —
+  // "never (HTTP 500)", "never (restore-pending)" and so on.
+  //
+  // Off for release. Those strings are diagnostics, not product copy: they are
+  // meaningless to someone reading their nitnem, and one of them (HTTP 500)
+  // reads as the app being broken even when the cause is a server-side problem
+  // already being fixed. With this off the line is a plain timestamp, or the
+  // localised "never".
+  //
+  // It earned its keep, though — this readout is how the stale device-scoped
+  // unique index was finally identified after days of guessing. Flip it to true
+  // to get that back rather than deleting the machinery.
+  SYNC_DIAGNOSTICS: false,
+
+  // The Khalis account API (signed-in requests): settings, pothis, reminders
+  // and the dashboard.
   DASHBOARD_API_BASE_URL: KHALIS_API_BASE,
   // Push device registry (src/push in the API). Registers this device's FCM
   // token — anonymously before sign-in, attached to the account after — so a
@@ -164,6 +221,16 @@ export default {
   // Reading themes served by the backend (public, no auth), merged over the
   // bundled set — see theme/reader/registry.
   THEMES_API_URL: `${KHALIS_API_BASE}/themes`,
+  // The Dashboard's Explore tiles with labels resolved per language.
+  EXPLORE_LINKS_API_URL: `${KHALIS_API_BASE}/explore-links`,
+  DAILY_VAAK_API_URL: `${KHALIS_API_BASE}/dashboard/daily-vaak`,
+  WORD_OF_DAY_API_URL: `${KHALIS_API_BASE}/dashboard/word-of-day`,
+  // Both are public and keyed on deviceId — deliberately NOT behind the SSO
+  // JWT. The backend's dashboard controller has no auth guard (unlike its
+  // favourite-shabads/folders/shortcuts controllers) and does not persist a
+  // user id, so attaching an Authorization header here would achieve nothing.
+  DASHBOARD_SYNC_API_URL: `${KHALIS_API_BASE}/dashboard/cache`, // POST, no auth
+  DASHBOARD_LATEST_API_URL: `${KHALIS_API_BASE}/dashboard/latest`, // GET, no auth
   // Khalis audio catalog (public, no auth): GET /audios/:baniId. This is the
   // SINGLE, authoritative source for the audio manifest — reciters, track URLs,
   // durations, sizes and lyrics URLs all live server-side, so adding/changing a
@@ -195,4 +262,22 @@ export default {
   // ONE small request, read only when the theme picker is opened, so it has no
   // launch deadline, while the DB seed and the first Home mount do.
   THEMES_SYNC_DELAY_MS: 8000,
+  // Backend serves the yearly Gurpurab/events feed here (CMS-style — updated
+  // server-side once a year, no app release needed). The app falls back to its
+  // bundled local computation when this is unreachable or not yet deployed, so it
+  // is safe to point at the endpoint before the backend ships it.
+  UPCOMING_EVENTS_API_URL: `${KHALIS_API_BASE}/dashboard/events`,
+  // The Nanakshahi date under the Fateh. Proxied by our backend from the
+  // SGPC-sourced calendar rather than computed in the app, so the header and
+  // the gurpurab list can never disagree about what today is.
+  NANAKSHAHI_DATE_API_URL: `${KHALIS_API_BASE}/dashboard/nanakshahi-date`,
+  // Per-date activity. The additive counterpart to /dashboard/cache: rows keyed
+  // (account, local day, device) that the server SUMS, so a phone and a tablet
+  // used on the same day add up instead of overwriting one another.
+  DASHBOARD_ACTIVITY_API_URL: `${KHALIS_API_BASE}/dashboard/activity`,
+  // Reachability probe for dashboard network services (see services/dashboard/
+  // connectivity.js). Same globally-distributed 204 endpoint the app's NetInfo
+  // layer uses (services/networkManager.js) — returns HTTP 204 when there is
+  // real internet, so a captive portal (which returns 200) reads as offline.
+  INTERNET_CHECK_URL: "https://clients3.google.com/generate_204",
 };

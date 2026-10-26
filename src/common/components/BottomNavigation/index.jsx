@@ -6,7 +6,14 @@ import { useNavigation } from "@react-navigation/native";
 import components, { bottomNavInset } from "@theme/components";
 import { useReaderScopedTheme, useReaderScopedStyles } from "@theme/reader";
 import PropTypes from "prop-types";
-import { ListIcon, SettingsIcon, MusicIcon, ReadIcon, SevaIcon } from "@common/icons";
+import {
+  ListIcon,
+  SettingsIcon,
+  MusicIcon,
+  ReadIcon,
+  DashboardIcon,
+  SevaIcon,
+} from "@common/icons";
 import { pauseTrack } from "@common/TrackPlayerUtils";
 import { CustomText, actions, constant, STRINGS, SafeArea } from "@common";
 import { getSevaConfig, subscribeSevaDot } from "../../../services/sevaConfig";
@@ -27,8 +34,8 @@ const BottomNavigation = ({
   // follows context — but Settings opened from the Reader keeps the reader
   // buttons while explicitly opting out of the theme.
   //
-  // Off the Reader this resolves to false, so the Home, Seva and Settings tabs
-  // are untouched and keep the app appearance.
+  // Off the Reader this resolves to false, so the Home, Dashboard, Seva and
+  // Settings tabs are untouched and keep the app appearance.
   const wearsReadingTheme = themed ?? context === "reader";
   const { theme } = useReaderScopedTheme("nav", wearsReadingTheme);
   const styles = useReaderScopedStyles(createStyles, "nav", wearsReadingTheme);
@@ -116,7 +123,7 @@ const BottomNavigation = ({
   // GlobalServices) pauses streaming playback when real internet is lost. The
   // old per-instance polling watchdog that lived here has been removed.
 
-  // Home tab bar items. The Dashboard tab arrives with the Dashboard.
+  // Home tab bar items.
   const homeNavigationItems = [
     {
       key: "Home",
@@ -127,6 +134,14 @@ const BottomNavigation = ({
         navigation.navigate("Home");
       },
       text: STRINGS.ALL_BANIS,
+    },
+    {
+      key: "Dashboard",
+      icon: DashboardIcon,
+      handlePress: () => {
+        navigation.navigate(constant.DASHBOARD);
+      },
+      text: STRINGS.DASHBOARD,
     },
     {
       key: "Seva",

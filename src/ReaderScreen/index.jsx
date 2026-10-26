@@ -9,6 +9,7 @@ import PropTypes from "prop-types";
 import { Spinner } from "@common/components/ui";
 import WebViewUnavailable from "@common/components/WebViewUnavailable";
 import { foldableTopSpace, useFoldableInsetTop } from "@common/deviceForm";
+import useReadingSession from "@common/hooks/useReadingSession";
 import { useNavBarSurface } from "@common/systemBars";
 import { pauseTrack } from "@common/TrackPlayerUtils";
 import { useWebViewAvailable } from "@common/webViewAvailability";
@@ -403,7 +404,7 @@ const Reader = ({ navigation, route }) => {
   // A fresh bani starts at 0% progress. The Reader screen is REUSED across
   // banis (navigating to "Reader" swaps route.params without remounting), so
   // without this reset scrollPercentRef keeps the PREVIOUS bani's value.
-  // The blur analytics read that ref to report progress — so a stale
+  // useReadingSession reads that ref on blur to decide completion — so a stale
   // >=95% from an already-read bani would falsely auto-mark the next bani
   // "done" at 0 scroll. Reset the analytics ref and the progress bar on id change.
   useEffect(() => {
@@ -601,6 +602,7 @@ const Reader = ({ navigation, route }) => {
   );
 
   useBookmarks(webViewRef, shabad, bookmarkPosition, handleBookmarkJump);
+  useReadingSession({ baniId: id, baniTitle: titleUni || title, navigation, scrollPercentRef });
 
   // Handle app state changes
   useEffect(() => {
@@ -782,7 +784,10 @@ const Reader = ({ navigation, route }) => {
             duration: 0,
             useNativeDriver: false,
           }).start();
-          scrollPercentRef.current = Math.round(pct * 100);
+          // Unrounded: the reading session's idle check needs to see a slow
+          // auto-scroll move, and on a long bani that stays inside one whole
+          // percent for more than ten minutes. Analytics rounds it on the way out.
+          scrollPercentRef.current = pct * 100;
           // Leaving the edge hands the bars back to the idle auto-hide.
           if (pct > 0 && pct < 1) atEdgeRef.current = false;
         }

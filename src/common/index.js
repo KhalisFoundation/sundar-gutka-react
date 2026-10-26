@@ -38,6 +38,11 @@ import {
   trackSsoEvent,
   trackPothiEvent,
   trackPunjabiKeyboardEvent,
+  trackDashboardEvent,
+  trackJourneyView,
+  trackBaniCompleted,
+  trackAudioStarted,
+  trackAudioCompleted,
 } from "./firebase/analytics";
 import {
   isNetworkFailure,
@@ -170,6 +175,11 @@ export {
   trackSsoEvent,
   trackPothiEvent,
   trackPunjabiKeyboardEvent,
+  trackDashboardEvent,
+  trackJourneyView,
+  trackBaniCompleted,
+  trackAudioStarted,
+  trackAudioCompleted,
   ThemedSwitch,
   GradientDivider,
   useCustomScrollbar,

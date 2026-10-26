@@ -5,6 +5,7 @@ import { useSelector, useDispatch } from "react-redux";
 import { useIsFocused, useNavigation } from "@react-navigation/native";
 import PropTypes from "prop-types";
 import { toggleAudio, setDefaultAudio, setAudioProgress } from "@common/actions";
+import useListeningSession from "@common/hooks/useListeningSession";
 import { showErrorToast } from "@common/toast";
 import { handlePlayerError } from "@common/TrackPlayerUtils";
 import {
@@ -102,6 +103,14 @@ const AudioPlayer = ({
     showTrackModal ? null : currentPlaying?.lyricsUrl,
     seekSyncRequest
   );
+  useListeningSession({
+    baniId: baniID,
+    baniTitle: title,
+    isPlaying,
+    currentPlayingId: currentPlaying?.id ?? null,
+    artistId: currentPlaying?.artistID ?? null,
+    artistName: currentPlaying?.displayName ?? null,
+  });
 
   useEffect(() => {
     trackBaniOpen(baniID, title, defaultAudio[baniID]?.displayName);

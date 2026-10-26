@@ -1,11 +1,12 @@
 import { useCallback } from "react";
 import { useDispatch, useSelector } from "react-redux";
+import { requestFlush } from "../../services/dashboard/syncSignal";
 import { syncAll } from "../../services/sync/syncRegistry";
 import { setAuthBusy } from "../actions";
 import { showConfirm } from "../components/ConfirmDialog";
 import { trackSsoEvent } from "../firebase/analytics";
 import STRINGS from "../localization";
-import { destroyLocalAccountData } from "../sso/accountScope";
+import { destroyLocalAccountData, leaveLocalAccount } from "../sso/accountScope";
 import { requestAccountDeletion } from "../sso/deleteAccount";
 import { startLogin, startLogout } from "../sso/khalisSso";
 import { beginSession, endSession } from "../sso/session";
@@ -76,19 +77,28 @@ const useSsoActions = ({ entryPoint = "unknown" } = {}) => {
         try {
           // Push before the session goes. Everything this device changed but
           // has not sent yet — a setting, a reminder, a pothi — belongs to the
-          // account being left, and destroyLocalAccountData below drops the outbox
+          // account being left, and leaveLocalAccount below drops the outbox
           // that was holding it. Sending afterwards is impossible: the token
           // is gone and so is the queue.
           //
           // Deadlined, because signing out must work on a phone with no
           // signal. A sync that cannot finish in time is abandoned and the
           // sign-out carries on; the alternative is a dialog that hangs.
-          await withDeadline(syncAll({ fresh: true }), SIGN_OUT_FLUSH_MS, false);
+          // The dashboard is not a registered feature, so it is flushed beside
+          // the rest: a nitnem tick or layout edit still in its debounce.
+          await withDeadline(
+            Promise.all([syncAll({ fresh: true }), requestFlush("sign-out")]),
+            SIGN_OUT_FLUSH_MS,
+            false
+          );
 
           // Signing out is an explicit "I am done on this device", so the
           // account's data goes with the session. Without this the next
           // person to open the app — signed in as someone else, or not signed
-          // in at all — still holds this account's.
+          // in at all — still holds this account's. Its preferences are
+          // dropped and its dashboard history detached, not deleted: the
+          // history's file stays on the phone for this account's next
+          // sign-in, unpushed reading included.
           //
           // Before the logout browser, not after: the token is cleared as it
           // opens, and an app swiped away while it is in front would
@@ -97,7 +107,7 @@ const useSsoActions = ({ entryPoint = "unknown" } = {}) => {
           // Deliberately here and NOT in useSsoSession.endSession, which also
           // fires on token expiry: resetting there would cost a user their own
           // setup for the crime of not opening the app for a week.
-          await destroyLocalAccountData(dispatch);
+          await leaveLocalAccount(dispatch);
 
           // Read before clearing: /logout/all needs the token to end the IdP
           // session. startLogout clears local storage itself.
@@ -156,9 +166,10 @@ const useSsoActions = ({ entryPoint = "unknown" } = {}) => {
           if (result.ok) {
             // The session first: the account is disabled now, so a sync still
             // out comes back 401, and with the token still held that read as
-            // an expiry — "session expired" beside "account deleted".
+            // an expiry — "session expired" beside "account deleted". Ending
+            // it detaches the history, so the wipe names the account's file.
             await endSession();
-            await destroyLocalAccountData(dispatch);
+            await destroyLocalAccountData(dispatch, user?.email);
             showInfoToast(STRINGS.DELETE_ACCOUNT_DONE);
             return;
           }
@@ -184,7 +195,7 @@ const useSsoActions = ({ entryPoint = "unknown" } = {}) => {
         }
       },
     });
-  }, [busy, dispatch, entryPoint]);
+  }, [busy, dispatch, entryPoint, user]);
 
   return { status, user, busy, signIn, signOut, deleteAccount };
 };

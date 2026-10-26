@@ -571,6 +571,250 @@ const auth = createReducer(
   }
 );
 
+// ─── Dashboard redesign ───────────────────────────────────────────────────
+// Default top-to-bottom section order from the new design.
+// Today first, then the day's reading — streak, nitnem, hukamnama — followed by
+// the places to go next, and the numbers about what has already been read last.
+const DEFAULT_DASHBOARD_ORDER = [
+  constant.DASHBOARD_SECTIONS.STREAK,
+  constant.DASHBOARD_SECTIONS.NITNEM,
+  constant.DASHBOARD_SECTIONS.SHABAD_VAAK,
+  constant.DASHBOARD_SECTIONS.EXPLORE,
+  constant.DASHBOARD_SECTIONS.DISCOVER,
+  constant.DASHBOARD_SECTIONS.REMINDERS,
+  constant.DASHBOARD_SECTIONS.PRACTICE,
+  constant.DASHBOARD_SECTIONS.CALENDAR,
+  constant.DASHBOARD_SECTIONS.WEEK_CHART,
+];
+
+// Orders this app has shipped as its default, newest last.
+//
+// `defaultLayout()` is persisted on the very first launch, so EVERY install
+// carries an order on disk whether or not the user ever opened the layout
+// editor. Changing the default alone therefore reaches nobody. An order that
+// still matches one of these was written by the app and not chosen by anyone,
+// so it is safe to move it onto the current default; anything else is the
+// user's own arrangement and is left exactly as they left it.
+const LEGACY_DASHBOARD_ORDERS = [
+  [
+    constant.DASHBOARD_SECTIONS.STREAK,
+    constant.DASHBOARD_SECTIONS.NITNEM,
+    constant.DASHBOARD_SECTIONS.EXPLORE,
+    constant.DASHBOARD_SECTIONS.PRACTICE,
+    constant.DASHBOARD_SECTIONS.CALENDAR,
+    constant.DASHBOARD_SECTIONS.WEEK_CHART,
+    constant.DASHBOARD_SECTIONS.DISCOVER,
+    constant.DASHBOARD_SECTIONS.REMINDERS,
+    constant.DASHBOARD_SECTIONS.SHABAD_VAAK,
+  ],
+];
+
+const sameOrder = (a, b) => a.length === b.length && a.every((key, i) => key === b[i]);
+
+/** True when a persisted order is an untouched default from an earlier release. */
+const isUncustomisedOrder = (order) =>
+  LEGACY_DASHBOARD_ORDERS.some((legacy) => sameOrder(order, legacy));
+
+// Section keys that are still valid (used to strip deprecated keys from a
+// persisted layout on upgrade — e.g. the old standalone randomShabad/vaak).
+const VALID_DASHBOARD_SECTIONS = new Set(Object.values(constant.DASHBOARD_SECTIONS));
+
+// Re-insert any sections missing from a persisted order AT their default position
+// — right after the nearest preceding default-neighbour that's present — instead
+// of appending them to the end. This keeps a re-added section (e.g. Explore after
+// a key change/upgrade) in its designed slot (right after Nitnem) rather than
+// sinking it to the bottom of the dashboard.
+const withMissingAtDefaultPos = (order) => {
+  const result = [...order];
+  DEFAULT_DASHBOARD_ORDER.forEach((key, defaultIdx) => {
+    if (result.includes(key)) return;
+    let insertAt = result.length;
+    for (let i = defaultIdx - 1; i >= 0; i -= 1) {
+      const pos = result.indexOf(DEFAULT_DASHBOARD_ORDER[i]);
+      if (pos !== -1) {
+        insertAt = pos + 1;
+        break;
+      }
+    }
+    result.splice(insertAt, 0, key);
+  });
+  return result;
+};
+
+// `modifiedAt` is the device clock of the last edit, carried in the account
+// snapshot so two devices can tell whose profile is newer per block rather
+// than guessing from push times. A restore passes the server's value through.
+const userProfile = createReducer(
+  { name: "", modifiedAt: 0 },
+  {
+    [actionTypes.SET_USER_PROFILE]: (state, action) => ({
+      ...state,
+      ...action.value,
+      modifiedAt: action.value?.modifiedAt ?? Date.now(),
+    }),
+  }
+);
+
+const defaultLayout = () => ({ order: [...DEFAULT_DASHBOARD_ORDER], hidden: [], modifiedAt: 0 });
+
+const dashboardLayout = createReducer(defaultLayout(), {
+  // On rehydrate: drop any deprecated section keys (e.g. the old standalone
+  // randomShabad/vaak now merged into shabadVaak) and append newly added default
+  // sections, so an upgrading user neither loses a section nor sees a dead key.
+  "persist/REHYDRATE": (state, action) => {
+    const persisted = action.payload?.dashboardLayout;
+    if (!persisted?.order) return state; // fresh install → keep default
+    const cleaned = persisted.order.filter((k) => VALID_DASHBOARD_SECTIONS.has(k));
+    return {
+      order: isUncustomisedOrder(cleaned)
+        ? [...DEFAULT_DASHBOARD_ORDER]
+        : withMissingAtDefaultPos(cleaned),
+      hidden: (persisted.hidden ?? []).filter((k) => VALID_DASHBOARD_SECTIONS.has(k)),
+      modifiedAt: persisted.modifiedAt ?? 0,
+    };
+  },
+  [actionTypes.SET_DASHBOARD_LAYOUT]: (state, action) => {
+    const next = { ...state, ...action.value };
+    // Self-heal: ensure any newly added sections land in their default slot.
+    return {
+      order: withMissingAtDefaultPos(next.order),
+      hidden: next.hidden ?? [],
+      // See userProfile: the clock another device compares its copy against.
+      modifiedAt: action.value?.modifiedAt ?? Date.now(),
+    };
+  },
+  // Stamped like any edit: at 0 a reset never reached the account, and the
+  // next snapshot from another device put the old layout straight back.
+  [actionTypes.RESET_DASHBOARD_LAYOUT]: () => ({ ...defaultLayout(), modifiedAt: Date.now() }),
+});
+
+// What has been READ today, and nothing else.
+//
+// WHICH banis make up today's Nitnem is not here: it is the Morning Nitnem
+// pothi, so the Dashboard card and the pothi can never disagree about what the
+// user's Nitnem is. This slice used to carry its own `selectedBaniIds` list —
+// a second, unrelated set that started as [2, 6, 4, 9, 21, 1] while Morning
+// Nitnem started as [2, 4, 6, 9, 10]. See TodaysNitnem.
+const todaysNitnem = createReducer(
+  // `completed[date]`  : ids done today (manual ticks + auto 95%-scroll reads).
+  // `autoSeeded[date]` : ids auto-completion has already folded in once, so a
+  //                      manual un-tick is never resurrected on the next refocus.
+  // `untickedAt[date][baniId]` : when a manual un-tick happened, so a LATER
+  //                      genuine re-read still counts (autoSeeded alone could
+  //                      not tell the two apart and blocked both).
+  { completed: {}, autoSeeded: {}, untickedAt: {} },
+  {
+    [actionTypes.TOGGLE_NITNEM_DONE]: (state, action) => {
+      const { date, baniId, at = Date.now() } = action.payload;
+      const dayList = state.completed[date] ?? [];
+      const removing = dayList.includes(baniId);
+      const nextDay = removing ? dayList.filter((id) => id !== baniId) : [...dayList, baniId];
+      // WHEN the un-tick happened, so auto-detection can tell a read that
+      // predates it (the same old read, re-reported on every dashboard
+      // refocus — must stay un-ticked) from one that came after it (the user
+      // genuinely went and read the bani again — must count).
+      const untickedAt = state.untickedAt ?? {};
+      const dayMarks = { ...(untickedAt[date] ?? {}) };
+      if (removing) dayMarks[baniId] = at;
+      else delete dayMarks[baniId];
+      return {
+        ...state,
+        completed: { ...state.completed, [date]: nextDay },
+        untickedAt: { ...untickedAt, [date]: dayMarks },
+      };
+    },
+    // Auto-detected 95%-scroll completions fold into the same per-day list
+    // TOGGLE_NITNEM_DONE writes — but only ids we've NEVER auto-added before
+    // (tracked in autoSeeded). Once seeded, an id the user manually un-ticks
+    // stays un-ticked: it is not re-added here on the next dashboard refocus.
+    [actionTypes.MARK_NITNEM_AUTO_DONE]: (state, action) => {
+      const { date, baniIds } = action.payload;
+      if (!baniIds || baniIds.length === 0) return state;
+      const autoSeeded = state.autoSeeded ?? {};
+      const seededDay = autoSeeded[date] ?? [];
+      const untickedDay = (state.untickedAt ?? {})[date] ?? {};
+      // Entries are either a bare id or `{ id, at }` carrying the moment the
+      // read actually completed.
+      const freshIds = baniIds
+        .map((entry) => (typeof entry === "object" && entry !== null ? entry : { id: entry }))
+        .filter(({ id, at }) => {
+          const unticked = untickedDay[id];
+          // A read we can date beats the seed list outright: the user un-ticked
+          // this, then went and read it again, and that second read has to
+          // count. Judging it by `autoSeeded` alone is what left a fully
+          // scrolled bani stuck un-ticked for the rest of the day.
+          if (at != null) return unticked == null || at > unticked;
+          // Undated (a bulk call, or a legacy caller) — fall back to the seed
+          // list, which still stops a refocus resurrecting an un-tick.
+          return !seededDay.includes(id);
+        })
+        .map(({ id }) => id);
+      if (freshIds.length === 0) return state;
+      const dayList = state.completed[date] ?? [];
+      return {
+        ...state,
+        completed: {
+          ...state.completed,
+          [date]: Array.from(new Set([...dayList, ...freshIds])),
+        },
+        autoSeeded: {
+          ...autoSeeded,
+          [date]: Array.from(new Set([...seededDay, ...freshIds])),
+        },
+      };
+    },
+    // The "Mark done" button. Unlike MARK_NITNEM_AUTO_DONE this consults no
+    // seed list: the user is stating outright that these are read, so a
+    // previous auto-seed of the same id must not veto it. It seeds too, so the
+    // background auto-detection has nothing left to re-add afterwards.
+    [actionTypes.MARK_NITNEM_DONE]: (state, action) => {
+      const { date, baniIds } = action.payload;
+      if (!baniIds || baniIds.length === 0) return state;
+      const autoSeeded = state.autoSeeded ?? {};
+      const dayList = state.completed[date] ?? [];
+      // Marking done clears any earlier un-tick for these banis — the user has
+      // just overridden it, so it must not go on suppressing auto-detection.
+      const untickedAt = state.untickedAt ?? {};
+      const dayMarks = { ...(untickedAt[date] ?? {}) };
+      baniIds.forEach((id) => delete dayMarks[id]);
+      return {
+        ...state,
+        completed: {
+          ...state.completed,
+          [date]: Array.from(new Set([...dayList, ...baniIds])),
+        },
+        autoSeeded: {
+          ...autoSeeded,
+          [date]: Array.from(new Set([...(autoSeeded[date] ?? []), ...baniIds])),
+        },
+        untickedAt: { ...untickedAt, [date]: dayMarks },
+      };
+    },
+    // Completion history only. The restored payload still carries the old
+    // `selectedBaaniIds`, but the bani SET now comes from the Morning Nitnem
+    // pothi, which My Pothi syncs on its own account — see usePothiSync.
+    // Union per date, NOT replace. A tick records that a bani was read that
+    // day — a fact rather than a preference — so a day ticked on either side
+    // stays ticked. Replacing wholesale threw away whatever this device had
+    // done while signed out, which on a restore is the user's own work, and
+    // it made the cloud snapshot beat a second device for the same day.
+    [actionTypes.RESTORE_NITNEM]: (state, action) => {
+      const incoming = action.value?.completed;
+      if (!incoming) return state;
+      const completed = { ...state.completed };
+      Object.keys(incoming).forEach((date) => {
+        // A bani un-ticked HERE that day stays un-ticked: the account's copy
+        // still holds the tick from before, and the union brought it straight
+        // back on the next sync.
+        const unticked = state.untickedAt?.[date] ?? {};
+        const theirs = (incoming[date] ?? []).filter((id) => unticked[id] == null);
+        completed[date] = [...new Set([...(completed[date] ?? []), ...theirs])];
+      });
+      return { ...state, completed };
+    },
+  }
+);
+
 // My Pothi. Every transition delegates to `pothi/model`, which owns the rules
 // (the pin ceiling, de-duplication, what an unpinned pothi's slot becomes) and
 // is tested without a store. This reducer only routes.
@@ -677,6 +921,9 @@ const appReducer = combineReducers({
   syncOutbox,
   pothis,
   remindersSync,
+  userProfile,
+  dashboardLayout,
+  todaysNitnem,
 });
 
 // Slices holding data that belongs to a PERSON, not to this device.
@@ -686,15 +933,23 @@ const appReducer = combineReducers({
 // language). Those describe how this phone is set up, not who is holding it.
 //
 // Only what the account holds a copy of, so a person signing back in gets it
-// all back. Bookmarks join the list with the Dashboard, which syncs them; until
-// then they stay on the phone, as they did before there was any sign-in,
-// rather than being lost for good on sign-out.
+// all back. Saved bookmarks are not in redux at all (they live in the bani
+// database), so they stay on the phone.
 const USER_DATA_SLICES = [
   // A pothi is the clearest case of person-owned data there is: the folders a
   // user built, synced to THEIR account. Left out, they survived an account
   // switch and usePothiSync uploaded the previous account's folders into the
   // new one on its first push.
   "pothis",
+  // The Dashboard's own: the name on its header, the section layout and the
+  // days' Nitnem ticks, all carried in the account's dashboard snapshot.
+  "userProfile",
+  "dashboardLayout",
+  "todaysNitnem",
+  // The Reader's pending jump to a bookmark. Not synced, but it points into
+  // the outgoing person's reading, so it goes with them.
+  "bookmarkPosition",
+  "bookmarkSequenceString",
   // The reminders and their switches sync to the account too, so they go with
   // it — and so do the clocks that go with them. The schedule already handed
   // to the OS is cancelled with them (accountScope.purgeLocalUserData).

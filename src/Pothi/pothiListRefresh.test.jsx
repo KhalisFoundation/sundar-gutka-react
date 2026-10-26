@@ -4,17 +4,17 @@ import { act, render } from "@testing-library/react-native";
 
 import PothiList from "./PothiList";
 
-// Pulling down on the Pothis tab must run the account sync — one request, one
-// spinner that ends when it ends.
+// Pulling down on the Pothis tab must run the same account sync as pulling
+// down on the Dashboard — one request, one spinner that ends when it ends.
 //
 // The pull itself is the shared PullToRefresh control (its own test covers the
 // gesture). What this file holds to is what the Folders tab tells that control:
 // when a pull is allowed at all, and that the list is wired to scroll
 // alongside it rather than fight it.
 
-const mockSyncAll = jest.fn(() => Promise.resolve(true));
-jest.mock("@service/sync/syncRegistry", () => ({
-  syncAll: (...a) => mockSyncAll(...a),
+const mockRequestPull = jest.fn(() => Promise.resolve());
+jest.mock("@service/dashboard/syncSignal", () => ({
+  requestPull: (...a) => mockRequestPull(...a),
 }));
 
 let mockState;
@@ -116,7 +116,7 @@ const open = () =>
   );
 
 beforeEach(() => {
-  mockSyncAll.mockClear();
+  mockRequestPull.mockClear();
   mockPull = null;
 });
 
@@ -129,7 +129,7 @@ it("pulling down runs the account sync", async () => {
   expect(rendered.getByTestId("list").props.simultaneousHandlers).toBe(mockPull.gestureRef);
 
   await act(async () => mockPull.onRefresh());
-  expect(mockSyncAll).toHaveBeenCalledTimes(1);
+  expect(mockRequestPull).toHaveBeenCalledWith("pull-to-refresh");
 });
 
 // The rule that lets a pull sit over a scrolling list at all.

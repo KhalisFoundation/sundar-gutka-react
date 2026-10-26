@@ -169,12 +169,27 @@ describe("CLEAR_USER_DATA", () => {
     expect(after.remindersSync).toEqual(fresh.remindersSync);
   });
 
-  // No account copy of bookmarks exists yet, so dropping them on sign-out lost
-  // them for good — even for the same person signing straight back in. They
-  // join the purge with the Dashboard, which syncs them.
-  it("keeps bookmarks, which nothing syncs yet", () => {
+  // The Reader's pending jump to a bookmark points into the outgoing person's
+  // reading. The saved bookmarks themselves are in the bani database, not here.
+  it("drops the pending bookmark jump", () => {
     const after = rootReducer(populated(), clearUserData());
-    expect(after.bookmarkPosition).toBe(1234);
+    const fresh = rootReducer(undefined, { type: "@@INIT" });
+    expect(after.bookmarkPosition).toBe(fresh.bookmarkPosition);
+  });
+
+  // The Dashboard's own preferences come back from the account snapshot.
+  it("drops the dashboard's profile, layout and nitnem ticks", () => {
+    let before = rootReducer(undefined, { type: "@@INIT" });
+    before = rootReducer(before, { type: actionTypes.SET_USER_PROFILE, value: { name: "A" } });
+    before = rootReducer(before, {
+      type: actionTypes.TOGGLE_NITNEM_DONE,
+      payload: { date: "2026-10-01", baniId: 2 },
+    });
+    const after = rootReducer(before, clearUserData());
+    const fresh = rootReducer(undefined, { type: "@@INIT" });
+    expect(after.userProfile.name).toBe("");
+    expect(after.todaysNitnem).toEqual(fresh.todaysNitnem);
+    expect(after.dashboardLayout).toEqual(fresh.dashboardLayout);
   });
 
   // An op sent before the reset can still answer after it. Ids end in the

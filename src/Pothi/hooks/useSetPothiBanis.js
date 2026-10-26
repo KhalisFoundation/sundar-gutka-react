@@ -13,9 +13,9 @@ import { actions, trackPothiEvent } from "@common";
  * The difference is dispatched instead, one add or remove per bani that
  * actually changed.
  *
- * The Add Banis sheet, where the selection is a list of ticks, wants exactly
- * this; so does the upcoming Dashboard's Today's Nitnem editor, which edits the
- * Morning Nitnem pothi.
+ * Two callers want exactly this and had it written twice: the Add Banis sheet,
+ * where the selection is a list of ticks, and the Dashboard's Today's Nitnem
+ * editor, which edits the Morning Nitnem pothi.
  *
  * Ungated. The edit lands in redux first and reaches the account when there is
  * one, so it is applied whether or not the user is signed in or online.

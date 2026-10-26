@@ -46,6 +46,7 @@ describe("where a pothi is reported emptied", () => {
   it.each([
     ["FolderScreen/FolderScreen.jsx", "folder_screen"],
     ["Pothi/components/AddBanisSheet.jsx", "add_banis_sheet"],
+    ["DashboardScreen/components/EditBanisModal.jsx", "todays_nitnem"],
   ])("is reported where %s commits its edit", (file, surface) => {
     expect(read(file)).toContain(`"${surface}")`);
   });

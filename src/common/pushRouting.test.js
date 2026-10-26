@@ -1,6 +1,7 @@
 /* eslint-env jest */
 import {
   ROUTE_READER,
+  ROUTE_DASHBOARD,
   ROUTE_SEVA,
   ROUTE_STORE,
   ROUTE_URL,
@@ -37,6 +38,7 @@ describe("routeForNotification", () => {
   it("accepts the named screens, case-insensitively", () => {
     expect(routeForNotification({ route: "Seva" })).toEqual({ route: ROUTE_SEVA });
     expect(routeForNotification({ route: "store" })).toEqual({ route: ROUTE_STORE });
+    expect(routeForNotification({ route: "dashboard" })).toEqual({ route: ROUTE_DASHBOARD });
   });
 
   it("opens only https urls in the browser", () => {

@@ -40,6 +40,7 @@ import useAudioCatalogSync from "./src/common/services/useAudioCatalogSync";
 import toastConfig from "./src/common/toastConfig";
 import { TrackPlayerSetup } from "./src/common/TrackPlayerUtils";
 import Navigation from "./src/navigation";
+import useDashboardSync from "./src/services/dashboard/useDashboardSync";
 import { reportRecentExits } from "./src/services/diagnostics/exitReasons";
 import usePushRegistration from "./src/services/push/usePushRegistration";
 import useRemindersSync from "./src/services/reminders/useRemindersSync";
@@ -97,6 +98,10 @@ const GlobalServices = () => {
   useSsoSession();
   // Tells a signed-in user once when a change cannot reach the server yet.
   useOfflineSyncToast();
+  // Account dashboard sync. Mounted HERE and not in DashboardScreen: on that
+  // screen both the push and the restore only existed while it was mounted, so
+  // signing in anywhere else never got the account's data up or down.
+  useDashboardSync();
   // My Pothi, through the persisted outbox, and the two default pothis seeded.
   // Mounted here for the same reason as settings: a change made on any screen
   // goes up whether or not that screen stays open.

@@ -73,7 +73,8 @@ const KIND_SETTINGS = "settings";
  *
  * ── How the account's changes arrive ──────────────────────────────────────
  * A bulk sync (`POST /reminders/sync`), run at the account-sync moments —
- * sign-in, foreground, connectivity returning (see useAccountSync) — and after
+ * sign-in, foreground, connectivity returning (see useAccountSync), and a
+ * pull-to-refresh on the Dashboard or the Pothis tab — and after
  * any conflict, including the first change made for an account this device has
  * never synced with. The device sends its whole
  * list with clocks and tombstones; the

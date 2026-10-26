@@ -1,3 +1,4 @@
+import { nitnemSelection } from "../nitnem/selection";
 import { baniItems, MORNING_NITNEM_IDS, reconcile, removeBani, toUpsertBody } from "./model";
 import { userPothis } from "./selectors";
 
@@ -58,6 +59,7 @@ describe("items this app does not show", () => {
     const [row] = userPothis(state);
     expect(row.count).toBe(2);
     expect(row.baniIds).toEqual([2, 4]);
+    expect(nitnemSelection(state.folders[0]).ids).toEqual([2, 4]);
   });
 
   // Two pothis with the same banis but a different shabad are two pothis.

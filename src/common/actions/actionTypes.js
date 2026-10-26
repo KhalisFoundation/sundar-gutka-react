@@ -118,6 +118,25 @@ export const SET_AUTH_BUSY = "SET_AUTH_BUSY";
 // and USER_DATA_SLICES in common/reducer.js.
 export const CLEAR_USER_DATA = "CLEAR_USER_DATA";
 
+// ─── Dashboard redesign ─────────────────────────────────────────────────────
+// Local editable user profile, synced per-device. Kept separate from the SSO
+// session above: this one is written by the cloud restore, so merging the two
+// would let a stale snapshot overwrite the signed-in user's real name.
+export const SET_USER_PROFILE = "SET_USER_PROFILE";
+
+// Customizable dashboard layout — section order + hidden sections
+export const SET_DASHBOARD_LAYOUT = "SET_DASHBOARD_LAYOUT";
+export const RESET_DASHBOARD_LAYOUT = "RESET_DASHBOARD_LAYOUT";
+
+// Today's Nitnem — the per-day completion map. WHICH banis are in the Nitnem
+// is the Morning Nitnem pothi's business, so there is no "set the banis" action
+// here; the card edits the pothi through ADD_BANI_TO_POTHI/REMOVE_BANI_FROM_POTHI.
+export const TOGGLE_NITNEM_DONE = "TOGGLE_NITNEM_DONE";
+export const MARK_NITNEM_AUTO_DONE = "MARK_NITNEM_AUTO_DONE";
+export const MARK_NITNEM_DONE = "MARK_NITNEM_DONE";
+// Restore the whole nitnem slice at once (cross-device sync / GET /dashboard/latest)
+export const RESTORE_NITNEM = "RESTORE_NITNEM";
+
 // My Pothi — user-made folders of banis, ordered and pinned by the user
 export const CREATE_POTHI = "CREATE_POTHI";
 export const RENAME_POTHI = "RENAME_POTHI";

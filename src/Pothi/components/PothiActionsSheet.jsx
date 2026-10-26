@@ -28,9 +28,9 @@ const PothiActionsSheet = ({ pothi = null, visible, onClose, startRenaming = fal
   const { space } = useTokens();
   const dispatch = useDispatch();
   const confirmDelete = useDeletePothi();
-  // Morning and Evening Nitnem cannot be deleted or renamed. The pair is seeded
-  // exactly once per user (Morning Nitnem is also what the upcoming Dashboard's
-  // Today's Nitnem reads), so a deletion is permanent. A rename breaks the link on any other
+  // Morning and Evening Nitnem cannot be deleted or renamed. Morning Nitnem IS
+  // Today's Nitnem on the Dashboard, and the API seeds the pair exactly once per
+  // user, so a deletion is permanent. A rename breaks the link on any other
   // device, which has to find the pair by its banis or its name — see
   // resolveDefaultId. Their banis still edit like any other pothi's.
   const isDefault = useSelector((state) => isDefaultPothi(state.pothis, pothi?.id));

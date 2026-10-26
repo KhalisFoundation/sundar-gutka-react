@@ -350,6 +350,60 @@ const SEVA_EVENT_NAMES = {
 };
 const trackSevaEvent = namespacedTracker(SEVA_EVENT_NAMES, "seva");
 
+// The Dashboard, and above all its Explore row. `explore_tile_tap` carries
+// `tile_id` (the backend's tile key), `tile_title`, `outcome` (app | store |
+// browser — which of the three deep-link levels took the tap), `position`,
+// `has_app` (whether the tile offered an app route on THIS platform, so a
+// browser outcome on a web-only tile is not read as a failed app open),
+// `badge`, `tile_count` and `source` (network | cache | bundled — where the
+// tile list came from), so a campaign can tell an installed-app open from a
+// store visit from a web fallback.
+//
+// `explore_impression` is the denominator those taps need: the same row, seen
+// and not tapped, is what makes a tile's tap count mean anything. Without it a
+// tile's total says as much about how often the row was on screen as about the
+// tile. Divide tile_tap by impression for a per-tile click-through rate.
+const DASHBOARD_EVENT_NAMES = {
+  explore_tile_tap: "dashboard_explore_tile_tap",
+  explore_impression: "dashboard_explore_impression",
+  continue_reading_tap: "dashboard_continue_reading_tap",
+  continue_listening_tap: "dashboard_continue_listening_tap",
+  vaak_open: "dashboard_vaak_open",
+  vaak_refreshed: "dashboard_vaak_refreshed",
+  shabad_open: "dashboard_shabad_open",
+  shabad_shuffle: "dashboard_shabad_shuffle",
+  shabad_vaak_tab: "dashboard_shabad_vaak_tab",
+  nitnem_bani_open: "dashboard_nitnem_bani_open",
+  nitnem_edit_opened: "dashboard_nitnem_edit_opened",
+  nitnem_banis_saved: "dashboard_nitnem_banis_saved",
+  // Finishing the nitnem, which is the point of the card and was the one
+  // action on it that reported nothing. `source` separates the two routes —
+  // the Mark done button against a single tick — and `count` is how many banis
+  // the press actually completed, so the button's bulk press is not one event
+  // indistinguishable from a tick.
+  //
+  // Un-ticking is its OWN event rather than a status on this one, per the
+  // convention below: an undo must never be counted as a completion, and a
+  // filter is easy to forget. It is also a real signal — it usually means the
+  // 95%-scroll auto-detection marked something the reader had not finished.
+  nitnem_marked_done: "dashboard_nitnem_marked_done",
+  nitnem_unmarked: "dashboard_nitnem_unmarked",
+  // A day cell carries `outcome`, so the taps that open nothing are counted
+  // too: a run of `empty` on the calendar is a UI problem, not a quiet one.
+  day_tapped: "dashboard_day_tapped",
+  week_navigated: "dashboard_week_navigated",
+  month_navigated: "dashboard_month_navigated",
+  reminders_opened: "dashboard_reminders_opened",
+  // A reminder row tapped open to change its time, text or delete it.
+  reminder_edit_opened: "dashboard_reminder_edit_opened",
+  sections_sheet_opened: "dashboard_sections_sheet_opened",
+  sections_changed: "dashboard_sections_changed",
+  sections_reset: "dashboard_sections_reset",
+  section_jump: "dashboard_section_jump",
+  refreshed: "dashboard_refreshed",
+};
+const trackDashboardEvent = namespacedTracker(DASHBOARD_EVENT_NAMES, "dashboard");
+
 // Reading themes. `selected` carries `theme_id`, `previous` and `source`
 // (bundled | remote), so a theme served from the backend is measurable
 // against the shipped ones. `picker_opened` is its denominator — how many
@@ -364,9 +418,8 @@ const trackThemeEvent = namespacedTracker(THEME_EVENT_NAMES, "theme");
 
 // Khalis SSO. One event per outcome rather than one event with a status
 // param, so each shows up as its own row in the funnel. Every sign-in event
-// carries `entry_point` (settings today; the Dashboard header arrives with the
-// Dashboard) — the places that can start one convert very differently, and a
-// single total hides that.
+// carries `entry_point` (dashboard_header | settings) — the two places that
+// can start one convert very differently, and a single total hides that.
 //
 // session_restored and session_expired are the lifecycle either side of the
 // funnel: a session picked up from the Keychain at launch is NOT a sign-in and
@@ -417,6 +470,56 @@ const trackPunjabiKeyboardEvent = namespacedTracker(
   "punjabi_keyboard"
 );
 
+// ─── Journey dashboard events ─────────────────────────────────────────────────
+
+const trackJourneyView = async (currentStreak, totalActiveDays) => {
+  try {
+    await logEvent(analytics, "journey_viewed", {
+      current_streak: safeInt(currentStreak),
+      total_active_days: safeInt(totalActiveDays),
+    });
+  } catch (error) {
+    logError(new Error(`journey_viewed tracking failed - ${error?.message || "Unknown error"}`));
+  }
+};
+
+// ─── Session lifecycle events ─────────────────────────────────────────────────
+
+const trackBaniCompleted = async (baniId, baniTitle, durationSeconds) => {
+  try {
+    await logEvent(analytics, "bani_completed", {
+      bani_id: safeStr(baniId),
+      bani_title: safeStr(baniTitle),
+      duration_seconds: safeInt(durationSeconds),
+    });
+  } catch (error) {
+    logError(new Error(`bani_completed tracking failed - ${error?.message || "Unknown error"}`));
+  }
+};
+
+const trackAudioStarted = async (audioId, baniName, artistName) => {
+  try {
+    await logEvent(analytics, "audio_started", {
+      audio_id: safeStr(audioId),
+      bani_name: safeStr(baniName),
+      artist_name: safeStr(artistName),
+    });
+  } catch (error) {
+    logError(new Error(`audio_started tracking failed - ${error?.message || "Unknown error"}`));
+  }
+};
+
+const trackAudioCompleted = async (durationSeconds, artistId) => {
+  try {
+    await logEvent(analytics, "audio_completed", {
+      duration_seconds: safeInt(durationSeconds),
+      artist_id: safeStr(artistId),
+    });
+  } catch (error) {
+    logError(new Error(`audio_completed tracking failed - ${error?.message || "Unknown error"}`));
+  }
+};
+
 export {
   trackThemeEvent,
   trackSevaEvent,
@@ -439,4 +542,10 @@ export {
   trackTrackDownload,
   trackAudioLinkRequest,
   trackScrollProgress,
+  trackDashboardEvent,
+  // Journey + session lifecycle events
+  trackJourneyView,
+  trackBaniCompleted,
+  trackAudioStarted,
+  trackAudioCompleted,
 };

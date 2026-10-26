@@ -22,6 +22,7 @@ import Bookmarks from "../Bookmarks";
 import BottomNavigation from "../common/components/BottomNavigation";
 import { trackScreenView } from "../common/firebase/analytics";
 import { useNavBarSurface } from "../common/systemBars";
+import DashboardScreen from "../DashboardScreen";
 import DatabaseUpdateScreen from "../DatabaseUpdate";
 import EditBaniOrder from "../EditBaniOrder";
 import FolderScreen from "../FolderScreen";
@@ -59,8 +60,8 @@ const Stack = createNativeStackNavigator();
 const Tab = createBottomTabNavigator();
 
 // The screen actually showing, through nested navigators: the tabs all sit
-// under one root route, so timing that would put Home, Seva and Settings in a
-// single "MainTabs" trace.
+// under one root route, so timing that would put Home, Dashboard, Seva and
+// Settings in a single "MainTabs" trace.
 const focusedRouteName = (state) => {
   const route = state?.routes?.[state.index];
   return route?.state ? focusedRouteName(route.state) : route?.name;
@@ -109,8 +110,7 @@ CustomTabBar.propTypes = {
 // eslint-disable-next-line react/jsx-props-no-spreading
 const renderTabBar = (barProps) => <CustomTabBar {...barProps} />;
 
-// Main tab navigator for Home, Seva and Settings. The Dashboard tab arrives
-// with the Dashboard.
+// Main tab navigator for Home, Dashboard, Seva and Settings.
 const MainTabs = () => {
   return (
     <Tab.Navigator
@@ -121,7 +121,7 @@ const MainTabs = () => {
         headerShown: false,
       }}
       // Android back returns to Home from any tab, rather than leaving the app:
-      // with "none" a tab with no back handler of its own (Seva) let the press
+      // with "none" a tab with no back handler of its own (Dashboard, Seva) let the press
       // fall through to the root stack, which sits at index 0 while the tabs
       // are showing, and the app exited. "initialRoute" is the platform
       // convention: back walks toward the start destination, and only Home
@@ -129,6 +129,7 @@ const MainTabs = () => {
       backBehavior="initialRoute"
     >
       <Tab.Screen name="Home" component={HomeScreen} />
+      <Tab.Screen name="Dashboard" component={DashboardScreen} />
       <Tab.Screen name="Seva" component={SevaScreen} />
       <Tab.Screen name="Settings" component={SettingsScreen} />
     </Tab.Navigator>

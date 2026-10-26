@@ -5,7 +5,7 @@ import { onUnauthorized } from "../../services/khalisRequest";
 import { setAuthSession, clearAuthSession } from "../actions";
 import { trackSsoEvent } from "../firebase/analytics";
 import STRINGS from "../localization";
-import { applyAccountScope } from "../sso/accountScope";
+import { applyAccountScope, switchAnalyticsAccount } from "../sso/accountScope";
 import { decodeJwtPayload, isTokenValid, toSessionUser } from "../sso/jwt";
 import { consumeLoginRedirect, forgetConsumedLogin } from "../sso/khalisSso";
 import { registerSessionHandlers } from "../sso/session";
@@ -41,6 +41,14 @@ const useSsoSession = () => {
    * Ends the session however it ended — an expiry, a token that will not decode,
    * or a launch with nothing in the Keychain.
    *
+   * The dashboard's history is DETACHED: the signed-out store is opened in
+   * place of the account's. Left open, an expiry kept that account's streak
+   * and calendar on screen beside a "Sign in" button — a stranger's history on
+   * a shared phone — and `switchAnalyticsAccount` would later have read it as
+   * unclaimed activity to hand the next person who signs in. Nothing is
+   * deleted: the account's file comes straight back on the next sign-in,
+   * including anything not yet pushed.
+   *
    * What is NOT done here, and why:
    *   purgeLocalUserData — drops the account's data (USER_DATA_SLICES). An
    *     expiry is not a decision the user made, and losing unsent changes
@@ -54,6 +62,9 @@ const useSsoSession = () => {
     async ({ notify } = {}) => {
       clearExpiryTimer();
       await clearToken();
+      // Before the session is announced, so no frame renders a signed-out
+      // dashboard over the previous account's numbers.
+      await switchAnalyticsAccount(null);
       // Nothing may replay the sign-in that began this session.
       forgetConsumedLogin();
       dispatch(clearAuthSession());

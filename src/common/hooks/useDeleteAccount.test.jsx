@@ -55,6 +55,7 @@ jest.mock("../localization", () => ({
 
 jest.mock("../sso/accountScope", () => ({
   destroyLocalAccountData: (...a) => mockDestroy(...a),
+  leaveLocalAccount: jest.fn(),
   purgeLocalUserData: (...a) => mockPurge(...a),
   writeLastAccount: (...a) => mockWriteLastAccount(...a),
 }));
@@ -122,6 +123,9 @@ describe("when the server accepted", () => {
     await confirmDelete();
 
     expect(mockDestroy).toHaveBeenCalledTimes(1);
+    // By name: ending the session has already detached the account's history,
+    // so the wipe has to say whose file to empty.
+    expect(mockDestroy).toHaveBeenCalledWith(expect.any(Function), "a@b.c");
     // Through the session's own end, which also disarms its expiry timer.
     expect(mockEndSession).toHaveBeenCalledTimes(1);
     // The session ends first: with the account disabled, a sync still out

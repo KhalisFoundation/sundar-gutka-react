@@ -82,3 +82,30 @@ describe("settingsSync slice", () => {
     expect(s.settingsSync).toEqual({ clocks: {}, base: { theme: 3 }, lastSyncedAt: 0 });
   });
 });
+
+describe("preference clocks", () => {
+  it("stamp the layout and profile on every edit, and keep a restored clock", () => {
+    const before = Date.now();
+    let s = reduce(init(), {
+      type: actionTypes.SET_DASHBOARD_LAYOUT,
+      value: { order: [], hidden: [] },
+    });
+    expect(s.dashboardLayout.modifiedAt).toBeGreaterThanOrEqual(before);
+    s = reduce(s, {
+      type: actionTypes.SET_USER_PROFILE,
+      value: { name: "Simran", modifiedAt: 123 },
+    });
+    expect(s.userProfile).toEqual({ name: "Simran", modifiedAt: 123 });
+    const rehydrated = rootReducer(init(), {
+      type: "persist/REHYDRATE",
+      payload: { dashboardLayout: { ...s.dashboardLayout, modifiedAt: 456 } },
+    });
+    expect(rehydrated.dashboardLayout.modifiedAt).toBe(456);
+  });
+});
+
+it("stamps a layout reset, so it reaches the account like any edit", () => {
+  const before = Date.now();
+  const s = reduce(init(), { type: actionTypes.RESET_DASHBOARD_LAYOUT });
+  expect(s.dashboardLayout.modifiedAt).toBeGreaterThanOrEqual(before);
+});

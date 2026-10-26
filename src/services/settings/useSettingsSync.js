@@ -54,7 +54,8 @@ export const ENQUEUE_DEBOUNCE_MS = 1000;
  *
  * ── How the account's changes arrive ──────────────────────────────────────
  * A bulk sync (`POST /settings/sync`), run at the account-sync moments —
- * sign-in, foreground, connectivity returning (see useAccountSync) — and after
+ * sign-in, foreground, connectivity returning (see useAccountSync), and a
+ * pull-to-refresh on the Dashboard or the Pothis tab — and after
  * any conflict. The device sends the settings it
  * has changed, with clocks; the server merges per key and returns the whole
  * live set. Newer values are applied with RAW dispatches — never through the

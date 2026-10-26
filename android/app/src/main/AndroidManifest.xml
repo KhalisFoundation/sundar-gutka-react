@@ -10,6 +10,16 @@
          download (requestNotificationPermission). -->
     <uses-permission android:name="android.permission.POST_NOTIFICATIONS" />
 
+    <!-- Android 11+ package-visibility: without declaring a target package here,
+         PackageManager.getLaunchIntentForPackage() always returns null for it
+         (as if not installed), even when it is. Needed for the Explore Gurbani
+         "open app if installed" deep link (see AppLauncherModule.kt). -->
+    <queries>
+        <package android:name="com.khalis.sehajpathapp" />
+        <package android:name="com.khalis.gurdham" />
+        <package android:name="org.khalisfoundation.shabadavali" />
+    </queries>
+
     <application android:name=".MainApplication" android:label="@string/app_name" android:icon="@mipmap/ic_launcher_foreground"
         android:roundIcon="@mipmap/ic_launcher_round" android:allowBackup="false" android:theme="@style/AppTheme" android:supportsRtl="true"
         android:networkSecurityConfig="@xml/network_security_config">

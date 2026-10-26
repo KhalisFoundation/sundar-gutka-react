@@ -38,16 +38,19 @@ describe("navigateTo", () => {
 describe("a tab destination", () => {
   afterEach(() => jest.restoreAllMocks());
 
-  // Seva exists only inside MainTabs. Navigated to by name from a stack screen
-  // it resolved against nothing, and the tap did nothing.
-  it("goes back to the main tabs, on that tab", async () => {
+  // Seva and the Dashboard exist only inside MainTabs. Navigated to by name
+  // from a stack screen they resolved against nothing, and the tap did nothing.
+  it.each([
+    ["seva", "Seva"],
+    ["dashboard", "Dashboard"],
+  ])("%s goes back to the main tabs, on that tab", async (route, screen) => {
     const dispatch = jest.spyOn(navigationRef, "dispatch").mockImplementation(() => {});
     jest.spyOn(navigationRef, "isReady").mockReturnValue(true);
-    await navigateTo({ notification: { data: { route: "seva", n: 1 } } });
+    await navigateTo({ notification: { data: { route, n: 1 } } });
     expect(dispatch).toHaveBeenCalledWith(
       expect.objectContaining({
         type: "POP_TO",
-        payload: expect.objectContaining({ name: "MainTabs", params: { screen: "Seva" } }),
+        payload: expect.objectContaining({ name: "MainTabs", params: { screen } }),
       })
     );
   });

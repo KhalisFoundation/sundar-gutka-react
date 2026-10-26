@@ -16,6 +16,7 @@ import useSsoSession from "./useSsoSession";
 const mockDispatch = jest.fn();
 const mockInfoToast = jest.fn();
 const mockApplyScope = jest.fn(() => Promise.resolve(false));
+const mockSwitchAnalytics = jest.fn(() => Promise.resolve(0));
 
 jest.mock("react-redux", () => ({ useDispatch: () => mockDispatch }));
 jest.mock("../actions", () => ({
@@ -26,6 +27,7 @@ jest.mock("../firebase/analytics", () => ({ trackSsoEvent: jest.fn() }));
 jest.mock("../localization", () => ({ SESSION_EXPIRED: "Session expired" }));
 jest.mock("../sso/accountScope", () => ({
   applyAccountScope: (...a) => mockApplyScope(...a),
+  switchAnalyticsAccount: (...a) => mockSwitchAnalytics(...a),
 }));
 jest.mock("../sso/jwt", () => ({
   decodeJwtPayload: jest.fn(),
@@ -94,6 +96,24 @@ it("disarms it when the session is ended from a screen", async () => {
     jest.advanceTimersByTime(61 * 1000);
   });
   expect(mockInfoToast).not.toHaveBeenCalled();
+});
+
+// Left open, an ended session kept the account's streak and calendar on a
+// signed-out screen, and the next sign-in read that file as unclaimed activity.
+it("detaches the dashboard history before announcing the session ended", async () => {
+  await mount();
+  await act(() => beginSession({ email: "a@khalis.net" }, Date.now() + 60 * 1000));
+  mockSwitchAnalytics.mockClear();
+  mockDispatch.mockClear();
+  mockSwitchAnalytics.mockImplementationOnce(async () => {
+    expect(mockDispatch).not.toHaveBeenCalledWith({ type: "CLEAR_AUTH_SESSION" });
+    return 0;
+  });
+
+  await act(() => endSession());
+
+  expect(mockSwitchAnalytics).toHaveBeenCalledWith(null);
+  expect(mockDispatch).toHaveBeenCalledWith({ type: "CLEAR_AUTH_SESSION" });
 });
 
 // Android begins one sign-in twice, overlapping. Each used to clear the timer

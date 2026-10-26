@@ -6,6 +6,7 @@ import { logError, logMessage } from "./firebase/crashlytics";
 import { openInAppBrowser } from "./inAppBrowser";
 import { storeUrlsFor } from "./openAppLink";
 import {
+  ROUTE_DASHBOARD,
   ROUTE_READER,
   ROUTE_SETTINGS,
   ROUTE_SEVA,
@@ -116,6 +117,9 @@ export const navigateTo = async (incoming) => {
       return;
     case ROUTE_SEVA:
       openTabWhenReady(constant.SEVA);
+      return;
+    case ROUTE_DASHBOARD:
+      openTabWhenReady(constant.DASHBOARD);
       return;
     case ROUTE_UPDATE:
       navigateWhenReady(constant.DATABASE_UPDATE);

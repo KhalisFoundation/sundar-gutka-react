@@ -3,7 +3,7 @@ import { Pressable, View } from "react-native";
 import DraggableFlatList, { ScaleDecorator } from "react-native-draggable-flatlist";
 import { GestureHandlerRootView } from "react-native-gesture-handler";
 import { useDispatch, useSelector } from "react-redux";
-import { syncAll } from "@service/sync/syncRegistry";
+import { requestPull } from "@service/dashboard/syncSignal";
 import PropTypes from "prop-types";
 import useScreenPalette from "@common/hooks/useScreenPalette";
 import useTokens from "@common/hooks/useTokens";
@@ -52,16 +52,17 @@ const PothiList = ({ baniListData, onOpenPothi, onCreatePress, onPinLimit, activ
   }, []);
 
   // Pull to refresh, for someone who has just changed a pothi on their other
-  // phone and wants it here now. One gesture runs the whole account sync —
-  // every feature registered with the sync registry, pothis among them. Only
-  // offered signed in: signed out there is no account to pull from.
+  // phone and wants it here now. It fires the same request the Dashboard's
+  // pull-down does, so one gesture runs the whole account sync — dashboard,
+  // reminders and pothis. Only offered signed in: signed out there is no
+  // account to pull from.
   const signedIn = useSelector((state) => state.auth?.status === "signedIn");
   // The list's own scroll offset, as the one bit of it the pull needs.
   const [atTop, setAtTop] = useState(true);
   // Off for the whole of a reorder, so a row dragged downwards from the top of
   // the list cannot also read as a pull and start a sync when it is dropped.
   const [dragging, setDragging] = useState(false);
-  const onRefresh = useCallback(() => syncAll(), []);
+  const onRefresh = useCallback(() => requestPull("pull-to-refresh"), []);
 
   // The scrollbar owns this callback as well — it is the only way the list
   // reports its offset — so both readers are given every one.

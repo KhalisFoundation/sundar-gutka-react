@@ -383,6 +383,11 @@ export const toggleAutoDownload = (value) => ({
   value,
 });
 
+// ─── Dashboard redesign ─────────────────────────────────────────────────────
+export const setUserProfile = (value) => {
+  return { type: actionTypes.SET_USER_PROFILE, value };
+};
+
 // Khalis SSO session. `value` is { user, expiresAt } — decoded claims and the
 // token's expiry in epoch ms. The token itself stays in the Keychain.
 export const setAuthSession = (value) => {
@@ -397,11 +402,46 @@ export const setAuthBusy = (value) => {
   return { type: actionTypes.SET_AUTH_BUSY, value };
 };
 
+export const setDashboardLayout = (value) => {
+  // value: { order: string[], hidden: string[] }
+  return { type: actionTypes.SET_DASHBOARD_LAYOUT, value };
+};
+
+export const resetDashboardLayout = () => {
+  return { type: actionTypes.RESET_DASHBOARD_LAYOUT };
+};
+
 export const clearUserData = () => {
   // Drops every slice that belongs to a PERSON rather than to this phone.
   // Dispatched on sign-out and when a different account signs in — see
   // common/sso/accountScope.js, which owns that decision.
   return { type: actionTypes.CLEAR_USER_DATA };
+};
+
+export const toggleNitnemDone = (date, baniId) => {
+  // Marks/unmarks a bani done for a given YYYY-MM-DD date
+  return { type: actionTypes.TOGGLE_NITNEM_DONE, payload: { date, baniId } };
+};
+
+export const markNitnemAutoDone = (date, baniIds) => {
+  // Records banis auto-detected as done (real read/listen time past threshold)
+  // for a date. Additive only (union with whatever's already recorded) — never
+  // removes anything, so it's safe to dispatch every time auto-detection runs.
+  return { type: actionTypes.MARK_NITNEM_AUTO_DONE, payload: { date, baniIds } };
+};
+
+export const markNitnemDone = (date, baniIds) => {
+  // The "Mark done" BUTTON — an explicit statement by the user that they read
+  // these elsewhere. Distinct from markNitnemAutoDone, which is a background
+  // guess from scroll position and therefore defers to any manual un-tick.
+  // Sharing that action made the button dead after the first press: it had
+  // already seeded every id, and the auto path refuses to re-add a seeded id.
+  return { type: actionTypes.MARK_NITNEM_DONE, payload: { date, baniIds } };
+};
+
+export const restoreNitnem = (value) => {
+  // value: { completed?: { [date]: number[] } }
+  return { type: actionTypes.RESTORE_NITNEM, value };
 };
 
 // ── My Pothi ───────────────────────────────────────────────────────────────

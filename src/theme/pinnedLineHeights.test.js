@@ -19,12 +19,14 @@ import { NATURAL_LINE_BOX } from "./lineHeight";
 const ROOT = path.join(__dirname, "..");
 
 const GUARDED = [
-  // The Dashboard and onboarding screens join this list with their own PRs.
   "SevaScreen/styles.js",
   "SevaScreen/sevaMeansStyles.js",
   "DatabaseUpdate/components/styles.jsx",
   "ReaderScreen/components/AudioPlayer/style.js",
   "ManageDownloads/styles.js",
+  "DashboardScreen/components/DashboardHeader.jsx",
+  "DashboardScreen/components/DayDetailModal.jsx",
+  "DashboardScreen/components/Discover.jsx",
 ];
 
 const read = (rel) => fs.readFileSync(path.join(ROOT, rel), "utf8");
