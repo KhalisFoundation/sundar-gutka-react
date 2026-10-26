@@ -1,4 +1,7 @@
+import { logError } from "@common/firebase/crashlytics";
 import { fetchManifest, scoreRecording, seqsForPauri } from "./client";
+
+jest.mock("@common/firebase/crashlytics", () => ({ logError: jest.fn() }));
 
 jest.mock("@common/constant", () => ({
   KIDS_SCORING_URL: "https://score.example",
@@ -43,9 +46,35 @@ describe("scoreRecording", () => {
     ]);
   });
 
-  it("surfaces a 401 as a key error", async () => {
-    global.fetch.mockResolvedValue({ ok: false, status: 401, text: async () => "" });
-    await expect(scoreRecording("/tmp/a.m4a", opts)).rejects.toThrow("did not accept");
+  it("keeps a rejected key out of the child's view and logs it", async () => {
+    global.fetch.mockResolvedValue({ ok: false, status: 401, text: async () => "bad key" });
+    await expect(scoreRecording("/tmp/a.m4a", opts)).rejects.toThrow(
+      /^Pronunciation checking is not available right now\.$/
+    );
+    expect(String(logError.mock.calls.at(-1)[1])).toContain("401");
+  });
+
+  it("shows no status code or server text for a failed score, and logs both", async () => {
+    global.fetch.mockResolvedValue({
+      ok: false,
+      status: 500,
+      text: async () => "Traceback: aligner crashed",
+    });
+    const caught = await scoreRecording("/tmp/a.m4a", opts).catch((e) => e);
+    expect(caught.message).toBe("We could not check that. Try again.");
+    expect(String(logError.mock.calls.at(-1)[1])).toMatch(/500.*Traceback/);
+  });
+
+  it("names no setting when the service URL was never configured", async () => {
+    let unconfigured;
+    jest.isolateModules(() => {
+      jest.doMock("@common/constant", () => ({}));
+      unconfigured = require("./client").scoreRecording;
+    });
+    await expect(unconfigured("/tmp/a.m4a", opts)).rejects.toThrow(
+      /^Pronunciation checking is not set up in this version\.$/
+    );
+    expect(global.fetch).not.toHaveBeenCalled();
   });
 });
 

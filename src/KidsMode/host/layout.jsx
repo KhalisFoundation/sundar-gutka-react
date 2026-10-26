@@ -3,6 +3,7 @@
 import React from "react";
 import { Modal, Pressable, ScrollView, StyleSheet, Text, View } from "react-native";
 import PropTypes from "prop-types";
+import { useUI } from "../design/components";
 
 const styles = StyleSheet.create({
   flex: { flex: 1 },
@@ -10,7 +11,6 @@ const styles = StyleSheet.create({
   backdrop: { flex: 1, backgroundColor: "rgba(0,0,0,0.35)" },
   sheet: {
     maxHeight: "86%",
-    backgroundColor: "#fff",
     borderTopLeftRadius: 20,
     borderTopRightRadius: 20,
     paddingHorizontal: 16,
@@ -21,7 +21,6 @@ const styles = StyleSheet.create({
     width: 40,
     height: 4,
     borderRadius: 2,
-    backgroundColor: "#d8d2c8",
     marginTop: 8,
   },
   sheetHeader: {
@@ -30,8 +29,8 @@ const styles = StyleSheet.create({
     justifyContent: "space-between",
     paddingVertical: 12,
   },
-  sheetTitle: { fontSize: 18, fontWeight: "700", color: "#1c1917" },
-  close: { fontSize: 16, color: "#b45309", fontWeight: "600" },
+  sheetTitle: { fontSize: 18, fontWeight: "700" },
+  close: { fontSize: 16, fontWeight: "600" },
 });
 
 export const Scroll = ({ children }) => (
@@ -50,31 +49,35 @@ export const HorizontalScroll = ({ children }) => (
   </ScrollView>
 );
 
-export const Sheet = ({ open, onOpenChange, title, children }) => (
-  <Modal
-    visible={open}
-    transparent
-    animationType="slide"
-    onRequestClose={() => onOpenChange(false)}
-  >
-    {/* Tapping the dimmed area closes, matching the prototype's sheet. */}
-    <Pressable style={styles.backdrop} onPress={() => onOpenChange(false)} />
-    <View style={styles.sheet}>
-      <View style={styles.grabber} />
-      <View style={styles.sheetHeader}>
-        <Text style={styles.sheetTitle}>{title}</Text>
-        <Pressable
-          accessibilityRole="button"
-          accessibilityLabel="Close"
-          onPress={() => onOpenChange(false)}
-        >
-          <Text style={styles.close}>Done</Text>
-        </Pressable>
+// Rendered inside the design's UIProvider, so the sheet takes the night/day palette from it.
+export const Sheet = ({ open, onOpenChange, title, children }) => {
+  const { t } = useUI();
+  return (
+    <Modal
+      visible={open}
+      transparent
+      animationType="slide"
+      onRequestClose={() => onOpenChange(false)}
+    >
+      {/* Tapping the dimmed area closes, matching the prototype's sheet. */}
+      <Pressable style={styles.backdrop} onPress={() => onOpenChange(false)} />
+      <View style={[styles.sheet, { backgroundColor: t.surface }]}>
+        <View style={[styles.grabber, { backgroundColor: t.separator }]} />
+        <View style={styles.sheetHeader}>
+          <Text style={[styles.sheetTitle, { color: t.text }]}>{title}</Text>
+          <Pressable
+            accessibilityRole="button"
+            accessibilityLabel="Close"
+            onPress={() => onOpenChange(false)}
+          >
+            <Text style={[styles.close, { color: t.primary }]}>Done</Text>
+          </Pressable>
+        </View>
+        <ScrollView contentContainerStyle={styles.scrollContent}>{children}</ScrollView>
       </View>
-      <ScrollView contentContainerStyle={styles.scrollContent}>{children}</ScrollView>
-    </View>
-  </Modal>
-);
+    </Modal>
+  );
+};
 
 const childrenType = PropTypes.node;
 Scroll.propTypes = { children: childrenType };

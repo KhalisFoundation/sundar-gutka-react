@@ -11,6 +11,8 @@ import KidsHomeScreen from "./KidsHomeScreen";
 jest.mock("react-redux", () => ({ useSelector: jest.fn(), useDispatch: jest.fn() }));
 const mockGoBack = jest.fn();
 jest.mock("@react-navigation/native", () => ({ useNavigation: () => ({ goBack: mockGoBack }) }));
+// Crashlytics is native; the app's own tests mock it the same way.
+jest.mock("@common/firebase/crashlytics", () => ({ logError: jest.fn() }));
 jest.mock("react-native-safe-area-context", () => ({
   useSafeAreaInsets: () => ({ top: 10, bottom: 20 }),
 }));
@@ -146,6 +148,7 @@ describe("KidsHomeScreen", () => {
     expect(loading.queryByTestId("kids-app")).toBeNull();
     mockBani.mockReturnValue({ ...japji, pauris: [], ready: false, error: new Error("No bani") });
     const failed = render(<KidsHomeScreen />);
-    expect(failed.getByText("No bani")).toBeTruthy();
+    expect(failed.getByText("Kids Mode could not load. Please try again.")).toBeTruthy();
+    expect(failed.queryByText("No bani")).toBeNull();
   });
 });

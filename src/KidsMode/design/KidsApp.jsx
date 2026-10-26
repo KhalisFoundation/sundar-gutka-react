@@ -72,6 +72,8 @@ export default function KidsApp({ pauris, host }) {
   function leave() { if (host.exit) host.exit(); else go('home'); }
   function go(next) {
     if (checking) return;
+    // Host edit: the prototype's home screen is not part of the host app, so every route to it leaves the journey.
+    if (next === 'home' && host.exit) {leave();return;}
     audio.stop();
     // Abandoning a challenge mid-recording would otherwise leave iOS in
     // play-and-record, which silently routes later playback to the earpiece.
@@ -157,7 +159,7 @@ export default function KidsApp({ pauris, host }) {
         <View style={[s.pad, s.center]}><Image source={host.image('khalislogo150.png')} style={{ width: 68, height: 68 }} resizeMode="contain" /><Small>With love, Khalis Foundation</Small></View>
       </>}
       {screen === 'settings' && <>
-        <Section>Learning</Section><Row title="Kids Mode" subtitle="Explore bani through practice and play" icon="map" trailing={<Switch accessibilityLabel="Kids Mode" value={kids} onValueChange={setKids} trackColor={{ false: '#c8c8cc', true: t.primary }} />} />
+        <Section>Learning</Section>{!host.exit && <Row title="Kids Mode" subtitle="Explore bani through practice and play" icon="map" trailing={<Switch accessibilityLabel="Kids Mode" value={kids} onValueChange={setKids} trackColor={{ false: '#c8c8cc', true: t.primary }} />} />}
         {kids && <View style={s.pad}><Button onPress={() => go(started ? 'world' : 'character')}>{started ? 'Open my journey' : 'Choose an explorer'}</Button></View>}
         <Section>Display</Section><Row title="Illustrations" subtitle="Show visual cues while reading" trailing={<Switch accessibilityLabel="Illustrations" value={illustrations} onValueChange={setIllustrations} trackColor={{ false: '#c8c8cc', true: t.primary }} />} /><Row title="Night mode" icon="book-open" trailing={<Switch accessibilityLabel="Night mode" value={night} onValueChange={setNight} trackColor={{ false: '#c8c8cc', true: t.primary }} />} />
         <Row title="English meanings" subtitle="Show translations while reading" trailing={<Switch accessibilityLabel="English meanings" value={meaning} onValueChange={setMeaning} trackColor={{ false: '#c8c8cc', true: t.primary }} />} />

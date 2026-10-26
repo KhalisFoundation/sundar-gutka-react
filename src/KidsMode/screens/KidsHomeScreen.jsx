@@ -3,9 +3,11 @@ import { ActivityIndicator, StatusBar, StyleSheet, Text, View } from "react-nati
 import { useSafeAreaInsets } from "react-native-safe-area-context";
 import { useDispatch, useSelector } from "react-redux";
 import { useNavigation } from "@react-navigation/native";
+import { logError } from "@common/firebase/crashlytics";
 import catalog from "../design/bani-catalog.json";
 import { freshExperience, parseExperience } from "../design/experience";
 import KidsApp from "../design/KidsApp";
+import { dark, light } from "../design/theme";
 import { useReferenceAudio, useClipPlayer } from "../host/audio";
 import { useBani } from "../host/bani";
 import { Icon } from "../host/icons";
@@ -18,6 +20,8 @@ import { setKidsExperience } from "../state/actions";
 // The journey the design draws (map, regions, stories, progress by pauri) is Japji's; the
 // data layer underneath takes any bani token.
 const JOURNEY = "japji";
+
+const LOAD_FAILED = "Kids Mode could not load. Please try again.";
 
 // Builds the HostPorts the design screens expect from this app's own stack.
 // Storage goes through redux so redux-persist does the disk write; reading it
@@ -76,20 +80,22 @@ const KidsHomeScreen = () => {
     [storage, audio, clip, recitation, navigation, insets.top, insets.bottom, bani.reciter]
   );
 
+  const palette = night ? dark : light;
   let body;
   if (bani.error) {
+    logError("Kids Mode could not load the bani", bani.error);
     body = (
-      <View style={styles.center}>
-        <Text style={styles.message}>{String(bani.error.message || bani.error)}</Text>
-        <Text style={styles.link} onPress={() => navigation.goBack()}>
+      <View style={[styles.center, { backgroundColor: palette.subtle }]}>
+        <Text style={[styles.message, { color: palette.text }]}>{LOAD_FAILED}</Text>
+        <Text style={[styles.link, { color: palette.primary }]} onPress={() => navigation.goBack()}>
           Back
         </Text>
       </View>
     );
   } else if (!bani.ready) {
     body = (
-      <View style={styles.center}>
-        <ActivityIndicator size="large" color="#b45309" />
+      <View style={[styles.center, { backgroundColor: palette.subtle }]}>
+        <ActivityIndicator size="large" color={palette.primary} />
       </View>
     );
   } else {
@@ -109,11 +115,10 @@ const KidsHomeScreen = () => {
   );
 };
 
-// The design's loading colours, so the wait looks like the screens it leads to.
 const styles = StyleSheet.create({
-  center: { flex: 1, alignItems: "center", justifyContent: "center", backgroundColor: "#faf9f6" },
-  message: { color: "#1b1b1f", margin: 24, textAlign: "center" },
-  link: { color: "#1e3a8a", padding: 12 },
+  center: { flex: 1, alignItems: "center", justifyContent: "center" },
+  message: { margin: 24, textAlign: "center" },
+  link: { padding: 12 },
 });
 
 export default KidsHomeScreen;
