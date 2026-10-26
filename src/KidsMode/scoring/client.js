@@ -1,11 +1,19 @@
 // One recording, one request: the service aligns a complete recitation, so the app records
 // a line and posts it when the child stops.
+import { logError } from "@common/firebase/crashlytics";
 import {
   REQUEST_TIMEOUT_MS,
   SCORING_API_KEY,
   SCORING_BASE_URL,
   SCORING_CONFIGURED,
 } from "./config";
+import {
+  CHECK_FAILED_MESSAGE,
+  NOT_CONFIGURED_MESSAGE,
+  OFFLINE_MESSAGE,
+  TIMEOUT_MESSAGE,
+  UNAVAILABLE_MESSAGE,
+} from "./messages";
 
 export class ScoringError extends Error {
   constructor(message, status) {
@@ -36,7 +44,7 @@ const appendAudio = (form, fileUri) => {
 const request = async (path, init, attempt = 0) => {
   // Fail with the real reason rather than a network error nobody can action.
   if (!SCORING_CONFIGURED) {
-    throw new ScoringError("The checking service is not configured yet (KIDS_SCORING_URL).");
+    throw new ScoringError(NOT_CONFIGURED_MESSAGE);
   }
   const headers = { Accept: "application/json" };
   if (SCORING_API_KEY) headers["X-Api-Key"] = SCORING_API_KEY;
@@ -52,11 +60,8 @@ const request = async (path, init, attempt = 0) => {
   } catch (caught) {
     // A dropped connection is retried once; a timeout is not, as the job may still be running.
     if (attempt < 1 && !controller.signal.aborted) return request(path, init, attempt + 1);
-    throw new ScoringError(
-      controller.signal.aborted
-        ? "The checking service took too long. Please try again."
-        : "Could not reach the checking service. Check the connection and try again."
-    );
+    logError(`Kids scoring request ${path} failed`, caught);
+    throw new ScoringError(controller.signal.aborted ? TIMEOUT_MESSAGE : OFFLINE_MESSAGE);
   } finally {
     clearTimeout(timer);
   }
@@ -110,7 +115,8 @@ export const fetchManifest = (bani) => {
       request(`/v1/manifest?bani=${bani}`, { method: "GET" })
         .then(async (response) => {
           if (!response.ok) {
-            throw new ScoringError(`Manifest unavailable (${response.status})`, response.status);
+            logError("Kids scoring manifest failed", new Error(`HTTP ${response.status}`));
+            throw new ScoringError(UNAVAILABLE_MESSAGE, response.status);
           }
           return response.json();
         })
@@ -135,13 +141,12 @@ export const scoreRecording = async (fileUri, { bani, reciter, seqs, optedIn = f
 
   const response = await request("/v1/score", { method: "POST", body: form });
   if (!response.ok) {
+    // The status and the service's reply are for whoever reads the logs, not the child.
     const detail = await response.text().catch(() => "");
+    logError("Kids scoring failed", new Error(`HTTP ${response.status} ${detail.slice(0, 300)}`));
+    const keyRejected = response.status === 401 || response.status === 403;
     throw new ScoringError(
-      response.status === 401 || response.status === 403
-        ? "The checking service did not accept this app’s key."
-        : `The checking service could not score this (${response.status}).${
-            detail ? ` ${detail.slice(0, 120)}` : ""
-          }`,
+      keyRejected ? UNAVAILABLE_MESSAGE : CHECK_FAILED_MESSAGE,
       response.status
     );
   }

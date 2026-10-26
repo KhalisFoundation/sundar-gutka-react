@@ -5,7 +5,7 @@
 // iOS caveat carried from the design app: recording leaves the audio session in a
 // play-and-record category that can route playback to the earpiece. Track player
 // re-claims the playback session on reset/add, which is why listen() always resets.
-import { useCallback, useEffect, useRef, useState } from "react";
+import { useCallback, useEffect, useMemo, useRef, useState } from "react";
 import TrackPlayer from "react-native-track-player";
 import { TrackPlayerSetup } from "@common/TrackPlayerUtils";
 
@@ -105,7 +105,8 @@ export const useReferenceAudio = (trackUrl, title) => {
     []
   );
 
-  return { playing, error, listen, stop };
+  // Same object until a field changes, so the host memo is not rebuilt on every render.
+  return useMemo(() => ({ playing, error, listen, stop }), [playing, error, listen, stop]);
 };
 
 // Word clips share the one track player with the reference, so playing a clip replaces
@@ -130,5 +131,5 @@ export const useClipPlayer = () => {
     TrackPlayer.pause().catch(() => {});
   }, []);
 
-  return { playing, error, play, stop };
+  return useMemo(() => ({ playing, error, play, stop }), [playing, error, play, stop]);
 };

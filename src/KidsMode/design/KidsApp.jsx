@@ -77,13 +77,20 @@ export default function KidsApp({ pauris, host }) {
     audio.stop();
     // Abandoning a challenge mid-recording would otherwise leave iOS in
     // play-and-record, which silently routes later playback to the earpiece.
-    if (recitation?.isRecording) void (recitation.cancel ? recitation.cancel() : recitation.stop());
+    // Host edit: cancel even before the recorder reports recording, so a tap during start-up cannot leave the microphone on.
+    if (recitation?.cancel) void recitation.cancel(); else if (recitation?.isRecording) void recitation.stop();
     setRunning(false);setNotice('');setScreen(next);
   }
   function openPauri(n) {setRegion(Math.max(0, regions.findIndex((r) => n >= r.start && n <= r.end)));setSelected(n);setLine(0);go('pauri');}
   function settings() {setSettingsReturn(screen);go('settings');}
+  // Host edit: a ref guard, since `checking` is state and two effect runs in one tick would both pass it.
+  const finishing = useRef(false);
   async function finishRecitation() {
-    if (!recitation || checking) return;
+    if (!recitation || checking || finishing.current) return;
+    finishing.current = true;
+    try {await finishRecitationNow();} finally {finishing.current = false;}
+  }
+  async function finishRecitationNow() {
     setChecking(true);
     const result = await recitation.stop().finally(() => setChecking(false));
     if (result && 'retry' in result) {

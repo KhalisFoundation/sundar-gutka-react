@@ -1,6 +1,6 @@
 import TrackPlayer from "react-native-track-player";
 import { act, renderHook, waitFor } from "@testing-library/react-native";
-import { useReferenceAudio } from "./audio";
+import { useClipPlayer, useReferenceAudio } from "./audio";
 
 jest.mock("@common/TrackPlayerUtils", () => ({
   TrackPlayerSetup: jest.fn(() => Promise.resolve()),
@@ -41,5 +41,19 @@ describe("useReferenceAudio", () => {
       expect(TrackPlayer.add).toHaveBeenLastCalledWith(expect.objectContaining({ url: second }))
     );
     unmount();
+  });
+});
+
+// The host memo and the design's effects key on these objects; a fresh one each render
+// rebuilt the host on every level-meter tick.
+describe("audio hook identity", () => {
+  it("keeps the same object across renders when nothing changed", () => {
+    const reference = renderHook(() => useReferenceAudio("https://cdn.example/a.m4a", "Japji"));
+    const clip = renderHook(() => useClipPlayer());
+    const before = [reference.result.current, clip.result.current];
+    reference.rerender();
+    clip.rerender();
+    expect(reference.result.current).toBe(before[0]);
+    expect(clip.result.current).toBe(before[1]);
   });
 });

@@ -66,11 +66,9 @@ describe("scoreRecording", () => {
   });
 
   it("names no setting when the service URL was never configured", async () => {
-    let unconfigured;
-    jest.isolateModules(() => {
-      jest.doMock("@common/constant", () => ({}));
-      unconfigured = require("./client").scoreRecording;
-    });
+    jest.resetModules();
+    jest.doMock("@common/constant", () => ({}));
+    const { scoreRecording: unconfigured } = require("./client");
     await expect(unconfigured("/tmp/a.m4a", opts)).rejects.toThrow(
       /^Pronunciation checking is not set up in this version\.$/
     );
