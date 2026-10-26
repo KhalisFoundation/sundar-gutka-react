@@ -1,5 +1,5 @@
 import React, { useEffect, useMemo, useState } from "react";
-import { useWindowDimensions, View } from "react-native";
+import { useWindowDimensions, View, InteractionManager } from "react-native";
 import { Gesture, GestureDetector } from "react-native-gesture-handler";
 import Animated, {
   runOnJS,
@@ -67,9 +67,15 @@ const HomeScreen = React.memo(({ navigation }) => {
   }, [baniLengthSelector, navigation]);
 
   useEffect(() => {
-    (async () => {
-      await allowTracking(isStatistics);
-    })();
+    // Deferred past the first interactive frame: setAnalyticsCollectionEnabled()
+    // is the app's first Firebase Analytics call, which can trigger Play
+    // Services' Analytics "dynamite" module to load over a synchronous Binder
+    // call. Running it on HomeScreen's very first mount — the highest-contention
+    // moment of cold start — risked blocking the main thread long enough to ANR.
+    const task = InteractionManager.runAfterInteractions(() => {
+      allowTracking(isStatistics);
+    });
+    return () => task.cancel();
   }, [isStatistics]);
 
   useEffect(() => {
@@ -83,9 +89,14 @@ const HomeScreen = React.memo(({ navigation }) => {
     }
   }, [language]);
 
+  // The app UI (Home/Bookmarks lists, Reader header/title) is fixed to Baloo
+  // Paaji — there is no longer a Font Face setting. The only font control left
+  // ("Bani Font") drives just the Reader scripture text via `baniFontFace`.
+  // Reset any previously-persisted non-Baloo value here on the entry screen;
+  // the reader's old choice has already moved to the Bani font (see reducer).
   useEffect(() => {
-    if (!fontFace) {
-      dispatch(actions.setFontFace(constant.GURBANI_AKHAR_TRUE));
+    if (fontFace !== constant.BALOO_PAAJI) {
+      dispatch(actions.setFontFace(constant.BALOO_PAAJI));
     }
   }, [fontFace]);
 

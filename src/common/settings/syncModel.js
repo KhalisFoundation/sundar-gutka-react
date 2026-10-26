@@ -24,14 +24,14 @@ import * as actionTypes from "../actions/actionTypes";
 //
 // What is NOT synced, deliberately: language is included, statistics consent,
 // download policy (Wi-Fi only / auto-download), the per-shabad maps
-// (auto-scroll speed, default reciter) and the font are not. The first is a
-// privacy decision made per device; the download rules describe this phone's
-// plan and storage; and the maps are large and per-bani rather than
+// (auto-scroll speed, default reciter) and the app's own font are not. The
+// first is a privacy decision made per device; the download rules describe this
+// phone's plan and storage; and the maps are large and per-bani rather than
 // preferences. Auto-scroll on/off is a reading mode rather than a preference,
 // and switching it on also switches this phone's audio off (TOGGLE_AUTO_SCROLL
 // reaches the audio slices), so another device's choice would silently take
-// audio away here. The font joins the list when it is split into a Home font and
-// a bani font (an upcoming PR): only the bani font is a reading preference.
+// audio away here. The app's font is fixed by HomeScreen; the Bani font is a
+// reading preference, and syncs.
 
 /**
  * Setting key → the action type that writes it. The value is applied with a
@@ -41,6 +41,7 @@ import * as actionTypes from "../actions/actionTypes";
  */
 export const SYNCED_SETTINGS = Object.freeze({
   fontSize: actionTypes.SET_FONT_SIZE,
+  baniFontFace: actionTypes.SET_BANI_FONT_FACE,
   language: actionTypes.SET_LANGUAGE,
   transliterationLanguage: actionTypes.SET_TRANSLITERATION,
   isTransliteration: actionTypes.TOGGLE_TRANSLITERATION,

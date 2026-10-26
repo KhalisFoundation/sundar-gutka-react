@@ -7,6 +7,7 @@
         <item name="colorPrimaryDark">@color/primary_variant</item>
         <item name="colorAccent">@color/primary_accent</item>
         <item name="android:scrollbarThumbVertical">@drawable/scrollbar_vertical_thumb</item>
+        <item name="android:scrollbarTrackVertical">@drawable/scrollbar_vertical_track</item>
         <!-- Edge-to-edge: draw content behind display cutouts (notches/punch-holes) -->
         <item name="android:windowLayoutInDisplayCutoutMode">shortEdges</item>
         <!-- Make navigation bar and status bar transparent so app draws underneath -->

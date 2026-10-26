@@ -1,4 +1,7 @@
-import { constant } from "@common";
+// Straight from the module, not the @common barrel: the barrel pulls in
+// firebase and native modules, and these lists are read where those are absent
+// (the font-registry test, for one).
+import constant from "../../../common/constant";
 
 export const getFontSizes = (strings) => [
   { key: "EXTRA_SMALL", title: strings.extra_small },
@@ -8,12 +11,16 @@ export const getFontSizes = (strings) => [
   { key: "EXTRA_LARGE", title: strings.extra_large },
 ];
 
-export const getFontFaces = (strings) => [
+// Font choices for the Reader scripture text. Defaults to Gurbani Akhar (see the
+// baniFontFace reducer). This is the only user-facing font control — the rest of
+// the app UI is fixed to Baloo Paaji.
+export const getBaniFontFaces = (strings) => [
   { key: constant.ANMOL_LIPI, title: strings.anmol_lipi },
-  { key: constant.GURBANI_AKHAR_TRUE, title: strings.gurbani_akhar_default },
+  { key: constant.GURBANI_AKHAR_TRUE, title: strings.gurbani_akhar_bani_default },
   { key: constant.GURBANI_AKHAR_HEAVY_TRUE, title: strings.gurbani_akhar_heavy },
   { key: constant.GURBANI_AKHAR_THICK_TRUE, title: strings.gurbani_akhar_think },
-  { key: constant.BALOO_PAAJI, title: strings.baloo_paaji },
+  { key: constant.PURATAN_HASTLIKHAT, title: strings.puratan_hathlikhat },
+  { key: constant.BALOO_PAAJI, title: strings.baloo_paaji_plain },
 ];
 
 export const getBaniLengths = (strings) => [

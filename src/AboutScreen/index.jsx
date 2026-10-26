@@ -1,11 +1,13 @@
-import React, { useEffect } from "react";
-import { Image, Linking, Pressable, ScrollView, View } from "react-native";
+import React, { useEffect, useState } from "react";
+import { Image, Linking, Pressable, ScrollView, Share, View } from "react-native";
 import { getBuildNumber, getVersion } from "react-native-device-info";
+import { getMessaging, getToken } from "@react-native-firebase/messaging";
 import PropTypes from "prop-types";
 import useTokens from "@common/hooks/useTokens";
 import {
   constant,
   GradientDivider,
+  logError,
   openInAppBrowser,
   SafeArea,
   StatusBarComponent,
@@ -32,6 +34,24 @@ const AboutScreen = ({ navigation }) => {
   useEffect(() => {
     navigation.setOptions({ headerShown: false });
   }, [navigation]);
+
+  // Read, never requested: asking for notification permission belongs to the
+  // push registration, not to an About page. No token simply hides the row.
+  const [pushToken, setPushToken] = useState(null);
+  useEffect(() => {
+    let live = true;
+    getToken(getMessaging())
+      .then((token) => {
+        if (live && token) setPushToken(token);
+      })
+      .catch(() => {});
+    return () => {
+      live = false;
+    };
+  }, []);
+  const sharePushToken = () => {
+    Share.share({ message: pushToken }).catch(logError);
+  };
 
   const openKhalis = () => Linking.openURL(constant.KHALIS_FOUNDATION_URL);
   const openBaniDB = () => Linking.openURL(constant.BANI_DB_URL);
@@ -168,6 +188,29 @@ const AboutScreen = ({ navigation }) => {
             {`${STRINGS.APP_VERSION}: ${getVersion()} (${getBuildNumber()})`}
           </Text>
         </View>
+
+        {/* This device's FCM token, handed to the share sheet. A campaign is
+            tested against one phone by pasting its token into the Firebase
+            console's "send test message"; without a way to get the token off
+            the device that test cannot be run. Only rendered once the token
+            exists — a device that refused notifications never gets one. */}
+        {pushToken ? (
+          <Pressable
+            onPress={sharePushToken}
+            accessibilityRole="button"
+            accessibilityLabel={STRINGS.PUSH_TOKEN}
+            accessibilityHint={STRINGS.PUSH_TOKEN_HINT}
+            hitSlop={layout.hitSlop}
+            style={{ gap: space.xs }}
+          >
+            <Text variant="caption" color="link">
+              {STRINGS.PUSH_TOKEN}
+            </Text>
+            <Text variant="caption" color="textSecondary">
+              {STRINGS.PUSH_TOKEN_HINT}
+            </Text>
+          </Pressable>
+        ) : null}
       </ScrollView>
     </SafeArea>
   );

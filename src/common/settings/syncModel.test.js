@@ -43,6 +43,11 @@ describe("SYNCED_SETTINGS", () => {
     ];
     perDevice.forEach((key) => expect(SYNCED_SETTING_KEYS).not.toContain(key));
   });
+
+  // The one font a reader chooses. The app's own font is fixed and stays out.
+  it("syncs the Bani font", () => {
+    expect(SYNCED_SETTING_KEYS).toContain("baniFontFace");
+  });
 });
 
 describe("snapshotSettings / diffSettings", () => {

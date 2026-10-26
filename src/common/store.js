@@ -4,7 +4,11 @@ import { persistReducer, persistStore } from "redux-persist";
 import crashlyticsMiddleware from "./middleware/crashlytics";
 import reducer from "./reducer";
 
-const persistConfig = {
+// Every key not blacklisted below is persisted, and that is the whole of how a
+// setting is remembered — `isStatusBar` included. There is deliberately no
+// `version` or `migrate` here: a migration rewrites a value the user already
+// chose, and no setting in this store has ever needed that.
+export const persistConfig = {
   key: "root",
   storage: AsyncStorage,
   // The reader tick counters and the player drag flag are momentary UI state.

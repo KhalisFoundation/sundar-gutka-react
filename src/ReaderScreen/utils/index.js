@@ -155,21 +155,24 @@ const PURATAN_TALL_RE = /[>Â∆åO9E]/g;
  * The padding, in em, a Puratan line needs so its tallest glyph clears the line
  * above. Zero when nothing in it rises past the baseline room it already has.
  */
-// KNOWN: `content` is the div's HTML, not just its text, so the `>` closing a
-// vishraam or Larivaar Assist <span style='…'> counts as the tall Ik Onkar
-// glyph and pads the line ~1.5em. Should scan text only. Unreachable until the
-// Puratan face can be chosen: `constant.PURATAN_HASTLIKHAT`, the font file and
-// its @font-face in gutkahtml.js all arrive with the upcoming PR that adds the
-// font, and this fix is planned with it.
+// The markup a line can carry: vishraam and Larivaar Assist spans. A tag opens
+// with a letter or a slash — which the ASCII Ik Onkar `<>` does not, so the
+// glyph being measured survives.
+const MARKUP_RE = /<\/?[a-zA-Z][^>]*>/g;
+
 export const puratanHeadroom = (content, lineHeightRatio) => {
+  // The text only. Scanned as HTML, the `>` closing a vishraam or Larivaar
+  // Assist <span style='…'> read as the tall Ik Onkar and padded every such
+  // line by about one and a half em.
+  const text = String(content ?? "").replace(MARKUP_RE, "");
   let tallest = 0;
   // `lastIndex` is reset because the regex is global and shared.
   PURATAN_TALL_RE.lastIndex = 0;
-  let hit = PURATAN_TALL_RE.exec(content);
+  let hit = PURATAN_TALL_RE.exec(text);
   while (hit !== null) {
     const y = PURATAN_TALL[hit[0]];
     if (y > tallest) tallest = y;
-    hit = PURATAN_TALL_RE.exec(content);
+    hit = PURATAN_TALL_RE.exec(text);
   }
   if (!tallest) return 0;
   const ratio = lineHeightRatio || PURATAN_NATURAL_RATIO;

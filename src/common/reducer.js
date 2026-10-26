@@ -27,8 +27,35 @@ const transliterationLanguage = createReducer(constant.ENGLISH, {
   [actionTypes.SET_TRANSLITERATION]: (state, action) => action.value,
 });
 
-const fontFace = createReducer(constant.GURBANI_AKHAR_TRUE, {
+// The app's own font — lists, headers, titles. Fixed to Baloo Paaji now: the
+// one font a reader chooses is the Bani font below. See HomeScreen.
+const fontFace = createReducer(constant.BALOO_PAAJI, {
   [actionTypes.SET_FONT_FACE]: (state, action) => action.value,
+});
+
+// Font used only for the Bani (scripture) text inside the Reader's WebView —
+// independent of `fontFace`, which drives Gurmukhi titles elsewhere in the app.
+//
+// Until this split, `fontFace` WAS the Bani font. A reader who had chosen one
+// keeps it: on the first launch that has no `baniFontFace` persisted, the old
+// choice is carried across once.
+const baniFontFace = createReducer(constant.GURBANI_AKHAR_TRUE, {
+  "persist/REHYDRATE": (state, action) => {
+    const persisted = action.payload;
+    if (!persisted) return state;
+    if (persisted.baniFontFace !== undefined) return persisted.baniFontFace;
+    return typeof persisted.fontFace === "string" && persisted.fontFace
+      ? persisted.fontFace
+      : state;
+  },
+  [actionTypes.SET_BANI_FONT_FACE]: (state, action) => action.value,
+});
+
+// The Bani font the reader picked for THEMSELVES, as opposed to one a theme
+// applied. A theme with no face of its own restores it — see applyTheme. Null
+// until one is known. Persisted, so a trip through a theme cannot lose it.
+const ownBaniFontFace = createReducer(null, {
+  [actionTypes.SET_OWN_BANI_FONT_FACE]: (state, action) => action.value,
 });
 const language = createReducer(constant.Default.toUpperCase(), {
   [actionTypes.SET_LANGUAGE]: (state, action) => action.value,
@@ -217,14 +244,22 @@ const audioManifest = (state = {}, action) => {
   }
 };
 
-const autoScrollSpeedObj = (state = {}, action) => {
+// ONE auto-scroll speed for every bani. It was kept per bani, so a speed
+// chosen in Jaap Sahib meant nothing in Japji Sahib and every bani started at
+// the default again. Per device, not per account: see settings/syncModel.
+const autoScrollSpeed = (state = null, action) => {
   switch (action.type) {
     case actionTypes.SET_AUTO_SCROLL_SPEED:
-      return { ...state, ...action.value };
+      return action.value;
     default:
       return state;
   }
 };
+
+// The per-bani map the speed used to live in. Read-only now: nothing writes
+// it, and it stays registered only so an existing install's persisted values
+// can seed `autoScrollSpeed` the first time the slider is shown.
+const autoScrollSpeedObj = (state = {}) => state;
 
 const baniOrder = (state = null, action) => {
   switch (action.type) {
@@ -863,6 +898,8 @@ const appReducer = combineReducers({
   isNightMode,
   fontSize,
   fontFace,
+  baniFontFace,
+  ownBaniFontFace,
   language,
   transliterationLanguage,
   isTransliteration,
@@ -895,6 +932,7 @@ const appReducer = combineReducers({
   isReminders,
   reminderBanis,
   reminderSound,
+  autoScrollSpeed,
   autoScrollSpeedObj,
   baniOrder,
   baniList,

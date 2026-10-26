@@ -17,6 +17,7 @@ import { ScreenHeader } from "../common/components/ui";
 import Account from "./components/account";
 import Audio from "./components/audio";
 import AutoScroll from "./components/autoScroll";
+import BaniFontFaceComponent from "./components/baniFontFace";
 import BaniLengthComponent from "./components/baniLength";
 import CollectStatistics from "./components/collectStatistics";
 import ListItemWithIcon from "./components/comon/ListitemWithIcon";
@@ -24,7 +25,6 @@ import { SettingsSection } from "./components/comon/SettingsRow";
 import DatabaseUpdateBanner from "./components/databaseUpdate";
 import Donate from "./components/donate";
 import EditBaniOrder from "./components/editBaniOrder";
-import FontFaceComponent from "./components/fontFace";
 import FontSizeComponent from "./components/fontSize";
 import KeepAwake from "./components/keepAwake";
 import LanguageComponent from "./components/language";
@@ -106,7 +106,7 @@ const Settings = ({ navigation, route = undefined }) => {
 
           <SettingsSection title={DISPLAY_OPTIONS}>
             <FontSizeComponent />
-            <FontFaceComponent />
+            <BaniFontFaceComponent />
             <LanguageComponent language={language} />
             <TransliterationComponent />
             <TranslationComponent />

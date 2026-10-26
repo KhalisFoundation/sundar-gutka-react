@@ -240,6 +240,12 @@ const htmlTemplate = (
 }');
     }
     @font-face {
+      font-family: '${constant.PURATAN_HASTLIKHAT}';
+      src: url('${getFontFaceURL(constant.PURATAN_HASTLIKHAT)}') format('truetype'),local('${
+  constant.PURATAN_HASTLIKHAT
+}');
+    }
+    @font-face {
       font-family: '${constant.BALOO_PAAJI}';
       src: url('${getFontFaceURL(constant.BALOO_PAAJI)}') format('truetype'),local('${
   constant.BALOO_PAAJI

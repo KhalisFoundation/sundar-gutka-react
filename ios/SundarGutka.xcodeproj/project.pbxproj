@@ -15,6 +15,7 @@
 		711185CC02C64148849936C6 /* GurbaniAkharTrue.ttf in Resources */ = {isa = PBXBuildFile; fileRef = FAE2F7F86FB14C858E603117 /* GurbaniAkharTrue.ttf */; };
 		7805EE342D930CA0008726B1 /* AppDelegate.swift in Sources */ = {isa = PBXBuildFile; fileRef = 7805EE332D930CA0008726B1 /* AppDelegate.swift */; };
 		81AB9BB82411601600AC10FF /* LaunchScreen.storyboard in Resources */ = {isa = PBXBuildFile; fileRef = 81AB9BB72411601600AC10FF /* LaunchScreen.storyboard */; };
+		9C4F1A7E63B24D0FA1E58C30 /* Puratan_Hastlikhat.ttf in Resources */ = {isa = PBXBuildFile; fileRef = 3D71B0C58AE1472E9F60D4A2 /* Puratan_Hastlikhat.ttf */; };
 		9C735B1F64F0CD433DFE1CD2 /* Pods_SundarGutka.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = 8C91DF7410D146A9CB955FE4 /* Pods_SundarGutka.framework */; };
 		9F26F74437CA410C9CED2877 /* Arial.ttf in Resources */ = {isa = PBXBuildFile; fileRef = 28D38692B74A4A1DAC2F2D3C /* Arial.ttf */; };
 		A469D6732B637179001A107B /* GoogleService-Info.plist in Resources */ = {isa = PBXBuildFile; fileRef = A469D6722B637179001A107B /* GoogleService-Info.plist */; };
@@ -49,6 +50,7 @@
 		13B07FB51A68108700A75B9A /* Images.xcassets */ = {isa = PBXFileReference; lastKnownFileType = folder.assetcatalog; name = Images.xcassets; path = SundarGutka/Images.xcassets; sourceTree = "<group>"; };
 		13B07FB61A68108700A75B9A /* Info.plist */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = text.plist.xml; name = Info.plist; path = SundarGutka/Info.plist; sourceTree = "<group>"; };
 		28D38692B74A4A1DAC2F2D3C /* Arial.ttf */ = {isa = PBXFileReference; explicitFileType = undefined; fileEncoding = 9; includeInIndex = 0; lastKnownFileType = unknown; name = Arial.ttf; path = ../assets/fonts/Arial.ttf; sourceTree = "<group>"; };
+		3D71B0C58AE1472E9F60D4A2 /* Puratan_Hastlikhat.ttf */ = {isa = PBXFileReference; explicitFileType = undefined; fileEncoding = 9; includeInIndex = 0; lastKnownFileType = unknown; name = Puratan_Hastlikhat.ttf; path = ../assets/fonts/Puratan_Hastlikhat.ttf; sourceTree = "<group>"; };
 		6A13EDB20C5F49D4980F2FC1 /* BalooPaaji2-SemiBold.ttf */ = {isa = PBXFileReference; explicitFileType = undefined; fileEncoding = 9; includeInIndex = 0; lastKnownFileType = unknown; name = "BalooPaaji2-SemiBold.ttf"; path = "../assets/fonts/BalooPaaji2-SemiBold.ttf"; sourceTree = "<group>"; };
 		7805EE332D930CA0008726B1 /* AppDelegate.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = AppDelegate.swift; sourceTree = "<group>"; };
 		787CCE4A2CB49B1B00633E99 /* AdSupport.framework */ = {isa = PBXFileReference; lastKnownFileType = wrapper.framework; name = AdSupport.framework; path = Platforms/MacOSX.platform/Developer/SDKs/MacOSX15.0.sdk/System/Library/Frameworks/AdSupport.framework; sourceTree = DEVELOPER_DIR; };
@@ -192,6 +194,7 @@
 				FAE2F7F86FB14C858E603117 /* GurbaniAkharTrue.ttf */,
 				E2026864AD524AAFB03C8E1F /* BalooPaaji2-Regular.ttf */,
 				6A13EDB20C5F49D4980F2FC1 /* BalooPaaji2-SemiBold.ttf */,
+				3D71B0C58AE1472E9F60D4A2 /* Puratan_Hastlikhat.ttf */,
 			);
 			name = Resources;
 			sourceTree = "<group>";
@@ -305,6 +308,7 @@
 				F00557B100F7FA7802293CBE /* PrivacyInfo.xcprivacy in Resources */,
 				6CD9DBAD0DA24CED921BDC7F /* BalooPaaji2-Regular.ttf in Resources */,
 				B0A7833D8F9848A1B4112DEB /* BalooPaaji2-SemiBold.ttf in Resources */,
+				9C4F1A7E63B24D0FA1E58C30 /* Puratan_Hastlikhat.ttf in Resources */,
 			);
 			runOnlyForDeploymentPostprocessing = 0;
 		};
@@ -471,7 +475,7 @@
 					"$(inherited)",
 				);
 				INFOPLIST_FILE = SundarGutkaTests/Info.plist;
-				IPHONEOS_DEPLOYMENT_TARGET = 12.4;
+				IPHONEOS_DEPLOYMENT_TARGET = 15.1;
 				LD_RUNPATH_SEARCH_PATHS = (
 					"$(inherited)",
 					"@executable_path/Frameworks",
@@ -494,7 +498,7 @@
 				BUNDLE_LOADER = "$(TEST_HOST)";
 				COPY_PHASE_STRIP = NO;
 				INFOPLIST_FILE = SundarGutkaTests/Info.plist;
-				IPHONEOS_DEPLOYMENT_TARGET = 12.4;
+				IPHONEOS_DEPLOYMENT_TARGET = 15.1;
 				LD_RUNPATH_SEARCH_PATHS = (
 					"$(inherited)",
 					"@executable_path/Frameworks",
@@ -538,7 +542,6 @@
 				ENABLE_RESOURCE_ACCESS_PRINTING = NO;
 				ENABLE_RESOURCE_ACCESS_USB = NO;
 				INFOPLIST_FILE = SundarGutka/Info.plist;
-				IPHONEOS_DEPLOYMENT_TARGET = 15.6;
 				LD_RUNPATH_SEARCH_PATHS = (
 					"$(inherited)",
 					"@executable_path/Frameworks",
@@ -589,7 +592,6 @@
 				ENABLE_RESOURCE_ACCESS_PRINTING = NO;
 				ENABLE_RESOURCE_ACCESS_USB = NO;
 				INFOPLIST_FILE = SundarGutka/Info.plist;
-				IPHONEOS_DEPLOYMENT_TARGET = 15.6;
 				LD_RUNPATH_SEARCH_PATHS = (
 					"$(inherited)",
 					"@executable_path/Frameworks",
@@ -675,7 +677,7 @@
 					"${PODS_CONFIGURATION_BUILD_DIR}/React-graphics/React_graphics.framework/Headers",
 					"${PODS_CONFIGURATION_BUILD_DIR}/React-graphics/React_graphics.framework/Headers/react/renderer/graphics/platform/ios",
 				);
-				IPHONEOS_DEPLOYMENT_TARGET = 15.6;
+				IPHONEOS_DEPLOYMENT_TARGET = 15.1;
 				LD_RUNPATH_SEARCH_PATHS = (
 					/usr/lib/swift,
 					"$(inherited)",
@@ -762,7 +764,7 @@
 					"${PODS_CONFIGURATION_BUILD_DIR}/React-graphics/React_graphics.framework/Headers",
 					"${PODS_CONFIGURATION_BUILD_DIR}/React-graphics/React_graphics.framework/Headers/react/renderer/graphics/platform/ios",
 				);
-				IPHONEOS_DEPLOYMENT_TARGET = 15.6;
+				IPHONEOS_DEPLOYMENT_TARGET = 15.1;
 				LD_RUNPATH_SEARCH_PATHS = (
 					/usr/lib/swift,
 					"$(inherited)",

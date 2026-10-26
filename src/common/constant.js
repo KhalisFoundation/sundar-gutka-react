@@ -15,6 +15,11 @@ export default {
   BALOO_PAAJI_SEMI_BOLD: "BalooPaaji2-SemiBold",
   GURBANI_AKHAR_HEAVY_TRUE: "GurbaniAkharHeavyTrue",
   ANMOL_LIPI: "AnmolLipiSG",
+  // Kulbir Singh Thind's manuscript hand, from tatkhalsa.org. ASCII-encoded like
+  // Gurbani Akhar and Anmol Lipi, so it reads the same `gurmukhi` column they do.
+  // The value is the font's own PostScript name, which is also its filename —
+  // iOS resolves the @font-face url against the bundle by that name.
+  PURATAN_HASTLIKHAT: "Puratan_Hastlikhat",
   READER: "Reader",
   SETTINGS: "Settings",
   DASHBOARD: "Dashboard",
@@ -73,6 +78,7 @@ export default {
   BOOKMARKS: "Bookmarks",
   FONT_SIZE: "fontSize",
   FONT_FACE: "fontFace",
+  BANI_FONT_FACE: "baniFontFace",
   LANGUAGE: "appLanguage",
   TRANSLITERATION_LANGUAGE: "transliterationLanguage",
   SPANISH: "spanish",
@@ -87,6 +93,7 @@ export default {
   STATUS_BAR: "statusBar",
   PARAGRAPH: "paragraph",
   AUTO_SCROLL: "autoScroll",
+  AUTO_SCROLL_SPEED: "autoScrollSpeed",
   AUDIO: "audio",
   AUDIO_AUTO_PLAY: "audioAutoPlay",
   AUDIO_SYNC_SCROLL: "audioSyncScroll",

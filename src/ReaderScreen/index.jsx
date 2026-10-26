@@ -69,6 +69,9 @@ const PLAYER_TOUCH_ECHO_MS = 500;
 // eslint-disable-next-line no-underscore-dangle
 const isDevBuild = Boolean(global.__DEV__);
 
+// How often the reading position is saved while the page moves.
+const POSITION_SAVE_MS = 5000;
+
 const Reader = ({ navigation, route }) => {
   const { theme } = useTheme();
   const styles = useThemedStyles(createStyles);
@@ -109,9 +112,8 @@ const Reader = ({ navigation, route }) => {
   const isAudioFeatureOn = isAudioFeatureEnabled ?? true;
   const isTransliteration = useSelector((state) => state.isTransliteration);
   const fontSize = useSelector((state) => state.fontSize);
-  // The bani is drawn in the font chosen in Settings. (A separate bani-only
-  // font setting comes with a later PR.)
-  const fontFace = useSelector((state) => state.fontFace);
+  // The bani is drawn in the Bani font; the rest of the app is Baloo Paaji.
+  const baniFontFace = useSelector((state) => state.baniFontFace);
   const isLarivaar = useSelector((state) => state.isLarivaar);
   const isLarivaarAssist = useSelector((state) => state.isLarivaarAssist);
   const isEnglishTranslation = useSelector((state) => state.isEnglishTranslation);
@@ -396,6 +398,19 @@ const Reader = ({ navigation, route }) => {
       dispatch(actions.setPosition(elementIdToSave, id, sequenceToSave));
     }
   }, [dispatch, id]);
+  // The periodic save while reading (see the scroll-elementId message). Read
+  // through a ref so the message handler need not change with `id`; cleared on
+  // a bani swap, where it would file the old bani's place under the new one.
+  const saveScrollPositionRef = useRef(saveScrollPosition);
+  saveScrollPositionRef.current = saveScrollPosition;
+  const positionSaveTimerRef = useRef(null);
+  useEffect(
+    () => () => {
+      clearTimeout(positionSaveTimerRef.current);
+      positionSaveTimerRef.current = null;
+    },
+    [id]
+  );
 
   useEffect(() => {
     dispatch(actions.setCurrentBani({ id, title, titleUni }));
@@ -545,7 +560,7 @@ const Reader = ({ navigation, route }) => {
         shabad,
         isTransliteration,
         fontSize,
-        fontFace,
+        baniFontFace,
         isEnglishTranslation,
         isPunjabiTranslation,
         isSpanishTranslation,
@@ -562,7 +577,7 @@ const Reader = ({ navigation, route }) => {
     shabad,
     isTransliteration,
     fontSize,
-    fontFace,
+    baniFontFace,
     isEnglishTranslation,
     isPunjabiTranslation,
     isSpanishTranslation,
@@ -624,6 +639,21 @@ const Reader = ({ navigation, route }) => {
     };
   }, [saveScrollPosition]);
 
+  // A bani swapped in with no place of its own starts at the top. The refs
+  // still held the previous bani's place: the page was restored to its
+  // element or sequence, and the periodic save filed it under this bani.
+  const positionForIdRef = useRef(id);
+  useEffect(() => {
+    if (positionForIdRef.current === id) return;
+    positionForIdRef.current = id;
+    if (!savePosition?.[id]) {
+      currentElementIdRef.current = null;
+      currentSequenceRef.current = null;
+    }
+    // Only on a swap: `savePosition` changes on every save of this bani.
+    // eslint-disable-next-line react-hooks/exhaustive-deps
+  }, [id]);
+
   // Set currentElementId from savePosition when it changes
   useEffect(() => {
     if (savePosition && id && savePosition[id]) {
@@ -677,11 +707,12 @@ const Reader = ({ navigation, route }) => {
       // the blank bottom inset in view — not the progress percentage. That
       // reaches 100% while the last lines are still where the returning nav bar
       // lands, so bringing the bars back on it covered them.
-      // KNOWN: that includes the iOS scroll guard, so WKWebView's spurious
-      // scroll-to-0 on return from Bookmarks can post "edge" and keep the idle
-      // auto-hide off until the reader scrolls. Fix planned in an upcoming
-      // Reader PR.
+      //
+      // Except inside the iOS scroll guard below: WKWebView's spurious
+      // scroll-to-0 on return from Bookmarks posts "edge" too, and taken as the
+      // top it kept the idle auto-hide off until the reader scrolled.
       if (data === "edge") {
+        if (iPadScrollGuardRef.current) return;
         atEdgeRef.current = true;
         clearBarsIdleTimer();
         setBarsVisible(true, "scroll_edge");
@@ -745,14 +776,20 @@ const Reader = ({ navigation, route }) => {
         // Only update refs here — do NOT dispatch to Redux on every scroll tick.
         // saveScrollPosition() reads these refs and dispatches once on blur,
         // back, unmount or backgrounding.
-        // KNOWN: a foreground crash or OOM kill skips all four, so that
-        // session's position is lost. `dev` saved on every tick. A debounced
-        // periodic save is planned in an upcoming Reader PR.
+        // A foreground crash or OOM kill skips all four, so the position is
+        // also saved while reading — at most once every few seconds, not per
+        // tick as `dev` did.
         const payload = data.split("scroll-elementId-")[1];
         const [elementId, seqPart] = payload.split("|seq-");
         const sequence = seqPart || null;
         currentElementIdRef.current = elementId;
         currentSequenceRef.current = sequence;
+        if (!positionSaveTimerRef.current) {
+          positionSaveTimerRef.current = setTimeout(() => {
+            positionSaveTimerRef.current = null;
+            saveScrollPositionRef.current();
+          }, POSITION_SAVE_MS);
+        }
         if (shouldNavigateBack) {
           navigation.goBack();
           setShouldNavigateBack(false);
