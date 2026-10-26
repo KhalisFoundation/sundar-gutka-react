@@ -46,6 +46,10 @@ const RECORDING = {
 
 const LINE_PATH = `${RNFS.CachesDirectoryPath}/kids-line.m4a`;
 
+// An AAC file that holds only its header is a few hundred bytes; half a second of speech is a
+// few thousand.
+const MIN_RECORDING_BYTES = 1024;
+
 // iOS treats a path without file:// as relative to Caches; Android wants a plain path.
 const recorderPath = () => (Platform.OS === "ios" ? `file://${LINE_PATH}` : LINE_PATH);
 
@@ -335,7 +339,7 @@ export const useRecordedRecitation = (pauris, { optedIn = false, reciter: wanted
 
     const bytes = await recordedBytes();
     if (gone()) return abandon();
-    if (bytes <= 0) {
+    if (bytes < MIN_RECORDING_BYTES) {
       await removeRecording();
       return { retry: NOT_CAUGHT_MESSAGE };
     }

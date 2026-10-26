@@ -52,6 +52,8 @@ export const HorizontalScroll = ({ children = null }) => (
 );
 
 // Rendered inside the design's UIProvider, so the sheet takes the night/day palette from it.
+// The app's ui/Sheet draws its own title row and actions; the design draws those itself and
+// only needs a window, so this stays a thin wrapper over Overlay.
 export const Sheet = ({ open, onOpenChange, title, children = null }) => {
   const { t } = useUI();
   // The scrim is the app's own, so every overlay dims the screen the same way.

@@ -2,9 +2,8 @@
 // timings from the chosen reciter's lyrics file, matched by verse Seq as the reader does.
 import { useEffect, useMemo, useState } from "react";
 import { useSelector } from "react-redux";
-import constant from "@common/constant";
+import { getBaniLinesByToken } from "@database";
 import { fetchManifest } from "@service";
-import initDB from "../../database/connect";
 import { getTranslitText } from "../../database/utils";
 import fetchLRCData from "../../ReaderScreen/components/AudioPlayer/utils/fetchLRC";
 import { reciterForUrl } from "../reciters";
@@ -17,12 +16,6 @@ const SEQ_RANGE = { japji: [5, 378] };
 // stanzas (Jaap Sahib), so they are cut after each verse number.
 const MAX_SECTION_LINES = 26;
 const VERSE_END = /॥[੦-੯]+॥\s*$/;
-
-const LENGTH_COLUMN = {
-  [constant.EXTRA_LONG]: constant.EXISTS_BUDDHA_DAL,
-  [constant.LONG]: constant.EXISTS_TAKSAL,
-  [constant.SHORT]: constant.EXISTS_SGPS,
-};
 
 const toLine = (row, language) => ({
   seq: row.Seq,
@@ -92,26 +85,8 @@ export const attachTimings = (sections, lrc = []) => {
   }));
 };
 
-const queryRows = async (token, column) => {
-  const db = await initDB();
-  return new Promise((resolve, reject) => {
-    db.transaction((tx) => {
-      tx.executeSql(
-        `SELECT s.Bani, s.Seq, s.Paragraph, s.GurmukhiUni, s.Transliterations, s.Translations
-         FROM mv_Banis_Shabad s JOIN Banis b ON b.ID = s.Bani
-         WHERE b.Token = ? AND s.header = 0 AND s.${column} = 1
-           AND (s.MangalPosition IS NULL OR s.MangalPosition = 'current')
-         ORDER BY s.Seq ASC;`,
-        [token],
-        (_tx, { rows }) => resolve(Array.from({ length: rows.length }, (_, i) => rows.item(i))),
-        (error) => reject(error)
-      );
-    });
-  });
-};
-
 const loadText = async (token, length, language) => {
-  const rows = await queryRows(token, LENGTH_COLUMN[length] || constant.EXISTS_MEDIUM);
+  const rows = await getBaniLinesByToken(token, length);
   if (!rows.length) throw new Error(`No bani "${token}" in the database.`);
   return { baniId: rows[0].Bani, sections: toSections(rows, language, SEQ_RANGE[token]) };
 };

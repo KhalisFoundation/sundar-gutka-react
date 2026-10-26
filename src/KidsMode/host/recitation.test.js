@@ -213,7 +213,20 @@ describe("useRecordedRecitation", () => {
       await scoreAs(60, "like"),
       await scoreAs(95, "unclear"),
     ];
-    expect(outcomes).toMatchSnapshot();
+    const [first, second, last] = outcomes;
+    expect(first).toEqual({ nextLine: 1, lineScore: 80 });
+    expect(second).toEqual({ nextLine: 2, lineScore: 60 });
+    expect(last.score).toBe(78);
+    expect(last.review.map((line) => [line.score, line.stars])).toEqual([
+      [80, 2],
+      [60, 1],
+      [95, 3],
+    ]);
+    const words = last.review.map((line) => line.tokens.filter((token) => token.kind === "word"));
+    expect(words.map((line) => line[1].feedback.state)).toEqual(["check", "like", "unclear"]);
+    expect(words[0][0].feedback.clip).toBe("https://score.example/reference/bjs/5/words/0.wav");
+    // Only scored words carry a practise flag; none of them is marked here.
+    expect(words.flat().some((token) => token.feedback.practise)).toBe(false);
   });
 
   it("starts on the first line it can check, and says so when it can check none", async () => {

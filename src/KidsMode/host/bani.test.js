@@ -1,7 +1,7 @@
 import { renderHook, waitFor } from "@testing-library/react-native";
 import { setMockState } from "@common/test-utils/mocks/react-redux";
+import { getBaniLinesByToken } from "@database";
 import { fetchManifest } from "@service";
-import initDB from "../../database/connect";
 import fetchLRCData from "../../ReaderScreen/components/AudioPlayer/utils/fetchLRC";
 import { attachTimings, toSections, useBani } from "./bani";
 
@@ -10,7 +10,7 @@ jest.mock("@common", () => {
   const { createCommonMock } = require("@common/test-utils/mocks/common");
   return createCommonMock({ constant: { ENGLISH: "ENGLISH", HINDI: "HINDI" } });
 });
-jest.mock("../../database/connect", () => jest.fn());
+jest.mock("@database", () => ({ getBaniLinesByToken: jest.fn() }));
 jest.mock("@service", () => ({ fetchManifest: jest.fn() }));
 jest.mock("../../ReaderScreen/components/AudioPlayer/utils/fetchLRC", () => jest.fn());
 
@@ -23,14 +23,7 @@ const row = (Seq, Paragraph, GurmukhiUni = `line ${Seq}`, Bani = 10) => ({
   Translations: JSON.stringify({ en: { bdb: `meaning ${Seq}` } }),
 });
 
-const serve = (rows) =>
-  initDB.mockResolvedValue({
-    transaction: (run) =>
-      run({
-        executeSql: (_sql, _params, ok) =>
-          ok(null, { rows: { length: rows.length, item: (i) => rows[i] } }),
-      }),
-  });
+const serve = (rows) => getBaniLinesByToken.mockResolvedValue(rows);
 
 const CDN = "https://cdn.example/audios";
 const track = (folder) => ({

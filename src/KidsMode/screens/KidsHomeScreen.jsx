@@ -4,6 +4,8 @@ import { useSafeAreaInsets } from "react-native-safe-area-context";
 import { useDispatch, useSelector } from "react-redux";
 import { useNavigation } from "@react-navigation/native";
 import { logError } from "@common/firebase/crashlytics";
+import { STRINGS } from "@common";
+import { Button } from "../../common/components/ui";
 import catalog from "../design/bani-catalog.json";
 import { freshExperience, parseExperience } from "../design/experience";
 import KidsApp from "../design/KidsApp";
@@ -26,7 +28,6 @@ const LOAD_FAILED = "Kids Mode could not load. Please try again.";
 const styles = StyleSheet.create({
   center: { flex: 1, alignItems: "center", justifyContent: "center" },
   message: { margin: 24, textAlign: "center" },
-  link: { padding: 12 },
 });
 
 // Builds the HostPorts the design screens expect from this app's own stack.
@@ -96,9 +97,7 @@ const KidsHomeScreen = () => {
     body = (
       <View style={[styles.center, { backgroundColor: palette.subtle }]}>
         <Text style={[styles.message, { color: palette.text }]}>{LOAD_FAILED}</Text>
-        <Text style={[styles.link, { color: palette.primary }]} onPress={() => navigation.goBack()}>
-          Back
-        </Text>
+        <Button title={STRINGS.GO_BACK} variant="ghost" onPress={() => navigation.goBack()} />
       </View>
     );
   } else if (!bani.ready) {

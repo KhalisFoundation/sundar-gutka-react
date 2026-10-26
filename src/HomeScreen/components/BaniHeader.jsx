@@ -1,7 +1,6 @@
 import React from "react";
 import { View } from "react-native";
 import { useSelector } from "react-redux";
-import { Icon } from "@rneui/themed";
 import { paletteFor } from "@theme/screenPalettes";
 import PropTypes from "prop-types";
 import { SettingsIconComponent } from "@common/components";
@@ -14,6 +13,8 @@ import {
   GradientDivider,
   constant,
 } from "@common";
+import { IconAction } from "../../common/components/ui";
+import KidsIcon from "../../KidsMode/KidsIcon";
 import createStyles from "../styles";
 
 // The title carries NO explicit lineHeight — see the note on the name below.
@@ -49,12 +50,10 @@ const BaniHeader = ({ navigate }) => {
               when on, takes this slot. */}
           <View style={styles.settingsWrap}>
             {kidsEnabled && (
-              <Icon
-                name="account-child-outline"
-                type="material-community"
-                size={26}
+              <IconAction
+                icon={KidsIcon}
+                label={STRINGS.KIDS_MODE}
                 color={iconColor}
-                accessibilityLabel={STRINGS.KIDS_MODE}
                 onPress={() => navigate("KidsHome")}
               />
             )}

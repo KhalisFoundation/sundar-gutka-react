@@ -13,6 +13,11 @@ const mockGoBack = jest.fn();
 jest.mock("@react-navigation/native", () => ({ useNavigation: () => ({ goBack: mockGoBack }) }));
 // Crashlytics is native; the app's own tests mock it the same way.
 jest.mock("@common/firebase/crashlytics", () => ({ logError: jest.fn() }));
+jest.mock("@common", () => ({ STRINGS: { GO_BACK: "Go back" } }));
+jest.mock("../../common/components/ui", () => {
+  const { Text } = require("react-native");
+  return { Button: ({ title, onPress }) => <Text onPress={onPress}>{title}</Text> };
+});
 jest.mock("react-native-safe-area-context", () => ({
   useSafeAreaInsets: () => ({ top: 10, bottom: 20 }),
 }));
