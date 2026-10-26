@@ -286,6 +286,14 @@ describe("useRecordedRecitation", () => {
     expect(retried).toBe(true);
   });
 
+  it("treats a file under a kilobyte as no recording", async () => {
+    const { result } = await mount();
+    await act(() => result.current.start(1, 3));
+    RNFS.stat.mockResolvedValue({ isFile: () => true, size: 600 });
+    expect(await stopLine(result)).toEqual({ retry: NOT_CAUGHT_MESSAGE });
+    expect(scoreRecording).not.toHaveBeenCalled();
+  });
+
   it("does not post an empty or missing recording", async () => {
     const { result } = await mount();
     await act(() => result.current.start(1, 3));
