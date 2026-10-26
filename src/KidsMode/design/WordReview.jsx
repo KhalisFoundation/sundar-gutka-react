@@ -49,7 +49,7 @@ export function WordReview({ pauri, score, textSize, onPractice, measured }) {
     {practise && <View style={[s.info, { backgroundColor: t.retry, gap: 6 }]}><Small>Say this word</Small><Copy style={{ fontFamily: bold, fontSize: textSize, lineHeight: lineFor(textSize), color: t.retryText }}>{practise.text}</Copy><Small>Line {practise.lineIndex + 1}</Small><Button onPress={() => {audio.stop();setSelected(practise);}}>Say this word</Button>{clipButton(practise)}</View>}
     {flagged.length > 0 && !practise && <Button secondary onPress={() => setSelected(flagged[0])}>Words to practise</Button>}
     <View style={{ gap: 22, marginVertical: 12 }}>{review.map((line, lineIndex) => <View key={lineIndex} style={{ gap: 7 }}>
-      <View style={s.rowBody}><View style={s.grow}><Small>Line {lineIndex + 1}</Small></View>{judged && <Stars count={line.stars ?? starsForScore(line.score)} />}<Small>{line.score}%</Small></View>
+      <View style={s.rowBody}><View style={s.grow}><Small>Line {lineIndex + 1}</Small></View>{judged && line.score != null && <Stars count={line.stars ?? starsForScore(line.score)} />}<Small>{line.score == null ? 'Not checked' : `${line.score}%`}</Small></View>
       <Text style={[s.text, { fontSize: textSize, lineHeight: lineFor(textSize), color: t.text }]}>{line.tokens.map((token, index) => token.kind === 'separator' ? <Text key={index}>{token.text}</Text> : <Text key={index} accessible accessibilityRole="button" accessibilityLabel={wordLabel(token.feedback)} onPress={() => {audio.stop();setSelected(token.feedback);}} style={wordStyle(token.feedback)}>{token.text}</Text>)}</Text>
     </View>)}</View>
     <Sheet open={selected !== null} onOpenChange={(open) => {if (!open) close();}} title="Practice coach">
