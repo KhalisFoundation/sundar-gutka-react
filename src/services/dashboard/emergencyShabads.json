@@ -1,0 +1,1405 @@
+{
+  "_generated": "2026-06-18",
+  "_source": "api.banidb.com/v2/random",
+  "count": 100,
+  "shabads": [
+    {
+      "lines": [
+        "ਫਰੀਦਾ ਪਾੜਿ ਪਟੋਲਾ ਧਜ ਕਰੀ ਕੰਬਲੜੀ ਪਹਿਰੇਉ ॥",
+        "ਜਿਨੑੀ ਵੇਸੀ ਸਹੁ ਮਿਲੈ ਸੇਈ ਵੇਸ ਕਰੇਉ ॥੧੦੩॥"
+      ],
+      "translation": "Fareed, I have torn my clothes to tatters; now I wear only a rough blanket.",
+      "transliteration": [
+        "fareedhaa paaR paTolaa dhaj karee ka(n)balaRee pahireau ||",
+        "jin(h)ee vesee sahu milai seiee ves kareau ||103||"
+      ],
+      "raag": "ਸਲੋਕ ਸੇਖ ਫਰੀਦ ਕ",
+      "ang": 1383,
+      "shabadId": 5311
+    },
+    {
+      "lines": [
+        "ਨਾਨਕ ਵੀਚਾਰਹਿ ਸੰਤ ਮੁਨਿ ਜਨਾਂ ਚਾਰਿ ਵੇਦ ਕਹੰਦੇ ॥",
+        "ਭਗਤ ਮੁਖੈ ਤੇ ਬੋਲਦੇ ਸੇ ਵਚਨ ਹੋਵੰਦੇ ॥"
+      ],
+      "translation": "O Nanak, the Saints and the silent sages think, and the four Vedas proclaim,",
+      "transliteration": [
+        "naanak veechaareh sa(n)t mun janaa(n) chaar vedh kaha(n)dhe ||",
+        "bhagat mukhai te boladhe se vachan hova(n)dhe ||"
+      ],
+      "raag": "ਰਾਗੁ ਗਉੜੀ",
+      "ang": 316,
+      "shabadId": 1215
+    },
+    {
+      "lines": [
+        "ਲਾਲ ਰੰਗੁ ਤਿਸ ਕਉ ਲਗਾ ਜਿਸ ਕੇ ਵਡਭਾਗਾ ॥",
+        "ਮੈਲਾ ਕਦੇ ਨ ਹੋਵਈ ਨਹ ਲਾਗੈ ਦਾਗਾ ॥੧॥"
+      ],
+      "translation": "One is dyed in the color of the Lord's Love, by great good fortune.",
+      "transliteration": [
+        "laal ra(n)g tis kau lagaa jis ke vaddabhaagaa ||",
+        "mailaa kadhe na hoviee neh laagai dhaagaa ||1||"
+      ],
+      "raag": "ਰਾਗੁ ਬਿਲਾਵਲ",
+      "ang": 808,
+      "shabadId": 3039
+    },
+    {
+      "lines": [
+        "ਪਾਰਬ੍ਰਹਮ ਸਭ ਊਚ ਬਿਰਾਜੇ ॥",
+        "ਆਪੇ ਥਾਪਿ ਉਥਾਪੇ ਸਾਜੇ ॥"
+      ],
+      "translation": "The Abode of the Supreme Lord God is above all.",
+      "transliteration": [
+        "paarabraham sabh uooch biraaje ||",
+        "aape thaap uthaape saaje ||"
+      ],
+      "raag": "ਰਾਗੁ ਮਾਰੂ",
+      "ang": 1084,
+      "shabadId": 3796
+    },
+    {
+      "lines": [
+        "ਅਮਲੁ ਗਲੋਲਾ ਕੂੜ ਕਾ ਦਿਤਾ ਦੇਵਣਹਾਰਿ ॥",
+        "ਮਤੀ ਮਰਣੁ ਵਿਸਾਰਿਆ ਖੁਸੀ ਕੀਤੀ ਦਿਨ ਚਾਰਿ ॥"
+      ],
+      "translation": "The Great Giver has given the intoxicating drug of falsehood.",
+      "transliteration": [
+        "amal galolaa kooR kaa dhitaa dhevanahaar ||",
+        "matee maran visaariaa khusee keetee dhin chaar ||"
+      ],
+      "raag": "ਸਿਰੀ ਰਾਗੁ",
+      "ang": 15,
+      "shabadId": 58
+    },
+    {
+      "lines": [
+        "ਇੰਦ੍ਰ ਲੋਕ ਸਿਵ ਲੋਕਹਿ ਜੈਬੋ ॥",
+        "ਓਛੇ ਤਪ ਕਰਿ ਬਾਹੁਰਿ ਐਬੋ ॥੧॥"
+      ],
+      "translation": "Mortals may go to the Realm of Indra, or the Realm of Shiva,",
+      "transliteration": [
+        "ei(n)dhr lok siv lokeh jaibo ||",
+        "ochhe tap kar baahur aaibo ||1||"
+      ],
+      "raag": "ਰਾਗੁ ਧਨਾਸਰੀ",
+      "ang": 692,
+      "shabadId": 2629
+    },
+    {
+      "lines": [
+        "ਕਬੀਰ ਗਰਬੁ ਨ ਕੀਜੀਐ ਚਾਮ ਲਪੇਟੇ ਹਾਡ ॥",
+        "ਹੈਵਰ ਊਪਰਿ ਛਤ੍ਰ ਤਰ ਤੇ ਫੁਨਿ ਧਰਨੀ ਗਾਡ ॥੩੭॥"
+      ],
+      "translation": "Kabeer, do not be so proud of your bones wrapped up in skin.",
+      "transliteration": [
+        "kabeer garab na keejeeaai chaam lapeTe haadd ||",
+        "haivar uoopar chhatr tar te fun dharanee gaadd ||37||"
+      ],
+      "raag": "ਸਲੋਕ ਭਗਤ ਕਬੀਰ ਜੀਉ ਕੇ",
+      "ang": 1366,
+      "shabadId": 5005
+    },
+    {
+      "lines": [
+        "ਅੰਤਰਿ ਹਰਿ ਗੁਰੂ ਧਿਆਇਦਾ ਵਡੀ ਵਡਿਆਈ ॥",
+        "ਤੁਸਿ ਦਿਤੀ ਪੂਰੈ ਸਤਿਗੁਰੂ ਘਟੈ ਨਾਹੀ ਇਕੁ ਤਿਲੁ ਕਿਸੈ ਦੀ ਘਟਾਈ ॥"
+      ],
+      "translation": "Great is the greatness of the Guru, who meditates on the Lord within.",
+      "transliteration": [
+        "a(n)tar har guroo dhiaaidhaa vaddee vaddiaaiee ||",
+        "tus dhitee poorai satiguroo ghaTai naahee ik til kisai dhee ghaTaiee ||"
+      ],
+      "raag": "ਰਾਗੁ ਗਉੜੀ",
+      "ang": 306,
+      "shabadId": 1157
+    },
+    {
+      "lines": [
+        "ਦਰਸਨ ਕੀ ਪਿਆਸ ਜਿਸੁ ਨਰ ਹੋਇ ॥",
+        "ਏਕਤੁ ਰਾਚੈ ਪਰਹਰਿ ਦੋਇ ॥"
+      ],
+      "translation": "That person, who thirsts for the Blessed Vision of the Lord's Darshan,",
+      "transliteration": [
+        "dharasan kee piaas jis nar hoi ||",
+        "ekat raachai parahar dhoi ||"
+      ],
+      "raag": "ਰਾਗੁ ਬਸੰਤ",
+      "ang": 1188,
+      "shabadId": 4225
+    },
+    {
+      "lines": [
+        "ਆਪੇ ਬਖਸੇ ਦਇਆ ਕਰਿ ਗੁਰ ਸਤਿਗੁਰ ਬਚਨੀ ॥",
+        "ਅਨਦਿਨੁ ਸੇਵੀ ਗੁਣ ਰਵਾ ਮਨੁ ਸਚੈ ਰਚਨੀ ॥"
+      ],
+      "translation": "The Merciful Lord Himself forgives those who dwell upon the Word of the Guru, the True Guru.",
+      "transliteration": [
+        "aape bakhase dhiaa kar gur satigur bachanee ||",
+        "anadhin sevee gun ravaa man sachai rachanee ||"
+      ],
+      "raag": "ਰਾਗੁ ਸੂਹੀ",
+      "ang": 791,
+      "shabadId": 2972
+    },
+    {
+      "lines": [
+        "ਐਸੀ ਲਾਲ ਤੁਝ ਬਿਨੁ ਕਉਨੁ ਕਰੈ ॥",
+        "ਗਰੀਬ ਨਿਵਾਜੁ ਗੁਸਈਆ ਮੇਰਾ ਮਾਥੈ ਛਤ੍ਰੁ ਧਰੈ ॥੧॥ ਰਹਾਉ ॥"
+      ],
+      "translation": "O Love, who else but You could do such a thing?",
+      "transliteration": [
+        "aaisee laal tujh bin kaun karai ||",
+        "gareeb nivaaj gusieeaa meraa maathai chhatr dharai ||1|| rahaau ||"
+      ],
+      "raag": "ਰਾਗੁ ਮਾਰੂ",
+      "ang": 1106,
+      "shabadId": 3973
+    },
+    {
+      "lines": [
+        "ਹਰਿ ਨਾਮੁ ਰਿਦੈ ਪਰੋਇਆ ॥",
+        "ਸਭੁ ਕਾਜੁ ਹਮਾਰਾ ਹੋਇਆ ॥"
+      ],
+      "translation": "I have woven the Lord's Name into the fabric of my heart.",
+      "transliteration": [
+        "har naam ridhai paroiaa ||",
+        "sabh kaaj hamaaraa hoiaa ||"
+      ],
+      "raag": "ਰਾਗੁ ਸੋਰਠਿ",
+      "ang": 627,
+      "shabadId": 2371
+    },
+    {
+      "lines": [
+        "ਛੋਡਿ ਛੋਡਿ ਰੇ ਬਿਖਿਆ ਕੇ ਰਸੂਆ ॥",
+        "ਉਰਝਿ ਰਹਿਓ ਰੇ ਬਾਵਰ ਗਾਵਰ ਜਿਉ ਕਿਰਖੈ ਹਰਿਆਇਓ ਪਸੂਆ ॥੧॥ ਰਹਾਉ ॥"
+      ],
+      "translation": "Give them up - give up the pleasures of corruption;",
+      "transliteration": [
+        "chhodd chhodd re bikhiaa ke rasooaa ||",
+        "aurajh rahio re baavar gaavar jiau kirakhai hariaaio pasooaa ||1|| rahaau ||"
+      ],
+      "raag": "ਰਾਗੁ ਗਉੜੀ",
+      "ang": 206,
+      "shabadId": 647
+    },
+    {
+      "lines": [
+        "ਤਿਸੁ ਤੂ ਸੇਵਿ ਜਿਨਿ ਤੂ ਕੀਆ ॥",
+        "ਤਿਸੁ ਅਰਾਧਿ ਜਿਨਿ ਜੀਉ ਦੀਆ ॥"
+      ],
+      "translation": "Serve the One who created You.",
+      "transliteration": [
+        "tis too sev jin too keeaa ||",
+        "tis araadh jin jeeau dheeaa ||"
+      ],
+      "raag": "ਰਾਗੁ ਬਸੰਤ",
+      "ang": 1182,
+      "shabadId": 4204
+    },
+    {
+      "lines": [
+        "ਤੂੰ ਆਪੇ ਹੀ ਸਿਧ ਸਾਧਿਕੋ ਤੂ ਆਪੇ ਹੀ ਜੁਗ ਜੋਗੀਆ ॥",
+        "ਤੂ ਆਪੇ ਹੀ ਰਸ ਰਸੀਅੜਾ ਤੂ ਆਪੇ ਹੀ ਭੋਗ ਭੋਗੀਆ ॥"
+      ],
+      "translation": "You Yourself are the Siddha and the seeker; You Yourself are the Yoga and the Yogi.",
+      "transliteration": [
+        "too(n) aape hee sidh saadhiko too aape hee jug jogeeaa ||",
+        "too aape hee ras raseeaRaa too aape hee bhog bhogeeaa ||"
+      ],
+      "raag": "ਰਾਗੁ ਕਾਨੜਾ",
+      "ang": 1313,
+      "shabadId": 4766
+    },
+    {
+      "lines": [
+        "ਅਪਨੀ ਉਕਤਿ ਖਲਾਵੈ ਭੋਜਨ ਅਪਨੀ ਉਕਤਿ ਖੇਲਾਵੈ ॥",
+        "ਸਰਬ ਸੂਖ ਭੋਗ ਰਸ ਦੇਵੈ ਮਨ ਹੀ ਨਾਲਿ ਸਮਾਵੈ ॥੧॥"
+      ],
+      "translation": "In His own way, He provides us with our food; in His own way, He plays with us.",
+      "transliteration": [
+        "apanee ukat khalaavai bhojan apanee ukat khelaavai ||",
+        "sarab sookh bhog ras dhevai man hee naal samaavai ||1||"
+      ],
+      "raag": "ਰਾਗੁ ਧਨਾਸਰੀ",
+      "ang": 680,
+      "shabadId": 2594
+    },
+    {
+      "lines": [
+        "ਘਨਿਹਰ ਬਰਸਿ ਸਗਲ ਜਗੁ ਛਾਇਆ ॥",
+        "ਭਏ ਕ੍ਰਿਪਾਲ ਪ੍ਰੀਤਮ ਪ੍ਰਭ ਮੇਰੇ ਅਨਦ ਮੰਗਲ ਸੁਖ ਪਾਇਆ ॥੧॥ ਰਹਾਉ ॥"
+      ],
+      "translation": "The clouds have rained down all over the world.",
+      "transliteration": [
+        "ghanihar baras sagal jag chhaiaa ||",
+        "bhe kirapaal preetam prabh mere anadh ma(n)gal sukh paiaa ||1|| rahaau ||"
+      ],
+      "raag": "ਰਾਗੁ ਮਲਾਰ",
+      "ang": 1268,
+      "shabadId": 4575
+    },
+    {
+      "lines": [
+        "ਸਾਸਤੁ ਬੇਦੁ ਸਿੰਮ੍ਰਿਤਿ ਸਰੁ ਤੇਰਾ ਸੁਰਸਰੀ ਚਰਣ ਸਮਾਣੀ ॥",
+        "ਸਾਖਾ ਤੀਨਿ ਮੂਲੁ ਮਤਿ ਰਾਵੈ ਤੂੰ ਤਾਂ ਸਰਬ ਵਿਡਾਣੀ ॥੧॥"
+      ],
+      "translation": "The Shaastras, the Vedas and the Simritees are contained in the ocean of Your Name; the River Ganges is held in Your Feet.",
+      "transliteration": [
+        "saasat bedh si(n)mirat sar teraa surasaree charan samaanee ||",
+        "saakhaa teen mool mat raavai too(n) taa(n) sarab viddaanee ||1||"
+      ],
+      "raag": "ਰਾਗੁ ਆਸਾ",
+      "ang": 422,
+      "shabadId": 1621
+    },
+    {
+      "lines": [
+        "ਧਨੁ ਸੁ ਵੇਲਾ ਜਿਤੁ ਦਰਸਨੁ ਕਰਣਾ ॥",
+        "ਹਉ ਬਲਿਹਾਰੀ ਸਤਿਗੁਰ ਚਰਣਾ ॥੧॥"
+      ],
+      "translation": "Blessed is that time, when the Blessed Vision of His Darshan is given;",
+      "transliteration": [
+        "dhanu su velaa jit dharasan karanaa ||",
+        "hau balihaaree satigur charanaa ||1||"
+      ],
+      "raag": "ਰਾਗੁ ਵਡਹੰਸੁ",
+      "ang": 562,
+      "shabadId": 2160
+    },
+    {
+      "lines": [
+        "ਹਰਿ ਜੀਉ ਸੇਵਿਹੁ ਅਗਮ ਅਪਾਰਾ ॥",
+        "ਤਿਸ ਦਾ ਅੰਤੁ ਨ ਪਾਈਐ ਪਾਰਾਵਾਰਾ ॥"
+      ],
+      "translation": "Serve the Dear Lord, the inaccessible and infinite.",
+      "transliteration": [
+        "har jeeau sevih agam apaaraa ||",
+        "tis dhaa a(n)t na paieeaai paaraavaaraa ||"
+      ],
+      "raag": "ਰਾਗੁ ਮਾਰੂ",
+      "ang": 1055,
+      "shabadId": 3769
+    },
+    {
+      "lines": [
+        "ਘੜੀਆ ਸਭੇ ਗੋਪੀਆ ਪਹਰ ਕੰਨੑ ਗੋਪਾਲ ॥",
+        "ਗਹਣੇ ਪਉਣੁ ਪਾਣੀ ਬੈਸੰਤਰੁ ਚੰਦੁ ਸੂਰਜੁ ਅਵਤਾਰ ॥"
+      ],
+      "translation": "All the hours are the milk-maids, and the quarters of the day are the Krishnas.",
+      "transliteration": [
+        "ghaReeaa sabhe gopeeaa pahar ka(n)n(h) gopaal ||",
+        "gahane paun paanee baisa(n)tar cha(n)dh sooraj avataar ||"
+      ],
+      "raag": "ਰਾਗੁ ਆਸਾ",
+      "ang": 465,
+      "shabadId": 1699
+    },
+    {
+      "lines": [
+        "ਬਧਾ ਚਟੀ ਜੋ ਭਰੇ ਨਾ ਗੁਣੁ ਨਾ ਉਪਕਾਰੁ ॥",
+        "ਸੇਤੀ ਖੁਸੀ ਸਵਾਰੀਐ ਨਾਨਕ ਕਾਰਜੁ ਸਾਰੁ ॥੩॥"
+      ],
+      "translation": "Paying a fine under pressure, does not bring either merit or goodness.",
+      "transliteration": [
+        "badhaa chaTee jo bhare naa gun naa upakaar ||",
+        "setee khusee savaareeaai naanak kaaraj saar ||3||"
+      ],
+      "raag": "ਰਾਗੁ ਸੂਹੀ",
+      "ang": 787,
+      "shabadId": 2934
+    },
+    {
+      "lines": [
+        "ਰਾਮ ਨਾਮੁ ਰਤਨ ਕੋਠੜੀ ਗੜ ਮੰਦਰਿ ਏਕ ਲੁਕਾਨੀ ॥",
+        "ਸਤਿਗੁਰੁ ਮਿਲੈ ਤ ਖੋਜੀਐ ਮਿਲਿ ਜੋਤੀ ਜੋਤਿ ਸਮਾਨੀ ॥੧॥"
+      ],
+      "translation": "The Lord's Name is a jewel, hidden in a chamber of the palace of the body-fortress.",
+      "transliteration": [
+        "raam naam ratan koThaRee gaR ma(n)dhar ek lukaanee ||",
+        "satigur milai ta khojeeaai mil jotee jot samaanee ||1||"
+      ],
+      "raag": "ਰਾਗੁ ਬਸੰਤ",
+      "ang": 1178,
+      "shabadId": 4191
+    },
+    {
+      "lines": [
+        "ਜਤ ਕਤਹ ਤਤਹ ਦ੍ਰਿਸਟੰ ਸ੍ਵਰਗ ਮਰਤ ਪਯਾਲ ਲੋਕਹ ॥",
+        "ਸਰਬਤ੍ਰ ਰਮਣੰ ਗੋਬਿੰਦਹ ਨਾਨਕ ਲੇਪ ਛੇਪ ਨ ਲਿਪੵਤੇ ॥੩੬॥"
+      ],
+      "translation": "Wherever I look, I see the Lord, whether in this world, in paradise, or the nether regions of the underworld.",
+      "transliteration": [
+        "jat kateh tateh dhirasaTa(n) savairag marat payaal lokeh ||",
+        "sarabatr ramana(n) gobi(n)dheh naanak lep chhep na lipayete ||36||"
+      ],
+      "raag": "ਸਲੋਕ ਸਹਸਕ੍ਰਿਤੀ",
+      "ang": 1357,
+      "shabadId": 4935
+    },
+    {
+      "lines": [
+        "ਜੋ ਹਰਿ ਸੇਵਹਿ ਤਿਨ ਬਲਿ ਜਾਉ ॥",
+        "ਤਿਨ ਹਿਰਦੈ ਸਾਚੁ ਸਚਾ ਮੁਖਿ ਨਾਉ ॥"
+      ],
+      "translation": "I am a sacrifice to those who serve the Lord.",
+      "transliteration": [
+        "jo har seveh tin bal jaau ||",
+        "tin hiradhai saach sachaa mukh naau ||"
+      ],
+      "raag": "ਰਾਗੁ ਧਨਾਸਰੀ",
+      "ang": 665,
+      "shabadId": 2538
+    },
+    {
+      "lines": [
+        "ਹਰਿ ਕੇ ਦਰਸਨ ਕੋ ਮਨਿ ਚਾਉ ॥",
+        "ਕਰਿ ਕਿਰਪਾ ਸਤਸੰਗਿ ਮਿਲਾਵਹੁ ਤੁਮ ਦੇਵਹੁ ਅਪਨੋ ਨਾਉ ॥ ਰਹਾਉ ॥"
+      ],
+      "translation": "My mind yearns for the Blessed Vision of the Lord's Darshan.",
+      "transliteration": [
+        "har ke dharasan ko man chaau ||",
+        "kar kirapaa satasa(n)g milaavahu tum dhevahu apano naau || rahaau ||"
+      ],
+      "raag": "ਰਾਗੁ ਕੇਦਾਰਾ",
+      "ang": 1119,
+      "shabadId": 4007
+    },
+    {
+      "lines": [
+        "ਸਸਾ ਸਿਆਨਪ ਛਾਡੁ ਇਆਨਾ ॥",
+        "ਹਿਕਮਤਿ ਹੁਕਮਿ ਨ ਪ੍ਰਭੁ ਪਤੀਆਨਾ ॥"
+      ],
+      "translation": "SASSA: Give up your clever tricks, you ignorant fool!",
+      "transliteration": [
+        "sasaa siaanap chhaadd iaanaa ||",
+        "hikamat hukam na prabh pateeaanaa ||"
+      ],
+      "raag": "ਰਾਗੁ ਗਉੜੀ",
+      "ang": 260,
+      "shabadId": 859
+    },
+    {
+      "lines": [
+        "ਜੀਉ ਡਰਤੁ ਹੈ ਆਪਣਾ ਕੈ ਸਿਉ ਕਰੀ ਪੁਕਾਰ ॥",
+        "ਦੂਖ ਵਿਸਾਰਣੁ ਸੇਵਿਆ ਸਦਾ ਸਦਾ ਦਾਤਾਰੁ ॥੧॥"
+      ],
+      "translation": "My soul is afraid; to whom should I complain?",
+      "transliteration": [
+        "jeeau ddarat hai aapanaa kai siau karee pukaar ||",
+        "dhookh visaaran seviaa sadhaa sadhaa dhaataar ||1||"
+      ],
+      "raag": "ਰਾਗੁ ਧਨਾਸਰੀ",
+      "ang": 660,
+      "shabadId": 2525
+    },
+    {
+      "lines": [
+        "ਗੁਰੁ ਪੂਰਾ ਵਡਭਾਗੀ ਪਾਈਐ ॥",
+        "ਮਿਲਿ ਸਾਧੂ ਹਰਿ ਨਾਮੁ ਧਿਆਈਐ ॥੧॥"
+      ],
+      "translation": "By great good fortune, the Perfect Guru is found.",
+      "transliteration": [
+        "gur pooraa vaddabhaagee paieeaai ||",
+        "mil saadhoo har naam dhiaaieeaai ||1||"
+      ],
+      "raag": "ਰਾਗੁ ਬਿਲਾਵਲ",
+      "ang": 804,
+      "shabadId": 3017
+    },
+    {
+      "lines": [
+        "ਸੋ ਜਪੁ ਸੋ ਤਪੁ ਜਿ ਸਤਿਗੁਰ ਭਾਵੈ ॥",
+        "ਸਤਿਗੁਰ ਕੈ ਭਾਣੈ ਵਡਿਆਈ ਪਾਵੈ ॥"
+      ],
+      "translation": "That alone is chanting, and that alone is deep meditation, which is pleasing to the True Guru.",
+      "transliteration": [
+        "so jap so tap j satigur bhaavai ||",
+        "satigur kai bhaanai vaddiaaiee paavai ||"
+      ],
+      "raag": "ਰਾਗੁ ਗੂਜਰੀ",
+      "ang": 509,
+      "shabadId": 1883
+    },
+    {
+      "lines": [
+        "ਹਰਿ ਹਰਿ ਨਾਮੁ ਪਵਿਤੁ ਹੈ ਨਾਮੁ ਜਪਤ ਦੁਖੁ ਜਾਇ ॥",
+        "ਜਿਨ ਕਉ ਪੂਰਬਿ ਲਿਖਿਆ ਤਿਨ ਮਨਿ ਵਸਿਆ ਆਇ ॥"
+      ],
+      "translation": "The Name of the Lord, Har, Har, is Sacred and Immaculate. Chanting the Naam, pain is dispelled.",
+      "transliteration": [
+        "har har naam pavit hai naam japat dhukh jai ||",
+        "jin kau poorab likhiaa tin man vasiaa aai ||"
+      ],
+      "raag": "ਰਾਗੁ ਕਾਨੜਾ",
+      "ang": 1313,
+      "shabadId": 4771
+    },
+    {
+      "lines": [
+        "ਵੈਦੁ ਬੁਲਾਇਆ ਵੈਦਗੀ ਪਕੜਿ ਢੰਢੋਲੇ ਬਾਂਹ ॥",
+        "ਭੋਲਾ ਵੈਦੁ ਨ ਜਾਣਈ ਕਰਕ ਕਲੇਜੇ ਮਾਹਿ ॥੧॥"
+      ],
+      "translation": "The physician was called in; he touched my arm and felt my pulse.",
+      "transliteration": [
+        "vaidh bulaiaa vaidhagee pakaR dda(n)ddole baa(n)h ||",
+        "bholaa vaidh na jaaniee karak kaleje maeh ||1||"
+      ],
+      "raag": "ਰਾਗੁ ਮਲਾਰ",
+      "ang": 1279,
+      "shabadId": 4609
+    },
+    {
+      "lines": [
+        "ਕਬੀਰ ਹਰਿ ਕਾ ਸਿਮਰਨੁ ਛਾਡਿ ਕੈ ਪਾਲਿਓ ਬਹੁਤੁ ਕੁਟੰਬੁ ॥",
+        "ਧੰਧਾ ਕਰਤਾ ਰਹਿ ਗਇਆ ਭਾਈ ਰਹਿਆ ਨ ਬੰਧੁ ॥੧੦੬॥"
+      ],
+      "translation": "Kabeer, you have given up meditating on the Lord, and you have raised a large family.",
+      "transliteration": [
+        "kabeer har kaa simaran chhaadd kai paalio bahut kuTa(n)b ||",
+        "dha(n)dhaa karataa reh giaa bhaiee rahiaa na ba(n)dh ||106||"
+      ],
+      "raag": "ਸਲੋਕ ਭਗਤ ਕਬੀਰ ਜੀਉ ਕੇ",
+      "ang": 1370,
+      "shabadId": 5074
+    },
+    {
+      "lines": [
+        "ਕਬੀਰ ਚੋਟ ਸੁਹੇਲੀ ਸੇਲ ਕੀ ਲਾਗਤ ਲੇਇ ਉਸਾਸ ॥",
+        "ਚੋਟ ਸਹਾਰੈ ਸਬਦ ਕੀ ਤਾਸੁ ਗੁਰੂ ਮੈ ਦਾਸ ॥੧੮੩॥"
+      ],
+      "translation": "Kabeer, the stroke of a lance is easy to bear; it takes away the breath.",
+      "transliteration": [
+        "kabeer choT suhelee sel kee laagat lei usaas ||",
+        "choT sahaarai sabadh kee taas guroo mai dhaas ||183||"
+      ],
+      "raag": "ਸਲੋਕ ਭਗਤ ਕਬੀਰ ਜੀਉ ਕੇ",
+      "ang": 1374,
+      "shabadId": 5151
+    },
+    {
+      "lines": [
+        "ਪ੍ਰਥਮੇ ਛੋਡੀ ਪਰਾਈ ਨਿੰਦਾ ॥",
+        "ਉਤਰਿ ਗਈ ਸਭ ਮਨ ਕੀ ਚਿੰਦਾ ॥"
+      ],
+      "translation": "First, I gave up slandering others.",
+      "transliteration": [
+        "prathame chhoddee paraiee ni(n)dhaa ||",
+        "autar giee sabh man kee chi(n)dhaa ||"
+      ],
+      "raag": "ਰਾਗੁ  ਭੈਰੳ",
+      "ang": 1147,
+      "shabadId": 4102
+    },
+    {
+      "lines": [
+        "ਪਾਨੀ ਮੈਲਾ ਮਾਟੀ ਗੋਰੀ ॥",
+        "ਇਸ ਮਾਟੀ ਕੀ ਪੁਤਰੀ ਜੋਰੀ ॥੧॥"
+      ],
+      "translation": "The water of the sperm is cloudy, and the egg of the ovary is crimson.",
+      "transliteration": [
+        "paanee mailaa maaTee goree ||",
+        "eis maaTee kee putaree joree ||1||"
+      ],
+      "raag": "ਰਾਗੁ ਗਉੜੀ",
+      "ang": 336,
+      "shabadId": 1344
+    },
+    {
+      "lines": [
+        "ਨਾਉ ਫਕੀਰੈ ਪਾਤਿਸਾਹੁ ਮੂਰਖ ਪੰਡਿਤੁ ਨਾਉ ॥",
+        "ਅੰਧੇ ਕਾ ਨਾਉ ਪਾਰਖੂ ਏਵੈ ਕਰੇ ਗੁਆਉ ॥"
+      ],
+      "translation": "The beggar is known as an emperor, and the fool is known as a religious scholar.",
+      "transliteration": [
+        "naau fakeerai paatisaahu moorakh pa(n)ddit naau ||",
+        "a(n)dhe kaa naau paarakhoo evai kare guaau ||"
+      ],
+      "raag": "ਰਾਗੁ ਮਲਾਰ",
+      "ang": 1288,
+      "shabadId": 4668
+    },
+    {
+      "lines": [
+        "ਫਰੀਦਾ ਗਲਂੀ ਸੁ ਸਜਣ ਵੀਹ ਇਕੁ ਢੂੰਢੇਦੀ ਨ ਲਹਾਂ ॥",
+        "ਧੁਖਾਂ ਜਿਉ ਮਾਂਲੀਹ ਕਾਰਣਿ ਤਿੰਨੑਾ ਮਾ ਪਿਰੀ ॥੮੭॥"
+      ],
+      "translation": "Fareed, there are dozens who say they are friends; I search, but I cannot find even one.",
+      "transliteration": [
+        "fareedhaa gala(n)ee su sajan veeh ik ddoo(n)ddedhee na lahaa(n) ||",
+        "dhukhaa(n) jiau maa(n)leeh kaaran ti(n)n(h)aa maa piree ||87||"
+      ],
+      "raag": "ਸਲੋਕ ਸੇਖ ਫਰੀਦ ਕ",
+      "ang": 1382,
+      "shabadId": 5295
+    },
+    {
+      "lines": [
+        "ਜੇ ਓਹੁ ਅਠਸਠਿ ਤੀਰਥ ਨੑਾਵੈ ॥",
+        "ਜੇ ਓਹੁ ਦੁਆਦਸ ਸਿਲਾ ਪੂਜਾਵੈ ॥"
+      ],
+      "translation": "Someone may bathe at the sixty-eight sacred shrines of pilgrimage,",
+      "transliteration": [
+        "je oh aThasaTh teerath n(h)aavai ||",
+        "je oh dhuaadhas silaa poojaavai ||"
+      ],
+      "raag": "ਰਾਗੁ ਗੋਂਡ",
+      "ang": 875,
+      "shabadId": 3270
+    },
+    {
+      "lines": [
+        "ਗੁਰ ਪੂਰੇ ਕੀ ਦਾਤਿ ਨਿਤ ਦੇਵੈ ਚੜੈ ਸਵਾਈਆ ॥",
+        "ਤੁਸਿ ਦੇਵੈ ਆਪਿ ਦਇਆਲੁ ਨ ਛਪੈ ਛਪਾਈਆ ॥"
+      ],
+      "translation": "The Perfect Guru bestows His gifts, which increase day by day.",
+      "transliteration": [
+        "gur poore kee dhaat nit dhevai chaRai savaieeaa ||",
+        "tus dhevai aap dhiaal na chhapai chhapaieeaa ||"
+      ],
+      "raag": "ਰਾਗੁ ਸਾਰੰਗ",
+      "ang": 1250,
+      "shabadId": 4519
+    },
+    {
+      "lines": [
+        "ਜੋ ਜਾਨੈ ਤਿਸੁ ਸਦਾ ਸੁਖੁ ਹੋਇ ॥",
+        "ਆਪਿ ਮਿਲਾਇ ਲਏ ਪ੍ਰਭੁ ਸੋਇ ॥"
+      ],
+      "translation": "One who knows Him, obtains everlasting peace.",
+      "transliteration": [
+        "jo jaanai tis sadhaa sukh hoi ||",
+        "aap milai le prabh soi ||"
+      ],
+      "raag": "ਰਾਗੁ ਗਉੜੀ",
+      "ang": 294,
+      "shabadId": 1077
+    },
+    {
+      "lines": [
+        "ਬਾਬਾ ਆਇਆ ਹੈ ਉਠਿ ਚਲਣਾ ਇਹੁ ਜਗੁ ਝੂਠੁ ਪਸਾਰੋਵਾ ॥",
+        "ਸਚਾ ਘਰੁ ਸਚੜੈ ਸੇਵੀਐ ਸਚੁ ਖਰਾ ਸਚਿਆਰੋਵਾ ॥"
+      ],
+      "translation": "O Baba, whoever has come, will rise up and leave; this world is merely a false show.",
+      "transliteration": [
+        "baabaa aaiaa hai uTh chalanaa ih jag jhooTh pasaarovaa ||",
+        "sachaa ghar sachaRai seveeaai sach kharaa sachiaarovaa ||"
+      ],
+      "raag": "ਰਾਗੁ ਵਡਹੰਸੁ",
+      "ang": 581,
+      "shabadId": 2198
+    },
+    {
+      "lines": [
+        "ਚਉਦਹਿ ਚਾਰਿ ਕੁੰਟ ਪ੍ਰਭ ਆਪ ॥",
+        "ਸਗਲ ਭਵਨ ਪੂਰਨ ਪਰਤਾਪ ॥"
+      ],
+      "translation": "The fourteenth day of the lunar cycle: God Himself is in all four directions.",
+      "transliteration": [
+        "chaudheh chaar ku(n)T prabh aap ||",
+        "sagal bhavan pooran parataap ||"
+      ],
+      "raag": "ਰਾਗੁ ਗਉੜੀ",
+      "ang": 299,
+      "shabadId": 1114
+    },
+    {
+      "lines": [
+        "ਜੀਵਾ ਤੇਰੈ ਨਾਇ ਮਨਿ ਆਨੰਦੁ ਹੈ ਜੀਉ ॥",
+        "ਸਾਚੋ ਸਾਚਾ ਨਾਉ ਗੁਣ ਗੋਵਿੰਦੁ ਹੈ ਜੀਉ ॥"
+      ],
+      "translation": "I live by Your Name; my mind is in ecstasy, Lord.",
+      "transliteration": [
+        "jeevaa terai nai man aana(n)dh hai jeeau ||",
+        "saacho saachaa naau gun govi(n)dh hai jeeau ||"
+      ],
+      "raag": "ਰਾਗੁ ਧਨਾਸਰੀ",
+      "ang": 688,
+      "shabadId": 2622
+    },
+    {
+      "lines": [
+        "ਭਭਾ ਭਰਮੁ ਮਿਟਾਵਹੁ ਅਪਨਾ ॥",
+        "ਇਆ ਸੰਸਾਰੁ ਸਗਲ ਹੈ ਸੁਪਨਾ ॥"
+      ],
+      "translation": "BHABHA: Cast out your doubt and delusion",
+      "transliteration": [
+        "bhabhaa bharam miTaavahu apanaa ||",
+        "eiaa sa(n)saar sagal hai supanaa ||"
+      ],
+      "raag": "ਰਾਗੁ ਗਉੜੀ",
+      "ang": 258,
+      "shabadId": 839
+    },
+    {
+      "lines": [
+        "ਮਿਹਰ ਮਸੀਤਿ ਸਿਦਕੁ ਮੁਸਲਾ ਹਕੁ ਹਲਾਲੁ ਕੁਰਾਣੁ ॥",
+        "ਸਰਮ ਸੁੰਨਤਿ ਸੀਲੁ ਰੋਜਾ ਹੋਹੁ ਮੁਸਲਮਾਣੁ ॥"
+      ],
+      "translation": "Let mercy be your mosque, faith your prayer-mat, and honest living your Koran.",
+      "transliteration": [
+        "mihar maseet sidhak musalaa hak halaal kuraan ||",
+        "saram su(n)nat seel rojaa hoh musalamaan ||"
+      ],
+      "raag": "ਰਾਗੁ ਮਾਝ",
+      "ang": 140,
+      "shabadId": 379
+    },
+    {
+      "lines": [
+        "ਪ੍ਰਭ ਜੀ ਤੂ ਮੇਰੇ ਪ੍ਰਾਨ ਅਧਾਰੈ ॥",
+        "ਨਮਸਕਾਰ ਡੰਡਉਤਿ ਬੰਦਨਾ ਅਨਿਕ ਬਾਰ ਜਾਉ ਬਾਰੈ ॥੧॥ ਰਹਾਉ ॥"
+      ],
+      "translation": "O Dear God, You are the Support of my breath of life.",
+      "transliteration": [
+        "prabh jee too mere praan adhaarai ||",
+        "namasakaar dda(n)ddaut ba(n)dhanaa anik baar jaau baarai ||1|| rahaau ||"
+      ],
+      "raag": "ਰਾਗੁ ਬਿਲਾਵਲ",
+      "ang": 820,
+      "shabadId": 3088
+    },
+    {
+      "lines": [
+        "ਜਿਨ ਡਿਠਿਆ ਮਨੁ ਰਹਸੀਐ ਕਿਉ ਪਾਈਐ ਤਿਨੑ ਸੰਗੁ ਜੀਉ ॥",
+        "ਸੰਤ ਸਜਨ ਮਨ ਮਿਤ੍ਰ ਸੇ ਲਾਇਨਿ ਪ੍ਰਭ ਸਿਉ ਰੰਗੁ ਜੀਉ ॥"
+      ],
+      "translation": "Gazing upon them, my mind is enraptured. How can I join them and be with them?",
+      "transliteration": [
+        "jin ddiThiaa man rahaseeaai kiau paieeaai tin(h) sa(n)g jeeau ||",
+        "sa(n)t sajan man mitr se lain prabh siau ra(n)g jeeau ||"
+      ],
+      "raag": "ਰਾਗੁ ਸੂਹੀ",
+      "ang": 760,
+      "shabadId": 2878
+    },
+    {
+      "lines": [
+        "ੴ ਸਤਿ ਨਾਮੁ ਕਰਤਾ ਪੁਰਖੁ ਨਿਰਭਉ ਨਿਰਵੈਰੁ ਅਕਾਲ ਮੂਰਤਿ ਅਜੂਨੀ ਸੈਭੰ ਗੁਰ ਪ੍ਰਸਾਦਿ ॥",
+        "ਆਦਿ ਸਚੁ ਜੁਗਾਦਿ ਸਚੁ ॥"
+      ],
+      "translation": "One Universal Creator God. The Name Is Truth. Creative Being Personified. No Fear. No Hatred. Image Of The Undying, Beyond Birth, Self-Existent. By Guru's Grace ~",
+      "transliteration": [
+        "ikOankaar sat naam karataa purakh nirabhau niravair akaal moorat ajoonee saibha(n) gur prasaadh ||",
+        "aadh sach jugaadh sach ||"
+      ],
+      "raag": "ਜਪ",
+      "ang": 1,
+      "shabadId": 1
+    },
+    {
+      "lines": [
+        "ਵਾਊ ਸੰਦੇ ਕਪੜੇ ਪਹਿਰਹਿ ਗਰਬਿ ਗਵਾਰ ॥",
+        "ਨਾਨਕ ਨਾਲਿ ਨ ਚਲਨੀ ਜਲਿ ਬਲਿ ਹੋਏ ਛਾਰੁ ॥੨॥"
+      ],
+      "translation": "He wears his body, like clothes of wind - what a proud fool he is!",
+      "transliteration": [
+        "vaauoo sa(n)dhe kapaRe pahireh garab gavaar ||",
+        "naanak naal na chalanee jal bal hoe chhaar ||2||"
+      ],
+      "raag": "ਰਾਗੁ ਗਉੜੀ",
+      "ang": 318,
+      "shabadId": 1226
+    },
+    {
+      "lines": [
+        "ਹਸਤ ਪੁਨੀਤ ਹੋਹਿ ਤਤਕਾਲ ॥",
+        "ਬਿਨਸਿ ਜਾਹਿ ਮਾਇਆ ਜੰਜਾਲ ॥"
+      ],
+      "translation": "The hands are sanctified instantly,",
+      "transliteration": [
+        "hasat puneet hoh tatakaal ||",
+        "binas jaeh maiaa ja(n)jaal ||"
+      ],
+      "raag": "ਰਾਗੁ ਗਉੜੀ",
+      "ang": 185,
+      "shabadId": 548
+    },
+    {
+      "lines": [
+        "ਕੰਚਨ ਕਾਇਆ ਨਿਰਮਲੀ ਜੋ ਸਚਿ ਨਾਮਿ ਸਚਿ ਲਾਗੀ ॥",
+        "ਨਿਰਮਲ ਜੋਤਿ ਨਿਰੰਜਨੁ ਪਾਇਆ ਗੁਰਮੁਖਿ ਭ੍ਰਮੁ ਭਉ ਭਾਗੀ ॥"
+      ],
+      "translation": "That body is golden and immaculate, which is attached to the True Name of the True Lord.",
+      "transliteration": [
+        "ka(n)chan kaiaa niramalee jo sach naam sach laagee ||",
+        "niramal jot nira(n)jan paiaa gurmukh bhram bhau bhaagee ||"
+      ],
+      "raag": "ਰਾਗੁ ਵਡਹੰਸੁ",
+      "ang": 590,
+      "shabadId": 2238
+    },
+    {
+      "lines": [
+        "ਕਬੀਰਾ ਰਾਮੁ ਨ ਚੇਤਿਓ ਜਰਾ ਪਹੂੰਚਿਓ ਆਇ ॥",
+        "ਲਾਗੀ ਮੰਦਿਰ ਦੁਆਰ ਤੇ ਅਬ ਕਿਆ ਕਾਢਿਆ ਜਾਇ ॥੧੩੨॥"
+      ],
+      "translation": "Kabeer, you have not contemplated the Lord, and now old age has overtaken you.",
+      "transliteration": [
+        "kabeeraa raam na chetio jaraa pahoo(n)chio aai ||",
+        "laagee ma(n)dhir dhuaar te ab kiaa kaaddiaa jai ||132||"
+      ],
+      "raag": "ਸਲੋਕ ਭਗਤ ਕਬੀਰ ਜੀਉ ਕੇ",
+      "ang": 1371,
+      "shabadId": 5100
+    },
+    {
+      "lines": [
+        "ਹਰਿ ਬਿਨੁ ਅਵਰ ਕ੍ਰਿਆ ਬਿਰਥੇ ॥",
+        "ਜਪ ਤਪ ਸੰਜਮ ਕਰਮ ਕਮਾਣੇ ਇਹਿ ਓਰੈ ਮੂਸੇ ॥੧॥ ਰਹਾਉ ॥"
+      ],
+      "translation": "Without the Lord, other actions are useless.",
+      "transliteration": [
+        "har bin avar kiraa birathe ||",
+        "jap tap sa(n)jam karam kamaane ieh orai moose ||1|| rahaau ||"
+      ],
+      "raag": "ਰਾਗੁ ਗਉੜੀ",
+      "ang": 216,
+      "shabadId": 684
+    },
+    {
+      "lines": [
+        "ਚਹੁ ਜੁਗੀ ਕਲਿ ਕਾਲੀ ਕਾਂਢੀ ਇਕ ਉਤਮ ਪਦਵੀ ਇਸੁ ਜੁਗ ਮਾਹਿ ॥",
+        "ਗੁਰਮੁਖਿ ਹਰਿ ਕੀਰਤਿ ਫਲੁ ਪਾਈਐ ਜਿਨ ਕਉ ਹਰਿ ਲਿਖਿ ਪਾਹਿ ॥"
+      ],
+      "translation": "Kali Yuga is called the Dark Age, but the most sublime state is attained in this age.",
+      "transliteration": [
+        "chahu jugee kal kaalee kaa(n)ddee ik utam padhavee is jug maeh ||",
+        "gurmukh har keerat fal paieeaai jin kau har likh paeh ||"
+      ],
+      "raag": "ਰਾਗੁ ਸੋਰਠਿ",
+      "ang": 651,
+      "shabadId": 2480
+    },
+    {
+      "lines": [
+        "ਮਨ ਕਰਹਲਾ ਵੀਚਾਰੀਆ ਵੀਚਾਰਿ ਦੇਖੁ ਸਮਾਲਿ ॥",
+        "ਬਨ ਫਿਰਿ ਥਕੇ ਬਨ ਵਾਸੀਆ ਪਿਰੁ ਗੁਰਮਤਿ ਰਿਦੈ ਨਿਹਾਲਿ ॥੧॥"
+      ],
+      "translation": "O contemplative camel-like mind, contemplate and look carefully.",
+      "transliteration": [
+        "man karahalaa veechaareeaa veechaar dhekh samaal ||",
+        "ban fir thake ban vaaseeaa pir gurmat ridhai nihaal ||1||"
+      ],
+      "raag": "ਰਾਗੁ ਗਉੜੀ",
+      "ang": 234,
+      "shabadId": 730
+    },
+    {
+      "lines": [
+        "ਹਰਿ ਹਰਿ ਧਿਆਇ ਮਨਾ ਖਿਨੁ ਨ ਵਿਸਾਰੀਐ ॥",
+        "ਰਾਮ ਰਾਮਾ ਰਾਮ ਰਮਾ ਕੰਠਿ ਉਰ ਧਾਰੀਐ ॥"
+      ],
+      "translation": "Meditate on the Lord, Har, Har, O mind; don't forget Him, even for an instant.",
+      "transliteration": [
+        "har har dhiaai manaa khin na visaareeaai ||",
+        "raam raamaa raam ramaa ka(n)Th ur dhaareeaai ||"
+      ],
+      "raag": "ਰਾਗੁ ਰਾਮਕਲੀ",
+      "ang": 925,
+      "shabadId": 3378
+    },
+    {
+      "lines": [
+        "ਬੋਲਹੁ ਭਈਆ ਰਾਮ ਨਾਮੁ ਪਤਿਤ ਪਾਵਨੋ ॥",
+        "ਹਰਿ ਸੰਤ ਭਗਤ ਤਾਰਨੋ ॥"
+      ],
+      "translation": "O Siblings of Destiny, chant the Name of the Lord, the Purifier of sinners.",
+      "transliteration": [
+        "bolahu bhieeaa raam naam patit paavano ||",
+        "har sa(n)t bhagat taarano ||"
+      ],
+      "raag": "ਰਾਗੁ ਬਿਲਾਵਲ",
+      "ang": 800,
+      "shabadId": 3006
+    },
+    {
+      "lines": [
+        "ਨਾਨਕ ਪਰਖੇ ਆਪ ਕਉ ਤਾ ਪਾਰਖੁ ਜਾਣੁ ॥",
+        "ਰੋਗੁ ਦਾਰੂ ਦੋਵੈ ਬੁਝੈ ਤਾ ਵੈਦੁ ਸੁਜਾਣੁ ॥"
+      ],
+      "translation": "O Nanak, if someone judges himself, only then is he known as a real judge.",
+      "transliteration": [
+        "naanak parakhe aap kau taa paarakh jaan ||",
+        "rog dhaaroo dhovai bujhai taa vaidh sujaan ||"
+      ],
+      "raag": "ਰਾਗੁ ਮਾਝ",
+      "ang": 148,
+      "shabadId": 433
+    },
+    {
+      "lines": [
+        "ਇਹੁ ਸਰੀਰੁ ਸਭੁ ਧਰਮੁ ਹੈ ਜਿਸੁ ਅੰਦਰਿ ਸਚੇ ਕੀ ਵਿਚਿ ਜੋਤਿ ॥",
+        "ਗੁਹਜ ਰਤਨ ਵਿਚਿ ਲੁਕਿ ਰਹੇ ਕੋਈ ਗੁਰਮੁਖਿ ਸੇਵਕੁ ਕਢੈ ਖੋਤਿ ॥"
+      ],
+      "translation": "This body is the home of Dharma; the Divine Light of the True Lord is within it.",
+      "transliteration": [
+        "eih sareer sabh dharam hai jis a(n)dhar sache kee vich jot ||",
+        "guhaj ratan vich luk rahe koiee gurmukh sevak kaddai khot ||"
+      ],
+      "raag": "ਰਾਗੁ ਗਉੜੀ",
+      "ang": 309,
+      "shabadId": 1169
+    },
+    {
+      "lines": [
+        "ਸਰੀਰ ਸਰੋਵਰ ਭੀਤਰੇ ਆਛੈ ਕਮਲ ਅਨੂਪ ॥",
+        "ਪਰਮ ਜੋਤਿ ਪੁਰਖੋਤਮੋ ਜਾ ਕੈ ਰੇਖ ਨ ਰੂਪ ॥੧॥"
+      ],
+      "translation": "Within the pool of the body, there is an incomparably beautiful lotus flower.",
+      "transliteration": [
+        "sareer sarovar bheetare aachhai kamal anoop ||",
+        "param jot purakhotamo jaa kai rekh na roop ||1||"
+      ],
+      "raag": "ਰਾਗੁ ਬਿਲਾਵਲ",
+      "ang": 857,
+      "shabadId": 3213
+    },
+    {
+      "lines": [
+        "ਸਿਮਰਤ ਨਾਮੁ ਰਿਦੈ ਸੁਖੁ ਪਾਇਆ ॥",
+        "ਕਰਿ ਕਿਰਪਾ ਭਗਤਂੀ ਪ੍ਰਗਟਾਇਆ ॥"
+      ],
+      "translation": "Meditating on the Naam, the Name of the Lord, my heart is filled with peace.",
+      "transliteration": [
+        "simarat naam ridhai sukh paiaa ||",
+        "kar kirapaa bhagata(n)ee pragaTaiaa ||"
+      ],
+      "raag": "ਰਾਗੁ ਮਾਝ",
+      "ang": 108,
+      "shabadId": 317
+    },
+    {
+      "lines": [
+        "ਸਤਿਗੁਰ ਤੇ ਗੁਣ ਊਪਜੈ ਜਾ ਪ੍ਰਭੁ ਮੇਲੈ ਸੋਇ ॥",
+        "ਸਹਜੇ ਨਾਮੁ ਧਿਆਈਐ ਗਿਆਨੁ ਪਰਗਟੁ ਹੋਇ ॥੧॥"
+      ],
+      "translation": "Merit is obtained from the True Guru, when God causes us to meet Him.",
+      "transliteration": [
+        "satigur te gun uoopajai jaa prabh melai soi ||",
+        "sahaje naam dhiaaieeaai giaan paragaT hoi ||1||"
+      ],
+      "raag": "ਰਾਗੁ ਆਸਾ",
+      "ang": 428,
+      "shabadId": 1633
+    },
+    {
+      "lines": [
+        "ਮੈ ਮਨਿ ਤਨਿ ਬਿਰਹੁ ਅਤਿ ਅਗਲਾ ਕਿਉ ਪ੍ਰੀਤਮੁ ਮਿਲੈ ਘਰਿ ਆਇ ॥",
+        "ਜਾ ਦੇਖਾ ਪ੍ਰਭੁ ਆਪਣਾ ਪ੍ਰਭਿ ਦੇਖਿਐ ਦੁਖੁ ਜਾਇ ॥"
+      ],
+      "translation": "Within my mind and body is the intense pain of separation; how can my Beloved come to meet me in my home?",
+      "transliteration": [
+        "mai man tan birahu at agalaa kiau preetam milai ghar aai ||",
+        "jaa dhekhaa prabh aapanaa prabh dhekhiaai dhukh jai ||"
+      ],
+      "raag": "ਸਿਰੀ ਰਾਗੁ",
+      "ang": 39,
+      "shabadId": 118
+    },
+    {
+      "lines": [
+        "ਪਾਰਬ੍ਰਹਮ ਪ੍ਰਭ ਭਏ ਕ੍ਰਿਪਾਲ ॥",
+        "ਕਾਰਜ ਸਗਲ ਸਵਾਰੇ ਸਤਿਗੁਰ ਜਪਿ ਜਪਿ ਸਾਧੂ ਭਏ ਨਿਹਾਲ ॥੧॥ ਰਹਾਉ ॥"
+      ],
+      "translation": "The Supreme Lord God has become Merciful.",
+      "transliteration": [
+        "paarabraham prabh bhe kirapaal ||",
+        "kaaraj sagal savaare satigur jap jap saadhoo bhe nihaal ||1|| rahaau ||"
+      ],
+      "raag": "ਰਾਗੁ ਬਿਲਾਵਲ",
+      "ang": 826,
+      "shabadId": 3119
+    },
+    {
+      "lines": [
+        "ਐਸੋ ਸਹਾਈ ਹਰਿ ਕੋ ਨਾਮ ॥",
+        "ਸਾਧਸੰਗਤਿ ਭਜੁ ਪੂਰਨ ਕਾਮ ॥੧॥ ਰਹਾਉ ॥"
+      ],
+      "translation": "This is the sort of helper the Name of the Lord is.",
+      "transliteration": [
+        "aaiso sahaiee har ko naam ||",
+        "saadhasa(n)gat bhaj pooran kaam ||1|| rahaau ||"
+      ],
+      "raag": "ਰਾਗੁ ਮਾਲੀ ਗਉੜਾ",
+      "ang": 986,
+      "shabadId": 3644
+    },
+    {
+      "lines": [
+        "ਫਰੀਦਾ ਭੂਮਿ ਰੰਗਾਵਲੀ ਮੰਝਿ ਵਿਸੂਲਾ ਬਾਗੁ ॥",
+        "ਜੋ ਨਰ ਪੀਰਿ ਨਿਵਾਜਿਆ ਤਿਨੑਾ ਅੰਚ ਨ ਲਾਗ ॥੧॥"
+      ],
+      "translation": "Fareed, this world is beautiful, but there is a thorny garden within it.",
+      "transliteration": [
+        "fareedhaa bhoom ra(n)gaavalee ma(n)jh visoolaa baag ||",
+        "jo nar peer nivaajiaa tin(h)aa a(n)ch na laag ||1||"
+      ],
+      "raag": "ਰਾਗੁ ਰਾਮਕਲੀ",
+      "ang": 966,
+      "shabadId": 3578
+    },
+    {
+      "lines": [
+        "ਮ੍ਰਿਗ ਮੀਨ ਭ੍ਰਿੰਗ ਪਤੰਗ ਕੁੰਚਰ ਏਕ ਦੋਖ ਬਿਨਾਸ ॥",
+        "ਪੰਚ ਦੋਖ ਅਸਾਧ ਜਾ ਮਹਿ ਤਾ ਕੀ ਕੇਤਕ ਆਸ ॥੧॥"
+      ],
+      "translation": "The deer, the fish, the bumble bee, the moth and the elephant are destroyed, each for a single defect.",
+      "transliteration": [
+        "mirag meen bhira(n)g pata(n)g ku(n)char ek dhokh binaas ||",
+        "pa(n)ch dhokh asaadh jaa meh taa kee ketak aas ||1||"
+      ],
+      "raag": "ਰਾਗੁ ਆਸਾ",
+      "ang": 486,
+      "shabadId": 1810
+    },
+    {
+      "lines": [
+        "ਪ੍ਰਭ ਦਾਤਉ ਦਾਤਾਰ ਪਰੵਿਉ ਜਾਚਕੁ ਇਕੁ ਸਰਨਾ ॥",
+        "ਮਿਲੈ ਦਾਨੁ ਸੰਤ ਰੇਨ ਜੇਹ ਲਗਿ ਭਉਜਲੁ ਤਰਨਾ ॥"
+      ],
+      "translation": "I am a beggar; I seek the Sanctuary of God, the Giver of givers.",
+      "transliteration": [
+        "prabh dhaatau dhaataar pariyeau jaachak ik saranaa ||",
+        "milai dhaan sa(n)t ren jeh lag bhaujal taranaa ||"
+      ],
+      "raag": "ਸਵਯੇ ਸ੍ਰੀ ਮੁਖ ਬਾਕ ਮਹਲਾ ੫",
+      "ang": 1386,
+      "shabadId": 5343
+    },
+    {
+      "lines": [
+        "ਵਿਸਾਰੇਦੇ ਮਰਿ ਗਏ ਮਰਿ ਭਿ ਨ ਸਕਹਿ ਮੂਲਿ ॥",
+        "ਵੇਮੁਖ ਹੋਏ ਰਾਮ ਤੇ ਜਿਉ ਤਸਕਰ ਉਪਰਿ ਸੂਲਿ ॥੨॥"
+      ],
+      "translation": "Those who forget the Lord die, but they cannot die a complete death.",
+      "transliteration": [
+        "visaaredhe mar ge mar bh na sakeh mool ||",
+        "vemukh hoe raam te jiau tasakar upar sool ||2||"
+      ],
+      "raag": "ਰਾਗੁ ਗਉੜੀ",
+      "ang": 319,
+      "shabadId": 1241
+    },
+    {
+      "lines": [
+        "ਏਕਮ ਏਕੰਕਾਰੁ ਨਿਰਾਲਾ ॥",
+        "ਅਮਰੁ ਅਜੋਨੀ ਜਾਤਿ ਨ ਜਾਲਾ ॥"
+      ],
+      "translation": "The First Day: The One Universal Creator is unique,",
+      "transliteration": [
+        "ekam eka(n)kaar niraalaa ||",
+        "amar ajonee jaat na jaalaa ||"
+      ],
+      "raag": "ਰਾਗੁ ਬਿਲਾਵਲ",
+      "ang": 838,
+      "shabadId": 3150
+    },
+    {
+      "lines": [
+        "ਜਿਨ ਹਰਿ ਹਿਰਦੈ ਸੇਵਿਆ ਤਿਨ ਹਰਿ ਆਪਿ ਮਿਲਾਏ ॥",
+        "ਗੁਣ ਕੀ ਸਾਝਿ ਤਿਨ ਸਿਉ ਕਰੀ ਸਭਿ ਅਵਗਣ ਸਬਦਿ ਜਲਾਏ ॥"
+      ],
+      "translation": "One who serves the Lord with all his heart - the Lord Himself unites him with Himself.",
+      "transliteration": [
+        "jin har hiradhai seviaa tin har aap milaae ||",
+        "gun kee saajh tin siau karee sabh avagan sabadh jalaae ||"
+      ],
+      "raag": "ਰਾਗੁ ਗਉੜੀ",
+      "ang": 303,
+      "shabadId": 1141
+    },
+    {
+      "lines": [
+        "ਸਾਧੂ ਸੰਗਿ ਸਿਖਾਇਓ ਨਾਮੁ ॥",
+        "ਸਰਬ ਮਨੋਰਥ ਪੂਰਨ ਕਾਮ ॥"
+      ],
+      "translation": "In the Saadh Sangat, the Company of the Holy, the Naam is learned;",
+      "transliteration": [
+        "saadhoo sa(n)g sikhaio naam ||",
+        "sarab manorath pooran kaam ||"
+      ],
+      "raag": "ਰਾਗੁ ਆਸਾ",
+      "ang": 393,
+      "shabadId": 1527
+    },
+    {
+      "lines": [
+        "ਜਿਹ ਮੁਖ ਬੇਦੁ ਗਾਇਤ੍ਰੀ ਨਿਕਸੈ ਸੋ ਕਿਉ ਬ੍ਰਹਮਨੁ ਬਿਸਰੁ ਕਰੈ ॥",
+        "ਜਾ ਕੈ ਪਾਇ ਜਗਤੁ ਸਭੁ ਲਾਗੈ ਸੋ ਕਿਉ ਪੰਡਿਤੁ ਹਰਿ ਨ ਕਹੈ ॥੧॥"
+      ],
+      "translation": "O Brahmin, how can you forget the One, from whose mouth the Vedas and the Gayitri prayer issured forth?",
+      "transliteration": [
+        "jeh mukh bedh gaitree nikasai so kiau brahaman bisar karai ||",
+        "jaa kai pai jagat sabh laagai so kiau pa(n)ddit har na kahai ||1||"
+      ],
+      "raag": "ਰਾਗੁ ਰਾਮਕਲੀ",
+      "ang": 970,
+      "shabadId": 3596
+    },
+    {
+      "lines": [
+        "ਤਿਸੁ ਗੁਰ ਕਉ ਹਉ ਵਾਰਿਆ ਜਿਨਿ ਹਰਿ ਕੀ ਹਰਿ ਕਥਾ ਸੁਣਾਈ ॥",
+        "ਤਿਸੁ ਗੁਰ ਕਉ ਸਦ ਬਲਿਹਾਰਣੈ ਜਿਨਿ ਹਰਿ ਸੇਵਾ ਬਣਤ ਬਣਾਈ ॥"
+      ],
+      "translation": "I am a sacrifice to the Guru, who recites the sermon of the Lord's Teachings.",
+      "transliteration": [
+        "tis gur kau hau vaariaa jin har kee har kathaa sunaiee ||",
+        "tis gur kau sadh balihaaranai jin har sevaa banat banaiee ||"
+      ],
+      "raag": "ਰਾਗੁ ਵਡਹੰਸੁ",
+      "ang": 587,
+      "shabadId": 2218
+    },
+    {
+      "lines": [
+        "ਨਾਨਕ ਲਿਲਾਰਿ ਲਿਖਿਆ ਸੋਇ ॥",
+        "ਮੇਟਿ ਨ ਸਾਕੈ ਕੋਇ ॥"
+      ],
+      "translation": "O Nanak, that destiny which is pre-ordained and written on one's forehead",
+      "transliteration": [
+        "naanak lilaar likhiaa soi ||",
+        "meT na saakai koi ||"
+      ],
+      "raag": "ਰਾਗੁ ਮਾਝ",
+      "ang": 144,
+      "shabadId": 406
+    },
+    {
+      "lines": [
+        "ਮਨ ਰੇ ਕਹਾ ਭਇਓ ਤੈ ਬਉਰਾ ॥",
+        "ਅਹਿਨਿਸਿ ਅਉਧ ਘਟੈ ਨਹੀ ਜਾਨੈ ਭਇਓ ਲੋਭ ਸੰਗਿ ਹਉਰਾ ॥੧॥ ਰਹਾਉ ॥"
+      ],
+      "translation": "O mind, why have you gone crazy?",
+      "transliteration": [
+        "man re kahaa bhio tai bauraa ||",
+        "ahinis aaudh ghaTai nahee jaanai bhio lobh sa(n)g hauraa ||1|| rahaau ||"
+      ],
+      "raag": "ਰਾਗੁ ਗਉੜੀ",
+      "ang": 220,
+      "shabadId": 700
+    },
+    {
+      "lines": [
+        "ਤਉ ਕਿਰਪਾ ਤੇ ਮਾਰਗੁ ਪਾਈਐ ॥",
+        "ਪ੍ਰਭ ਕਿਰਪਾ ਤੇ ਨਾਮੁ ਧਿਆਈਐ ॥"
+      ],
+      "translation": "By Your Grace, we find the Way.",
+      "transliteration": [
+        "tau kirapaa te maarag paieeaai ||",
+        "prabh kirapaa te naam dhiaaieeaai ||"
+      ],
+      "raag": "ਰਾਗੁ ਗਉੜੀ",
+      "ang": 180,
+      "shabadId": 534
+    },
+    {
+      "lines": [
+        "ਹਰਿ ਕਾ ਸੰਤੁ ਸਤਗੁਰੁ ਸਤ ਪੁਰਖਾ ਜੋ ਬੋਲੈ ਹਰਿ ਹਰਿ ਬਾਨੀ ॥",
+        "ਜੋ ਜੋ ਕਹੈ ਸੁਣੈ ਸੋ ਮੁਕਤਾ ਹਮ ਤਿਸ ਕੈ ਸਦ ਕੁਰਬਾਨੀ ॥੧॥"
+      ],
+      "translation": "The True Guru is the Lord's Saint, the True Being, who chants the Bani of the Lord, Har, Har.",
+      "transliteration": [
+        "har kaa sa(n)t satagur sat purakhaa jo bolai har har baanee ||",
+        "jo jo kahai sunai so mukataa ham tis kai sadh kurabaanee ||1||"
+      ],
+      "raag": "ਰਾਗੁ ਧਨਾਸਰੀ",
+      "ang": 667,
+      "shabadId": 2545
+    },
+    {
+      "lines": [
+        "ਮੈ ਮਨਿ ਤਨਿ ਪ੍ਰੇਮੁ ਅਗਮ ਠਾਕੁਰ ਕਾ ਖਿਨੁ ਖਿਨੁ ਸਰਧਾ ਮਨਿ ਬਹੁਤੁ ਉਠਈਆ ॥",
+        "ਗੁਰ ਦੇਖੇ ਸਰਧਾ ਮਨ ਪੂਰੀ ਜਿਉ ਚਾਤ੍ਰਿਕ ਪ੍ਰਿਉ ਪ੍ਰਿਉ ਬੂੰਦ ਮੁਖਿ ਪਈਆ ॥੧॥"
+      ],
+      "translation": "My mind and body are filled with love for my Inaccessible Lord and Master. Each and every instant, I am filled with immense faith and devotion.",
+      "transliteration": [
+        "mai man tan prem agam Thaakur kaa khin khin saradhaa man bahut uThieeaa ||",
+        "gur dhekhe saradhaa man pooree jiau chaatirak priau priau boo(n)dh mukh pieeaa ||1||"
+      ],
+      "raag": "ਰਾਗੁ ਬਿਲਾਵਲ",
+      "ang": 836,
+      "shabadId": 3147
+    },
+    {
+      "lines": [
+        "ਹਰਿ ਹਰਿ ਨਾਮੁ ਸਦਾ ਸਦ ਜਾਪਿ ॥",
+        "ਧਾਰਿ ਅਨੁਗ੍ਰਹੁ ਪਾਰਬ੍ਰਹਮ ਸੁਆਮੀ ਵਸਦੀ ਕੀਨੀ ਆਪਿ ॥੧॥ ਰਹਾਉ ॥"
+      ],
+      "translation": "Chant the Name of the Lord, Har, Har, forever and ever.",
+      "transliteration": [
+        "har har naam sadhaa sadh jaap ||",
+        "dhaar anugrahu paarabraham suaamee vasadhee keenee aap ||1|| rahaau ||"
+      ],
+      "raag": "ਰਾਗੁ ਟੋਡੀ",
+      "ang": 714,
+      "shabadId": 2736
+    },
+    {
+      "lines": [
+        "ਗਾਈ ਪੁਤਾ ਨਿਰਧਨਾ ਪੰਥੀ ਚਾਕਰੁ ਹੋਇ ॥੨॥"
+      ],
+      "translation": "the cow's calves, the poor, the travellers and the servants. ||2||",
+      "transliteration": [
+        "gaiee putaa niradhanaa pa(n)thee chaakar hoi ||2||"
+      ],
+      "raag": "ਰਾਗੁ ਮਲਾਰ",
+      "ang": 1279,
+      "shabadId": 4607
+    },
+    {
+      "lines": [
+        "ਇਕੁ ਖਿਨੁ ਹਰਿ ਪ੍ਰਭਿ ਕਿਰਪਾ ਧਾਰੀ ਗੁਨ ਗਾਏ ਰਸਕ ਰਸੀਕ ॥",
+        "ਗਾਵਤ ਸੁਨਤ ਦੋਊ ਭਏ ਮੁਕਤੇ ਜਿਨਾ ਗੁਰਮੁਖਿ ਖਿਨੁ ਹਰਿ ਪੀਕ ॥੧॥"
+      ],
+      "translation": "The Lord God showered me with His Mercy for an instant; I sing His Glorious Praises with joyous love and delight.",
+      "transliteration": [
+        "eik khin har prabh kirapaa dhaaree gun gaae rasak raseek ||",
+        "gaavat sunat dhouoo bhe mukate jinaa gurmukh khin har peek ||1||"
+      ],
+      "raag": "ਰਾਗੁ ਪ੍ਰਭਾਤੀ",
+      "ang": 1335,
+      "shabadId": 4857
+    },
+    {
+      "lines": [
+        "ਆਵਣ ਜਾਣਾ ਨਾ ਥੀਐ ਨਿਜ ਘਰਿ ਵਾਸਾ ਹੋਇ ॥",
+        "ਸਚੁ ਖਜਾਨਾ ਬਖਸਿਆ ਆਪੇ ਜਾਣੈ ਸੋਇ ॥੧॥"
+      ],
+      "translation": "Coming and going in reincarnation no longer happens, when one dwells in the home of the self within.",
+      "transliteration": [
+        "aavan jaanaa naa theeaai nij ghar vaasaa hoi ||",
+        "sach khajaanaa bakhasiaa aape jaanai soi ||1||"
+      ],
+      "raag": "ਰਾਗੁ ਮਾਰੂ",
+      "ang": 993,
+      "shabadId": 3669
+    },
+    {
+      "lines": [
+        "ਨਾਮਿ ਰਤੇ ਕੁਲਾਂ ਕਾ ਕਰਹਿ ਉਧਾਰੁ ॥",
+        "ਸਾਚੀ ਬਾਣੀ ਨਾਮ ਪਿਆਰੁ ॥"
+      ],
+      "translation": "Those who are imbued with the Naam, the Name of the Lord - their generations are redeemed and saved.",
+      "transliteration": [
+        "naam rate kulaa(n) kaa kareh udhaar ||",
+        "saachee baanee naam piaar ||"
+      ],
+      "raag": "ਰਾਗੁ ਬਸੰਤ",
+      "ang": 1174,
+      "shabadId": 4179
+    },
+    {
+      "lines": [
+        "ਸੇ ਸਚਿ ਲਾਗੇ ਜੋ ਤੁਧੁ ਭਾਏ ॥",
+        "ਸਦਾ ਸਚੁ ਸੇਵਹਿ ਸਹਜ ਸੁਭਾਏ ॥"
+      ],
+      "translation": "Those who please You are linked to the Truth.",
+      "transliteration": [
+        "se sach laage jo tudh bhaae ||",
+        "sadhaa sach seveh sahaj subhaae ||"
+      ],
+      "raag": "ਰਾਗੁ ਮਾਝ",
+      "ang": 119,
+      "shabadId": 337
+    },
+    {
+      "lines": [
+        "ਕਬੀਰ ਮੇਰੀ ਜਾਤਿ ਕਉ ਸਭੁ ਕੋ ਹਸਨੇਹਾਰੁ ॥",
+        "ਬਲਿਹਾਰੀ ਇਸ ਜਾਤਿ ਕਉ ਜਿਹ ਜਪਿਓ ਸਿਰਜਨਹਾਰੁ ॥੨॥"
+      ],
+      "translation": "Kabeer, everyone laughs at my social class.",
+      "transliteration": [
+        "kabeer meree jaat kau sabh ko hasanehaar ||",
+        "balihaaree is jaat kau jeh japio sirajanahaar ||2||"
+      ],
+      "raag": "ਸਲੋਕ ਭਗਤ ਕਬੀਰ ਜੀਉ ਕੇ",
+      "ang": 1364,
+      "shabadId": 4970
+    },
+    {
+      "lines": [
+        "ਝਾਲਾਘੇ ਉਠਿ ਨਾਮੁ ਜਪਿ ਨਿਸਿ ਬਾਸੁਰ ਆਰਾਧਿ ॥",
+        "ਕਾਰ੍ਹਾ ਤੁਝੈ ਨ ਬਿਆਪਈ ਨਾਨਕ ਮਿਟੈ ਉਪਾਧਿ ॥੧॥"
+      ],
+      "translation": "Rise early in the morning, and chant the Naam; worship and adore the Lord, night and day.",
+      "transliteration": [
+        "jhaalaaghe uTh naam jap nis baasur aaraadh ||",
+        "kaarhaa tujhai na biaapiee naanak miTai upaadh ||1||"
+      ],
+      "raag": "ਰਾਗੁ ਗਉੜੀ",
+      "ang": 255,
+      "shabadId": 808
+    },
+    {
+      "lines": [
+        "ਆਗੈ ਸੁਖੁ ਮੇਰੇ ਮੀਤਾ ॥",
+        "ਪਾਛੇ ਆਨਦੁ ਪ੍ਰਭਿ ਕੀਤਾ ॥"
+      ],
+      "translation": "Peace in this world, O my friends,",
+      "transliteration": [
+        "aagai sukh mere meetaa ||",
+        "paachhe aanadh prabh keetaa ||"
+      ],
+      "raag": "ਰਾਗੁ ਸੋਰਠਿ",
+      "ang": 629,
+      "shabadId": 2386
+    },
+    {
+      "lines": [
+        "ਸਹਜੈ ਨੋ ਸਭ ਲੋਚਦੀ ਬਿਨੁ ਗੁਰ ਪਾਇਆ ਨ ਜਾਇ ॥",
+        "ਪੜਿ ਪੜਿ ਪੰਡਿਤ ਜੋਤਕੀ ਥਕੇ ਭੇਖੀ ਭਰਮਿ ਭੁਲਾਇ ॥"
+      ],
+      "translation": "Everyone longs to be centered and balanced, but without the Guru, no one can.",
+      "transliteration": [
+        "sahajai no sabh lochadhee bin gur paiaa na jai ||",
+        "paR paR pa(n)ddit jotakee thake bhekhee bharam bhulai ||"
+      ],
+      "raag": "ਸਿਰੀ ਰਾਗੁ",
+      "ang": 68,
+      "shabadId": 177
+    },
+    {
+      "lines": [
+        "ਉਲਟਿ ਜਾਤਿ ਕੁਲ ਦੋਊ ਬਿਸਾਰੀ ॥",
+        "ਸੁੰਨ ਸਹਜ ਮਹਿ ਬੁਨਤ ਹਮਾਰੀ ॥੧॥"
+      ],
+      "translation": "Turning away from the world, I have forgotten both my social class and ancestry.",
+      "transliteration": [
+        "aulaT jaat kul dhouoo bisaaree ||",
+        "su(n)n sahaj meh bunat hamaaree ||1||"
+      ],
+      "raag": "ਰਾਗੁ  ਭੈਰੳ",
+      "ang": 1158,
+      "shabadId": 4132
+    },
+    {
+      "lines": [
+        "ਜਿਉ ਜਾਨਹੁ ਤਿਉ ਰਾਖੁ ਹਰਿ ਪ੍ਰਭ ਤੇਰਿਆ ॥",
+        "ਕੇਤੇ ਗਨਉ ਅਸੰਖ ਅਵਗਣ ਮੇਰਿਆ ॥"
+      ],
+      "translation": "Save me, any way You can; O Lord God, I am Yours.",
+      "transliteration": [
+        "jiau jaanahu tiau raakh har prabh teriaa ||",
+        "kete ganau asa(n)kh avagan meriaa ||"
+      ],
+      "raag": "ਰਾਗੁ ਜੈਤਸਰੀ",
+      "ang": 704,
+      "shabadId": 2673
+    },
+    {
+      "lines": [
+        "ਅਪਣੇ ਬਾਲਕ ਆਪਿ ਰਖਿਅਨੁ ਪਾਰਬ੍ਰਹਮ ਗੁਰਦੇਵ ॥",
+        "ਸੁਖ ਸਾਂਤਿ ਸਹਜ ਆਨਦ ਭਏ ਪੂਰਨ ਭਈ ਸੇਵ ॥੧॥ ਰਹਾਉ ॥"
+      ],
+      "translation": "The Supreme Lord God, through the Divine Guru, has Himself protected and preserved His children.",
+      "transliteration": [
+        "apane baalak aap rakhian paarabraham gurdhev ||",
+        "sukh saa(n)t sahaj aanadh bhe pooran bhiee sev ||1|| rahaau ||"
+      ],
+      "raag": "ਰਾਗੁ ਬਿਲਾਵਲ",
+      "ang": 819,
+      "shabadId": 3086
+    },
+    {
+      "lines": [
+        "ਅਤਿ ਪ੍ਰੀਤਮ ਮਨ ਮੋਹਨਾ ਘਟ ਸੋਹਨਾ ਪ੍ਰਾਨ ਅਧਾਰਾ ਰਾਮ ॥",
+        "ਸੁੰਦਰ ਸੋਭਾ ਲਾਲ ਗੋਪਾਲ ਦਇਆਲ ਕੀ ਅਪਰ ਅਪਾਰਾ ਰਾਮ ॥"
+      ],
+      "translation": "He is dear to me; He fascinates my mind; He is the ornament of my heart, the support of the breath of life.",
+      "transliteration": [
+        "at preetam man mohanaa ghaT sohanaa praan adhaaraa raam ||",
+        "su(n)dhar sobhaa laal gopaal dhiaal kee apar apaaraa raam ||"
+      ],
+      "raag": "ਰਾਗੁ ਬਿਹਾਗੜਾ",
+      "ang": 542,
+      "shabadId": 2073
+    },
+    {
+      "lines": [
+        "ਮਨ ਮੇਰਿਆ ਤੂ ਸਦਾ ਸਚੁ ਸਮਾਲਿ ਜੀਉ ॥",
+        "ਆਪਣੈ ਘਰਿ ਤੂ ਸੁਖਿ ਵਸਹਿ ਪੋਹਿ ਨ ਸਕੈ ਜਮਕਾਲੁ ਜੀਉ ॥"
+      ],
+      "translation": "O my mind, contemplate the True Lord forever.",
+      "transliteration": [
+        "man meriaa too sadhaa sach samaal jeeau ||",
+        "aapanai ghar too sukh vaseh poh na sakai jamakaal jeeau ||"
+      ],
+      "raag": "ਰਾਗੁ ਵਡਹੰਸੁ",
+      "ang": 569,
+      "shabadId": 2174
+    },
+    {
+      "lines": [
+        "ਏ ਮਨਾ ਅਤਿ ਲੋਭੀਆ ਨਿਤ ਲੋਭੇ ਰਾਤਾ ॥",
+        "ਮਾਇਆ ਮਨਸਾ ਮੋਹਣੀ ਦਹ ਦਿਸ ਫਿਰਾਤਾ ॥"
+      ],
+      "translation": "O my utterly greedy mind, you are constantly engrossed in greed.",
+      "transliteration": [
+        "e manaa at lobheeaa nit lobhe raataa ||",
+        "maiaa manasaa mohanee dheh dhis firaataa ||"
+      ],
+      "raag": "ਰਾਗੁ ਗੂਜਰੀ",
+      "ang": 514,
+      "shabadId": 1921
+    },
+    {
+      "lines": [
+        "ਮਾਤਾ ਪ੍ਰੀਤਿ ਕਰੇ ਪੁਤੁ ਖਾਇ ॥",
+        "ਮੀਨੇ ਪ੍ਰੀਤਿ ਭਈ ਜਲਿ ਨਾਇ ॥"
+      ],
+      "translation": "The mother loves to see her son eat.",
+      "transliteration": [
+        "maataa preet kare put khai ||",
+        "meene preet bhiee jal nai ||"
+      ],
+      "raag": "ਰਾਗੁ ਗਉੜੀ",
+      "ang": 164,
+      "shabadId": 491
+    },
+    {
+      "lines": [
+        "ਫਰੀਦਾ ਭੂਮਿ ਰੰਗਾਵਲੀ ਮੰਝਿ ਵਿਸੂਲਾ ਬਾਗ ॥",
+        "ਜੋ ਜਨ ਪੀਰਿ ਨਿਵਾਜਿਆ ਤਿੰਨੑਾ ਅੰਚ ਨ ਲਾਗ ॥੮੨॥"
+      ],
+      "translation": "Fareed, in the midst of this beautiful earth, there is a garden of thorns.",
+      "transliteration": [
+        "fareedhaa bhoom ra(n)gaavalee ma(n)jh visoolaa baag ||",
+        "jo jan peer nivaajiaa ti(n)n(h)aa a(n)ch na laag ||82||"
+      ],
+      "raag": "ਸਲੋਕ ਸੇਖ ਫਰੀਦ ਕ",
+      "ang": 1382,
+      "shabadId": 5290
+    },
+    {
+      "lines": [
+        "ਭਗਤਿ ਵਛਲੁ ਹਰਿ ਵਸੈ ਮਨਿ ਆਇ ॥",
+        "ਗੁਰ ਕਿਰਪਾ ਤੇ ਸਹਜ ਸੁਭਾਇ ॥"
+      ],
+      "translation": "The Lord is the Lover of His devotees; He dwells within their minds,",
+      "transliteration": [
+        "bhagat vachhal har vasai man aai ||",
+        "gur kirapaa te sahaj subhai ||"
+      ],
+      "raag": "ਰਾਗੁ ਬਸੰਤ",
+      "ang": 1173,
+      "shabadId": 4175
+    },
+    {
+      "lines": [
+        "ਜਿ ਸਤਿਗੁਰੁ ਸੇਵੇ ਆਪਣਾ ਤਿਸ ਨੋ ਪੂਜੇ ਸਭੁ ਕੋਇ ॥",
+        "ਸਭਨਾ ਉਪਾਵਾ ਸਿਰਿ ਉਪਾਉ ਹੈ ਹਰਿ ਨਾਮੁ ਪਰਾਪਤਿ ਹੋਇ ॥"
+      ],
+      "translation": "One who serves his True Guru, is worshipped by everyone.",
+      "transliteration": [
+        "j satigur seve aapanaa tis no pooje sabh koi ||",
+        "sabhanaa upaavaa sir upaau hai har naam paraapat hoi ||"
+      ],
+      "raag": "ਰਾਗੁ ਗੂਜਰੀ",
+      "ang": 511,
+      "shabadId": 1901
+    }
+  ]
+}

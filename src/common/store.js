@@ -4,10 +4,30 @@ import { persistReducer, persistStore } from "redux-persist";
 import crashlyticsMiddleware from "./middleware/crashlytics";
 import reducer from "./reducer";
 
-const persistConfig = {
+// Every key not blacklisted below is persisted, and that is the whole of how a
+// setting is remembered — `isStatusBar` included. There is deliberately no
+// `version` or `migrate` here: a migration rewrites a value the user already
+// chose, and no setting in this store has ever needed that.
+export const persistConfig = {
   key: "root",
   storage: AsyncStorage,
-  blacklist: ["navigation", "baniList", "audioManifest"],
+  // The reader tick counters and the player drag flag are momentary UI state.
+  // A persisted `isPlayerDragging: true` (the app killed mid-drag) would have
+  // the Reader ignore every page message on the next launch.
+  //
+  // "auth" is blacklisted deliberately: redux-persist writes plain, unencrypted
+  // AsyncStorage, and the SSO session holds an email + SAML nameID. The session
+  // is rehydrated from the Keychain by useSsoSession instead, which also keeps
+  // status "unknown" until that read resolves.
+  blacklist: [
+    "navigation",
+    "baniList",
+    "audioManifest",
+    "readerTapTick",
+    "readerScrollDownTick",
+    "isPlayerDragging",
+    "auth",
+  ],
 };
 const persistedReducer = persistReducer(persistConfig, reducer);
 

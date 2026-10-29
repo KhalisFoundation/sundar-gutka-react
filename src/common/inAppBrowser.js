@@ -98,10 +98,6 @@ export const withinTimeout = (promise) =>
 
 // True once the link is open in an installed app; false when the browser
 // should take it.
-//
-// KNOWN: the Android AppLauncher module and the iOS LSApplicationQueriesSchemes
-// entries arrive in an upcoming PR. Until then both platforms return false here
-// and every link opens in the in-app browser, which is the safe fallback.
 const openInInstalledApp = async (url) => {
   if (!isHttpUrl(url)) return false;
 

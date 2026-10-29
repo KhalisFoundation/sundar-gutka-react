@@ -1,5 +1,4 @@
 import darkTheme from "./darkTheme";
-import { legacyDark, legacyLight, staticColors } from "./legacyColors";
 import lightTheme from "./lightTheme";
 import { ROLES } from "./semanticColors";
 
@@ -36,15 +35,13 @@ describe("the two themes are the same shape", () => {
     Object.keys(darkTheme.c).forEach((role) => expect(ROLES).toContain(role));
   });
 
-  it("carry the deprecated colour maps only as the frozen legacy copy", () => {
-    // Kept solely for the screens not yet on the token layer (see
-    // legacyColors.js): exactly dev's maps, so those screens look as they did,
-    // and nothing new is added to them. When the last of those screens moves
-    // over, this becomes `toBeUndefined()` again.
-    expect(lightTheme.colors).toBe(legacyLight);
-    expect(darkTheme.colors).toBe(legacyDark);
-    expect(lightTheme.staticColors).toBe(staticColors);
-    expect(darkTheme.staticColors).toBe(staticColors);
+  it("no longer carry the deprecated colour maps", () => {
+    // Nothing in the app reads these. Leaving them would let new code reach for
+    // a raw value that the token layer has already replaced.
+    expect(lightTheme.colors).toBeUndefined();
+    expect(darkTheme.colors).toBeUndefined();
+    expect(lightTheme.staticColors).toBeUndefined();
+    expect(darkTheme.staticColors).toBeUndefined();
   });
 });
 

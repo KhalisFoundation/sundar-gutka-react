@@ -17,7 +17,7 @@ const Header = ({
   title,
   handleBackPress,
   handleBookmarkPress,
-  handleAddToPothiPress = () => {},
+  handleAddToPothiPress,
   isHeader,
 }) => {
   const styles = useThemedStyles(createStyles);
@@ -75,9 +75,7 @@ const Header = ({
   const headerRight = () => (
     <>
       {/* Hidden with the feature off — filing a bani needs somewhere to file
-          it to, and there are no user pothis then. See constant.POTHI_ENABLED.
-          Its label string, POTHI_ADD_TO, arrives with My Pothi alongside the
-          flag. */}
+          it to, and there are no user pothis then. See constant.POTHI_ENABLED. */}
       {constant.POTHI_ENABLED && (
         <Pressable
           onPress={() => {
@@ -204,8 +202,8 @@ Header.propTypes = {
   title: PropTypes.string.isRequired,
   handleBackPress: PropTypes.func.isRequired,
   handleBookmarkPress: PropTypes.func.isRequired,
-  /** Opens the add-to-pothi sheet. Only used once constant.POTHI_ENABLED is on. */
-  handleAddToPothiPress: PropTypes.func,
+  /** Opens the add-to-pothi sheet. */
+  handleAddToPothiPress: PropTypes.func.isRequired,
   isHeader: PropTypes.bool.isRequired,
 };
 export default Header;

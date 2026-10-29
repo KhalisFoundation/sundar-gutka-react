@@ -171,16 +171,7 @@
         "**/*.test.js",
         "**/*.test.jsx",
         "src/theme/**",
-        "src/common/components/ui/Overlay.jsx",
-        // Not on the token layer yet: each moves over with its own feature, and
-        // its line goes with it. Audio player: the audio PR. Folder screen and
-        // its AppBar: My Pothi. Reminders screen: Reminders. Audio settings row:
-        // Downloads.
-        "src/ReaderScreen/components/AudioPlayer/**",
-        "src/common/components/AppBar/**",
-        "src/FolderScreen/**",
-        "src/Settings/components/reminders/**",
-        "src/Settings/components/audio.jsx"
+        "src/common/components/ui/Overlay.jsx"
       ],
       "rules": {
         "no-restricted-syntax": [

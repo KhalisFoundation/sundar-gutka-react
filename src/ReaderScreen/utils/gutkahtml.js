@@ -240,6 +240,12 @@ const htmlTemplate = (
 }');
     }
     @font-face {
+      font-family: '${constant.PURATAN_HASTLIKHAT}';
+      src: url('${getFontFaceURL(constant.PURATAN_HASTLIKHAT)}') format('truetype'),local('${
+  constant.PURATAN_HASTLIKHAT
+}');
+    }
+    @font-face {
       font-family: '${constant.BALOO_PAAJI}';
       src: url('${getFontFaceURL(constant.BALOO_PAAJI)}') format('truetype'),local('${
   constant.BALOO_PAAJI
@@ -335,8 +341,6 @@ const htmlTemplate = (
       // every resize could mark a bani read that the user never scrolled.
       // Reported on layout and on resize only (font-size change, translation
       // toggle, rotation); never per scroll event, so scrolling costs nothing.
-      // KNOWN: only ReaderScrollbar reads "scroll-ratio-", and it arrives with
-      // the upcoming audio PR's Reader; until then these messages are dropped.
       function reportViewportRatio() {
         var sh = document.documentElement.scrollHeight;
         var ch = window.innerHeight;

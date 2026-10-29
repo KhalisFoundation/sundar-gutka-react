@@ -15,6 +15,7 @@ import {
   CustomText,
   STRINGS,
 } from "@common";
+import { mostCommonSpeed } from "./legacySpeed";
 
 const localStyles = StyleSheet.create({
   outerContainer: {
@@ -71,8 +72,21 @@ const AutoScrollComponent = ({
   const isFocused = useIsFocused();
   const [isPaused, togglePaused] = useState(true);
   const isAutoScroll = useSelector((state) => state.isAutoScroll);
-  const autoScrollSpeedObj = useSelector((state) => state.autoScrollSpeedObj);
-  const savedSpeed = autoScrollSpeedObj[shabadID] || constant.DEFAULT_SPEED;
+  // One speed for every bani. It used to be kept per bani, so 67% chosen in
+  // Jaap Sahib meant nothing in Japji Sahib and each bani opened at the
+  // default again. Persisted, so it also survives switching auto-scroll off
+  // and on.
+  const autoScrollSpeed = useSelector((state) => state.autoScrollSpeed);
+  // The per-bani map it replaced, read only to carry an existing install's
+  // choice forward: this bani's own value if it had one, else the speed it
+  // was set to most often. The map is keyed by bani id, which says nothing
+  // about which was chosen last. Nothing writes it any more.
+  const legacySpeeds = useSelector((state) => state.autoScrollSpeedObj) ?? {};
+  const savedSpeed =
+    autoScrollSpeed ??
+    legacySpeeds[shabadID] ??
+    mostCommonSpeed(legacySpeeds) ??
+    constant.DEFAULT_SPEED;
 
   const [sliderValue, setSliderValue] = useState(savedSpeed);
   const dispatch = useDispatch();
@@ -81,7 +95,7 @@ const AutoScrollComponent = ({
   const sendStopSignal = useCallback(() => {
     if (webViewRef?.current?.postMessage) {
       try {
-        webViewRef.current.postMessage(JSON.stringify({ autoScroll: 0, scrollMultiplier: 1.5 }));
+        webViewRef.current.postMessage(JSON.stringify({ autoScroll: 0 }));
       } catch (error) {
         logError("Error sending auto-scroll stop:", error);
       }
@@ -96,10 +110,7 @@ const AutoScrollComponent = ({
     // If screen not focused, manually paused, or auto-scroll disabled, send stop signal
     const shouldScroll = isFocused && !isPaused && isAutoScroll;
     const speed = shouldScroll ? sliderValue : 0;
-    const autoScrollObj = {
-      autoScroll: speed,
-      scrollMultiplier: 1.25,
-    };
+    const autoScrollObj = { autoScroll: speed };
 
     if (webViewRef?.current?.postMessage) {
       try {
@@ -108,6 +119,7 @@ const AutoScrollComponent = ({
         logError("Error sending auto-scroll message:", error);
       }
     }
+    // eslint-disable-next-line react-hooks/exhaustive-deps
   }, [isPaused, sliderValue, isFocused, isAutoScroll, webViewLoadTick]);
 
   // Send stop signal on unmount so the WebView doesn't keep scrolling
@@ -121,11 +133,11 @@ const AutoScrollComponent = ({
   const handleSlidingComplete = useCallback(
     (valueArr) => {
       const val = Math.floor(valueArr[0]);
-      dispatch(actions.setAutoScrollSpeed(val, shabadID));
+      dispatch(actions.setAutoScrollSpeed(val));
       trackReaderEvent("autoScrollSpeed", val);
       onActivity?.();
     },
-    [dispatch, shabadID, onActivity]
+    [dispatch, onActivity]
   );
 
   const handlePause = useCallback(() => {
@@ -169,15 +181,10 @@ const AutoScrollComponent = ({
             onSlidingComplete={handleSlidingComplete}
             thumbStyle={localStyles.sliderThumb}
             // The library's own prop, NOT a backgroundColor in `thumbStyle`.
-
             // It renders the thumb as { backgroundColor: thumbTintColor, ...thumbStyle },
-
             // so an ARRAY passed as thumbStyle spreads to { 0: ..., 1: ... } and the
-
             // colour inside it is silently dropped — leaving the default #343434,
-
             // which is why the dot stayed blackish grey.
-
             thumbTintColor={textColor}
             trackStyle={localStyles.sliderTrack}
             minimumTrackTintColor={textColor}
@@ -195,6 +202,7 @@ const AutoScrollComponent = ({
 };
 
 AutoScrollComponent.propTypes = {
+  /** Only used to look up this bani's speed in the old per-bani map. */
   shabadID: PropTypes.number.isRequired,
   webViewRef: PropTypes.shape({
     current: PropTypes.shape({

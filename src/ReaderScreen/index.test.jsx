@@ -6,6 +6,8 @@ import { AppState } from "react-native";
 
 import { render, waitFor, act } from "@testing-library/react-native";
 
+import { trackNavBar } from "@common";
+
 import Reader from "./index";
 
 // -------------------- MOCKS --------------------
@@ -99,25 +101,64 @@ jest.mock("./hooks", () => ({
   useFooterAnimation: () => ({ animationPosition: { value: 0 } }),
 }));
 
-// The real light theme: it carries the token layer every style reads, so the
-// test can't drift from what the styles expect.
-const mockTheme = require("@theme/lightTheme").default;
+// Mock theme + styles
+// Built ON the real theme, not hand-rolled beside it. A mock that lists its own
+// keys silently goes stale the moment the theme grows one — the styles then read
+// `undefined` in the app while every test here still passes. The overrides below
+// are deliberate; everything else comes from the real object.
+const mockTheme = {
+  ...require("@theme/lightTheme").default,
+  mode: "light",
+  c: require("@theme/semanticColors").light,
 
-// The Reader page follows the READING theme; the light record's values are
-// stood in here, since this test is about the Reader, not theme resolution.
-jest.mock("@theme/reader", () => ({
-  useReaderTheme: () => ({
-    theme: {
-      base: "light",
-      background: { color: "#FFFFFF" },
-      chrome: { progressTrack: "#E5E5E5", progressFill: "#113979" },
+  colors: {
+    surface: "#FFFFFF",
+    primary: "#123456",
+    primaryHeaderVariant: "#789ABC",
+    primaryText: "#000000",
+  },
+  staticColors: {
+    HIGHLIGHT_COLOR: "#FFFF00",
+    WHITE_COLOR: "#FFFFFF",
+  },
+  spacing: {
+    xs: 2,
+    sm: 4,
+    md: 8,
+    lg: 16,
+    xl: 24,
+    xxl: 32,
+    xxxl: 48,
+  },
+  typography: {
+    sizes: {
+      xs: 10,
+      sm: 12,
+      md: 14,
+      lg: 16,
+      xl: 18,
+      xxl: 20,
+      xxxl: 24,
     },
-  }),
-}));
-
-jest.mock("@common/webViewAvailability", () => ({
-  useWebViewAvailable: () => ({ available: true, recheck: jest.fn() }),
-}));
+    fonts: {
+      gurbaniPrimary: "GurbaniAkharTrue",
+      balooPaaji: "BalooPaaji2-Regular",
+    },
+  },
+  radius: {
+    sm: 6,
+    md: 10,
+    lg: 16,
+  },
+  components: {
+    header: {
+      height: 56,
+    },
+    bottomNavigation: {
+      height: 65,
+    },
+  },
+};
 
 jest.mock("@common/context", () => ({
   __esModule: true,
@@ -130,13 +171,23 @@ jest.mock("@common/hooks/useThemedStyles", () => {
   return (createStyles) => (theme) => createStyles(theme);
 });
 
+// The Add to Pothi sheet is exercised by its own suite. Stubbed here so this
+// one stays about the Reader and does not have to mock the whole pothi slice.
+jest.mock("../Pothi/components/AddToPothiSheet", () => () => null);
+
 // Mock @common exports
 jest.mock("@common", () => ({
+  // The header title is resolved through this, the same way the bani list
+  // resolves its rows. Identity is enough here — the tests assert which title
+  // is chosen, not how the script is converted.
+  convertToUnicode: (value) => value,
   constant: {
     READER: "READER",
     BOOKMARKS: "BOOKMARKS",
     BALOO_PAAJI: "BalooPaaji2-Regular",
   },
+  c: require("@theme/semanticColors").light,
+
   colors: {
     VISHRAM_SHORT: "#FF0000",
   },
@@ -153,10 +204,22 @@ jest.mock("@common", () => ({
       type: "SET_BOOKMARK_SEQUENCE_STRING",
       value: seq,
     })),
+    bumpReaderTap: jest.fn(() => ({
+      type: "BUMP_READER_TAP",
+    })),
+    bumpReaderScrollDown: jest.fn(() => ({
+      type: "BUMP_READER_SCROLL_DOWN",
+    })),
+    setPlayerDragging: jest.fn((val) => ({
+      type: "SET_PLAYER_DRAGGING",
+      value: val,
+    })),
   },
   useScreenAnalytics: jest.fn(),
   logMessage: jest.fn(),
   logError: jest.fn(),
+  trackScrollProgress: jest.fn(),
+  trackNavBar: jest.fn(),
   SafeArea: ({ children, ...props }) => {
     const { View } = require("react-native");
     return (
@@ -173,6 +236,18 @@ jest.mock("@common", () => ({
       </View>
     );
   },
+  Coachmark: ({ children }) => children,
+  AudioHintCallout: () => null,
+  DownloadsGuideCallout: () => null,
+  PREVIEW_STEPS: [],
+  COACH: {
+    HOME: "home",
+    AUDIO_HINT: "audioHint",
+    PREVIEW: "preview",
+    PLAYER: "player",
+    EXPLORE: "explore",
+    DOWNLOADS: "downloads",
+  },
   useTheme: () => ({ theme: mockTheme }),
   useThemedStyles: (createStyles) => createStyles(mockTheme),
   StatusBarComponent: ({ ...props }) => {
@@ -180,10 +255,6 @@ jest.mock("@common", () => ({
     return <View testID="status-bar" {...props} />;
   },
   useBackHandler: jest.fn(),
-  showInfoToast: jest.fn(),
-  STRINGS: {},
-  trackScrollProgress: jest.fn(),
-  trackNavBar: jest.fn(),
 }));
 
 // Mock components
@@ -207,6 +278,11 @@ jest.mock("./components", () => {
         <Text>{baniID}</Text>
         <Text>{title}</Text>
       </View>
+    ),
+    // Themed scroll indicator. Rendered as a leaf so its colour and width props
+    // can be asserted without pulling in Animated listeners.
+    ReaderScrollbar: ({ color, width, visibleFraction }) => (
+      <View testID="reader-scrollbar" accessibilityLabel={`${color}|${width}|${visibleFraction}`} />
     ),
   };
 });
@@ -263,6 +339,7 @@ describe("Reader", () => {
       transliterationLanguage: "english",
       vishraamSource: "sttm",
       padched: false,
+      isPlayerDragging: false,
     };
     mockUseFetchShabad.shabad = [
       {
@@ -294,12 +371,14 @@ describe("Reader", () => {
     mockUseFetchShabad.isLoading = true;
     // eslint-disable-next-line react/no-unsafe, camelcase
     const { UNSAFE_root } = render(<Reader navigation={mockNavigation} route={mockRoute} />);
-    const { ActivityIndicator } = require("react-native");
+    // The app's own Spinner, not `ActivityIndicator` — see @common/components/ui.
+    // It still IS an ActivityIndicator on Android; this suite runs as iOS, where
+    // it is the drawn arc, so the component itself is what to look for.
+    const Spinner = require("@common/components/ui").default ?? require("@common/components/ui");
 
-    // Check if ActivityIndicator is rendered
     // eslint-disable-next-line react/no-unsafe, camelcase
-    const activityIndicators = UNSAFE_root.findAllByType(ActivityIndicator);
-    expect(activityIndicators.length).toBeGreaterThan(0);
+    const spinners = UNSAFE_root.findAllByType(Spinner.Spinner ?? Spinner);
+    expect(spinners.length).toBeGreaterThan(0);
   });
 
   it("displays header with correct title", () => {
@@ -493,6 +572,81 @@ describe("Reader", () => {
     expect(onMessage).toBeDefined();
   });
 
+  // Reaching the top or the end of the bani brings the header and bottom
+  // navigation back, however the reader got there.
+  it("shows the bars again when the page reaches the top or end of the bani", () => {
+    const { getByTestId } = render(<Reader navigation={mockNavigation} route={mockRoute} />);
+    const { onMessage } = getByTestId("webview").props;
+
+    act(() => {
+      onMessage({ nativeEvent: { data: "hide" } });
+    });
+    trackNavBar.mockClear();
+    act(() => {
+      onMessage({ nativeEvent: { data: "scroll-progress-1.0000" } });
+      onMessage({ nativeEvent: { data: "edge" } });
+    });
+
+    expect(trackNavBar).toHaveBeenCalledWith(true, "scroll_edge", expect.any(String));
+  });
+
+  // Progress reaches 100% as the last line touches the bottom of the screen,
+  // with the blank inset meant for the nav bar still below it. Bringing the
+  // bars back there covered the last lines; only the page's own "edge", sent
+  // once the inset is in view, may do it.
+  it("does not bring the bars back on 100% progress alone", () => {
+    const { getByTestId } = render(<Reader navigation={mockNavigation} route={mockRoute} />);
+    const { onMessage } = getByTestId("webview").props;
+
+    act(() => {
+      onMessage({ nativeEvent: { data: "hide" } });
+    });
+    trackNavBar.mockClear();
+    act(() => {
+      onMessage({ nativeEvent: { data: "scroll-progress-1.0000" } });
+    });
+
+    expect(trackNavBar).not.toHaveBeenCalled();
+  });
+
+  // Auto-scroll stops at the end but stays switched on; its idle auto-hide must
+  // not take the bars away again while the page rests there.
+  it("keeps the bars up at the end of the bani while auto-scroll is on", () => {
+    jest.useFakeTimers();
+    try {
+      mockState.isAutoScroll = true;
+      const { getByTestId } = render(<Reader navigation={mockNavigation} route={mockRoute} />);
+      const { onMessage } = getByTestId("webview").props;
+
+      act(() => {
+        onMessage({ nativeEvent: { data: "hide" } });
+        onMessage({ nativeEvent: { data: "scroll-progress-1.0000" } });
+        onMessage({ nativeEvent: { data: "edge" } });
+      });
+      trackNavBar.mockClear();
+      act(() => {
+        jest.advanceTimersByTime(10000);
+      });
+
+      expect(trackNavBar).not.toHaveBeenCalledWith(false, "auto_hide_idle", expect.any(String));
+    } finally {
+      jest.useRealTimers();
+    }
+  });
+
+  it("does not report an edge when the bars are already showing", () => {
+    const { getByTestId } = render(<Reader navigation={mockNavigation} route={mockRoute} />);
+    const { onMessage } = getByTestId("webview").props;
+
+    trackNavBar.mockClear();
+    act(() => {
+      onMessage({ nativeEvent: { data: "edge" } });
+    });
+
+    // A bani opens with the bars up, so there is nothing to change.
+    expect(trackNavBar).not.toHaveBeenCalled();
+  });
+
   it("handles WebView messages - scroll-elementId", () => {
     const { getByTestId } = render(<Reader navigation={mockNavigation} route={mockRoute} />);
 
@@ -554,13 +708,43 @@ describe("Reader", () => {
     expect(getByTestId("audio-player")).toBeTruthy();
   });
 
-  it("renders AutoScrollComponent when isAutoScroll is true", () => {
+  it("renders AutoScrollComponent when isAutoScroll is true, with the chrome up", () => {
     mockState.isAutoScroll = true;
-    const { getByTestId } = render(<Reader navigation={mockNavigation} route={mockRoute} />);
+    const { getByTestId, queryByTestId } = render(
+      <Reader navigation={mockNavigation} route={mockRoute} />
+    );
 
-    // The auto-scroll controls mount with the header hidden (display: none until
-    // the header bar is shown), so include hidden elements in the query.
-    expect(getByTestId("auto-scroll-component", { includeHiddenElements: true })).toBeTruthy();
+    // A bani OPENS with its chrome: a bani is reached from the home list, the
+    // Dashboard, a pothi, a search result and a notification, and arriving with
+    // the bars already gone left no visible way back from any of them.
+    expect(getByTestId("auto-scroll-component")).toBeTruthy();
+
+    // Tap detection lives in the WebView's injected JS, which posts "toggle".
+    act(() => {
+      getByTestId("webview").props.onMessage({ nativeEvent: { data: "toggle" } });
+    });
+    expect(queryByTestId("auto-scroll-component")).toBeNull();
+  });
+
+  it("toggles the chrome when the reader taps the page", () => {
+    mockState.isAutoScroll = true;
+    const { getByTestId, queryByTestId } = render(
+      <Reader navigation={mockNavigation} route={mockRoute} />
+    );
+    const tapThePage = () =>
+      act(() => {
+        getByTestId("webview").props.onMessage({ nativeEvent: { data: "toggle" } });
+      });
+
+    // Up on arrival, so the FIRST tap puts the chrome away rather than
+    // revealing it. The wrapper stays mounted but is hidden from accessibility, which the
+    // query layer treats as hidden — the same thing the reader sees.
+    expect(queryByTestId("auto-scroll-component")).toBeTruthy();
+    tapThePage();
+    expect(queryByTestId("auto-scroll-component")).toBeNull();
+
+    tapThePage();
+    expect(queryByTestId("auto-scroll-component")).toBeTruthy();
   });
 
   it("restores saved position on mount", async () => {
@@ -676,6 +860,24 @@ describe("Reader", () => {
     });
   });
 
+  // The page margin is only ever adjusted live on a foldable. The test
+  // environment does not fold, so the page must never be told to move.
+  it("never sends a top-margin change on a phone that does not fold", async () => {
+    mockPostMessage.mockClear();
+    const { getByTestId } = render(<Reader navigation={mockNavigation} route={mockRoute} />);
+    await waitFor(() => {
+      expect(getByTestId("webview")).toBeTruthy();
+    });
+    const topMarginCalls = mockPostMessage.mock.calls.filter(([raw]) => {
+      try {
+        return JSON.parse(raw).action === "setTopMargin";
+      } catch (_) {
+        return false;
+      }
+    });
+    expect(topMarginCalls).toHaveLength(0);
+  });
+
   it("handles WebView error", () => {
     const { getByTestId } = render(<Reader navigation={mockNavigation} route={mockRoute} />);
 
@@ -765,6 +967,71 @@ describe("Reader", () => {
     // Should dispatch setPosition on unmount if element ID is set
     expect(mockDispatch).toHaveBeenCalled();
   });
+
+  describe("reading position and the iOS scroll guard", () => {
+    afterEach(() => {
+      jest.useRealTimers();
+      mockNavigation.addListener.mockImplementation(() => () => {});
+    });
+
+    // A foreground crash or an OOM kill skips every save on leaving the screen.
+    it("saves the position while reading, a few seconds after it moves", () => {
+      jest.useFakeTimers();
+      const { getByTestId } = render(<Reader navigation={mockNavigation} route={mockRoute} />);
+      const { onMessage } = getByTestId("webview").props;
+      mockDispatch.mockClear();
+      act(() => {
+        onMessage({ nativeEvent: { data: "scroll-elementId-501|seq-3" } });
+        onMessage({ nativeEvent: { data: "scroll-elementId-502|seq-4" } });
+      });
+      expect(mockDispatch).not.toHaveBeenCalledWith(
+        expect.objectContaining({ type: "SET_POSITION" })
+      );
+      act(() => {
+        jest.advanceTimersByTime(5000);
+      });
+      const saves = mockDispatch.mock.calls.filter(([a]) => a?.type === "SET_POSITION");
+      expect(saves).toHaveLength(1);
+    });
+
+    // A notification swaps the bani in place. The refs held the previous
+    // bani's place, which was restored on the new page and saved under it.
+    it("starts a bani swapped in with no place of its own from the top", () => {
+      mockState.savePosition = { 123: "element1" };
+      const { rerender, unmount } = render(
+        <Reader navigation={mockNavigation} route={mockRoute} />
+      );
+      const other = { params: { params: { id: "456", title: "Other", titleUni: "ਹੋਰ" } } };
+      rerender(<Reader navigation={mockNavigation} route={other} />);
+      const { setPosition } = jest.requireMock("@common").actions;
+      setPosition.mockClear();
+      unmount();
+      // Leaving writes only what this bani has: nothing yet.
+      const saves = setPosition.mock.calls.filter(([, id]) => id === "456");
+      expect(saves).toHaveLength(0);
+    });
+
+    // WKWebView's spurious scroll-to-0 on return from Bookmarks posts "edge" as
+    // well, and taken as the top it kept the idle auto-hide off.
+    it("ignores an edge report inside the iOS scroll guard", () => {
+      const listeners = {};
+      mockNavigation.addListener.mockImplementation((event, cb) => {
+        (listeners[event] = listeners[event] || []).push(cb);
+        return () => {};
+      });
+      const { getByTestId } = render(<Reader navigation={mockNavigation} route={mockRoute} />);
+      const { onMessage } = getByTestId("webview").props;
+      act(() => {
+        onMessage({ nativeEvent: { data: "hide" } });
+      });
+      act(() => listeners.blur.forEach((cb) => cb()));
+      trackNavBar.mockClear();
+      act(() => {
+        onMessage({ nativeEvent: { data: "edge" } });
+      });
+      expect(trackNavBar).not.toHaveBeenCalledWith(true, "scroll_edge", expect.any(String));
+    });
+  });
 });
 
 // Cleanup after all tests
@@ -772,4 +1039,66 @@ afterAll(() => {
   if (appStateSpy) {
     appStateSpy.mockRestore();
   }
+});
+
+// The header title is the FULL name, whatever route opened the Reader and
+// whatever bani font is set.
+//
+// Two things made it truncate, and each hid the other. The Reader fell back to
+// the ASCII name whenever the bani font was not Baloo, and that name is the
+// abbreviated one for many banis. And the dashboard Continue/Explore tiles
+// passed the server's abbreviated `bani_title` — those tiles only appear ONCE
+// A BANI HAS BEEN READ, so the header looked right for the first opening or two
+// and then truncated, because the later opens came from a different screen.
+describe("Reader header title", () => {
+  const routeFor = (params) => ({ params: { params: { id: 2, ...params } } });
+
+  it.each(["GurbaniAkharTrue", "BalooPaaji2-Regular"])(
+    "shows the full Unicode name with the %s bani font",
+    (font) => {
+      mockState.fontFace = font;
+      const route = routeFor({ title: "jpujI", titleUni: "ਜਪੁਜੀ ਸਾਹਿਬ" });
+
+      const { getByTestId } = render(<Reader navigation={mockNavigation} route={route} />);
+
+      expect(getByTestId("header-title").props.children).toBe("ਜਪੁਜੀ ਸਾਹਿਬ");
+    }
+  );
+
+  it("converts an ASCII name when no Unicode one was passed", () => {
+    const route = routeFor({ title: "jpujI", titleUni: undefined });
+
+    const { getByTestId } = render(<Reader navigation={mockNavigation} route={route} />);
+
+    // convertToUnicode is mocked to identity here; the point is that it is used
+    // rather than the raw ASCII being handed to a font that cannot draw it.
+    expect(getByTestId("header-title").props.children).toBe("jpujI");
+  });
+
+  it("does not render the title in the user's bani font", () => {
+    // Header chrome takes the header face. Tying it to the bani font is what
+    // forced the ASCII name to be used in the first place.
+    const fs2 = require("fs");
+    const path2 = require("path");
+    const header = fs2.readFileSync(path2.join(__dirname, "components/header.jsx"), "utf8");
+    expect(header).not.toMatch(/fontFamily: fontFace/);
+  });
+});
+
+// The strip that paints reader ground along the bottom edge is OPAQUE and sits
+// over the WebView, so every point of it above where the progress track rests is
+// a band of flat colour hiding the last line of bani — a blank gap between the
+// text and the bar. Sizing it to the raw inset is what put 24pt of that on
+// iPhone once the track stopped resting at the full inset.
+describe("the bottom ground strip", () => {
+  const source = require("fs").readFileSync(require("path").join(__dirname, "index.jsx"), "utf8");
+
+  it("ends where the chrome rests, not at the raw inset", () => {
+    expect(source).toMatch(/height: chromeRestLift,/);
+    expect(source).not.toMatch(/height: insetBottom,/);
+  });
+
+  it("is not drawn at all when nothing rests above the bottom edge", () => {
+    expect(source).toMatch(/\{chromeRestLift > 0 && \(/);
+  });
 });

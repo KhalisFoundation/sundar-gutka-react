@@ -15,6 +15,7 @@
 		711185CC02C64148849936C6 /* GurbaniAkharTrue.ttf in Resources */ = {isa = PBXBuildFile; fileRef = FAE2F7F86FB14C858E603117 /* GurbaniAkharTrue.ttf */; };
 		7805EE342D930CA0008726B1 /* AppDelegate.swift in Sources */ = {isa = PBXBuildFile; fileRef = 7805EE332D930CA0008726B1 /* AppDelegate.swift */; };
 		81AB9BB82411601600AC10FF /* LaunchScreen.storyboard in Resources */ = {isa = PBXBuildFile; fileRef = 81AB9BB72411601600AC10FF /* LaunchScreen.storyboard */; };
+		9C4F1A7E63B24D0FA1E58C30 /* Puratan_Hastlikhat.ttf in Resources */ = {isa = PBXBuildFile; fileRef = 3D71B0C58AE1472E9F60D4A2 /* Puratan_Hastlikhat.ttf */; };
 		9C735B1F64F0CD433DFE1CD2 /* Pods_SundarGutka.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = 8C91DF7410D146A9CB955FE4 /* Pods_SundarGutka.framework */; };
 		9F26F74437CA410C9CED2877 /* Arial.ttf in Resources */ = {isa = PBXBuildFile; fileRef = 28D38692B74A4A1DAC2F2D3C /* Arial.ttf */; };
 		A469D6732B637179001A107B /* GoogleService-Info.plist in Resources */ = {isa = PBXBuildFile; fileRef = A469D6722B637179001A107B /* GoogleService-Info.plist */; };
@@ -23,6 +24,8 @@
 		AA000002AAAA000200000001 /* NowPlayingHelperBridge.m in Sources */ = {isa = PBXBuildFile; fileRef = AA000002AAAA000200000002 /* NowPlayingHelperBridge.m */; };
 		AA000003AAAA000300000001 /* WebViewScrollFixer.m in Sources */ = {isa = PBXBuildFile; fileRef = AA000003AAAA000300000002 /* WebViewScrollFixer.m */; };
 		B0A7833D8F9848A1B4112DEB /* BalooPaaji2-SemiBold.ttf in Resources */ = {isa = PBXBuildFile; fileRef = 6A13EDB20C5F49D4980F2FC1 /* BalooPaaji2-SemiBold.ttf */; };
+		CAF0000000000000000000B1 /* waheguru_soul.caf in Resources */ = {isa = PBXBuildFile; fileRef = CAF0000000000000000000A1 /* waheguru_soul.caf */; };
+		CAF0000000000000000000B2 /* wake_up_jap.caf in Resources */ = {isa = PBXBuildFile; fileRef = CAF0000000000000000000A2 /* wake_up_jap.caf */; };
 		DA119E1D2A5F0D7200FD0E10 /* waheguru_soul.mp3 in Resources */ = {isa = PBXBuildFile; fileRef = DA119E1B2A5F0D7200FD0E10 /* waheguru_soul.mp3 */; };
 		DA119E1E2A5F0D7200FD0E10 /* wake_up_jap.mp3 in Resources */ = {isa = PBXBuildFile; fileRef = DA119E1C2A5F0D7200FD0E10 /* wake_up_jap.mp3 */; };
 		F00557B100F7FA7802293CBE /* PrivacyInfo.xcprivacy in Resources */ = {isa = PBXBuildFile; fileRef = B5622B2E177976AE33F51A68 /* PrivacyInfo.xcprivacy */; };
@@ -47,6 +50,7 @@
 		13B07FB51A68108700A75B9A /* Images.xcassets */ = {isa = PBXFileReference; lastKnownFileType = folder.assetcatalog; name = Images.xcassets; path = SundarGutka/Images.xcassets; sourceTree = "<group>"; };
 		13B07FB61A68108700A75B9A /* Info.plist */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = text.plist.xml; name = Info.plist; path = SundarGutka/Info.plist; sourceTree = "<group>"; };
 		28D38692B74A4A1DAC2F2D3C /* Arial.ttf */ = {isa = PBXFileReference; explicitFileType = undefined; fileEncoding = 9; includeInIndex = 0; lastKnownFileType = unknown; name = Arial.ttf; path = ../assets/fonts/Arial.ttf; sourceTree = "<group>"; };
+		3D71B0C58AE1472E9F60D4A2 /* Puratan_Hastlikhat.ttf */ = {isa = PBXFileReference; explicitFileType = undefined; fileEncoding = 9; includeInIndex = 0; lastKnownFileType = unknown; name = Puratan_Hastlikhat.ttf; path = ../assets/fonts/Puratan_Hastlikhat.ttf; sourceTree = "<group>"; };
 		6A13EDB20C5F49D4980F2FC1 /* BalooPaaji2-SemiBold.ttf */ = {isa = PBXFileReference; explicitFileType = undefined; fileEncoding = 9; includeInIndex = 0; lastKnownFileType = unknown; name = "BalooPaaji2-SemiBold.ttf"; path = "../assets/fonts/BalooPaaji2-SemiBold.ttf"; sourceTree = "<group>"; };
 		7805EE332D930CA0008726B1 /* AppDelegate.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = AppDelegate.swift; sourceTree = "<group>"; };
 		787CCE4A2CB49B1B00633E99 /* AdSupport.framework */ = {isa = PBXFileReference; lastKnownFileType = wrapper.framework; name = AdSupport.framework; path = Platforms/MacOSX.platform/Developer/SDKs/MacOSX15.0.sdk/System/Library/Frameworks/AdSupport.framework; sourceTree = DEVELOPER_DIR; };
@@ -61,6 +65,8 @@
 		B5622B2E177976AE33F51A68 /* PrivacyInfo.xcprivacy */ = {isa = PBXFileReference; includeInIndex = 1; lastKnownFileType = text.xml; name = PrivacyInfo.xcprivacy; path = SundarGutka/PrivacyInfo.xcprivacy; sourceTree = "<group>"; };
 		BF0C3B3B1147E0FCF6749E86 /* Pods-SundarGutka.release.xcconfig */ = {isa = PBXFileReference; includeInIndex = 1; lastKnownFileType = text.xcconfig; name = "Pods-SundarGutka.release.xcconfig"; path = "Target Support Files/Pods-SundarGutka/Pods-SundarGutka.release.xcconfig"; sourceTree = "<group>"; };
 		C973C1C9E6ED468AA759E427 /* AnmolLipiSG.ttf */ = {isa = PBXFileReference; explicitFileType = undefined; fileEncoding = 9; includeInIndex = 0; lastKnownFileType = unknown; name = AnmolLipiSG.ttf; path = ../assets/fonts/AnmolLipiSG.ttf; sourceTree = "<group>"; };
+		CAF0000000000000000000A1 /* waheguru_soul.caf */ = {isa = PBXFileReference; lastKnownFileType = file; path = waheguru_soul.caf; sourceTree = "<group>"; };
+		CAF0000000000000000000A2 /* wake_up_jap.caf */ = {isa = PBXFileReference; lastKnownFileType = file; path = wake_up_jap.caf; sourceTree = "<group>"; };
 		DA119E1B2A5F0D7200FD0E10 /* waheguru_soul.mp3 */ = {isa = PBXFileReference; lastKnownFileType = audio.mp3; path = waheguru_soul.mp3; sourceTree = "<group>"; };
 		DA119E1C2A5F0D7200FD0E10 /* wake_up_jap.mp3 */ = {isa = PBXFileReference; lastKnownFileType = audio.mp3; path = wake_up_jap.mp3; sourceTree = "<group>"; };
 		E2026864AD524AAFB03C8E1F /* BalooPaaji2-Regular.ttf */ = {isa = PBXFileReference; explicitFileType = undefined; fileEncoding = 9; includeInIndex = 0; lastKnownFileType = unknown; name = "BalooPaaji2-Regular.ttf"; path = "../assets/fonts/BalooPaaji2-Regular.ttf"; sourceTree = "<group>"; };
@@ -145,6 +151,8 @@
 				A469D6722B637179001A107B /* GoogleService-Info.plist */,
 				DA119E1B2A5F0D7200FD0E10 /* waheguru_soul.mp3 */,
 				DA119E1C2A5F0D7200FD0E10 /* wake_up_jap.mp3 */,
+				CAF0000000000000000000A1 /* waheguru_soul.caf */,
+				CAF0000000000000000000A2 /* wake_up_jap.caf */,
 				13B07FAE1A68108700A75B9A /* SundarGutka */,
 				832341AE1AAA6A7D00B99B32 /* Libraries */,
 				00E356EF1AD99517003FC87E /* SundarGutkaTests */,
@@ -186,6 +194,7 @@
 				FAE2F7F86FB14C858E603117 /* GurbaniAkharTrue.ttf */,
 				E2026864AD524AAFB03C8E1F /* BalooPaaji2-Regular.ttf */,
 				6A13EDB20C5F49D4980F2FC1 /* BalooPaaji2-SemiBold.ttf */,
+				3D71B0C58AE1472E9F60D4A2 /* Puratan_Hastlikhat.ttf */,
 			);
 			name = Resources;
 			sourceTree = "<group>";
@@ -290,6 +299,8 @@
 				FE704EC35D2847DFBE7DC00D /* AnmolLipiSG.ttf in Resources */,
 				A469D6732B637179001A107B /* GoogleService-Info.plist in Resources */,
 				DA119E1E2A5F0D7200FD0E10 /* wake_up_jap.mp3 in Resources */,
+				CAF0000000000000000000B1 /* waheguru_soul.caf in Resources */,
+				CAF0000000000000000000B2 /* wake_up_jap.caf in Resources */,
 				9F26F74437CA410C9CED2877 /* Arial.ttf in Resources */,
 				16CFCFEA88304281997FBC21 /* GurbaniAkharHeavyTrue.ttf in Resources */,
 				0A969EA195AE44A784B59F55 /* GurbaniAkharThickTrue.ttf in Resources */,
@@ -297,6 +308,7 @@
 				F00557B100F7FA7802293CBE /* PrivacyInfo.xcprivacy in Resources */,
 				6CD9DBAD0DA24CED921BDC7F /* BalooPaaji2-Regular.ttf in Resources */,
 				B0A7833D8F9848A1B4112DEB /* BalooPaaji2-SemiBold.ttf in Resources */,
+				9C4F1A7E63B24D0FA1E58C30 /* Puratan_Hastlikhat.ttf in Resources */,
 			);
 			runOnlyForDeploymentPostprocessing = 0;
 		};
@@ -463,7 +475,7 @@
 					"$(inherited)",
 				);
 				INFOPLIST_FILE = SundarGutkaTests/Info.plist;
-				IPHONEOS_DEPLOYMENT_TARGET = 12.4;
+				IPHONEOS_DEPLOYMENT_TARGET = 15.1;
 				LD_RUNPATH_SEARCH_PATHS = (
 					"$(inherited)",
 					"@executable_path/Frameworks",
@@ -486,7 +498,7 @@
 				BUNDLE_LOADER = "$(TEST_HOST)";
 				COPY_PHASE_STRIP = NO;
 				INFOPLIST_FILE = SundarGutkaTests/Info.plist;
-				IPHONEOS_DEPLOYMENT_TARGET = 12.4;
+				IPHONEOS_DEPLOYMENT_TARGET = 15.1;
 				LD_RUNPATH_SEARCH_PATHS = (
 					"$(inherited)",
 					"@executable_path/Frameworks",
@@ -530,7 +542,6 @@
 				ENABLE_RESOURCE_ACCESS_PRINTING = NO;
 				ENABLE_RESOURCE_ACCESS_USB = NO;
 				INFOPLIST_FILE = SundarGutka/Info.plist;
-				IPHONEOS_DEPLOYMENT_TARGET = 15.6;
 				LD_RUNPATH_SEARCH_PATHS = (
 					"$(inherited)",
 					"@executable_path/Frameworks",
@@ -581,7 +592,6 @@
 				ENABLE_RESOURCE_ACCESS_PRINTING = NO;
 				ENABLE_RESOURCE_ACCESS_USB = NO;
 				INFOPLIST_FILE = SundarGutka/Info.plist;
-				IPHONEOS_DEPLOYMENT_TARGET = 15.6;
 				LD_RUNPATH_SEARCH_PATHS = (
 					"$(inherited)",
 					"@executable_path/Frameworks",
@@ -667,7 +677,7 @@
 					"${PODS_CONFIGURATION_BUILD_DIR}/React-graphics/React_graphics.framework/Headers",
 					"${PODS_CONFIGURATION_BUILD_DIR}/React-graphics/React_graphics.framework/Headers/react/renderer/graphics/platform/ios",
 				);
-				IPHONEOS_DEPLOYMENT_TARGET = 15.6;
+				IPHONEOS_DEPLOYMENT_TARGET = 15.1;
 				LD_RUNPATH_SEARCH_PATHS = (
 					/usr/lib/swift,
 					"$(inherited)",
@@ -754,7 +764,7 @@
 					"${PODS_CONFIGURATION_BUILD_DIR}/React-graphics/React_graphics.framework/Headers",
 					"${PODS_CONFIGURATION_BUILD_DIR}/React-graphics/React_graphics.framework/Headers/react/renderer/graphics/platform/ios",
 				);
-				IPHONEOS_DEPLOYMENT_TARGET = 15.6;
+				IPHONEOS_DEPLOYMENT_TARGET = 15.1;
 				LD_RUNPATH_SEARCH_PATHS = (
 					/usr/lib/swift,
 					"$(inherited)",

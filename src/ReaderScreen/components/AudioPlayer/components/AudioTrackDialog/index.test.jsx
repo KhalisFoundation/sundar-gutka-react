@@ -12,12 +12,12 @@ import AudioTrackDialog from "./index";
 
 let mockState = { fontFace: "TestFont" };
 
-jest.mock("react-redux", () => ({
-  useSelector: (selector) => selector(mockState),
-}));
-
 jest.mock("@react-navigation/native", () => ({
   useIsFocused: () => true,
+}));
+
+jest.mock("react-redux", () => ({
+  useSelector: (selector) => selector(mockState),
 }));
 
 jest.mock("@common/context", () => ({
@@ -25,6 +25,12 @@ jest.mock("@common/context", () => ({
   default: () => ({
     theme: {
       mode: "light",
+      // Native-prop enums that the theme decides. This suite stubs `@common`,
+      // so it cannot require the real theme (which reads `constant` for its
+      // font names) and states them directly instead.
+      chrome: { statusBarStyle: "dark-content", scrollIndicator: "black", blurType: "light" },
+      c: require("@theme/semanticColors").light,
+
       colors: {
         primary: "#123456",
         audioTitleText: "#111111",
@@ -35,6 +41,7 @@ jest.mock("@common/context", () => ({
       },
     },
   }),
+  useNetwork: () => ({ isOffline: false, isOnline: true }),
 }));
 
 const mockStyles = {
@@ -79,12 +86,17 @@ jest.mock("@common", () => {
       NEXT: "Next",
       welcome_to_sundar_gutka: "Welcome to Sundar Gutka",
       please_choose_a_track: "Please choose a track for",
+      OPENING_PLAYER: "Opening Player...",
+      OFFLINE_TRACKS_NOTICE: "You're offline.",
     },
     CustomText: ({ children, ...props }) => (
       <Text accessibilityRole="text" {...props}>
         {children}
       </Text>
     ),
+    Coachmark: ({ children }) => children,
+    PREVIEW_STEPS: [],
+    COACH: { HOME: "home", PREVIEW: "preview", PLAYER: "player", DOWNLOADS: "downloads" },
   };
 });
 
@@ -95,10 +107,19 @@ jest.mock("@react-native-community/blur", () => {
   };
 });
 
+jest.mock("@react-native-community/netinfo", () => ({
+  useNetInfo: () => ({ isConnected: true, type: "wifi" }),
+}));
+
 jest.mock("../ScrollViewComponent", () => {
   const { View, Pressable, Text } = require("react-native");
-  return ({ tracks, handleSelectTrack, previewLoadingTrackId }) => (
+  // `header` is rendered INSIDE the scroller by the real component, so that the
+  // intro scrolls with the rows instead of pushing them and Next off the card
+  // at a raised OS text size. The stub has to honour that or the dialog's own
+  // header assertions would pass against a component that never showed it.
+  const Comp = ({ tracks, handleSelectTrack, previewLoadingTrackId, header }) => (
     <View testID="tracks-list">
+      {header}
       <Text testID="preview-loading-id">{previewLoadingTrackId || ""}</Text>
       {tracks.map((track) => (
         <Pressable
@@ -111,6 +132,7 @@ jest.mock("../ScrollViewComponent", () => {
       ))}
     </View>
   );
+  return { __esModule: true, default: Comp, isOfflineAvailable: () => true };
 });
 
 // -------------------- HELPERS --------------------
@@ -215,7 +237,10 @@ describe("AudioTrackDialog", () => {
     });
   });
 
-  it("shows countdown label while preview is playing", async () => {
+  it("keeps a bare Next label (no countdown text) while preview is playing", async () => {
+    // The button intentionally always reads a bare "Next" — the countdown is
+    // conveyed visually by the progress-fill bar, not by button text (see
+    // nextButtonLabel in index.jsx).
     TrackPlayer.getActiveTrack.mockResolvedValue({ id: defaultTracks[0].id });
     TrackPlayer.getPlaybackState.mockResolvedValue({ state: "playing" });
 
@@ -225,7 +250,7 @@ describe("AudioTrackDialog", () => {
     fireEvent.press(getByTestId("track-track-1"));
 
     await waitFor(() => {
-      expect(getByText(/Next \(\d+s\)/)).toBeTruthy();
+      expect(getByText("Next")).toBeTruthy();
     });
   });
 

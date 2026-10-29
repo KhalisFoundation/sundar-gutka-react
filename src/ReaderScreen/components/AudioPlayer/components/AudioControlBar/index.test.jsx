@@ -33,11 +33,18 @@ jest.mock("@react-navigation/native", () => ({
 }));
 
 // Mock theme + styles
+const mockUseNetwork = jest.fn(() => ({ isOffline: false }));
 jest.mock("@common/context", () => ({
   __esModule: true,
   default: () => ({
     theme: {
       mode: "light",
+      // Native-prop enums that the theme decides. This suite stubs `@common`,
+      // so it cannot require the real theme (which reads `constant` for its
+      // font names) and states them directly instead.
+      chrome: { statusBarStyle: "dark-content", scrollIndicator: "black", blurType: "light" },
+      c: require("@theme/semanticColors").light,
+
       colors: {
         primary: "#123456",
         audioTitleText: "#000000",
@@ -49,6 +56,7 @@ jest.mock("@common/context", () => ({
       },
     },
   }),
+  useNetwork: () => mockUseNetwork(),
 }));
 
 jest.mock("@common/hooks/useThemedStyles", () => {
@@ -96,19 +104,30 @@ jest.mock("@react-native-community/blur", () => {
 
 // Mock @common
 export const STRINGS = {
-  MORE_TRACKS: "More Tracks",
+  MUSIC: "Audio",
   AUDIO_SETTINGS: "Audio Settings",
+  OPTIONS: "Options",
+  please_choose_a_track: "Please choose a track for",
 };
 
 jest.mock("@common", () => {
   const { Text } = require("react-native");
   return {
     STRINGS: {
-      MORE_TRACKS: "More Tracks",
+      MUSIC: "Audio",
       AUDIO_SETTINGS: "Audio Settings",
+      OPTIONS: "Options",
+      please_choose_a_track: "Please choose a track for",
+      ok: "OK",
+      cancel: "Cancel",
     },
     CustomText: (props) => <Text {...props} />,
     logError: jest.fn(),
+    setToastBottomReservation: jest.fn(),
+    Coachmark: ({ children }) => children,
+    ExplorePromptCallout: () => null,
+    PLAYER_STEPS: [],
+    COACH: { HOME: "home", PLAYER: "player", EXPLORE: "explore", DOWNLOADS: "downloads" },
   };
 });
 
@@ -123,9 +142,15 @@ const mockToggleAudioSyncScroll = jest.fn((value) => ({
   payload: value,
 }));
 
+const mockSetPlayerDragging = jest.fn((value) => ({
+  type: "SET_PLAYER_DRAGGING",
+  payload: value,
+}));
+
 jest.mock("@common/actions", () => ({
   setAudioProgress: (...args) => mockSetAudioProgress(...args),
   toggleAudioSyncScroll: (...args) => mockToggleAudioSyncScroll(...args),
+  setPlayerDragging: (...args) => mockSetPlayerDragging(...args),
 }));
 
 // Mock icons (just simple text)
@@ -138,6 +163,7 @@ jest.mock("@common/icons", () => {
     PlayIcon: (props) => <Text testID="play-icon" {...props} />,
     PauseIcon: (props) => <Text testID="pause-icon" {...props} />,
     ChevronDownIcon: (props) => <Text testID="chevron-down-icon" {...props} />,
+    ExpandCollapseIcon: (props) => <Text testID="expand-collapse-icon" {...props} />,
   };
 });
 
@@ -150,6 +176,8 @@ jest.mock("../../hooks", () => ({
   useDownloadManager: jest.fn(() => ({
     isDownloading: false,
     isDownloaded: false,
+    progress: 0,
+    handleDownload: jest.fn(),
   })),
   useBookmarks: jest.fn(),
   useArtistListeningDuration: jest.fn(),
@@ -193,14 +221,14 @@ jest.mock("../AudioSettingsModal", () => {
   return AudioSettingsModal;
 });
 
-jest.mock("../DownloadBadge", () => {
+jest.mock("../DownloadButton", () => {
   const { View, Text } = require("react-native");
-  const DownloadBadge = () => (
-    <View testID="download-badge">
-      <Text>Downloading…</Text>
+  const DownloadButton = () => (
+    <View testID="download-button">
+      <Text>Download</Text>
     </View>
   );
-  return DownloadBadge;
+  return DownloadButton;
 });
 
 jest.mock("../ScrollViewComponent", () => {
@@ -255,7 +283,6 @@ const createProps = (overrides = {}) => ({
   isInitialized: true,
   addAndPlayTrack: jest.fn(),
   play: jest.fn(),
-  onReopenPreviewModal: jest.fn(),
   ...overrides,
 });
 
@@ -280,6 +307,7 @@ describe("AudioControlBar", () => {
       isAudioSyncScroll: true,
       isAudioAutoPlay: false,
       audioProgress: {},
+      isPlayerDragging: false,
     };
   });
 
@@ -289,14 +317,15 @@ describe("AudioControlBar", () => {
     expect(getByText("Test Track")).toBeTruthy();
   });
 
-  it("shows DownloadBadge when track is downloading", async () => {
+  it("shows DownloadButton for current track", async () => {
     useDownloadManager.mockImplementation(() => ({
-      isDownloading: true,
+      isDownloading: false,
       isDownloaded: false,
+      handleDownload: jest.fn(),
     }));
     const props = createProps();
     const { getByTestId } = await renderComponent(props);
-    expect(getByTestId("download-badge")).toBeTruthy();
+    expect(getByTestId("download-button")).toBeTruthy();
   });
 
   it("calls handlePlayPause when play button is pressed", async () => {
@@ -312,13 +341,32 @@ describe("AudioControlBar", () => {
     expect(props.handlePlayPause).toHaveBeenCalledTimes(1);
   });
 
-  it("opens preview chooser when Audios action is pressed", async () => {
+  it("shows the inline reciter list when Audios action is pressed", async () => {
     const props = createProps();
+    const { getByTestId, queryByTestId } = await renderComponent(props);
+
+    expect(queryByTestId("tracks-list")).toBeNull();
+
+    fireEvent.press(getByTestId("action-Audio"));
+
+    await waitFor(() => {
+      expect(getByTestId("tracks-list")).toBeTruthy();
+    });
+  });
+
+  it("asks the owner to refetch the catalog each time the inline list opens", async () => {
+    const onTrackListOpen = jest.fn();
+    const props = createProps({ onTrackListOpen });
     const { getByTestId } = await renderComponent(props);
+    expect(onTrackListOpen).not.toHaveBeenCalled();
 
-    fireEvent.press(getByTestId("action-More Tracks"));
+    fireEvent.press(getByTestId("action-Audio"));
+    await waitFor(() => expect(onTrackListOpen).toHaveBeenCalledTimes(1));
 
-    expect(props.onReopenPreviewModal).toHaveBeenCalled();
+    // Closing does not refetch; reopening does.
+    fireEvent.press(getByTestId("action-Audio"));
+    fireEvent.press(getByTestId("action-Audio"));
+    await waitFor(() => expect(onTrackListOpen).toHaveBeenCalledTimes(2));
   });
 
   it("shows PauseIcon when isPlaying is true", async () => {
@@ -579,18 +627,20 @@ describe("AudioControlBar", () => {
     );
   });
 
-  it("opens AudioSettingsModal after Audios action triggers preview callback", async () => {
+  it("switches from the inline reciter list to AudioSettingsModal when Options is pressed", async () => {
     const props = createProps();
     const { getByTestId, queryByTestId } = await renderComponent(props);
 
-    fireEvent.press(getByTestId("action-More Tracks"));
-    expect(props.onReopenPreviewModal).toHaveBeenCalled();
-    expect(queryByTestId("tracks-list")).toBeNull();
+    fireEvent.press(getByTestId("action-Audio"));
+    await waitFor(() => {
+      expect(getByTestId("tracks-list")).toBeTruthy();
+    });
 
-    fireEvent.press(getByTestId("action-Audio Settings"));
+    fireEvent.press(getByTestId("action-Options"));
 
     await waitFor(() => {
       expect(getByTestId("audio-settings-modal")).toBeTruthy();
+      expect(queryByTestId("tracks-list")).toBeNull();
     });
   });
 
@@ -624,16 +674,16 @@ describe("AudioControlBar", () => {
       expect(props.onCloseTrackModal).toHaveBeenCalledTimes(1);
     });
 
-    it("keeps CloseIcon visible when Audios action is pressed", async () => {
+    it("shows ChevronDownIcon when the inline reciter list is open", async () => {
       const props = createProps();
       const { getByTestId, queryByTestId } = await renderComponent(props);
 
-      fireEvent.press(getByTestId("action-More Tracks"));
+      fireEvent.press(getByTestId("action-Audio"));
 
       await waitFor(() => {
-        expect(props.onReopenPreviewModal).toHaveBeenCalled();
-        expect(getByTestId("close-icon")).toBeTruthy();
-        expect(queryByTestId("chevron-down-icon")).toBeNull();
+        expect(getByTestId("tracks-list")).toBeTruthy();
+        expect(getByTestId("chevron-down-icon")).toBeTruthy();
+        expect(queryByTestId("close-icon")).toBeNull();
       });
     });
 
@@ -643,7 +693,7 @@ describe("AudioControlBar", () => {
 
       // Open Audio Settings modal
       await waitFor(() => {
-        fireEvent.press(getByTestId("action-Audio Settings"));
+        fireEvent.press(getByTestId("action-Options"));
       });
 
       await waitFor(() => {
@@ -656,7 +706,7 @@ describe("AudioControlBar", () => {
       const props = createProps();
       const { getByTestId, queryByTestId } = await renderComponent(props);
 
-      fireEvent.press(getByTestId("action-Audio Settings"));
+      fireEvent.press(getByTestId("action-Options"));
 
       await waitFor(() => {
         expect(getByTestId("audio-settings-modal")).toBeTruthy();

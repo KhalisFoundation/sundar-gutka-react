@@ -1,16 +1,17 @@
-import React, { useState, useEffect, useMemo, useRef } from "react";
-import { View, Pressable, Animated, Platform, ActivityIndicator } from "react-native";
-import { useNavigation, useIsFocused } from "@react-navigation/native";
+import React, { useState, useEffect, useMemo, useRef, useCallback } from "react";
+import { View, Pressable, Animated, Platform } from "react-native";
 import TrackPlayer from "react-native-track-player";
 import { useDispatch, useSelector } from "react-redux";
 import { Slider } from "@miblanchard/react-native-slider";
 import { BlurView } from "@react-native-community/blur";
-
+import { useNavigation, useIsFocused } from "@react-navigation/native";
 import PropTypes from "prop-types";
 import { setAudioProgress } from "@common/actions";
+import { Spinner } from "@common/components/ui";
+// Used by the two bani-length guards below. It was referenced without being
+// imported, so those paths threw a ReferenceError instead of running.
 import constant from "@common/constant";
-import useTheme from "@common/context";
-import useThemedStyles from "@common/hooks/useThemedStyles";
+import { useNetwork } from "@common/context";
 import {
   MusicNoteIcon,
   SettingsIcon,
@@ -18,20 +19,24 @@ import {
   PlayIcon,
   PauseIcon,
   ChevronDownIcon,
+  ExpandCollapseIcon,
 } from "@common/icons";
-import { STRINGS, CustomText, logError } from "@common";
+import { handlePlayerError } from "@common/TrackPlayerUtils";
+import { STRINGS, CustomText, setToastBottomReservation, trackPlayerForm } from "@common";
 import {
   useAnimation,
   useDownloadManager,
   useBookmarks,
   useArtistListeningDuration,
 } from "../../hooks";
-import { audioControlBarStyles } from "../../style";
+import { audioControlBarStyles, MINIMIZED_PLAYER_FOOTPRINT } from "../../style";
+import { useAudioTheme, useAudioThemedStyles } from "../../useAudioTheme";
 import checkLyricsFileAvailable from "../../utils/checkLRC";
 import { getSequenceFromPosition } from "../../utils/getSequenceFromPosition";
 import ActionComponents from "../ActionComponent";
 import AudioSettingsModal from "../AudioSettingsModal";
-import DownloadBadge from "../DownloadBadge";
+import DownloadButton from "../DownloadButton";
+import MinimizePlayer from "../MinimizePlayer";
 import ScrollViewComponent from "../ScrollViewComponent";
 
 const AudioControlBar = ({
@@ -44,35 +49,62 @@ const AudioControlBar = ({
   handleTrackSelect,
   onCloseTrackModal,
   baniID,
-  title,
+  title = undefined,
   notificationTitle = "",
-  currentPlaying,
+  currentPlaying = null,
   addTrackToManifest,
   isTrackDownloaded,
   tracks,
   seekTo,
-  reset,
-  pause,
   setRate,
   isInitialized,
   addAndPlayTrack,
   play,
-  isPlayerActionLoading,
-  onReopenPreviewModal,
-  skipNextLoadRef,
+  isPlayerActionLoading = false,
+  skipNextLoadRef = undefined,
+  isNavBarVisible = false,
+  barsDrop = 0,
+  onHideBars = () => {},
+  onPlayerTouch = () => {},
+  onTrackListOpen = () => {},
 }) => {
   const dispatch = useDispatch();
-  const { theme } = useTheme();
-  const styles = useThemedStyles(audioControlBarStyles);
+  const { theme } = useAudioTheme();
+  const styles = useAudioThemedStyles(audioControlBarStyles);
+  const fontFace = useSelector((state) => state.fontFace);
   const [isSettingsModalOpen, setIsSettingsModalOpen] = useState(false);
   const [isMoreTracksModalOpen, setIsMoreTracksModalOpen] = useState(false);
+  // Instant swap between the full player and the mini pill — no crossfade
+  // animation (it caused flicker). Only one of the two is mounted at a time.
+  const [isMinimized, setIsMinimized] = useState(false);
+  // Mirrored so `setMinimized` below can dedupe without depending on the state
+  // it sets, the same shape as the Reader own setBarsVisible.
+  const isMinimizedRef = useRef(isMinimized);
+  isMinimizedRef.current = isMinimized;
   const [isLyricsAvailable, setIsLyricsAvailable] = useState(false);
   const [isLyricsChecking, setIsLyricsChecking] = useState(true);
+  // Single source of truth (NetworkProvider) — gates tapping a non-downloaded
+  // reciter in the inline Audios list while offline, same guard AudioTrackDialog
+  // already uses, so a tap can never leave playback stuck trying to stream with
+  // no network.
+  const { isOffline } = useNetwork();
+
+  // The ONE path between the full player and the floating one. Every caller
+  // says why, so each conversion is recorded once and the analytics cannot
+  // drift from the UI — the mini/micro pair is funnelled the same way inside
+  // MinimizePlayer.
+  const setMinimized = useCallback((minimized, trigger) => {
+    if (isMinimizedRef.current === minimized) return;
+    isMinimizedRef.current = minimized;
+    setIsMinimized(minimized);
+    trackPlayerForm(minimized ? "mini" : "full", trigger);
+  }, []);
   const isAudioAutoPlay = useSelector((state) => state.isAudioAutoPlay);
   const baniLength = useSelector((state) => state.baniLength);
   const progressRef = useRef(progress);
   const currentPlayingRef = useRef(currentPlaying);
   const audioProgress = useSelector((state) => state.audioProgress);
+  const isPlayerDragging = useSelector((state) => state.isPlayerDragging);
   // When baniLength changes while playing, the reducer clears saved progress for
   // length-variant banis. Guard the periodic save and unmount save so they don't
   // write the stale position straight back before the safe-exit fires.
@@ -90,12 +122,15 @@ const AudioControlBar = ({
   // Snapshot of saved progress captured once on mount — see useEffect below.
   const initialProgressRef = useRef(null);
   const { modalHeight, modalOpacity } = useAnimation(isSettingsModalOpen, isMoreTracksModalOpen);
-  const { isDownloading, isDownloaded } = useDownloadManager(
+  // Called for its side effects (auto-enqueue current track + stamp manifest);
+  // per-track download UI now lives in DownloadButton, so no return value is used.
+  useDownloadManager(
     currentPlaying,
     addTrackToManifest,
     isTrackDownloaded,
     baniID,
-    title
+    title,
+    notificationTitle || title
   );
   useBookmarks(seekTo, currentPlaying?.lyricsUrl);
   useArtistListeningDuration(baniID, title, isPlaying, currentPlaying);
@@ -159,9 +194,9 @@ const AudioControlBar = ({
 
   // Memoize slider color to avoid recalculating on every render
   const sliderMinTrackColor = useMemo(() => {
-    if (!isAudioEnabled) return theme.staticColors.LIGHT_GRAY;
-    return theme.colors.primary;
-  }, [isAudioEnabled, theme.staticColors.LIGHT_GRAY, theme.colors.primary]);
+    if (!isAudioEnabled) return theme.c.border;
+    return theme.c.textBrand;
+  }, [isAudioEnabled, theme.c.border, theme.c.textBrand]);
 
   useEffect(() => {
     // Avoid showing stale duration from a previous track while new metadata is loading.
@@ -184,9 +219,8 @@ const AudioControlBar = ({
     // if the native player reports a duration far beyond the manifest value
     // (e.g. the edit list still references the original full-file length),
     // fall back to the manifest value so the slider doesn't collapse.
-    const isNativeSuspect =
-      manifestDuration > 0 && nativeDuration > manifestDuration * 1.1;
-    const nextDuration = isNativeSuspect ? manifestDuration : (nativeDuration || 0);
+    const isNativeSuspect = manifestDuration > 0 && nativeDuration > manifestDuration * 1.1;
+    const nextDuration = isNativeSuspect ? manifestDuration : nativeDuration || 0;
     setDisplayDuration(nextDuration);
     setDurationTrackId(currentTrackId);
   }, [currentPlaying?.id, progress.duration]);
@@ -194,56 +228,61 @@ const AudioControlBar = ({
   const sliderMax =
     durationTrackId && durationTrackId === getTrackId(currentPlaying) && displayDuration > 0
       ? displayDuration
-      : (Number(currentPlaying?.trackLengthSec) || 0);
+      : Number(currentPlaying?.trackLengthSec) || 0;
 
-  const safePosition = useMemo(
-    () => {
-      // While loadActiveTrack hasn't confirmed the new track in RNTP yet,
-      // progress.position may still be the previous track's stale value (e.g.
-      // 4:44 from a just-left track). Show saved/restore position or 0 instead.
-      if (confirmedCurrentTrackId !== String(currentPlaying?.id ?? "")) {
-        const savedProgress = audioProgress?.[baniID];
-        if (savedProgress?.trackId && String(savedProgress.trackId) === String(currentPlaying?.id)) {
-          const candidatePos = savedProgress.position || 0;
-          const manifestDuration = Number(currentPlaying?.trackLengthSec) || 0;
-          const trackCompleted = manifestDuration > 0 && candidatePos >= manifestDuration - 5;
-          if (!trackCompleted && candidatePos > 0) {
-            return sliderMax > 0 ? sanitizePosition(candidatePos, sliderMax) : candidatePos;
-          }
-        }
-        return 0;
-      }
-
-      let basePosition = progress.position;
-
-      // If native player hasn't caught up (position is 0 or near-0 right after
-      // addAndPlayTrack / reset), show the Redux-saved position to avoid a 0:00 flash.
-      // isSeekLoading is intentionally excluded: keeping it here caused the stale
-      // Redux position to flash over the live player position on every focus return.
-      if (!basePosition || basePosition < 0.5) {
-        const savedProgress = audioProgress?.[baniID];
-        if (savedProgress?.trackId && String(savedProgress.trackId) === String(currentPlaying?.id)) {
-          const candidatePos = savedProgress.position || basePosition;
-          const manifestDuration = Number(currentPlaying?.trackLengthSec) || 0;
-          const trackCompleted = manifestDuration > 0 && candidatePos >= manifestDuration - 5;
-          if (!trackCompleted) {
-            basePosition = candidatePos;
-          }
+  const safePosition = useMemo(() => {
+    // While loadActiveTrack hasn't confirmed the new track in RNTP yet,
+    // progress.position may still be the previous track's stale value (e.g.
+    // 4:44 from a just-left track). Show saved/restore position or 0 instead.
+    if (confirmedCurrentTrackId !== String(currentPlaying?.id ?? "")) {
+      const savedProgress = audioProgress?.[baniID];
+      if (savedProgress?.trackId && String(savedProgress.trackId) === String(currentPlaying?.id)) {
+        const candidatePos = savedProgress.position || 0;
+        const manifestDuration = Number(currentPlaying?.trackLengthSec) || 0;
+        const trackCompleted = manifestDuration > 0 && candidatePos >= manifestDuration - 5;
+        if (!trackCompleted && candidatePos > 0) {
+          return sliderMax > 0 ? sanitizePosition(candidatePos, sliderMax) : candidatePos;
         }
       }
+      return 0;
+    }
 
-      if (optimisticSeekPosition != null) {
-        basePosition = optimisticSeekPosition;
+    let basePosition = progress.position;
+
+    // If native player hasn't caught up (position is 0 or near-0 right after
+    // addAndPlayTrack / reset), show the Redux-saved position to avoid a 0:00 flash.
+    // isSeekLoading is intentionally excluded: keeping it here caused the stale
+    // Redux position to flash over the live player position on every focus return.
+    if (!basePosition || basePosition < 0.5) {
+      const savedProgress = audioProgress?.[baniID];
+      if (savedProgress?.trackId && String(savedProgress.trackId) === String(currentPlaying?.id)) {
+        const candidatePos = savedProgress.position || basePosition;
+        const manifestDuration = Number(currentPlaying?.trackLengthSec) || 0;
+        const trackCompleted = manifestDuration > 0 && candidatePos >= manifestDuration - 5;
+        if (!trackCompleted) {
+          basePosition = candidatePos;
+        }
       }
+    }
 
-      if (sliderMax <= 0) {
-        return basePosition;
-      }
+    if (optimisticSeekPosition != null) {
+      basePosition = optimisticSeekPosition;
+    }
 
-      return sanitizePosition(basePosition, sliderMax);
-    },
-    [progress.position, sliderMax, optimisticSeekPosition, audioProgress, baniID, currentPlaying?.id, confirmedCurrentTrackId]
-  );
+    if (sliderMax <= 0) {
+      return basePosition;
+    }
+
+    return sanitizePosition(basePosition, sliderMax);
+  }, [
+    progress.position,
+    sliderMax,
+    optimisticSeekPosition,
+    audioProgress,
+    baniID,
+    currentPlaying?.id,
+    confirmedCurrentTrackId,
+  ]);
 
   useEffect(() => {
     if (optimisticSeekPosition == null) {
@@ -331,18 +370,29 @@ const AudioControlBar = ({
 
   const actionComponents = [
     {
-      selector: false,
-      toggle: onReopenPreviewModal,
+      selector: isMoreTracksModalOpen,
+      toggle: setIsMoreTracksModalOpen,
       Icon: MusicNoteIcon,
-      text: STRINGS.MORE_TRACKS,
+      text: STRINGS.MUSIC,
     },
     {
       selector: isSettingsModalOpen,
       toggle: setIsSettingsModalOpen,
       Icon: SettingsIcon,
-      text: STRINGS.AUDIO_SETTINGS,
+      text: STRINGS.OPTIONS,
     },
   ];
+
+  // Switching reciters from the inline Audios list closes the list back down —
+  // the same "pick and collapse" behaviour a chooser is expected to have,
+  // instead of leaving it open over the newly-selected track.
+  const handleInlineTrackSelect = useCallback(
+    (track) => {
+      setIsMoreTracksModalOpen(false);
+      handleTrackSelect(track);
+    },
+    [handleTrackSelect]
+  );
 
   const actionItems =
     isMoreTracksModalOpen || isSettingsModalOpen
@@ -373,6 +423,9 @@ const AudioControlBar = ({
   useEffect(() => {
     if (isMoreTracksModalOpen) {
       setIsSettingsModalOpen(false);
+      // The inline reciter list is a list opening like any other: the owner
+      // refetches the manifest behind it so it never shows a stale catalog.
+      onTrackListOpen();
     }
   }, [isMoreTracksModalOpen]);
 
@@ -402,6 +455,7 @@ const AudioControlBar = ({
       // effect to prevent the destructive double-load race condition.
       // M4A moov parse takes seconds — a second reset() kills it.
       if (skipNextLoadRef?.current) {
+        // eslint-disable-next-line no-param-reassign -- mutating a ref's .current is the intended pattern
         skipNextLoadRef.current = false;
         setConfirmedCurrentTrackId(String(currentPlaying.id));
         return;
@@ -454,7 +508,8 @@ const AudioControlBar = ({
         if (initialProgressRef.current) {
           const savedProgress = initialProgressRef.current;
           const isSavedProgressForCurrentTrack =
-            savedProgress.trackId != null && String(savedProgress.trackId) === String(currentPlaying.id);
+            savedProgress.trackId != null &&
+            String(savedProgress.trackId) === String(currentPlaying.id);
 
           // Restore exact saved position if it belongs to the currently selected track.
           // We intentionally avoid restoring from sequence ID to prevent snapping backwards
@@ -470,7 +525,7 @@ const AudioControlBar = ({
         setConfirmedCurrentTrackId(String(currentPlaying.id));
         setIsSeekLoading(false);
       } catch (error) {
-        logError("Error loading active track:", error);
+        handlePlayerError("loading active track", error);
         setIsSeekLoading(false);
       }
     };
@@ -492,14 +547,16 @@ const AudioControlBar = ({
       const currentTrack = currentPlayingRef.current;
       const trackId = currentTrack?.id;
       const unmountDuration =
-        sanitizeDuration(currentProgress?.duration) || sanitizeDuration(currentTrack?.trackLengthSec);
+        sanitizeDuration(currentProgress?.duration) ||
+        sanitizeDuration(currentTrack?.trackLengthSec);
       const unmountPosition = sanitizePosition(currentProgress?.position, unmountDuration);
       if (trackId) {
         if (
           baniLengthChangedRef.current &&
           constant.BANI_IDS_WITH_LENGTH_VARIANTS.includes(Number(baniID))
-        )
+        ) {
           return;
+        }
         // Save sequence along with position
         (async () => {
           let sequence = null;
@@ -529,8 +586,9 @@ const AudioControlBar = ({
       if (
         baniLengthChangedRef.current &&
         constant.BANI_IDS_WITH_LENGTH_VARIANTS.includes(Number(baniID))
-      )
+      ) {
         return;
+      }
 
       const persistDuration =
         sanitizeDuration(currentProgress?.duration) ||
@@ -557,140 +615,216 @@ const AudioControlBar = ({
     return () => clearInterval(intervalId);
   }, [isPlaying, currentPlaying?.id, baniID, dispatch]);
 
+  // Keep toasts clear of whichever form of the player is on screen. The
+  // expanded bar sits in normal flow, so this wrapper measures it; the
+  // collapsed pill is absolutely positioned and contributes nothing to that
+  // height, so its known footprint is used instead.
+  const [footerHeight, setFooterHeight] = useState(0);
+  const handleFooterLayout = useCallback((e) => {
+    setFooterHeight(e.nativeEvent.layout.height);
+  }, []);
+  useEffect(() => {
+    setToastBottomReservation(isMinimized ? MINIMIZED_PLAYER_FOOTPRINT : footerHeight);
+    // Released on unmount so a toast fired from any other screen sits at its
+    // normal resting offset.
+    return () => setToastBottomReservation(0);
+  }, [isMinimized, footerHeight]);
+
   return (
-    <View style={styles.container} pointerEvents="box-none">
-      {isDownloading && !isDownloaded && <DownloadBadge />}
-      {/* Full Player with Animation */}
-      <View style={[styles.mainContainer, Platform.OS === "ios" && styles.mainContainerIOS]}>
-        {Platform.OS === "ios" && (
-          <BlurView
-            style={styles.blurOverlay}
-            blurType={theme.mode === "dark" ? "dark" : "light"}
-            blurAmount={5}
-            reducedTransparencyFallbackColor={theme.colors.transparentOverlay}
-          />
-        )}
-        {/* Top Control Bar */}
-        <View style={styles.topControlBar}>
-          <View style={styles.leftControls}>
-            {actionComponents.map((component) => (
-              <ActionComponents
-                key={component.text}
-                selector={component.selector}
-                toggle={component.toggle}
-                Icon={component.Icon}
-                text={component.text}
-              />
-            ))}
-          </View>
-
-          <View style={styles.rightControls}>
-            {actionItems.map((item) => (
-              <Pressable key={item.id} style={styles.controlIcon} onPress={item.onPress}>
-                <item.Icon size={30} color={theme.colors.audioTitleText} />
-              </Pressable>
-            ))}
-          </View>
-        </View>
-
-        {/* Separator */}
-        <View style={styles.separator} />
-        <Animated.View
-          style={[styles.modalAnimation, { maxHeight: modalHeight, opacity: modalOpacity }]}
-        >
-          {isSettingsModalOpen && (
-            <AudioSettingsModal
-              isLyricsAvailable={isLyricsAvailable}
-              isLyricsChecking={isLyricsChecking}
-              setRate={setRate}
+    // onTouchStart here catches EVERY form and control in one place: the full
+    // bar, the pill and the circle all live under this view. It is box-none, so
+    // a touch landing where the player is NOT passes through to the page and
+    // never fires this — which is exactly the line that has to be drawn.
+    <View
+      style={styles.container}
+      pointerEvents="box-none"
+      onLayout={handleFooterLayout}
+      onTouchStart={onPlayerTouch}
+    >
+      {/* DownloadBadge replaced by DownloadButton in the trackInfo row */}
+      {isMinimized && (
+        <MinimizePlayer
+          setMinimized={setMinimized}
+          handlePlayPause={handlePlayPause}
+          isPlaying={isPlaying}
+          progress={formatTime(safePosition)}
+          duration={sliderMax > 0 ? formatTime(sliderMax) : "0:00"}
+          displayName={currentPlaying?.displayName || ""}
+          isDragging={isPlayerDragging}
+          isNavBarVisible={isNavBarVisible}
+          barsDrop={barsDrop}
+          onHideBars={onHideBars}
+        />
+      )}
+      {!isMinimized && (
+        <View style={[styles.mainContainer, Platform.OS === "ios" && styles.mainContainerIOS]}>
+          {Platform.OS === "ios" && (
+            <BlurView
+              style={styles.blurOverlay}
+              blurType={theme.chrome.blurType}
+              blurAmount={5}
+              reducedTransparencyFallbackColor={theme.c.surface}
             />
           )}
-
-          {isMoreTracksModalOpen && (
-            <View style={styles.moreTracksModalContainer}>
-              <ScrollViewComponent
-                tracks={tracks}
-                selectedTrack={currentPlaying}
-                handleSelectTrack={handleTrackSelect}
-              />
+          {/* Top Control Bar */}
+          <View style={styles.topControlBar}>
+            <View style={styles.leftControls}>
+              {actionComponents.map((component) => (
+                <ActionComponents
+                  key={component.text}
+                  selector={component.selector}
+                  toggle={component.toggle}
+                  Icon={component.Icon}
+                  text={component.text}
+                />
+              ))}
             </View>
-          )}
-        </Animated.View>
 
-        {/* Main Playback Section */}
-        <View style={[styles.mainSection]}>
-          <View style={styles.trackInfo}>
-            <View style={styles.trackInfoLeft}>
-              {currentPlaying && currentPlaying.displayName && (
-                <CustomText style={styles.trackName}>{currentPlaying.displayName}</CustomText>
+            <View style={styles.rightControls}>
+              {!isMoreTracksModalOpen && !isSettingsModalOpen && currentPlaying && (
+                <Pressable style={styles.controlIcon} onPress={() => setMinimized(true, "control")}>
+                  <ExpandCollapseIcon size={26} color={theme.c.textBrand} />
+                </Pressable>
               )}
+              {actionItems.map((item) => (
+                <Pressable key={item.id} style={styles.controlIcon} onPress={item.onPress}>
+                  <item.Icon size={30} color={theme.c.textBrand} />
+                </Pressable>
+              ))}
             </View>
           </View>
 
-          <View style={styles.playbackControls}>
-            <Pressable
-              style={styles.playButton}
-              onPress={handlePlayPause}
-              disabled={!isAudioEnabled || isPlayerActionLoading || isBuffering}
-            >
-              {isPlayerActionLoading || isBuffering ? (
-                <ActivityIndicator
-                  testID="player-action-loading-indicator"
-                  size="small"
-                  color={theme.colors.audioTitleText}
-                  style={styles.playButtonLoadingSpinner}
-                />
-              ) : isPlaying ? (
-                <PauseIcon size={30} color={theme.colors.audioTitleText} />
-              ) : (
-                <PlayIcon size={30} color={theme.colors.audioTitleText} />
-              )}
-            </Pressable>
+          {/* Separator */}
+          <View style={styles.separator} />
+          <Animated.View
+            style={[styles.modalAnimation, { maxHeight: modalHeight, opacity: modalOpacity }]}
+          >
+            {isSettingsModalOpen && (
+              <AudioSettingsModal
+                isLyricsAvailable={isLyricsAvailable}
+                isLyricsChecking={isLyricsChecking}
+                setRate={setRate}
+              />
+            )}
 
-            <View style={styles.progressContainer}>
-              <View style={styles.progressBar}>
-                {isSeekLoading && (
-                  <View style={styles.seekLoadingOverlay} testID="seek-loading-indicator">
-                    <ActivityIndicator size="small" color={theme.colors.primary} />
-                  </View>
-                )}
-                <View style={styles.timeRow}>
-                  <CustomText style={[styles.timestamp, styles.timestampWithColor]}>
-                    {formatTime(safePosition)}
-                  </CustomText>
-                  <CustomText style={[styles.timestamp, styles.timestampWithColor]}>
-                    {sliderMax > 0 ? formatTime(sliderMax) : "0:00"}
-                  </CustomText>
-                </View>
-                <Slider
-                  value={safePosition}
-                  minimumValue={0}
-                  maximumValue={sliderMax}
-                  onSlidingComplete={handleSliderSeekComplete}
-                  minimumTrackTintColor={sliderMinTrackColor}
-                  maximumTrackTintColor={theme.staticColors.SLIDER_TRACK_COLOR}
-                  disabled={!isAudioEnabled || isSeekLoading}
-                  trackStyle={{
-                    height: 6,
-                    borderRadius: 3,
-                  }}
-                  thumbStyle={{
-                    width: 10,
-                    height: 10,
-                  }}
+            {isMoreTracksModalOpen && (
+              <View style={styles.moreTracksModalContainer}>
+                {/* The heading rides INSIDE the scroller. Above it, in a panel
+                  capped by an animated maxHeight, it was the first thing lost
+                  at a raised OS text size — and lost silently, since there was
+                  no way to scroll up to something clipped off the top. */}
+                <ScrollViewComponent
+                  tracks={tracks}
+                  selectedTrack={currentPlaying}
+                  playingTrack={currentPlaying}
+                  isPlaying={isPlaying}
+                  isOffline={isOffline}
+                  handleSelectTrack={handleInlineTrackSelect}
+                  header={
+                    <CustomText style={styles.moreTracksHeaderText}>
+                      {STRINGS.please_choose_a_track}{" "}
+                      <CustomText style={{ fontFamily: fontFace }}>{title}</CustomText>
+                    </CustomText>
+                  }
                 />
+              </View>
+            )}
+          </Animated.View>
+
+          {isMoreTracksModalOpen && <View style={styles.separator} />}
+
+          {/* Main Playback Section */}
+          <View style={[styles.mainSection]}>
+            <View style={styles.trackInfo}>
+              {/* Artist name. Gives way to the download icon and the timestamp,
+                which keep their size — but STARTS from its own width rather
+                than from zero. `flex: 1` here meant `flexBasis: 0`, so the pair
+                on the right was served in full and the name lived on the
+                remainder, which at a raised OS text size is a couple of words
+                wide. */}
+              <View
+                style={[styles.trackInfoLeft, { flexGrow: 1, flexShrink: 1, flexBasis: "auto" }]}
+              >
+                {currentPlaying && currentPlaying.displayName && (
+                  // No line cap. One line gave "Bhai Jarnai…"; two gave "Bibi /
+                  // Indermoha…" — each cap is a guess at how many lines a reciter's
+                  // name needs, and the guess fails on the next longer name. A
+                  // truncated name identifies nobody, which defeats the one job
+                  // this label has. Nothing in the player has a fixed height, so
+                  // it takes the lines it needs.
+                  <CustomText style={styles.trackName}>{currentPlaying.displayName}</CustomText>
+                )}
+              </View>
+              {/* Download indicator + timestamp — stay right-aligned as a unit */}
+              <View style={{ flexDirection: "row", alignItems: "center", gap: 8, flexShrink: 0 }}>
+                {currentPlaying && (
+                  <DownloadButton
+                    track={currentPlaying}
+                    baniTitle={title}
+                    baniNameUni={notificationTitle || title}
+                    baniId={baniID}
+                  />
+                )}
+                <CustomText style={[styles.timestamp, styles.timestampWithColor]}>
+                  {formatTime(safePosition)}
+                </CustomText>
+              </View>
+            </View>
+
+            <View style={styles.playbackControls}>
+              <Pressable
+                style={styles.playButton}
+                onPress={handlePlayPause}
+                disabled={!isAudioEnabled || isPlayerActionLoading || isBuffering}
+              >
+                {/* eslint-disable-next-line no-nested-ternary -- loading / pause / play icon states */}
+                {isPlayerActionLoading || isBuffering ? (
+                  <Spinner
+                    testID="player-action-loading-indicator"
+                    size="small"
+                    color={theme.c.textBrand}
+                    style={styles.playButtonLoadingSpinner}
+                  />
+                ) : isPlaying ? (
+                  <PauseIcon size={30} color={theme.c.textBrand} />
+                ) : (
+                  <PlayIcon size={30} color={theme.c.textBrand} />
+                )}
+              </Pressable>
+
+              <View style={styles.progressContainer}>
+                <View style={styles.progressBar}>
+                  {isSeekLoading && (
+                    <View style={styles.seekLoadingOverlay} testID="seek-loading-indicator">
+                      <Spinner size="small" color={theme.c.textBrand} />
+                    </View>
+                  )}
+                  <Slider
+                    value={safePosition}
+                    minimumValue={0}
+                    maximumValue={sliderMax}
+                    onSlidingComplete={handleSliderSeekComplete}
+                    minimumTrackTintColor={sliderMinTrackColor}
+                    maximumTrackTintColor={theme.c.surfaceSelected}
+                    disabled={!isAudioEnabled || isSeekLoading}
+                    trackStyle={{
+                      height: 6,
+                      borderRadius: 3,
+                    }}
+                    thumbTintColor={sliderMinTrackColor}
+                    thumbStyle={{
+                      width: 10,
+                      height: 10,
+                    }}
+                  />
+                </View>
               </View>
             </View>
           </View>
         </View>
-      </View>
+      )}
     </View>
   );
-};
-
-AudioControlBar.defaultProps = {
-  currentPlaying: null,
-  isPlayerActionLoading: false,
 };
 
 AudioControlBar.propTypes = {
@@ -726,15 +860,18 @@ AudioControlBar.propTypes = {
     })
   ).isRequired,
   seekTo: PropTypes.func.isRequired,
-  reset: PropTypes.func.isRequired,
-  pause: PropTypes.func.isRequired,
   setRate: PropTypes.func.isRequired,
   isInitialized: PropTypes.bool.isRequired,
   addAndPlayTrack: PropTypes.func.isRequired,
   play: PropTypes.func.isRequired,
   isPlayerActionLoading: PropTypes.bool,
-  onReopenPreviewModal: PropTypes.func.isRequired,
   skipNextLoadRef: PropTypes.shape({ current: PropTypes.bool }),
+  isNavBarVisible: PropTypes.bool,
+  barsDrop: PropTypes.number,
+  onHideBars: PropTypes.func,
+  /** Any touch on the player, so the page cannot report it as a tap on the bani. */
+  onPlayerTouch: PropTypes.func,
+  onTrackListOpen: PropTypes.func,
 };
 
 export default AudioControlBar;

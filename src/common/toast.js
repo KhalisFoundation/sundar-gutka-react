@@ -1,5 +1,26 @@
 import Toast from "react-native-toast-message";
 
+// Resting distance from the bottom of the screen, when nothing else is there.
+const BASE_BOTTOM_OFFSET = 40;
+
+// Space currently occupied by the floating audio player, so a toast stacks
+// above it instead of landing on top of it. The player is rendered in the
+// Reader and reports its own footprint; toasts fire from non-React code
+// (globalDownloadManager), so this is module state rather than context.
+let reservedBottomSpace = 0;
+
+/**
+ * Reserve vertical space at the bottom of the screen for a floating element.
+ * @param {number} height - Space to keep clear, in dp. 0 releases it.
+ */
+export const setToastBottomReservation = (height) => {
+  reservedBottomSpace = Number.isFinite(height) && height > 0 ? height : 0;
+};
+
+// 12dp of breathing room so the toast never sits flush against the player.
+const bottomOffset = () =>
+  BASE_BOTTOM_OFFSET + (reservedBottomSpace ? reservedBottomSpace + 12 : 0);
+
 /**
  * Show a toast message to the user
  * @param {string} message - The message to display
@@ -14,7 +35,7 @@ export const showToast = (message, type = "info", duration = 3000) => {
     visibilityTime: duration,
     autoHide: true,
     topOffset: 30,
-    bottomOffset: 40,
+    bottomOffset: bottomOffset(),
   });
 };
 
@@ -29,7 +50,7 @@ export const showErrorToast = (message) => {
     position: "bottom",
     visibilityTime: 3500,
     autoHide: true,
-    bottomOffset: 40,
+    bottomOffset: bottomOffset(),
   });
 };
 
@@ -44,7 +65,7 @@ export const showSuccessToast = (message) => {
     position: "bottom",
     visibilityTime: 3000,
     autoHide: true,
-    bottomOffset: 40,
+    bottomOffset: bottomOffset(),
   });
 };
 
@@ -59,6 +80,6 @@ export const showInfoToast = (message) => {
     position: "bottom",
     visibilityTime: 3000,
     autoHide: true,
-    bottomOffset: 40,
+    bottomOffset: bottomOffset(),
   });
 };

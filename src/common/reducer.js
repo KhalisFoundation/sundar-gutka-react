@@ -1,6 +1,10 @@
 import { combineReducers } from "@reduxjs/toolkit";
 import * as actionTypes from "./actions/actionTypes";
 import constant from "./constant";
+import * as pothiModel from "./pothi/model";
+import { emptyRemindersSync } from "./reminders/syncModel";
+import { emptySettingsSync } from "./settings/syncModel";
+import * as outbox from "./sync/outboxModel";
 
 const createReducer =
   (initialState, handlers) =>
@@ -23,8 +27,35 @@ const transliterationLanguage = createReducer(constant.ENGLISH, {
   [actionTypes.SET_TRANSLITERATION]: (state, action) => action.value,
 });
 
-const fontFace = createReducer(constant.GURBANI_AKHAR_TRUE, {
+// The app's own font — lists, headers, titles. Fixed to Baloo Paaji now: the
+// one font a reader chooses is the Bani font below. See HomeScreen.
+const fontFace = createReducer(constant.BALOO_PAAJI, {
   [actionTypes.SET_FONT_FACE]: (state, action) => action.value,
+});
+
+// Font used only for the Bani (scripture) text inside the Reader's WebView —
+// independent of `fontFace`, which drives Gurmukhi titles elsewhere in the app.
+//
+// Until this split, `fontFace` WAS the Bani font. A reader who had chosen one
+// keeps it: on the first launch that has no `baniFontFace` persisted, the old
+// choice is carried across once.
+const baniFontFace = createReducer(constant.GURBANI_AKHAR_TRUE, {
+  "persist/REHYDRATE": (state, action) => {
+    const persisted = action.payload;
+    if (!persisted) return state;
+    if (persisted.baniFontFace !== undefined) return persisted.baniFontFace;
+    return typeof persisted.fontFace === "string" && persisted.fontFace
+      ? persisted.fontFace
+      : state;
+  },
+  [actionTypes.SET_BANI_FONT_FACE]: (state, action) => action.value,
+});
+
+// The Bani font the reader picked for THEMSELVES, as opposed to one a theme
+// applied. A theme with no face of its own restores it — see applyTheme. Null
+// until one is known. Persisted, so a trip through a theme cannot lose it.
+const ownBaniFontFace = createReducer(null, {
+  [actionTypes.SET_OWN_BANI_FONT_FACE]: (state, action) => action.value,
 });
 const language = createReducer(constant.Default.toUpperCase(), {
   [actionTypes.SET_LANGUAGE]: (state, action) => action.value,
@@ -166,6 +197,32 @@ const reminderSound = createReducer(constant.Default.toLowerCase(), {
   [actionTypes.SET_REMINDER_SOUND]: (state, action) => action.value,
 });
 
+// Per-reminder sync clocks, tombstones and server bases — see
+// reminders/syncModel. Persisted, and reset with the reminders themselves on
+// an account switch (USER_DATA_SLICES).
+const remindersSync = createReducer(emptyRemindersSync(), {
+  [actionTypes.MERGE_REMINDER_SYNC_META]: (state, action) => {
+    const p = action.payload || {};
+    if (p.replace) return { ...emptyRemindersSync(), ...p.replace };
+    const clocks = { ...state.clocks, ...(p.clocks || {}) };
+    const tombstones = { ...state.tombstones, ...(p.tombstones || {}) };
+    const base = { ...state.base, ...(p.base || {}) };
+    (p.removeTombstones || []).forEach((id) => delete tombstones[id]);
+    (p.removeClocks || []).forEach((id) => {
+      delete clocks[id];
+      delete base[id];
+    });
+    return {
+      clocks,
+      tombstones,
+      base,
+      settingsUpdatedAt: p.settingsUpdatedAt ?? state.settingsUpdatedAt,
+      settingsBase: p.settingsBase ?? state.settingsBase,
+      lastSyncedAt: p.lastSyncedAt ?? state.lastSyncedAt,
+    };
+  },
+});
+
 const isHeaderFooter = createReducer(false, {
   [actionTypes.TOGGLE_HEADER_FOOTER]: (state, action) => action.value,
 });
@@ -187,14 +244,22 @@ const audioManifest = (state = {}, action) => {
   }
 };
 
-const autoScrollSpeedObj = (state = {}, action) => {
+// ONE auto-scroll speed for every bani. It was kept per bani, so a speed
+// chosen in Jaap Sahib meant nothing in Japji Sahib and every bani started at
+// the default again. Per device, not per account: see settings/syncModel.
+const autoScrollSpeed = (state = null, action) => {
   switch (action.type) {
     case actionTypes.SET_AUTO_SCROLL_SPEED:
-      return { ...state, ...action.value };
+      return action.value;
     default:
       return state;
   }
 };
+
+// The per-bani map the speed used to live in. Read-only now: nothing writes
+// it, and it stays registered only so an existing install's persisted values
+// can seed `autoScrollSpeed` the first time the slider is shown.
+const autoScrollSpeedObj = (state = {}) => state;
 
 const baniOrder = (state = null, action) => {
   switch (action.type) {
@@ -282,10 +347,559 @@ const currentBani = createReducer(null, {
   [actionTypes.SET_CURRENT_BANI]: (state, action) => action.value,
 });
 
-const rootReducer = combineReducers({
+// ── Audio catalog, the floating player and downloads ──────────────────────
+
+// Audio catalog cache — the persisted offline copy of the backend /audios
+// manifest, keyed by baniId. Each entry holds the RAW length-grouped API
+// response ({ groups, baniName, fetchedAt }); the length-group selection that
+// turns it into a playable track list happens at read time (see
+// selectTracksForBani), so a single cache entry serves every bani length. This
+// replaces the former hardcoded EMERGENCY_MANIFEST — it is the app's only
+// offline audio source, populated by useAudioCatalogSync + per-bani lazy fetch.
+// Persisted (intentionally NOT in the store.js blacklist).
+const audioCatalog = (state = {}, action) => {
+  switch (action.type) {
+    case actionTypes.SET_AUDIO_CATALOG_ENTRY:
+      return {
+        ...state,
+        [action.payload.baniId]: action.payload.entry,
+      };
+    case actionTypes.SET_AUDIO_CATALOG_ENTRIES:
+      return { ...state, ...action.payload.entries };
+    case actionTypes.CLEAR_AUDIO_CATALOG:
+      return {};
+    default:
+      return state;
+  }
+};
+
+// Bookkeeping for the eager catalog prefetch: when it last completed a full
+// sweep and the app version that ran it, so the sweep only re-runs on a fresh
+// install, an app update, or once the TTL has elapsed. Persisted.
+const audioCatalogMeta = (state = {}, action) => {
+  switch (action.type) {
+    case actionTypes.SET_AUDIO_CATALOG_META:
+      return { ...state, ...action.payload };
+    case actionTypes.CLEAR_AUDIO_CATALOG:
+      return {};
+    default:
+      return state;
+  }
+};
+
+// Two counters rather than one "last reader gesture" value: the floating audio
+// player reacts to each in the opposite direction, and a single value could not
+// tell "the same gesture again" from "no gesture".
+const readerTapTick = createReducer(0, {
+  [actionTypes.BUMP_READER_TAP]: (state) => state + 1,
+});
+
+const readerScrollDownTick = createReducer(0, {
+  [actionTypes.BUMP_READER_SCROLL_DOWN]: (state) => state + 1,
+});
+
+const isPlayerDragging = createReducer(false, {
+  [actionTypes.SET_PLAYER_DRAGGING]: (state, action) => action.value,
+});
+
+// Download queue — entries stuck in 'downloading' at rehydrate had their native
+// job killed; reset them to 'queued' so the engine restarts them from scratch.
+const downloadQueue = (state = {}, action) => {
+  switch (action.type) {
+    case "persist/REHYDRATE": {
+      const persisted = action.payload?.downloadQueue ?? {};
+      const healed = {};
+      // 'downloading' = native task is re-adopted on launch (or restarted if
+      // truly lost); 'paused_retry' = a backoff timer that didn't survive the
+      // restart. Both resolve to 'queued' so the engine reconciles them.
+      const reset = new Set(["downloading", "paused_retry"]);
+      Object.entries(persisted).forEach(([k, t]) => {
+        // 'completed' lives only until its 2s cleanup timer, which a kill can
+        // beat. Left in the queue, it made ENQUEUE_DOWNLOAD a no-op for that
+        // track forever, so it could never be downloaded again once deleted.
+        if (t.status === "completed") return;
+        healed[k] = reset.has(t.status) ? { ...t, status: "queued", progress: 0, jobId: null } : t;
+      });
+      return healed;
+    }
+    case actionTypes.ENQUEUE_DOWNLOAD:
+      if (state[action.payload.trackKey]) return state;
+      return {
+        ...state,
+        [action.payload.trackKey]: {
+          ...action.payload,
+          status: "queued",
+          progress: 0,
+          retryCount: 0,
+          errorMessage: null,
+          jobId: null,
+        },
+      };
+    case actionTypes.UPDATE_DOWNLOAD_STATUS:
+      if (!state[action.payload.trackKey]) return state;
+      return {
+        ...state,
+        [action.payload.trackKey]: {
+          ...state[action.payload.trackKey],
+          ...action.payload,
+        },
+      };
+    case actionTypes.UPDATE_DOWNLOAD_PROGRESS:
+      if (!state[action.payload.trackKey]) return state;
+      return {
+        ...state,
+        [action.payload.trackKey]: {
+          ...state[action.payload.trackKey],
+          progress: action.payload.progress,
+        },
+      };
+    case actionTypes.REMOVE_DOWNLOAD_QUEUE_ENTRY: {
+      const next = { ...state };
+      delete next[action.payload.trackKey];
+      return next;
+    }
+    case actionTypes.RETRY_DOWNLOAD:
+      if (!state[action.payload.trackKey]) return state;
+      return {
+        ...state,
+        [action.payload.trackKey]: {
+          ...state[action.payload.trackKey],
+          status: "queued",
+          progress: 0,
+          retryCount: 0,
+          errorMessage: null,
+        },
+      };
+    case actionTypes.REQUEUE_PAUSED_DOWNLOADS: {
+      const next = { ...state };
+      action.payload.statuses.forEach((pausedStatus) => {
+        Object.keys(next).forEach((k) => {
+          if (next[k].status !== pausedStatus) return;
+          // A storage failure won't be fixed by retrying — leave it for the user.
+          if (next[k].errorMessage === "NOT_ENOUGH_STORAGE") return;
+          // Reset the retry budget so a previously-failed entry gets a clean
+          // restart (otherwise it would immediately re-fail on its first error).
+          next[k] = {
+            ...next[k],
+            status: "queued",
+            progress: 0,
+            retryCount: 0,
+            errorMessage: null,
+          };
+        });
+      });
+      return next;
+    }
+    default:
+      return state;
+  }
+};
+
+const downloadRegistry = (state = {}, action) => {
+  switch (action.type) {
+    case actionTypes.ADD_DOWNLOAD_ENTRY:
+      return { ...state, [action.payload.relativePath]: action.payload };
+    case actionTypes.REMOVE_DOWNLOAD_ENTRIES: {
+      const next = { ...state };
+      action.payload.forEach((k) => delete next[k]);
+      return next;
+    }
+    case actionTypes.UPDATE_DOWNLOAD_ENTRIES: {
+      const next = { ...state };
+      Object.entries(action.payload || {}).forEach(([k, patch]) => {
+        if (next[k]) next[k] = { ...next[k], ...patch };
+      });
+      return next;
+    }
+    case actionTypes.SET_DOWNLOAD_REGISTRY:
+      return action.payload;
+    case actionTypes.CLEAR_DOWNLOAD_REGISTRY:
+      return {};
+    default:
+      return state;
+  }
+};
+
+const downloadWifiOnly = createReducer(true, {
+  [actionTypes.TOGGLE_DOWNLOAD_WIFI_ONLY]: (state, action) => action.value,
+});
+
+// When true, streaming a bani automatically enqueues its download in the background.
+// Shipped ON by default — fresh installs auto-save what they stream (the global
+// engine still gates on the WiFi-only setting before any bytes flow).
+const autoDownloadOnStream = createReducer(true, {
+  [actionTypes.TOGGLE_AUTO_DOWNLOAD]: (state, action) => action.value,
+});
+
+// Whether the previous release's downloads have been adopted into
+// downloadRegistry (see useStorageMigration). Persisted with the registry in the
+// same write — a flag stored separately could survive a kill that lost the
+// entries, and the orphan sweep would then delete every one of those files.
+const audioStorageMigrated = createReducer(false, {
+  [actionTypes.MARK_AUDIO_STORAGE_MIGRATED]: () => true,
+});
+
+// Per-setting sync clocks and server bases — see settings/syncModel.
+// Persisted, and reset with the rest of the account's data on a switch
+// (USER_DATA_SLICES), so one person's pending edits never reach another.
+const settingsSync = createReducer(emptySettingsSync(), {
+  [actionTypes.MERGE_SETTINGS_SYNC_META]: (state, action) => {
+    const p = action.payload || {};
+    if (p.replace) return { ...emptySettingsSync(), ...p.replace };
+    const clocks = { ...state.clocks, ...(p.clocks || {}) };
+    const base = { ...state.base, ...(p.base || {}) };
+    (p.removeClocks || []).forEach((key) => delete clocks[key]);
+    return {
+      clocks,
+      base,
+      lastSyncedAt: p.lastSyncedAt ?? state.lastSyncedAt,
+    };
+  },
+});
+
+// Changes to account data not yet at the server — see sync/outboxModel. On
+// rehydrate nothing is in flight any more, so "sending" goes back to the queue.
+const syncOutbox = createReducer(outbox.emptyOutbox(), {
+  "persist/REHYDRATE": (state, action) =>
+    action.payload?.syncOutbox ? outbox.heal(action.payload.syncOutbox) : state,
+  [actionTypes.ENQUEUE_SYNC_OP]: (state, action) => outbox.enqueue(state, action.payload),
+  [actionTypes.SYNC_OP_SENDING]: (state, action) => outbox.markSending(state, action.payload.id),
+  [actionTypes.SYNC_OP_DONE]: (state, action) => outbox.markDone(state, action.payload.id),
+  [actionTypes.SYNC_OP_FAILED]: (state, action) =>
+    outbox.markFailed(state, action.payload.id, { error: action.payload.error }),
+});
+
+// Bumped by every CLEAR_USER_DATA, which is the account boundary. A request
+// made for one account can answer after the boundary has moved even while
+// `auth` still names the same person (sign-out purges before the logout
+// browser closes), so code that must not write one account's answer into the
+// next compares this rather than the session.
+const accountEpoch = createReducer(0, {
+  [actionTypes.CLEAR_USER_DATA]: (state) => state + 1,
+});
+
+// Khalis SSO session state. Blacklisted from redux-persist (see store.js): the
+// claims carry an email + SAML nameID and redux-persist writes unencrypted
+// AsyncStorage. Blacklisting also guarantees "unknown" on cold start, so the UI
+// cannot flash a signed-in state before the Keychain read resolves.
+const auth = createReducer(
+  { status: "unknown", user: null, expiresAt: null, busy: false },
+  {
+    // `busy` is left to the action that set it (useSsoActions clears it when
+    // it finishes). A session event mid-action — a 401 ending the session
+    // during sign-out, the Android return link beginning one while
+    // startLogin still waits — used to clear it, re-enabling the row while
+    // a login browser was still open, and a second tap broke openAuth.
+    [actionTypes.SET_AUTH_SESSION]: (state, action) => ({
+      ...state,
+      status: "signedIn",
+      user: action.value?.user ?? null,
+      expiresAt: action.value?.expiresAt ?? null,
+    }),
+    [actionTypes.CLEAR_AUTH_SESSION]: (state) => ({
+      ...state,
+      status: "signedOut",
+      user: null,
+      expiresAt: null,
+    }),
+    [actionTypes.SET_AUTH_BUSY]: (state, action) => ({ ...state, busy: !!action.value }),
+  }
+);
+
+// ─── Dashboard redesign ───────────────────────────────────────────────────
+// Default top-to-bottom section order from the new design.
+// Today first, then the day's reading — streak, nitnem, hukamnama — followed by
+// the places to go next, and the numbers about what has already been read last.
+const DEFAULT_DASHBOARD_ORDER = [
+  constant.DASHBOARD_SECTIONS.STREAK,
+  constant.DASHBOARD_SECTIONS.NITNEM,
+  constant.DASHBOARD_SECTIONS.SHABAD_VAAK,
+  constant.DASHBOARD_SECTIONS.EXPLORE,
+  constant.DASHBOARD_SECTIONS.DISCOVER,
+  constant.DASHBOARD_SECTIONS.REMINDERS,
+  constant.DASHBOARD_SECTIONS.PRACTICE,
+  constant.DASHBOARD_SECTIONS.CALENDAR,
+  constant.DASHBOARD_SECTIONS.WEEK_CHART,
+];
+
+// Orders this app has shipped as its default, newest last.
+//
+// `defaultLayout()` is persisted on the very first launch, so EVERY install
+// carries an order on disk whether or not the user ever opened the layout
+// editor. Changing the default alone therefore reaches nobody. An order that
+// still matches one of these was written by the app and not chosen by anyone,
+// so it is safe to move it onto the current default; anything else is the
+// user's own arrangement and is left exactly as they left it.
+const LEGACY_DASHBOARD_ORDERS = [
+  [
+    constant.DASHBOARD_SECTIONS.STREAK,
+    constant.DASHBOARD_SECTIONS.NITNEM,
+    constant.DASHBOARD_SECTIONS.EXPLORE,
+    constant.DASHBOARD_SECTIONS.PRACTICE,
+    constant.DASHBOARD_SECTIONS.CALENDAR,
+    constant.DASHBOARD_SECTIONS.WEEK_CHART,
+    constant.DASHBOARD_SECTIONS.DISCOVER,
+    constant.DASHBOARD_SECTIONS.REMINDERS,
+    constant.DASHBOARD_SECTIONS.SHABAD_VAAK,
+  ],
+];
+
+const sameOrder = (a, b) => a.length === b.length && a.every((key, i) => key === b[i]);
+
+/** True when a persisted order is an untouched default from an earlier release. */
+const isUncustomisedOrder = (order) =>
+  LEGACY_DASHBOARD_ORDERS.some((legacy) => sameOrder(order, legacy));
+
+// Section keys that are still valid (used to strip deprecated keys from a
+// persisted layout on upgrade — e.g. the old standalone randomShabad/vaak).
+const VALID_DASHBOARD_SECTIONS = new Set(Object.values(constant.DASHBOARD_SECTIONS));
+
+// Re-insert any sections missing from a persisted order AT their default position
+// — right after the nearest preceding default-neighbour that's present — instead
+// of appending them to the end. This keeps a re-added section (e.g. Explore after
+// a key change/upgrade) in its designed slot (right after Nitnem) rather than
+// sinking it to the bottom of the dashboard.
+const withMissingAtDefaultPos = (order) => {
+  const result = [...order];
+  DEFAULT_DASHBOARD_ORDER.forEach((key, defaultIdx) => {
+    if (result.includes(key)) return;
+    let insertAt = result.length;
+    for (let i = defaultIdx - 1; i >= 0; i -= 1) {
+      const pos = result.indexOf(DEFAULT_DASHBOARD_ORDER[i]);
+      if (pos !== -1) {
+        insertAt = pos + 1;
+        break;
+      }
+    }
+    result.splice(insertAt, 0, key);
+  });
+  return result;
+};
+
+// `modifiedAt` is the device clock of the last edit, carried in the account
+// snapshot so two devices can tell whose profile is newer per block rather
+// than guessing from push times. A restore passes the server's value through.
+const userProfile = createReducer(
+  { name: "", modifiedAt: 0 },
+  {
+    [actionTypes.SET_USER_PROFILE]: (state, action) => ({
+      ...state,
+      ...action.value,
+      modifiedAt: action.value?.modifiedAt ?? Date.now(),
+    }),
+  }
+);
+
+const defaultLayout = () => ({ order: [...DEFAULT_DASHBOARD_ORDER], hidden: [], modifiedAt: 0 });
+
+const dashboardLayout = createReducer(defaultLayout(), {
+  // On rehydrate: drop any deprecated section keys (e.g. the old standalone
+  // randomShabad/vaak now merged into shabadVaak) and append newly added default
+  // sections, so an upgrading user neither loses a section nor sees a dead key.
+  "persist/REHYDRATE": (state, action) => {
+    const persisted = action.payload?.dashboardLayout;
+    if (!persisted?.order) return state; // fresh install → keep default
+    const cleaned = persisted.order.filter((k) => VALID_DASHBOARD_SECTIONS.has(k));
+    return {
+      order: isUncustomisedOrder(cleaned)
+        ? [...DEFAULT_DASHBOARD_ORDER]
+        : withMissingAtDefaultPos(cleaned),
+      hidden: (persisted.hidden ?? []).filter((k) => VALID_DASHBOARD_SECTIONS.has(k)),
+      modifiedAt: persisted.modifiedAt ?? 0,
+    };
+  },
+  [actionTypes.SET_DASHBOARD_LAYOUT]: (state, action) => {
+    const next = { ...state, ...action.value };
+    // Self-heal: ensure any newly added sections land in their default slot.
+    return {
+      order: withMissingAtDefaultPos(next.order),
+      hidden: next.hidden ?? [],
+      // See userProfile: the clock another device compares its copy against.
+      modifiedAt: action.value?.modifiedAt ?? Date.now(),
+    };
+  },
+  // Stamped like any edit: at 0 a reset never reached the account, and the
+  // next snapshot from another device put the old layout straight back.
+  [actionTypes.RESET_DASHBOARD_LAYOUT]: () => ({ ...defaultLayout(), modifiedAt: Date.now() }),
+});
+
+// What has been READ today, and nothing else.
+//
+// WHICH banis make up today's Nitnem is not here: it is the Morning Nitnem
+// pothi, so the Dashboard card and the pothi can never disagree about what the
+// user's Nitnem is. This slice used to carry its own `selectedBaniIds` list —
+// a second, unrelated set that started as [2, 6, 4, 9, 21, 1] while Morning
+// Nitnem started as [2, 4, 6, 9, 10]. See TodaysNitnem.
+const todaysNitnem = createReducer(
+  // `completed[date]`  : ids done today (manual ticks + auto 95%-scroll reads).
+  // `autoSeeded[date]` : ids auto-completion has already folded in once, so a
+  //                      manual un-tick is never resurrected on the next refocus.
+  // `untickedAt[date][baniId]` : when a manual un-tick happened, so a LATER
+  //                      genuine re-read still counts (autoSeeded alone could
+  //                      not tell the two apart and blocked both).
+  { completed: {}, autoSeeded: {}, untickedAt: {} },
+  {
+    [actionTypes.TOGGLE_NITNEM_DONE]: (state, action) => {
+      const { date, baniId, at = Date.now() } = action.payload;
+      const dayList = state.completed[date] ?? [];
+      const removing = dayList.includes(baniId);
+      const nextDay = removing ? dayList.filter((id) => id !== baniId) : [...dayList, baniId];
+      // WHEN the un-tick happened, so auto-detection can tell a read that
+      // predates it (the same old read, re-reported on every dashboard
+      // refocus — must stay un-ticked) from one that came after it (the user
+      // genuinely went and read the bani again — must count).
+      const untickedAt = state.untickedAt ?? {};
+      const dayMarks = { ...(untickedAt[date] ?? {}) };
+      if (removing) dayMarks[baniId] = at;
+      else delete dayMarks[baniId];
+      return {
+        ...state,
+        completed: { ...state.completed, [date]: nextDay },
+        untickedAt: { ...untickedAt, [date]: dayMarks },
+      };
+    },
+    // Auto-detected 95%-scroll completions fold into the same per-day list
+    // TOGGLE_NITNEM_DONE writes — but only ids we've NEVER auto-added before
+    // (tracked in autoSeeded). Once seeded, an id the user manually un-ticks
+    // stays un-ticked: it is not re-added here on the next dashboard refocus.
+    [actionTypes.MARK_NITNEM_AUTO_DONE]: (state, action) => {
+      const { date, baniIds } = action.payload;
+      if (!baniIds || baniIds.length === 0) return state;
+      const autoSeeded = state.autoSeeded ?? {};
+      const seededDay = autoSeeded[date] ?? [];
+      const untickedDay = (state.untickedAt ?? {})[date] ?? {};
+      // Entries are either a bare id or `{ id, at }` carrying the moment the
+      // read actually completed.
+      const freshIds = baniIds
+        .map((entry) => (typeof entry === "object" && entry !== null ? entry : { id: entry }))
+        .filter(({ id, at }) => {
+          const unticked = untickedDay[id];
+          // A read we can date beats the seed list outright: the user un-ticked
+          // this, then went and read it again, and that second read has to
+          // count. Judging it by `autoSeeded` alone is what left a fully
+          // scrolled bani stuck un-ticked for the rest of the day.
+          if (at != null) return unticked == null || at > unticked;
+          // Undated (a bulk call, or a legacy caller) — fall back to the seed
+          // list, which still stops a refocus resurrecting an un-tick.
+          return !seededDay.includes(id);
+        })
+        .map(({ id }) => id);
+      if (freshIds.length === 0) return state;
+      const dayList = state.completed[date] ?? [];
+      return {
+        ...state,
+        completed: {
+          ...state.completed,
+          [date]: Array.from(new Set([...dayList, ...freshIds])),
+        },
+        autoSeeded: {
+          ...autoSeeded,
+          [date]: Array.from(new Set([...seededDay, ...freshIds])),
+        },
+      };
+    },
+    // The "Mark done" button. Unlike MARK_NITNEM_AUTO_DONE this consults no
+    // seed list: the user is stating outright that these are read, so a
+    // previous auto-seed of the same id must not veto it. It seeds too, so the
+    // background auto-detection has nothing left to re-add afterwards.
+    [actionTypes.MARK_NITNEM_DONE]: (state, action) => {
+      const { date, baniIds } = action.payload;
+      if (!baniIds || baniIds.length === 0) return state;
+      const autoSeeded = state.autoSeeded ?? {};
+      const dayList = state.completed[date] ?? [];
+      // Marking done clears any earlier un-tick for these banis — the user has
+      // just overridden it, so it must not go on suppressing auto-detection.
+      const untickedAt = state.untickedAt ?? {};
+      const dayMarks = { ...(untickedAt[date] ?? {}) };
+      baniIds.forEach((id) => delete dayMarks[id]);
+      return {
+        ...state,
+        completed: {
+          ...state.completed,
+          [date]: Array.from(new Set([...dayList, ...baniIds])),
+        },
+        autoSeeded: {
+          ...autoSeeded,
+          [date]: Array.from(new Set([...(autoSeeded[date] ?? []), ...baniIds])),
+        },
+        untickedAt: { ...untickedAt, [date]: dayMarks },
+      };
+    },
+    // Completion history only. The restored payload still carries the old
+    // `selectedBaaniIds`, but the bani SET now comes from the Morning Nitnem
+    // pothi, which My Pothi syncs on its own account — see usePothiSync.
+    // Union per date, NOT replace. A tick records that a bani was read that
+    // day — a fact rather than a preference — so a day ticked on either side
+    // stays ticked. Replacing wholesale threw away whatever this device had
+    // done while signed out, which on a restore is the user's own work, and
+    // it made the cloud snapshot beat a second device for the same day.
+    [actionTypes.RESTORE_NITNEM]: (state, action) => {
+      const incoming = action.value?.completed;
+      if (!incoming) return state;
+      const completed = { ...state.completed };
+      Object.keys(incoming).forEach((date) => {
+        // A bani un-ticked HERE that day stays un-ticked: the account's copy
+        // still holds the tick from before, and the union brought it straight
+        // back on the next sync.
+        const unticked = state.untickedAt?.[date] ?? {};
+        const theirs = (incoming[date] ?? []).filter((id) => unticked[id] == null);
+        completed[date] = [...new Set([...(completed[date] ?? []), ...theirs])];
+      });
+      return { ...state, completed };
+    },
+  }
+);
+
+// My Pothi. Every transition delegates to `pothi/model`, which owns the rules
+// (the pin ceiling, de-duplication, what an unpinned pothi's slot becomes) and
+// is tested without a store. This reducer only routes.
+//
+// REHYDRATE runs the persisted payload through `reconcile` rather than trusting
+// it: it is user data that outlives the build that wrote it, so a pothi deleted
+// in one version, or a pin count from before the ceiling existed, must not come
+// back and put the list into a state the UI cannot render.
+const pothis = createReducer(pothiModel.emptyPothis(), {
+  "persist/REHYDRATE": (state, action) =>
+    action.payload?.pothis ? pothiModel.reconcile(action.payload.pothis) : state,
+  [actionTypes.CREATE_POTHI]: (state, action) => pothiModel.addPothi(state, action.value),
+  [actionTypes.RENAME_POTHI]: (state, action) =>
+    pothiModel.renamePothi(state, action.payload.id, action.payload.name),
+  [actionTypes.DELETE_POTHI]: (state, action) => pothiModel.deletePothi(state, action.value),
+  [actionTypes.ADD_BANI_TO_POTHI]: (state, action) =>
+    pothiModel.addBani(state, action.payload.id, action.payload.item),
+  [actionTypes.REMOVE_BANI_FROM_POTHI]: (state, action) =>
+    pothiModel.removeBani(state, action.payload.id, action.payload.baaniId),
+  [actionTypes.RESTORE_POTHI_ITEMS]: (state, action) =>
+    pothiModel.restoreItems(state, action.payload.id, action.payload.items),
+  [actionTypes.SET_POTHI_ORDER]: (state, action) => pothiModel.setOrder(state, action.value),
+  [actionTypes.TOGGLE_POTHI_PIN]: (state, action) => pothiModel.togglePin(state, action.value),
+  [actionTypes.SEED_DEFAULT_POTHIS]: (state, action) =>
+    pothiModel.seedDefaults(state, action.value ?? []),
+  [actionTypes.MERGE_REMOTE_POTHIS]: (state, action) =>
+    pothiModel.mergeRemote(state, action.value ?? [], Date.now(), action.deletedFolderIds ?? []),
+  [actionTypes.SET_POTHI_SYNC_WATERMARK]: (state, action) => ({
+    ...state,
+    syncWatermark: Number(action.value) || 0,
+  }),
+  // This slice deliberately does NOT handle CLEAR_AUTH_SESSION or
+  // SET_AUTH_SESSION. Reacting to the auth actions coupled My Pothi to the
+  // sign-in/sign-out path, which is not this feature's business — the auth
+  // flow must behave exactly as it did before My Pothi existed.
+  // The account BOUNDARY is still enforced, one level up: `pothis` is in
+  // USER_DATA_SLICES below, so CLEAR_USER_DATA resets it when a different
+  // account signs in.
+  [actionTypes.SET_POTHIS_SYNCED_AT]: (state, action) => ({
+    ...state,
+    lastSyncedAt: action.value ?? null,
+  }),
+});
+
+const appReducer = combineReducers({
   isNightMode,
   fontSize,
   fontFace,
+  baniFontFace,
+  ownBaniFontFace,
   language,
   transliterationLanguage,
   isTransliteration,
@@ -318,6 +932,7 @@ const rootReducer = combineReducers({
   isReminders,
   reminderBanis,
   reminderSound,
+  autoScrollSpeed,
   autoScrollSpeedObj,
   baniOrder,
   baniList,
@@ -327,6 +942,84 @@ const rootReducer = combineReducers({
   isDatabaseUpdateAvailable,
   audioManifest,
   audioProgress,
+  audioCatalog,
+  audioCatalogMeta,
+  readerTapTick,
+  readerScrollDownTick,
+  isPlayerDragging,
+  downloadQueue,
+  downloadRegistry,
+  downloadWifiOnly,
+  autoDownloadOnStream,
+  audioStorageMigrated,
   currentBani,
+  auth,
+  accountEpoch,
+  settingsSync,
+  syncOutbox,
+  pothis,
+  remindersSync,
+  userProfile,
+  dashboardLayout,
+  todaysNitnem,
 });
+
+// Slices holding data that belongs to a PERSON, not to this device.
+//
+// Deliberately NOT here: downloadRegistry (real audio files on disk — dropping
+// the registry orphans them) and every display preference (theme, font size,
+// language). Those describe how this phone is set up, not who is holding it.
+//
+// Only what the account holds a copy of, so a person signing back in gets it
+// all back. Saved bookmarks are not in redux at all (they live in the bani
+// database), so they stay on the phone.
+const USER_DATA_SLICES = [
+  // A pothi is the clearest case of person-owned data there is: the folders a
+  // user built, synced to THEIR account. Left out, they survived an account
+  // switch and usePothiSync uploaded the previous account's folders into the
+  // new one on its first push.
+  "pothis",
+  // The Dashboard's own: the name on its header, the section layout and the
+  // days' Nitnem ticks, all carried in the account's dashboard snapshot.
+  "userProfile",
+  "dashboardLayout",
+  "todaysNitnem",
+  // The Reader's pending jump to a bookmark. Not synced, but it points into
+  // the outgoing person's reading, so it goes with them.
+  "bookmarkPosition",
+  "bookmarkSequenceString",
+  // The reminders and their switches sync to the account too, so they go with
+  // it — and so do the clocks that go with them. The schedule already handed
+  // to the OS is cancelled with them (accountScope.purgeLocalUserData).
+  "isReminders",
+  "reminderBanis",
+  "reminderSound",
+  "remindersSync",
+  // The clocks that go with the synced settings, and every change of the
+  // outgoing account still waiting to be sent — neither may reach the next
+  // account.
+  "settingsSync",
+  "syncOutbox",
+];
+
+// Wrapping combineReducers rather than adding a handler to each slice: this
+// keeps the "what counts as user data" list in one readable place, and a slice
+// added later is opt-in rather than silently surviving an account switch.
+const rootReducer = (state, action) => {
+  if (action.type === actionTypes.CLEAR_USER_DATA && state) {
+    const next = { ...state };
+    // Deleting the key (rather than setting undefined) makes combineReducers
+    // hand each of these reducers `undefined`, so they return their own initial
+    // state — no separate copy of the defaults to drift out of sync.
+    USER_DATA_SLICES.forEach((key) => delete next[key]);
+    const cleared = appReducer(next, action);
+    // The outbox restarts empty but keeps counting: an op from before the
+    // reset may still be in flight, and its late done/failed must not land on
+    // a new op that reused its id (ids end in the sequence number).
+    const seq = state.syncOutbox?.seq ?? cleared.syncOutbox.seq;
+    return { ...cleared, syncOutbox: { ...cleared.syncOutbox, seq } };
+  }
+  return appReducer(state, action);
+};
+
 export default rootReducer;

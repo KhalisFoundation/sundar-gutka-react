@@ -3,6 +3,7 @@ import { AppState, InteractionManager } from "react-native";
 import { useDispatch, useStore } from "react-redux";
 import { mergeThemeRegistry, sanitizeRemoteTheme } from "@theme/reader/registry";
 import { setRemoteThemes, setTheme } from "@common/actions";
+import { asAppWrite } from "@common/settings/appWrite";
 import { constant, logError, trackThemeEvent, useNetwork } from "@common";
 import { fetchRemoteThemes } from "../themesApi";
 
@@ -93,7 +94,8 @@ const healWithdrawnTheme = (store, dispatch, previous, themes) => {
   // in the registry at all and must never be touched.
   if (!before) return;
   if (mergeThemeRegistry({ themes }).byId[selected]) return;
-  dispatch(setTheme(before.base === "dark" ? constant.Dark : constant.Light));
+  // The app falling back from a withdrawn theme, not the person choosing one.
+  asAppWrite(() => dispatch(setTheme(before.base === "dark" ? constant.Dark : constant.Light)));
 };
 
 /**

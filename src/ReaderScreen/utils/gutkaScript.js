@@ -10,7 +10,18 @@ const script = (readerTheme) => {
 let autoScrollTimeout;
 let autoScrollRAF = null;
 let autoScrollSpeed = 0;
-let scrollMultiplier = 1.5;
+// Auto-scroll rate. The 1-100 slider maps linearly onto this px/s range rather
+// than scaling straight from the slider value: the slowest setting still has to
+// move at a readable pace, and the fastest has to keep up with a fast reader.
+const AUTO_SCROLL_MIN_SPEED = 1;
+const AUTO_SCROLL_MAX_SPEED = 100;
+const AUTO_SCROLL_MIN_PX_PER_SECOND = 12;
+const AUTO_SCROLL_MAX_PX_PER_SECOND = 200;
+// The topmost-line scan walks the page. Once per this many ms on a manual
+// fling, rather than on every scroll event.
+const ELEMENT_SCAN_MS = 150;
+let lastElementScanTime = 0;
+let elementScanTimer = null;
 let isScrolling;
 let isManuallyScrolling = false;
 let lastHighlightedElement = null;
@@ -73,10 +84,6 @@ const clearEnlarged = () => {
 // gurmukhi content-item. The div is targeted by data-type, NOT the .gurmukhi
 // class — the Punjabi translation div shares that class for its font.
 // Transliteration/translation lines never enlarge.
-// KNOWN: db.js does not emit the .pline[data-pseq] spans yet (they come with
-// the audio PR's sync-scroll fix), so in paragraph mode this falls back to the
-// whole merged paragraph, and later lines of a long paragraph can scroll off.
-// Fixed by the upcoming audio PR.
 const setEnlarged = (element, sequenceNumber, isParagraphMode) => {
   clearEnlarged();
   if (!element) return null;
@@ -173,26 +180,29 @@ const scrollFunc=(e)=> {
 
   // Report topmost element on both manual and auto-scroll so read context
   // survives background/terminate mid-auto-scroll. The 300ms throttle above
-  // keeps this off the 60fps RAF hot path during auto-scroll.
-  // KNOWN: manual scrolling is no longer throttled (the old 150ms
-  // ELEMENT_ID_THROTTLE), so a fling runs this scan and posts a message on every
-  // tick. The Reader no longer writes Redux per tick, but low-end Android may
-  // still stutter on long banis. Restoring a time gate on this scan is planned
-  // in an upcoming Reader PR.
-  const elementId = reflowing ? null : getTopmostElementId();
-  const topEl = elementId ? document.getElementById(String(elementId)) : null;
-  if (topEl) {
-    // WHERE on screen that line sits, so a rotation can put it back in the
-    // same place (see the resize handler).
-    anchorElementId = String(elementId);
-    anchorViewportTop = topEl.getBoundingClientRect().top;
-  }
+  // keeps this off the 60fps RAF hot path during auto-scroll; a manual fling
+  // gets its own time gate (ELEMENT_SCAN_MS), with one trailing scan so the
+  // place it comes to rest is still the one reported.
   if (!reflowing) {
-    if (elementId && !hasReachedEnd) {
-      const seq = topEl ? (topEl.getAttribute("data-sequence") || "") : "";
-      window.ReactNativeWebView.postMessage("scroll-elementId-" + elementId + "|seq-" + seq);
-    } else if (hasReachedEnd) {
-      window.ReactNativeWebView.postMessage("scroll-elementId-null");
+    // The rotation anchor stays current on every event even while the scan
+    // waits: only the line already chosen is measured, which is cheap, and a
+    // rotation right after a fling then restores where the page came to rest
+    // rather than where the last gated scan saw it.
+    if (anchorElementId) {
+      const anchorEl = document.getElementById(anchorElementId);
+      if (anchorEl) anchorViewportTop = anchorEl.getBoundingClientRect().top;
+    }
+    const scanNow = Date.now();
+    clearTimeout(elementScanTimer);
+    if (scanNow - lastElementScanTime >= ELEMENT_SCAN_MS) {
+      lastElementScanTime = scanNow;
+      reportTopmostElement();
+    } else {
+      elementScanTimer = setTimeout(() => {
+        if (window.innerWidth !== lastViewportWidth) return;
+        lastElementScanTime = Date.now();
+        reportTopmostElement();
+      }, ELEMENT_SCAN_MS);
     }
   }
 
@@ -247,6 +257,10 @@ const scrollFunc=(e)=> {
     window.ReactNativeWebView.postMessage("edge");
   } else if (!reflowing && autoScrollSpeed == 0 && Date.now() > syncScrollUntil) {
     let diffY = scrollFunc.y - window.pageYOffset;
+    // The anchor stays put until a direction commits: moved on every tick, a
+    // slow drag of under 3px per event never crossed the threshold and the
+    // bars ignored it.
+    if (Math.abs(diffY) <= 3) return;
     // Scroll direction drives the bars: scrolling DOWN hides them, scrolling UP
     // restores them together. (A tap also toggles — see the touch handlers
     // below.) The syncScrollUntil guard keeps audio-sync/position-restore
@@ -262,12 +276,27 @@ const scrollFunc=(e)=> {
       window.ReactNativeWebView.postMessage("show");
     }
   }
-  // KNOWN: the anchor moves on every tick, so a slow drag of under 3px per
-  // event never crosses the threshold and the bars ignore it. The old code
-  // moved it only once a direction committed. Fix planned in an upcoming
-  // Reader PR.
   scrollFunc.y = window.pageYOffset;
 }
+
+// The line at the top of the screen: reported for the saved reading position,
+// and remembered as the anchor a rotation puts back in place.
+const reportTopmostElement = () => {
+  const elementId = getTopmostElementId();
+  const topEl = elementId ? document.getElementById(String(elementId)) : null;
+  if (topEl) {
+    // WHERE on screen that line sits, so a rotation can put it back in the
+    // same place (see the resize handler).
+    anchorElementId = String(elementId);
+    anchorViewportTop = topEl.getBoundingClientRect().top;
+  }
+  if (elementId && !hasReachedEnd) {
+    const seq = topEl ? (topEl.getAttribute("data-sequence") || "") : "";
+    window.ReactNativeWebView.postMessage("scroll-elementId-" + elementId + "|seq-" + seq);
+  } else if (hasReachedEnd) {
+    window.ReactNativeWebView.postMessage("scroll-elementId-null");
+  }
+};
 
 const getTopmostElementId=()=> {
   const viewportTop = window.pageYOffset;
@@ -365,9 +394,16 @@ const setAutoScroll=()=> {
     }
 
     if (!isManuallyScrolling) {
-      // Compute from live autoScrollSpeed so speed changes take effect immediately
-      // Speed reduced by 50% per user request (was 1.1, now 0.55)
-      const pxPerSecond = autoScrollSpeed * 0.55 * scrollMultiplier;
+      // Compute from live autoScrollSpeed so speed changes take effect immediately.
+      const slider = Math.min(
+        Math.max(autoScrollSpeed, AUTO_SCROLL_MIN_SPEED),
+        AUTO_SCROLL_MAX_SPEED
+      );
+      const sliderFraction =
+        (slider - AUTO_SCROLL_MIN_SPEED) / (AUTO_SCROLL_MAX_SPEED - AUTO_SCROLL_MIN_SPEED);
+      const pxPerSecond =
+        AUTO_SCROLL_MIN_PX_PER_SECOND +
+        sliderFraction * (AUTO_SCROLL_MAX_PX_PER_SECOND - AUTO_SCROLL_MIN_PX_PER_SECOND);
       const deltaMs = currentTime - lastFrameTime;
       // Cap delta to prevent huge jumps after tab switch
       const deltaSec = Math.min(deltaMs / 1000, 0.05);
@@ -602,7 +638,6 @@ ${listener}.addEventListener(
     }
     if (message.hasOwnProperty("autoScroll")) {
       autoScrollSpeed = message.autoScroll;
-      scrollMultiplier = message.scrollMultiplier;
       if (autoScrollRAF == null) {
         setAutoScroll();
       }

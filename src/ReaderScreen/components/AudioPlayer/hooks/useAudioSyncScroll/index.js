@@ -32,8 +32,8 @@ const useAudioSyncScroll = (progress, isPlaying, webViewRef, lyricsUrl, seekSync
     if (webViewRef?.current?.postMessage) {
       try {
         webViewRef.current.postMessage(JSON.stringify({ resetHighlight: true }));
-      } catch (_e) {
-        /* non-critical — postMessage may not be available yet */
+      } catch (_) {
+        // Best effort: WebView may be unmounted or not ready to receive messages.
       }
     }
 
@@ -301,8 +301,8 @@ const useAudioSyncScroll = (progress, isPlaying, webViewRef, lyricsUrl, seekSync
             // Sync scroll disabled or lyrics unavailable — clear highlight.
             webViewRef.current.postMessage(JSON.stringify({ resetHighlight: true }));
           }
-        } catch (_e) {
-          /* non-critical — postMessage may throw if WebView unmounted */
+        } catch (_) {
+          // Best effort: WebView may be unmounted or not ready to receive messages.
         }
       }
     }
@@ -315,8 +315,8 @@ const useAudioSyncScroll = (progress, isPlaying, webViewRef, lyricsUrl, seekSync
       if (webViewRef?.current?.postMessage) {
         try {
           webViewRef.current.postMessage(JSON.stringify({ resetHighlight: true }));
-        } catch (_e) {
-          /* non-critical — postMessage may throw if WebView unmounted */
+        } catch (_) {
+          // Best effort: WebView may be unmounted or not ready to receive messages.
         }
       }
     };

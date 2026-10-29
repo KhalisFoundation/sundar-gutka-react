@@ -1,6 +1,8 @@
 export const TOGGLE_NIGHT_MODE = "TOGGLE_NIGHT_MODE";
 export const SET_FONT_SIZE = "SET_FONT_SIZE";
 export const SET_FONT_FACE = "SET_FONT_FACE";
+export const SET_BANI_FONT_FACE = "SET_BANI_FONT_FACE";
+export const SET_OWN_BANI_FONT_FACE = "SET_OWN_BANI_FONT_FACE";
 export const SET_LANGUAGE = "SET_LANGUAGE";
 export const TOGGLE_TRANSLITERATION = "TOGGLE_TRANSLITERATION";
 export const SET_TRANSLITERATION = "SET_TRANSLITERATION";
@@ -49,3 +51,121 @@ export const SET_AUDIO_MANIFEST = "SET_AUDIO_MANIFEST";
 // Audio progress actions
 export const SET_AUDIO_PROGRESS = "SET_AUDIO_PROGRESS";
 export const CLEAR_AUDIO_PROGRESS = "CLEAR_AUDIO_PROGRESS";
+
+// ── Audio catalog, the floating player and downloads ──────────────────────
+
+// Audio catalog cache — the persisted offline copy of the backend /audios
+// manifest, keyed by baniId. Populated by the eager catalog sync and per-bani
+// lazy refresh; read as the offline source for the audio player.
+export const SET_AUDIO_CATALOG_ENTRIES = "SET_AUDIO_CATALOG_ENTRIES";
+
+export const SET_AUDIO_CATALOG_ENTRY = "SET_AUDIO_CATALOG_ENTRY";
+
+export const SET_AUDIO_CATALOG_META = "SET_AUDIO_CATALOG_META";
+
+export const CLEAR_AUDIO_CATALOG = "CLEAR_AUDIO_CATALOG";
+
+// Reader tap signal — incremented on each tap in the bani WebView so the
+// floating mini player can toggle its expanded/collapsed state.
+export const BUMP_READER_TAP = "BUMP_READER_TAP";
+
+// Scroll DOWN in the reader. The counterpart of the tap above: a tap grows the
+// floating audio player back to its pill, scrolling away shrinks it to the
+// circle. See MinimizePlayer.
+export const BUMP_READER_SCROLL_DOWN = "BUMP_READER_SCROLL_DOWN";
+
+// Floating mini-player drag state — used to disable WebView scroll while dragging
+export const SET_PLAYER_DRAGGING = "SET_PLAYER_DRAGGING";
+
+// Download queue
+export const ENQUEUE_DOWNLOAD = "ENQUEUE_DOWNLOAD";
+
+export const UPDATE_DOWNLOAD_STATUS = "UPDATE_DOWNLOAD_STATUS";
+
+// The previous release's downloads have been adopted into the registry. Kept in
+// the store beside the registry, so both are persisted in the same write.
+export const MARK_AUDIO_STORAGE_MIGRATED = "MARK_AUDIO_STORAGE_MIGRATED";
+
+export const UPDATE_DOWNLOAD_PROGRESS = "UPDATE_DOWNLOAD_PROGRESS";
+
+export const REMOVE_DOWNLOAD_QUEUE_ENTRY = "REMOVE_DOWNLOAD_QUEUE_ENTRY";
+
+export const RETRY_DOWNLOAD = "RETRY_DOWNLOAD";
+
+export const REQUEUE_PAUSED_DOWNLOADS = "REQUEUE_PAUSED_DOWNLOADS";
+
+// Download registry
+export const ADD_DOWNLOAD_ENTRY = "ADD_DOWNLOAD_ENTRY";
+
+export const REMOVE_DOWNLOAD_ENTRIES = "REMOVE_DOWNLOAD_ENTRIES";
+
+export const UPDATE_DOWNLOAD_ENTRIES = "UPDATE_DOWNLOAD_ENTRIES";
+
+export const SET_DOWNLOAD_REGISTRY = "SET_DOWNLOAD_REGISTRY";
+
+export const CLEAR_DOWNLOAD_REGISTRY = "CLEAR_DOWNLOAD_REGISTRY";
+
+// Download settings
+export const TOGGLE_DOWNLOAD_WIFI_ONLY = "TOGGLE_DOWNLOAD_WIFI_ONLY";
+
+export const TOGGLE_AUTO_DOWNLOAD = "TOGGLE_AUTO_DOWNLOAD";
+
+// ─── Khalis SSO session ─────────────────────────────────────────────────────
+// Decoded claims only — the raw JWT lives in the Keychain, never in Redux.
+export const SET_AUTH_SESSION = "SET_AUTH_SESSION";
+export const CLEAR_AUTH_SESSION = "CLEAR_AUTH_SESSION";
+export const SET_AUTH_BUSY = "SET_AUTH_BUSY";
+// Drops every slice belonging to a PERSON rather than to this device. Fired on
+// sign-out and when a DIFFERENT account signs in; see common/sso/accountScope.js
+// and USER_DATA_SLICES in common/reducer.js.
+export const CLEAR_USER_DATA = "CLEAR_USER_DATA";
+
+// ─── Dashboard redesign ─────────────────────────────────────────────────────
+// Local editable user profile, synced per-device. Kept separate from the SSO
+// session above: this one is written by the cloud restore, so merging the two
+// would let a stale snapshot overwrite the signed-in user's real name.
+export const SET_USER_PROFILE = "SET_USER_PROFILE";
+
+// Customizable dashboard layout — section order + hidden sections
+export const SET_DASHBOARD_LAYOUT = "SET_DASHBOARD_LAYOUT";
+export const RESET_DASHBOARD_LAYOUT = "RESET_DASHBOARD_LAYOUT";
+
+// Today's Nitnem — the per-day completion map. WHICH banis are in the Nitnem
+// is the Morning Nitnem pothi's business, so there is no "set the banis" action
+// here; the card edits the pothi through ADD_BANI_TO_POTHI/REMOVE_BANI_FROM_POTHI.
+export const TOGGLE_NITNEM_DONE = "TOGGLE_NITNEM_DONE";
+export const MARK_NITNEM_AUTO_DONE = "MARK_NITNEM_AUTO_DONE";
+export const MARK_NITNEM_DONE = "MARK_NITNEM_DONE";
+// Restore the whole nitnem slice at once (cross-device sync / GET /dashboard/latest)
+export const RESTORE_NITNEM = "RESTORE_NITNEM";
+
+// My Pothi — user-made folders of banis, ordered and pinned by the user
+export const CREATE_POTHI = "CREATE_POTHI";
+export const RENAME_POTHI = "RENAME_POTHI";
+export const DELETE_POTHI = "DELETE_POTHI";
+export const ADD_BANI_TO_POTHI = "ADD_BANI_TO_POTHI";
+export const REMOVE_BANI_FROM_POTHI = "REMOVE_BANI_FROM_POTHI";
+// An editor's Discard: the items it opened with, back in their order.
+export const RESTORE_POTHI_ITEMS = "RESTORE_POTHI_ITEMS";
+export const SET_POTHI_ORDER = "SET_POTHI_ORDER";
+export const TOGGLE_POTHI_PIN = "TOGGLE_POTHI_PIN";
+// Seeded once: Morning + Evening Nitnem. Tracked so a user who deletes them
+// does not find them back on the next launch.
+export const SEED_DEFAULT_POTHIS = "SEED_DEFAULT_POTHIS";
+// Cloud sync — folder-level last-write-wins against GET /folders.
+export const MERGE_REMOTE_POTHIS = "MERGE_REMOTE_POTHIS";
+export const SET_POTHIS_SYNCED_AT = "SET_POTHIS_SYNCED_AT";
+// The server watermark from the last folders read, sent back as `since`.
+export const SET_POTHI_SYNC_WATERMARK = "SET_POTHI_SYNC_WATERMARK";
+
+// Sync outbox — changes to account data waiting to reach the server.
+export const ENQUEUE_SYNC_OP = "ENQUEUE_SYNC_OP";
+export const SYNC_OP_SENDING = "SYNC_OP_SENDING";
+export const SYNC_OP_DONE = "SYNC_OP_DONE";
+export const SYNC_OP_FAILED = "SYNC_OP_FAILED";
+
+// Reminder sync bookkeeping: per-reminder clocks, tombstones, server bases.
+export const MERGE_REMINDER_SYNC_META = "MERGE_REMINDER_SYNC_META";
+
+// Settings sync bookkeeping: per-key clocks and server bases.
+export const MERGE_SETTINGS_SYNC_META = "MERGE_SETTINGS_SYNC_META";

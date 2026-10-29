@@ -1,3 +1,9 @@
+import errorFallbackStyles from "../ReaderScreen/components/AudioPlayer/components/ErrorFallback/styles";
+import loadingStyles from "../ReaderScreen/components/AudioPlayer/components/Loading/styles";
+import {
+  audioControlBarStyles,
+  minimizePlayerStyles,
+} from "../ReaderScreen/components/AudioPlayer/style";
 import readerStyles from "../ReaderScreen/styles";
 import darkTheme from "./darkTheme";
 import lightTheme from "./lightTheme";
@@ -19,9 +25,6 @@ import lightTheme from "./lightTheme";
 //
 // Asserted as EQUALITY between roles rather than against hex values, so retuning
 // the ladder cannot make this pass while the screens disagree.
-//
-// The audio player's boxes and the Dashboard join these checks with their own
-// PRs, once those screens are on the token layer.
 
 const themes = [
   ["light", lightTheme],
@@ -34,14 +37,26 @@ describe("two greys, assigned by what a thing is", () => {
     expect(rs.headerStyle.backgroundColor).toBe(theme.c.backgroundAlt);
   });
 
+  it.each(themes)("[%s] every audio box takes the CARD grey", (_n, theme) => {
+    const expected = theme.c.surface;
+    expect(audioControlBarStyles(theme).mainContainer.backgroundColor).toBe(expected);
+    expect(audioControlBarStyles(theme).modalAnimation.backgroundColor).toBe(expected);
+    expect(minimizePlayerStyles(theme).container.backgroundColor).toBe(expected);
+    expect(loadingStyles(theme).loadingContainer.backgroundColor).toBe(expected);
+    expect(errorFallbackStyles(theme).statusContainer.backgroundColor).toBe(expected);
+  });
+
   it("a card is distinguishable from the ground it sits on, in dark mode", () => {
     // Light mode deliberately shares one white and separates with a shadow.
     expect(darkTheme.c.surface).not.toBe(darkTheme.c.background);
   });
 
-  it("uses no third grey — surfaceElevated is not a screen role", () => {
+  it("uses no third grey — surfaceElevated is not a player or screen role", () => {
     const rs = readerStyles(darkTheme);
     expect(rs.headerStyle.backgroundColor).not.toBe(darkTheme.c.surfaceElevated);
+    expect(minimizePlayerStyles(darkTheme).container.backgroundColor).not.toBe(
+      darkTheme.c.surfaceElevated
+    );
   });
 });
 
@@ -91,5 +106,48 @@ describe("one blue per theme", () => {
     // The navy measures ~1.3:1 on the dark ground — fine behind white on a
     // filled bar, far too quiet for a control the user is meant to spot.
     expect(darkTheme.c.accent).not.toBe(darkTheme.c.primary);
+  });
+});
+
+// Dashboard section headings all take one treatment. The week range used to be
+// the only one styled like a heading — it passed its own colour, size and case
+// inline — so every other section read as a small grey caption beside it.
+describe("dashboard section headings are one treatment", () => {
+  const sectionLabel = require("../DashboardScreen/components/SectionLabel");
+
+  it("only the week range opts out of the caption treatment", () => {
+    const fs = require("fs");
+    const path = require("path");
+    const dir = path.join(__dirname, "..", "DashboardScreen", "components");
+    const offenders = fs
+      .readdirSync(dir)
+      .filter((f) => /\.jsx$/.test(f) && !/\.test\./.test(f))
+      .filter((f) => {
+        const src = fs.readFileSync(path.join(dir, f), "utf8");
+        if (!src.includes("<SectionLabel")) return false;
+        // The week range is a title in its own right, not a section heading.
+        // Any SECTION setting its own size, case or colour is drift — Reminders
+        // used to take a quieter accent, which left one heading in the stack
+        // looking faded next to Explore, Discover and Insights.
+        return /<SectionLabel[^>]*(titleStyle|uppercase|color)=/s.test(src);
+      });
+    expect(offenders.sort()).toEqual(["WeekChart.jsx"]);
+  });
+
+  it("defaults to the small uppercase caption", () => {
+    const fs = require("fs");
+    const path = require("path");
+    const src = fs.readFileSync(
+      path.join(__dirname, "..", "DashboardScreen", "components", "SectionLabel.jsx"),
+      "utf8"
+    );
+    expect(src).toContain("uppercase = true");
+    expect(src).toContain("fontSize: 12");
+    // The muted role, so each theme's own value applies rather than a literal.
+    expect(src).toContain("c.textSecondary");
+  });
+
+  it("is exported as a component, so the treatment has one home", () => {
+    expect(typeof (sectionLabel.default ?? sectionLabel)).toBe("function");
   });
 });

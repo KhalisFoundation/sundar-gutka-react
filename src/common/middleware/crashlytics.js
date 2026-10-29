@@ -8,6 +8,11 @@ const MAX_STATE_KEYS = 10;
 // on low-end devices without adding any useful crash context.
 const HIGH_FREQUENCY_ACTIONS = new Set(["SET_AUDIO_PROGRESS", "SET_SCROLL_POSITION"]);
 
+// Actions whose value is about a PERSON — the SSO session carries an email and
+// a SAML nameID. Their type is still recorded; the value never leaves the
+// phone in a crash report, whatever the Statistics setting.
+const PERSONAL_ACTIONS = new Set(["SET_AUTH_SESSION"]);
+
 // Helper function to safely stringify values
 const safeStringify = (value) => {
   if (value == null) return "";
@@ -62,7 +67,9 @@ const crashlyticsMiddleware = (store) => (next) => (action) => {
     setCustomKey("last-action", action.type);
 
     const actionValue = action.value !== undefined ? action.value : action.payload;
-    if (actionValue !== undefined) {
+    if (PERSONAL_ACTIONS.has(action.type)) {
+      setCustomKey("last-action-value", "[redacted]");
+    } else if (actionValue !== undefined) {
       setCustomKey("last-action-value", safeStringify(actionValue));
     }
 

@@ -5,6 +5,20 @@
     <uses-permission android:name="android.permission.WAKE_LOCK" />
     <uses-permission android:name="android.permission.FOREGROUND_SERVICE" />
     <uses-permission android:name="android.permission.FOREGROUND_SERVICE_MEDIA_PLAYBACK" />
+    <!-- Android 13+: required so the background-download foreground-service
+         progress notification is visible. Requested at runtime before the first
+         download (requestNotificationPermission). -->
+    <uses-permission android:name="android.permission.POST_NOTIFICATIONS" />
+
+    <!-- Android 11+ package-visibility: without declaring a target package here,
+         PackageManager.getLaunchIntentForPackage() always returns null for it
+         (as if not installed), even when it is. Needed for the Explore Gurbani
+         "open app if installed" deep link (see AppLauncherModule.kt). -->
+    <queries>
+        <package android:name="com.khalis.sehajpathapp" />
+        <package android:name="com.khalis.gurdham" />
+        <package android:name="org.khalisfoundation.shabadavali" />
+    </queries>
 
     <application android:name=".MainApplication" android:label="@string/app_name" android:icon="@mipmap/ic_launcher_foreground"
         android:roundIcon="@mipmap/ic_launcher_round" android:allowBackup="false" android:theme="@style/AppTheme" android:supportsRtl="true"
@@ -13,9 +27,39 @@
             android:name="firebase_analytics_automatic_screen_reporting_enabled"
             android:value="false"
             tools:node="replace" />
+        <!-- Push notifications FCM shows by itself (app in the background,
+             message carrying a notification block). Without these it draws a
+             grey square for the icon and posts to the "Miscellaneous" channel;
+             the channel id must match PUSH_CHANNEL_ID in services/push, which
+             creates it, and firebase.json, which tells FCM to use it. -->
+        <meta-data
+            android:name="com.google.firebase.messaging.default_notification_icon"
+            android:resource="@drawable/ic_notification" />
+        <meta-data
+            android:name="com.google.firebase.messaging.default_notification_color"
+            android:resource="@color/primary_dark"
+            tools:replace="android:resource" />
+        <meta-data
+            android:name="com.google.firebase.messaging.default_notification_channel_id"
+            android:value="general_v2" />
         <activity android:name=".MainActivity" android:exported="true" android:label="@string/app_name"
-            android:configChanges="keyboard|keyboardHidden|orientation|screenSize|uiMode"
+            android:configChanges="keyboard|keyboardHidden|orientation|screenLayout|screenSize|smallestScreenSize|uiMode"
             android:launchMode="singleTask" android:windowSoftInputMode="adjustResize">
+            <!-- Khalis SSO return deep link. This must live on MainActivity, NOT
+                 SplashActivity: SplashActivity builds a brand-new Intent for
+                 MainActivity and drops the original's data, so a filter there
+                 would silently discard the ?token= payload. MainActivity is also
+                 the ReactActivity, the only one React Native's Linking module can
+                 read the URL from. It has no LAUNCHER category, so this adds no
+                 second launcher icon; singleTask means the warm case is delivered
+                 via onNewIntent and clears the browser tab above it. -->
+            <intent-filter>
+                <action android:name="android.intent.action.VIEW" />
+                <category android:name="android.intent.category.DEFAULT" />
+                <category android:name="android.intent.category.BROWSABLE" />
+                <data android:scheme="sundargutka" android:host="login" />
+                <data android:scheme="sundargutka" android:host="logout" />
+            </intent-filter>
         </activity>
 
         <activity android:name=".SplashActivity" android:exported="true" android:theme="@style/SplashTheme" android:label="@string/app_name">
@@ -30,5 +74,17 @@
             android:foregroundServiceType="mediaPlayback"
             android:exported="true"
             tools:replace="android:exported" />
+
+        <!-- React Native's own manifest sets this to false, which is right only
+             while SoLoader is initialised WITHOUT the merged-library mapping:
+             SoLoader then steps aside and the plain system loader takes over.
+             MainApplication initialises it WITH the mapping, so SoLoader is the
+             loader either way, and leaving this false means the flags passed at
+             init are read against a SoLoader that has just switched itself off.
+             See the startup-crash recovery flag in MainApplication. -->
+        <meta-data
+            android:name="com.facebook.soloader.enabled"
+            android:value="true"
+            tools:replace="android:value" />
     </application>
 </manifest>

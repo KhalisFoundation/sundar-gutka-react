@@ -18,7 +18,10 @@ end
 target 'SundarGutka' do
   pod 'Firebase', :modular_headers => true
   pod 'FirebaseCore', :modular_headers => true
-  pod 'GoogleUtilities', :modular_headers => true
+  # 8.1.4 or later: 8.1.1/8.1.2 fix a race crash in GULNetworkURLSession, and
+  # 8.1.4 stops a malformed Analytics experiment response from crashing the app
+  # (the "key cannot be nil" crash of 29 Sep 2026). Firebase keeps it below 9.
+  pod 'GoogleUtilities', '>= 8.1.4', :modular_headers => true
   pod 'FirebaseCoreExtension', :modular_headers => true
   pod 'FirebaseInstallations', :modular_headers => true
   pod 'GoogleDataTransport', :modular_headers => true
@@ -48,6 +51,10 @@ target 'SundarGutka' do
     installer.pods_project.targets.each do |target|
     target.build_configurations.each do |config|
       config.build_settings['CLANG_ALLOW_NON_MODULAR_INCLUDES_IN_FRAMEWORK_MODULES'] = 'YES'
+      # Some pods still declare iOS 9.0, which current Xcode no longer supports.
+      if Gem::Version.new(config.build_settings['IPHONEOS_DEPLOYMENT_TARGET'].to_s) < Gem::Version.new(min_ios_version_supported)
+        config.build_settings['IPHONEOS_DEPLOYMENT_TARGET'] = min_ios_version_supported
+      end
     end
   end
   end

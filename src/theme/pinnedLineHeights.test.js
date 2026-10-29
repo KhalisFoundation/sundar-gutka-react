@@ -1,6 +1,7 @@
 /* eslint-env jest */
 import fs from "fs";
 import path from "path";
+import { NATURAL_LINE_BOX } from "./lineHeight";
 
 // Guards the screens that were clipping Gurmukhi and Devanagari on iPhone.
 //
@@ -18,9 +19,14 @@ import path from "path";
 const ROOT = path.join(__dirname, "..");
 
 const GUARDED = [
-  // The Seva, Dashboard, Downloads, onboarding and new audio-player screens
-  // join this list with their own PRs.
+  "SevaScreen/styles.js",
+  "SevaScreen/sevaMeansStyles.js",
   "DatabaseUpdate/components/styles.jsx",
+  "ReaderScreen/components/AudioPlayer/style.js",
+  "ManageDownloads/styles.js",
+  "DashboardScreen/components/DashboardHeader.jsx",
+  "DashboardScreen/components/DayDetailModal.jsx",
+  "DashboardScreen/components/Discover.jsx",
 ];
 
 const read = (rel) => fs.readFileSync(path.join(ROOT, rel), "utf8");
@@ -94,5 +100,20 @@ describe("the bottom navigation bar", () => {
       .map(([n, line]) => `${n}: ${line.trim()}`);
 
     expect(rawInset).toEqual([]);
+  });
+});
+
+// The two values the pill's own layout depends on, kept honest against the
+// metrics rather than against a remembered number.
+describe("the collapsed audio pill", () => {
+  const style = read("ReaderScreen/components/AudioPlayer/style.js");
+
+  it("sizes to its content instead of pinning a height", () => {
+    // Without a pinned line height the two stacked lines measure
+    // 12 * 1.771 + 14 * 1.771 - 1.5 ~= 44.5 on iOS, which a fixed 44 clipped.
+    const stack = (12 + 14) * NATURAL_LINE_BOX.baloo - 1.5;
+    expect(stack).toBeGreaterThan(44);
+    expect(style).toMatch(/minHeight: 44,/);
+    expect(style).not.toMatch(/^\s+height: 44,$/m);
   });
 });

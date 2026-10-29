@@ -42,8 +42,8 @@ describe("the flush sheet presentation is scoped to Settings", () => {
     // is multi-select so it cannot use SelectSheet but must look identical to
     // it; and the pothi overflow, which is the same thing — a short list of
     // actions in edge-to-edge `Row`s with dividers.
-    // (The pothi overflow joins this list with My Pothi.)
     expect(callers).toEqual([
+      "FolderScreen/FolderScreen.jsx",
       "Settings/components/comon/SelectSheet.jsx",
       "Settings/components/translation.jsx",
     ]);
@@ -68,8 +68,11 @@ describe("the flush sheet presentation is scoped to Settings", () => {
     //
     // The sheet grab bar is the opposite case: it clears the scope, so every
     // sheet's bar is the app theme's one colour whatever palette it sits in.
-    // (The four pothi sheets join this list with My Pothi.)
     expect(users.sort()).toEqual([
+      "Pothi/components/AddBanisSheet.jsx",
+      "Pothi/components/AddToPothiSheet.jsx",
+      "Pothi/components/CreatePothiSheet.jsx",
+      "Pothi/components/PothiActionsSheet.jsx",
       "common/components/BaniLengthSelector/BaniLengthSelector.jsx",
       "common/components/ui/Sheet.jsx",
       "common/components/ui/sheetDrag.jsx",

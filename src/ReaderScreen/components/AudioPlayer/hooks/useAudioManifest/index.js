@@ -1,396 +1,37 @@
-import { useState, useEffect } from "react";
-import { DocumentDirectoryPath, exists, stat, unlink } from "react-native-fs";
-import { useSelector, useDispatch } from "react-redux";
+import { useState, useEffect, useRef } from "react";
+import { exists, stat, unlink } from "react-native-fs";
+import { useSelector, useDispatch, useStore } from "react-redux";
 import constant from "@common/constant";
-import { actions, logError, STRINGS } from "@common";
-import { fetchManifest } from "@service";
+import { reconcileDownloads } from "@common/services/audioReconcile";
+import { actions, logError, logNetworkError, STRINGS, useNetwork } from "@common";
+import { fetchRawBaniAudio, selectTracksForBani } from "@service";
+import { getLocalTrackPath, AUDIO_DIRECTORY_PATH } from "../../utils/audioDownloader";
 
-const ALLOWED_ARTIST_IDS = [4, 8, 9];
-const ALLOWED_ARTIST_NAME_KEYWORDS = ["jarnail", "indermohan", "gurdev"];
-const ALLOWED_ARTIST_URL_KEYWORDS = ["bhaijarnailsingh", "indermohankauruk", "gianigurdevsingh"];
+// ─────────────────────────────────────────────────────────────────────────────
+// Audio manifest hook — fully backend-driven, offline-capable.
+//
+// Source of truth is the backend /audios manifest (services/audioApi.js). Its
+// offline copy lives in the persisted `audioCatalog` Redux slice as the RAW
+// length-grouped response per bani; this hook selects the right length group at
+// read time (selectTracksForBani) and merges in any locally-downloaded files.
+//
+// Read order per bani:
+//   1. Persisted catalog cache → instant, works offline.
+//   2. If online and the cache is missing/stale → fetch fresh, persist, use it.
+//      (A stale-but-present cache is always used immediately; the refresh is a
+//      background upgrade, never a blocker.)
+//   3. Merge downloaded tracks so local files play offline and integrity-check.
+//   4. When the manifest came from the network, reconcile the downloads
+//      against it in the background (audioReconcile) and re-merge if anything
+//      on disk changed — the list that is already showing is never held up.
+//
+// There is NO hardcoded track data and no bundled fallback: a bani that has
+// never been cached and can't be fetched (offline first-run) surfaces a
+// network-retry state rather than stale baked-in URLs.
+// ─────────────────────────────────────────────────────────────────────────────
 
-// Single source of truth for display names — prevents API variants like
-// "Indermohan Kaur UK" appearing alongside the canonical "Bibi Indermohan Kaur".
-const CANONICAL_ARTIST_NAMES = {
-  4: "Bhai Jarnail Singh",
-  8: "Bibi Indermohan Kaur",
-  9: "Giani Gurdev Singh",
-};
-
-// Base URL for all audio assets — served via the Azure Front Door CDN.
-const BLOB_BASE_URL = constant.AUDIO_BASE_URL;
-
-/**
- * Emergency manifests cover all supported banis for all 3 artists.
- * These are used as a last-resort when both the remote API and session cache
- * are unavailable (e.g. first launch with no network).
- */
-const EMERGENCY_MANIFEST_BY_BANI = {
-  2: {
-    status: "success",
-    data: [
-      {
-        bani_id: 2,
-        track_id: 1002,
-        track_url: `${BLOB_BASE_URL}/BhaiJarnailSingh/JapjiSahib.m4a`,
-        track_length_seconds: 985.547,
-        track_size_mb: 15.39,
-        artist_name: "Bhai Jarnail Singh",
-        artist_id: 4,
-        lyrics_url: `${BLOB_BASE_URL}/BhaiJarnailSingh/japji-sahib.json`,
-      },
-      {
-        bani_id: 2,
-        track_id: 2002,
-        track_url: `${BLOB_BASE_URL}/IndermohanKaurUK/JapjiSahib.m4a`,
-        track_length_seconds: 1156,
-        track_size_mb: 17.94,
-        artist_name: "Bibi Indermohan Kaur",
-        artist_id: 8,
-        lyrics_url: `${BLOB_BASE_URL}/IndermohanKaurUK/JapjiSahib.json`,
-      },
-      {
-        bani_id: 2,
-        track_id: 3002,
-        track_url: `${BLOB_BASE_URL}/GianiGurdevSingh/JapjiSahib.m4a`,
-        track_length_seconds: 1257,
-        track_size_mb: 19.69,
-        artist_name: "Giani Gurdev Singh",
-        artist_id: 9,
-        lyrics_url: `${BLOB_BASE_URL}/GianiGurdevSingh/JapjiSahib.json`,
-      },
-    ],
-  },
-  4: {
-    status: "success",
-    data: [
-      {
-        bani_id: 4,
-        track_id: 1004,
-        track_url: `${BLOB_BASE_URL}/BhaiJarnailSingh/JaapSahib.m4a`,
-        track_length_seconds: 987,
-        track_size_mb: 15.36,
-        artist_name: "Bhai Jarnail Singh",
-        artist_id: 4,
-        lyrics_url: `${BLOB_BASE_URL}/BhaiJarnailSingh/jaap-sahib.json`,
-      },
-      {
-        bani_id: 4,
-        track_id: 2004,
-        track_url: `${BLOB_BASE_URL}/IndermohanKaurUK/JaapSahib.m4a`,
-        track_length_seconds: 1170,
-        track_size_mb: 18.18,
-        artist_name: "Bibi Indermohan Kaur",
-        artist_id: 8,
-        lyrics_url: `${BLOB_BASE_URL}/IndermohanKaurUK/JaapSahib.json`,
-      },
-      {
-        bani_id: 4,
-        track_id: 3004,
-        track_url: `${BLOB_BASE_URL}/GianiGurdevSingh/JaapSahib.m4a`,
-        track_length_seconds: 1281,
-        track_size_mb: 20.06,
-        artist_name: "Giani Gurdev Singh",
-        artist_id: 9,
-        lyrics_url: `${BLOB_BASE_URL}/GianiGurdevSingh/JaapSahib.json`,
-      },
-    ],
-  },
-  6: {
-    status: "success",
-    data: [
-      {
-        bani_id: 6,
-        track_id: 1006,
-        track_url: `${BLOB_BASE_URL}/BhaiJarnailSingh/Saviye.m4a`,
-        track_length_seconds: 207,
-        track_size_mb: 3.23,
-        artist_name: "Bhai Jarnail Singh",
-        artist_id: 4,
-        lyrics_url: `${BLOB_BASE_URL}/BhaiJarnailSingh/saviye.json`,
-      },
-      {
-        bani_id: 6,
-        track_id: 2006,
-        track_url: `${BLOB_BASE_URL}/IndermohanKaurUK/TavParsadSwayiye.m4a`,
-        track_length_seconds: 227,
-        track_size_mb: 3.52,
-        artist_name: "Bibi Indermohan Kaur",
-        artist_id: 8,
-        lyrics_url: `${BLOB_BASE_URL}/IndermohanKaurUK/TavParsadSwayiye.json`,
-      },
-      {
-        bani_id: 6,
-        track_id: 3006,
-        track_url: `${BLOB_BASE_URL}/GianiGurdevSingh/TavParsadSwayiye.m4a`,
-        track_length_seconds: 237,
-        track_size_mb: 3.71,
-        artist_name: "Giani Gurdev Singh",
-        artist_id: 9,
-        lyrics_url: `${BLOB_BASE_URL}/GianiGurdevSingh/TavParsadSwayiye.json`,
-      },
-    ],
-  },
-  9: (baniLength) => {
-    // Chaupai Sahib — DB flag zones:
-    //   Seqs  1–42 : existsBuddhaDal only (XL-only opening Dohra — no artist recorded this)
-    //   Seqs 43–146: all flags = 1 (Short / Medium / Long / XL all include these)
-    //   Seqs 147–173: existsTaksal + existsBuddhaDal (Long+XL closing sections)
-    //
-    // Audio availability:
-    //   Short / Medium → trimmed M4A (seqs 43–146), rebased timestamps
-    //   Long (Taksal)  → full original M4A (seqs 43–173, all closing sections)
-    //   XL (BuddhaDal) → UNAVAILABLE — no artist recorded the seqs 1–42 opening
-    // Original (no-suffix) files only — no trimmed variants.
-    // BJS + GGS originals cover Long (seq 1–173).
-    // Indermohan's original covers Short/Medium (her recording ends at seq 146).
-    // Any other length combination → empty → maafi message.
-
-    const isShortOrMedium = baniLength !== constant.LONG && baniLength !== constant.EXTRA_LONG;
-    const isXL = baniLength === constant.EXTRA_LONG;
-
-    if (isXL) return { status: "success", data: [] };
-
-    if (isShortOrMedium) {
-      return {
-        status: "success",
-        data: [
-          {
-            bani_id: 9,
-            track_id: 2009,
-            track_url: `${BLOB_BASE_URL}/IndermohanKaurUK/ChaupaiSahib.m4a`,
-            track_length_seconds: 268,
-            track_size_mb: 4.16,
-            artist_name: "Bibi Indermohan Kaur",
-            artist_id: 8,
-            lyrics_url: `${BLOB_BASE_URL}/IndermohanKaurUK/ChaupaiSahib.json`,
-          },
-        ],
-      };
-    }
-
-    // LONG
-    return {
-      status: "success",
-      data: [
-        {
-          bani_id: 9,
-          track_id: 1009,
-          track_url: `${BLOB_BASE_URL}/BhaiJarnailSingh/ChaupaiSahib.m4a`,
-          track_length_seconds: 317,
-          track_size_mb: 4.94,
-          artist_name: "Bhai Jarnail Singh",
-          artist_id: 4,
-          lyrics_url: `${BLOB_BASE_URL}/BhaiJarnailSingh/chopai-sahib.json`,
-        },
-        {
-          bani_id: 9,
-          track_id: 3009,
-          track_url: `${BLOB_BASE_URL}/GianiGurdevSingh/ChaupaiSahib.m4a`,
-          track_length_seconds: 378,
-          track_size_mb: 5.86,
-          artist_name: "Giani Gurdev Singh",
-          artist_id: 9,
-          lyrics_url: `${BLOB_BASE_URL}/GianiGurdevSingh/ChaupaiSahib.json`,
-        },
-      ],
-    };
-  },
-  10: {
-    status: "success",
-    data: [
-      {
-        bani_id: 10,
-        track_id: 1010,
-        track_url: `${BLOB_BASE_URL}/BhaiJarnailSingh/AnandSahib.m4a`,
-        track_length_seconds: 784,
-        track_size_mb: 12.18,
-        artist_name: "Bhai Jarnail Singh",
-        artist_id: 4,
-        lyrics_url: `${BLOB_BASE_URL}/BhaiJarnailSingh/anand-sahib.json`,
-      },
-      {
-        bani_id: 10,
-        track_id: 2010,
-        track_url: `${BLOB_BASE_URL}/IndermohanKaurUK/AnandSahib.m4a`,
-        track_length_seconds: 869,
-        track_size_mb: 13.48,
-        artist_name: "Bibi Indermohan Kaur",
-        artist_id: 8,
-        lyrics_url: `${BLOB_BASE_URL}/IndermohanKaurUK/AnandSahib.json`,
-      },
-      {
-        bani_id: 10,
-        track_id: 3010,
-        track_url: `${BLOB_BASE_URL}/GianiGurdevSingh/AnandSahib.m4a`,
-        track_length_seconds: 994,
-        track_size_mb: 15.52,
-        artist_name: "Giani Gurdev Singh",
-        artist_id: 9,
-        lyrics_url: `${BLOB_BASE_URL}/GianiGurdevSingh/AnandSahib.json`,
-      },
-    ],
-  },
-  // Anand Sahib 6 Paudi — pauris 1–5 + pauri 40 (last) trimmed from bani 10 audio.
-  // Audio files are trimmed M4As; JSON timestamps are rebased to match the trimmed audio.
-  1000: {
-    status: "success",
-    data: [
-      {
-        bani_id: 1000,
-        track_id: 11000,
-        track_url: `${BLOB_BASE_URL}/BhaiJarnailSingh/AnandSahib-6-pauri.m4a`,
-        track_length_seconds: 150.977,
-        track_size_mb: 2.34,
-        artist_name: "Bhai Jarnail Singh",
-        artist_id: 4,
-        lyrics_url: `${BLOB_BASE_URL}/BhaiJarnailSingh/anand-sahib-6-pauri.json`,
-      },
-      {
-        bani_id: 1000,
-        track_id: 21000,
-        track_url: `${BLOB_BASE_URL}/IndermohanKaurUK/AnandSahib-6-pauri.m4a`,
-        track_length_seconds: 142.631,
-        track_size_mb: 2.19,
-        artist_name: "Bibi Indermohan Kaur",
-        artist_id: 8,
-        lyrics_url: `${BLOB_BASE_URL}/IndermohanKaurUK/AnandSahib-6-pauri.json`,
-      },
-      {
-        bani_id: 1000,
-        track_id: 31000,
-        track_url: `${BLOB_BASE_URL}/GianiGurdevSingh/AnandSahib-6-pauri.m4a`,
-        track_length_seconds: 182.856,
-        track_size_mb: 2.84,
-        artist_name: "Giani Gurdev Singh",
-        artist_id: 9,
-        lyrics_url: `${BLOB_BASE_URL}/GianiGurdevSingh/AnandSahib-6-pauri.json`,
-      },
-    ],
-  },
-  21: (baniLength) => {
-    // Rehras Sahib — DB flag zones:
-    //   Short (SGPC) -> 1, 20-169, 215-318, 487-540
-    //   Medium -> 1, 12-169, 215-318, 487-563
-    //   Long (Taksal) -> 1, 8-169, 175-178, 207-375, 405-416, 469-471, 473-563
-    //   XL (BuddhaDal) -> 1-563 (No audio available)
-
-    // Original (no-suffix) files only — no trimmed variants.
-    // BJS + Indermohan originals cover Long only.
-    // Short/Medium/XL → empty → maafi message.
-
-    const isLong = baniLength === constant.LONG;
-
-    if (!isLong) return { status: "success", data: [] };
-
-    return {
-      status: "success",
-      data: [
-        {
-          bani_id: 21,
-          track_id: 1021,
-          track_url: `${BLOB_BASE_URL}/BhaiJarnailSingh/RehrasSahib-trimmed.m4a`,
-          track_length_seconds: 1328.845,
-          track_size_mb: 20.52,
-          artist_name: "Bhai Jarnail Singh",
-          artist_id: 4,
-          lyrics_url: `${BLOB_BASE_URL}/BhaiJarnailSingh/Rehras-sahib-trimmed.json`,
-        },
-        {
-          bani_id: 21,
-          track_id: 2021,
-          track_url: `${BLOB_BASE_URL}/IndermohanKaurUK/RehrasSahib.m4a`,
-          track_length_seconds: 1145,
-          track_size_mb: 17.77,
-          artist_name: "Bibi Indermohan Kaur",
-          artist_id: 8,
-          lyrics_url: `${BLOB_BASE_URL}/IndermohanKaurUK/RehrasSahib.json`,
-        },
-      ],
-    };
-  },
-  23: (baniLength) => {
-    // Kirtan Sohila
-    // Short/Medium: seq 32-86
-    // Long: seq 1-86
-    // XL: seq 1-146 (No artist has recorded up to 146)
-
-    // Original (no-suffix) files only — no trimmed variants.
-    // Indermohan's original covers Short/Medium (seq 33–86).
-    // BJS original covers Long (seq 1–86).
-    // XL → empty → maafi message.
-
-    const isShortOrMedium = baniLength === constant.SHORT || baniLength === constant.MEDIUM;
-    const isXL = baniLength === constant.EXTRA_LONG;
-
-    if (isXL) return { status: "success", data: [] };
-
-    if (isShortOrMedium) {
-      return {
-        status: "success",
-        data: [
-          {
-            bani_id: 23,
-            track_id: 2023,
-            track_url: `${BLOB_BASE_URL}/IndermohanKaurUK/KirtanSohaila.m4a`,
-            track_length_seconds: 239,
-            track_size_mb: 3.7,
-            artist_name: "Bibi Indermohan Kaur",
-            artist_id: 8,
-            lyrics_url: `${BLOB_BASE_URL}/IndermohanKaurUK/KirtanSohaila.json`,
-          },
-        ],
-      };
-    }
-
-    // LONG
-    return {
-      status: "success",
-      data: [
-        {
-          bani_id: 23,
-          track_id: 1023,
-          track_url: `${BLOB_BASE_URL}/BhaiJarnailSingh/KirtanSohaila-trimmed.m4a`,
-          track_length_seconds: 325.858,
-          track_size_mb: 5.03,
-          artist_name: "Bhai Jarnail Singh",
-          artist_id: 4,
-          lyrics_url: `${BLOB_BASE_URL}/BhaiJarnailSingh/kirtan-sohaila-trimmed.json`,
-        },
-      ],
-    };
-  },
-};
-
-const normalize = (value) => (value || "").toString().trim().toLowerCase();
-
-const isAllowedArtist = ({ artistID, displayName, trackUrl }) => {
-  const numericArtistId = Number(artistID);
-  if (ALLOWED_ARTIST_IDS.includes(numericArtistId)) {
-    return true;
-  }
-
-  const normalizedDisplayName = normalize(displayName);
-  const normalizedTrackUrl = normalize(trackUrl);
-
-  const matchesName = ALLOWED_ARTIST_NAME_KEYWORDS.some((keyword) =>
-    normalizedDisplayName.includes(keyword)
-  );
-  const matchesUrl = ALLOWED_ARTIST_URL_KEYWORDS.some((keyword) =>
-    normalizedTrackUrl.includes(keyword)
-  );
-
-  return matchesName || matchesUrl;
-};
-
-// Module-level cache for raw API responses.
-// Re-navigating to the same bani within a session reuses the cached response
-// instead of firing another network round-trip.
-const manifestApiCache = new Map();
-
-export const resetManifestApiCacheForTests = () => {
-  manifestApiCache.clear();
-};
+// How fresh a manifest must be for opening the track list to skip the network.
+const SILENT_REFRESH_MIN_AGE_MS = 5 * 60 * 1000;
 
 const useAudioManifest = (baniID) => {
   const [tracks, setTracks] = useState([]);
@@ -401,39 +42,49 @@ const useAudioManifest = (baniID) => {
   const baniLength = useSelector((state) => state.baniLength);
 
   const dispatch = useDispatch();
+  const store = useStore();
   const audioManifest = useSelector((state) => state.audioManifest);
+  // Persisted offline manifest cache (raw length-grouped API responses per bani).
+  const audioCatalog = useSelector((state) => state.audioCatalog) || {};
+  // Authoritative download records — carries the exact downloaded byte size,
+  // used for deterministic integrity checks below. Defaulted so a missing slice
+  // (e.g. in tests) never throws.
+  const downloadRegistry = useSelector((state) => state.downloadRegistry) || {};
   // Gate manifest fetch on redux-persist rehydration — prevents re-downloading
   // tracks that are already on disk but whose manifest hasn't been restored yet.
-  // eslint-disable-next-line no-underscore-dangle
+  // eslint-disable-next-line no-underscore-dangle -- _persist is redux-persist's own key
   const isRehydrated = useSelector((state) => state._persist?.rehydrated);
+  const { isOnline } = useNetwork();
+  // Tracks whether we've observed an offline period since mount, so the
+  // reconnect-refresh effect below only fires on a real offline→online
+  // transition, never on first mount (which already fetches on its own).
+  const wasOfflineRef = useRef(false);
+  // The fetch in progress, if any — a list opening while the mount fetch is
+  // still running joins it instead of starting a second one.
+  const inFlightRef = useRef(null);
+  // The most recently started fetch. Only it may apply results: an older run
+  // that finishes later — even after the newer one has cleared inFlightRef —
+  // would otherwise show its own (old) bani or length.
+  const latestRunRef = useRef(null);
 
-  // Map API manifest data to our track format
-  const mapApiDataToTracks = (manifest) => {
-    if (!manifest?.data || manifest.data.length === 0) {
-      return null;
+  // Map intermediate manifest items (services/audioApi shape) to the player's
+  // track shape. Artist display names come straight from the backend, which is
+  // authoritative and already returns the canonical names.
+  const mapIntermediateToTracks = (items) => {
+    if (!Array.isArray(items) || items.length === 0) {
+      return [];
     }
 
-    return manifest.data
-      .filter(
-        (item) =>
-          item != null &&
-          item.track_url &&
-          isAllowedArtist({
-            artistID: item.artist_id,
-            displayName: item.artist_name,
-            trackUrl: item.track_url,
-          })
-      )
+    return items
+      .filter((item) => item != null && item.track_url)
       .map((item) => {
         const hasExplicitLyricsUrl = Object.prototype.hasOwnProperty.call(item, "lyrics_url");
-        let lyricsUrl;
-        if (hasExplicitLyricsUrl) {
-          lyricsUrl = item.lyrics_url;
-        } else if (item.track_url) {
-          lyricsUrl = item.track_url.replace(/\.m4a$/i, ".json");
-        } else {
-          lyricsUrl = null;
-        }
+        // eslint-disable-next-line no-nested-ternary -- explicit lyrics_url, else derived from track_url, else null
+        const lyricsUrl = hasExplicitLyricsUrl
+          ? item.lyrics_url
+          : item.track_url
+          ? item.track_url.replace(/\.m4a$/i, ".json")
+          : null;
 
         return {
           id: item.track_id,
@@ -441,7 +92,7 @@ const useAudioManifest = (baniID) => {
           artistID: item.artist_id,
           audioUrl: item.track_url,
           remoteUrl: item.track_url,
-          displayName: CANONICAL_ARTIST_NAMES[item.artist_id] || item.artist_name,
+          displayName: item.artist_name,
           trackLengthSec: item.track_length_seconds,
           trackSizeMB: item.track_size_mb,
           lyricsUrl,
@@ -450,49 +101,122 @@ const useAudioManifest = (baniID) => {
       });
   };
 
-  const getEmergencyManifest = () => {
-    const entry = EMERGENCY_MANIFEST_BY_BANI[Number(baniID)];
-    if (!entry) return null;
-    // Bani 9 (Chaupai Sahib) emergency manifest is a function that resolves
-    // the correct track/lyrics URLs based on the current bani length setting.
-    return typeof entry === "function" ? entry(baniLength) : entry;
+  // Resolve the track list for this bani + length from a raw `groups` object.
+  const tracksFromGroups = (groups) =>
+    mapIntermediateToTracks(groups ? selectTracksForBani(groups, baniID, baniLength) : []);
+
+  // The companion lyrics file a download keeps beside its audio.
+  const lyricsPathOf = (audioRelativePath) =>
+    audioRelativePath ? audioRelativePath.replace(/\.[^/.]+$/, ".json") : null;
+
+  // Every download of this bani, not only the ones this session played.
+  //
+  // `audioManifest` (the session list) is not persisted and only gains the
+  // track that was just downloaded or played, so after a restart every other
+  // download was missing from it and its row kept the remote URL — streaming,
+  // and failing offline, although the persisted registry knew the file was on
+  // disk. Each catalog track the registry holds is added (and with no catalog,
+  // the registry's own entries for this bani), and every download points at
+  // its companion lyrics file; the merge below validates both before use.
+  const withRegistryDownloads = (apiTracks, sessionDownloads, registry) => {
+    const list = (sessionDownloads || []).map((t) => ({
+      ...t,
+      lyricsUrl: t.lyricsUrl || lyricsPathOf(t.audioUrl),
+    }));
+    const has = (id) => list.some((d) => String(d.id) === String(id));
+    if (apiTracks && apiTracks.length > 0) {
+      // Downloads the previous release left are adopted with no bani (see
+      // useStorageMigration). The catalog identifies them by path, so record
+      // the bani now — that is what lets them show offline later, when there
+      // is no catalog to match against.
+      const banisLearned = {};
+      apiTracks.forEach((apiTrack) => {
+        const rel = apiTrack?.audioUrl ? getLocalTrackPath(apiTrack.audioUrl) : null;
+        if (rel && registry?.[rel] && registry[rel].baniId == null) {
+          banisLearned[rel] = { baniId: Number(baniID) };
+        }
+      });
+      if (Object.keys(banisLearned).length > 0) {
+        dispatch(actions.updateDownloadEntries(banisLearned));
+      }
+      apiTracks.forEach((apiTrack) => {
+        const rel = apiTrack?.audioUrl ? getLocalTrackPath(apiTrack.audioUrl) : null;
+        if (!rel || !registry?.[rel] || has(apiTrack.id)) return;
+        list.push({
+          id: apiTrack.id,
+          track_id: apiTrack.track_id,
+          artistID: apiTrack.artistID,
+          displayName: apiTrack.displayName,
+          trackLengthSec: apiTrack.trackLengthSec,
+          trackSizeMB: apiTrack.trackSizeMB,
+          audioUrl: rel,
+          lyricsUrl: lyricsPathOf(rel),
+          remoteUrl: apiTrack.audioUrl,
+        });
+      });
+    } else {
+      // KNOWN: a download the previous release left, never yet matched to a
+      // catalog (adopted offline before any catalog arrived), has no bani, so
+      // it cannot be offered here until the device is online once.
+      Object.values(registry || {}).forEach((entry) => {
+        if (String(entry?.baniId) !== String(baniID)) return;
+        const rel = entry.relativePath;
+        if (!rel || list.some((d) => d.audioUrl === rel)) return;
+        list.push({
+          id: rel,
+          displayName: entry.artistDisplayName,
+          trackSizeMB: entry.sizeMB,
+          audioUrl: rel,
+          lyricsUrl: lyricsPathOf(rel),
+        });
+      });
+    }
+    return list;
   };
 
-  // Merge downloaded tracks with API tracks
-  const mergeDownloadedTracks = async (apiTracks, downloadedTracks) => {
+  // Merge downloaded tracks with remote (catalog) tracks. `registry` is passed
+  // in rather than read from the closure because the merge also runs after the
+  // reconcile pass has just changed it.
+  // KNOWN: the on-disk integrity check (exists, stat, exact bytes or 90% of the
+  // manifest size, unlink, mark corrupt) is written out twice below, once per
+  // branch. A shared validateLocalTrack helper is planned in an upcoming PR so
+  // the two cannot drift.
+  const mergeDownloadedTracks = async (
+    apiTracks,
+    sessionDownloads,
+    registry = downloadRegistry
+  ) => {
+    const downloadedTracks = withRegistryDownloads(apiTracks, sessionDownloads, registry);
     if (!apiTracks || apiTracks.length === 0) {
-      // If no API data, use downloaded tracks
+      // No remote data → surface valid downloaded tracks straight from disk.
       if (!downloadedTracks || downloadedTracks.length === 0) {
         return [];
       }
       const corruptIds1 = new Set();
+      const corruptKeys1 = new Set();
       const validatedDownloads = await Promise.all(
         downloadedTracks.map(async (track) => {
-          if (
-            !isAllowedArtist({
-              artistID: track.artistID,
-              displayName: track.displayName,
-              trackUrl: track.remoteUrl || track.audioUrl,
-            })
-          ) {
-            return null;
-          }
-
-          const fullLocalPath = `${DocumentDirectoryPath}/audio/${track.audioUrl}`;
+          const fullLocalPath = `${AUDIO_DIRECTORY_PATH}/${track.audioUrl}`;
           const lyricsUrlPath = track.lyricsUrl
-            ? `${DocumentDirectoryPath}/audio/${track.lyricsUrl}`
+            ? `${AUDIO_DIRECTORY_PATH}/${track.lyricsUrl}`
             : null;
           let hasAudio = false;
           let hasLyrics = true;
           try {
             hasAudio = await exists(fullLocalPath);
             if (hasAudio) {
+              // Prefer an EXACT byte match against the recorded download size;
+              // fall back to the 90%-of-manifest-MB heuristic for legacy
+              // downloads that predate sizeBytes.
+              const exactBytes = Number(registry[track.audioUrl]?.sizeBytes) || 0;
               const expectedBytes = (track.trackSizeMB || 0) * 1024 * 1024;
-              if (expectedBytes > 0) {
-                const fileStat = await stat(fullLocalPath);
-                if (Number(fileStat.size) < expectedBytes * 0.9) {
+              if (exactBytes > 0 || expectedBytes > 0) {
+                const size = Number((await stat(fullLocalPath)).size);
+                const corrupt = exactBytes > 0 ? size !== exactBytes : size < expectedBytes * 0.9;
+                if (corrupt) {
                   await unlink(fullLocalPath).catch(() => {});
                   corruptIds1.add(String(track.id));
+                  corruptKeys1.add(track.audioUrl);
                   hasAudio = false;
                 }
               }
@@ -531,9 +255,12 @@ const useAudioManifest = (baniID) => {
         dispatch(
           actions.setAudioManifest(
             baniID,
-            (audioManifest[baniID] || []).filter((t) => !corruptIds1.has(String(t.id)))
+            (sessionDownloads || []).filter((t) => !corruptIds1.has(String(t.id)))
           )
         );
+        // Clear the registry entry too so the track shows as not-downloaded and
+        // the auto-download-on-stream path re-fetches a clean copy.
+        if (corruptKeys1.size > 0) dispatch(actions.removeDownloadEntries([...corruptKeys1]));
       }
       // Filter out any missing/broken downloads
       return validatedDownloads.filter((track) => track !== null);
@@ -541,6 +268,7 @@ const useAudioManifest = (baniID) => {
 
     // Merge downloaded tracks with API tracks, falling back to remote if local file is missing
     const corruptIds2 = new Set();
+    const corruptKeys2 = new Set();
     const mergedTracks = await Promise.all(
       apiTracks.map(async (apiTrack) => {
         const downloadedTrack = downloadedTracks.find(
@@ -551,16 +279,20 @@ const useAudioManifest = (baniID) => {
         // files depending on the selected length. If the cached entry's
         // remoteUrl doesn't match the currently expected URL, the local file
         // belongs to a different length — ignore it and stream the correct one.
+        // Compare by artist/file PATH (not the full URL) so a host change (e.g.
+        // blob → CDN) never invalidates an existing download: only a genuinely
+        // different file (different length variant) fails the match.
         const remoteUrlMatches =
-          !downloadedTrack?.remoteUrl || downloadedTrack.remoteUrl === apiTrack.audioUrl;
+          !downloadedTrack?.remoteUrl ||
+          getLocalTrackPath(downloadedTrack.remoteUrl) === getLocalTrackPath(apiTrack.audioUrl);
         const validDownloadedTrack = downloadedTrack && remoteUrlMatches ? downloadedTrack : null;
 
         const fullLocalPath = validDownloadedTrack
-          ? `${DocumentDirectoryPath}/audio/${validDownloadedTrack.audioUrl}`
+          ? `${AUDIO_DIRECTORY_PATH}/${validDownloadedTrack.audioUrl}`
           : null;
         const lyricsUrlPath =
           validDownloadedTrack && validDownloadedTrack.lyricsUrl
-            ? `${DocumentDirectoryPath}/audio/${validDownloadedTrack.lyricsUrl}`
+            ? `${AUDIO_DIRECTORY_PATH}/${validDownloadedTrack.lyricsUrl}`
             : null;
 
         let hasAudio = false;
@@ -569,13 +301,16 @@ const useAudioManifest = (baniID) => {
           try {
             hasAudio = await exists(fullLocalPath);
             if (hasAudio) {
+              const exactBytes = Number(registry[validDownloadedTrack.audioUrl]?.sizeBytes) || 0;
               const expectedBytes =
                 (validDownloadedTrack.trackSizeMB || apiTrack.trackSizeMB || 0) * 1024 * 1024;
-              if (expectedBytes > 0) {
-                const fileStat = await stat(fullLocalPath);
-                if (Number(fileStat.size) < expectedBytes * 0.9) {
+              if (exactBytes > 0 || expectedBytes > 0) {
+                const size = Number((await stat(fullLocalPath)).size);
+                const corrupt = exactBytes > 0 ? size !== exactBytes : size < expectedBytes * 0.9;
+                if (corrupt) {
                   await unlink(fullLocalPath).catch(() => {});
                   corruptIds2.add(String(apiTrack.id));
+                  corruptKeys2.add(validDownloadedTrack.audioUrl);
                   hasAudio = false;
                 }
               }
@@ -619,9 +354,10 @@ const useAudioManifest = (baniID) => {
       dispatch(
         actions.setAudioManifest(
           baniID,
-          (audioManifest[baniID] || []).filter((t) => !corruptIds2.has(String(t.id)))
+          (sessionDownloads || []).filter((t) => !corruptIds2.has(String(t.id)))
         )
       );
+      if (corruptKeys2.size > 0) dispatch(actions.removeDownloadEntries([...corruptKeys2]));
     }
 
     return mergedTracks;
@@ -637,12 +373,13 @@ const useAudioManifest = (baniID) => {
     //  1. Saved user preference (defaultAudio) — primary source
     //  2. Currently playing track — used when baniLength changes while audio
     //     is active; ensures currentPlaying gets the new-length URL instantly
-    let preferredArtistId = null;
-    if (defaultAudio[baniID]?.artistID != null) {
-      preferredArtistId = defaultAudio[baniID].artistID.toString();
-    } else if (currentPlaying?.artistID != null) {
-      preferredArtistId = currentPlaying.artistID.toString();
-    }
+    const preferredArtistId =
+      // eslint-disable-next-line no-nested-ternary -- saved preference, then current track, then none
+      defaultAudio[baniID]?.artistID != null
+        ? defaultAudio[baniID].artistID.toString()
+        : currentPlaying?.artistID != null
+        ? currentPlaying.artistID.toString()
+        : null;
 
     if (preferredArtistId) {
       const defaultTrack = trackList.find(
@@ -654,72 +391,170 @@ const useAudioManifest = (baniID) => {
     }
   };
 
-  const fetchAudioManifest = async (forceRefresh = false) => {
-    try {
-      setIsLoading(true);
-      setManifestError(null);
+  const fileOf = (track) => getLocalTrackPath(track.remoteUrl || track.audioUrl || "");
 
-      // Use the session cache when available — avoids a round-trip every time the
-      // user navigates back to the same bani. The downloaded-tracks merge still
-      // runs fresh each time so local file changes are always reflected.
-      let manifest;
-      // Cache is keyed by baniID+baniLength so a length change always triggers
-      // a fresh fetch (different track/lyrics URLs may be needed).
-      const cacheKey = `${baniID}:${baniLength}`;
-      const cachedManifest = manifestApiCache.get(cacheKey);
-      const hasNonEmptyCachedData =
-        cachedManifest && Array.isArray(cachedManifest.data) && cachedManifest.data.length > 0;
+  // A refreshed list while something is playing. The same file keeps the
+  // SAME currentPlaying object — replacing it re-fires every effect keyed on
+  // it, and the player would reload a track that did not change — and only
+  // takes a corrected reciter name. A different file for the artist (the
+  // other length variant) is adopted, as setDefaultTrack always did.
+  const syncCurrentPlaying = (trackList) => {
+    setCurrentPlaying((prev) => {
+      if (!prev?.artistID) return prev;
+      const next = trackList.find((t) => String(t.artistID) === String(prev.artistID));
+      if (!next || !next.audioUrl) return prev;
+      if (fileOf(next) !== fileOf(prev)) return next;
+      return next.displayName !== prev.displayName
+        ? { ...prev, displayName: next.displayName }
+        : prev;
+    });
+  };
 
-      if (!forceRefresh && hasNonEmptyCachedData) {
-        manifest = cachedManifest;
-      } else {
-        manifest = await fetchManifest(baniID);
-        if (manifest && Array.isArray(manifest.data) && manifest.data.length > 0) {
-          manifestApiCache.set(cacheKey, manifest);
-        }
-      }
-
-      // Map API data to tracks
-      let mappedData;
-      const emergencyManifest = getEmergencyManifest();
-
-      if (constant.BANI_IDS_WITH_LENGTH_VARIANTS.includes(Number(baniID))) {
-        // For length-variant banis (e.g. Chaupai Sahib), the emergency manifest
-        // holds the authoritative, length-correct URLs. Use it directly.
-        // We still map API data first (if available) for metadata consistency,
-        // but always override track_url and lyrics_url from the emergency manifest.
-        mappedData = mapApiDataToTracks(emergencyManifest);
-      } else {
-        mappedData = mapApiDataToTracks(manifest);
-        if (!mappedData || mappedData.length === 0) {
-          mappedData = mapApiDataToTracks(emergencyManifest);
-        }
-      }
-      // Get downloaded tracks from Redux
-      const downloadedTracks = audioManifest[baniID];
-      // Merge downloaded tracks with API tracks if available
-      if (downloadedTracks && downloadedTracks.length > 0) {
-        const mappedDataLength = mappedData ? mappedData.length : 0;
-        const isExplicitlyEmpty =
-          constant.BANI_IDS_WITH_LENGTH_VARIANTS.includes(Number(baniID)) && mappedDataLength === 0;
-        if (!isExplicitlyEmpty) {
-          mappedData = await mergeDownloadedTracks(mappedData || [], downloadedTracks);
-        }
-      }
-      // Set tracks and default playing track
-      if (mappedData && mappedData.length > 0) {
-        setTracks(mappedData);
-        setDefaultTrack(mappedData);
-        setManifestError(null);
-      } else {
-        setTracks([]);
-      }
-    } catch (error) {
-      logError("Error fetching manifest:", error);
-      setManifestError(error?.message || STRINGS.NETWORK_ERROR || STRINGS.PLEASE_TRY_AGAIN);
-    } finally {
-      setIsLoading(false);
+  // Select tracks for the current length from `groups`, merge the files on
+  // disk, and show the result. `registry` / `downloadedTracks` default to the
+  // render's values; the post-reconcile re-run passes the store's current ones.
+  const applyGroups = async (groups, registry, downloadedTracks) => {
+    let mappedData = tracksFromGroups(groups);
+    const reg = registry || {};
+    if ((downloadedTracks && downloadedTracks.length > 0) || Object.keys(reg).length > 0) {
+      mappedData = await mergeDownloadedTracks(mappedData, downloadedTracks || [], reg);
     }
+
+    if (mappedData.length > 0) {
+      setTracks(mappedData);
+      if (currentPlaying) syncCurrentPlaying(mappedData);
+      else setDefaultTrack(mappedData);
+      setManifestError(null);
+    } else {
+      setTracks([]);
+      // No manifest at all — offline with nothing cached, or online but the
+      // request failed (server error, timeout, captive portal) with nothing
+      // cached — is not "this bani has no audio": offer a retry rather than
+      // the dead "no audio" screen. A manifest that exists but has nothing for
+      // this length still shows the reader's normal "no audio for this
+      // length" message.
+      if (!groups) {
+        setManifestError(STRINGS.NETWORK_ERROR || STRINGS.PLEASE_TRY_AGAIN);
+      }
+    }
+  };
+
+  // Once a manifest has come from the network, bring the downloads in line
+  // with it in the background; if anything on disk changed, merge again so the
+  // showing list reflects it. Never awaited by the caller.
+  const reconcileAgainst = (groups) => {
+    reconcileDownloads({
+      manifests: { [baniID]: groups },
+      getState: () => store.getState(),
+      dispatch,
+    })
+      .then((result) => {
+        if (!result?.changed) return null;
+        const state = store.getState();
+        return applyGroups(groups, state.downloadRegistry || {}, state.audioManifest?.[baniID]);
+      })
+      .catch(() => {});
+  };
+
+  /**
+   * @param {boolean} forceRefresh bypass the TTL and ask the network.
+   * @param {{ silent?: boolean }} [options] silent: keep the current list on
+   *   screen while refreshing (used when the user opens the track list) instead
+   *   of showing the loading state. A refresh already in flight is joined.
+   */
+  const fetchAudioManifest = async (forceRefresh = false, options = {}) => {
+    // A refresh in flight is joined only if it is for the SAME bani and length.
+    // It captured those in its closure, so a length (or bani) change during a
+    // slow fetch used to join the old run and show the old length's tracks.
+    const requestKey = `${baniID}|${baniLength}`;
+    if (inFlightRef.current && inFlightRef.current.key === requestKey) {
+      return inFlightRef.current.run;
+    }
+    // Whether a newer request has taken over; a superseded run applies nothing.
+    const token = {};
+    latestRunRef.current = token;
+    const isCurrent = () => latestRunRef.current === token;
+    const { silent = false } = options;
+    const run = (async () => {
+      try {
+        if (!silent || tracks.length === 0) setIsLoading(true);
+        setManifestError(null);
+
+        // 1. Start from the persisted cache (raw length-grouped response).
+        const cacheEntry = audioCatalog[baniID];
+        let groups = cacheEntry?.groups || null;
+        let fetchedFresh = false;
+        const isStale =
+          forceRefresh ||
+          !cacheEntry ||
+          Date.now() - (cacheEntry.fetchedAt || 0) > constant.AUDIO_CATALOG_TTL_MS;
+
+        // 2. Refresh from the network when online and the cache is missing/stale.
+        //    A failed fetch keeps whatever (possibly stale) cache we already have.
+        if (isOnline && isStale) {
+          const raw = await fetchRawBaniAudio(baniID);
+          if (raw?.noAudio) {
+            // A definite "no audio for this bani" (the server answered 404).
+            // Cached, so tracks the backend has removed stop showing and the
+            // entry is fresh again rather than refetched on every open — but
+            // never reconciled against: an empty manifest would read as every
+            // downloaded track removed, and one wrong 404 must not delete them.
+            groups = {};
+            dispatch(
+              actions.setAudioCatalogEntry(baniID, {
+                groups: {},
+                baniName: cacheEntry?.baniName || "",
+                fetchedAt: Date.now(),
+              })
+            );
+          } else if (raw) {
+            ({ groups } = raw);
+            fetchedFresh = true;
+            dispatch(
+              actions.setAudioCatalogEntry(baniID, {
+                groups: raw.groups,
+                baniName: raw.baniName,
+                fetchedAt: Date.now(),
+              })
+            );
+          }
+        }
+
+        // 3. Select tracks for the current length, then merge downloaded files.
+        if (!isCurrent()) return;
+        await applyGroups(groups, downloadRegistry, audioManifest[baniID]);
+
+        // 4. A fresh 200 is the only thing the reconcile is allowed to act on.
+        if (fetchedFresh) reconcileAgainst(groups);
+      } catch (error) {
+        logNetworkError(`Error fetching manifest: ${error?.message || error}`, error);
+        if (!isCurrent()) return;
+
+        // Best-effort offline reconstruction: play whatever is already on disk.
+        const offlineTracks = audioManifest?.[baniID] || [];
+        if (offlineTracks.length > 0 || Object.keys(downloadRegistry).length > 0) {
+          try {
+            const merged = await mergeDownloadedTracks([], offlineTracks);
+            if (merged.length > 0) {
+              setTracks(merged);
+              setDefaultTrack(merged);
+              return; // Loaded from local disk — don't surface a network error
+            }
+          } catch (mergeErr) {
+            logError("Offline merge failed:", mergeErr);
+          }
+        }
+
+        setManifestError(error?.message || STRINGS.NETWORK_ERROR || STRINGS.PLEASE_TRY_AGAIN);
+      } finally {
+        if (isCurrent()) {
+          setIsLoading(false);
+          inFlightRef.current = null;
+        }
+      }
+    })();
+    inFlightRef.current = { key: requestKey, run };
+    return run;
   };
 
   const addTrackToManifest = (track, localPath, jsonPath) => {
@@ -780,7 +615,26 @@ const useAudioManifest = (baniID) => {
     if (baniID && isRehydrated) {
       fetchAudioManifest();
     }
+    // eslint-disable-next-line react-hooks/exhaustive-deps
   }, [baniID, isRehydrated, baniLength]);
+
+  // Auto-refresh the moment connectivity returns. Without this, a manifest
+  // served from a stale cache while offline stays stale until the user manually
+  // taps "Retry" or force-closes the app — even once the device is genuinely
+  // back online. forceRefresh=true bypasses the TTL, so this is a real network
+  // call to the Khalis API.
+  useEffect(() => {
+    if (!baniID || !isRehydrated) return;
+    if (!isOnline) {
+      wasOfflineRef.current = true;
+      return;
+    }
+    if (wasOfflineRef.current) {
+      wasOfflineRef.current = false;
+      fetchAudioManifest(true);
+    }
+    // eslint-disable-next-line react-hooks/exhaustive-deps
+  }, [isOnline, baniID, isRehydrated]);
 
   const isAudioUnavailableForCurrentLengthOnly =
     constant.BANI_IDS_WITH_LENGTH_VARIANTS.includes(Number(baniID)) && tracks.length === 0;
@@ -795,6 +649,18 @@ const useAudioManifest = (baniID) => {
     manifestError,
     isAudioUnavailableForCurrentLengthOnly,
     refetchManifest: () => fetchAudioManifest(true),
+    // The track list opening: the cached list is already showing, so the
+    // network answer and any corrections swap in behind it.
+    // Opening the track list re-asks the network only if this bani's manifest
+    // is more than a few minutes old: each forced fetch also runs a reconcile
+    // (a HEAD per download, a GET per lyrics file, a walk of the audio folder),
+    // and opening and closing the list while reading repeated all of it.
+    refreshManifestSilently: () => {
+      if (!isRehydrated) return Promise.resolve();
+      const fetchedAt = audioCatalog[baniID]?.fetchedAt || 0;
+      const recent = Date.now() - fetchedAt < SILENT_REFRESH_MIN_AGE_MS;
+      return fetchAudioManifest(!recent, { silent: true });
+    },
   };
 };
 

@@ -42,6 +42,54 @@ export const getBaniList = (language) => {
   });
 };
 
+// A single random tukk (line) from the bundled bani database. Used by the
+// dashboard Random Shabad card as an offline fallback when BaniDB is unreachable.
+// Returns { gurmukhi, translation, transliteration } or null. No ang/raag/shabadId
+// exist for gutka lines, so the card hides the "Read Shabad" footer for these.
+export const getRandomTukk = async (language) => {
+  try {
+    const db = await initDB();
+    return await new Promise((resolve, reject) => {
+      db.transaction((tx) => {
+        tx.executeSql(
+          `SELECT GurmukhiUni, Transliterations, Translations
+           FROM mv_Banis_Shabad
+           WHERE GurmukhiUni IS NOT NULL AND TRIM(GurmukhiUni) != ''
+           ORDER BY RANDOM() LIMIT 1;`,
+          [],
+          (_tx, results) => {
+            if (!results.rows.length) {
+              resolve(null);
+              return;
+            }
+            const row = results.rows.item(0);
+            let translation = "";
+            try {
+              const json = JSON.parse(row.Translations) || {};
+              translation = (json.en && json.en.bdb) || "";
+            } catch (_) {
+              translation = "";
+            }
+            resolve({
+              gurmukhi: row.GurmukhiUni,
+              translation: translation.trim(),
+              transliteration: row.Transliterations
+                ? getTranslitText(row.Transliterations, language) || ""
+                : "",
+            });
+          },
+          (error) => {
+            reject(error);
+          }
+        );
+      });
+    });
+  } catch (error) {
+    logError("Error in getRandomTukk:", error);
+    return null;
+  }
+};
+
 export const getBaniByID = async (baniId) => {
   try {
     const db = await initDB();
@@ -220,8 +268,13 @@ export const getShabadFromID = async (
 
                     paragraphId = ID;
                     paragraphHeader = header;
-                    gurmukhi = curGurmukhi;
-                    gurmukhiUni = curGurmukhiUni;
+                    // Each verse is wrapped in its own marked span: the merged
+                    // paragraph string has no other per-verse boundaries, and the
+                    // WebView's sync-scroll needs them to enlarge/center just the
+                    // sung line (.pline[data-pseq]) instead of the whole paragraph.
+                    // Gurmukhi only — transliteration/translations never enlarge.
+                    gurmukhi = `<span class="pline" data-pseq="${Seq}">${curGurmukhi}</span>`;
+                    gurmukhiUni = `<span class="pline" data-pseq="${Seq}">${curGurmukhiUni}</span>`;
                     transliteration = translit;
                     englishTranslation = English;
                     punjabiTranslation = Punjabi;
@@ -230,8 +283,8 @@ export const getShabadFromID = async (
                     paragraphSequences = [Seq]; // Start new sequence array with first verse ID
                   } else {
                     const space = isLarivar ? "" : " ";
-                    gurmukhi += `${space}${curGurmukhi}`;
-                    gurmukhiUni += `${space}${curGurmukhiUni}`;
+                    gurmukhi += `${space}<span class="pline" data-pseq="${Seq}">${curGurmukhi}</span>`;
+                    gurmukhiUni += `${space}<span class="pline" data-pseq="${Seq}">${curGurmukhiUni}</span>`;
                     transliteration += ` ${translit}`;
                     englishTranslation += ` ${English}`;
                     punjabiTranslation += ` ${Punjabi}`;

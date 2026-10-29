@@ -1,0 +1,24 @@
+<resources>
+
+    <!-- The SECOND splash window: react-native-splash-screen shows its own
+         Dialog over MainActivity — `new Dialog(activity, themeResId)` in
+         SplashScreen.java — and the platform's three-button scrim is a
+         PER-WINDOW setting, so neither MainActivity's opt-out nor
+         SplashActivity's reaches it. The library keeps that Dialog in a private
+         static field with no accessor, so its theme is the only handle on it.
+
+         Overriding a library style by name is resource merging working as
+         intended; the parent and the animation item are copied from the
+         library's own values/styles.xml and must stay in step with it.
+
+         values-v29 because `enforceNavigationBarContrast` is API 29 (the XML
+         name for Window.setNavigationBarContrastEnforced — see
+         public-final.xml) and the app's floor is API 24. Below 29 there is no
+         scrim to switch off. -->
+
+    <style name="SplashScreen_SplashTheme" parent="Theme.AppCompat.NoActionBar">
+        <item name="android:windowAnimationStyle">@style/SplashScreen_SplashAnimation</item>
+        <item name="android:enforceNavigationBarContrast">false</item>
+    </style>
+
+</resources>

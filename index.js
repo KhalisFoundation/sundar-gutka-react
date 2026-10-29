@@ -8,10 +8,18 @@ import { AppRegistry, NativeModules } from "react-native";
 // is null (stale APK / native build mismatch). A static import would run before
 // any code and crash the app before AppRegistry.registerComponent is called.
 import notifee, { EventType } from "@notifee/react-native";
+import { getMessaging, setBackgroundMessageHandler } from "@react-native-firebase/messaging";
 import App from "./app";
 import { name as appName } from "./app.json";
 import { resetBadgeCount } from "./src/common/notifications";
 import { navigateTo } from "./src/common/rootNavigation";
+import { handleBackgroundMessage } from "./src/services/push/pushMessages";
+
+// Push messages that arrive with the app closed or in the background. Must
+// be registered here, outside the component tree, so it runs headless. A
+// data-only message is posted as a local notification; one FCM already
+// showed in the tray is left alone. See services/push/pushMessages.
+setBackgroundMessageHandler(getMessaging(), handleBackgroundMessage);
 
 notifee.onBackgroundEvent(async ({ type, detail }) => {
   resetBadgeCount();

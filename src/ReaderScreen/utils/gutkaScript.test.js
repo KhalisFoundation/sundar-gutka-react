@@ -194,6 +194,57 @@ describe("sync-scroll enlargement (paragraph mode)", () => {
   });
 });
 
+// Auto-scroll rate. The slider runs 1-100 and maps linearly onto a px/s range:
+// step 1 scrolls at 12 px/s, step 100 at 200 px/s. This pins both ends and the
+// straight line between them, so a "make it faster" change is deliberate rather
+// than a side effect.
+describe("auto-scroll rate", () => {
+  const MIN_PX_PER_SECOND = 12;
+  const MAX_PX_PER_SECOND = 200;
+  const expectedRate = (speed) =>
+    MIN_PX_PER_SECOND + ((speed - 1) / 99) * (MAX_PX_PER_SECOND - MIN_PX_PER_SECOND);
+
+  // Stop the loop and give it a frame to notice, so each measurement starts
+  // from a dead loop whatever the previous one left behind.
+  const stop = () => {
+    send({ autoScroll: 0 });
+    jest.advanceTimersByTime(100);
+  };
+
+  const measure = (speed) => {
+    stop();
+    // jsdom has no layout: give the page somewhere to scroll to.
+    Object.defineProperty(document.documentElement, "scrollHeight", {
+      configurable: true,
+      value: 100000,
+    });
+    window.innerHeight = 800;
+    window.scrollBy = jest.fn();
+
+    const started = window.performance.now();
+    send({ autoScroll: speed });
+    // Long enough that the sub-half-pixel remainder the loop holds back each
+    // frame is negligible even at the slowest setting.
+    for (let i = 0; i < 200; i += 1) jest.advanceTimersByTime(16);
+    const elapsedSec = (window.performance.now() - started) / 1000;
+    const scrolled = window.scrollBy.mock.calls.reduce((sum, [, px]) => sum + px, 0);
+    stop();
+    return scrolled / elapsedSec;
+  };
+
+  it.each([1, 50, 100])("scrolls slider step %i at its mapped px/s", (speed) => {
+    // Within 3%: the loop holds back any sub-half-pixel remainder each frame.
+    expect(Math.abs(measure(speed) / expectedRate(speed) - 1)).toBeLessThan(0.03);
+  });
+
+  it("is linear between the two ends", () => {
+    const quarter = measure(25);
+    const half = measure(50);
+    const threeQuarters = measure(75);
+    expect(Math.abs(half - quarter - (threeQuarters - half))).toBeLessThan(2);
+  });
+});
+
 // A foldable's page margin changes with the fold. It is applied by message so
 // the page never reloads, and the page scrolls by exactly the change so the
 // line being read stays where it was.
@@ -317,6 +368,31 @@ describe("edge arrival", () => {
     scrollTo(900);
     scrollTo(1000);
     expect(bars().filter((m) => m === "edge")).toHaveLength(2);
+  });
+
+  // The direction anchor moved on every tick, so a drag of under 3px per event
+  // never crossed the threshold and the bars ignored it.
+  it("hides the bars for a slow drag made of small steps", () => {
+    scrollTo(502);
+    scrollTo(504);
+    scrollTo(506);
+    expect(bars()).toEqual(["hide"]);
+  });
+
+  // A fling ran the topmost-line scan, and posted, on every event.
+  it("scans for the top line at most every 150ms on a fling, and once more where it stops", () => {
+    document.body.innerHTML = LINE_MODE_HTML;
+    // jsdom has no layout: put the first line at the top of the screen.
+    document.getElementById("101").getBoundingClientRect = () => ({ top: 0, height: 50 });
+    for (let y = 510; y < 560; y += 5) scrollTo(y);
+    const scans = () => posted().filter((m) => m.startsWith("scroll-elementId-"));
+    // Ten events inside one window: at most one scan while it moves…
+    const during = scans().length;
+    expect(during).toBeLessThanOrEqual(1);
+    // …and one more once it comes to rest, for the line it stopped on.
+    jest.advanceTimersByTime(200);
+    expect(scans()).toHaveLength(during + 1);
+    expect(scans().pop()).toBe("scroll-elementId-101|seq-1");
   });
 
   it("does not report an edge for a position-restore jump", () => {

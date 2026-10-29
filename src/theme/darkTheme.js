@@ -2,7 +2,6 @@ import borderRadius from "./borderRadius";
 import components from "./components";
 import { dark as darkElevation } from "./elevation";
 import layout from "./layout";
-import { legacyDark, staticColors } from "./legacyColors";
 import palette from "./palette";
 import radii from "./radii";
 import { dark as darkColors } from "./semanticColors";
@@ -44,9 +43,6 @@ const darkTheme = {
     /** Decorative photograph behind a card. */
     backdropImage: 0.12,
   },
-  // LEGACY (see legacyColors.js): only for screens not yet on the token layer.
-  colors: legacyDark,
-  staticColors,
   typography,
   spacing,
   components,
