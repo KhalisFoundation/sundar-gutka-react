@@ -1,6 +1,5 @@
 /* eslint-env jest */
-import { getSevaMeansPage, prewarmSevaMeans } from "./sevaMeans";
-import { langToApi } from "./sevaRequest";
+import { getSevaMeansPage, prewarmSevaMeans, langToApi } from "./sevaMeans";
 
 // In-memory AsyncStorage so cache reads/writes are observable and isolated.
 const mockStore = new Map();

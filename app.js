@@ -1,6 +1,5 @@
 import React, { useEffect } from "react";
 import { AppState, Platform } from "react-native";
-import { isTablet } from "react-native-device-info";
 import ErrorBoundary from "react-native-error-boundary";
 import { GestureHandlerRootView } from "react-native-gesture-handler";
 import { SafeAreaProvider } from "react-native-safe-area-context";
@@ -8,6 +7,7 @@ import SplashScreen from "react-native-splash-screen";
 import Toast from "react-native-toast-message";
 import { Provider } from "react-redux";
 import notifee, { EventType } from "@notifee/react-native";
+import AsyncStorage from "@react-native-async-storage/async-storage";
 import {
   getInitialNotification,
   getMessaging,
@@ -25,11 +25,13 @@ import {
   navigateTo,
   initializePerformanceMonitoring,
   ConfirmDialogHost,
+  OnboardingCarousel,
 } from "@common";
 import NetworkProvider from "./src/common/context/NetworkProvider";
 import ThemeProvider from "./src/common/context/ThemeProvider";
 import useOfflinePlaybackGuard from "./src/common/hooks/useOfflinePlaybackGuard";
 import useOfflineSyncToast from "./src/common/hooks/useOfflineSyncToast";
+import useOnboardingTrigger from "./src/common/hooks/useOnboardingTrigger";
 import usePauseAudioOnExit from "./src/common/hooks/usePauseAudioOnExit";
 import usePothiSync from "./src/common/hooks/usePothiSync";
 import useReminderRearm from "./src/common/hooks/useReminderRearm";
@@ -45,7 +47,6 @@ import { reportRecentExits } from "./src/services/diagnostics/exitReasons";
 import usePushRegistration from "./src/services/push/usePushRegistration";
 import useRemindersSync from "./src/services/reminders/useRemindersSync";
 import useSettingsSync from "./src/services/settings/useSettingsSync";
-import useAccountSync from "./src/services/sync/useAccountSync";
 import useSyncOutbox from "./src/services/sync/useSyncOutbox";
 import useRemoteThemesSync from "./src/services/themes/useRemoteThemesSync";
 
@@ -62,21 +63,16 @@ const handleBeforeLift = () => {
   if (language) {
     STRINGS.setLanguage(language);
   }
-  // Here, not on mount: this is the first point the persisted language is in
-  // the store. Read any earlier and every session reports the reducer default.
-  setCustomKey("app_language", language || "en-US");
-  // Same reason: only now does the store hold the user's Statistics choice.
-  initializePerformanceMonitoring(store.getState().isStatistics);
 };
 
-// Redux-dependent background services, mounted once inside the Provider tree.
+// Mounts Redux-dependent background services inside the Provider tree.
 const GlobalServices = () => {
-  // Downloads run app-wide, not per screen: the queue keeps going while the
-  // user reads something else, and finished files are adopted on launch.
   useGlobalDownloadManager();
   useStorageMigration();
+  useOfflinePlaybackGuard();
   usePauseAudioOnExit();
-  // Reminders already handed to the OS are re-armed, so they keep firing.
+  useOnboardingTrigger();
+  useOfflineSyncToast();
   useReminderRearm();
   // Push: registers this device's FCM token with the account, keeps its
   // topics current, and shows foreground messages. Mounted here so it runs
@@ -85,38 +81,28 @@ const GlobalServices = () => {
   // Reading themes from the backend, merged over the bundled set on every
   // screen that resolves a theme.
   useRemoteThemesSync();
-  // Pauses a streaming track once the connection has been gone for a moment.
-  // It replaces the polling watchdog BottomNavigation used to run.
-  useOfflinePlaybackGuard();
-  // Offline audio parity: warms the manifest + lyrics caches for every audio
-  // bani, so audio a user never opened online still plays offline. It starts
-  // only after the launch window (see AUDIO_CATALOG_SYNC_DELAY_MS), so it
-  // cannot compete with the fresh-install DB seed.
-  useAudioCatalogSync();
-  // The Khalis account session: restored from the Keychain on launch, the
-  // sign-in redirect caught however it arrives, and dropped on expiry.
   useSsoSession();
-  // Tells a signed-in user once when a change cannot reach the server yet.
-  useOfflineSyncToast();
+  // Offline audio parity: warms the manifest + lyrics caches for every audio
+  // bani, so audio a user never opened online still plays offline. It went
+  // missing from this list in a July commit that never mentioned it, and with
+  // it every fresh install lost the eager cache entirely. It starts only after
+  // the launch window (see AUDIO_CATALOG_SYNC_DELAY_MS), so it cannot compete
+  // with the fresh-install DB seed it used to be blamed for.
+  useAudioCatalogSync();
   // Account dashboard sync. Mounted HERE and not in DashboardScreen: on that
   // screen both the push and the restore only existed while it was mounted, so
   // signing in anywhere else never got the account's data up or down.
   useDashboardSync();
-  // My Pothi, through the persisted outbox, and the two default pothis seeded.
-  // Mounted here for the same reason as settings: a change made on any screen
-  // goes up whether or not that screen stays open.
+  // Account data that syncs per row — pothis and reminders — through the
+  // persisted outbox. Mounted here for the same reason as the dashboard: a
+  // change made on any screen goes up whether or not that screen stays open.
+  // The features register with the sync registry; the outbox drains them.
   usePothiSync();
-  // Reminders, per reminder, through the same outbox and the same sync moments.
   useRemindersSync();
-  // The person's preferences, per key, through the persisted outbox. Mounted
-  // here rather than on Settings so a change made anywhere goes up whether or
-  // not Settings stays open. Features register with the sync registry; the
-  // outbox drains them.
+  // The person's preferences, per key, through the same outbox and the same
+  // sync moments as reminders.
   useSettingsSync();
   useSyncOutbox();
-  // And takes back what other devices changed: on sign-in, foreground and
-  // connectivity returning.
-  useAccountSync();
   return null;
 };
 
@@ -127,12 +113,25 @@ const App = () => {
   }, []); // The empty array causes this effect to only run on mount
 
   useEffect(() => {
-    // No app-made user ID: Crashlytics already has its own per-install ID, and a
-    // second persistent one could not be turned off by the Statistics opt-out.
-    setCustomKey({
-      platform: Platform.OS,
-      device_type: isTablet() ? "tablet" : "phone",
-    });
+    const setUserProperties = async () => {
+      try {
+        let userId = await AsyncStorage.getItem("analytics_user_id");
+        if (!userId) {
+          userId = `${Date.now()}-${Math.random().toString(36).slice(2, 9)}`;
+          await AsyncStorage.setItem("analytics_user_id", userId);
+        }
+        const { language } = store.getState();
+        setCustomKey({
+          user_id: userId,
+          app_language: language || "en-US",
+          platform: Platform.OS,
+          device_type: Platform.isPad === true ? "tablet" : "phone",
+        });
+      } catch (err) {
+        logError(err);
+      }
+    };
+    setUserProperties();
   }, []);
 
   useEffect(() => {
@@ -143,6 +142,7 @@ const App = () => {
       // crash report at all, so without this a phone that keeps losing the app
       // is indistinguishable from one that never opened it.
       await reportRecentExits();
+      await initializePerformanceMonitoring();
       await TrackPlayerSetup();
     };
 
@@ -220,22 +220,26 @@ const App = () => {
   }, []);
 
   return (
-    // The gesture root, at the top of the tree exactly once. Sheets close with a
-    // drag; without one root here every gesture outside a screen that mounted its
-    // own was dead, and a nested root is an isolated tree of its own.
+    // The gesture root the library asks for, at the top of the tree exactly once.
+    //
+    // It was missing, so every gesture outside a screen that mounted its OWN
+    // root was dead — and a nested root is its own isolated tree, which is why
+    // a swipe on Home could never reach a list that carried one. One root here
+    // lets a gesture declared on a screen compose with the scrolling inside it.
     <GestureHandlerRootView style={{ flex: 1 }}>
       <Provider store={store}>
         <PersistGate loading={null} persistor={persistor} onBeforeLift={handleBeforeLift}>
           <NetworkProvider>
+            <GlobalServices />
             <ThemeProvider>
               <ErrorBoundary onError={logError} FallbackComponent={FallBack}>
-                {/* Inside the boundary, so a throw from a global service shows
-                    the fallback screen rather than a blank app. */}
-                <GlobalServices />
                 <SafeAreaProvider>
                   <Navigation />
                   <Toast config={toastConfig} />
                   <ConfirmDialogHost />
+                  {/* Mounted last so the full-screen onboarding carousel stacks
+                      above every screen when shown (first run + Revisit Tutorial). */}
+                  <OnboardingCarousel />
                 </SafeAreaProvider>
               </ErrorBoundary>
             </ThemeProvider>

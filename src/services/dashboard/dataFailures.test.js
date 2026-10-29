@@ -13,7 +13,6 @@ jest.mock("@common", () => ({
   logNetworkError: jest.fn(),
 }));
 jest.mock("./dailyCache", () => ({
-  readAnyCache: jest.fn(() => Promise.resolve(null)),
   readFreshCache: jest.fn(() => Promise.resolve(null)),
   writeCache: jest.fn(() => Promise.resolve()),
 }));

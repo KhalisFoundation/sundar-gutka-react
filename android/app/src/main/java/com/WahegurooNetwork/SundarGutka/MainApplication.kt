@@ -44,6 +44,9 @@ class MainApplication : Application(), ReactApplication {
     com.eko.Downloader.bindFailureReporter = { failure ->
       FirebaseCrashlytics.getInstance().recordException(failure)
     }
+    // The app's own memory footprint on every crash report, native ones included
+    // (see MemoryContext for why device free memory is not enough).
+    MemoryContext.install(this)
     // Let SoLoader rebuild a native library that has gone missing, instead of
     // dying on the spot.
     //

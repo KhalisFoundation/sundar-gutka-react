@@ -14,8 +14,6 @@
 
 import AsyncStorage from "@react-native-async-storage/async-storage";
 import {
-  DASHBOARD_ACCOUNT_TODAY_KEY,
-  DASHBOARD_ACTIVITY_PUSHED_AT_KEY,
   DASHBOARD_RESTORED_KEY,
   DASHBOARD_LAST_PUSH_KEY,
   RESTORED_TOP_BANIS_KEY,
@@ -24,9 +22,6 @@ import {
   isAccountChange,
   purgeLocalUserData,
   applyAccountScope,
-  destroyLocalAccountData,
-  leaveLocalAccount,
-  switchAnalyticsAccount,
   readLastAccount,
   writeLastAccount,
 } from "./accountScope";
@@ -147,28 +142,10 @@ describe("purgeLocalUserData", () => {
     expect(dispatch).toHaveBeenCalledWith({ type: "CLEAR_USER_DATA" });
   });
 
-  // Redux forgetting the reminders does not stop the OS firing them, so the
-  // next person would be woken for the previous one's nitnem.
-  it("cancels the reminders already scheduled with the OS", async () => {
+  // Redux forgetting the reminders does not unschedule them with the OS.
+  it("cancels reminders so the previous account's notifications stop firing", async () => {
     await purgeLocalUserData(dispatch);
     expect(mockCancelAllReminders).toHaveBeenCalledTimes(1);
-  });
-
-  it("still purges when cancelling the schedule fails", async () => {
-    mockCancelAllReminders.mockRejectedValueOnce(new Error("notifee"));
-    await expect(purgeLocalUserData(dispatch)).resolves.toBeUndefined();
-    expect(dispatch).toHaveBeenCalledWith({ type: "CLEAR_USER_DATA" });
-  });
-
-  // Every process starts on the signed-out store, so an account ended in a
-  // fresh process never "left" a file, and its upload watermark survived into
-  // the next account — whose older unpushed days were then never sent.
-  it("clears the previous account's upload watermark and today figure", async () => {
-    await AsyncStorage.setItem(DASHBOARD_ACTIVITY_PUSHED_AT_KEY, "999");
-    await AsyncStorage.setItem(DASHBOARD_ACCOUNT_TODAY_KEY, "{}");
-    await purgeLocalUserData(dispatch);
-    expect(await AsyncStorage.getItem(DASHBOARD_ACTIVITY_PUSHED_AT_KEY)).toBeNull();
-    expect(await AsyncStorage.getItem(DASHBOARD_ACCOUNT_TODAY_KEY)).toBeNull();
   });
 
   it("clears the push timestamp and the restored-top-banis cache", async () => {
@@ -196,72 +173,6 @@ describe("purgeLocalUserData", () => {
   });
 });
 
-describe("leaveLocalAccount", () => {
-  // Sign-out detaches the history; it never deletes it. Deleting is what let a
-  // device holding a few minutes of reading push over a real account.
-  it("detaches the history, purges the preferences and forgets the owner", async () => {
-    const dispatch = jest.fn();
-    await writeLastAccount("a@khalis.net");
-    await AsyncStorage.setItem(DASHBOARD_ACCOUNT_TODAY_KEY, "{}");
-    await leaveLocalAccount(dispatch);
-    // Read by the streak engine as today's activity; signed out there is none.
-    expect(await AsyncStorage.getItem(DASHBOARD_ACCOUNT_TODAY_KEY)).toBeNull();
-    expect(mockUseAnalyticsAccount).toHaveBeenCalledWith(null);
-    expect(mockClearAllAnalyticsData).not.toHaveBeenCalled();
-    expect(dispatch).toHaveBeenCalledWith({ type: "CLEAR_USER_DATA" });
-    expect(await readLastAccount()).toBeNull();
-  });
-
-  it("switches the database before the preferences are reset", async () => {
-    const order = [];
-    mockUseAnalyticsAccount.mockImplementationOnce(async () => {
-      order.push("detach");
-      return true;
-    });
-    await leaveLocalAccount(() => order.push("purge"));
-    expect(order).toEqual(["detach", "purge"]);
-  });
-});
-
-// An expiry found at launch detaches with no purge, in a process that is
-// already on the signed-out store — so "leaving a file" never happened.
-it("drops the account's today figure on a bare detach", async () => {
-  await AsyncStorage.setItem(DASHBOARD_ACCOUNT_TODAY_KEY, "{}");
-  await switchAnalyticsAccount(null);
-  expect(await AsyncStorage.getItem(DASHBOARD_ACCOUNT_TODAY_KEY)).toBeNull();
-});
-
-describe("destroyLocalAccountData", () => {
-  it("purges and forgets the owner, so the next sign-in is a first one", async () => {
-    const dispatch = jest.fn();
-    await writeLastAccount("a@khalis.net");
-    await destroyLocalAccountData(dispatch, "a@khalis.net");
-    expect(dispatch).toHaveBeenCalledWith({ type: "CLEAR_USER_DATA" });
-    expect(await readLastAccount()).toBeNull();
-  });
-
-  // By the time it runs the session has ended, and ending it pointed the store
-  // at the signed-out file. Emptying "whatever is open" then destroyed the
-  // signed-out reading and left the deleted account's file on the phone.
-  it("empties the deleted account's own file, opened by name", async () => {
-    const order = [];
-    mockUseAnalyticsAccount.mockImplementation(async (email) => {
-      order.push(`open ${email}`);
-      return true;
-    });
-    mockClearAllAnalyticsData.mockImplementation(async () => order.push("clear"));
-    await destroyLocalAccountData(jest.fn(), "a@khalis.net");
-    expect(order.slice(0, 3)).toEqual(["open a@khalis.net", "clear", "open null"]);
-    mockUseAnalyticsAccount.mockImplementation(() => Promise.resolve(true));
-    mockClearAllAnalyticsData.mockImplementation(() => Promise.resolve());
-  });
-
-  it("wipes nothing it cannot name", async () => {
-    await destroyLocalAccountData(jest.fn());
-    expect(mockClearAllAnalyticsData).not.toHaveBeenCalled();
-  });
-});
-
 describe("applyAccountScope", () => {
   const dispatch = jest.fn();
 
@@ -286,7 +197,7 @@ describe("applyAccountScope", () => {
 
   it("carries signed-out activity into the account that signs in", async () => {
     mockGetAllDailyActivity.mockResolvedValueOnce([
-      { date: "2026-08-20", own_reading_seconds: 300, own_listening_seconds: 60 },
+      { date: "2026-08-20", reading_seconds: 300, listening_seconds: 60 },
     ]);
     await applyAccountScope("a@khalis.net", dispatch);
     // ADDED as a delta: signed-out reading is genuinely extra activity for that
@@ -300,33 +211,6 @@ describe("applyAccountScope", () => {
     // cannot add it twice and a later sign-OUT shows a genuinely blank
     // dashboard rather than the previous account's streak and most-read lists.
     expect(mockClearAllAnalyticsData).toHaveBeenCalledTimes(1);
-  });
-
-  // A total can hold the account's sum (a restore). Carried as a delta it
-  // became this device's own work and was pushed to be added again.
-  it("carries this device's own seconds, never a day's totals", async () => {
-    mockGetAllDailyActivity.mockResolvedValueOnce([
-      {
-        date: "2026-08-19",
-        reading_seconds: 2400,
-        listening_seconds: 0,
-        own_reading_seconds: 120,
-        own_listening_seconds: 0,
-      },
-      {
-        date: "2026-08-18",
-        reading_seconds: 900,
-        own_reading_seconds: 0,
-        own_listening_seconds: 0,
-      },
-    ]);
-    await applyAccountScope("a@khalis.net", dispatch);
-    expect(mockUpsertDailyActivity).toHaveBeenCalledTimes(1);
-    expect(mockUpsertDailyActivity).toHaveBeenCalledWith({
-      date: "2026-08-19",
-      reading_seconds_delta: 120,
-      listening_seconds_delta: 0,
-    });
   });
 
   it("carries the session histories too, not just the day rows", async () => {
@@ -352,7 +236,7 @@ describe("applyAccountScope", () => {
 
   it("leaves signed-out activity in place if adding it failed", async () => {
     mockGetAllDailyActivity.mockResolvedValueOnce([
-      { date: "2026-08-20", own_reading_seconds: 300, own_listening_seconds: 0 },
+      { date: "2026-08-20", reading_seconds: 300, listening_seconds: 0 },
     ]);
     mockUpsertDailyActivity.mockRejectedValueOnce(new Error("db locked"));
     await applyAccountScope("a@khalis.net", dispatch);
@@ -365,15 +249,19 @@ describe("applyAccountScope", () => {
     await writeLastAccount("a@khalis.net");
     const purged = await applyAccountScope("a@khalis.net", dispatch);
     expect(purged).toBe(false);
+    expect(mockClearAllAnalyticsData).not.toHaveBeenCalled();
     expect(dispatch).not.toHaveBeenCalled();
   });
 
   // A first sign-in has no previous ACCOUNT to protect — only whatever this
-  // person did on the device before signing in, which is their own.
+  // person did on the device before signing in, which is their own. Purging
+  // it destroyed a nitnem arranged while signed out, which is exactly the
+  // work the signed-out editing is there to allow.
   it("CLAIMS a first sign-in rather than purging it", async () => {
     expect(await readLastAccount()).toBeNull();
     const purged = await applyAccountScope("a@khalis.net", dispatch);
     expect(purged).toBe(false);
+    expect(mockClearAllAnalyticsData).not.toHaveBeenCalled();
     expect(dispatch).not.toHaveBeenCalled();
     // Still records the owner, so the NEXT account is a real switch.
     expect(await readLastAccount()).toBe("a@khalis.net");
@@ -391,7 +279,7 @@ describe("applyAccountScope", () => {
   it("does nothing on a launch that was never signed in", async () => {
     const purged = await applyAccountScope(null, dispatch);
     expect(purged).toBe(false);
-    expect(dispatch).not.toHaveBeenCalled();
+    expect(mockClearAllAnalyticsData).not.toHaveBeenCalled();
   });
 
   it("stores the normalised address, so case never causes a false purge", async () => {
@@ -401,34 +289,11 @@ describe("applyAccountScope", () => {
     expect(await applyAccountScope("a@khalis.net", dispatch)).toBe(false);
   });
 
-  // Android delivers one sign-in twice (openAuth and the return link). Run
-  // together, both read the old owner and both purged.
-  it("purges once when the same sign-in arrives twice at the same moment", async () => {
-    await writeLastAccount("a@khalis.net");
-    const results = await Promise.all([
-      applyAccountScope("b@khalis.net", dispatch),
-      applyAccountScope("b@khalis.net", dispatch),
-    ]);
-    expect(results).toEqual([true, false]);
-    expect(dispatch).toHaveBeenCalledTimes(1);
-  });
-
-  // The history switch running first must not be able to skip the purge: the
-  // next account would take the previous one's pothis and reminders.
-  it("still purges on an account change when the history switch fails", async () => {
-    mockUseAnalyticsAccount.mockRejectedValueOnce(new Error("db wedged"));
-    await writeLastAccount("a@khalis.net");
-    await expect(applyAccountScope("b@khalis.net", dispatch)).resolves.toBe(true);
-    expect(dispatch).toHaveBeenCalledWith({ type: "CLEAR_USER_DATA" });
-  });
-
   // A failed purge must not block sign-in — the user would be stuck unable to
   // log in at all, which is worse than briefly stale data.
   it("reports false rather than throwing when the purge fails", async () => {
+    mockUseAnalyticsAccount.mockRejectedValueOnce(new Error("db locked"));
     await writeLastAccount("a@khalis.net");
-    const failing = jest.fn(() => {
-      throw new Error("store unavailable");
-    });
-    await expect(applyAccountScope("b@khalis.net", failing)).resolves.toBe(false);
+    await expect(applyAccountScope("b@khalis.net", dispatch)).resolves.toBe(false);
   });
 });

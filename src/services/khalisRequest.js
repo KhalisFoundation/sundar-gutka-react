@@ -52,33 +52,16 @@ export const request = async (url, { method = "GET", body, token } = {}) => {
       logMessage(`khalisRequest: ${method} ${url} offline`);
       return { ok: false, status: 0, error: "network" };
     }
-    // Not the network: a fault in this request itself. Still status 0, so the
-    // sync layer retries it like any unanswered request, but named apart so a
-    // caller that must not call it "offline" (account deletion) can tell.
     logError(error);
-    return { ok: false, status: 0, error: "failed" };
+    return { ok: false, status: 0, error: "network" };
   } finally {
     clearTimeout(timer);
   }
-};
-
-// Told when the server refuses a token the phone still thinks is good: the
-// account was deleted, or signed out from another Khalis app. Without it the
-// phone stayed "signed in" for up to the token's 7 days while every request
-// failed. Set by useSsoSession, which ends the session.
-let unauthorizedHandler = null;
-export const onUnauthorized = (handler) => {
-  unauthorizedHandler = handler;
-  return () => {
-    if (unauthorizedHandler === handler) unauthorizedHandler = null;
-  };
 };
 
 /** The same, with the SSO bearer token; `401 signed-out` when there is none. */
 export const authedRequest = async (url, options = {}) => {
   const token = await readToken();
   if (!token) return { ok: false, status: 401, error: "signed-out" };
-  const res = await request(url, { ...options, token });
-  if (res.status === 401) unauthorizedHandler?.();
-  return res;
+  return request(url, { ...options, token });
 };

@@ -44,7 +44,6 @@ const accountSecondsToday = async (today) => {
   }
 };
 
-// Named: the Dashboard and the tests import it by name.
 // eslint-disable-next-line import/prefer-default-export
 export const computeStreaks = async () => {
   try {

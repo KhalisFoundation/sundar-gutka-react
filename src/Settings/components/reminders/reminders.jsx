@@ -3,7 +3,6 @@ import { useSelector, useDispatch } from "react-redux";
 import PropTypes from "prop-types";
 import useReminderPermissionGate from "@common/hooks/useReminderPermissionGate";
 import { parseReminders } from "@common/reminders/syncModel";
-import { asAppWrite } from "@common/settings/appWrite";
 import {
   STRINGS,
   cancelAllReminders,
@@ -49,9 +48,7 @@ const RemindersComponent = ({ navigation }) => {
 
   const fetchBanis = async (value) => {
     const data = await getBaniList(transliterationLanguage);
-    setDefaultReminders(data, dispatch, value, reminderSound, isTransliteration, {
-      appWrite: true,
-    });
+    setDefaultReminders(data, dispatch, value, reminderSound, isTransliteration);
   };
 
   // Switching on keeps the list that is already there and only schedules it:
@@ -88,9 +85,7 @@ const RemindersComponent = ({ navigation }) => {
     if (!isReminders) return;
     if (await resolvePermissions()) return;
     await cancelAllReminders();
-    // The app reacting to THIS phone's permissions, not the person switching
-    // reminders off: synced, it would turn them off on every other device.
-    asAppWrite(() => dispatch(actions.toggleReminders(false)));
+    dispatch(actions.toggleReminders(false));
   };
   latestRef.current = { enableReminders, verifyStillAllowed };
 

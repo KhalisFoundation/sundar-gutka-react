@@ -80,16 +80,10 @@ describe("the arithmetic", () => {
     expect(mockExecuteSql.mock.calls[0][0]).toMatch(
       /reading_seconds\s*=\s*reading_seconds\s*\+ \?/
     );
-    // The device's own columns take the same delta — they are what is pushed.
-    expect(mockExecuteSql.mock.calls[0][0]).toMatch(
-      /own_reading_seconds\s*=\s*own_reading_seconds\s*\+ \?/
-    );
-    expect(mockExecuteSql.mock.calls[0][1]).toEqual([30, 10, 40, 30, 10, "d"]);
+    expect(mockExecuteSql.mock.calls[0][1]).toEqual([30, 10, 40, "d"]);
 
-    // A restore writes the account's figures, and never this device's own.
     await setDailyActivity({ date: "d", reading_seconds: 300, listening_seconds: 100 });
     expect(mockExecuteSql.mock.calls[1][0]).not.toMatch(/reading_seconds\s*\+/);
-    expect(mockExecuteSql.mock.calls[1][0]).not.toMatch(/own_/);
     expect(mockExecuteSql.mock.calls[1][1]).toEqual([300, 100, 400, null, "d"]);
   });
 });

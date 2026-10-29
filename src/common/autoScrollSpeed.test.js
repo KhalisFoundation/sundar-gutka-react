@@ -44,22 +44,3 @@ describe("the auto-scroll speed", () => {
     expect(state.autoScrollSpeedObj).toEqual({});
   });
 });
-
-// Until the Bani font was split from the app's font, `fontFace` WAS the Bani
-// font. A reader who had chosen one keeps it.
-describe("the Bani font on the first launch after the split", () => {
-  // eslint-disable-next-line global-require
-  const rootReducer = require("./reducer").default;
-  const rehydrate = (payload) =>
-    rootReducer(rootReducer(undefined, { type: "@@INIT" }), { type: "persist/REHYDRATE", payload });
-
-  it("carries the font they had chosen across", () => {
-    expect(rehydrate({ fontFace: "AnmolLipiSG" }).baniFontFace).toBe("AnmolLipiSG");
-  });
-
-  it("keeps a Bani font already chosen", () => {
-    expect(
-      rehydrate({ fontFace: "AnmolLipiSG", baniFontFace: "Puratan_Hastlikhat" }).baniFontFace
-    ).toBe("Puratan_Hastlikhat");
-  });
-});

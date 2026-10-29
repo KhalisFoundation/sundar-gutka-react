@@ -114,7 +114,7 @@ const DayDetailModal = ({ visible, date = null, onClose }) => {
   // The Dashboard's own colours, not the semantic layer.
   const { c } = themeForScreen(theme, "dashboard");
   const palette = paletteFor("dashboard", theme);
-  // The Dashboard blue, from the token layer.
+  // The Dashboard blue, from the token layer — see ActivityCalendar.
   const accentBlue = c.textBrand;
   const bg = palette.sectionBg;
   const iconBg = palette.dayIconBg;

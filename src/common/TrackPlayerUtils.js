@@ -34,10 +34,8 @@ const loadRNTP = () => {
   return _rntp;
 };
 
-const delay = (ms) =>
-  new Promise((resolve) => {
-    setTimeout(resolve, ms);
-  });
+// eslint-disable-next-line no-promise-executor-return
+const delay = (ms) => new Promise((resolve) => setTimeout(resolve, ms));
 
 // What the native module answers with, on both platforms, whenever its service
 // connection is gone: never set up, or set up and since lost (the task swiped
@@ -126,7 +124,7 @@ class TrackPlayerService {
     return this.initPromise;
   }
 
-  // eslint-disable-next-line no-underscore-dangle -- module-private setup helper
+  // eslint-disable-next-line no-underscore-dangle, consistent-return -- module-private setup helper
   async _setupWithRetry(attempt = 1) {
     // Never start the player's foreground service from the background —
     // wait until the app is foreground first (Android 12+ FGS restriction).
@@ -194,7 +192,6 @@ class TrackPlayerService {
       ],
       compactCapabilities: [Capability.Play, Capability.Pause, Capability.SkipToNext],
     });
-    return undefined;
   }
 
   // The flag only says what THIS side did; the native service can go away

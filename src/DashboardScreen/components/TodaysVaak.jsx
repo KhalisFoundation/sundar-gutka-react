@@ -312,8 +312,6 @@ const TodaysVaak = ({
           2 lines, matching Random Shabad's short preview. */}
       {(vaak?.lines ?? []).map((line, i) => (
         <CustomText
-          // The vaak's lines, replaced whole and never reordered; a line can
-          // repeat, so its position is the identity.
           // eslint-disable-next-line react/no-array-index-key
           key={i}
           style={[styles.gurmukhi, { color: gurmukhiColor, fontFamily: gurmukhiFont }]}

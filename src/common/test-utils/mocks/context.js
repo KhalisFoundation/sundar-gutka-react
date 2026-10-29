@@ -24,10 +24,9 @@ export const createContextMock = (themeOverrides = {}) => {
         // reads as `undefined.overlay` at render rather than as a failed
         // assertion.
         elevation: require("../../../theme/elevation")[mode],
-        chrome: (mode === "dark"
-          ? require("../../../theme/darkTheme")
-          : require("../../../theme/lightTheme")
-        ).default.chrome,
+        // eslint-disable-next-line import/no-dynamic-require
+        chrome: require(mode === "dark" ? "../../../theme/darkTheme" : "../../../theme/lightTheme")
+          .default.chrome,
         radii: require("../../../theme/radii").default,
         space: require("../../../theme/space").default,
         type: require("../../../theme/type").default,

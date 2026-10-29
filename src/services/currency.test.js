@@ -117,32 +117,15 @@ describe("currency", () => {
       expect(localToUsd(5000, inr)).toBe(52); // ₹5000 → $52 (5000/96)
     });
 
-    it("rounds the Qgiv USD DOWN to whole dollars, flooring at $1", () => {
+    it("rounds the Qgiv USD to whole dollars, flooring at $1", () => {
       const cad = { code: "CAD", ...CURRENCIES.CAD };
-      expect(localToUsd(15, cad)).toBe(10); // CA$15 → 10.64 → $10, never more than typed
-      // ₹149 → 1.55: to the nearest dollar this charged $2 (≈ ₹192).
-      expect(localToUsd(149, { code: "INR", ...CURRENCIES.INR })).toBe(1);
+      expect(localToUsd(15, cad)).toBe(11); // CA$15 → 10.64 → $11
       expect(localToUsd(0, cad)).toBe(0);
       expect(localToUsd(1, cad)).toBe(1); // 1/1.41 = 0.71 → floored to $1
     });
 
     it("accepts a currency code string as well as an object", () => {
       expect(localToUsd(1000, "INR")).toBe(10);
-      // The built-in ladder is found from a code too, not only from an object.
-      expect(resolveLocalPresets("INR")).toEqual([100, 1000, 5000]);
-    });
-
-    it("never offers the same local tier twice", () => {
-      const gbp = { code: "GBP", ...CURRENCIES.GBP };
-      // £1, £2 and £5 base tiers all nice-round to £5.
-      expect(resolveLocalPresets(gbp, [1, 2, 5])).toEqual([5]);
-      expect(resolveLocalPresets(gbp, [], { GBP: [10, 10, 25] })).toEqual([10, 25]);
-    });
-
-    it("does not lose a dollar to floating point", () => {
-      getLiveRate.mockImplementation((code) => (code === "INR" ? 8.662 : null));
-      expect(localToUsd(4331, { code: "INR", ...CURRENCIES.INR })).toBe(500);
-      getLiveRate.mockReset();
     });
   });
 

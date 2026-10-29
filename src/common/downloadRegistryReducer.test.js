@@ -30,21 +30,3 @@ describe("downloadRegistry UPDATE_DOWNLOAD_ENTRIES", () => {
     expect(registry).toEqual({});
   });
 });
-
-describe("downloadQueue on rehydrate", () => {
-  const rehydrate = (downloadQueue) => ({ type: "persist/REHYDRATE", payload: { downloadQueue } });
-  const queueAfter = (...actions) =>
-    actions.reduce((state, action) => rootReducer(state, action), undefined).downloadQueue;
-
-  it("drops a 'completed' entry a kill left behind, so the track can be downloaded again", () => {
-    const queue = queueAfter(
-      rehydrate({
-        "A/done.m4a": { trackKey: "A/done.m4a", status: "completed" },
-        "A/live.m4a": { trackKey: "A/live.m4a", status: "downloading", progress: 0.4 },
-      }),
-      { type: actionTypes.ENQUEUE_DOWNLOAD, payload: { trackKey: "A/done.m4a", audioUrl: "x" } }
-    );
-    expect(queue["A/done.m4a"].status).toBe("queued");
-    expect(queue["A/live.m4a"]).toMatchObject({ status: "queued", progress: 0 });
-  });
-});

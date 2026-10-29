@@ -24,8 +24,18 @@ const mockUseNavigation = jest.fn(() => ({
   goBack: mockGoBack,
 }));
 
+// useFocusEffect behaves exactly like useEffect for a screen that IS focused,
+// which is the state every test here starts in. The blur case is exercised
+// explicitly at the bottom by running the cleanup the hook returns.
+const mockUseFocusEffect = jest.fn();
 jest.mock("@react-navigation/native", () => ({
   useNavigation: () => mockUseNavigation(),
+  // eslint-disable-next-line global-require
+  useFocusEffect: (cb) => {
+    mockUseFocusEffect(cb);
+    // eslint-disable-next-line global-require
+    return require("react").useEffect(cb, [cb]);
+  },
 }));
 
 // Test component that uses the hook
@@ -200,34 +210,34 @@ describe("useBackHandler", () => {
     expect(secondGoBack).toHaveBeenCalledTimes(1);
   });
 
-  // A screen stays mounted under the one pushed over it. Only the focused
-  // screen may answer Back; otherwise the screen underneath pops itself out.
-  it("leaves Back to the screen on top when this one is not focused", () => {
-    const handleBackPress = jest.fn(() => true);
-    mockUseNavigation.mockReturnValue({ goBack: mockGoBack, isFocused: () => false });
-
-    render(<TestComponent handleBackPress={handleBackPress} />);
-
-    let handled;
-    act(() => {
-      handled = backPressHandler();
-    });
-
-    expect(handled).toBe(false);
-    expect(handleBackPress).not.toHaveBeenCalled();
-    expect(mockGoBack).not.toHaveBeenCalled();
+  // ── The bug this hook exists to prevent ──────────────────────────────────
+  // A screen the user cannot see must not be able to answer the back button.
+  it("SUBSCRIBES ON FOCUS, not on mount", () => {
+    render(<TestComponent />);
+    expect(mockUseFocusEffect).toHaveBeenCalled();
   });
 
-  it("answers Back while focused", () => {
-    const handleBackPress = jest.fn(() => true);
-    mockUseNavigation.mockReturnValue({ goBack: mockGoBack, isFocused: () => true });
+  it("REGRESSION: releases the listener on blur, not only on unmount", () => {
+    // Tab screens and stacked screens stay MOUNTED when they leave the screen.
+    // Holding the listener until unmount is what let an invisible screen
+    // swallow a back press meant for the visible one — which is how pressing
+    // back on Folders or About exited the app instead of going back.
+    render(<TestComponent />);
+    const effect = mockUseFocusEffect.mock.calls[0][0];
 
-    render(<TestComponent handleBackPress={handleBackPress} />);
+    // Focus, then blur.
+    const cleanup = effect();
+    cleanup();
 
-    act(() => {
-      backPressHandler();
-    });
+    expect(mockRemove).toHaveBeenCalled();
+  });
 
-    expect(handleBackPress).toHaveBeenCalledTimes(1);
+  it("keeps ONE subscription across re-renders with an inline handler", () => {
+    // Callers pass arrow functions, which are new on every render. Re-keying
+    // the subscription on that identity would churn the listener constantly.
+    const { rerender } = render(<TestComponent handleBackPress={() => true} />);
+    const before = BackHandler.addEventListener.mock.calls.length;
+    rerender(<TestComponent handleBackPress={() => true} />);
+    expect(BackHandler.addEventListener.mock.calls.length).toBe(before);
   });
 });

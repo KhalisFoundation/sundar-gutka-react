@@ -218,7 +218,7 @@ const MonthCalendar = ({ refreshKey = 0 }) => {
   const { accentBlue, mutedText, theme, c, palette } = useDashboardTheme();
   // Month arrows are controls, not secondary text: mutedText only reached
   // 2.4:1 against the light card, under the 3:1 WCAG asks of a non-text UI
-  // element.
+  // element. primaryText also matches the arrows in ActivityCalendar.
   const navColor = c.textPrimary;
   // Real SemiBold glyph for today's number (heavier than the Regular the other
   // days use). fontWeight alone does nothing on these custom TTFs.
@@ -391,7 +391,6 @@ const MonthCalendar = ({ refreshKey = 0 }) => {
       <View
         style={styles.card}
         onLayout={(e) => setGridWidth(e.nativeEvent.layout.width)}
-        // A PanResponder's handlers are meant to be spread onto the view.
         // eslint-disable-next-line react/jsx-props-no-spreading
         {...panResponder.panHandlers}
       >
@@ -461,7 +460,6 @@ const MonthCalendar = ({ refreshKey = 0 }) => {
 
         <View style={styles.weekRow}>
           {weekdayNarrowRow(false).map((l, i) => (
-            // The column is the identity: narrow labels repeat (S, T).
             // eslint-disable-next-line react/no-array-index-key
             <View key={i} style={styles.cell}>
               <CustomText style={[styles.dayLabel, { color: mutedText }]}>{l}</CustomText>
@@ -471,7 +469,6 @@ const MonthCalendar = ({ refreshKey = 0 }) => {
 
         {loading
           ? Array.from({ length: 5 }).map((_, ri) => (
-              // Fixed placeholders: their position is all they have.
               // eslint-disable-next-line react/no-array-index-key
               <View key={ri} style={styles.weekRow}>
                 {Array.from({ length: 7 }).map((_c, ci) => (
@@ -489,12 +486,10 @@ const MonthCalendar = ({ refreshKey = 0 }) => {
         {!loading && error ? <SectionError onRetry={retry} /> : null}
 
         {!loading && !error
-          ? rows.map((row) => (
-              // Keyed on the week's first day: every row holds at least one.
-              <View key={row.find(Boolean)} style={styles.weekRow}>
+          ? rows.map((row, ri) => (
+              // eslint-disable-next-line react/no-array-index-key
+              <View key={ri} style={styles.weekRow}>
                 {row.map((d, ci) => {
-                  // A blank before the 1st or after the last day: only its
-                  // column tells it apart.
                   // eslint-disable-next-line react/no-array-index-key
                   if (!d) return <View key={`e-${ci}`} style={styles.cell} />;
                   const dateStr = `${year}-${String(month).padStart(2, "0")}-${String(d).padStart(
@@ -510,15 +505,13 @@ const MonthCalendar = ({ refreshKey = 0 }) => {
                   // months before historyStart are browsable but always read empty.
                   const missed =
                     isPast && dateStr >= historyStart && level === 0 && hasEverBeenActive;
-                  let fillColor = null;
-                  if (isToday) fillColor = todayFill;
-                  else if (level > 0) fillColor = heatColor(level);
                   return (
                     <Pressable key={d} style={styles.cell} onPress={() => handleDayPress(d)}>
                       <View style={[styles.dayCircle, { width: circle, height: circle }]}>
                         <DayMarker
                           size={circle}
-                          fillColor={fillColor}
+                          // eslint-disable-next-line no-nested-ternary
+                          fillColor={isToday ? todayFill : level > 0 ? heatColor(level) : null}
                           todayColor={isToday ? accentBlue : null}
                           missedColor={missed ? palette.missedFill : null}
                         />

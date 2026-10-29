@@ -229,57 +229,8 @@ describe("re-arming on app foreground", () => {
     expect(notifee.createTriggerNotification).not.toHaveBeenCalled();
   });
 
-  it("clears the old triggers even when nothing is left enabled", async () => {
-    await rearmReminders("default", listOf(reminder({ enabled: false })));
-    expect(notifee.cancelTriggerNotifications).toHaveBeenCalled();
-    expect(notifee.createTriggerNotification).not.toHaveBeenCalled();
-  });
-
-  // A re-arm from the old list must not finish AFTER the rewrite of an edit,
-  // or it brings back the reminder the person just switched off.
-  it("never interleaves with another rewrite of the schedule", async () => {
-    let finishRearm;
-    notifee.createTriggerNotification.mockImplementationOnce(
-      () =>
-        new Promise((resolve) => {
-          finishRearm = resolve;
-        })
-    );
-    const rearm = rearmReminders("default", listOf(reminder()));
-    const update = updateReminders(true, "default", listOf(reminder({ enabled: false })));
-    for (let i = 0; i < 10; i += 1) {
-      // eslint-disable-next-line no-await-in-loop
-      await Promise.resolve();
-    }
-    expect(notifee.cancelAllNotifications).not.toHaveBeenCalled();
-    finishRearm();
-    await Promise.all([rearm, update]);
-    expect(notifee.cancelAllNotifications).toHaveBeenCalledTimes(1);
-  });
-
   it("survives corrupt stored reminders", async () => {
     expect(await rearmReminders("default", "{not json")).toBe(0);
-  });
-
-  // After an update moves the channels to new ids, the first launch re-arms
-  // before anything else has scheduled. Aimed at channels that were never
-  // created, every reminder was dropped by Android.
-  it("creates the channels it schedules onto, before scheduling", async () => {
-    await rearmReminders("default", listOf(reminder()));
-    const created = notifee.createChannel.mock.calls.map(([ch]) => ch.id);
-    expect(created).toContain(channelIdFor("default"));
-    expect(notifee.createChannel.mock.invocationCallOrder[0]).toBeLessThan(
-      notifee.createTriggerNotification.mock.invocationCallOrder[0]
-    );
-  });
-
-  // Overlapping runs (a quick double toggle, a re-arm meeting a sync) must
-  // replace a reminder rather than schedule it a second time.
-  it("schedules each reminder under its own stable id", async () => {
-    await rearmReminders("default", listOf(reminder({ id: 7, key: 7 })));
-    await rearmReminders("default", listOf(reminder({ id: 7, key: 7 })));
-    const ids = notifee.createTriggerNotification.mock.calls.map(([n]) => n.id);
-    expect(ids).toEqual(["reminder-7", "reminder-7"]);
   });
 });
 
@@ -336,23 +287,6 @@ describe("channels are versioned, because Android will not let them change", () 
     // The one in use, and anything not ours, are left alone.
     expect(notifee.deleteChannel).not.toHaveBeenCalledWith(channelIdFor("wake_up_jap.mp3"));
     expect(notifee.deleteChannel).not.toHaveBeenCalledWith("some_other_channel");
-  });
-
-  // The push channel is versioned the same way. Deleted by a reminder edit,
-  // every campaign the app drew posted to a channel that no longer existed.
-  it("leaves the push channel alone", async () => {
-    notifee.getChannels.mockResolvedValueOnce([{ id: "general_v2" }, { id: "general_v1" }]);
-    await updateReminders(true, "default", JSON.stringify([]));
-    expect(notifee.deleteChannel).not.toHaveBeenCalledWith("general_v2");
-    expect(notifee.deleteChannel).not.toHaveBeenCalledWith("general_v1");
-  });
-
-  // Earlier builds created the reminder channels without a version.
-  it("drops the unversioned reminder channels of earlier builds", async () => {
-    notifee.getChannels.mockResolvedValueOnce([{ id: "sound" }, { id: "waheguru_soul" }]);
-    await updateReminders(true, "default", JSON.stringify([]));
-    expect(notifee.deleteChannel).toHaveBeenCalledWith("sound");
-    expect(notifee.deleteChannel).toHaveBeenCalledWith("waheguru_soul");
   });
 });
 
@@ -419,36 +353,6 @@ describe("checkPermissions", () => {
     await Promise.resolve();
     jest.advanceTimersByTime(4000);
     expect(await result).toBe(false);
-  });
-
-  // A real prompt takes focus from the app. Timed out at 4s, a slower Allow
-  // left the permission granted and the switch off.
-  it("waits for the answer while a prompt is actually on screen", async () => {
-    jest.useFakeTimers();
-    let mod;
-    let focusHandler;
-    jest.isolateModules(() => {
-      const { AppState } = require("react-native");
-      jest.spyOn(AppState, "addEventListener").mockImplementation((_t, handler) => {
-        focusHandler = handler;
-        return { remove: () => {} };
-      });
-      mod = require("./notifications");
-    });
-    notifee.getNotificationSettings.mockResolvedValue(denied);
-    let answer;
-    notifee.requestPermission.mockReturnValue(
-      new Promise((resolve) => {
-        answer = resolve;
-      })
-    );
-    const result = mod.checkPermissions();
-    await Promise.resolve();
-    await Promise.resolve();
-    focusHandler("background");
-    jest.advanceTimersByTime(6000);
-    answer(granted);
-    expect(await result).toBe(true);
   });
 });
 

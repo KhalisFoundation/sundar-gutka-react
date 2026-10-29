@@ -19,7 +19,6 @@ import { READER_THEMES, READER_THEMES_BY_ID } from "./themes";
 
 export const THEME_ID_PATTERN = /^[a-z][a-z0-9-]{1,31}$/;
 const HEX_COLOR = /^#(?:[0-9a-f]{3}|[0-9a-f]{6}|[0-9a-f]{8})$/i;
-const PALETTE_HEX = /^#(?:[0-9a-f]{3}|[0-9a-f]{6})$/i;
 const BASES = new Set(["light", "dark"]);
 /** Light and dark are what an unknown theme falls back to; they cannot be withdrawn. */
 const APPEARANCE_IDS = new Set(["light", "dark"]);
@@ -44,104 +43,6 @@ export const pickAllowed = (record, shape = ALLOWED_SHAPE) => {
       if (isPlainObject(value)) out[key] = pickAllowed(value, allowed);
     } else if (value !== undefined) {
       out[key] = value;
-    }
-  });
-  return out;
-};
-
-// What each remote leaf may hold. `pickAllowed` decides which keys exist; this
-// decides what they may contain. Every value here ends up inside Reader HTML —
-// a style attribute, a <style> block, a string in the injected script — or in an
-// app-wide React Native style, so a value that is not exactly a colour, a number
-// in range or one of a few words is dropped. A dropped leaf falls back to the
-// base theme's value; it never takes the rest of the row with it.
-const RGB_COLOR =
-  /^rgba?\(\s*\d{1,3}\s*,\s*\d{1,3}\s*,\s*\d{1,3}\s*(?:,\s*(?:0|1|0?\.\d+)\s*)?\)$/i;
-const isColor = (v) => typeof v === "string" && (HEX_COLOR.test(v) || RGB_COLOR.test(v));
-const inRange = (min, max) => (v) =>
-  typeof v === "number" && Number.isFinite(v) && v >= min && v <= max;
-const oneOf =
-  (...words) =>
-  (v) =>
-    words.includes(v);
-const isBoolean = (v) => typeof v === "boolean";
-// Lengths, offsets and colours only: no quotes, semicolons, colons, braces,
-// angle brackets or backslashes, so it cannot leave the declaration it is in.
-const isCssValue = (v) => typeof v === "string" && /^[a-z0-9#.,%()\s-]{1,120}$/i.test(v);
-// An https URL or an inline image. Placed inside url('…'), so a quote, a
-// backslash, an angle bracket or a line break is refused.
-const isImageUri = (v) =>
-  typeof v === "string" &&
-  v.length <= 20000 &&
-  /^(?:https:\/\/|data:image\/)/i.test(v) &&
-  !/['"\\<>\s]/.test(v);
-
-const LEAF_CHECKS = {
-  background: {
-    color: isColor,
-    image: isImageUri,
-    imageOpacity: inRange(0, 1),
-    imageRepeat: oneOf("repeat", "no-repeat", "repeat-x", "repeat-y", "round", "space"),
-    imageSize: isCssValue,
-  },
-  text: {
-    gurbani: { color: isColor, shadow: isCssValue },
-    gurbaniHeading: { color: isColor, shadow: isCssValue },
-    translation: { color: isColor },
-    transliteration: { color: isColor },
-    teeka: { color: isColor },
-  },
-  highlight: { color: isColor },
-  vishraam: { main: isColor, yamki: isColor, mainGradient: isColor, yamkiGradient: isColor },
-  typography: {
-    fontScale: inRange(0.5, 2),
-    lineHeightRatio: inRange(1, 3),
-    letterSpacing: inRange(-5, 10),
-    preferredFontFace: (v) => typeof v === "string" && /^[A-Za-z0-9_-]{1,40}$/.test(v),
-    larivaarAssistOpacity: inRange(0, 1),
-  },
-  border: {
-    width: inRange(0, 16),
-    outerWidth: inRange(0, 16),
-    color: isColor,
-    outerColor: isColor,
-    gapColor: isColor,
-    marginColor: isColor,
-    style: oneOf("solid", "dashed", "dotted", "double", "groove", "ridge", "inset", "outset"),
-    radius: inRange(0, 64),
-    inset: inRange(0, 64),
-    gap: inRange(0, 64),
-  },
-  scrollbar: { thumb: isColor, track: isColor, width: inRange(0, 20) },
-  defaults: {
-    isTransliteration: isBoolean,
-    isEnglishTranslation: isBoolean,
-    isPunjabiTranslation: isBoolean,
-    isSpanishTranslation: isBoolean,
-  },
-};
-// Every leaf of these groups is a colour role.
-["app", "audio", "chrome", "nav"].forEach((group) => {
-  LEAF_CHECKS[group] = Object.fromEntries(
-    Object.keys(ALLOWED_SHAPE[group]).map((key) => [key, isColor])
-  );
-});
-
-/**
- * Drops every leaf whose value fails its check, recursively. Groups with no
- * entry (the palette, checked on its own below; `base`) pass through.
- */
-export const checkLeaves = (record, checks = LEAF_CHECKS) => {
-  const out = {};
-  Object.keys(record).forEach((key) => {
-    const value = record[key];
-    const check = checks[key];
-    if (check === undefined) {
-      out[key] = value;
-    } else if (typeof check === "function") {
-      if (check(value)) out[key] = value;
-    } else if (isPlainObject(value)) {
-      out[key] = checkLeaves(value, check);
     }
   });
   return out;
@@ -173,14 +74,10 @@ export const sanitizeRemoteTheme = (row) => {
 
   const names = cleanNames(row.names);
   if (!names) return null;
-  const record = checkLeaves(pickAllowed(row.record));
+  const record = pickAllowed(row.record);
   if (!BASES.has(record.base)) return null;
   const palette = record.palette || {};
-  // 3 or 6 digits only: every derived slot is mixed from these through
-  // colorUtils, which cannot read an alpha channel — an 8-digit ground came
-  // back as the ground for every button fill and label, and a rule as
-  // transparent. Explicit leaf colours (isColor) may still carry alpha.
-  const isHex = (value) => typeof value === "string" && PALETTE_HEX.test(value);
+  const isHex = (value) => typeof value === "string" && HEX_COLOR.test(value);
   if (!["ground", "ink", "accent"].every((key) => isHex(palette[key]))) return null;
   if (!["muted", "rule"].every((key) => palette[key] === undefined || isHex(palette[key]))) {
     return null;

@@ -3,7 +3,6 @@ import { useDispatch, useSelector } from "react-redux";
 import ScreenRolesProvider from "@theme/ScreenRolesProvider";
 import PropTypes from "prop-types";
 import { NEST_OVERLAYS_IN_SHEET } from "@common/components/ui/Overlay";
-import baniItemTitle from "@common/pothi/itemTitle";
 import {
   createPothi,
   isValidName,
@@ -38,7 +37,7 @@ import PothiNameField from "./PothiNameField";
 // its own display title and stores it verbatim.
 /** The reader's bani in the item shape the picker and the API use. */
 const seedItemFor = (seedBani) =>
-  makeBaniItem({ baaniId: seedBani.id, title: baniItemTitle(seedBani) });
+  makeBaniItem({ baaniId: seedBani.id, title: seedBani.gurmukhiUni || seedBani.gurmukhi });
 
 const CreatePothiSheet = ({ visible, onClose, onCreated, seedBani = null, baniListData = [] }) => {
   const dispatch = useDispatch();

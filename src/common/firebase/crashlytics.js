@@ -5,6 +5,7 @@ import {
   setAttribute,
   log,
   recordError,
+  didCrashOnPreviousExecution,
 } from "@react-native-firebase/crashlytics";
 import { isNetworkFailure } from "../networkFailure";
 import { sanitizeName } from "./helper";
@@ -86,6 +87,16 @@ export const initializeCrashlytics = async () => {
   }
 };
 
+// Whether the previous run ended in a crash Crashlytics recorded. Never throws,
+// and answers false when it cannot tell.
+export const didCrashLastRun = async () => {
+  try {
+    return Boolean(await didCrashOnPreviousExecution(crashlytics));
+  } catch {
+    return false;
+  }
+};
+
 // Set a custom key-value pair
 export const setCustomKey = (keyOrValues, value = undefined) => {
   if (typeof keyOrValues === "string" && value !== undefined) {
@@ -116,68 +127,12 @@ export const logMessage = (message) => {
 // "context, error" pair (many call sites do `logError("X failed:", err)`) —
 // without this second form the context string was recorded as the whole
 // error and the real `err` (and its message/stack) was silently dropped.
-//
-// Whichever argument is a real Error is recorded AS ITSELF, so its own stack
-// decides where the issue groups; the other argument becomes a breadcrumb.
-// This matters for the error boundary, which calls onError(error,
-// componentStack): folding that ever-changing component stack into a new
-// Error's message pointed every render crash at this file and split each one
-// into many issues.
-const MAX_BREADCRUMB_LENGTH = 1000;
-const breadcrumb = (value) => {
-  try {
-    const text = value instanceof Error ? value.message : describeNonError(value);
-    log(crashlytics, text.slice(0, MAX_BREADCRUMB_LENGTH));
-  } catch {
-    // A breadcrumb is best-effort.
-  }
-};
-
-// A rejection from a native module (React Native gives these a native stack
-// and userInfo). Its JS stack is the bridge's, the same whichever call failed,
-// so recorded as-is, failures from different callers (play, pause, seek, ...)
-// would all merge into one issue.
-const isNativeRejection = (err) =>
-  err instanceof Error &&
-  (Array.isArray(err.nativeStackAndroid) ||
-    Array.isArray(err.nativeStackIOS) ||
-    err.userInfo !== undefined);
-
 export const logError = (error, extra) => {
   try {
     if (extra !== undefined) {
-      // A phone with no connection is not a bug (see logNetworkError). Callers
-      // written as logError("X failed", err) get the same treatment: a
-      // breadcrumb, not an issue, so an offline launch doesn't file one per
-      // call site that fetches.
-      if (isNetworkFailure(extra)) {
-        breadcrumb(
-          `${describeNonError(error)}: ${
-            extra instanceof Error ? extra.message : describeNonError(extra)
-          }`
-        );
-        return;
-      }
-      if (extra instanceof Error) {
-        if (isNativeRejection(extra) && !(error instanceof Error)) {
-          // Made here, so its stack is the caller's and each call site groups on
-          // its own; the context names the call and the original rides as cause.
-          const code = extra.code !== undefined ? ` (code: ${extra.code})` : "";
-          const recorded = new Error(`${describeNonError(error)}: ${extra.message}${code}`);
-          recorded.cause = extra;
-          recordError(crashlytics, recorded);
-          return;
-        }
-        breadcrumb(error);
-        recordError(crashlytics, extra);
-        return;
-      }
-      if (error instanceof Error) {
-        breadcrumb(extra);
-        recordError(crashlytics, error);
-        return;
-      }
-      recordError(crashlytics, new Error(`${describeNonError(error)} ${describeNonError(extra)}`));
+      const detail = extra instanceof Error ? extra.message : describeNonError(extra);
+      const prefix = error instanceof Error ? error.message : describeNonError(error);
+      recordError(crashlytics, new Error(`${prefix} ${detail}`));
       return;
     }
     if (error instanceof Error) {
@@ -211,26 +166,11 @@ export const logError = (error, extra) => {
  *   goes, so it must be the original — not the message built from it.
  */
 export const logNetworkError = (message, error) => {
-  const text = message instanceof Error ? message.message : String(message);
   if (isNetworkFailure(error)) {
-    logMessage(text);
+    logMessage(message instanceof Error ? message.message : String(message));
     return;
   }
-  if (!(error instanceof Error)) {
-    logError(message instanceof Error ? message : new Error(text));
-    return;
-  }
-  // Keep the call site's text as the title, so the issue groups where it always
-  // did, but carry the ORIGINAL error's frames, code and cause: those say where
-  // it actually failed, which a fresh Error made here would not.
-  const code = error.code !== undefined ? ` (code: ${error.code})` : "";
-  const recorded = new Error(`${text}${code}`);
-  if (typeof error.stack === "string") {
-    const frames = error.stack.split("\n").slice(1).join("\n");
-    recorded.stack = `Error: ${recorded.message}${frames ? `\n${frames}` : ""}`;
-  }
-  recorded.cause = error;
-  logError(recorded);
+  logError(message instanceof Error ? message : new Error(String(message)));
 };
 
 // Test function to force a crash

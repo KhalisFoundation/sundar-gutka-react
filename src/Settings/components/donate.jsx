@@ -19,14 +19,10 @@ const Donate = () => {
       // Settings is registered twice: once as a tab and once as a stack screen.
       // Opened from the Reader — where the bar shows Read/Audios — it is the
       // STACK copy, and that navigator has no Seva route, so a bare
-      // navigate("Seva") had nothing to resolve against. popTo names the parent
-      // and goes BACK to it: inside MainTabs it simply switches tab, and from
-      // the stack copy it returns to the one MainTabs at the root. A plain
-      // navigate would push a second MainTabs there (React Navigation 7 does
-      // not go back to an existing route unless asked), a whole duplicate tab
-      // tree whose Back and Close lead to its own Home. The Reader it leaves
-      // saves its position when it loses focus, so the bani reopens where it was.
-      onPress={() => navigation.popTo("MainTabs", { screen: "Seva" })}
+      // navigate("Seva") had nothing to resolve against. Naming the parent works
+      // from both, because React Navigation already inside MainTabs simply
+      // switches tab.
+      onPress={() => navigation.navigate("MainTabs", { screen: "Seva" })}
     />
   );
 };

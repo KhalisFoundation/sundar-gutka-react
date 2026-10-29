@@ -1,6 +1,5 @@
 import { useEffect } from "react";
 import { AppState } from "react-native";
-import { isPermissionPromptOpen } from "../notifications";
 import { pauseTrack } from "../TrackPlayerUtils";
 
 /**
@@ -22,9 +21,7 @@ import { pauseTrack } from "../TrackPlayerUtils";
 const usePauseAudioOnExit = () => {
   useEffect(() => {
     const sub = AppState.addEventListener("change", (state) => {
-      // A system permission prompt takes focus too, but the user has not left:
-      // the first download's notification prompt must not pause the track.
-      if ((state === "background" || state === "inactive") && !isPermissionPromptOpen()) {
+      if (state === "background" || state === "inactive") {
         pauseTrack().catch(() => {});
       }
     });

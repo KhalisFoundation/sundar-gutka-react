@@ -147,11 +147,3 @@ export const toSessionUser = (payload) => {
     nameIDFormat: payload.nameIDFormat ?? "",
   };
 };
-
-/**
- * One account per address, whatever its case or surrounding space. The rule
- * for "is this the same person": the sign-in check (khalisSso) and the
- * account-switch purge (accountScope) both use it, so they cannot disagree.
- */
-export const normaliseEmail = (email) =>
-  typeof email === "string" ? email.trim().toLowerCase() : null;

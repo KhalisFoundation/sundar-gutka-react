@@ -52,7 +52,7 @@ describe("buildActivityPayload", () => {
     // before. Deriving the day from a timestamp server-side would file most
     // Indian morning nitnem under the previous date; the device already knows.
     analytics.getActivityUpdatedSince.mockResolvedValue([
-      { date: "2026-08-19", own_reading_seconds: 900, own_listening_seconds: 120 },
+      { date: "2026-08-19", reading_seconds: 900, listening_seconds: 120 },
     ]);
 
     const body = await buildActivityPayload({ deviceId: "phone", since: 0 });
@@ -70,7 +70,7 @@ describe("buildActivityPayload", () => {
 
   it("rounds and floors, so a fractional or negative second never reaches the API", async () => {
     analytics.getActivityUpdatedSince.mockResolvedValue([
-      { date: "2026-08-19", own_reading_seconds: 12.7, own_listening_seconds: -5 },
+      { date: "2026-08-19", reading_seconds: 12.7, listening_seconds: -5 },
     ]);
     const body = await buildActivityPayload({ deviceId: "phone", since: 0 });
     expect(body.days[0]).toEqual({
@@ -78,23 +78,6 @@ describe("buildActivityPayload", () => {
       readingSeconds: 13,
       listeningSeconds: 0,
     });
-  });
-
-  // A pull merges the account's sum into a day's totals. The server adds every
-  // device's figure together, so sending the totals counted the other devices'
-  // minutes a second time — and the next pull handed the inflated sum back.
-  it("sends this device's own seconds, never the account's totals", async () => {
-    analytics.getActivityUpdatedSince.mockResolvedValue([
-      {
-        date: "2026-08-19",
-        reading_seconds: 2100,
-        listening_seconds: 300,
-        own_reading_seconds: 300,
-        own_listening_seconds: 0,
-      },
-    ]);
-    const body = await buildActivityPayload({ deviceId: "phone", since: 0 });
-    expect(body.days[0]).toEqual({ date: "2026-08-19", readingSeconds: 300, listeningSeconds: 0 });
   });
 
   it("tolerates a row with no seconds recorded yet", async () => {

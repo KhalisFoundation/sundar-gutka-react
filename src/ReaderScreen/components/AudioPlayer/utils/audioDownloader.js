@@ -367,12 +367,10 @@ export const touchPrefetchTrack = async (url) => {
   }
 };
 
-// Keeps the newest `maxTracks` streamed-prefetch copies (each a full 3–20 MB
-// track) and deletes the rest. These are invisible in Manage Downloads, so
-// without a bound the directory grew for as long as the user streamed. (A
-// track the user wants kept offline is downloaded, not prefetched.) Also prunes
-// index entries whose files are gone and removes empty artist directories.
-export const prunePrefetchCache = async (maxTracks = 5) => {
+// maxTracks defaults to Infinity → no cap on the number of cached tracks. The
+// pass still prunes index entries whose files no longer exist and removes empty
+// artist directories; it just never evicts live cache files by count.
+export const prunePrefetchCache = async (maxTracks = Infinity) => {
   try {
     const directoryExists = await exists(PREFETCH_AUDIO_DIRECTORY);
     if (!directoryExists) {
@@ -430,12 +428,6 @@ export const prunePrefetchCache = async (maxTracks = 5) => {
   }
 };
 
-// KNOWN: the companion lyrics URL is derived from the audio URL (.m4a → .json),
-// as is refreshCompanionJson's in audioReconcile, while the backend catalog
-// also carries a `lyricsUrl` per track. They agree for every track served
-// today; if the backend ever points a track at a different (e.g. shared)
-// lyrics file, both should take that `lyricsUrl` instead. Planned with an
-// upcoming PR, alongside the backend's lyrics layout.
 export const downloadLyricsOnly = async (url, trackTitle, options = {}) => {
   const { skipDirectorySetup = false } = options;
   const { artistName, jsonFileName, jsonUrl, fullJsonPath, jsonRelativePath } =
@@ -481,30 +473,14 @@ export const downloadLyricsOnly = async (url, trackTitle, options = {}) => {
   const jsonResult = await jsonDownloadTask.promise;
 
   // A lyrics file that is not there is an expected state of the catalog, not a
-  // fault in the app — kept out of Crashlytics. RNFS has already written the
-  // response body to disk, so an error page (or a captive portal's 200 HTML)
-  // would sit there as the lyrics: unreadable for sync-scroll, and treated as
-  // "already downloaded" by every later attempt. Only valid JSON is kept.
-  const discard = async (reason) => {
-    logMessage(`Lyrics download discarded (${reason}): ${jsonFileName}`);
-    await unlink(fullJsonPath).catch(() => {});
-    return {
-      relativePath: jsonRelativePath,
-      alreadyExists: false,
-      downloaded: false,
-      remoteMissing: false,
-    };
-  };
-  if (jsonResult.statusCode !== 200) return discard(`status ${jsonResult.statusCode}`);
+  // fault in the app — kept out of Crashlytics.
+  if (jsonResult.statusCode !== 200) {
+    logMessage(`Lyrics download failed with status code: ${jsonResult.statusCode}`);
+  }
 
   const finalJsonExists = await exists(fullJsonPath);
   if (!finalJsonExists) {
     logMessage("Lyrics download completed but file was not created");
-  }
-  try {
-    JSON.parse(await readFile(fullJsonPath, "utf8"));
-  } catch (_) {
-    return discard("not JSON");
   }
 
   logMessage(`Lyrics download completed: ${jsonFileName}`);
@@ -514,4 +490,71 @@ export const downloadLyricsOnly = async (url, trackTitle, options = {}) => {
     downloaded: true,
     remoteMissing: false,
   };
+};
+
+/**
+ * Download audio track with progress tracking
+ */
+export const downloadTrack = async (url, trackTitle, expectedSizeMB = 0) => {
+  try {
+    const { artistName, fileName, jsonFileName } = buildTrackPaths(url);
+
+    await ensureArtistDirectory(artistName);
+
+    const audioResult = await downloadAudioOnly(url, trackTitle, {
+      skipDirectorySetup: true,
+      expectedSizeMB,
+    });
+    const lyricsResult = await downloadLyricsOnly(url, trackTitle, { skipDirectorySetup: true });
+    const lyricsAvailable = !lyricsResult.remoteMissing;
+    const lyricsSatisfied = lyricsAvailable
+      ? lyricsResult.alreadyExists || lyricsResult.downloaded
+      : true;
+
+    if (audioResult.alreadyExists && lyricsSatisfied) {
+      logMessage(`Track already downloaded${lyricsAvailable ? " with lyrics" : ""}: ${fileName}`);
+      const result = {
+        audioRelativePath: audioResult.relativePath,
+        jsonRelativePath: lyricsAvailable ? lyricsResult.relativePath : null,
+      };
+      return result;
+    }
+
+    if (lyricsAvailable) {
+      logMessage(`Download completed: ${fileName} and ${jsonFileName}`);
+    } else {
+      logMessage(`Download completed: ${fileName} (no lyrics available)`);
+    }
+
+    const result = {
+      audioRelativePath:
+        audioResult.alreadyExists || audioResult.downloaded ? audioResult.relativePath : null,
+      jsonRelativePath: lyricsAvailable ? lyricsResult.relativePath : null,
+    };
+    return result;
+  } catch (error) {
+    logError(`Download error for ${trackTitle}: ${error.message}`);
+
+    // Clean up partial downloads if they exist
+    try {
+      const fullLocalPath = getFullLocalTrackPath(url);
+      const { artistName, fileName } = generateFilename(url);
+      const jsonFileName = fileName.replace(/\.[^/.]+$/, ".json");
+      const fullJsonPath = `${AUDIO_DIRECTORY}/${artistName}/${jsonFileName}`;
+
+      const audioFileExists = await exists(fullLocalPath);
+      const jsonFileExists = await exists(fullJsonPath);
+
+      if (audioFileExists) {
+        await unlink(fullLocalPath);
+      }
+      if (jsonFileExists) {
+        await unlink(fullJsonPath);
+      }
+    } catch (cleanupError) {
+      logError(`Error cleaning up failed download: ${cleanupError.message}`);
+    }
+    logError(`Download error for ${trackTitle}: ${error.message}`);
+    return null;
+  }
 };

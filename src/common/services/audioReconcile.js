@@ -6,10 +6,7 @@ import {
   AUDIO_DIRECTORY_PATH,
   getLocalTrackPath,
 } from "../../ReaderScreen/components/AudioPlayer/utils/audioDownloader";
-import {
-  ensureLyricsCached,
-  notifyLyricsChanged,
-} from "../../ReaderScreen/components/AudioPlayer/utils/lyricsCache";
+import { ensureLyricsCached } from "../../ReaderScreen/components/AudioPlayer/utils/lyricsCache";
 import {
   fetchValidators,
   NO_CACHE_HEADERS,
@@ -25,7 +22,6 @@ import {
   setAudioManifest,
   updateDownloadEntries,
 } from "../actions";
-import { isStorageMigrated } from "../hooks/useStorageMigration";
 
 // ─────────────────────────────────────────────────────────────────────────────
 // Downloaded-audio reconcile.
@@ -213,19 +209,12 @@ export const refreshCompanionJson = async (link) => {
       ...validatorsFromResponse(response),
       revalidatedAt: Date.now(),
     });
-    notifyLyricsChanged(jsonPath);
     return true;
   } catch (_) {
     return false;
   } finally {
     clearTimeout(timeoutId);
   }
-};
-
-// "Artist/file.m4a" for a path under the audio directory; anything else as is.
-const relativeToAudioDir = (path) => {
-  const prefix = `${AUDIO_DIRECTORY_PATH}/`;
-  return typeof path === "string" && path.startsWith(prefix) ? path.slice(prefix.length) : path;
 };
 
 // Files under the audio directory that nothing owns any more.
@@ -252,9 +241,7 @@ const sweepOrphans = async ({ owned, skip }) => {
   return deleted;
 };
 
-// `revalidateLyrics: false` when the caller has just revalidated the same
-// lyrics itself (the catalog sync does), so each file is asked about once.
-const runReconcile = async ({ manifests, getState, dispatch, revalidateLyrics = true }) => {
+const runReconcile = async ({ manifests, getState, dispatch }) => {
   const state = getState() || {};
   const registry = state.downloadRegistry || {};
   const queue = state.downloadQueue || {};
@@ -285,7 +272,6 @@ const runReconcile = async ({ manifests, getState, dispatch, revalidateLyrics = 
         if (!live) {
           await deleteTrackFiles(relativePath);
           removed.push(relativePath);
-          dispatch(removeDownloadEntries([relativePath]));
           return;
         }
 
@@ -299,11 +285,6 @@ const runReconcile = async ({ manifests, getState, dispatch, revalidateLyrics = 
           await deleteTrackFiles(relativePath);
           removed.push(relativePath);
           replaced.push(relativePath);
-          // Out of the registry NOW, before the replacement is queued: it can
-          // finish while this run is still waiting on other requests, and
-          // finalize would see the old entry, treat the new file as already
-          // registered, and drop it — leaving it for the sweep below.
-          dispatch(removeDownloadEntries([relativePath]));
           dispatch(
             enqueueDownload({
               trackKey: relativePath,
@@ -328,45 +309,26 @@ const runReconcile = async ({ manifests, getState, dispatch, revalidateLyrics = 
 
   // The lyrics every track of these banis plays against, whether streamed or
   // downloaded: a conditional GET each, 304 and no bytes when unchanged.
-  if (revalidateLyrics) {
-    const lyricsUrls = new Set();
-    Object.values(expectedByBani).forEach((byPath) =>
-      Object.values(byPath).forEach((t) => t.lyricsUrl && lyricsUrls.add(t.lyricsUrl))
-    );
-    await Promise.all(
-      [...lyricsUrls].map((url) => ensureLyricsCached(url, { revalidate: true }).catch(() => null))
-    );
-  }
+  const lyricsUrls = new Set();
+  Object.values(expectedByBani).forEach((byPath) =>
+    Object.values(byPath).forEach((t) => t.lyricsUrl && lyricsUrls.add(t.lyricsUrl))
+  );
+  await Promise.all(
+    [...lyricsUrls].map((url) => ensureLyricsCached(url, { revalidate: true }).catch(() => null))
+  );
 
   const removedSet = new Set(removed);
   removed.forEach((key) => delete patches[key]);
-  // Ownership is read again HERE, not taken from the snapshot at the start of
-  // the run: the validator and lyrics requests above can take seconds, and a
-  // download that finished meanwhile is in the registry now but not in that
-  // snapshot, so the sweep would have deleted the file it just wrote. Likewise
-  // anything queued or loaded since.
-  // Removals were dispatched as they happened, so the fresh registry already
-  // excludes them, and anything it holds for one of those paths now is a
-  // replacement that finished during the run.
-  const fresh = getState() || {};
-  const owned = new Set(Object.keys(fresh.downloadRegistry || {}));
-  const sweepSkip = new Set([...skip, ...Object.keys(fresh.downloadQueue || {})]);
-  const nowLoaded = await currentlyLoadedKey();
-  if (nowLoaded) sweepSkip.add(nowLoaded);
-  // Until the previous release's downloads are adopted into the registry (see
-  // useStorageMigration), every one of them looks unowned. Never sweep before.
-  const orphansDeleted = isStorageMigrated(fresh)
-    ? await sweepOrphans({ owned, skip: sweepSkip }).catch(() => [])
-    : [];
+  const owned = new Set(Object.keys(registry).filter((key) => !removedSet.has(key)));
+  const orphansDeleted = await sweepOrphans({ owned, skip }).catch(() => []);
 
+  if (removed.length) dispatch(removeDownloadEntries(removed));
   if (Object.keys(patches).length) dispatch(updateDownloadEntries(patches));
   // The session's per-bani manifest still lists the deleted files; without
   // this a removed track would keep its offline tick until the next launch.
   Object.entries(state.audioManifest || {}).forEach(([baniId, tracks]) => {
     if (!expectedByBani[String(baniId)] || !Array.isArray(tracks)) return;
-    // A downloaded track is stored with its FULL local path as audioUrl, while
-    // the removed set holds artist-relative paths ("Artist/file.m4a").
-    const kept = tracks.filter((t) => !removedSet.has(relativeToAudioDir(t?.audioUrl)));
+    const kept = tracks.filter((t) => !removedSet.has(t?.audioUrl));
     if (kept.length !== tracks.length) dispatch(setAudioManifest(baniId, kept));
   });
 

@@ -1,15 +1,12 @@
 import React, { useState, useEffect, useCallback, useMemo, useLayoutEffect } from "react";
 import { View, SectionList, Pressable } from "react-native";
 import { exists, unlink } from "react-native-fs";
-import TrackPlayer from "react-native-track-player";
 import { useDispatch, useSelector } from "react-redux";
 import { Icon } from "@rneui/themed";
-import PropTypes from "prop-types";
-import { removeDownloadEntries, retryDownload } from "@common/actions";
+import { removeDownloadEntries, removeDownloadQueueEntry, retryDownload } from "@common/actions";
 import constant from "@common/constant";
 import useTokens from "@common/hooks/useTokens";
 import useTokenStyles from "@common/hooks/useTokenStyles";
-import { downloadControls } from "@common/services/globalDownloadManager";
 import {
   SafeArea,
   StatusBarComponent,
@@ -32,6 +29,7 @@ const formatMB = (mb) => {
   return mb >= 100 ? String(Math.round(mb)) : mb.toFixed(1);
 };
 
+// eslint-disable-next-line react/prop-types
 const ManageDownloads = ({ navigation }) => {
   const { c, layout } = useTokens();
   const styles = useTokenStyles(createStyles);
@@ -104,10 +102,12 @@ const ManageDownloads = ({ navigation }) => {
 
   // Tell the native stack to hide its own header — we render AppBar ourselves.
   useLayoutEffect(() => {
+    // eslint-disable-next-line react/prop-types
     navigation.setOptions({ headerShown: false });
   }, [navigation]);
 
   const handleBack = useCallback(() => {
+    // eslint-disable-next-line react/prop-types
     navigation.goBack();
     return true;
   }, [navigation]);
@@ -236,15 +236,8 @@ const ManageDownloads = ({ navigation }) => {
       confirmText: STRINGS.delete,
       destructive: true,
       onConfirm: async () => {
-        // The file the player has loaded is left in place (unlinking it under
-        // the player fails the next seek or buffer refill); it leaves the
-        // registry with the rest, and the reconcile sweep deletes it once
-        // nothing is playing it.
-        const active = await TrackPlayer.getActiveTrack().catch(() => null);
-        const loadedKey = active?.url ? getLocalTrackPath(String(active.url)) : null;
         await Promise.all(
           keys.map(async (key) => {
-            if (key === loadedKey) return;
             const base = `${AUDIO_DIRECTORY_PATH}/${key}`;
             await unlink(base).catch(() => {});
             await unlink(base.replace(/\.m4a$/, ".json")).catch(() => {});
@@ -256,19 +249,19 @@ const ManageDownloads = ({ navigation }) => {
     });
   }, [selected, downloadRegistry, dispatch]);
 
-  const cancelQueueEntry = useCallback((trackKey, displayName) => {
-    showConfirm({
-      title: STRINGS.CANCEL_DOWNLOAD_TITLE,
-      message: STRINGS.CANCEL_DOWNLOAD_BODY.replace("{title}", displayName ?? ""),
-      cancelText: STRINGS.CANCEL_DOWNLOAD_KEEP,
-      confirmText: STRINGS.CANCEL_DOWNLOAD_CONFIRM,
-      destructive: true,
-      // The manager stops the live native task and clears the queue entry,
-      // as the player's DownloadButton does. Clearing the entry alone left
-      // the task running, and its completion registered the track anyway.
-      onConfirm: () => downloadControls.cancel(trackKey),
-    });
-  }, []);
+  const cancelQueueEntry = useCallback(
+    (trackKey, displayName) => {
+      showConfirm({
+        title: STRINGS.CANCEL_DOWNLOAD_TITLE,
+        message: STRINGS.CANCEL_DOWNLOAD_BODY.replace("{title}", displayName ?? ""),
+        cancelText: STRINGS.CANCEL_DOWNLOAD_KEEP,
+        confirmText: STRINGS.CANCEL_DOWNLOAD_CONFIRM,
+        destructive: true,
+        onConfirm: () => dispatch(removeDownloadQueueEntry(trackKey)),
+      });
+    },
+    [dispatch]
+  );
 
   // Tapping a failed row retries it (matching the player's DownloadButton). A
   // storage failure can't be retried away, so we explain that instead.
@@ -477,13 +470,6 @@ const ManageDownloads = ({ navigation }) => {
       )}
     </SafeArea>
   );
-};
-
-ManageDownloads.propTypes = {
-  navigation: PropTypes.shape({
-    setOptions: PropTypes.func,
-    goBack: PropTypes.func,
-  }).isRequired,
 };
 
 export default ManageDownloads;

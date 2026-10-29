@@ -1,5 +1,6 @@
 import { Alert } from "react-native";
 import messaging from "@react-native-firebase/messaging";
+import STRINGS from "./localization";
 
 const getFcmToken = async () => {
   await messaging().getToken();
@@ -8,7 +9,7 @@ const getFcmToken = async () => {
 export const handleNotification = (title, body) => {
   Alert.alert(title, body, [
     {
-      text: "OK",
+      text: STRINGS.ok,
       onPress: () => {},
     },
   ]);

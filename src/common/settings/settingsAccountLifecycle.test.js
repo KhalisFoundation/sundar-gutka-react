@@ -26,23 +26,18 @@ describe("signing out pushes before it clears", () => {
     // purgeLocalUserData drops syncOutbox and settingsSync, so an edit that had
     // not been sent yet is gone the moment it runs — and afterwards there is no
     // token to send it with either. This is the last chance the change gets.
-    expect(signOutSource()).toContain("syncAll({ fresh: true })");
+    expect(signOutSource()).toContain("syncAll()");
   });
 
   it("syncs BEFORE the session and the outbox are thrown away", () => {
     const body = signOutSource();
-    expect(body.indexOf("syncAll({ fresh: true })")).toBeLessThan(body.indexOf("endSession()"));
-    expect(body.indexOf("syncAll({ fresh: true })")).toBeLessThan(
-      body.indexOf("leaveLocalAccount(dispatch)")
-    );
+    expect(body.indexOf("syncAll()")).toBeLessThan(body.indexOf("clearAuthSession()"));
+    expect(body.indexOf("syncAll()")).toBeLessThan(body.indexOf("purgeLocalUserData(dispatch)"));
   });
 
   it("gives up on the push rather than trapping anyone in a spinner", () => {
     // A phone with no signal must still be able to sign out.
-    const body = signOutSource();
-    expect(body).toMatch(
-      /withDeadline\(\s*Promise\.all\(\[syncAll\(\{ fresh: true \}\), requestFlush\(/
-    );
+    expect(signOutSource()).toContain("withDeadline(syncAll()");
   });
 });
 
@@ -79,9 +74,7 @@ describe("signing out leaves the phone set up as it was", () => {
     const next = afterSignOut(stateWith());
 
     expect(next.settingsSync).toEqual(emptySettingsSync());
-    // Emptied, but still counting, so a late answer for an op sent before
-    // the sign-out cannot land on a new op that reused its id.
-    expect(next.syncOutbox.ops).toEqual({});
+    expect(next.syncOutbox).toEqual({ ops: {}, seq: 0 });
   });
 
   it("holds for every synced key, not just the ones spelled out above", () => {

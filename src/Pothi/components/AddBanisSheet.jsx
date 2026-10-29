@@ -1,10 +1,10 @@
 import React, { useEffect, useState } from "react";
-import { useDispatch, useSelector } from "react-redux";
+import { useSelector } from "react-redux";
 import ScreenRolesProvider from "@theme/ScreenRolesProvider";
 import PropTypes from "prop-types";
 import { NEST_OVERLAYS_IN_SHEET } from "@common/components/ui/Overlay";
 import { baniItems } from "@common/pothi/model";
-import { actions, ConfirmDialogHost, showConfirm, STRINGS } from "@common";
+import { ConfirmDialogHost, showConfirm, STRINGS } from "@common";
 import { GurmukhiKeyboard, Sheet, SheetActions } from "../../common/components/ui";
 import usePothiTitle from "../hooks/usePothiTitle";
 import usePunjabiKeyboard from "../hooks/usePunjabiKeyboard";
@@ -27,7 +27,6 @@ import PickBanisStep from "./PickBanisStep";
 // that discarding can put it back, and it is asked for first, because there is
 // nothing to take back afterwards.
 const AddBanisSheet = ({ visible, onClose, pothiId = null, baniListData }) => {
-  const dispatch = useDispatch();
   const setBanis = useSetPothiBanis();
   const { titleFor } = usePothiTitle();
   // Read LIVE from the store, by id. Holding the row object the list handed
@@ -54,7 +53,7 @@ const AddBanisSheet = ({ visible, onClose, pothiId = null, baniListData }) => {
   // the pothi changes on every tick — the sentinel is what stops the snapshot
   // following those edits and making discard a no-op.
   useEffect(() => {
-    if (visible && pothi && openedWith === null) setOpenedWith(pothi.items);
+    if (visible && pothi && openedWith === null) setOpenedWith(baniItems(pothi));
     if (!visible && openedWith !== null) setOpenedWith(null);
   }, [visible, pothi, openedWith]);
 
@@ -64,8 +63,7 @@ const AddBanisSheet = ({ visible, onClose, pothiId = null, baniListData }) => {
   // puts the opening selection back and closes without passing through here.
   const commit = () => {
     const banis = baniItems(pothi).length;
-    const before = openedWith ? baniItems({ items: openedWith }).length : banis;
-    reportPothiEmptied(before, banis, "add_banis_sheet");
+    reportPothiEmptied(openedWith ? openedWith.length : banis, banis, "add_banis_sheet");
     onClose();
   };
 
@@ -76,9 +74,7 @@ const AddBanisSheet = ({ visible, onClose, pothiId = null, baniListData }) => {
       confirmText: STRINGS.POTHI_DISCARD,
       destructive: true,
       onConfirm: () => {
-        // Restored, not re-applied as ticks: the add/remove diff put a
-        // removed bani back at the END, so a Discard reordered the nitnem.
-        if (openedWith) dispatch(actions.restorePothiItems(pothi.id, openedWith));
+        setBanis(pothi, openedWith ?? []);
         onClose();
       },
     });

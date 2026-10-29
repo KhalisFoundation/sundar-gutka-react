@@ -17,7 +17,6 @@
 import React, { useEffect, useRef, useCallback } from "react";
 import { View, Pressable, Animated, Vibration, StyleSheet } from "react-native";
 import { unlink } from "react-native-fs";
-import TrackPlayer from "react-native-track-player";
 import { useDispatch, useSelector } from "react-redux";
 import NetInfo from "@react-native-community/netinfo";
 import { Icon } from "@rneui/themed";
@@ -170,22 +169,9 @@ const DownloadButton = ({ track = null, baniTitle = "", baniNameUni = "", baniId
       destructive: true,
       onNeutral: () => navigate("ManageDownloads"),
       onConfirm: async () => {
-        // Never delete the file the player has loaded: unlinking it under
-        // ExoPlayer/AVPlayer fails the next seek or buffer refill, and recovery
-        // would reload the same missing file. It leaves the registry now (so it
-        // shows as not downloaded); the reconcile sweep removes the unowned file
-        // once nothing is playing it.
-        // KNOWN: the track list already on screen keeps this row's local path
-        // until the manifest is merged again (the next list open or bani
-        // change), so picking it in between tries the deleted file. Planned:
-        // re-merge the open list on removal, in an upcoming PR.
-        const active = await TrackPlayer.getActiveTrack().catch(() => null);
-        const isLoaded = Boolean(active?.url) && getLocalTrackPath(String(active.url)) === trackKey;
-        if (!isLoaded) {
-          const base = `${AUDIO_DIRECTORY_PATH}/${trackKey}`;
-          await unlink(base).catch(() => {});
-          await unlink(base.replace(/\.m4a$/, ".json")).catch(() => {});
-        }
+        const base = `${AUDIO_DIRECTORY_PATH}/${trackKey}`;
+        await unlink(base).catch(() => {});
+        await unlink(base.replace(/\.m4a$/, ".json")).catch(() => {});
         dispatch(removeDownloadEntries([trackKey]));
         dispatch(removeDownloadQueueEntry(trackKey));
       },

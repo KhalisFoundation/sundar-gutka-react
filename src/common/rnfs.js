@@ -10,11 +10,8 @@ import {
   copyFile,
   copyFileAssets,
   unlink,
-  moveFile,
-  stat,
-  hash as fileHash,
 } from "react-native-fs";
-import { constant, logError, logMessage } from "@common";
+import { constant, logError, logMessage, logNetworkError } from "@common";
 
 // Paths and URLs
 const BUNDLED_DB_PATH = `${MainBundlePath}/www/${constant.DB}.db`;
@@ -83,55 +80,19 @@ const readHashFile = async (path) => {
  * written last, so the copy simply retried and failed the same way on every
  * later launch.
  */
-//
-// The new file is copied to a staging path first and only swapped in once the
-// copy has completed (and, for the DB, matches the bundled checksum). A failed
-// or short copy — no space left, an interrupted write — then leaves the
-// existing database untouched instead of deleting it and leaving nothing.
-const replace = async (destination, copyTo, expectedMd5) => {
-  const staged = `${destination}.incoming`;
-  if (await exists(staged)) await unlink(staged);
-  try {
-    await copyTo(staged);
-    const { size } = await stat(staged);
-    if (!(Number(size) > 0)) throw new Error(`staged copy of ${destination} is empty`);
-    if (expectedMd5) {
-      const actual = await fileHash(staged, "md5");
-      if (actual !== expectedMd5) {
-        throw new Error(`staged copy of ${destination} failed its checksum`);
-      }
-    }
-  } catch (err) {
-    if (await exists(staged)) await unlink(staged).catch(() => {});
-    throw err;
-  }
-  // Swap: set the current file aside, move the verified copy in, and put the
-  // old one back if that move fails, so a known-good file is never lost.
-  const previous = `${destination}.previous`;
-  const hadCurrent = await exists(destination);
-  if (hadCurrent) {
-    if (await exists(previous)) await unlink(previous);
-    await moveFile(destination, previous);
-  }
-  try {
-    await moveFile(staged, destination);
-  } catch (err) {
-    if (hadCurrent) await moveFile(previous, destination).catch(() => {});
-    throw err;
-  }
-  if (hadCurrent) await unlink(previous).catch(() => {});
+const replace = async (destination, copy) => {
+  if (await exists(destination)) await unlink(destination);
+  await copy();
 };
 
 const copyBundledDb = async (bundledMd5) => {
   if (Platform.OS === "android") {
-    await replace(LOCAL_DB_PATH, (to) => copyFileAssets(ASSET_DB_PATH, to), bundledMd5);
-    await replace(LOCAL_MD5_PATH, (to) => copyFileAssets(ASSET_MD5_PATH, to));
+    await replace(LOCAL_DB_PATH, () => copyFileAssets(ASSET_DB_PATH, LOCAL_DB_PATH));
+    await replace(LOCAL_MD5_PATH, () => copyFileAssets(ASSET_MD5_PATH, LOCAL_MD5_PATH));
   } else {
-    await replace(LOCAL_DB_PATH, (to) => copyFile(BUNDLED_DB_PATH, to), bundledMd5);
-    await replace(LOCAL_MD5_PATH, (to) => copyFile(BUNDLED_MD5_PATH, to));
+    await replace(LOCAL_DB_PATH, () => copyFile(BUNDLED_DB_PATH, LOCAL_DB_PATH));
+    await replace(LOCAL_MD5_PATH, () => copyFile(BUNDLED_MD5_PATH, LOCAL_MD5_PATH));
   }
-  // Written only after both files are in place, so an interrupted refresh is
-  // simply retried on the next launch.
   if (bundledMd5) await writeFile(BUNDLED_MARKER_PATH, bundledMd5);
 };
 
@@ -150,7 +111,7 @@ const copyBundledDb = async (bundledMd5) => {
  * NOT the live DB's checksum — so a user-applied remote DB update is preserved
  * within an app version and only a new app build's bundled DB triggers a refresh.
  */
-const seedOrRefreshDb = async () => {
+export const ensureDbExists = async () => {
   try {
     const dbExists = await exists(LOCAL_DB_PATH);
     const bundledMd5 = await readBundledMD5Hash();
@@ -164,58 +125,14 @@ const seedOrRefreshDb = async () => {
     // DB different from the one we last seeded (i.e. an app upgrade with new
     // data). If we can't read the bundled checksum, leave the existing DB alone.
     const seededMd5 = await readHashFile(BUNDLED_MARKER_PATH);
-    if (!bundledMd5 || bundledMd5 === seededMd5) return;
-
-    // No marker yet: the first launch of this code on an existing install, so
-    // the marker can't say what's on disk, but the saved checksum can. It is the
-    // bundled checksum after a seed, and the remote one after an in-app update.
-    // If it already equals this build's bundled DB, adopt it. That also covers
-    // a downloaded update, because the published remote DB IS this bundled DB
-    // (both be841ae9…, June 2025). Anything else predates both, e.g. the old
-    // bundled DB with empty Gurmukhi names, and is exactly what this refresh is
-    // for. If a newer DB is ever published remotely, bundle it in the next build
-    // too, or this would replace a newer download with an older bundled copy.
-    if (!seededMd5 && (await readHashFile(LOCAL_MD5_PATH)) === bundledMd5) {
-      await writeFile(BUNDLED_MARKER_PATH, bundledMd5);
-      return;
-    }
-
-    // A failed refresh is not fatal: the swap in `replace` puts the existing
-    // database back, and it is still perfectly usable. Throwing here would fail
-    // every query (initDB awaits this before opening). The marker is not
-    // written, so the refresh is tried again on the next launch.
-    try {
+    if (bundledMd5 && bundledMd5 !== seededMd5) {
       logMessage("Bundled DB changed since last seed — refreshing on-device DB.");
       await copyBundledDb(bundledMd5);
-    } catch (refreshError) {
-      logError("Bundled DB refresh failed; keeping the existing database", refreshError);
     }
   } catch (err) {
     logError(`ensureDbExists error: ${err.message}`);
     throw err;
   }
-};
-
-// initDB() calls this before every query, and the first queries of a launch run
-// in parallel. Each one used to start its own copy into the same staging file,
-// deleting the others' work mid-write. Now concurrent callers share one run.
-// After a successful run a call only re-checks that the file is still there
-// (a remote DB update replaces it), reseeding if it has gone.
-let ensureInFlight = null;
-let ensuredOnce = false;
-
-export const ensureDbExists = async () => {
-  if (ensuredOnce && !ensureInFlight && (await exists(LOCAL_DB_PATH))) return;
-  if (!ensureInFlight) {
-    ensureInFlight = seedOrRefreshDb()
-      .then(() => {
-        ensuredOnce = true;
-      })
-      .finally(() => {
-        ensureInFlight = null;
-      });
-  }
-  await ensureInFlight;
 };
 
 /**
@@ -243,9 +160,8 @@ export const fetchRemoteMD5Hash = async () => {
     const remoteHash = await response.text();
     return remoteHash.trim();
   } catch (error) {
-    // A breadcrumb only: every caller catches this error and reports it (offline
-    // as a breadcrumb, a real fault such as a 404/500 as an issue), so recording
-    // it here as well would file each failure twice.
+    // A phone without a connection is the usual reason to land here; the
+    // caller decides what to show. Not a Crashlytics error.
     logMessage(`Error fetching remote MD5 hash: ${error.message}`);
     throw error;
   }
@@ -261,8 +177,7 @@ export const writeRemoteMD5Hash = async () => {
     await writeFile(LOCAL_MD5_PATH, remoteHash.trim());
     return remoteHash.trim();
   } catch (error) {
-    // Breadcrumb only, for the same reason: the caller reports it.
-    logMessage(`Error writing remote MD5 hash: ${error.message}`);
+    logNetworkError(`Error writing remote MD5 hash: ${error.message}`, error);
     throw error;
   }
 };

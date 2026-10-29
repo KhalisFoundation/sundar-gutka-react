@@ -1,4 +1,4 @@
-import baniItemTitle from "./itemTitle";
+import convertToUnicode from "../utils";
 import {
   createPothi,
   EVENING_ID,
@@ -29,13 +29,8 @@ import {
  */
 export const buildDefaultPothis = (baniListData, names) => {
   const byId = new Map();
-  // Folder children too, as resolveBanis does: a reordered list can hold a
-  // Nitnem bani inside a folder, and all-or-nothing would then never seed.
   (baniListData ?? []).forEach((bani) => {
     if (bani?.id != null) byId.set(bani.id, bani);
-    (Array.isArray(bani?.folder) ? bani.folder : []).forEach((child) => {
-      if (child?.id != null && !byId.has(child.id)) byId.set(child.id, child);
-    });
   });
   const wanted = [...MORNING_NITNEM_IDS, ...EVENING_NITNEM_IDS];
   // All-or-nothing: a partial database would otherwise produce a Morning Nitnem
@@ -44,9 +39,14 @@ export const buildDefaultPothis = (baniListData, names) => {
 
   const itemsFor = (ids) =>
     ids.map((id) => {
-      // The Unicode name — the ASCII one renders as mojibake under Baloo, and
-      // the API stores this verbatim for every client that reads it back.
-      return makeBaniItem({ baaniId: id, title: baniItemTitle(byId.get(id)) });
+      const bani = byId.get(id);
+      return makeBaniItem({
+        baaniId: id,
+        // The Unicode name — the ASCII one renders as mojibake under Baloo, and
+        // the API stores this verbatim for every client that reads it back.
+        // Converted when the table has no Unicode column, as the list does.
+        title: bani.gurmukhiUni || convertToUnicode(bani.gurmukhi),
+      });
     });
 
   // FIXED ids, not minted ones. addPothi de-duplicates by id, so if this ever

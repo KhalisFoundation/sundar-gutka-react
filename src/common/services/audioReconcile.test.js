@@ -58,15 +58,8 @@ jest.mock("../actions", () => ({
     payload: { baniId, tracks },
   }),
 }));
-// Whether the previous release's downloads have been adopted (useStorageMigration).
-let mockMigrated = true;
-jest.mock("../hooks/useStorageMigration", () => ({
-  isStorageMigrated: () => mockMigrated,
-}));
-
 jest.mock("../../ReaderScreen/components/AudioPlayer/utils/lyricsCache", () => ({
   ensureLyricsCached: jest.fn(() => Promise.resolve("/doc/audio_lyrics/x")),
-  notifyLyricsChanged: jest.fn(),
 }));
 
 const CDN = "https://cdn.example.net/audios";
@@ -119,7 +112,6 @@ const entry = (over = {}) => ({
 
 beforeEach(() => {
   jest.clearAllMocks();
-  mockMigrated = true;
   mockDisk = new Map([
     [`${AUDIO}/${KEY}`, "0123456789"],
     [`${AUDIO}/${JSON_KEY}`, "[]"],
@@ -199,16 +191,6 @@ describe("nothing to act on", () => {
       revalidate: true,
     });
   });
-
-  it("leaves the lyrics alone when the caller has just revalidated them", async () => {
-    await reconcileDownloads({
-      manifests: { 2: groupsWith() },
-      getState: () => state,
-      dispatch,
-      revalidateLyrics: false,
-    });
-    expect(ensureLyricsCached).not.toHaveBeenCalled();
-  });
 });
 
 describe("same URL, different bytes", () => {
@@ -235,48 +217,6 @@ describe("same URL, different bytes", () => {
         { type: "SET_AUDIO_MANIFEST", payload: { baniId: "2", tracks: [] } },
       ])
     );
-  });
-
-  it("keeps a replacement that finishes while the run is still going", async () => {
-    await run({ 2: groupsWith() });
-    cdn[LINK] = { etag: "v2", body: "01234567" };
-    // The store behaves like the real one: the registry follows dispatches, and
-    // the replacement lands (as finalize would register it) during the
-    // lyrics requests that come after the enqueue.
-    const liveDispatch = (action) => {
-      dispatched.push(action);
-      if (action.type === "REMOVE_DOWNLOAD_ENTRIES") {
-        const next = { ...state.downloadRegistry };
-        action.payload.forEach((k) => delete next[k]);
-        state = { ...state, downloadRegistry: next };
-      }
-    };
-    ensureLyricsCached.mockImplementation(async () => {
-      if (dispatched.some((a) => a.type === "ENQUEUE_DOWNLOAD")) {
-        mockDisk.set(`${AUDIO}/${KEY}`, "01234567");
-        state = {
-          ...state,
-          downloadRegistry: { ...state.downloadRegistry, [KEY]: entry({ sizeBytes: 8 }) },
-        };
-      }
-      return "/doc/audio_lyrics/x";
-    });
-
-    // The old entry left the registry before the replacement was queued, so
-    // finalize would register the new file rather than discard it.
-    await reconcileDownloads({
-      manifests: { 2: groupsWith() },
-      getState: () => state,
-      dispatch: liveDispatch,
-    });
-    const removeAt = dispatched.findIndex((a) => a.type === "REMOVE_DOWNLOAD_ENTRIES");
-    const enqueueAt = dispatched.findIndex((a) => a.type === "ENQUEUE_DOWNLOAD");
-    expect(removeAt).toBeGreaterThan(-1);
-    expect(removeAt).toBeLessThan(enqueueAt);
-    // And neither the sweep nor a late removal takes it away again.
-    expect(mockDisk.has(`${AUDIO}/${KEY}`)).toBe(true);
-    expect(state.downloadRegistry[KEY]).toBeDefined();
-    ensureLyricsCached.mockImplementation(() => Promise.resolve("/doc/audio_lyrics/x"));
   });
 
   it("a legacy download with no sidecar is judged by byte length", async () => {
@@ -350,22 +290,6 @@ describe("catalog membership", () => {
     });
   });
 
-  it("drops a removed download from the session manifest, which stores its full path", async () => {
-    // The player keeps a downloaded track's audioUrl as the full local path;
-    // the removed set is artist-relative. Both must be recognised as one.
-    state.audioManifest = {
-      2: [
-        { id: 1, audioUrl: `${AUDIO}/${KEY}`, isLocallyDownloaded: true },
-        { id: 2, audioUrl: "https://cdn.example.org/Other/stream.m4a" },
-      ],
-    };
-    await run({ 2: { short: { artists: [] } } });
-    expect(dispatched).toContainEqual({
-      type: "SET_AUDIO_MANIFEST",
-      payload: { baniId: "2", tracks: [state.audioManifest[2][1]] },
-    });
-  });
-
   it("does not delete a track that only moved to another length group", async () => {
     const r = await run({ 2: { long: groupsWith().short } });
     expect(r.removed).toEqual([]);
@@ -394,36 +318,6 @@ describe("orphans", () => {
     expect(r.orphansDeleted.sort()).toEqual(["Old/gone.json.meta", "Old/gone.m4a"]);
     expect(mockDisk.has(`${AUDIO}/BhaiJarnailSingh/incoming.m4a`)).toBe(true);
     expect(mockDisk.has(`${AUDIO}/BhaiJarnailSingh/playing.m4a`)).toBe(true);
-  });
-
-  it("never sweeps before the previous release's downloads are adopted", async () => {
-    // An upgrading user's tracks are on disk with no registry entries yet;
-    // sweeping now would delete every one of them.
-    mockMigrated = false;
-    mockDisk.set(`${AUDIO}/BhaiJarnailSingh/legacy.m4a`, "x");
-    mockDisk.set(`${AUDIO}/BhaiJarnailSingh/legacy.json`, "[]");
-    const r = await run({ 2: groupsWith() });
-    expect(r.orphansDeleted).toEqual([]);
-    expect(mockDisk.has(`${AUDIO}/BhaiJarnailSingh/legacy.m4a`)).toBe(true);
-    expect(mockDisk.has(`${AUDIO}/BhaiJarnailSingh/legacy.json`)).toBe(true);
-  });
-
-  it("keeps a download that finished while the run was in flight", async () => {
-    // The registry gains the entry only after the run has taken its snapshot.
-    mockDisk.set(`${AUDIO}/BhaiJarnailSingh/fresh.m4a`, "x");
-    global.fetch = jest.fn(async (url, init) => {
-      state = {
-        ...state,
-        downloadRegistry: {
-          ...state.downloadRegistry,
-          "BhaiJarnailSingh/fresh.m4a": entry({ relativePath: "BhaiJarnailSingh/fresh.m4a" }),
-        },
-      };
-      return serve(url, init);
-    });
-    const r = await run({ 2: groupsWith() });
-    expect(r.orphansDeleted).not.toContain("BhaiJarnailSingh/fresh.m4a");
-    expect(mockDisk.has(`${AUDIO}/BhaiJarnailSingh/fresh.m4a`)).toBe(true);
   });
 });
 

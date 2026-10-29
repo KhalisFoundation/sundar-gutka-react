@@ -15,7 +15,6 @@ import {
   CustomText,
   STRINGS,
 } from "@common";
-import { mostCommonSpeed } from "./legacySpeed";
 
 const localStyles = StyleSheet.create({
   outerContainer: {
@@ -78,14 +77,13 @@ const AutoScrollComponent = ({
   // and on.
   const autoScrollSpeed = useSelector((state) => state.autoScrollSpeed);
   // The per-bani map it replaced, read only to carry an existing install's
-  // choice forward: this bani's own value if it had one, else the speed it
-  // was set to most often. The map is keyed by bani id, which says nothing
-  // about which was chosen last. Nothing writes it any more.
+  // choice forward: this bani's own value if it had one, else whatever was
+  // last chosen anywhere. Nothing writes it any more.
   const legacySpeeds = useSelector((state) => state.autoScrollSpeedObj) ?? {};
   const savedSpeed =
     autoScrollSpeed ??
     legacySpeeds[shabadID] ??
-    mostCommonSpeed(legacySpeeds) ??
+    Object.values(legacySpeeds).pop() ??
     constant.DEFAULT_SPEED;
 
   const [sliderValue, setSliderValue] = useState(savedSpeed);
@@ -181,10 +179,15 @@ const AutoScrollComponent = ({
             onSlidingComplete={handleSlidingComplete}
             thumbStyle={localStyles.sliderThumb}
             // The library's own prop, NOT a backgroundColor in `thumbStyle`.
+
             // It renders the thumb as { backgroundColor: thumbTintColor, ...thumbStyle },
+
             // so an ARRAY passed as thumbStyle spreads to { 0: ..., 1: ... } and the
+
             // colour inside it is silently dropped — leaving the default #343434,
+
             // which is why the dot stayed blackish grey.
+
             thumbTintColor={textColor}
             trackStyle={localStyles.sliderTrack}
             minimumTrackTintColor={textColor}

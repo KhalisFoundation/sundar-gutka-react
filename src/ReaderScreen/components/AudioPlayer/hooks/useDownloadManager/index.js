@@ -37,11 +37,6 @@ const useDownloadManager = (
   // data (same dialog the manual download button shows) — confirming turns
   // WiFi-only off, so every later download (manual or auto) proceeds without
   // asking again, until the user re-enables WiFi-only themselves.
-  //
-  // KNOWN: this enqueue payload and the Wi-Fi-only prompt are duplicated in
-  // DownloadButton. Both use the engine's rule (only cellular is metered); a
-  // shared requestDownload helper beside globalDownloadManager is planned in
-  // an upcoming PR so the two cannot drift.
   useEffect(() => {
     if (!autoDownloadOnStream || !currentPlaying?.audioUrl || isDownloaded || queueEntry) {
       return undefined;

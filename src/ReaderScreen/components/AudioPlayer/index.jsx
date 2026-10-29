@@ -31,7 +31,8 @@ const TRACK_MATCH_TOLERANCE_SEC = 2;
 const AudioPlayer = ({
   baniID,
   title,
-  notificationTitle = "",
+  // eslint-disable-next-line react/prop-types
+  notificationTitle,
   webViewRef,
   isNavBarVisible = false,
   barsDrop = 0,
@@ -273,6 +274,78 @@ const AudioPlayer = ({
     onShowBars();
   }, [isPlaying, onShowBars]);
 
+  const handleTrackSelect = useCallback(
+    async (selectedTrack) => {
+      try {
+        // Early return if selectedTrack is null or undefined
+        if (!selectedTrack) {
+          return;
+        }
+
+        isSelectingTrackRef.current = true;
+
+        const previousTrack = currentPlaying;
+        const previousPosition = progressRef.current?.position;
+
+        // Stop current playback and reset queue so same-track reopening
+        // doesn't retain old timeline/state (critical for preview -> full play transition)
+        await stop();
+        await reset();
+
+        // Save current sequence before switching artists
+        if (previousTrack?.id && previousPosition != null) {
+          let currentSequence = null;
+          if (previousTrack?.lyricsUrl) {
+            currentSequence = await getSequenceFromPosition(
+              previousTrack.lyricsUrl,
+              previousPosition
+            );
+          }
+
+          dispatch(setAudioProgress(baniID, previousTrack.id, previousPosition, currentSequence));
+        }
+
+        // Dispatch Redux action BEFORE setting React state so that when the
+        // safe-exit effect runs, defaultAudio is already up-to-date and the
+        // defaultAudioWiped check doesn't false-positive.
+        dispatch(setDefaultAudio(selectedTrack, baniID));
+
+        // Set the new track as current and close modal together
+        setCurrentPlaying(selectedTrack);
+        setShowTrackModal(false);
+        setHasAutoRestoredView(true);
+
+        // After selecting a track (including from preview -> Next), enter full player
+        // with playback already running so no extra Play tap is required.
+        // Don't actually start playback if screen is not focused (e.g. bani
+        // length changed while on Settings) — defer to focus-based auto-resume.
+        if (isAudioEnabled) {
+          const shouldPlay = isAudioAutoPlay && isFocused;
+          setIsPlayerActionLoading(true);
+          await addAndPlayTrack(
+            selectedTrack.id,
+            selectedTrack.audioUrl,
+            notificationTitle || title,
+            selectedTrack.displayName,
+            selectedTrack.lyricsUrl,
+            selectedTrack.trackLengthSec,
+            selectedTrack.trackSizeMB,
+            shouldPlay,
+            selectedTrack.remoteUrl || selectedTrack.audioUrl
+          );
+          setIsPlayerActionLoading(false);
+        }
+      } catch (error) {
+        handlePlayerError("switching track", error);
+        showErrorToast(`${STRINGS.UNABLE_TO_SWITCH_TRACK} ${STRINGS.PLEASE_TRY_AGAIN}`);
+        setIsPlayerActionLoading(false);
+      } finally {
+        isSelectingTrackRef.current = false;
+      }
+    },
+    [baniID, isAudioEnabled, isAudioAutoPlay, isFocused, currentPlaying]
+  );
+
   useEffect(() => {
     const autoStartFirstTrack = async () => {
       // Don't auto-start playback while the screen is not focused (e.g. user
@@ -296,7 +369,6 @@ const AudioPlayer = ({
       try {
         setIsPlayerActionLoading(true);
         // handleTrackSelect internally calls addAndPlayTrack — do not call it again here
-        // eslint-disable-next-line no-use-before-define -- defined later in the component; resolved by the time the effect runs
         await handleTrackSelect(firstPlayableTrack);
       } catch (error) {
         handlePlayerError("auto-starting first track", error);
@@ -316,7 +388,6 @@ const AudioPlayer = ({
     currentPlaying,
     defaultAudio,
     baniID,
-    // eslint-disable-next-line no-use-before-define -- defined below; moving it would change when this effect re-runs
     handleTrackSelect,
   ]);
 
@@ -405,12 +476,12 @@ const AudioPlayer = ({
         try {
           await stop();
         } catch (_) {
-          // Best effort: nothing may be playing to stop.
+          // nothing was playing to stop
         }
         try {
           await reset();
         } catch (_) {
-          // Best effort: player may already be reset.
+          // already reset; a second one is a no-op
         }
       })();
       setCurrentPlaying(null);
@@ -432,78 +503,6 @@ const AudioPlayer = ({
       showErrorToast(`${STRINGS.UNABLE_TO_SEEK} ${STRINGS.PLEASE_TRY_AGAIN}`);
     }
   };
-
-  const handleTrackSelect = useCallback(
-    async (selectedTrack) => {
-      try {
-        // Early return if selectedTrack is null or undefined
-        if (!selectedTrack) {
-          return;
-        }
-
-        isSelectingTrackRef.current = true;
-
-        const previousTrack = currentPlaying;
-        const previousPosition = progressRef.current?.position;
-
-        // Stop current playback and reset queue so same-track reopening
-        // doesn't retain old timeline/state (critical for preview -> full play transition)
-        await stop();
-        await reset();
-
-        // Save current sequence before switching artists
-        if (previousTrack?.id && previousPosition != null) {
-          let currentSequence = null;
-          if (previousTrack?.lyricsUrl) {
-            currentSequence = await getSequenceFromPosition(
-              previousTrack.lyricsUrl,
-              previousPosition
-            );
-          }
-
-          dispatch(setAudioProgress(baniID, previousTrack.id, previousPosition, currentSequence));
-        }
-
-        // Dispatch Redux action BEFORE setting React state so that when the
-        // safe-exit effect runs, defaultAudio is already up-to-date and the
-        // defaultAudioWiped check doesn't false-positive.
-        dispatch(setDefaultAudio(selectedTrack, baniID));
-
-        // Set the new track as current and close modal together
-        setCurrentPlaying(selectedTrack);
-        setShowTrackModal(false);
-        setHasAutoRestoredView(true);
-
-        // After selecting a track (including from preview -> Next), enter full player
-        // with playback already running so no extra Play tap is required.
-        // Don't actually start playback if screen is not focused (e.g. bani
-        // length changed while on Settings) — defer to focus-based auto-resume.
-        if (isAudioEnabled) {
-          const shouldPlay = isAudioAutoPlay && isFocused;
-          setIsPlayerActionLoading(true);
-          await addAndPlayTrack(
-            selectedTrack.id,
-            selectedTrack.audioUrl,
-            notificationTitle || title,
-            selectedTrack.displayName,
-            selectedTrack.lyricsUrl,
-            selectedTrack.trackLengthSec,
-            selectedTrack.trackSizeMB,
-            shouldPlay,
-            selectedTrack.remoteUrl || selectedTrack.audioUrl
-          );
-          setIsPlayerActionLoading(false);
-        }
-      } catch (error) {
-        handlePlayerError("switching track", error);
-        showErrorToast(`${STRINGS.UNABLE_TO_SWITCH_TRACK} ${STRINGS.PLEASE_TRY_AGAIN}`);
-        setIsPlayerActionLoading(false);
-      } finally {
-        isSelectingTrackRef.current = false;
-      }
-    },
-    [baniID, isAudioEnabled, isAudioAutoPlay, isFocused, currentPlaying]
-  );
 
   // Memoize error fallback renderer to prevent recreation
   const renderErrorFallback = useCallback(
@@ -649,7 +648,6 @@ const AudioPlayer = ({
 AudioPlayer.propTypes = {
   baniID: PropTypes.string.isRequired,
   title: PropTypes.string.isRequired,
-  notificationTitle: PropTypes.string,
   webViewRef: PropTypes.shape({
     current: PropTypes.shape({
       postMessage: PropTypes.func,

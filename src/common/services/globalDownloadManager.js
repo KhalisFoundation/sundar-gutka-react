@@ -147,14 +147,8 @@ const applyDownloadConfig = () => {
 // native tasks, which live inside the hook. The hook installs the real
 // implementation on mount; before that it's a safe no-op.
 export const downloadControls = {
-  cancel: async () => {},
-};
-
-// The connection a download used, for analytics: always a concrete value.
-const networkLabel = (type) => {
-  if (type === "wifi") return "wifi";
-  if (type === "cellular") return "mobile_data";
-  return "unknown";
+  // eslint-disable-next-line no-unused-vars -- placeholder until the manager mounts
+  cancel: async (_trackKey) => {},
 };
 
 const useGlobalDownloadManager = () => {
@@ -168,25 +162,7 @@ const useGlobalDownloadManager = () => {
   const wifiOnlyRef = useRef(downloadWifiOnly);
   const registryRef = useRef(downloadRegistry);
   // Conservative default: treat network as UNKNOWN until NetInfo.fetch() resolves.
-  //
-  // `isMetered` is the Wi-Fi-only gate, and only a CELLULAR connection is
-  // metered — the same rule DownloadButton, useDownloadManager and
-  // audioReconcile use. Treating everything that is not "wifi" as metered
-  // (ethernet, VPN, "other", "unknown") left a download the button had queued
-  // without asking stuck on "paused_wifi_only" with no prompt ever shown.
-  const networkRef = useRef({ isConnected: false, isMetered: true, type: null });
-  // Whether the last network event allowed downloads at all, so 'failed'
-  // entries are re-queued only on the TRANSITION back to an allowed network.
-  const allowedRef = useRef(false);
-  // relativePaths whose finalize is in flight: a download that finished while
-  // the app was terminated reaches finalize twice on relaunch (the attached
-  // `done` handler and reattach's direct call), before any re-render could
-  // refresh registryRef.
-  const finalizingRef = useRef(new Set());
-  // trackKey -> when the user last cancelled it. startTask awaits (the
-  // permission prompt, file checks) before it creates the native task; a cancel
-  // in that window found no task to stop, and the start went ahead anyway.
-  const cancelledAtRef = useRef(new Map());
+  const networkRef = useRef({ isConnected: false, isWifi: false });
   const dispatchRef = useRef(dispatch);
   // trackKey -> native DownloadTask. Prevents double-starting a live task.
   const activeTasksRef = useRef(new Map());
@@ -204,11 +180,6 @@ const useGlobalDownloadManager = () => {
   // trackKey -> stall-detection timer id. Re-armed on every progress event.
   const stallTimersRef = useRef(new Map());
   const [networkReady, setNetworkReady] = useState(false);
-  // The queue processor must not start anything until reattach has adopted the
-  // tasks still running from the last session (or given up): a rehydrated
-  // 'downloading' entry is 'queued' again, and starting it before reattach
-  // fills activeTasksRef created a second native task for the same file.
-  const [reattachDone, setReattachDone] = useState(false);
   // Bumped on every NetInfo event so the queue processor re-evaluates whenever
   // the connection changes. Without it the processor only woke when the QUEUE
   // changed, so a network that came back without moving any entry's status left
@@ -262,11 +233,7 @@ const useGlobalDownloadManager = () => {
       // message, not a Crashlytics error.
       logMessage(`Stall detected for ${trackKey} — restarting`);
       stopActiveTask(trackKey);
-      // Counted as an attempt, with backoff, so a transfer that never moves
-      // (an edge or captive network that accepts and then sends nothing)
-      // ends in 'failed' instead of restarting every 20s all session.
-      // eslint-disable-next-line no-use-before-define -- runs from a timer, after both are defined
-      handleFailure(trackKey, "STALLED");
+      dispatchRef.current(updateDownloadStatus(trackKey, "queued"));
     }, STALL_TIMEOUT_MS);
     stallTimersRef.current.set(trackKey, t);
   };
@@ -274,25 +241,14 @@ const useGlobalDownloadManager = () => {
   // Install the imperative cancel control used by the UI.
   useEffect(() => {
     downloadControls.cancel = async (trackKey) => {
-      cancelledAtRef.current.set(trackKey, Date.now());
       stopActiveTask(trackKey);
       const entry = queueRef.current[trackKey];
       dispatchRef.current(removeDownloadQueueEntry(trackKey));
       // Defensive: if the file had just reached its destination, remove it so a
-      // cancel never leaves a half-registered orphan behind — unless the
-      // download has already been finalized (the queue keeps a 'completed'
-      // entry for a moment after). That file is registered and playable;
-      // deleting it would leave the registry pointing at nothing.
+      // cancel never leaves a half-registered orphan behind.
       if (entry?.audioUrl) {
         const { artistName, fileName } = parseUrl(entry.audioUrl);
-        const relativePath = `${artistName}/${fileName}`;
-        const finalized =
-          entry.status === "completed" ||
-          Boolean(registryRef.current[relativePath]) ||
-          finalizingRef.current.has(relativePath);
-        if (!finalized) {
-          await unlink(`${AUDIO_DIRECTORY_PATH}/${relativePath}`).catch(() => {});
-        }
+        await unlink(`${AUDIO_DIRECTORY_PATH}/${artistName}/${fileName}`).catch(() => {});
       }
     };
     // eslint-disable-next-line react-hooks/exhaustive-deps
@@ -305,8 +261,7 @@ const useGlobalDownloadManager = () => {
     const current = queueRef.current[trackKey];
     if (!current) return;
     const retryCount = (current.retryCount ?? 0) + 1;
-    // Three retries (5s, 15s, 45s), then failed: the fourth failure ends it.
-    if (retryCount > RETRY_DELAYS.length) {
+    if (retryCount >= 3) {
       dispatchRef.current(
         updateDownloadStatus(trackKey, "failed", { errorMessage: message, retryCount })
       );
@@ -337,10 +292,6 @@ const useGlobalDownloadManager = () => {
       downloadNetwork,
     } = meta;
     clearStallTimer(trackKey);
-    // A second call for the same file while the first is still running (see
-    // finalizingRef) has nothing to add, and must not register it twice.
-    if (finalizingRef.current.has(relativePath)) return;
-    finalizingRef.current.add(relativePath);
     try {
       if (registryRef.current[relativePath]) {
         dispatchRef.current(removeDownloadQueueEntry(trackKey));
@@ -358,26 +309,24 @@ const useGlobalDownloadManager = () => {
       // Companion lyrics file (small; best-effort, JS-thread fetch).
       await downloadLyricsOnly(audioUrl, displayName, { skipDirectorySetup: true }).catch(() => {});
 
-      const registryEntry = {
-        relativePath,
-        artistDisplayName: displayName,
-        baniTitle,
-        // Unicode Gurmukhi name — ManageDownloads renders this with the Unicode
-        // BalooPaaji font, so without it the row falls back to the legacy-ASCII
-        // baniTitle and shows gibberish ("jpuji swibh" instead of ਜਪੁਜੀ ਸਾਹਿਬ).
-        baniNameUni,
-        baniId,
-        sizeMB: sizeMB ?? 0,
-        // Exact on-disk byte count — used for deterministic integrity checks
-        // (a file that isn't exactly this size is truncated/corrupt).
-        sizeBytes: Number(size) || 0,
-        hasLyrics: await exists(finalPath.replace(/\.[^/.]+$/, ".json")).catch(() => false),
-        downloadedAt: Date.now(),
-      };
-      dispatchRef.current(addDownloadEntry(registryEntry));
-      // Seen at once by anything that runs before the next render (a second
-      // finalize, a cancel), rather than only once registryRef catches up.
-      registryRef.current = { ...registryRef.current, [relativePath]: registryEntry };
+      dispatchRef.current(
+        addDownloadEntry({
+          relativePath,
+          artistDisplayName: displayName,
+          baniTitle,
+          // Unicode Gurmukhi name — ManageDownloads renders this with the Unicode
+          // BalooPaaji font, so without it the row falls back to the legacy-ASCII
+          // baniTitle and shows gibberish ("jpuji swibh" instead of ਜਪੁਜੀ ਸਾਹਿਬ).
+          baniNameUni,
+          baniId,
+          sizeMB: sizeMB ?? 0,
+          // Exact on-disk byte count — used for deterministic integrity checks
+          // (a file that isn't exactly this size is truncated/corrupt).
+          sizeBytes: Number(size) || 0,
+          hasLyrics: false,
+          downloadedAt: Date.now(),
+        })
+      );
       trackTrackDownload(baniId, displayName, baniTitle, downloadNetwork);
       dispatchRef.current(updateDownloadStatus(trackKey, "completed"));
       logMessage(`Download complete: ${relativePath}`);
@@ -400,7 +349,6 @@ const useGlobalDownloadManager = () => {
       handleFailure(trackKey, err?.message);
     } finally {
       activeTasksRef.current.delete(trackKey);
-      finalizingRef.current.delete(relativePath);
     }
   };
 
@@ -441,21 +389,9 @@ const useGlobalDownloadManager = () => {
   // suppressed unless POST_NOTIFICATIONS is granted. Cached as a promise so every
   // task in the first batch awaits the same single prompt; a no-op on Android <13
   // / iOS / once the user has already decided.
-  //
-  // Bounded once, not per task: the deadline's answer replaces the memo, so a
-  // request that never settles (notifee on Android 13+ with the permission
-  // already granted, invertase/notifee#609) costs the first start its few
-  // seconds and nothing after. Every later start used to wait the full
-  // deadline on that same pending promise.
   const ensureNotificationPermission = () => {
     if (!notifPermPromiseRef.current) {
-      const request = requestNotificationPermission().catch(() => false);
-      notifPermPromiseRef.current = withDeadline(request, NOTIF_PERMISSION_TIMEOUT_MS, false).then(
-        (granted) => {
-          notifPermPromiseRef.current = Promise.resolve(granted);
-          return granted;
-        }
-      );
+      notifPermPromiseRef.current = requestNotificationPermission().catch(() => false);
     }
     return notifPermPromiseRef.current;
   };
@@ -470,8 +406,7 @@ const useGlobalDownloadManager = () => {
       if (Date.now() - startedAt < STARTING_STALE_MS) return;
       logMessage(`Stale start guard cleared for ${trackKey} — retrying`);
     }
-    const startBeganAt = Date.now();
-    startingRef.current.set(trackKey, startBeganAt);
+    startingRef.current.set(trackKey, Date.now());
 
     // EVERYTHING below is inside the try, and the guard is released in the
     // finally. It used to await the notification prompt and parse the URL
@@ -486,7 +421,7 @@ const useGlobalDownloadManager = () => {
       // The transfer does not depend on it, so it gets a deadline instead of the
       // queue waiting on the OS indefinitely — and because the promise is
       // memoised, one unanswered prompt used to block every later download too.
-      await ensureNotificationPermission();
+      await withDeadline(ensureNotificationPermission(), NOTIF_PERMISSION_TIMEOUT_MS, false);
 
       const { artistName, fileName } = parseUrl(audioUrl);
       const relativePath = `${artistName}/${fileName}`;
@@ -504,21 +439,25 @@ const useGlobalDownloadManager = () => {
         // Connection the download starts on — recorded so the completion
         // analytics reports what the user actually used (always a concrete
         // value, never null).
-        downloadNetwork: networkLabel(networkRef.current.type),
+        // eslint-disable-next-line no-nested-ternary
+        downloadNetwork: networkRef.current.isWifi
+          ? "wifi"
+          : networkRef.current.isConnected
+          ? "mobile_data"
+          : "unknown",
         // Bani name (Punjabi) + artist (English) — the notification title.
         groupName:
           [entry.baniNameUni || entry.baniTitle, entry.displayName].filter(Boolean).join("  •  ") ||
           "Sundar Gutka",
       };
 
-      // A file already at the destination is not proof of a finished
-      // download: on Android both download engines write straight into it, so
-      // a transfer killed part-way leaves a partial file there. Registering
-      // that recorded its truncated size as exact, and the integrity check then
-      // passed a track that stops part-way for good. A finished download is
-      // registered by its `done` event (or by reattach); anything else here is
-      // discarded and fetched again.
+      // Already fully downloaded (e.g. re-enqueued) → finalize immediately.
       if (await exists(finalPath)) {
+        const { size } = await stat(finalPath);
+        if (Number(size) >= MIN_VALID_BYTES) {
+          await finalizeDownload(meta);
+          return;
+        }
         await unlink(finalPath).catch(() => {});
       }
 
@@ -532,16 +471,6 @@ const useGlobalDownloadManager = () => {
       }
 
       await ensureArtistDirectory(artistName);
-
-      // Cancelled, paused (the network dropped, or Wi-Fi-only now blocks it)
-      // or removed while this start was waiting: create nothing. Starting
-      // anyway overwrote the paused status with 'downloading' and spent a
-      // retry on a transfer that could not run.
-      const nowQueued = queueRef.current[trackKey]?.status === "queued";
-      if ((cancelledAtRef.current.get(trackKey) ?? 0) >= startBeganAt || !nowQueued) {
-        logMessage(`Start abandoned, no longer queued: ${trackKey}`);
-        return;
-      }
 
       dispatchRef.current(updateDownloadStatus(trackKey, "downloading"));
 
@@ -565,10 +494,6 @@ const useGlobalDownloadManager = () => {
       activeTasksRef.current.set(trackKey, task);
       attachHandlers(task, meta);
       task.start();
-      // Watched from the start, not only once `begin` fires: a request the
-      // system never begins (a busy download provider, OEM throttling) would
-      // otherwise sit on 'downloading' with no watchdog, holding a slot.
-      armStallTimer(trackKey);
     } catch (err) {
       logNetworkError(`Failed to start download for ${meta.displayName}: ${err?.message}`, err);
       if (err?.message === "NOT_ENOUGH_STORAGE") {
@@ -595,9 +520,9 @@ const useGlobalDownloadManager = () => {
 
   // ── Queue processor — starts allowed 'queued' entries ──────────────────────
   useEffect(() => {
-    if (!networkReady || !reattachDone) return;
+    if (!networkReady) return;
 
-    const { isConnected, isMetered } = networkRef.current;
+    const { isConnected, isWifi } = networkRef.current;
     const queued = Object.values(downloadQueue).filter((t) => t.status === "queued");
     if (queued.length === 0) return;
 
@@ -605,13 +530,13 @@ const useGlobalDownloadManager = () => {
       queued.forEach((t) => dispatch(updateDownloadStatus(t.trackKey, "paused_no_network")));
       return;
     }
-    if (isMetered && downloadWifiOnly) {
+    if (!isWifi && downloadWifiOnly) {
       queued.forEach((t) => dispatch(updateDownloadStatus(t.trackKey, "paused_wifi_only")));
       return;
     }
     queued.forEach((entry) => startTask(entry));
     // eslint-disable-next-line react-hooks/exhaustive-deps
-  }, [downloadQueue, downloadWifiOnly, networkReady, reattachDone, networkTick]);
+  }, [downloadQueue, downloadWifiOnly, networkReady, networkTick]);
 
   // ── Initial network state fetch (runs once on mount) ───────────────────────
   //
@@ -628,18 +553,15 @@ const useGlobalDownloadManager = () => {
       if (state) {
         networkRef.current = {
           isConnected: Boolean(state.isConnected),
-          isMetered: state.type === "cellular",
-          type: state.type,
+          isWifi: state.type === "wifi",
         };
       } else {
         // Assume an allowed network rather than stalling the queue. If that is
         // wrong the download fails and retries, which is recoverable; never
         // starting is not.
         logMessage("NetInfo did not answer in time — assuming an allowed network");
-        networkRef.current = { isConnected: true, isMetered: false, type: null };
+        networkRef.current = { isConnected: true, isWifi: true };
       }
-      allowedRef.current =
-        networkRef.current.isConnected && !(networkRef.current.isMetered && wifiOnlyRef.current);
       setNetworkReady(true);
     });
     return () => {
@@ -672,7 +594,6 @@ const useGlobalDownloadManager = () => {
       if (cancelled) return;
       if (existing === null) {
         logMessage("Reattach skipped: download engine did not answer in time");
-        setReattachDone(true);
         return;
       }
 
@@ -691,7 +612,6 @@ const useGlobalDownloadManager = () => {
                 audioUrl: meta.audioUrl,
                 displayName: meta.displayName,
                 baniTitle: meta.baniTitle,
-                baniNameUni: meta.baniNameUni,
                 baniId: meta.baniId,
                 sizeMB: meta.sizeMB,
               })
@@ -726,11 +646,7 @@ const useGlobalDownloadManager = () => {
       );
     };
 
-    reattach()
-      .catch((err) => logNetworkError(`Reattach failed: ${err?.message}`, err))
-      .finally(() => {
-        if (!cancelled) setReattachDone(true);
-      });
+    reattach();
     cleanupLegacyTempFiles().catch(() => {});
 
     return () => {
@@ -742,10 +658,8 @@ const useGlobalDownloadManager = () => {
   // ── Network listener ───────────────────────────────────────────────────────
   useEffect(() => {
     const unsubscribe = NetInfo.addEventListener(({ isConnected, type }) => {
-      const isMetered = type === "cellular";
-      networkRef.current = { isConnected: Boolean(isConnected), isMetered, type };
-      const wasAllowed = allowedRef.current;
-      allowedRef.current = Boolean(isConnected) && !(isMetered && wifiOnlyRef.current);
+      const isWifi = type === "wifi";
+      networkRef.current = { isConnected: Boolean(isConnected), isWifi };
       // Wake the queue processor on every event, whatever the branches below
       // decide: coming back online must restart a queued download on its own.
       setNetworkTick((n) => n + 1);
@@ -758,7 +672,7 @@ const useGlobalDownloadManager = () => {
             dispatch(updateDownloadStatus(t.trackKey, "paused_no_network"));
           }
         });
-      } else if (isMetered && wifiOnlyRef.current) {
+      } else if (!isWifi && wifiOnlyRef.current) {
         // Switched to cellular while WiFi-only is ON — stop so no metered bytes
         // flow, and mark waiting. Restarts from zero when WiFi returns.
         Object.values(queueRef.current).forEach((t) => {
@@ -768,43 +682,21 @@ const useGlobalDownloadManager = () => {
           }
         });
       } else {
-        // Back on an allowed network — re-queue everything that was waiting.
-        // 'failed' entries (retries exhausted, likely while the connection was
-        // down) are re-queued only on the TRANSITION from a blocked network, so
-        // they heal without a tap; on every other event they stay failed.
-        // NetInfo fires often while connected (signal, Wi-Fi details,
-        // foregrounding), and re-queueing on each gave a permanent failure
-        // such as a 404 a fresh retry budget all session. Storage failures are
-        // skipped in the reducer (retrying won't free space).
-        dispatch(
-          requeuePausedDownloads(
-            wasAllowed
-              ? ["paused_no_network", "paused_wifi_only"]
-              : ["paused_no_network", "paused_wifi_only", "failed"]
-          )
-        );
+        // Back on an allowed network — re-queue everything that was waiting,
+        // plus anything that exhausted its retries while offline ('failed') so
+        // it heals itself without the user needing to tap retry. Storage
+        // failures are skipped in the reducer (retrying won't free space).
+        dispatch(requeuePausedDownloads(["paused_no_network", "paused_wifi_only", "failed"]));
       }
     });
     return () => unsubscribe();
     // eslint-disable-next-line react-hooks/exhaustive-deps
   }, []);
 
-  // Wi-Fi-only switched while connected: OFF releases the gate; ON over a
-  // metered connection stops what is transferring, so no more mobile data
-  // flows against the user's new setting (they restart from zero on Wi-Fi).
+  // When WiFi-only is turned OFF while on cellular, release the gate.
   useEffect(() => {
-    const { isConnected, isMetered } = networkRef.current;
-    if (!isConnected) return;
-    allowedRef.current = !(isMetered && downloadWifiOnly);
-    if (!downloadWifiOnly) {
+    if (!downloadWifiOnly && networkRef.current.isConnected) {
       dispatch(requeuePausedDownloads(["paused_wifi_only"]));
-    } else if (isMetered) {
-      Object.values(queueRef.current).forEach((t) => {
-        if (t.status === "downloading") stopActiveTask(t.trackKey);
-        if (t.status === "downloading" || t.status === "queued") {
-          dispatch(updateDownloadStatus(t.trackKey, "paused_wifi_only"));
-        }
-      });
     }
     // eslint-disable-next-line react-hooks/exhaustive-deps
   }, [downloadWifiOnly]);

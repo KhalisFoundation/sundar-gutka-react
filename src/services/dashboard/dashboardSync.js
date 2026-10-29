@@ -671,14 +671,10 @@ export const buildActivityPayload = async ({ deviceId, since = 0 }) => {
   const rows = await getActivityUpdatedSince(since);
   return {
     deviceId,
-    // This device's OWN seconds, never the row's totals: a pull merges the
-    // account's sum into those, and the server adds every device's figure
-    // together — sending the totals counted the other devices' minutes again,
-    // and the next pull brought the inflated sum back down to every device.
     days: rows.map((r) => ({
       date: String(r.date),
-      readingSeconds: Math.max(0, Math.round(r.own_reading_seconds ?? 0)),
-      listeningSeconds: Math.max(0, Math.round(r.own_listening_seconds ?? 0)),
+      readingSeconds: Math.max(0, Math.round(r.reading_seconds ?? 0)),
+      listeningSeconds: Math.max(0, Math.round(r.listening_seconds ?? 0)),
     })),
   };
 };

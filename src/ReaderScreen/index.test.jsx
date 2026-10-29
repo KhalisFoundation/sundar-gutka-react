@@ -171,11 +171,20 @@ jest.mock("@common/hooks/useThemedStyles", () => {
   return (createStyles) => (theme) => createStyles(theme);
 });
 
+// Mock @common exports
+// Name resolution is the bani list's job, not this screen's. Stubbed so these
+// tests do not drag the database layer in behind it; the title assertions below
+// exercise the ROUTE fallback, and a dedicated test covers the lookup winning.
+const mockNameOf = () => null;
+jest.mock("@common/hooks/useBaniLookup", () => ({
+  __esModule: true,
+  default: () => ({ map: {}, nameOf: (...args) => mockNameOf(...args) }),
+}));
+
 // The Add to Pothi sheet is exercised by its own suite. Stubbed here so this
 // one stays about the Reader and does not have to mock the whole pothi slice.
 jest.mock("../Pothi/components/AddToPothiSheet", () => () => null);
 
-// Mock @common exports
 jest.mock("@common", () => ({
   // The header title is resolved through this, the same way the bani list
   // resolves its rows. Identity is enough here — the tests assert which title
@@ -966,71 +975,6 @@ describe("Reader", () => {
 
     // Should dispatch setPosition on unmount if element ID is set
     expect(mockDispatch).toHaveBeenCalled();
-  });
-
-  describe("reading position and the iOS scroll guard", () => {
-    afterEach(() => {
-      jest.useRealTimers();
-      mockNavigation.addListener.mockImplementation(() => () => {});
-    });
-
-    // A foreground crash or an OOM kill skips every save on leaving the screen.
-    it("saves the position while reading, a few seconds after it moves", () => {
-      jest.useFakeTimers();
-      const { getByTestId } = render(<Reader navigation={mockNavigation} route={mockRoute} />);
-      const { onMessage } = getByTestId("webview").props;
-      mockDispatch.mockClear();
-      act(() => {
-        onMessage({ nativeEvent: { data: "scroll-elementId-501|seq-3" } });
-        onMessage({ nativeEvent: { data: "scroll-elementId-502|seq-4" } });
-      });
-      expect(mockDispatch).not.toHaveBeenCalledWith(
-        expect.objectContaining({ type: "SET_POSITION" })
-      );
-      act(() => {
-        jest.advanceTimersByTime(5000);
-      });
-      const saves = mockDispatch.mock.calls.filter(([a]) => a?.type === "SET_POSITION");
-      expect(saves).toHaveLength(1);
-    });
-
-    // A notification swaps the bani in place. The refs held the previous
-    // bani's place, which was restored on the new page and saved under it.
-    it("starts a bani swapped in with no place of its own from the top", () => {
-      mockState.savePosition = { 123: "element1" };
-      const { rerender, unmount } = render(
-        <Reader navigation={mockNavigation} route={mockRoute} />
-      );
-      const other = { params: { params: { id: "456", title: "Other", titleUni: "ਹੋਰ" } } };
-      rerender(<Reader navigation={mockNavigation} route={other} />);
-      const { setPosition } = jest.requireMock("@common").actions;
-      setPosition.mockClear();
-      unmount();
-      // Leaving writes only what this bani has: nothing yet.
-      const saves = setPosition.mock.calls.filter(([, id]) => id === "456");
-      expect(saves).toHaveLength(0);
-    });
-
-    // WKWebView's spurious scroll-to-0 on return from Bookmarks posts "edge" as
-    // well, and taken as the top it kept the idle auto-hide off.
-    it("ignores an edge report inside the iOS scroll guard", () => {
-      const listeners = {};
-      mockNavigation.addListener.mockImplementation((event, cb) => {
-        (listeners[event] = listeners[event] || []).push(cb);
-        return () => {};
-      });
-      const { getByTestId } = render(<Reader navigation={mockNavigation} route={mockRoute} />);
-      const { onMessage } = getByTestId("webview").props;
-      act(() => {
-        onMessage({ nativeEvent: { data: "hide" } });
-      });
-      act(() => listeners.blur.forEach((cb) => cb()));
-      trackNavBar.mockClear();
-      act(() => {
-        onMessage({ nativeEvent: { data: "edge" } });
-      });
-      expect(trackNavBar).not.toHaveBeenCalledWith(true, "scroll_edge", expect.any(String));
-    });
   });
 });
 

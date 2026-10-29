@@ -94,10 +94,8 @@ export const selectTracksForBani = (groups, baniId, baniLength) => {
 
 /**
  * Fetch the raw, length-grouped audio manifest for one bani from the backend.
- * Returns `{ baniId, baniName, groups }`. A 404 is a definite answer — this bani
- * has no audio — and returns `{ ..., groups: {}, noAudio: true }`; `null` means
- * no answer at all (server error, malformed response, offline, timeout), which
- * a caller must not mistake for "no audio". Never throws.
+ * Returns `{ baniId, baniName, groups }`, or `null` when the bani has no audio
+ * (404), the response is malformed, or the network is unavailable. Never throws.
  *
  * The caller persists the returned `groups` into `audioCatalog` for offline use.
  */
@@ -109,10 +107,7 @@ export const fetchRawBaniAudio = async (baniId) => {
   const timeoutId = setTimeout(() => controller.abort(), REQUEST_TIMEOUT_MS);
   try {
     const res = await fetch(`${base}/${baniId}`, { signal: controller.signal });
-    if (res.status === 404) {
-      return { baniId: Number(baniId), baniName: "", groups: {}, noAudio: true };
-    }
-    if (!res.ok) return null;
+    if (!res.ok) return null; // 404 = no audio for this bani; treat as "nothing".
     const json = await res.json();
     const groups = json?.data;
     if (!groups || typeof groups !== "object") return null;
@@ -134,6 +129,6 @@ export const fetchRawBaniAudio = async (baniId) => {
  */
 export const fetchManifest = async (baniId, baniLength) => {
   const raw = await fetchRawBaniAudio(baniId);
-  if (!raw || raw.noAudio) return null;
+  if (!raw) return null;
   return { status: "success", data: selectTracksForBani(raw.groups, baniId, baniLength) };
 };

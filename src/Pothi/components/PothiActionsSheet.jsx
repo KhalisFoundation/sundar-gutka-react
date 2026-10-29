@@ -65,9 +65,6 @@ const PothiActionsSheet = ({ pothi = null, visible, onClose, startRenaming = fal
   }, []);
 
   // Reopening on a different pothi starts from that pothi's current name.
-  // Keyed on the id, not the object: a caller that hands in a fresh object on
-  // every render would otherwise wipe the name being typed.
-  const pothiId = pothi?.id;
   useEffect(() => {
     if (visible) {
       // Opened from the folder screen's overflow, rename IS the action, so the
@@ -76,7 +73,7 @@ const PothiActionsSheet = ({ pothi = null, visible, onClose, startRenaming = fal
       setGurmukhi(false);
       setName(pothi?.name ?? "");
     }
-  }, [visible, pothiId, startRenaming]);
+  }, [visible, pothi, startRenaming]);
 
   if (!pothi) return null;
 

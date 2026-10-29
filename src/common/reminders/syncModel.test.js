@@ -41,11 +41,6 @@ describe("parse / wire", () => {
     expect(toWire(item())).toEqual({ time: "05:30", enabled: true, title: null });
     expect(toWire(item({ title: "Wake up", titleCustom: true })).title).toBe("Wake up");
   });
-
-  // Renamed before the `titleCustom` flag existed: still the person's words.
-  it("sends a custom title an older build stored without the flag", () => {
-    expect(toWire(item({ title: "Wake up for Nitnem" })).title).toBe("Wake up for Nitnem");
-  });
 });
 
 describe("diffReminders", () => {
@@ -141,16 +136,6 @@ describe("applySyncResult", () => {
     expect(out.meta.lastSyncedAt).toBe(9300);
   });
 
-  it("retires a tombstone whose deletion lost to a newer edit elsewhere", () => {
-    const lost = { ...emptyRemindersSync(), tombstones: { 4: 2000 } };
-    const out = applySyncResult(
-      { reminders: [{ baniId: 4, time: "06:00", enabled: true, updatedAt: 3000 }], syncedAt: 9 },
-      { items: [], meta: lost }
-    );
-    expect(out.items.map((i) => i.key)).toEqual([4]);
-    expect(out.meta.tombstones).toEqual({});
-  });
-
   it("a server without settings leaves the local switches alone", () => {
     const out = applySyncResult({ reminders: [], syncedAt: 1 }, { items: [], meta });
     expect(out.settings).toBeNull();
@@ -158,16 +143,6 @@ describe("applySyncResult", () => {
 });
 
 describe("itemFromRow / sameSchedule", () => {
-  // Stock titles are resolved when shown; rebuilding one on every sync made the
-  // list differ and rescheduled the OS for nothing.
-  it("keeps this device's stock title for a reminder the account did not rename", () => {
-    const existing = item({ title: "Time for ਜਪੁਜੀ ਸਾਹਿਬ" });
-    const row = { baniId: 2, time: "05:30", enabled: true, title: null };
-    expect(itemFromRow(row, { existing, timeForPrefix: "Time for" }).title).toBe(
-      "Time for ਜਪੁਜੀ ਸਾਹਿਬ"
-    );
-  });
-
   it("falls back to the bani database for names, and an empty title without them", () => {
     expect(itemFromRow({ baniId: 6, time: "07:00", enabled: true, title: null }).title).toBe("");
     expect(

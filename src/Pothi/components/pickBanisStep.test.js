@@ -121,8 +121,6 @@ describe("the picker's actions and search are fixed around its list", () => {
     // rather than merely close, or the question would be a lie.
     const text = read("AddBanisSheet.jsx");
     expect(text).toContain("openedWith");
-    // Restored as it was, order and all — not re-applied as ticks, which put
-    // a removed bani back at the end.
-    expect(text).toMatch(/restorePothiItems[(]pothi\.id, openedWith/);
+    expect(text).toMatch(/setBanis[(]pothi, openedWith/);
   });
 });

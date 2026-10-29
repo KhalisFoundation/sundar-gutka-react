@@ -32,37 +32,25 @@ describe("signing out resets the whole dashboard", () => {
     return src.slice(start);
   };
 
-  /** accountScope's leaveLocalAccount, which the sign-out goes through. */
-  const leaveBody = () => {
-    const src = read("../sso/accountScope.js").replace(/\r\n/g, "\n");
-    const start = src.indexOf("export const leaveLocalAccount = async (dispatch) => {");
-    expect(start).toBeGreaterThan(-1);
-    return src.slice(start, src.indexOf("\n};\n", start));
-  };
-
-  it("leaves the account through leaveLocalAccount", () => {
-    expect(signOutBody()).toContain("leaveLocalAccount(dispatch)");
-  });
-
   it("points SQLite back at the signed-out store", () => {
     // Without this the streak, the calendar and the completed count keep
     // reading the account's own database file after sign-out.
-    expect(leaveBody()).toContain("switchAnalyticsAccount(null)");
+    expect(signOutBody()).toContain("switchAnalyticsAccount(null)");
   });
 
   it("resets the redux preferences", () => {
-    // Layout, reminders, nitnem, pothis.
-    expect(leaveBody()).toContain("purgeLocalUserData(dispatch)");
+    // Layout, reminders, nitnem, bookmarks.
+    expect(signOutBody()).toContain("purgeLocalUserData(dispatch)");
   });
 
   it("forgets which account the device belonged to", () => {
-    expect(leaveBody()).toContain("writeLastAccount(null)");
+    expect(signOutBody()).toContain("writeLastAccount(null)");
   });
 
   it("switches the database BEFORE resetting preferences", () => {
     // Otherwise a frame can render signed-out preferences over the previous
     // account's numbers.
-    const body = leaveBody();
+    const body = signOutBody();
     expect(body.indexOf("switchAnalyticsAccount(null)")).toBeLessThan(
       body.indexOf("purgeLocalUserData(dispatch)")
     );
@@ -72,7 +60,6 @@ describe("signing out resets the whole dashboard", () => {
     // Sign-out detaches; it does not destroy. Deleting here is what let a
     // device holding a few minutes of reading push over a real account.
     expect(source()).not.toContain("clearAllAnalyticsData");
-    expect(leaveBody()).not.toContain("clearAllAnalyticsData");
   });
 
   // Token EXPIRY ends a session too, and the two halves are scoped differently:

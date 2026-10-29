@@ -89,15 +89,6 @@ react {
 def enableProguardInReleaseBuilds = true
 
 /**
- * Upload the R8 mapping file and native symbols to Crashlytics. Only the build that
- * ships passes -PuploadCrashlyticsSymbols (or =true), so local, PR and QA release
- * builds do not depend on Firebase being reachable or send it symbols for builds
- * nobody installs. uploadCrashlyticsSymbols=false leaves uploads off.
- */
-def uploadCrashlyticsSymbolsValue = project.findProperty("uploadCrashlyticsSymbols")?.toString()?.trim()?.toLowerCase()
-def uploadCrashlyticsSymbols = uploadCrashlyticsSymbolsValue != null && (uploadCrashlyticsSymbolsValue == "" || uploadCrashlyticsSymbolsValue == "true")
-
-/**
  * The preferred build flavor of JavaScriptCore (JSC)
  *
  * For example, to use the international variant, you can use:
@@ -134,9 +125,6 @@ android {
             keyAlias 'androiddebugkey'
             keyPassword 'android'
         }
-        // The upload key, from gradle.properties or -P on the machine that
-        // cuts the release. Without it the release build is left unsigned
-        // rather than signed with the debug key.
         release {
             if (project.hasProperty('MYAPP_UPLOAD_STORE_FILE')) {
                 storeFile file(MYAPP_UPLOAD_STORE_FILE)
@@ -144,7 +132,7 @@ android {
                 keyAlias MYAPP_UPLOAD_KEY_ALIAS
                 keyPassword MYAPP_UPLOAD_KEY_PASSWORD
             }
-        }
+         }
     }
     buildTypes {
         debug {
@@ -169,9 +157,8 @@ android {
             // Unlike the R8 mapping file, the plugin does not upload native symbols on
             // its own, so this is wired up below. Both uploads authenticate from the app
             // details in google-services.json; nothing extra is configured on the machine
-            // that builds the release. Both happen only with -PuploadCrashlyticsSymbols.
+            // that builds the release.
             firebaseCrashlytics {
-                mappingFileUploadEnabled = uploadCrashlyticsSymbols
                 nativeSymbolUploadEnabled = true
                 // AGP nests this under the merge task name; the shorter path that most
                 // guides quote does not exist here and fails the build.
@@ -203,37 +190,8 @@ android {
 // compiled and a patch-package patch of it can never reach the APK. The guard
 // rewrites the packaged bytecode instead; its javadoc in android/buildSrc says
 // which crashes it addresses and why each one is safe to swallow.
-//
-// Escape hatch for React Native upgrades: -PskipAnimatedCrashGuard (or the same
-// key in gradle.properties) builds without the rewrite and without the version
-// pin below, so an upgrade is not blocked while the guard is re-verified. A build
-// made this way ships WITHOUT the crash fixes, so release tasks refuse it.
-// On for -PskipAnimatedCrashGuard or =true; skipAnimatedCrashGuard=false (e.g.
-// left in gradle.properties) keeps the guard on.
-def skipAnimatedCrashGuardValue = project.findProperty("skipAnimatedCrashGuard")?.toString()?.trim()?.toLowerCase()
-def skipAnimatedCrashGuard = skipAnimatedCrashGuardValue != null && (skipAnimatedCrashGuardValue == "" || skipAnimatedCrashGuardValue == "true")
-if (skipAnimatedCrashGuard) {
-    // Refused for anything that packages or installs the release variant
-    // (assembleRelease, bundleRelease, packageRelease, installRelease, and the
-    // same for any future flavor; plain `assemble`/`build` pull these in too), so
-    // the flag cannot ship a build that lacks the crash fixes this guard exists for.
-    gradle.taskGraph.whenReady { graph ->
-        def releaseTasks = graph.allTasks.findAll {
-            it.project == project && it.name ==~ /(assemble|bundle|package|install)\w*Release/
-        }
-        if (!releaseTasks.isEmpty()) {
-            throw new GradleException(
-                "-PskipAnimatedCrashGuard cannot be used to build a release " +
-                "(${releaseTasks*.name.join(', ')}). Re-verify the guard against the installed " +
-                "React Native instead.")
-        }
-    }
-    logger.warn("AnimatedCrashGuard is DISABLED (-PskipAnimatedCrashGuard). Do not release this build.")
-}
-
 androidComponents {
     onVariants(selector().all()) { variant ->
-        if (skipAnimatedCrashGuard) return
         variant.instrumentation.transformClassesWith(
             com.sundargutka.gradle.AnimatedCrashGuard.class,
             com.android.build.api.instrumentation.InstrumentationScope.ALL
@@ -246,23 +204,13 @@ androidComponents {
     }
 }
 
-// With -PuploadCrashlyticsSymbols, release builds upload the R8 mapping file
-// automatically, which is why Java stack traces come back readable. Native symbols
-// are the one Crashlytics upload the plugin leaves to the caller, so the same flag
-// chains it onto the release build here. Without the flag nothing is uploaded, and
-// a warning says so, because a shipped build without symbols is how the largest
-// native issue ended up with no frames at all.
-if (!uploadCrashlyticsSymbols) {
-    gradle.taskGraph.whenReady { graph ->
-        if (graph.allTasks.any { it.project == project && it.name ==~ /(assemble|bundle)\w*Release/ }) {
-            logger.warn("Crashlytics symbols are NOT uploaded for this release build. " +
-                "Pass -PuploadCrashlyticsSymbols for a build that ships.")
-        }
-    }
-}
-
+// Release builds already upload the R8 mapping file automatically, which is why
+// Java stack traces come back readable. Native symbols are the one Crashlytics
+// upload the plugin leaves to the caller, and a step someone has to remember on
+// the machine that cuts the release is a step that silently never happens - which
+// is exactly how the largest native issue ended up with no frames at all.
 tasks.configureEach { task ->
-    if (uploadCrashlyticsSymbols && (task.name == "assembleRelease" || task.name == "bundleRelease")) {
+    if (task.name == "assembleRelease" || task.name == "bundleRelease") {
         task.finalizedBy("uploadCrashlyticsSymbolFileRelease")
     }
     // The symbol generator reads merged_native_libs but does not declare it, so
@@ -279,12 +227,11 @@ tasks.configureEach { task ->
 def guardedReactNativeVersion = "0.78.2"
 def installedReactNativeVersion = new groovy.json.JsonSlurper()
         .parse(file("../../node_modules/react-native/package.json")).version
-if (!skipAnimatedCrashGuard && installedReactNativeVersion != guardedReactNativeVersion) {
+if (installedReactNativeVersion != guardedReactNativeVersion) {
     throw new GradleException(
         "AnimatedCrashGuard was verified against React Native ${guardedReactNativeVersion} " +
         "but ${installedReactNativeVersion} is installed. Re-verify the guard against the " +
-        "new runtime, then update guardedReactNativeVersion in android/app/build.gradle " +
-        "(or build with -PskipAnimatedCrashGuard until then; not for release).")
+        "new runtime, then update guardedReactNativeVersion in android/app/build.gradle.")
 }
 
 dependencies {
@@ -295,6 +242,9 @@ dependencies {
     implementation 'com.google.firebase:firebase-crashlytics:2.9.9'
     implementation project(':react-native-screens')
     implementation project(':react-native-safe-area-context')
+
+    // JVM unit tests for plain-Kotlin helpers (src/test); nothing ships in the app.
+    testImplementation 'junit:junit:4.13.2'
 
     if (hermesEnabled.toBoolean()) {
         implementation("com.facebook.react:hermes-android")

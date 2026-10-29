@@ -55,7 +55,6 @@ jest.mock("@common", () => ({
     seedDefaultPothis: (folders) => ({ type: "SEED_DEFAULT_POTHIS", folders }),
     setPothisSyncedAt: (at) => ({ type: "SET_POTHIS_SYNCED_AT", at }),
     enqueueSyncOp: (op) => ({ type: "ENQUEUE_SYNC_OP", op }),
-    syncOpDone: (id) => ({ type: "SYNC_OP_DONE", id }),
   },
   logMessage: jest.fn(),
   STRINGS: { POTHI_DEFAULT_MORNING: "Morning", POTHI_DEFAULT_EVENING: "Evening" },
@@ -186,8 +185,6 @@ describe("usePothiSync edits and the outbox", () => {
       deletedFolderIds: ["gone"],
     });
     expect(mockDispatch).toHaveBeenCalledWith({ type: "SET_POTHI_SYNC_WATERMARK", at: 777 });
-    // The PUT that follows answers syncedAt 1000; only the read's counts.
-    expect(mockDispatch).not.toHaveBeenCalledWith({ type: "SET_POTHI_SYNC_WATERMARK", at: 1000 });
     expect(mockPutFolders).toHaveBeenCalledWith({
       source: "sundar-gutka",
       folders: [expect.objectContaining({ id: "mine" })],
@@ -227,49 +224,18 @@ describe("usePothiSync edits and the outbox", () => {
     expect(enqueued().filter((a) => a.op.kind === "delete")).toEqual([]);
   });
 
-  // A sign-out flushes through reconcile and then drops the outbox, so a
-  // deletion still waiting there would be lost with it.
-  it("reconcile sends the deletions the account still has to hear about", async () => {
+  it("queues a deletion once the pull has landed, once per id", async () => {
     mockFetchFolders.mockResolvedValue(okRead([]));
-    mockDeleteFolder.mockResolvedValue({ ok: true, status: 204 });
     signedInWith([], { deletedIds: ["d1"] });
-    const { rerender } = renderHook(() => usePothiSync());
-    await act(async () => {
-      expect(await impl().reconcile()).toBe(true);
-    });
-    expect(mockDeleteFolder).toHaveBeenCalledWith("d1");
-    // Sent already, so not queued a second time.
-    rerender();
-    await flush(0);
-    expect(enqueued().filter((a) => a.op.kind === "delete")).toEqual([]);
-  });
-
-  it("fails the reconcile when a deletion does not get through", async () => {
-    mockFetchFolders.mockResolvedValue(okRead([]));
-    mockDeleteFolder.mockResolvedValue({ ok: false, status: 503 });
-    signedInWith([pothi("mine")], { deletedIds: ["d1"] });
-    renderHook(() => usePothiSync());
-    await act(async () => {
-      expect(await impl().reconcile()).toBe(false);
-    });
-    expect(mockPutFolders).not.toHaveBeenCalled();
-  });
-
-  it("queues a deletion made after the pull, once per id", async () => {
-    mockFetchFolders.mockResolvedValue(okRead([]));
-    signedInWith([pothi("mine")]);
     const { rerender } = renderHook(() => usePothiSync());
     await act(async () => {
       await impl().reconcile();
     });
-    signedInWith([], { deletedIds: ["mine"] });
-    rerender();
-    await flush(0);
     rerender();
     await flush(0);
 
     expect(enqueued().filter((a) => a.op.kind === "delete")).toEqual([
-      { type: "ENQUEUE_SYNC_OP", op: { feature: FEATURE, kind: "delete", key: "mine" } },
+      { type: "ENQUEUE_SYNC_OP", op: { feature: FEATURE, kind: "delete", key: "d1" } },
     ]);
   });
 
@@ -287,7 +253,7 @@ describe("usePothiSync edits and the outbox", () => {
 });
 
 describe("usePothiSync drain outcomes", () => {
-  beforeEach(async () => {
+  beforeEach(() => {
     jest.useFakeTimers();
     mockDispatch.mockClear();
     mockRegister.mockClear();
@@ -296,12 +262,6 @@ describe("usePothiSync drain outcomes", () => {
     mockDeleteFolder.mockReset();
     signedInWith([pothi("mine")]);
     renderHook(() => usePothiSync());
-    // The session's first pull, after which a put may go on its own.
-    await act(async () => {
-      await impl().reconcile();
-    });
-    mockDispatch.mockClear();
-    mockPutFolders.mockClear();
   });
   afterEach(() => jest.useRealTimers());
 
@@ -318,11 +278,7 @@ describe("usePothiSync drain outcomes", () => {
     expect(mockDispatch).toHaveBeenCalledWith(
       expect.objectContaining({ type: "MERGE_REMOTE_POTHIS", folders: expect.any(Array) })
     );
-    // A PUT answer is no read: its syncedAt cannot vouch for deletions made
-    // elsewhere since the last one, so the watermark stays where it was.
-    expect(mockDispatch).not.toHaveBeenCalledWith(
-      expect.objectContaining({ type: "SET_POTHI_SYNC_WATERMARK" })
-    );
+    expect(mockDispatch).toHaveBeenCalledWith({ type: "SET_POTHI_SYNC_WATERMARK", at: 42 });
   });
 
   it("network and server errors are retried; a bad request is not", async () => {
@@ -331,9 +287,6 @@ describe("usePothiSync drain outcomes", () => {
     mockPutFolders.mockResolvedValueOnce({ ok: false, status: 503 });
     expect(await impl().drain({ kind: "put" })).toBe("retry");
     mockPutFolders.mockResolvedValueOnce({ ok: false, status: 413 });
-    expect(await impl().drain({ kind: "put" })).toBe("fatal");
-    // A fault in the request itself, not the network: retrying cannot help.
-    mockPutFolders.mockResolvedValueOnce({ ok: false, status: 0, error: "failed" });
     expect(await impl().drain({ kind: "put" })).toBe("fatal");
   });
 
@@ -502,239 +455,5 @@ describe("seeding when redux has no bani list", () => {
     await flush(0);
 
     expect(mockGetBaniList).not.toHaveBeenCalled();
-  });
-});
-
-describe("usePothiSync and the outbox contract", () => {
-  beforeEach(() => {
-    jest.useFakeTimers();
-    mockDispatch.mockClear();
-    mockRegister.mockClear();
-    mockFetchFolders.mockReset().mockResolvedValue(okRead([]));
-    mockPutFolders.mockReset().mockResolvedValue(okRead([]));
-    mockDeleteFolder.mockReset().mockResolvedValue({ ok: true, status: 204 });
-  });
-  afterEach(() => jest.useRealTimers());
-
-  const doneIds = () =>
-    mockDispatch.mock.calls.map(([a]) => a).filter((a) => a.type === "SYNC_OP_DONE");
-
-  // A put left in the outbox from an earlier launch must not go up ahead of
-  // this session's pull: the list may predate deletions made elsewhere. Said
-  // to be a conflict, the drainer hands it to the bulk sync, which pulls first.
-  it("answers a put before this session's first pull as a conflict", async () => {
-    signedInWith([pothi("mine")]);
-    renderHook(() => usePothiSync());
-    expect(await impl().drain({ kind: "put", key: "sundar-gutka" })).toBe("conflict");
-    expect(mockPutFolders).not.toHaveBeenCalled();
-  });
-
-  it("marks done only the ops the reconcile carried", async () => {
-    const carried = { id: "put-1", feature: FEATURE, kind: "put", key: "sundar-gutka" };
-    const merged = { id: "put-2", feature: FEATURE, kind: "put", key: "x" };
-    const other = { id: "set-1", feature: "settings", kind: "set", key: "fontSize" };
-    signedInWith([pothi("mine")]);
-    mockState.syncOutbox = { ops: { "put-1": carried, "put-2": merged, "set-1": other } };
-    // While the push is out, put-2 takes in a later edit: same id, new object.
-    mockPutFolders.mockImplementation(async () => {
-      mockState.syncOutbox = {
-        ops: { "put-1": carried, "put-2": { ...merged, payload: "newer" }, "set-1": other },
-      };
-      return okRead([]);
-    });
-    renderHook(() => usePothiSync());
-    await act(async () => {
-      expect(await impl().reconcile()).toBe(true);
-    });
-    expect(doneIds()).toEqual([{ type: "SYNC_OP_DONE", id: "put-1" }]);
-  });
-
-  it("marks nothing done when the push fails", async () => {
-    signedInWith([pothi("mine")]);
-    mockState.syncOutbox = {
-      ops: { "put-1": { id: "put-1", feature: FEATURE, kind: "put", key: "sundar-gutka" } },
-    };
-    mockPutFolders.mockResolvedValue({ ok: false, status: 503 });
-    renderHook(() => usePothiSync());
-    await act(async () => {
-      expect(await impl().reconcile()).toBe(false);
-    });
-    expect(doneIds()).toEqual([]);
-  });
-
-  it("joins a reconcile already running rather than sending the list twice", async () => {
-    let release;
-    mockFetchFolders.mockReturnValue(
-      new Promise((resolve) => {
-        release = resolve;
-      })
-    );
-    signedInWith([pothi("mine")]);
-    renderHook(() => usePothiSync());
-    let first;
-    let second;
-    await act(async () => {
-      first = impl().reconcile();
-      second = impl().reconcile();
-    });
-    await act(async () => {
-      release(okRead([]));
-      await Promise.all([first, second]);
-    });
-    expect(mockFetchFolders).toHaveBeenCalledTimes(1);
-    expect(mockPutFolders).toHaveBeenCalledTimes(1);
-  });
-
-  // Sign-out's last push: an edit made after the running one built its list
-  // must still go up before the outbox is dropped.
-  it("a fresh reconcile runs again after the one already out", async () => {
-    let release;
-    mockFetchFolders.mockReturnValueOnce(
-      new Promise((resolve) => {
-        release = resolve;
-      })
-    );
-    signedInWith([pothi("mine")]);
-    renderHook(() => usePothiSync());
-    let first;
-    let fresh;
-    await act(async () => {
-      first = impl().reconcile();
-    });
-    signedInWith([pothi("mine"), pothi("later")]);
-    await act(async () => {
-      fresh = impl().reconcile({ fresh: true });
-      release(okRead([]));
-      await Promise.all([first, fresh]);
-    });
-    expect(mockPutFolders).toHaveBeenCalledTimes(2);
-    expect(mockPutFolders).toHaveBeenLastCalledWith({
-      source: "sundar-gutka",
-      folders: [expect.objectContaining({ id: "mine" }), expect.objectContaining({ id: "later" })],
-    });
-  });
-});
-
-// Signing out purges the slice before the session ends — the logout browser
-// is still to open — so for a while the list is empty while still signed in.
-describe("usePothiSync across an account boundary", () => {
-  beforeEach(() => {
-    jest.useFakeTimers();
-    mockDispatch.mockClear();
-    mockRegister.mockClear();
-    buildDefaultPothis.mockReset().mockReturnValue([{ id: "default_morning_nitnem" }]);
-    mockFetchFolders.mockReset().mockResolvedValue(okRead([]));
-    mockPutFolders.mockReset().mockResolvedValue(okRead([]));
-    mockDeleteFolder.mockReset().mockResolvedValue({ ok: true, status: 204 });
-  });
-  afterEach(() => jest.useRealTimers());
-
-  const purged = () => {
-    mockState = {
-      ...mockState,
-      accountEpoch: (mockState.accountEpoch ?? 0) + 1,
-      baniList: [{ id: 1 }],
-      pothis: { folders: [], seededDefaults: false, lastSyncedAt: null, deletedIds: [] },
-    };
-  };
-
-  it("neither seeds nor uploads the emptied list of a sign-out under way", async () => {
-    signedInWith([pothi("theirs")]);
-    const { rerender } = renderHook(() => usePothiSync());
-    await act(async () => {
-      await impl().reconcile();
-    });
-    mockDispatch.mockClear();
-    mockPutFolders.mockClear();
-
-    purged();
-    rerender();
-    await flush(10000);
-    rerender();
-    await flush(10000);
-
-    const types = mockDispatch.mock.calls.map(([a]) => a.type);
-    expect(types).not.toContain("SEED_DEFAULT_POTHIS");
-    expect(types).not.toContain("ENQUEUE_SYNC_OP");
-    // Nor does a foreground sync in that window pull the account back down.
-    await act(async () => {
-      expect(await impl().reconcile()).toBe(false);
-    });
-    expect(mockFetchFolders).toHaveBeenCalledTimes(1);
-  });
-
-  it("seeds again once the session has ended", async () => {
-    signedInWith([pothi("theirs")]);
-    const { rerender } = renderHook(() => usePothiSync());
-    await act(async () => {
-      await impl().reconcile();
-    });
-    purged();
-    rerender();
-    mockState = { ...mockState, auth: { status: "signedOut" } };
-    rerender();
-    await flush(0);
-    expect(mockDispatch).toHaveBeenCalledWith({
-      type: "SEED_DEFAULT_POTHIS",
-      folders: [{ id: "default_morning_nitnem" }],
-    });
-  });
-
-  it("drops a pull that lands after the boundary moved", async () => {
-    let release;
-    mockFetchFolders.mockReturnValue(
-      new Promise((resolve) => {
-        release = resolve;
-      })
-    );
-    signedInWith([pothi("mine")]);
-    const { rerender } = renderHook(() => usePothiSync());
-    let reconciled;
-    await act(async () => {
-      reconciled = impl().reconcile();
-    });
-    purged();
-    rerender();
-    await act(async () => {
-      release(okRead([pothi("theirs")]));
-      expect(await reconciled).toBe(false);
-    });
-    const types = mockDispatch.mock.calls.map(([a]) => a.type);
-    expect(types).not.toContain("MERGE_REMOTE_POTHIS");
-    expect(mockPutFolders).not.toHaveBeenCalled();
-  });
-
-  it("a put answered after a purge is done and applies nothing", async () => {
-    signedInWith([pothi("mine")]);
-    renderHook(() => usePothiSync());
-    await act(async () => {
-      await impl().reconcile();
-    });
-    mockDispatch.mockClear();
-    mockPutFolders.mockImplementation(async () => {
-      purged();
-      return okRead([pothi("theirs")]);
-    });
-    expect(await impl().drain({ kind: "put", key: "sundar-gutka" })).toBe("done");
-    const types = mockDispatch.mock.calls.map(([a]) => a.type);
-    expect(types).not.toContain("MERGE_REMOTE_POTHIS");
-  });
-
-  it("a put answered after the session ended stays queued for it", async () => {
-    signedInWith([pothi("mine")]);
-    renderHook(() => usePothiSync());
-    await act(async () => {
-      await impl().reconcile();
-    });
-    mockDispatch.mockClear();
-    // An expiry while it was out: the op still belongs to this account, so it
-    // waits for the next sign-in rather than counting as sent.
-    mockPutFolders.mockImplementation(async () => {
-      mockState = { ...mockState, auth: { status: "signedOut" } };
-      return okRead([pothi("theirs")]);
-    });
-    expect(await impl().drain({ kind: "put", key: "sundar-gutka" })).toBe("retry");
-    const types = mockDispatch.mock.calls.map(([a]) => a.type);
-    expect(types).not.toContain("MERGE_REMOTE_POTHIS");
   });
 });

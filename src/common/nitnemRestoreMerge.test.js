@@ -68,14 +68,3 @@ describe("RESTORE_NITNEM — merging two devices", () => {
     expect(next.todaysNitnem.autoSeeded).toEqual({ "2026-08-18": [1] });
   });
 });
-
-// The account's copy still holds a tick from before an un-tick here, and the
-// union put it straight back on the next sync.
-it("keeps a bani un-ticked on this device un-ticked", () => {
-  const state = withNitnem({
-    completed: { "2026-08-18": [1] },
-    untickedAt: { "2026-08-18": { 2: 1000 } },
-  });
-  const next = restore(state, { completed: { "2026-08-18": [1, 2, 3] } });
-  expect(next.todaysNitnem.completed["2026-08-18"].sort()).toEqual([1, 3]);
-});

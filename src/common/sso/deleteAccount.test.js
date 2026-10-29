@@ -25,11 +25,7 @@ jest.mock("@common", () => {
 jest.mock("../constant", () => ({ SSO_IDP_URL: "https://idp.test" }));
 
 const respond = (status) => {
-  global.fetch = jest.fn().mockResolvedValue({
-    status,
-    ok: status >= 200 && status < 300,
-    text: () => Promise.resolve(""),
-  });
+  global.fetch = jest.fn().mockResolvedValue({ status });
 };
 
 beforeEach(() => {

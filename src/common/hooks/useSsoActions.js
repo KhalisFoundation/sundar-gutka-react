@@ -1,16 +1,19 @@
 import { useCallback } from "react";
 import { useDispatch, useSelector } from "react-redux";
-import { requestFlush } from "../../services/dashboard/syncSignal";
 import { syncAll } from "../../services/sync/syncRegistry";
-import { setAuthBusy } from "../actions";
+import { setAuthSession, clearAuthSession, setAuthBusy } from "../actions";
 import { showConfirm } from "../components/ConfirmDialog";
 import { trackSsoEvent } from "../firebase/analytics";
 import STRINGS from "../localization";
-import { destroyLocalAccountData, leaveLocalAccount } from "../sso/accountScope";
+import {
+  destroyLocalAccountData,
+  purgeLocalUserData,
+  switchAnalyticsAccount,
+  writeLastAccount,
+} from "../sso/accountScope";
 import { requestAccountDeletion } from "../sso/deleteAccount";
 import { startLogin, startLogout } from "../sso/khalisSso";
-import { beginSession, endSession } from "../sso/session";
-import { readToken } from "../sso/tokenStore";
+import { clearToken, readToken } from "../sso/tokenStore";
 import { showErrorToast, showInfoToast } from "../toast";
 import withDeadline from "../withDeadline";
 
@@ -20,9 +23,9 @@ import withDeadline from "../withDeadline";
 const SIGN_OUT_FLUSH_MS = 6000;
 
 /**
- * Sign-in / sign-out actions for the Settings account row (and, with the
- * Dashboard, its header avatar), so the busy-state, toast and dispatch handling
- * lives in exactly one place.
+ * Sign-in / sign-out actions shared by the Settings account row and the
+ * Dashboard header avatar, so the busy-state, toast and dispatch handling lives
+ * in exactly one place.
  *
  * Session *restoration* and expiry are not here — those belong to
  * useSsoSession, which owns the lifecycle for the whole app.
@@ -46,13 +49,7 @@ const useSsoActions = ({ entryPoint = "unknown" } = {}) => {
         entry_point: entryPoint,
       });
       if (result.status === "success") {
-        // Through the session's own begin, as a redirect caught by
-        // useSsoSession is: the account check, then the session, then its
-        // expiry timer. On iOS the browser hands the URL straight back and no
-        // Linking event fires, so this is the ONLY path a sign-in takes there.
-        // On Android both paths run; the account checks run one at a time and
-        // the second finds the owner already recorded.
-        await beginSession(result.user, result.expiresAt);
+        dispatch(setAuthSession({ user: result.user, expiresAt: result.expiresAt }));
       } else if (result.status === "error") {
         showErrorToast(STRINGS.SIGN_IN_FAILED);
       }
@@ -77,37 +74,14 @@ const useSsoActions = ({ entryPoint = "unknown" } = {}) => {
         try {
           // Push before the session goes. Everything this device changed but
           // has not sent yet — a setting, a reminder, a pothi — belongs to the
-          // account being left, and leaveLocalAccount below drops the outbox
+          // account being left, and purgeLocalUserData below drops the outbox
           // that was holding it. Sending afterwards is impossible: the token
           // is gone and so is the queue.
           //
           // Deadlined, because signing out must work on a phone with no
           // signal. A sync that cannot finish in time is abandoned and the
           // sign-out carries on; the alternative is a dialog that hangs.
-          // The dashboard is not a registered feature, so it is flushed beside
-          // the rest: a nitnem tick or layout edit still in its debounce.
-          await withDeadline(
-            Promise.all([syncAll({ fresh: true }), requestFlush("sign-out")]),
-            SIGN_OUT_FLUSH_MS,
-            false
-          );
-
-          // Signing out is an explicit "I am done on this device", so the
-          // account's data goes with the session. Without this the next
-          // person to open the app — signed in as someone else, or not signed
-          // in at all — still holds this account's. Its preferences are
-          // dropped and its dashboard history detached, not deleted: the
-          // history's file stays on the phone for this account's next
-          // sign-in, unpushed reading included.
-          //
-          // Before the logout browser, not after: the token is cleared as it
-          // opens, and an app swiped away while it is in front would
-          // otherwise launch signed out with the account's data still here.
-          //
-          // Deliberately here and NOT in useSsoSession.endSession, which also
-          // fires on token expiry: resetting there would cost a user their own
-          // setup for the crime of not opening the app for a week.
-          await leaveLocalAccount(dispatch);
+          await withDeadline(syncAll(), SIGN_OUT_FLUSH_MS, false);
 
           // Read before clearing: /logout/all needs the token to end the IdP
           // session. startLogout clears local storage itself.
@@ -115,7 +89,33 @@ const useSsoActions = ({ entryPoint = "unknown" } = {}) => {
           const { remote } = await startLogout(token);
           // `remote` says whether the IdP session ended too, or only this device's.
           trackSsoEvent("sign_out", { remote, entry_point: entryPoint });
-          await endSession();
+          dispatch(clearAuthSession());
+
+          // Signing out is an explicit "I am done on this device", so the
+          // dashboard goes with the session. Without this the next person to
+          // open the app — signed in as someone else, or not signed in at all —
+          // still sees this account's streaks, history and bookmarks.
+          //
+          // Deliberately here and NOT in useSsoSession.endSession, which also
+          // fires on token expiry: resetting there would cost a user their own
+          // dashboard for the crime of not opening the app for a week.
+          //
+          // TWO separate things, and missing either one leaves half a session
+          // on screen:
+          //
+          //   switchAnalyticsAccount — points SQLite back at the signed-out
+          //     store. Without it the app keeps reading the account's own
+          //     database file, so the streak, the calendar and the completed
+          //     count all stay on screen after signing out. Nothing is deleted;
+          //     the account's file is simply no longer the one being read.
+          //   purgeLocalUserData — resets the redux preferences: layout,
+          //     reminders, nitnem, bookmarks.
+          //
+          // The database first, so no frame renders signed-out preferences over
+          // the previous account's numbers.
+          await switchAnalyticsAccount(null);
+          await purgeLocalUserData(dispatch);
+          await writeLastAccount(null);
           // An expired token can't end the IdP session (the SP 401s it), so be
           // honest rather than implying a full sign-out happened.
           if (!remote) showInfoToast(STRINGS.SIGN_OUT_LOCAL_ONLY);
@@ -160,27 +160,24 @@ const useSsoActions = ({ entryPoint = "unknown" } = {}) => {
           const result = await requestAccountDeletion();
           trackSsoEvent(result.ok ? "account_deleted" : "account_delete_failed", {
             reason: result.ok ? null : result.reason,
-            entry_point: entryPoint,
           });
 
           if (result.ok) {
-            // The session first: the account is disabled now, so a sync still
-            // out comes back 401, and with the token still held that read as
-            // an expiry — "session expired" beside "account deleted". Ending
-            // it detaches the history, so the wipe names the account's file.
-            await endSession();
-            await destroyLocalAccountData(dispatch, user?.email);
+            await destroyLocalAccountData(dispatch);
+            await clearToken();
+            dispatch(clearAuthSession());
             showInfoToast(STRINGS.DELETE_ACCOUNT_DONE);
             return;
           }
 
           if (result.reason === "session") {
-            // The token is no good, so the account was never asked. End the
-            // session locally — the same shape as an expiry — and leave the
-            // data alone: the account still exists, and signing back in to
-            // retry finds its settings and reminders where they were. The owner
-            // stays recorded, so a different account signing in still purges.
-            await endSession();
+            // The token is no good, so the account was never asked. Sign out
+            // locally — the same shape as an expiry — and leave the data alone.
+            await switchAnalyticsAccount(null);
+            await purgeLocalUserData(dispatch);
+            await writeLastAccount(null);
+            await clearToken();
+            dispatch(clearAuthSession());
             showErrorToast(STRINGS.SESSION_EXPIRED);
             return;
           }
@@ -195,7 +192,7 @@ const useSsoActions = ({ entryPoint = "unknown" } = {}) => {
         }
       },
     });
-  }, [busy, dispatch, entryPoint, user]);
+  }, [busy, dispatch]);
 
   return { status, user, busy, signIn, signOut, deleteAccount };
 };

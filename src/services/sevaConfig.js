@@ -3,7 +3,6 @@ import { constant, logNetworkError } from "@common";
 import STRINGS from "../common/localization";
 import { parseSevaContent } from "../SevaScreen/utils/sevaContentParser";
 import { buildBundledSevaLayout } from "./sevaBundledContent";
-import { fetchJson, langToApi } from "./sevaRequest";
 
 /**
  * Seva configuration service.
@@ -209,6 +208,18 @@ const buildConfig = (dyn, source = "network", lang = "en") => ({
   },
 });
 
+const fetchJson = async (url) => {
+  const controller = new AbortController();
+  const timeoutId = setTimeout(() => controller.abort(), 6000);
+  try {
+    const res = await fetch(url, { signal: controller.signal });
+    if (!res.ok) throw new Error(`HTTP ${res.status}`);
+    return await res.json();
+  } finally {
+    clearTimeout(timeoutId);
+  }
+};
+
 const readCache = async (lang) => {
   try {
     const raw = await AsyncStorage.getItem(cacheKey(lang));
@@ -228,20 +239,26 @@ const readLastVersion = async () => {
   }
 };
 
+/** Maps the app language state (e.g. "DEFAULT", "en-US", "pa") to an API lang. */
+const langToApi = (lang) => {
+  const l = String(lang || "")
+    .trim()
+    .toLowerCase();
+  if (!l || l === "default") return "en";
+  const primary = l.split(/[-_]/)[0];
+  return ["en", "hi", "pa", "fr", "it", "es"].includes(primary) ? primary : "en";
+};
+
 /**
  * Returns the Seva configuration (backend server-driven content + payment/dot).
  * @param {string} [langInput] current app language, so the backend returns the
  *   page content translated to it. Both callers (SevaScreen, BottomNavigation)
  *   pass the same current language so the cached content stays consistent.
  * @returns {Promise<SevaConfig>}
- *
- * Not de-duplicated, deliberately: the two callers do not ask at the same
- * time. The tab bar asks on mount, language change and foreground; the Seva
- * screen on focus, and a foreground does not refocus it. Each answer also
- * reads the seen-version as of its own call, which a shared promise would not.
  */
 export const getSevaConfig = async (langInput) => {
   const apiLang = langToApi(langInput);
+  const cached = await readCache(apiLang);
   const url = constant.SEVA_CONFIG_API_URL;
   try {
     if (!url) throw new Error("SEVA_CONFIG_API_URL not set");
@@ -251,8 +268,7 @@ export const getSevaConfig = async (langInput) => {
     // the bottom bar must NOT clear it. `lang` drives the server-driven copy.
     const seenVersion = await readSeenVersion();
     const resp = await fetchJson(
-      `${url}?v=${encodeURIComponent(seenVersion)}&lang=${encodeURIComponent(apiLang)}`,
-      6000
+      `${url}?v=${encodeURIComponent(seenVersion)}&lang=${encodeURIComponent(apiLang)}`
     );
     const dyn = {
       version: resp?.version,
@@ -287,8 +303,6 @@ export const getSevaConfig = async (langInput) => {
     return buildConfig({ ...dyn, redDot }, "network", apiLang);
   } catch (err) {
     logNetworkError(`getSevaConfig failed: ${err?.message || err}`, err);
-    // Read only now: on the usual path the network answer replaces it.
-    const cached = await readCache(apiLang);
     if (cached) {
       cachedPayment = cached.payment ?? null;
       latestVersion = Number(cached.version) || latestVersion;

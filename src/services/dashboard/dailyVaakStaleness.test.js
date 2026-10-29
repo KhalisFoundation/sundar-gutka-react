@@ -169,32 +169,6 @@ describe("caching the two sources differently", () => {
     expect(global.fetch.mock.calls.length).toBe(callsAfterFirst);
   });
 
-  // Yesterday's BaniDB answer was final for YESTERDAY, so it carries no
-  // expiry. Read as fresh the next day, it stood in for today's all day
-  // without a request being made.
-  it("asks again the next day instead of serving yesterday's final entry", async () => {
-    const yesterday = istKey(-1);
-    await AsyncStorage.setItem(
-      CACHE_KEY,
-      JSON.stringify({ date: yesterday, data: { istDate: yesterday, _source: "banidb" } })
-    );
-    routeFetch(baniDbVaak(TODAY), null);
-    const res = await getDailyVaak({ requireOnline: true });
-    expect(res.istDate).toBe(TODAY);
-  });
-
-  it("still serves the previous day's stand-in while it is young", async () => {
-    const yesterday = istKey(-1);
-    const standIn = { istDate: yesterday, _source: "api" };
-    await AsyncStorage.setItem(
-      CACHE_KEY,
-      JSON.stringify({ date: yesterday, data: standIn, expiresAt: Date.now() + 60000 })
-    );
-    global.fetch = jest.fn();
-    expect(await getDailyVaak({ requireOnline: true })).toEqual(standIn);
-    expect(global.fetch).not.toHaveBeenCalled();
-  });
-
   it("re-fetches once the fallback's life is over, and upgrades to BaniDB", async () => {
     routeFetch(null, backendVaak(TODAY));
     await getDailyVaak({ requireOnline: true });

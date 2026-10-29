@@ -343,6 +343,39 @@ export const getShabadFromID = async (
   }
 };
 
+export const getBaniTransliterations = async (baniIds) => {
+  if (!baniIds || baniIds.length === 0) return {};
+  try {
+    const db = await initDB();
+    return new Promise((resolve, reject) => {
+      const placeholders = baniIds.map(() => "?").join(",");
+      db.transaction((tx) => {
+        tx.executeSql(
+          `SELECT ID, Transliterations FROM Banis WHERE ID IN (${placeholders})`,
+          baniIds,
+          (_tx, results) => {
+            const map = {};
+            for (let i = 0; i < results.rows.length; i += 1) {
+              const row = results.rows.item(i);
+              try {
+                const json = JSON.parse(row.Transliterations);
+                map[row.ID] = json.en || null;
+              } catch (_) {
+                map[row.ID] = null;
+              }
+            }
+            resolve(map);
+          },
+          (error) => reject(error)
+        );
+      });
+    });
+  } catch (error) {
+    logError(error);
+    return {};
+  }
+};
+
 export const getBookmarksForID = (baniId, length, language) => {
   let baniLength;
   const {

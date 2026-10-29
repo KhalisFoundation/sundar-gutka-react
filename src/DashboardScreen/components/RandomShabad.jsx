@@ -164,8 +164,6 @@ const RandomShabad = ({
       {!loading && !error
         ? (shabad?.lines ?? []).map((line, i) => (
             <CustomText
-              // The shabad's lines, replaced whole and never reordered; a line
-              // can repeat, so its position is the identity.
               // eslint-disable-next-line react/no-array-index-key
               key={i}
               style={[styles.gurmukhi, { color: gurmukhiColor, fontFamily: gurmukhiFont }]}

@@ -1,4 +1,5 @@
 import {
+  downloadTrack,
   isTrackDownloaded,
   getLocalTrackPath,
   getFullLocalTrackPath,
@@ -15,8 +16,6 @@ const mockUnlink = jest.fn();
 const mockDownloadFile = jest.fn();
 const mockStat = jest.fn();
 const mockStopDownload = jest.fn();
-// The downloaded lyrics file's contents; valid JSON unless a test says not.
-const mockReadFile = jest.fn(() => Promise.resolve("[]"));
 
 jest.mock("react-native-fs", () => ({
   DocumentDirectoryPath: "/test/documents",
@@ -26,7 +25,6 @@ jest.mock("react-native-fs", () => ({
   downloadFile: (config) => mockDownloadFile(config),
   stat: (...args) => mockStat(...args),
   stopDownload: (...args) => mockStopDownload(...args),
-  readFile: (...args) => mockReadFile(...args),
 }));
 
 // Mock checkHelper
@@ -372,24 +370,259 @@ describe("audioDownloader", () => {
         expect.stringContaining("Lyrics download completed")
       );
     });
+  });
 
-    // RNFS writes the response body whatever the status, so an error page (or a
-    // captive portal's 200 HTML) must not be left behind as the lyrics.
-    it.each([
-      ["a non-200 response", { statusCode: 500 }, "[]"],
-      ["a body that is not JSON", { statusCode: 200 }, "<html>Sign in to Wi-Fi</html>"],
-    ])("deletes the file and reports no download on %s", async (_case, response, body) => {
-      mockExists.mockResolvedValue(false);
+  describe("downloadTrack", () => {
+    beforeEach(() => {
+      jest.clearAllMocks();
+    });
+
+    it("should return early if both audio and lyrics already exist", async () => {
+      mockExists.mockImplementation((path) => {
+        if (path === AUDIO_DIRECTORY) return Promise.resolve(true);
+        if (path === `${AUDIO_DIRECTORY}/artist`) return Promise.resolve(true);
+        if (path.includes("track.m4a") || path.includes("track.json")) {
+          return Promise.resolve(true);
+        }
+        return Promise.resolve(false);
+      });
+
+      const result = await downloadTrack(mockUrl, mockTrackTitle);
+
+      expect(result).toEqual({
+        audioRelativePath: "artist/track.m4a",
+        jsonRelativePath: "artist/track.json",
+      });
+      expect(mockLogMessage).toHaveBeenCalledWith(
+        expect.stringContaining("Track already downloaded with lyrics")
+      );
+    });
+
+    it("should return early if audio exists and lyrics are not available remotely", async () => {
+      mockExists.mockImplementation((path) => {
+        if (path === AUDIO_DIRECTORY) return Promise.resolve(true);
+        if (path === `${AUDIO_DIRECTORY}/artist`) return Promise.resolve(true);
+        if (path.includes("track.m4a")) return Promise.resolve(true);
+        return Promise.resolve(false);
+      });
+      mockCheckIsJsonRemoteExists.mockResolvedValue(false);
+
+      const result = await downloadTrack(mockUrl, mockTrackTitle);
+
+      expect(result).toEqual({
+        audioRelativePath: "artist/track.m4a",
+        jsonRelativePath: null,
+      });
+      expect(mockLogMessage).toHaveBeenCalledWith(
+        expect.stringContaining("Track already downloaded")
+      );
+    });
+
+    it("should download both audio and lyrics when neither exists", async () => {
+      let callCount = 0;
+      mockExists.mockImplementation((path) => {
+        // Directory checks (multiple times for both audio and lyrics)
+        if (path === AUDIO_DIRECTORY) {
+          return Promise.resolve(true);
+        }
+        if (path === `${AUDIO_DIRECTORY}/artist`) {
+          return Promise.resolve(true);
+        }
+        // Check if audio file exists (before download)
+        if (path.includes("track.m4a") && callCount < 1) {
+          callCount += 1;
+          return Promise.resolve(false);
+        }
+        // Check if audio file exists (after download)
+        if (path.includes("track.m4a") && callCount === 1) {
+          callCount += 1;
+          return Promise.resolve(true);
+        }
+        // Check if JSON file exists (before download)
+        if (path.includes("track.json") && callCount === 2) {
+          callCount += 1;
+          return Promise.resolve(false);
+        }
+        // Check if JSON file exists (after download)
+        if (path.includes("track.json") && callCount === 3) {
+          callCount += 1;
+          return Promise.resolve(true);
+        }
+        return Promise.resolve(false);
+      });
       mockCheckIsJsonRemoteExists.mockResolvedValue(true);
-      mockDownloadFile.mockReturnValue({ promise: Promise.resolve(response) });
-      mockReadFile.mockReset();
-      mockReadFile.mockResolvedValue(body);
 
-      const result = await downloadLyricsOnly(mockUrl, mockTrackTitle);
+      const audioPromise = Promise.resolve({ statusCode: 200 });
+      const jsonPromise = Promise.resolve({ statusCode: 200 });
 
-      expect(result.downloaded).toBe(false);
-      expect(mockUnlink).toHaveBeenCalledWith(`${AUDIO_DIRECTORY}/artist/track.json`);
-      mockReadFile.mockResolvedValue("[]");
+      mockDownloadFile.mockImplementation((config) => {
+        if (config.fromUrl.includes(".m4a")) {
+          return { promise: audioPromise, jobId: 42 };
+        }
+        return { promise: jsonPromise, jobId: 43 };
+      });
+
+      const result = await downloadTrack(mockUrl, mockTrackTitle);
+
+      expect(mockDownloadFile).toHaveBeenCalledTimes(2);
+      expect(result).toEqual({
+        audioRelativePath: "artist/track.m4a",
+        jsonRelativePath: "artist/track.json",
+      });
+      expect(mockLogMessage).toHaveBeenCalledWith(
+        expect.stringContaining("Download completed: track.m4a and track.json")
+      );
+    });
+
+    it("should download only audio when lyrics are not available remotely", async () => {
+      let callCount = 0;
+      mockExists.mockImplementation((path) => {
+        // Directory checks
+        if (path === AUDIO_DIRECTORY) {
+          return Promise.resolve(true);
+        }
+        if (path === `${AUDIO_DIRECTORY}/artist`) {
+          return Promise.resolve(true);
+        }
+        // Check if audio file exists (before download)
+        if (path.includes("track.m4a") && callCount === 0) {
+          callCount += 1;
+          return Promise.resolve(false);
+        }
+        // Check if audio file exists (after download)
+        if (path.includes("track.m4a") && callCount === 1) {
+          callCount += 1;
+          return Promise.resolve(true);
+        }
+        return Promise.resolve(false);
+      });
+      mockCheckIsJsonRemoteExists.mockResolvedValue(false);
+
+      const audioPromise = Promise.resolve({ statusCode: 200 });
+      mockDownloadFile.mockReturnValue({ promise: audioPromise, jobId: 42 });
+
+      const result = await downloadTrack(mockUrl, mockTrackTitle);
+
+      expect(mockDownloadFile).toHaveBeenCalledTimes(1);
+      expect(mockDownloadFile).toHaveBeenCalledWith(
+        expect.objectContaining({
+          fromUrl: mockUrl,
+        })
+      );
+      expect(result).toEqual({
+        audioRelativePath: "artist/track.m4a",
+        jsonRelativePath: null,
+      });
+      expect(mockLogMessage).toHaveBeenCalledWith(
+        expect.stringContaining("Download completed: track.m4a (no lyrics available)")
+      );
+    });
+
+    it("should download only lyrics when audio already exists", async () => {
+      let callCount = 0;
+      mockExists.mockImplementation((path) => {
+        // Directory checks
+        if (path === AUDIO_DIRECTORY) {
+          return Promise.resolve(true);
+        }
+        if (path === `${AUDIO_DIRECTORY}/artist`) {
+          return Promise.resolve(true);
+        }
+        // Check if audio file exists (before download) - should return true
+        if (path.includes("track.m4a") && callCount === 0) {
+          callCount += 1;
+          return Promise.resolve(true);
+        }
+        // Check if JSON file exists (before download)
+        if (path.includes("track.json") && callCount === 1) {
+          callCount += 1;
+          return Promise.resolve(false);
+        }
+        // Check if JSON file exists (after download)
+        if (path.includes("track.json") && callCount === 2) {
+          callCount += 1;
+          return Promise.resolve(true);
+        }
+        return Promise.resolve(false);
+      });
+      mockCheckIsJsonRemoteExists.mockResolvedValue(true);
+
+      const jsonPromise = Promise.resolve({ statusCode: 200 });
+      mockDownloadFile.mockReturnValue({ promise: jsonPromise, jobId: 43 });
+
+      const result = await downloadTrack(mockUrl, mockTrackTitle);
+
+      expect(mockDownloadFile).toHaveBeenCalledTimes(1);
+      expect(mockDownloadFile).toHaveBeenCalledWith(
+        expect.objectContaining({
+          fromUrl: "https://example.com/artist/track.json",
+        })
+      );
+      expect(result).toEqual({
+        audioRelativePath: "artist/track.m4a",
+        jsonRelativePath: "artist/track.json",
+      });
+    });
+
+    it("should handle cleanup errors gracefully", async () => {
+      let callCount = 0;
+      let downloadAttempted = false;
+      mockExists.mockImplementation((path) => {
+        // Directory checks
+        if (path === AUDIO_DIRECTORY) {
+          return Promise.resolve(true);
+        }
+        if (path === `${AUDIO_DIRECTORY}/artist`) {
+          return Promise.resolve(true);
+        }
+        // Check if audio file exists (before download)
+        if (path.includes("track.m4a") && callCount === 0) {
+          callCount += 1;
+          return Promise.resolve(false);
+        }
+        // After download fails, check for cleanup
+        if (path.includes("track.m4a") && downloadAttempted) {
+          return Promise.resolve(true); // Simulate partial download
+        }
+        if (path.includes("track.json") && downloadAttempted) {
+          return Promise.resolve(true); // Simulate partial download
+        }
+        return Promise.resolve(false);
+      });
+
+      mockDownloadFile.mockImplementation(() => {
+        downloadAttempted = true;
+      });
+
+      mockUnlink.mockRejectedValue(new Error("Cleanup failed"));
+
+      const result = await downloadTrack(mockUrl, mockTrackTitle);
+      expect(result).toBeNull();
+
+      expect(mockLogError).toHaveBeenCalledWith(
+        expect.stringContaining("Error cleaning up failed download")
+      );
+    });
+
+    it("should handle audio download failure from downloadAudioOnly", async () => {
+      mockExists.mockImplementation((path) => {
+        // Directory checks
+        if (path === AUDIO_DIRECTORY) {
+          return Promise.resolve(true);
+        }
+        if (path === `${AUDIO_DIRECTORY}/artist`) {
+          return Promise.resolve(true);
+        }
+        return Promise.resolve(false);
+      });
+      mockCheckIsAudioRemoteExists.mockResolvedValue(false);
+
+      const result = await downloadTrack(mockUrl, mockTrackTitle);
+      expect(result).toBeNull();
+
+      expect(mockLogError).toHaveBeenCalledWith(
+        expect.stringContaining("Download error for Test Track")
+      );
     });
   });
 });

@@ -111,6 +111,15 @@ export const markFailed = (state, id, { error = null, now = Date.now(), random }
   });
 };
 
+/** Drop every op of one feature — after a bulk sync has carried them all up. */
+export const clearFeature = (state, feature) => {
+  const ops = {};
+  Object.values(state.ops).forEach((op) => {
+    if (op.feature !== feature) ops[op.id] = op;
+  });
+  return { ...state, ops };
+};
+
 /**
  * After a relaunch nothing is in flight any more: whatever was "sending" when
  * the process died goes back to the queue, to be sent again (every op is
@@ -132,11 +141,11 @@ export const heal = (state) => {
 export const nextRunnable = (state, feature, now = Date.now()) => {
   const ops = Object.values(state.ops).filter((op) => op.feature === feature);
   if (ops.some((op) => op.status === OP_SENDING)) return null;
-  // The OLDEST queued op, and only once its own retry time has come. Taking
-  // the oldest that is due instead let a later op overtake one in backoff,
-  // and an update could reach the server before the create it depends on.
-  const [head] = ops.filter((op) => op.status === OP_QUEUED).sort((a, b) => a.seq - b.seq);
-  return head && head.nextAttemptAt <= now ? head : null;
+  return (
+    ops
+      .filter((op) => op.status === OP_QUEUED && op.nextAttemptAt <= now)
+      .sort((a, b) => a.seq - b.seq)[0] ?? null
+  );
 };
 
 /** The soonest retry time among a feature's waiting ops, or null. */

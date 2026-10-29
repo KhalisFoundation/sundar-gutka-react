@@ -1,4 +1,5 @@
 import React from "react";
+import { Platform } from "react-native";
 import { Spinner } from "@common/components/ui";
 import useSsoActions from "@common/hooks/useSsoActions";
 import useTokens from "@common/hooks/useTokens";
@@ -16,6 +17,15 @@ const Account = () => {
   const { status, user, busy, signIn, signOut, deleteAccount } = useSsoActions({
     entryPoint: "settings",
   });
+
+  // iOS ONLY, and that is the whole scope of this change.
+  //
+  // App Review requires an in-app way to delete the account for any app that
+  // creates one, and requires it to be a real control in the app rather than a
+  // link to support — which is why it sits here in Settings beside Sign Out.
+  // Play has no equivalent requirement today, and the deletion is permanent
+  // after its grace period, so it is not offered where it is not asked for.
+  const canDeleteAccount = Platform.OS === "ios";
 
   const spinner = busy ? <Spinner size="small" color={c.textSecondary} /> : undefined;
 
@@ -37,20 +47,19 @@ const Account = () => {
           trailing={spinner}
           disabled={busy}
         />
-        {/* On both platforms: App Review and Google Play both require an
-            in-app way to delete an account the app signs people into, as a
-            real control rather than a link to support. Last in the group and
-            the only destructive row on the screen; the confirmation, its copy
-            and every "what do we clear" decision live in
-            useSsoActions.deleteAccount — this is only the way in. */}
-        <SettingsRow
-          title={STRINGS.DELETE_ACCOUNT}
-          icon="delete-forever"
-          destructive
-          onPress={busy ? undefined : deleteAccount}
-          disabled={busy}
-          testID="delete-account-row"
-        />
+        {canDeleteAccount && (
+          /* Last in the group, and the only destructive row on the screen. The
+             confirmation, its copy and every "what do we clear" decision live in
+             useSsoActions.deleteAccount — this is only the way in. */
+          <SettingsRow
+            title={STRINGS.DELETE_ACCOUNT}
+            icon="delete-forever"
+            destructive
+            onPress={busy ? undefined : deleteAccount}
+            disabled={busy}
+            testID="delete-account-row"
+          />
+        )}
       </>
     );
   }

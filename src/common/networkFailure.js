@@ -24,15 +24,7 @@
 const NETWORK_FAILURE = new RegExp(
   [
     "^(network request failed|failed to fetch|load failed)$",
-    // Anchored like the rest: a message merely CONTAINING one of these words
-    // ("statement aborted", a component stack with "Timeout" in it) is a real
-    // fault and must still be recorded.
-    "^(the request |network request |(connect|read|write|socket|connection) )?timed out\\.?$",
-    "^timeout( of \\d+ms exceeded)?$",
-    "^aborted$",
-    "^the (operation|user) (was aborted|aborted a request)\\.?$",
-    "^network error$",
-    "^failed to connect to ",
+    "timed out|timeout|aborted|network error",
     // Android: OkHttp / HttpURLConnection / BoringSSL
     "^(read|write) error: ssl=",
     "^failure in ssl library",

@@ -86,7 +86,6 @@ const WeekChart = ({ refreshKey = 0 }) => {
     const max = Math.max(1, ...mins);
     setBars(
       days.map((d, i) => ({
-        key: ymd(d),
         letter: weekdayNarrow(d.getDay()),
         mins: mins[i],
         ratio: mins[i] / max,
@@ -158,7 +157,6 @@ const WeekChart = ({ refreshKey = 0 }) => {
           {loading ? (
             <View style={styles.chart}>
               {Array.from({ length: 7 }).map((_, i) => (
-                // Fixed placeholders: their position is all they have.
                 // eslint-disable-next-line react/no-array-index-key
                 <View key={i} style={styles.barCol}>
                   <SkeletonBlock style={styles.barSkeleton} />
@@ -169,8 +167,9 @@ const WeekChart = ({ refreshKey = 0 }) => {
           {!loading && error ? <SectionError compact onRetry={retry} /> : null}
           {!loading && !error ? (
             <View style={styles.chart}>
-              {bars.map((b) => (
-                <View key={b.key} style={styles.barCol}>
+              {bars.map((b, i) => (
+                // eslint-disable-next-line react/no-array-index-key
+                <View key={i} style={styles.barCol}>
                   <View style={styles.barTrack}>
                     <View
                       style={[

@@ -4,7 +4,6 @@ import DeviceInfo from "react-native-device-info";
 import { useStore, useDispatch, useSelector } from "react-redux";
 import AsyncStorage from "@react-native-async-storage/async-storage";
 import { logNetworkError, useNetwork } from "@common";
-import { currentAccountKey } from "../../database/analytics";
 import { syncAll } from "../sync/syncRegistry";
 import {
   getDashboardSnapshot,
@@ -28,7 +27,7 @@ import {
   DASHBOARD_LOCAL_MUTATED_AT_KEY as LOCAL_MUTATED_AT_KEY,
   DASHBOARD_ACTIVITY_PUSHED_AT_KEY as ACTIVITY_PUSHED_AT_KEY,
 } from "./syncKeys";
-import { subscribePush, subscribePull, subscribeFlush, requestPush } from "./syncSignal";
+import { subscribePush, subscribePull, requestPush } from "./syncSignal";
 import {
   recordPush,
   recordPull,
@@ -64,10 +63,7 @@ const ACTIVITY_DEBOUNCE_MS = 20 * 1000;
  * the same days rather than leaving a hole. Resolves true when the server now
  * holds everything this device has recorded.
  */
-// `stillOurs` says whether the account this run began for is still the one on
-// the device: rows read after a sign-out come from another store, and a
-// watermark written after one lands on the next account's rows.
-const pushPendingActivity = async (deviceId, stillOurs = () => true) => {
+const pushPendingActivity = async (deviceId) => {
   try {
     const sinceRaw = await AsyncStorage.getItem(ACTIVITY_PUSHED_AT_KEY);
     const startedAt = Math.floor(Date.now() / 1000);
@@ -75,9 +71,8 @@ const pushPendingActivity = async (deviceId, stillOurs = () => true) => {
       deviceId,
       since: sinceRaw ? Number(sinceRaw) : 0,
     });
-    if (!stillOurs()) return false;
     const res = await pushDailyActivity(activity);
-    if (!res?.ok || !stillOurs()) return false;
+    if (!res?.ok) return false;
     if (activity.days.length) {
       await AsyncStorage.setItem(ACTIVITY_PUSHED_AT_KEY, String(startedAt));
     }
@@ -97,17 +92,11 @@ const pushPendingActivity = async (deviceId, stillOurs = () => true) => {
 // No month: the whole retention window, so a reinstall gets its calendar back
 // rather than the slice of the month it happened to be installed in. See
 // getDashboardState for what asking for one month cost.
-const pullServerActivity = async (deviceId, stillOurs) => {
-  if (!(await pushPendingActivity(deviceId, stillOurs))) return null;
+const pullServerActivity = async (deviceId) => {
+  if (!(await pushPendingActivity(deviceId))) return null;
   const res = await getDashboardState();
   return res.status === "ok" && res.state ? res.state : null;
 };
-
-// After a pull that stopped because the account changed under it.
-const CROSSED_RETRY_MS = 2000;
-
-// Thrown inside a pull to stop it the moment the account it began for is gone.
-class AccountChanged extends Error {}
 
 const RETRY_BASE_MS = 30 * 1000;
 const RETRY_MAX_MS = 5 * 60 * 1000;
@@ -204,40 +193,15 @@ const useDashboardSync = () => {
   const accountRef = useRef(account);
   accountRef.current = account;
 
-  // The account a run began for: the session, the purge counter and the open
-  // history file. A pull or push answering after sign-out, a deletion or an
-  // expiry would otherwise write one account's answer into the signed-out
-  // store and the next account — or build a push from the next one's state.
-  // The epoch alone is not enough: the history file is detached before the
-  // purge bumps it, and an expiry detaches without a purge at all.
-  const boundaryCheck = useCallback(() => {
-    const at = {
-      account: accountRef.current,
-      epoch: store.getState().accountEpoch ?? 0,
-      file: currentAccountKey(),
-    };
-    return () =>
-      signedInRef.current &&
-      accountRef.current === at.account &&
-      (store.getState().accountEpoch ?? 0) === at.epoch &&
-      currentAccountKey() === at.file;
-  }, [store]);
-
   const pull = useCallback(
     async ({ force = false } = {}) => {
       if (!signedInRef.current || inFlightRef.current) return;
       inFlightRef.current = true;
       const forAccount = accountRef.current;
-      const stillOurs = boundaryCheck();
       let settled = false;
-      let crossed = false;
       try {
         const bootstrapped = !!(await AsyncStorage.getItem(RESTORED_KEY));
         const snapshot = await getDashboardSnapshot();
-        if (!stillOurs()) {
-          crossed = true;
-          return;
-        }
 
         await recordPull({ status: snapshot.status });
         if (snapshot.status === "unauthorized") return;
@@ -260,7 +224,6 @@ const useDashboardSync = () => {
           // Authoritative: this account has never synced. Nothing to apply, but
           // the gate must lift — otherwise a brand-new account could never make
           // its FIRST push, and would stay empty forever.
-          if (!stillOurs()) throw new AccountChanged();
           await AsyncStorage.setItem(RESTORED_KEY, "1");
           bootstrappedForRef.current = forAccount;
           retryAttemptRef.current = 0;
@@ -273,7 +236,6 @@ const useDashboardSync = () => {
 
         const { payload, syncedAt } = snapshot;
         if (!payload) {
-          if (!stillOurs()) throw new AccountChanged();
           await AsyncStorage.setItem(RESTORED_KEY, "1");
           bootstrappedForRef.current = forAccount;
           settled = true;
@@ -284,11 +246,7 @@ const useDashboardSync = () => {
         // The snapshot is applied first either way and the sums are laid over
         // it, so the days the server knows are exact and the days only the
         // snapshot remembers survive. Neither is ever pushed back up.
-        const activity = await pullServerActivity(await DeviceInfo.getUniqueId(), stillOurs);
-        if (!stillOurs()) {
-          crossed = true;
-          return;
-        }
+        const activity = await pullServerActivity(await DeviceInfo.getUniqueId());
 
         if (!bootstrapped) {
           // ── PULL → MERGE → PUSH ──────────────────────────────────────────
@@ -316,7 +274,6 @@ const useDashboardSync = () => {
           // restore again on the next launch and silently re-apply the
           // snapshot's reminders over whatever the user had since set. One
           // attempt is what a bootstrap gets.
-          if (!stillOurs()) throw new AccountChanged();
           await AsyncStorage.setItem(RESTORED_KEY, "1");
           bootstrappedForRef.current = forAccount;
 
@@ -329,7 +286,6 @@ const useDashboardSync = () => {
             // PREFERENCES wholesale: layout, reminders and the nitnem list are
             // single-valued, and this is the account's own copy of them. Merging
             // those would resurrect a reminder the user deleted elsewhere.
-            if (!stillOurs()) throw new AccountChanged();
             await applyDashboardRestore(payload, dispatch, {
               reschedule: true,
               transliterationLanguage: store.getState().transliterationLanguage,
@@ -339,9 +295,7 @@ const useDashboardSync = () => {
             // day the account has never seen — reading done signed out and
             // carried in, or an earlier session on this device that was never
             // pushed — survives the restore instead of being overwritten by it.
-            if (!stillOurs()) throw new AccountChanged();
             await seedAnalyticsFromSnapshot(payload, { merge: true });
-            if (!stillOurs()) throw new AccountChanged();
             if (activity) await applyServerActivity(activity);
           } finally {
             restoringRef.current = false;
@@ -400,7 +354,6 @@ const useDashboardSync = () => {
           restoringRef.current = true;
           try {
             const current = store.getState();
-            if (!stillOurs()) throw new AccountChanged();
             await applyDashboardRestore(payload, dispatch, {
               merge: true,
               preferences,
@@ -412,41 +365,32 @@ const useDashboardSync = () => {
               },
               transliterationLanguage: current.transliterationLanguage,
             });
-            if (!stillOurs()) throw new AccountChanged();
             await seedAnalyticsFromSnapshot(payload, { merge: true });
-            if (!stillOurs()) throw new AccountChanged();
             if (activity) await applyServerActivity(activity);
           } finally {
             restoringRef.current = false;
           }
         }
-        if (!stillOurs()) throw new AccountChanged();
         if (syncedAt) await AsyncStorage.setItem(APPLIED_AT_KEY, syncedAt);
         lastRefreshAtRef.current = Date.now();
         retryAttemptRef.current = 0;
         settled = true;
       } catch (err) {
-        if (err instanceof AccountChanged) crossed = true;
-        else logNetworkError(err, err);
+        logNetworkError(err, err);
       } finally {
+        // Reminders and pothis reconcile at the same moments the dashboard
+        // does — sign-in, foreground, connectivity returning, pull-to-refresh.
+        // Whatever the snapshot said: a brand-new account still has this
+        // device's reminders to send up, and each feature checks the session
+        // for itself.
+        await syncAll();
         inFlightRef.current = false;
-        // The run that bailed held the in-flight slot, so the next session's own
-        // bootstrap pull — a different account, or the same one signing
-        // straight back in — was turned away while it ran. Pull again shortly,
-        // through the retry timer so it can never spin.
-        if (crossed && signedInRef.current) {
-          clearRetry();
-          retryTimerRef.current = setTimeout(() => {
-            retryTimerRef.current = null;
-            pull();
-          }, CROSSED_RETRY_MS);
-        }
         // Tells the Dashboard's sections to look again — they fetch on mount and
         // would otherwise keep rendering whatever was there before these writes.
         if (settled) bumpRestoreTick();
       }
     },
-    [dispatch, store, clearRetry, boundaryCheck]
+    [dispatch, store, clearRetry]
   );
 
   // Declared before pushNow so the cooldown branch inside it can re-arm. Held
@@ -462,7 +406,6 @@ const useDashboardSync = () => {
 
   const pushNow = useCallback(
     async ({ force = false } = {}) => {
-      const stillOurs = boundaryCheck();
       try {
         if (!signedInRef.current) {
           await recordPush({ skipped: SKIP_SIGNED_OUT });
@@ -499,7 +442,7 @@ const useDashboardSync = () => {
         // Sent ALONGSIDE the snapshot, not instead of it: the snapshot still
         // drives restore for app versions that know nothing about this
         // endpoint. It can never fail the snapshot push.
-        await pushPendingActivity(deviceId, stillOurs);
+        await pushPendingActivity(deviceId);
 
         const body = await buildCachePayload({
           state: store.getState(),
@@ -545,13 +488,10 @@ const useDashboardSync = () => {
           return;
         }
 
-        // Built from whatever is on the device NOW. After a sign-out that is
-        // the signed-out state, which must not go up over the account's.
-        if (!stillOurs()) return;
         const res = await pushDashboardCache(body);
         // `unauthorized` is a normal state (the token lapsed while the app sat
         // open), not a failure worth logging on every backgrounding.
-        if (res?.ok && stillOurs()) {
+        if (res?.ok) {
           await AsyncStorage.setItem(LAST_PUSH_KEY, String(Date.now()));
           await AsyncStorage.setItem(HASH_KEY, hash);
           pendingPushRef.current = false;
@@ -568,7 +508,7 @@ const useDashboardSync = () => {
         logNetworkError(err, err);
       }
     },
-    [store, schedulePush, boundaryCheck]
+    [store, schedulePush]
   );
 
   // Bootstrap on sign-in, and again whenever the account changes. Switching
@@ -673,30 +613,9 @@ const useDashboardSync = () => {
     }
     await pull({ force: true });
     await pushNow({ force: true });
-    // A pull-to-refresh asks for EVERYTHING on the account, not only the
-    // dashboard: pothis, reminders and settings reconcile too. The automatic
-    // moments (sign-in, foreground, connectivity back) are useAccountSync's,
-    // which runs syncAll itself — calling it from every dashboard pull as
-    // well ran each of them twice. Signed out there is no account to ask.
-    if (signedInRef.current) await syncAll();
   }, [pull, pushNow]);
 
   useEffect(() => subscribePull(() => syncNow()), [syncNow]);
-
-  // Sign-out: whatever is waiting in the debounce goes up before the slices it
-  // describes are dropped — forced past the cooldown, which would otherwise
-  // hold it back.
-  useEffect(
-    () =>
-      subscribeFlush(async () => {
-        if (pushTimerRef.current) {
-          clearTimeout(pushTimerRef.current);
-          pushTimerRef.current = null;
-        }
-        if (pendingPushRef.current) await pushNow({ force: true });
-      }),
-    [pushNow]
-  );
 
   // Push once the bootstrap has settled, so an account that signs in and never
   // opens the Dashboard still gets its local history up. Without this the very

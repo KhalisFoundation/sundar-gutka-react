@@ -14,7 +14,7 @@ const AsyncStorage = require("@react-native-async-storage/async-storage").defaul
  *  - Autoplay ON  → pause on interrupt, auto-resume when interrupt ends.
  *  - Notification volume duck → OS handles volume dip natively, no pause.
  */
-module.exports = async function playbackService() {
+module.exports = async function () {
   let shouldResumeAfterDuck = false;
 
   const getIsAutoPlay = async () => {
@@ -24,8 +24,8 @@ module.exports = async function playbackService() {
         const state = JSON.parse(rawState);
         return JSON.parse(state.isAudioAutoPlay || "false");
       }
-    } catch {
-      // Non-critical: AsyncStorage read failure — default to false
+    } catch (e) {
+      console.error("Failed to read autoplay pref", e);
     }
     return false;
   };
@@ -33,18 +33,18 @@ module.exports = async function playbackService() {
   const safeStopAndReset = async () => {
     try {
       await TrackPlayer.pause();
-    } catch (_e) {
-      /* intentional no-op */
+    } catch (_) {
+      // nothing was playing to pause
     }
     try {
       await TrackPlayer.stop();
-    } catch (_e) {
-      /* intentional no-op */
+    } catch (_) {
+      // nothing was playing to stop
     }
     try {
       await TrackPlayer.reset();
-    } catch (_e) {
-      /* intentional no-op */
+    } catch (_) {
+      // already reset; a second one is a no-op
     }
     shouldResumeAfterDuck = false;
   };
@@ -106,9 +106,8 @@ module.exports = async function playbackService() {
     if (shouldResumeAfterDuck) {
       shouldResumeAfterDuck = false;
       // Brief delay so the OS audio session is fully restored on all OEMs.
-      await new Promise((resolve) => {
-        setTimeout(resolve, 300);
-      });
+      // eslint-disable-next-line no-promise-executor-return
+      await new Promise((resolve) => setTimeout(resolve, 300));
       await TrackPlayer.play().catch(() => {});
     }
   });
@@ -144,7 +143,7 @@ module.exports = async function playbackService() {
         if (NowPlayingHelper) {
           NowPlayingHelper.forcePlaybackRate(currentRate);
         }
-      } catch (_e) {
+      } catch (_) {
         // Non-critical — the polling backstop will retry.
       }
     };
@@ -184,7 +183,7 @@ module.exports = async function playbackService() {
           if (NowPlayingHelper) {
             NowPlayingHelper.forcePlaybackRate(currentRate);
           }
-        } catch (_e) {
+        } catch (_) {
           // Non-critical — next iteration will retry.
         }
 
@@ -213,7 +212,6 @@ module.exports = async function playbackService() {
   });
 
   TrackPlayer.addEventListener(Event.PlaybackError, ({ code, message }) => {
-    // eslint-disable-next-line no-console
-    console.warn("[TrackPlayer] Playback error:", code, message);
+    console.error("[TrackPlayer] Playback error:", code, message);
   });
 };

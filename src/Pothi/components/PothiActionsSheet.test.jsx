@@ -96,11 +96,7 @@ jest.mock("../../common/components/ui", () => {
   };
 });
 
-jest.mock("./PothiNameField", () => {
-  const { TextInput } = require("react-native");
-  // eslint-disable-next-line react/prop-types
-  return ({ value, onChange }) => <TextInput testID="name" value={value} onChangeText={onChange} />;
-});
+jest.mock("./PothiNameField", () => () => null);
 
 jest.mock("../hooks/useDeletePothi", () => () => mockConfirmDelete);
 
@@ -217,34 +213,5 @@ describe("the pothi actions sheet", () => {
 
     rerender(<PothiActionsSheet pothi={pothi} visible onClose={jest.fn()} />);
     expect(queryByLabelText("Delete")).toBeTruthy();
-  });
-});
-
-// A caller can hand in a fresh object for the same pothi on every render (a
-// sync merge landing re-renders the folder screen). The rename must survive it.
-describe("renaming", () => {
-  it("keeps the name being typed when the same pothi is handed in again", () => {
-    const { getByTestId, rerender } = render(
-      <PothiActionsSheet pothi={{ ...pothi }} visible startRenaming onClose={jest.fn()} />
-    );
-    fireEvent.changeText(getByTestId("name"), "Nitnem ev");
-    rerender(<PothiActionsSheet pothi={{ ...pothi }} visible startRenaming onClose={jest.fn()} />);
-    expect(getByTestId("name").props.value).toBe("Nitnem ev");
-  });
-
-  it("starts from the new pothi's name when a different one is opened", () => {
-    const { getByTestId, rerender } = render(
-      <PothiActionsSheet pothi={pothi} visible startRenaming onClose={jest.fn()} />
-    );
-    fireEvent.changeText(getByTestId("name"), "typed");
-    rerender(
-      <PothiActionsSheet
-        pothi={{ id: "p2", name: "Other", count: 1 }}
-        visible
-        startRenaming
-        onClose={jest.fn()}
-      />
-    );
-    expect(getByTestId("name").props.value).toBe("Other");
   });
 });

@@ -227,6 +227,7 @@ jest.mock("@react-native-firebase/crashlytics", () => ({
   setAttribute: jest.fn(),
   log: jest.fn(),
   recordError: jest.fn(),
+  didCrashOnPreviousExecution: jest.fn(() => Promise.resolve(false)),
 }));
 
 // Mock react-native-keychain (native module; no JS fallback in Jest).

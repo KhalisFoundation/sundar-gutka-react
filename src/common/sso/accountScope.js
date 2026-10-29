@@ -1,31 +1,28 @@
 // Keeps on-device data belonging to the account that is actually signed in.
 //
 // Signing out used to clear only the Keychain token and the `auth` slice, so
-// everything that belongs to a PERSON rather than to this phone survived into
-// the next person's session. Signing in as B then showed A's data: wrong, and a
-// privacy leak rather than merely a stale-cache bug.
+// everything that makes up "your dashboard" — SQLite sessions, streaks,
+// bookmarks, nitnem, layout, reminders — survived into the next person's
+// session. Signing in as B showed A's reading history: wrong, and a privacy leak
+// rather than merely a stale-cache bug.
 //
-// Two kinds of data, kept apart in two different ways.
+// The first fix for that was to DELETE the history on every account change,
+// including a plain sign-out. That is what made a much worse bug possible: sign
+// out, read for a few minutes, sign back in, and the device held a near-empty
+// store which the sync layer then treated as the account's truth and pushed
+// over real history. An account lost a streak and every completed bani that way.
 //
-// PREFERENCES — the slices in USER_DATA_SLICES (common/reducer.js): pothis,
-// reminders, the dashboard's layout and nitnem ticks, the sync clocks and the
-// unsent changes. The account holds a copy of each, so they cost nothing to
-// drop on an account change and come back with the account. They persist under
-// one redux-persist key, which is why they are reset rather than scoped.
+// So the HISTORY is no longer deleted — it is SCOPED. Each account has its own
+// SQLite file (see database/analytics/accountDb), signing out detaches instead
+// of destroying, and signing back in finds everything still there, including
+// whatever had not been pushed yet. Account B never opens account A's file, so
+// the privacy property survives without deleting anything.
 //
-// HISTORY — the dashboard's SQLite store: day rows, sessions, streaks. It is
-// not deleted, it is SCOPED. Deleting it on every account change is what made a
-// much worse bug possible: sign out, read for a few minutes, sign back in, and
-// the device held a near-empty store which the sync layer then treated as the
-// account's truth and pushed over real history. An account lost a streak and
-// every completed bani that way. So each account has its own file (see
-// database/analytics/accountDb), signing out detaches instead of destroying,
-// and signing back in finds everything still there, including whatever had not
-// been pushed yet. Account B never opens account A's file, so the privacy
-// property survives without deleting anything.
-//
-// A FIRST sign-in is not a change: whatever was set up signed-out is the
-// signing-in person's own, and is claimed.
+// PREFERENCES — layout, reminders, nitnem, bookmarks — are still reset on an
+// account CHANGE. They are small, single-valued and restored from the account's
+// own snapshot, so resetting them costs nothing and keeps the boundary simple.
+// They persist under one redux-persist key, which is why they are not scoped the
+// same way.
 
 import AsyncStorage from "@react-native-async-storage/async-storage";
 import {
@@ -56,7 +53,6 @@ import { clearUserData } from "../actions";
 import constant from "../constant";
 import { logError } from "../firebase/crashlytics";
 import { cancelAllReminders } from "../notifications";
-import { normaliseEmail } from "./jwt";
 
 // Which account the data currently on this device belongs to. Email, because
 // that is what the backend resolves an SSO token to (its auth guard upserts the
@@ -83,7 +79,7 @@ export const writeLastAccount = async (email) => {
 };
 
 /** Case/whitespace-insensitive, so "A@x.com" and "a@x.com " are one account. */
-const normalise = normaliseEmail;
+const normalise = (email) => (typeof email === "string" ? email.trim().toLowerCase() : null);
 
 /**
  * True when `email` is a different account from the one this device's data
@@ -106,18 +102,14 @@ export const isAccountChange = (email, lastAccount) => {
  * language). Those describe how this phone is set up, not who is holding it.
  */
 export const purgeLocalUserData = async (dispatch) => {
-  // Deliberately does NOT touch the analytics database. Switching accounts
-  // changes which FILE is open (switchAnalyticsAccount below); the outgoing
-  // account's history stays exactly where it is.
+  // Deliberately does NOT touch the analytics database any more. Switching
+  // accounts changes which FILE is open (switchAnalyticsAccount below); the
+  // outgoing account's history stays exactly where it is.
   dispatch(clearUserData());
-  // The reminders are already scheduled with the OS. Redux forgetting them
-  // does not stop them firing, so the next person would still be woken for
-  // the previous one's nitnem.
-  try {
-    await cancelAllReminders();
-  } catch (err) {
-    logError(new Error(`SSO accountScope: cancelling reminders failed: ${err?.message || err}`));
-  }
+
+  // A's reminders are already scheduled with the OS. Redux forgetting them does
+  // not unschedule them — without this, B keeps getting A's notifications.
+  await cancelAllReminders();
 
   // DASHBOARD_APPLIED_AT_KEY goes with them: it records how fresh the LAST
   // ACCOUNT's applied snapshot was. Left behind, the incoming account's own
@@ -126,21 +118,11 @@ export const purgeLocalUserData = async (dispatch) => {
   // data that timestamp described, so leaving it would tell the incoming
   // account that this device holds newer changes than the cloud — and its own
   // snapshot would be discarded in favour of nothing.
-  //
-  // And the three that switchAnalyticsAccount clears on leaving an account
-  // (see there). It decides "leaving" from the file open in THIS process, and
-  // every process starts on the signed-out store — so an account ended in a
-  // fresh process (an expiry found at launch) left them behind, and the next
-  // account's activity upload started from the previous one's watermark and
-  // skipped every day older than it.
   await AsyncStorage.multiRemove([
     DASHBOARD_LAST_PUSH_KEY,
     RESTORED_TOP_BANIS_KEY,
     DASHBOARD_APPLIED_AT_KEY,
     DASHBOARD_LOCAL_MUTATED_AT_KEY,
-    DASHBOARD_ACCOUNT_TODAY_KEY,
-    DASHBOARD_ACTIVITY_PUSHED_AT_KEY,
-    DASHBOARD_PAYLOAD_HASH_KEY,
   ]);
 
   if (constant.SSO_ACCOUNT_SCOPED_SYNC) {
@@ -306,11 +288,6 @@ export const switchAnalyticsAccount = async (email) => {
   // that user's own history, the summary belongs to it, and walking four whole
   // tables to prove so would be on the cold-start path of every such launch.
   if (!email) {
-    // What the ACCOUNT read today, counted as today's activity by the streak
-    // engine without a local row behind it. Signed out, there is no account.
-    // On every detach, not only when the file changed: at launch the process
-    // is already on the signed-out store, and an expiry found then left it.
-    await AsyncStorage.removeItem(DASHBOARD_ACCOUNT_TODAY_KEY);
     if (previousKey !== ANONYMOUS_KEY) await resetSummaryIfUnbacked();
     return 0;
   }
@@ -325,22 +302,14 @@ export const switchAnalyticsAccount = async (email) => {
   try {
     // Days are ADDED as deltas: signed-out reading is genuinely extra activity
     // for that date, not a competing copy of it.
-    //
-    // This device's OWN seconds, not the row's totals: a total can hold the
-    // account's sum (a restore, or a pull from an earlier build), and carried
-    // as a delta it became this device's work and went up to be added to every
-    // other device's again. A row with none of this device's seconds in it is
-    // left out — carried, it would stamp an empty day as this device's own.
     await Promise.all(
-      (carried.days ?? [])
-        .filter((row) => (row.own_reading_seconds ?? 0) + (row.own_listening_seconds ?? 0) > 0)
-        .map((row) =>
-          upsertDailyActivity({
-            date: row.date,
-            reading_seconds_delta: row.own_reading_seconds ?? 0,
-            listening_seconds_delta: row.own_listening_seconds ?? 0,
-          })
-        )
+      (carried.days ?? []).map((row) =>
+        upsertDailyActivity({
+          date: row.date,
+          reading_seconds_delta: row.reading_seconds ?? 0,
+          listening_seconds_delta: row.listening_seconds ?? 0,
+        })
+      )
     );
     // Sessions are individual facts, so they are re-inserted as they were. The
     // summary is not carried at all — it is DERIVED (computeStreaks rebuilds the
@@ -400,59 +369,45 @@ export const switchAnalyticsAccount = async (email) => {
 };
 
 /**
- * Leave the signed-in account on this device: detach its history, drop its
- * preferences, and forget that this device had an owner. Sign-out — the end a
- * person chooses. An expiry is not one, and keeps the preferences and the owner
- * (see useSsoSession.endSession).
- *
- * Forgetting the owner makes the next sign-in a first one, which claims what
- * is on the phone. That is safe because what an account owns has just gone
- * (USER_DATA_SLICES) or been detached (its history file); what is left belongs
- * to the phone.
- *
- * The database first, so no frame renders signed-out preferences over the
- * previous account's numbers.
- */
-export const leaveLocalAccount = async (dispatch) => {
-  await switchAnalyticsAccount(null);
-  await purgeLocalUserData(dispatch);
-  await writeLastAccount(null);
-};
-
-/**
- * DESTROY `email`'s on-device data. Account deletion only.
+ * DESTROY the signed-in account's on-device data. Account deletion only.
  *
  * This is the one place that deletes history, and it is deliberately not what
- * signing out does (leaveLocalAccount detaches). There is nothing to come back
- * to after a deletion, and a device still holding the reading history of an
- * account that no longer exists is the bug users notice; so here the file is
- * emptied rather than merely closed.
+ * signing out does. Signing out DETACHES — the account's SQLite file stays on
+ * disk so signing back in finds everything, including work not yet pushed.
+ * There is nothing to come back to after a deletion, and a device still holding
+ * the reading history of an account that no longer exists is the bug users
+ * notice; so here the file is emptied rather than merely closed.
  *
- * The file is opened BY ACCOUNT, not taken as whichever store is open. By the
- * time this runs the session has ended, and ending it already pointed the
- * handle at the signed-out store — emptying "the open store" then would destroy
- * activity that was never part of this account and leave the account's own
- * file untouched. With no email there is no file to name, and nothing is wiped.
+ * Order is load-bearing. The wipe runs while the ACCOUNT's store is still the
+ * open one — detaching first would point the handle at the signed-out store and
+ * empty that instead, destroying activity that was never part of this account
+ * and leaving the account's own file untouched.
  *
  * The Keychain token is NOT cleared here. It belongs to the session rather than
- * to on-device data — see useSsoActions.deleteAccount.
+ * to on-device data, and the caller needs it right up until the delete has been
+ * accepted — see useSsoActions.deleteAccount.
  */
-export const destroyLocalAccountData = async (dispatch, email) => {
-  if (email) {
-    try {
-      // Day rows, both session histories, the read counts and the summary.
-      await useAnalyticsAccount(email);
-      await clearAllAnalyticsData();
-    } catch (err) {
-      // Reported, not rethrown. The account IS gone server-side by the time
-      // this runs, so leaving it below has to happen either way.
-      logError(new Error(`SSO accountScope: wiping deleted account data failed: ${err?.message}`));
-    }
+export const destroyLocalAccountData = async (dispatch) => {
+  try {
+    // 1. The account's own analytics file: day rows, both session histories,
+    //    the read counts and the derived summary.
+    await clearAllAnalyticsData();
+  } catch (err) {
+    // Reported, not rethrown. The account IS gone server-side by the time this
+    // runs, so the sign-out below has to happen either way — leaving the user
+    // signed in to a deleted account would be the worse failure.
+    logError(new Error(`SSO accountScope: wiping deleted account data failed: ${err?.message}`));
   }
-  // Back to the signed-out store, then — via CLEAR_USER_DATA's slice list —
-  // the preferences and the sync outbox, whose queued ops would otherwise keep
-  // pushing to a dead account.
-  await leaveLocalAccount(dispatch);
+
+  // 2. Back to the signed-out store, so nothing reads the emptied file.
+  await switchAnalyticsAccount(null);
+
+  // 3. Preferences, reminders and — via CLEAR_USER_DATA's slice list — the sync
+  //    outbox, whose queued ops would otherwise keep pushing to a dead account.
+  await purgeLocalUserData(dispatch);
+
+  // 4. No previous account to compare the next sign-in against.
+  await writeLastAccount(null);
 };
 
 /**
@@ -468,22 +423,14 @@ export const destroyLocalAccountData = async (dispatch, email) => {
  *
  * Returns true if a purge happened (useful for tests and logging).
  */
-const applyAccountScopeNow = async (email, dispatch) => {
+export const applyAccountScope = async (email, dispatch) => {
   try {
     const last = await readLastAccount();
 
     // Unconditional: the database must follow the session even when the account
     // has not CHANGED — a relaunch starts on the anonymous store and has to be
     // pointed at the signed-in account before anything reads or writes.
-    //
-    // Its failure must not stop the purge below: a wedged database would
-    // otherwise hand the next account the previous one's pothis, reminders and
-    // unsent changes, which would then sync into it.
-    try {
-      await switchAnalyticsAccount(email);
-    } catch (err) {
-      logError(new Error(`SSO accountScope: switching the history store failed: ${err?.message}`));
-    }
+    await switchAnalyticsAccount(email);
 
     if (!isAccountChange(email, last)) return false;
     if (!normalise(last) && normalise(email)) {
@@ -499,18 +446,4 @@ const applyAccountScopeNow = async (email, dispatch) => {
     logError(new Error(`SSO accountScope.applyAccountScope failed: ${err?.message || err}`));
     return false;
   }
-};
-
-// One at a time. On Android a sign-in arrives twice — openAuth resolves and
-// the return link fires — and two checks running together both read the
-// previous owner before either records the new one, so both purged; the
-// second could land after the first session had already synced the account's
-// settings down, and wipe them. In turn, the second finds the owner recorded
-// and changes nothing.
-let scopeQueue = Promise.resolve();
-
-export const applyAccountScope = (email, dispatch) => {
-  const run = scopeQueue.then(() => applyAccountScopeNow(email, dispatch));
-  scopeQueue = run.catch(() => {});
-  return run;
 };

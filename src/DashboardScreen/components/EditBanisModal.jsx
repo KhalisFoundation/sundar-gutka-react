@@ -19,7 +19,6 @@ import {
   trackDashboardEvent,
 } from "@common";
 import { getBaniList } from "@database";
-import { nitnemSelection } from "../../common/nitnem/selection";
 import useSetPothiBanis from "../../Pothi/hooks/useSetPothiBanis";
 import reportPothiEmptied from "../../Pothi/reportPothiEmptied";
 import CheckCircle from "./CheckCircle";
@@ -106,8 +105,6 @@ const EditBanisModal = ({ visible, onClose }) => {
   const transliterationLanguage = useSelector((state) => state.transliterationLanguage);
   const baniListRedux = useSelector((state) => state.baniList);
   const morning = useSelector((state) => defaultPothi(state.pothis, "morning"));
-  // Gone rather than not here yet — see TodaysNitnem.
-  const morningDeleted = useSelector((state) => !!state.pothis?.seededDefaults);
   const setBanis = useSetPothiBanis();
 
   const [allBanis, setAllBanis] = useState([]);
@@ -122,9 +119,7 @@ const EditBanisModal = ({ visible, onClose }) => {
   const morningRef = useRef(morning);
   morningRef.current = morning;
   useEffect(() => {
-    // The same ticks the card shows: with no Morning Nitnem pothi yet that is
-    // the defaults, and opening on none made a Save write an empty pothi.
-    if (visible) setPicked(nitnemSelection(morningRef.current).ids);
+    if (visible) setPicked(baniItems(morningRef.current).map((item) => item.baaniId));
   }, [visible]);
 
   useEffect(() => {
@@ -135,20 +130,7 @@ const EditBanisModal = ({ visible, onClose }) => {
       // undefined. Rendering them here gave every folder row `key={undefined}`,
       // which is the "unique key prop" warning this screen was throwing, and
       // put rows in a bani picker that are not banis.
-      //
-      // Their CHILDREN are banis, though: Savaiye, the Vaaran and the Bhagat
-      // Bani sit inside them. Left out, they could not be picked here, and a
-      // Save removed any the pothi already held.
-      const seen = new Set();
-      const flat = [];
-      baniListRedux.forEach((entry) => {
-        [entry, ...(Array.isArray(entry?.folder) ? entry.folder : [])].forEach((bani) => {
-          if (bani?.id === undefined || seen.has(bani.id)) return;
-          seen.add(bani.id);
-          flat.push(bani);
-        });
-      });
-      setAllBanis(flat);
+      setAllBanis(baniListRedux.filter((b) => b.id !== undefined));
     } else {
       getBaniList(transliterationLanguage).then(setAllBanis).catch(logError);
     }
@@ -163,26 +145,17 @@ const EditBanisModal = ({ visible, onClose }) => {
     // own banis, so an empty `allBanis` would resolve to an empty selection and
     // silently empty the pothi.
     if (allBanis.length === 0) return;
-    // Not here yet, rather than deleted: the account's own list is on its way,
-    // and a copy built now would be written over it.
-    if (!morning && !morningDeleted) return;
     // Built in bani-list order, so a Nitnem assembled here reads in the order
     // it is recited. An existing pothi keeps its own order and new banis append,
     // which is how a bani is added to any other pothi.
-    const listed = new Set(allBanis.map((bani) => bani.id));
-    const items = [
-      ...allBanis
-        .filter((bani) => picked.includes(bani.id))
-        .map((bani) =>
-          makeBaniItem({
-            baaniId: bani.id,
-            title: bani.gurmukhiUni || convertToUnicode(bani.gurmukhi),
-          })
-        ),
-      // A bani this list does not show was never offered to untick, so it is
-      // kept rather than read as removed.
-      ...baniItems(morning).filter((item) => !listed.has(item.baaniId)),
-    ];
+    const items = allBanis
+      .filter((bani) => picked.includes(bani.id))
+      .map((bani) =>
+        makeBaniItem({
+          baaniId: bani.id,
+          title: bani.gurmukhiUni || convertToUnicode(bani.gurmukhi),
+        })
+      );
 
     if (morning) {
       if (!setBanis(morning, items)) return;
@@ -200,7 +173,7 @@ const EditBanisModal = ({ visible, onClose }) => {
     }
     trackDashboardEvent("nitnem_banis_saved", { count: items.length });
     onClose();
-  }, [allBanis, picked, morning, morningDeleted, setBanis, dispatch, onClose]);
+  }, [allBanis, picked, morning, setBanis, dispatch, onClose]);
 
   return (
     <SheetModal visible={visible} onClose={onClose} heightRatio={0.75}>

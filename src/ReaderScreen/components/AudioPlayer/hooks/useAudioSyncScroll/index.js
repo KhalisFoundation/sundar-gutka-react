@@ -33,7 +33,7 @@ const useAudioSyncScroll = (progress, isPlaying, webViewRef, lyricsUrl, seekSync
       try {
         webViewRef.current.postMessage(JSON.stringify({ resetHighlight: true }));
       } catch (_) {
-        // Best effort: WebView may be unmounted or not ready to receive messages.
+        // the WebView can already be gone; there is nothing left to reset
       }
     }
 
@@ -302,7 +302,7 @@ const useAudioSyncScroll = (progress, isPlaying, webViewRef, lyricsUrl, seekSync
             webViewRef.current.postMessage(JSON.stringify({ resetHighlight: true }));
           }
         } catch (_) {
-          // Best effort: WebView may be unmounted or not ready to receive messages.
+          // the WebView can already be gone; there is nothing left to reset
         }
       }
     }
@@ -316,7 +316,7 @@ const useAudioSyncScroll = (progress, isPlaying, webViewRef, lyricsUrl, seekSync
         try {
           webViewRef.current.postMessage(JSON.stringify({ resetHighlight: true }));
         } catch (_) {
-          // Best effort: WebView may be unmounted or not ready to receive messages.
+          // the WebView can already be gone; there is nothing left to reset
         }
       }
     };

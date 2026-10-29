@@ -39,7 +39,7 @@ const useKeepAwake = () => {
 
   // Release lock when backgrounded, re-acquire when foregrounded
   useEffect(() => {
-    if (!shouldStayAwake) return undefined; // nothing to hold
+    if (!shouldStayAwake) return; // nothing to hold
 
     const handleAppStateChange = (nextState) => {
       if (nextState === "active") {
@@ -51,6 +51,7 @@ const useKeepAwake = () => {
     };
 
     const subscription = AppState.addEventListener("change", handleAppStateChange);
+    // eslint-disable-next-line consistent-return
     return () => subscription.remove();
   }, [shouldStayAwake]);
 };

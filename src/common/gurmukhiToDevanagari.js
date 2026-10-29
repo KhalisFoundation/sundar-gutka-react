@@ -44,17 +44,24 @@ export const gurmukhiToDevanagari = (input) => {
 
     if (ch === TIPPI) {
       out += ANUSVARA;
-    } else if (ch === ADDAK) {
+      // eslint-disable-next-line no-continue -- this character is fully handled
+      continue;
+    }
+    if (ch === ADDAK) {
       // Gemination: the following consonant is doubled → emit (thatConsonant +
       // halant) now; the consonant itself is emitted on the next iteration.
       const dev = next && isGurmukhi(next) ? shift(next) : "";
       if (isDevConsonant(dev)) out += dev + VIRAMA_DEV;
-    } else if (next === NUKTA && NUKTA_OVERRIDES[ch]) {
+      // eslint-disable-next-line no-continue -- this character is fully handled
+      continue;
+    }
+    if (next === NUKTA && NUKTA_OVERRIDES[ch]) {
       out += NUKTA_OVERRIDES[ch];
       i += 1; // consume the nukta
-    } else {
-      out += isGurmukhi(ch) ? shift(ch) : ch; // pass punctuation/spaces through
+      // eslint-disable-next-line no-continue -- this character is fully handled
+      continue;
     }
+    out += isGurmukhi(ch) ? shift(ch) : ch; // pass punctuation/spaces through
   }
   return out;
 };

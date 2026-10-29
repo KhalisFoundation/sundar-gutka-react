@@ -5,7 +5,8 @@
 // (StreakCard, MonthCalendar, YourPractice, WeekChart, computeStreaks...), so
 // this isn't rare. Running them one at a time removes the race entirely,
 // regardless of the exact native-side cause.
-let chain = Promise.resolve();
+// eslint-disable-next-line no-underscore-dangle -- module-private chain
+let _chain = Promise.resolve();
 
 // A wedged native call (e.g. the SQLite bridge left in a bad state after a
 // prior crash — the native module survives a JS-only reload) would otherwise
@@ -32,10 +33,10 @@ const withTimeout = (promise) =>
   });
 
 export const runSerialized = (fn) => {
-  const result = chain.then(() => withTimeout(fn()));
+  const result = _chain.then(() => withTimeout(fn()));
   // Keep the chain alive even after a failure/timeout, but don't let one
   // caller's rejection propagate to the next queued caller.
-  chain = result.then(
+  _chain = result.then(
     () => {},
     () => {}
   );

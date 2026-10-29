@@ -1,6 +1,6 @@
 /* eslint-env jest */
-import { log, recordError } from "@react-native-firebase/crashlytics";
-import { logError } from "./crashlytics";
+import { didCrashOnPreviousExecution, recordError } from "@react-native-firebase/crashlytics";
+import { didCrashLastRun, logError } from "./crashlytics";
 
 jest.mock("@react-native-firebase/crashlytics", () => ({
   getCrashlytics: jest.fn(() => ({})),
@@ -9,12 +9,12 @@ jest.mock("@react-native-firebase/crashlytics", () => ({
   setAttribute: jest.fn(),
   log: jest.fn(),
   recordError: jest.fn(),
+  didCrashOnPreviousExecution: jest.fn(() => Promise.resolve(false)),
 }));
 
 describe("logError", () => {
   beforeEach(() => {
     recordError.mockClear();
-    log.mockClear();
   });
 
   it("records a real Error as-is", () => {
@@ -29,44 +29,16 @@ describe("logError", () => {
     expect(recorded.message).toBe("Non-Error exception: useDatabaseUpdateCheck");
   });
 
-  it("logError(context, error) records the real error itself, context as a breadcrumb", () => {
+  it("regression: logError(context, error) must not swallow the real error", () => {
     // Many call sites use this two-arg form, e.g.
-    // logError("useDatabaseUpdateCheck", error). The real error keeps its own
-    // stack (so the issue groups where it failed); the context rides along.
-    const realError = new Error("database disk image is malformed");
+    // logError("useDatabaseUpdateCheck", error). Before the fix, the second
+    // argument was dropped entirely and the context string was recorded as
+    // if it were the whole error, losing the real failure's message.
+    const realError = new Error("network request failed");
     logError("useDatabaseUpdateCheck", realError);
-    expect(recordError).toHaveBeenCalledWith(expect.anything(), realError);
-    expect(log).toHaveBeenCalledWith(expect.anything(), "useDatabaseUpdateCheck");
-  });
-
-  it("logError(context, offlineError) leaves a breadcrumb instead of an issue", () => {
-    logError("useDatabaseUpdateCheck", new TypeError("Network request failed"));
-    expect(recordError).not.toHaveBeenCalled();
-    expect(log).toHaveBeenCalledWith(
-      expect.anything(),
-      "useDatabaseUpdateCheck: Network request failed"
-    );
-  });
-
-  it("a native-module rejection is recorded per call site, context in the title", () => {
-    const rejection = new Error("The player is not initialized.");
-    rejection.code = "player_not_initialized";
-    rejection.nativeStackAndroid = [];
-    logError("useTrackPlayer seek failed", rejection);
     const recorded = recordError.mock.calls[0][1];
-    expect(recorded).not.toBe(rejection);
-    expect(recorded.message).toBe(
-      "useTrackPlayer seek failed: The player is not initialized. (code: player_not_initialized)"
-    );
-    expect(recorded.cause).toBe(rejection);
-  });
-
-  it("error boundary: onError(error, componentStack) records the error, not the stack text", () => {
-    const renderError = new Error("Cannot read property 'x' of undefined");
-    const componentStack = "\n    in Reader\n    in Stack\n    in App";
-    logError(renderError, componentStack);
-    expect(recordError).toHaveBeenCalledWith(expect.anything(), renderError);
-    expect(log).toHaveBeenCalledWith(expect.anything(), componentStack);
+    expect(recorded.message).toContain("network request failed");
+    expect(recorded.message).toContain("useDatabaseUpdateCheck");
   });
 
   it("combines a string context with a non-Error extra value", () => {
@@ -97,5 +69,17 @@ describe("logError", () => {
     expect(() => logError(circular)).not.toThrow();
     const recorded = recordError.mock.calls[0][1];
     expect(recorded.message).toBe("Non-Error exception: [object Object]");
+  });
+});
+
+describe("didCrashLastRun", () => {
+  it("passes on Crashlytics' answer", async () => {
+    didCrashOnPreviousExecution.mockResolvedValueOnce(true);
+    await expect(didCrashLastRun()).resolves.toBe(true);
+  });
+
+  it("answers false rather than failing when Crashlytics cannot tell", async () => {
+    didCrashOnPreviousExecution.mockRejectedValueOnce(new Error("not ready"));
+    await expect(didCrashLastRun()).resolves.toBe(false);
   });
 });

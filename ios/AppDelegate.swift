@@ -3,9 +3,6 @@ import React
 import React_RCTAppDelegate
 import ReactAppDependencyProvider
 import Firebase
-// Background download support (@kesha-antonov/react-native-background-downloader).
-// The pod's Swift module is named after the package, with the npm scope dropped.
-import react_native_background_downloader
  
 @main
 class AppDelegate: RCTAppDelegate {
@@ -19,40 +16,25 @@ class AppDelegate: RCTAppDelegate {
     }
     self.moduleName = "SundarGutka"
     self.dependencyProvider = RCTAppDependencyProvider()
- 
+
     // You can add your custom initial props in the dictionary below.
     // They will be passed down to the ViewController used by React Native.
     self.initialProps = [:]
 
     // The window is created by SceneDelegate, not here: an app built with the
     // iOS 27 SDK that creates its window without a scene is refused at launch
-    // on iOS 27 (Apple TN3187). The factory is set up below; the bridge itself
-    // starts when SceneDelegate asks for the root view.
+    // on iOS 27 (Apple TN3187). React Native itself still starts below.
     self.automaticallyLoadReactNativeWindow = false
     self.appLaunchOptions = launchOptions
- 
+
     return super.application(application, didFinishLaunchingWithOptions: launchOptions)
   }
-
-  // Reconnect the background URLSession so downloads that completed while the
-  // app was suspended or terminated can finish flushing to disk.
-  override func application(
-    _ application: UIApplication,
-    handleEventsForBackgroundURLSession identifier: String,
-    completionHandler: @escaping () -> Void
-  ) {
-    RNBackgroundDownloader.setCompletionHandlerWithIdentifier(identifier, completionHandler: completionHandler)
-  }
  
-  // Return links opened while the app is running — the Khalis SSO sign-in
-  // (sundargutka://login) when it finishes in the system browser rather than
-  // the in-app one. A link that launched the app arrives in the launch options
-  // instead, which React Native reads for Linking.getInitialURL().
-  override func application(
-    _ app: UIApplication,
-    open url: URL,
-    options: [UIApplication.OpenURLOptionsKey: Any] = [:]
-  ) -> Bool {
+  // Delivers custom-scheme opens (sundargutka://) to React Native's Linking
+  // module. Without this the JS `url` event never fires on iOS, so the SSO
+  // return redirect would be dropped.
+  override func application(_ app: UIApplication, open url: URL,
+                            options: [UIApplication.OpenURLOptionsKey: Any] = [:]) -> Bool {
     return RCTLinkingManager.application(app, open: url, options: options)
   }
 

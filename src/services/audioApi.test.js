@@ -116,18 +116,8 @@ describe("fetchRawBaniAudio", () => {
     );
   });
 
-  it("answers a 404 as a definite 'no audio', not as no answer", async () => {
+  it("returns null on a 404 (bani without audio)", async () => {
     global.fetch = jest.fn(() => Promise.resolve({ ok: false, status: 404 }));
-    expect(await fetchRawBaniAudio(1)).toEqual({
-      baniId: 1,
-      baniName: "",
-      groups: {},
-      noAudio: true,
-    });
-  });
-
-  it("returns null on a server error, which says nothing about the bani", async () => {
-    global.fetch = jest.fn(() => Promise.resolve({ ok: false, status: 503 }));
     expect(await fetchRawBaniAudio(1)).toBeNull();
   });
 

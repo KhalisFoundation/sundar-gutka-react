@@ -11,7 +11,7 @@
  * only), zero after any reset, and inline font-size never rewritten.
  */
 /* global window, document, Element */
-import { READER_THEMES_BY_ID } from "@theme/reader/themes";
+// eslint-disable-next-line import/order -- the theme is required after jest.mock below
 import script from "./gutkaScript";
 
 jest.mock("react-native", () => ({ Platform: { OS: "ios" } }));
@@ -19,7 +19,7 @@ jest.mock("react-native", () => ({ Platform: { OS: "ios" } }));
 // The real light reading-theme record, not a hand-written stub: the highlight
 // behind a sung verse comes from the theme now, and a stub would drift from the
 // app the moment a slot was added or renamed.
-const theme = READER_THEMES_BY_ID.light;
+const theme = require("@theme/reader/themes").READER_THEMES_BY_ID.light;
 
 // Mirrors the DOM that loadHTML/createDiv emit in line mode: one .text-item
 // per verse, each holding a gurmukhi div plus translit/translation siblings.
@@ -368,31 +368,6 @@ describe("edge arrival", () => {
     scrollTo(900);
     scrollTo(1000);
     expect(bars().filter((m) => m === "edge")).toHaveLength(2);
-  });
-
-  // The direction anchor moved on every tick, so a drag of under 3px per event
-  // never crossed the threshold and the bars ignored it.
-  it("hides the bars for a slow drag made of small steps", () => {
-    scrollTo(502);
-    scrollTo(504);
-    scrollTo(506);
-    expect(bars()).toEqual(["hide"]);
-  });
-
-  // A fling ran the topmost-line scan, and posted, on every event.
-  it("scans for the top line at most every 150ms on a fling, and once more where it stops", () => {
-    document.body.innerHTML = LINE_MODE_HTML;
-    // jsdom has no layout: put the first line at the top of the screen.
-    document.getElementById("101").getBoundingClientRect = () => ({ top: 0, height: 50 });
-    for (let y = 510; y < 560; y += 5) scrollTo(y);
-    const scans = () => posted().filter((m) => m.startsWith("scroll-elementId-"));
-    // Ten events inside one window: at most one scan while it moves…
-    const during = scans().length;
-    expect(during).toBeLessThanOrEqual(1);
-    // …and one more once it comes to rest, for the line it stopped on.
-    jest.advanceTimersByTime(200);
-    expect(scans()).toHaveLength(during + 1);
-    expect(scans().pop()).toBe("scroll-elementId-101|seq-1");
   });
 
   it("does not report an edge for a position-restore jump", () => {

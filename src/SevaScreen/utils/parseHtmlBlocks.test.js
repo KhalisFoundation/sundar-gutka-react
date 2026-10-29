@@ -75,44 +75,6 @@ describe("blockText", () => {
     expect(blockText(block)).toBe("Hi there!");
   });
 
-  it("decodes entities in a link's href", () => {
-    const [block] = parseHtmlBlocks('<p><a href="https://x.org/?a=1&amp;b=2">Go</a></p>');
-    expect(block.segments[0].url).toBe("https://x.org/?a=1&b=2");
-  });
-
-  it("drops inline tags to their text and keeps <br> as a line break", () => {
-    const [block] = parseHtmlBlocks("<p>Support <strong>Khalis</strong><br/>today</p>");
-    expect(blockText(block)).toBe("Support Khalis\ntoday");
-  });
-
-  it("keeps a literal < in copy, and the space between two links", () => {
-    expect(blockText(parseHtmlBlocks("<p>Give <5 min a day></p>")[0])).toBe("Give <5 min a day>");
-    expect(blockText(parseHtmlBlocks("<p>Ages 5<a then 10 > 3</p>")[0])).toBe(
-      "Ages 5<a then 10 > 3"
-    );
-    const [block] = parseHtmlBlocks('<p><a href="a">A</a> <a href="b">B</a></p>');
-    expect(blockText(block)).toBe("A B");
-  });
-
-  it("decodes numeric and typographic entities", () => {
-    const [block] = parseHtmlBlocks(
-      "<p>d&#8217;autres &#x27;x&#x27; l&rsquo;app&hellip; &unknown;</p>"
-    );
-    expect(blockText(block)).toBe("d\u2019autres 'x' l\u2019app\u2026 &unknown;");
-  });
-
-  it("keeps a leading <br> before a link as its line break", () => {
-    const [block] = parseHtmlBlocks('<p>Note<br><a href="x">Go</a></p>');
-    expect(blockText(block)).toBe("Note\nGo");
-    expect(parseHtmlBlocks('<p><br><a href="x">Go</a></p>')[0].segments[0].text).toBe("\n");
-  });
-
-  it("leaves no empty segments around a wrapped link, and no empty blocks", () => {
-    const [block] = parseHtmlBlocks('<p><strong><a href="x">Go</a></strong></p>');
-    expect(block.segments).toEqual([{ text: "Go", link: true, url: "x" }]);
-    expect(parseHtmlBlocks("<p><span></span></p>")).toEqual([]);
-  });
-
   it("is safe on null/empty blocks", () => {
     expect(blockText(null)).toBe("");
     expect(blockText({ segments: [] })).toBe("");

@@ -138,37 +138,6 @@ describe("refreshRemoteThemes", () => {
     expect(fetchRemoteThemes).toHaveBeenCalledTimes(1);
   });
 
-  it("keeps the same themes array when the catalogue has not changed", async () => {
-    // A new array rebuilds every remote theme record, which reloads the Reader
-    // page mid-read. Only `fetchedAt` may move.
-    const held = { version: 1, fetchedAt: 0, themes: [{ id: "sanjh", base: "dark" }] };
-    fetchRemoteThemes.mockResolvedValue({
-      ok: true,
-      version: 1,
-      themes: [{ id: "sanjh", base: "dark" }],
-    });
-    const dispatch = jest.fn();
-
-    await refreshRemoteThemes(storeWith(held), dispatch, { force: true });
-
-    const stored = dispatch.mock.calls.find(([a]) => a.type === "SET_REMOTE_THEMES")[0].value;
-    expect(stored.themes).toBe(held.themes);
-    expect(stored.fetchedAt).toBeGreaterThan(0);
-  });
-
-  it("takes the new array when the content changed, even at the same version", async () => {
-    const held = { version: 1, fetchedAt: 0, themes: [{ id: "sanjh", base: "dark" }] };
-    const served = [{ id: "sanjh", base: "light" }];
-    fetchRemoteThemes.mockResolvedValue({ ok: true, version: 1, themes: served });
-    const dispatch = jest.fn();
-
-    await refreshRemoteThemes(storeWith(held), dispatch, { force: true });
-
-    const stored = dispatch.mock.calls.find(([a]) => a.type === "SET_REMOTE_THEMES")[0].value;
-    expect(stored.themes).toEqual(served);
-    expect(stored.themes).not.toBe(held.themes);
-  });
-
   it("treats an empty catalogue as a fault and keeps what it has", async () => {
     // The API's documented failure mode is "last good cache, then an empty
     // list", so a healthy 200 carrying nothing is what a device sees while the

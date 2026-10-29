@@ -17,11 +17,6 @@ const AUTO_SCROLL_MIN_SPEED = 1;
 const AUTO_SCROLL_MAX_SPEED = 100;
 const AUTO_SCROLL_MIN_PX_PER_SECOND = 12;
 const AUTO_SCROLL_MAX_PX_PER_SECOND = 200;
-// The topmost-line scan walks the page. Once per this many ms on a manual
-// fling, rather than on every scroll event.
-const ELEMENT_SCAN_MS = 150;
-let lastElementScanTime = 0;
-let elementScanTimer = null;
 let isScrolling;
 let isManuallyScrolling = false;
 let lastHighlightedElement = null;
@@ -180,29 +175,21 @@ const scrollFunc=(e)=> {
 
   // Report topmost element on both manual and auto-scroll so read context
   // survives background/terminate mid-auto-scroll. The 300ms throttle above
-  // keeps this off the 60fps RAF hot path during auto-scroll; a manual fling
-  // gets its own time gate (ELEMENT_SCAN_MS), with one trailing scan so the
-  // place it comes to rest is still the one reported.
+  // keeps this off the 60fps RAF hot path during auto-scroll.
+  const elementId = reflowing ? null : getTopmostElementId();
+  const topEl = elementId ? document.getElementById(String(elementId)) : null;
+  if (topEl) {
+    // WHERE on screen that line sits, so a rotation can put it back in the
+    // same place (see the resize handler).
+    anchorElementId = String(elementId);
+    anchorViewportTop = topEl.getBoundingClientRect().top;
+  }
   if (!reflowing) {
-    // The rotation anchor stays current on every event even while the scan
-    // waits: only the line already chosen is measured, which is cheap, and a
-    // rotation right after a fling then restores where the page came to rest
-    // rather than where the last gated scan saw it.
-    if (anchorElementId) {
-      const anchorEl = document.getElementById(anchorElementId);
-      if (anchorEl) anchorViewportTop = anchorEl.getBoundingClientRect().top;
-    }
-    const scanNow = Date.now();
-    clearTimeout(elementScanTimer);
-    if (scanNow - lastElementScanTime >= ELEMENT_SCAN_MS) {
-      lastElementScanTime = scanNow;
-      reportTopmostElement();
-    } else {
-      elementScanTimer = setTimeout(() => {
-        if (window.innerWidth !== lastViewportWidth) return;
-        lastElementScanTime = Date.now();
-        reportTopmostElement();
-      }, ELEMENT_SCAN_MS);
+    if (elementId && !hasReachedEnd) {
+      const seq = topEl ? (topEl.getAttribute("data-sequence") || "") : "";
+      window.ReactNativeWebView.postMessage("scroll-elementId-" + elementId + "|seq-" + seq);
+    } else if (hasReachedEnd) {
+      window.ReactNativeWebView.postMessage("scroll-elementId-null");
     }
   }
 
@@ -257,10 +244,6 @@ const scrollFunc=(e)=> {
     window.ReactNativeWebView.postMessage("edge");
   } else if (!reflowing && autoScrollSpeed == 0 && Date.now() > syncScrollUntil) {
     let diffY = scrollFunc.y - window.pageYOffset;
-    // The anchor stays put until a direction commits: moved on every tick, a
-    // slow drag of under 3px per event never crossed the threshold and the
-    // bars ignored it.
-    if (Math.abs(diffY) <= 3) return;
     // Scroll direction drives the bars: scrolling DOWN hides them, scrolling UP
     // restores them together. (A tap also toggles — see the touch handlers
     // below.) The syncScrollUntil guard keeps audio-sync/position-restore
@@ -278,25 +261,6 @@ const scrollFunc=(e)=> {
   }
   scrollFunc.y = window.pageYOffset;
 }
-
-// The line at the top of the screen: reported for the saved reading position,
-// and remembered as the anchor a rotation puts back in place.
-const reportTopmostElement = () => {
-  const elementId = getTopmostElementId();
-  const topEl = elementId ? document.getElementById(String(elementId)) : null;
-  if (topEl) {
-    // WHERE on screen that line sits, so a rotation can put it back in the
-    // same place (see the resize handler).
-    anchorElementId = String(elementId);
-    anchorViewportTop = topEl.getBoundingClientRect().top;
-  }
-  if (elementId && !hasReachedEnd) {
-    const seq = topEl ? (topEl.getAttribute("data-sequence") || "") : "";
-    window.ReactNativeWebView.postMessage("scroll-elementId-" + elementId + "|seq-" + seq);
-  } else if (hasReachedEnd) {
-    window.ReactNativeWebView.postMessage("scroll-elementId-null");
-  }
-};
 
 const getTopmostElementId=()=> {
   const viewportTop = window.pageYOffset;
@@ -384,12 +348,6 @@ const setAutoScroll=()=> {
     const clientHeight = window.innerHeight;
     if (scrollTop + clientHeight >= scrollHeight - 2) {
       autoScrollRAF = null;
-      // scrollFunc is throttled to every 300ms while auto-scrolling, and the
-      // loop stopping here means no further scroll event comes. Run it once
-      // for the final position, so the end is reported: progress, the read
-      // position, and the "edge" that brings the bars back.
-      lastScrollFuncTime = 0;
-      scrollFunc();
       return;
     }
 
@@ -583,9 +541,6 @@ ${listener}.addEventListener(
         return;
       }
         // Manually scroll to the bookmarked element because location.hash is unreliable inside WebView HTML
-      // Programmatic: keep scrollFunc's show/hide out of the smooth scroll, or
-      // the bars hidden below pop back up on the way.
-      syncScrollUntil = Date.now() + 700;
       element.scrollIntoView({
         behavior: "smooth",
         block: "start",

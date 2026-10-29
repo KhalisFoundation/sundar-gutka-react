@@ -273,7 +273,6 @@ const StreakCard = ({ refreshKey = 0 }) => {
         <SkeletonBlock style={[styles.lineSkeletonSmall, { marginTop: 42 }]} />
         <View style={[styles.weekRow, { marginTop: 6 }]}>
           {Array.from({ length: 7 }).map((_, i) => (
-            // Fixed placeholders: their position is all they have.
             // eslint-disable-next-line react/no-array-index-key
             <SkeletonBlock key={i} style={styles.dotSkeleton} />
           ))}

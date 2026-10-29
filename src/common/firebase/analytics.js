@@ -6,7 +6,6 @@ import {
 import { getApp } from "@react-native-firebase/app";
 import { logError } from "./crashlytics";
 import { sanitizeName } from "./helper";
-import { initializePerformanceMonitoring } from "./performance";
 
 const app = getApp();
 const analytics = getAnalytics(app);
@@ -56,8 +55,6 @@ const trackEvent = async (category, action, label) => {
 };
 
 const allowTracking = async (isStatistics) => {
-  // Performance monitoring follows the same Statistics setting.
-  initializePerformanceMonitoring(isStatistics);
   try {
     await setAnalyticsCollectionEnabled(analytics, isStatistics);
   } catch (error) {
@@ -144,19 +141,18 @@ const trackBaniListen = async (baniID, baniTitle, artist, durationSec, trackLeng
 
 // Fires when playback session ends (navigation away / unmount) with position context.
 // Enables % completion and half-listened segmentation in Firebase Explore.
+const completionTier = (percent, complete, halfway, completeLabel = "completed") => {
+  if (percent >= complete) return completeLabel;
+  if (percent >= halfway) return "half";
+  return "partial";
+};
+
 const trackBaniListenCompletion = async (baniID, title, artist, positionSec, trackLengthSec) => {
   try {
     const position = safeInt(positionSec);
     const length = safeInt(trackLengthSec);
     const pct = length > 0 ? Math.min(100, Math.round((position / length) * 100)) : 0;
-    let tier;
-    if (pct >= 90) {
-      tier = "completed";
-    } else if (pct >= 40) {
-      tier = "half";
-    } else {
-      tier = "partial";
-    }
+    const tier = completionTier(pct, 90, 40);
     await logEvent(analytics, "bani_listen_completion", {
       bani_id: safeStr(baniID),
       bani_title: safeStr(title),
@@ -221,14 +217,7 @@ const trackAudioLinkRequest = async (baniTitle, baniID, baniLength) => {
 const trackScrollProgress = async (baniID, baniTitle, scrollPercent, syncScrollEnabled) => {
   try {
     const pct = Math.min(100, Math.max(0, safeInt(scrollPercent)));
-    let tier;
-    if (pct >= 90) {
-      tier = "complete";
-    } else if (pct >= 40) {
-      tier = "half";
-    } else {
-      tier = "partial";
-    }
+    const tier = completionTier(pct, 90, 40, "complete");
     await logEvent(analytics, "scroll_progress", {
       bani_id: safeStr(baniID),
       bani_title: safeStr(baniTitle),
@@ -262,11 +251,8 @@ const trackPlayerForm = async (form, trigger) => {
   }
 };
 
-// Fires whenever the reader's header + bottom navigation bar are shown or hidden,
-// as two distinct events (NAV_BAR_SHOW / NAV_BAR_HIDE) so each is a first-class
-// metric in Firebase. trigger: "tap" | "scroll_up" | "scroll_down" |
-// "auto_hide_idle" separates deliberate toggles from the inactivity auto-hide;
-// mode: "reading" | "audio" | "autoscroll" is the active reading context.
+// Nav-bar (top app bar + bottom navigation) show/hide. `trigger` is one of
+// tap | scroll_up | scroll_down | auto_hide_idle; `mode` is reading | autoscroll | audio.
 const trackNavBar = async (visible, trigger, mode) => {
   try {
     await logEvent(analytics, visible ? "NAV_BAR_SHOW" : "NAV_BAR_HIDE", {
@@ -280,9 +266,40 @@ const trackNavBar = async (visible, trigger, mode) => {
   }
 };
 
+// Seva donation funnel — IN-APP, OBSERVABLE steps only. Funnel:
+//   opened (landing) → frequency_changed (donation type) → amount_selected
+//   → payment_started (Donate tapped) → payment_success (Qgiv handoff opened).
+// On exit before the handoff we emit checkout_abandoned with the furthest step
+// reached. A visit is a FOCUS of the Seva tab, not a mount — the tab stays
+// mounted once visited, so opened/checkout_abandoned are emitted per visit.
+// below_minimum sits off to the side of the funnel: the donor tapped Donate and
+// was refused because the amount was under what Qgiv can charge, so no
+// payment_started follows. Without it those donors are indistinguishable from
+// the ones who simply left, since both end the visit at amount_selected.
+// NOTE on payment_success: real payment confirmation lives on Qgiv, which the
+// app hands off to in the in-app browser and cannot observe. Per product
+// decision, OPENING the Qgiv handoff is counted as a successful donation, so
+// payment_success fires on browser-open — it is a conversion proxy, not a
+// Qgiv-confirmed payment. Donor details, payment failures and locality remain
+// unobservable and are not emitted.
+// Every param is sanitized so nothing reaches Firebase as null/empty/wrong-type
+// (which would surface as "(not set)"): booleans → "true"/"false", numbers →
+// safe ints, strings trimmed; null/undefined/empty values are dropped entirely.
+// Call sites always pass real values for the required dimensions (donation_type,
+// amount_bucket, last_step_reached).
+const SEVA_EVENT_NAMES = {
+  opened: "seva_opened",
+  frequency_changed: "seva_frequency_changed",
+  amount_selected: "seva_amount_selected",
+  below_minimum: "seva_amount_below_minimum",
+  payment_started: "seva_payment_started",
+  payment_success: "seva_payment_success",
+  checkout_abandoned: "seva_checkout_abandoned",
+};
+
 // Firebase drops a param that is null, empty or the wrong type, and silently
-// truncates a long one. Shared by every namespaced tracker so they cannot drift
-// on what they consider a safe param.
+// truncates a long one. Shared by every namespaced tracker below so they cannot
+// drift on what they consider a safe param.
 const sanitizeParams = (params) => {
   const safeParams = {};
   Object.entries(params || {}).forEach(([key, value]) => {
@@ -306,8 +323,50 @@ const sanitizeParams = (params) => {
   return safeParams;
 };
 
-// One tracker per feature: a known action maps to its event name, anything else
-// to `<prefix>_<action>`.
+const trackSevaEvent = async (action, params = {}) => {
+  try {
+    const eventName = SEVA_EVENT_NAMES[action] || sanitize(`seva_${action}`, "seva_event");
+    await logEvent(analytics, eventName, sanitizeParams(params));
+  } catch (error) {
+    logError(
+      new Error(`Seva analytics failed for ${action} - ${error?.message || "Unknown error"}`)
+    );
+  }
+};
+
+// My Pothi. One event name per action, so each carries only the params it
+// actually populates — a shared "pothi" umbrella would leave (not set) on every
+// param the other actions do not set, which is why the audio events were split.
+const POTHI_EVENT_NAMES = {
+  created: "pothi_created",
+  bani_added: "pothi_bani_added",
+  bani_removed: "pothi_bani_removed",
+  opened: "pothi_opened",
+  renamed: "pothi_renamed",
+  deleted: "pothi_deleted",
+  reordered: "pothi_reordered",
+  pinned: "pothi_pinned",
+  unpinned: "pothi_unpinned",
+  // A pothi left with no banis in it, reported where the edit is committed —
+  // see Pothi/reportPothiEmptied. `size` is what it held before, `surface`
+  // where it happened. Both are already registered in GA4.
+  emptied: "pothi_emptied",
+};
+
+const trackPothiEvent = async (action, params = {}) => {
+  try {
+    const eventName = POTHI_EVENT_NAMES[action] || sanitize(`pothi_${action}`, "pothi_event");
+    await logEvent(analytics, eventName, sanitizeParams(params));
+  } catch (error) {
+    logError(
+      new Error(`Pothi analytics failed for ${action} - ${error?.message || "Unknown error"}`)
+    );
+  }
+};
+
+// One namespaced tracker per feature, all on the same rule as Seva and Pothi:
+// a fixed map of event names, so a typo at a call site cannot invent an event,
+// and `sanitizeParams` on the way out, so nothing reaches Firebase as (not set).
 const namespacedTracker =
   (names, prefix) =>
   async (action, params = {}) => {
@@ -320,35 +379,6 @@ const namespacedTracker =
       );
     }
   };
-
-// Seva donation funnel — IN-APP, OBSERVABLE steps only. Funnel:
-//   opened (landing) → frequency_changed (donation type) → amount_selected
-//   → payment_started (Donate tapped) → payment_success (Qgiv handoff opened).
-// On exit before the handoff we emit checkout_abandoned with the furthest step
-// reached. A visit is a FOCUS of the Seva tab, not a mount — the tab stays
-// mounted once visited, so opened/checkout_abandoned are emitted per visit.
-// below_minimum sits off to the side of the funnel: the donor tapped Donate and
-// was refused because the amount was under what Qgiv can charge, so no
-// payment_started follows. Without it those donors are indistinguishable from
-// the ones who simply left, since both end the visit at amount_selected.
-// NOTE on payment_success: real payment confirmation lives on Qgiv, which the
-// app hands off to in the in-app browser and cannot observe. Per product
-// decision, OPENING the Qgiv handoff is counted as a successful donation, so
-// payment_success fires on browser-open — it is a conversion proxy, not a
-// Qgiv-confirmed payment. Donor details, payment failures and locality remain
-// unobservable and are not emitted.
-// Call sites always pass real values for the required dimensions (donation_type,
-// amount_bucket, last_step_reached).
-const SEVA_EVENT_NAMES = {
-  opened: "seva_opened",
-  frequency_changed: "seva_frequency_changed",
-  amount_selected: "seva_amount_selected",
-  below_minimum: "seva_amount_below_minimum",
-  payment_started: "seva_payment_started",
-  payment_success: "seva_payment_success",
-  checkout_abandoned: "seva_checkout_abandoned",
-};
-const trackSevaEvent = namespacedTracker(SEVA_EVENT_NAMES, "seva");
 
 // The Dashboard, and above all its Explore row. `explore_tile_tap` carries
 // `tile_id` (the backend's tile key), `tile_title`, `outcome` (app | store |
@@ -437,26 +467,21 @@ const SSO_EVENT_NAMES = {
   account_delete_failed: "sso_account_delete_failed",
 };
 const trackSsoEvent = namespacedTracker(SSO_EVENT_NAMES, "sso");
-
-// My Pothi. One event name per action, so each carries only the params it
-// actually populates — a shared "pothi" umbrella would leave (not set) on every
-// param the other actions do not set, which is why the audio events were split.
-const POTHI_EVENT_NAMES = {
-  created: "pothi_created",
-  bani_added: "pothi_bani_added",
-  bani_removed: "pothi_bani_removed",
-  opened: "pothi_opened",
-  renamed: "pothi_renamed",
-  deleted: "pothi_deleted",
-  reordered: "pothi_reordered",
-  pinned: "pothi_pinned",
-  unpinned: "pothi_unpinned",
-  // A pothi left with no banis in it, reported where the edit is committed —
-  // see Pothi/reportPothiEmptied. `size` is what it held before, `surface`
-  // where it happened. Both are already registered in GA4.
-  emptied: "pothi_emptied",
+// The first-run onboarding carousel. `started` is the denominator; the other
+// three are the ways out of it, and which one it was is the whole question —
+// a tour people finish and a tour people skip on slide one are the same total.
+// `step_id` and `step_index` say where they left, so a slide that loses
+// everyone is visible rather than averaged away.
+//
+// A fixed map like every other family here, rather than the raw event name the
+// caller used to pass: that signature let a call site invent an event.
+const TOUR_EVENT_NAMES = {
+  started: "tour_started",
+  completed: "tour_completed",
+  skipped: "tour_skipped",
+  dismissed: "tour_dismissed",
 };
-const trackPothiEvent = namespacedTracker(POTHI_EVENT_NAMES, "pothi");
+const trackTourEvent = namespacedTracker(TOUR_EVENT_NAMES, "tour");
 
 // The in-app Punjabi keyboard. `opened` fires each time someone switches it on;
 // GA4's Users metric on it is how many people use the keyboard. `surface` is
@@ -480,6 +505,18 @@ const trackJourneyView = async (currentStreak, totalActiveDays) => {
     });
   } catch (error) {
     logError(new Error(`journey_viewed tracking failed - ${error?.message || "Unknown error"}`));
+  }
+};
+
+const trackKhalisAppClicked = async (appName) => {
+  try {
+    await logEvent(analytics, "khalis_app_clicked", {
+      app_name: safeStr(appName),
+    });
+  } catch (error) {
+    logError(
+      new Error(`khalis_app_clicked tracking failed - ${error?.message || "Unknown error"}`)
+    );
   }
 };
 
@@ -521,19 +558,17 @@ const trackAudioCompleted = async (durationSeconds, artistId) => {
 };
 
 export {
-  trackThemeEvent,
-  trackSevaEvent,
-  trackSsoEvent,
-  trackPothiEvent,
-  trackPunjabiKeyboardEvent,
   allowTracking,
   trackReaderEvent,
-  trackNavBar,
-  trackPlayerForm,
   trackSettingEvent,
   trackReminderEvent,
   trackScreenView,
   trackAudioEvent,
+  trackSevaEvent,
+  trackPothiEvent,
+  trackDashboardEvent,
+  trackThemeEvent,
+  trackSsoEvent,
   // Dedicated per-action events (replace the old single "audio" umbrella event)
   trackBaniOpen,
   trackBaniListen,
@@ -542,9 +577,13 @@ export {
   trackTrackDownload,
   trackAudioLinkRequest,
   trackScrollProgress,
-  trackDashboardEvent,
+  trackNavBar,
+  trackPlayerForm,
+  trackTourEvent,
+  trackPunjabiKeyboardEvent,
   // Journey + session lifecycle events
   trackJourneyView,
+  trackKhalisAppClicked,
   trackBaniCompleted,
   trackAudioStarted,
   trackAudioCompleted,

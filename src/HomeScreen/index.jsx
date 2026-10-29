@@ -26,7 +26,6 @@ import {
 } from "@common";
 import { setBaniOrder } from "../common/actions";
 import { SegmentedTabs } from "../common/components/ui";
-import { asAppWrite } from "../common/settings/appWrite";
 import CreatePothiSheet from "../Pothi/components/CreatePothiSheet";
 import usePothiActions from "../Pothi/hooks/usePothiActions";
 import PothiList from "../Pothi/PothiList";
@@ -84,16 +83,14 @@ const HomeScreen = React.memo(({ navigation }) => {
     const isLanguageValid = language && validLanguageKeys.includes(language);
 
     if (!language || !isLanguageValid) {
-      // The app resetting a language it does not know, not the person choosing.
-      asAppWrite(() => dispatch(actions.setLanguage("DEFAULT")));
+      dispatch(actions.setLanguage("DEFAULT"));
     }
   }, [language]);
 
   // The app UI (Home/Bookmarks lists, Reader header/title) is fixed to Baloo
   // Paaji — there is no longer a Font Face setting. The only font control left
   // ("Bani Font") drives just the Reader scripture text via `baniFontFace`.
-  // Reset any previously-persisted non-Baloo value here on the entry screen;
-  // the reader's old choice has already moved to the Bani font (see reducer).
+  // Reset any previously-persisted non-Baloo value here on the entry screen.
   useEffect(() => {
     if (fontFace !== constant.BALOO_PAAJI) {
       dispatch(actions.setFontFace(constant.BALOO_PAAJI));
@@ -102,8 +99,7 @@ const HomeScreen = React.memo(({ navigation }) => {
 
   useEffect(() => {
     const order = validateBaniOrder(baniOrder);
-    // Normalised to this build's banis by the app, not reordered by the person.
-    asAppWrite(() => dispatch(setBaniOrder(order)));
+    dispatch(setBaniOrder(order));
   }, []);
 
   // With My Pothi ON, `baniRows` filters the folders out and every row here is
@@ -202,9 +198,7 @@ const HomeScreen = React.memo(({ navigation }) => {
         })
         .onEnd((event) => {
           const thrown = Math.abs(event.velocityX) > 500;
-          // A throw goes the way the finger is MOVING at release, which a
-          // drag reversed into a flick does not share with its net distance.
-          const forward = event.velocityX < 0;
+          const forward = event.translationX < 0;
           if (thrown) settle(forward ? 1 : 0);
           else settle(page.value > 0.5 ? 1 : 0);
         }),
@@ -231,7 +225,9 @@ const HomeScreen = React.memo(({ navigation }) => {
   // No "bottom" edge below: this screen is a TAB, and the tab bar the navigator
   // draws under it is a `BottomNavigation`, which reserves and paints the bottom
   // inset itself. Reserving it here as well banded the foot of the list with a
-  // second strip of `baniGround` for the rows to disappear behind.
+  // second strip of `baniGround` for the rows to disappear behind. It went
+  // unnoticed for as long as the app hid the system navigation bar and the inset
+  // was always zero.
   return baniLengthSelector ? (
     <BaniLengthSelector />
   ) : (

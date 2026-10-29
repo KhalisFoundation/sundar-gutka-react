@@ -23,10 +23,6 @@ const useBaniList = () => {
   }, [baniList]);
   const dispatch = useDispatch();
 
-  // KNOWN: overlapping fetches for two different keys (a language switch
-  // right after launch) are not ordered, so whichever finishes last sets the
-  // list, and the first one's `finally` clears the second's key. `dev` had the
-  // same race with no guard at all. Fix planned in an upcoming PR.
   const fetchBaniList = useCallback(async () => {
     const requestKey = `${transliterationLanguage}|${JSON.stringify(baniOrder)}`;
     if (inFlightKeyRef.current === requestKey) return;

@@ -17,7 +17,6 @@ export const setFontFace = (value) => {
   trackSettingEvent(constant.FONT_FACE, value);
   return { type: actionTypes.SET_FONT_FACE, value };
 };
-
 export const setBaniFontFace = (value) => {
   trackSettingEvent(constant.BANI_FONT_FACE, value);
   return { type: actionTypes.SET_BANI_FONT_FACE, value };
@@ -44,6 +43,12 @@ export const setTransliteration = (value) => {
   trackSettingEvent(constant.TRANSLITERATION, value);
   return { type: actionTypes.SET_TRANSLITERATION, value };
 };
+// The app's ONE theme setting. `value` is either an appearance keyword
+// ("Default" | "Light" | "Dark") or a designed theme's id ("blue", "puratan",
+// …), which additionally carries the appearance it pairs with — see
+// resolve.js. The seed-once behaviour lives in `applyTheme` at the end of this
+// file, which is what Settings dispatches; this stays a plain action so the
+// existing callers and tests are unaffected.
 export const setTheme = (value) => {
   trackSettingEvent(constant.THEME, value);
   return { type: actionTypes.SET_THEME, value };
@@ -57,6 +62,14 @@ export const toggleAutoScroll = (value) => {
 export const toggleAudio = (value) => {
   trackSettingEvent(constant.AUDIO, value);
   return { type: actionTypes.TOGGLE_AUDIO, value };
+};
+
+export const bumpReaderTap = () => {
+  return { type: actionTypes.BUMP_READER_TAP };
+};
+
+export const bumpReaderScrollDown = () => {
+  return { type: actionTypes.BUMP_READER_SCROLL_DOWN };
 };
 
 export const toggleAudioFeatureEnabled = (value) => {
@@ -191,6 +204,12 @@ export const setBaniList = (value) => {
   return { type: actionTypes.SET_BANI_LIST, value };
 };
 
+// The backend's reading themes, already sanitised — see useRemoteThemesSync.
+export const setRemoteThemes = ({ version, themes, fetchedAt }) => ({
+  type: actionTypes.SET_REMOTE_THEMES,
+  payload: { version, themes, fetchedAt },
+});
+
 export const setPosition = (elementId, shabadID, sequence = null) => {
   const value = { [shabadID]: { elementId, sequence } };
   return { type: actionTypes.SET_SAVE_POSITION, value };
@@ -213,123 +232,6 @@ export const setAudioManifest = (baniId, tracks) => {
     type: actionTypes.SET_AUDIO_MANIFEST,
     payload: { baniId, tracks },
   };
-};
-
-// Audio progress actions
-export const setAudioProgress = (baniId, trackId, position, sequence) => {
-  return {
-    type: actionTypes.SET_AUDIO_PROGRESS,
-    payload: { baniId, trackId, position, sequence },
-  };
-};
-
-export const clearAudioProgress = (baniId) => {
-  return {
-    type: actionTypes.CLEAR_AUDIO_PROGRESS,
-    payload: { baniId },
-  };
-};
-
-// The reading-theme catalogue served by the backend, merged over the bundled
-// set (see theme/reader/registry and services/themes).
-export const setRemoteThemes = ({ version, themes, fetchedAt }) => ({
-  type: actionTypes.SET_REMOTE_THEMES,
-  payload: { version, themes, fetchedAt },
-});
-
-// Which of the user's toggles a reading theme may SUGGEST, and the action that
-// owns each. Going through the real action creators keeps their analytics and
-// cross-toggle rules intact — a theme takes exactly the path a user tapping the
-// switch would. A function, not a module-scope literal, so the action creators
-// above are never read in their temporal dead zone.
-const readerThemeSeedableToggles = () => ({
-  isTransliteration: toggleTransliteration,
-  isEnglishTranslation: toggleEnglishTranslation,
-  isPunjabiTranslation: togglePunjabiTranslation,
-  isSpanishTranslation: toggleSpanishTranslation,
-});
-
-// Applies a theme, plus the one-time "seeding" of the display settings a
-// designed theme suggests.
-//
-// A theme suggests those settings the FIRST time it is chosen and never again:
-// once `readerThemeSeeded[id]` is set, re-selecting that theme leaves the user's
-// toggles alone, so a theme can express an intended reading setup without ever
-// silently undoing a choice the user made by hand. Light, Dark and Default have
-// no `defaults`, so for them this is `setTheme` plus one no-op dispatch.
-export const applyTheme = (value) => (dispatch, getState) => {
-  // Read before the switch: which theme is being LEFT decides whether the
-  // face on screen is the reader's own.
-  const leaving = getState().theme;
-  dispatch(setTheme(value));
-
-  const state = getState();
-  // The MERGED registry: a theme served by the backend behaves exactly as a
-  // bundled one does.
-  const registry = mergeThemeRegistry(state.remoteThemes).byId;
-  const record = registry[value];
-
-  // The Bani font is re-applied on EVERY selection, and deliberately not
-  // through the once-only path below.
-  //
-  // A face is part of how a theme LOOKS — Puratan is a manuscript, and Anmol
-  // Lipi is what makes it one — so choosing the theme means choosing its face,
-  // the same way it means choosing its ground. A setting like transliteration
-  // is a reading preference that happens to have a sensible default, which is
-  // why that one is seeded once and never re-asserted.
-  //
-  // The user is not overruled: while the theme is selected their own choice
-  // stands, because nothing here runs again until a theme is selected. Leaving
-  // and coming back is a fresh choice of the theme, and brings its face back.
-  //
-  // Leaving a theme like that puts the reader's OWN face back, instead of
-  // keeping the theme's after the theme has gone. Their own face is the last
-  // one they picked in Settings (chooseBaniFontFace). A reader who has never
-  // picked one there has not had one recorded yet, so the face they are
-  // reading in is taken as theirs the moment they leave a theme that did not
-  // set it — it can only have been their choice, or the app's default.
-  //
-  // Decided by the theme being LEFT. Leaving one that sets no face, the face on
-  // screen is the reader's own — however it got there, including from another
-  // device through settings sync — so it is recorded as theirs, and nothing is
-  // put back over it. Recording it only when nothing was recorded yet left an
-  // older choice in place, and the next change of theme restored that over a
-  // font synced since, then sent it to the account as a fresh edit.
-  const leavingFace = registry[leaving]?.typography?.preferredFontFace;
-  let own = state.ownBaniFontFace;
-  if (!leavingFace && state.baniFontFace) {
-    own = state.baniFontFace;
-    if (state.ownBaniFontFace !== own) {
-      dispatch({ type: actionTypes.SET_OWN_BANI_FONT_FACE, value: own });
-    }
-  }
-  const face = record?.typography?.preferredFontFace || (leavingFace ? own : null);
-  if (face && state.baniFontFace !== face) dispatch(setBaniFontFace(face));
-
-  // Everything below is once per theme, for the life of the install.
-  if (state.readerThemeSeeded?.[value]) return;
-
-  const defaults = record?.defaults ?? {};
-  const seedable = readerThemeSeedableToggles();
-  Object.entries(defaults).forEach(([key, desired]) => {
-    const toggle = seedable[key];
-    // Only dispatch a real change, so no misleading analytics event is sent.
-    if (toggle && state[key] !== desired) dispatch(toggle(desired));
-  });
-
-  // Marked even when `defaults` is empty, so the check above short-circuits on
-  // every later selection of this theme.
-  dispatch({ type: actionTypes.MARK_READER_THEME_SEEDED, value });
-};
-
-// ── Audio catalog, the floating player and downloads ──────────────────────
-
-export const bumpReaderTap = () => {
-  return { type: actionTypes.BUMP_READER_TAP };
-};
-
-export const bumpReaderScrollDown = () => {
-  return { type: actionTypes.BUMP_READER_SCROLL_DOWN };
 };
 
 // Audio catalog cache actions
@@ -360,6 +262,30 @@ export const setAudioCatalogMeta = (meta) => ({
 export const clearAudioCatalog = () => ({
   type: actionTypes.CLEAR_AUDIO_CATALOG,
 });
+
+// Audio progress actions
+export const setAudioProgress = (baniId, trackId, position, sequence) => {
+  return {
+    type: actionTypes.SET_AUDIO_PROGRESS,
+    payload: { baniId, trackId, position, sequence },
+  };
+};
+
+export const clearAudioProgress = (baniId) => {
+  return {
+    type: actionTypes.CLEAR_AUDIO_PROGRESS,
+    payload: { baniId },
+  };
+};
+
+// Seva Donor action creators
+export const setDonorState = (value) => {
+  return { type: actionTypes.SET_DONOR_STATE, value };
+};
+
+export const clearDonorState = () => {
+  return { type: actionTypes.CLEAR_DONOR_STATE };
+};
 
 export const setPlayerDragging = (value) => {
   return { type: actionTypes.SET_PLAYER_DRAGGING, value };
@@ -430,15 +356,27 @@ export const toggleDownloadWifiOnly = (value) => ({
   value,
 });
 
-export const markAudioStorageMigrated = () => ({
-  type: actionTypes.MARK_AUDIO_STORAGE_MIGRATED,
-});
-
 export const toggleAutoDownload = (value) => ({
   type: actionTypes.TOGGLE_AUTO_DOWNLOAD,
   value,
 });
 
+// Onboarding carousel guide
+// Show/hide the full-screen onboarding carousel. Set true on a genuine fresh
+// install (see useOnboardingTrigger) and from the Settings "Revisit Tutorial"
+// row; set false when the user finishes or skips it.
+export const setOnboardingVisible = (value) => ({
+  type: actionTypes.SET_ONBOARDING_VISIBLE,
+  value,
+});
+
+// Persist the onboarding-carousel version the user has completed (pass
+// constant.ONBOARDING_VERSION) so the first-run auto-open doesn't fire again
+// until that constant is bumped. "Revisit" ignores this value.
+export const setOnboardingSeen = (value) => ({
+  type: actionTypes.SET_ONBOARDING_SEEN,
+  value,
+});
 // ─── Dashboard redesign ─────────────────────────────────────────────────────
 export const setUserProfile = (value) => {
   return { type: actionTypes.SET_USER_PROFILE, value };
@@ -500,6 +438,88 @@ export const restoreNitnem = (value) => {
   return { type: actionTypes.RESTORE_NITNEM, value };
 };
 
+// Which of the user's toggles a reading theme may SUGGEST, and the action that
+// owns each. Going through the real action creators rather than writing the
+// reducers directly keeps their analytics and cross-toggle rules intact — a
+// theme takes exactly the path a user tapping the switch would.
+//
+// Returned from a function rather than held in a module-scope object literal:
+// evaluating the map at module scope would read these `const` arrow functions in
+// their temporal dead zone and throw on import. Keeping it lazy also lets this
+// whole block sit at the end of the file, below everything it depends on.
+const readerThemeSeedableToggles = () => ({
+  isTransliteration: toggleTransliteration,
+  isEnglishTranslation: toggleEnglishTranslation,
+  isPunjabiTranslation: togglePunjabiTranslation,
+  isSpanishTranslation: toggleSpanishTranslation,
+});
+
+// Applies a theme, plus the one-time "seeding" of the display settings a
+// designed theme suggests.
+//
+// A theme suggests those settings the FIRST time it is chosen and never again:
+// once `readerThemeSeeded[id]` is set, re-selecting that theme leaves the user's
+// toggles alone. So a theme can express an intended reading setup without ever
+// silently undoing a choice the user made by hand.
+//
+// Light, Dark and Default have no `defaults`, so for them this is exactly
+// `setTheme` with one extra no-op dispatch.
+export const applyTheme = (value) => (dispatch, getState) => {
+  // Read before the switch: which theme is being LEFT decides whether the
+  // face on screen is the reader's own.
+  const leaving = getState().theme;
+  dispatch(setTheme(value));
+
+  const state = getState();
+  // The MERGED registry: a theme served by the backend behaves exactly as a
+  // bundled one does.
+  const registry = mergeThemeRegistry(state.remoteThemes).byId;
+  const record = registry[value];
+
+  // The Bani font is re-applied on EVERY selection, and deliberately not
+  // through the once-only path below.
+  //
+  // A face is part of how a theme LOOKS — Puratan is a manuscript, and Anmol
+  // Lipi is what makes it one — so choosing the theme means choosing its face,
+  // the same way it means choosing its ground. A setting like transliteration
+  // is a reading preference that happens to have a sensible default, which is
+  // why that one is seeded once and never re-asserted.
+  //
+  // The user is not overruled: while the theme is selected their own choice
+  // stands, because nothing here runs again until a theme is selected. Leaving
+  // and coming back is a fresh choice of the theme, and brings its face back.
+  //
+  // Leaving a theme like that puts the reader's OWN face back, instead of
+  // keeping the theme's after the theme has gone. Their own face is the last
+  // one they picked in Settings (chooseBaniFontFace). A reader who has never
+  // picked one there has not had one recorded yet, so the face they are
+  // reading in is taken as theirs the moment they leave a theme that did not
+  // set it — it can only have been their choice, or the app's default.
+  let own = state.ownBaniFontFace;
+  if (!own && state.baniFontFace && !registry[leaving]?.typography?.preferredFontFace) {
+    own = state.baniFontFace;
+    dispatch({ type: actionTypes.SET_OWN_BANI_FONT_FACE, value: own });
+  }
+  const face = record?.typography?.preferredFontFace || own;
+  if (face && state.baniFontFace !== face) dispatch(setBaniFontFace(face));
+
+  // Everything below is once per theme, for the life of the install.
+  if (state.readerThemeSeeded?.[value]) return;
+
+  const defaults = record?.defaults ?? {};
+  const seedable = readerThemeSeedableToggles();
+  Object.entries(defaults).forEach(([key, desired]) => {
+    const toggle = seedable[key];
+    // Only dispatch a real change. Re-asserting a toggle that already holds the
+    // desired value would emit a misleading analytics event.
+    if (toggle && state[key] !== desired) dispatch(toggle(desired));
+  });
+
+  // Marked even when `defaults` is empty, so the check above short-circuits on
+  // every subsequent selection of this theme.
+  dispatch({ type: actionTypes.MARK_READER_THEME_SEEDED, value });
+};
+
 // ── My Pothi ───────────────────────────────────────────────────────────────
 // `id` is minted by the caller (via createPothi) rather than by the reducer, so
 // the add-to-pothi flow can create a pothi and drop the current shabad into it
@@ -526,11 +546,6 @@ export const removeBaniFromPothi = (id, baaniId) => {
   return { type: actionTypes.REMOVE_BANI_FROM_POTHI, payload: { id, baaniId } };
 };
 
-export const restorePothiItems = (id, items) => {
-  // items: the pothi's `items` as the editor opened with them
-  return { type: actionTypes.RESTORE_POTHI_ITEMS, payload: { id, items } };
-};
-
 export const setPothiOrder = (order) => {
   // order: pothiId[] for the draggable (unpinned) lane
   return { type: actionTypes.SET_POTHI_ORDER, value: order };
@@ -555,6 +570,10 @@ export const setPothiSyncWatermark = (syncedAt) => {
   return { type: actionTypes.SET_POTHI_SYNC_WATERMARK, value: syncedAt };
 };
 
+export const pothiDeleteSynced = (id) => {
+  return { type: actionTypes.POTHI_DELETE_SYNCED, value: id };
+};
+
 export const setPothisSyncedAt = (isoTimestamp) => {
   return { type: actionTypes.SET_POTHIS_SYNCED_AT, value: isoTimestamp };
 };
@@ -568,16 +587,20 @@ export const syncOpFailed = (id, error) => ({
   type: actionTypes.SYNC_OP_FAILED,
   payload: { id, error },
 });
-// Reminder sync bookkeeping — see reminders/syncModel and useRemindersSync.
-// patch: { clocks?, tombstones?, base?, removeTombstones?, removeClocks?,
-//          settingsUpdatedAt?, settingsBase?, lastSyncedAt?, replace? }
-export const mergeReminderSyncMeta = (patch) => ({
-  type: actionTypes.MERGE_REMINDER_SYNC_META,
-  payload: patch,
+export const clearSyncFeature = (feature) => ({
+  type: actionTypes.CLEAR_SYNC_FEATURE,
+  payload: { feature },
 });
 
 // Settings sync bookkeeping — see settings/syncModel and useSettingsSync.
 export const mergeSettingsSyncMeta = (payload) => ({
   type: actionTypes.MERGE_SETTINGS_SYNC_META,
   payload,
+});
+
+// patch: { clocks?, tombstones?, base?, removeTombstones?, removeClocks?,
+//          settingsUpdatedAt?, settingsBase?, lastSyncedAt?, replace? }
+export const mergeReminderSyncMeta = (patch) => ({
+  type: actionTypes.MERGE_REMINDER_SYNC_META,
+  payload: patch,
 });

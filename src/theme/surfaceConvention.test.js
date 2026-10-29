@@ -81,6 +81,29 @@ describe("every header starts at one height", () => {
   });
 });
 
+// Asserted screen-against-screen, not just against a role name. A role rename
+// would keep the tests above green while the pages silently drifted apart.
+describe("the three main pages agree with each other", () => {
+  const dashboardTheme = require("../DashboardScreen/components/dashboardTheme");
+
+  it.each(themes)("[%s] Reader, Dashboard and Settings share one ground", (_n, theme) => {
+    const reader = readerStyles(theme).headerStyle.backgroundColor;
+    // Settings renders <SafeArea backgroundColor={c.backgroundAlt}>, and the
+    // Dashboard takes its ground from `screenBg` in its own theme hook.
+    const settings = theme.c.backgroundAlt;
+    const dashboard = theme.c.backgroundAlt;
+
+    expect(reader).toBe(settings);
+    expect(reader).toBe(dashboard);
+    expect(dashboardTheme.SCREEN_BG_ROLE ?? "backgroundAlt").toBe("backgroundAlt");
+  });
+
+  it.each(themes)("[%s] an audio box matches a settings card exactly", (_n, theme) => {
+    // Same value, so the player reads as part of the same family of surfaces.
+    expect(minimizePlayerStyles(theme).container.backgroundColor).toBe(theme.c.surface);
+  });
+});
+
 // Each theme uses exactly ONE blue for everything a user can act on or that
 // carries emphasis. Dark mode was collapsed first; light mode still had three —
 // navy for chrome and controls, a brighter accent, and a third for links — with
@@ -149,5 +172,38 @@ describe("dashboard section headings are one treatment", () => {
 
   it("is exported as a component, so the treatment has one home", () => {
     expect(typeof (sectionLabel.default ?? sectionLabel)).toBe("function");
+  });
+});
+
+// The Audios / Options pills read as buttons in BOTH states.
+//
+// Unselected was fully transparent, so the icon and label floated with nothing
+// to say they were tappable — and the pair had no pill shape at all until one
+// of them happened to be active. Both states now carry a fill, from two roles
+// that already exist rather than a new colour.
+describe("audio action pills", () => {
+  const source = require("fs").readFileSync(
+    require("path").join(
+      __dirname,
+      "..",
+      "ReaderScreen/components/AudioPlayer/components/ActionComponent.jsx"
+    ),
+    "utf8"
+  );
+
+  it("fills the unselected state instead of leaving it transparent", () => {
+    expect(source).not.toMatch(/selector \? [^:]+: "transparent"/);
+    expect(source).toMatch(/theme\.c\.fillSubtle/);
+  });
+
+  it("keeps the selected state on the brand tint, so the two still differ", () => {
+    expect(source).toMatch(/theme\.c\.accentSubtle/);
+  });
+
+  it.each([
+    ["light", lightTheme],
+    ["dark", darkTheme],
+  ])("[%s] the two fills are actually distinguishable", (_n, theme) => {
+    expect(theme.c.fillSubtle).not.toBe(theme.c.accentSubtle);
   });
 });

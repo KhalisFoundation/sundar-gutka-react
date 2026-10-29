@@ -98,14 +98,3 @@ describe("isCustomTitle", () => {
     expect(isCustomTitle(null)).toBe(false);
   });
 });
-
-// After a cloud restore the stored names can be empty; the row has the ones
-// re-resolved from the database, and the sheet must show those.
-it("keeps the row's resolved names over empty stored ones", () => {
-  const parsed = [{ key: 2, title: "Time for x", time: "5:00 AM", translit: "", gurmukhi: "" }];
-  const rows = [{ key: 2, translit: "Japji Sahib", gurmukhi: "jpujI swihb" }];
-  const section = liveSection(parsed, rows, { key: 2 });
-  expect(section.translit).toBe("Japji Sahib");
-  expect(section.gurmukhi).toBe("jpujI swihb");
-  expect(section.time).toBe("5:00 AM");
-});

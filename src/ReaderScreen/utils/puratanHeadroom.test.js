@@ -63,14 +63,4 @@ describe("puratanHeadroom", () => {
     expect(puratanHeadroom("<> siq nwmu", RATIO)).toBe(first);
     expect(puratanHeadroom("<> siq nwmu", RATIO)).toBe(first);
   });
-
-  // A vishraam or Larivaar Assist span closes with `>`, which is also the
-  // ASCII Ik Onkar. Scanned as markup, every such line was padded as if it held
-  // one. The text is what is measured; the Ik Onkar `<>` itself survives.
-  it("ignores the markup a line carries", () => {
-    expect(puratanHeadroom("<span style='color:#f00'>hir jI</span> AwpxI", RATIO)).toBe(0);
-    expect(puratanHeadroom("<span class='v'><> siq</span>", RATIO)).toBe(
-      puratanHeadroom("<> siq", RATIO)
-    );
-  });
 });

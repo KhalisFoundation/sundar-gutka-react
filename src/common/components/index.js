@@ -7,6 +7,7 @@ import CustomText from "./CustomText";
 import FallBack from "./FallbackComponent";
 import GradientDivider from "./GradientDivider";
 import ListItemTitle from "./ListItemTitle";
+import OnboardingCarousel from "./OnboardingCarousel";
 import SafeArea from "./SafeArea";
 import { useCustomScrollbar } from "./ScrollIndicator";
 import SettingsIconComponent from "./SettingsIconComponent";
@@ -20,6 +21,7 @@ export {
   BaniList,
   BaniLengthSelector,
   BottomNavigation,
+  OnboardingCarousel,
   SafeArea,
   StatusBarComponent,
   CustomText,

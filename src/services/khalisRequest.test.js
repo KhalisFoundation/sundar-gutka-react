@@ -1,5 +1,5 @@
 /* eslint-env jest */
-import { authedRequest, isTransientStatus, onUnauthorized, request } from "./khalisRequest";
+import { authedRequest, isTransientStatus, request } from "./khalisRequest";
 
 const mockReadToken = jest.fn();
 jest.mock("@common/sso/tokenStore", () => ({ readToken: (...a) => mockReadToken(...a) }));
@@ -41,12 +41,6 @@ describe("khalisRequest", () => {
     });
   });
 
-  it("reports a fault in the request itself apart from offline, and records it", async () => {
-    global.fetch.mockRejectedValueOnce(new Error("undefined is not a function"));
-    expect(await request("u")).toEqual({ ok: false, status: 0, error: "failed" });
-    expect(mockLogError).toHaveBeenCalled();
-  });
-
   it("reports offline and timeouts as status 0 without a crash report", async () => {
     global.fetch.mockRejectedValueOnce(new TypeError("Network request failed"));
     expect(await request("u")).toEqual({ ok: false, status: 0, error: "network" });
@@ -70,24 +64,5 @@ describe("khalisRequest", () => {
         headers: expect.objectContaining({ Authorization: "Bearer tok" }),
       })
     );
-  });
-
-  // A token the phone still holds but the server refuses: the account was
-  // deleted, or signed out elsewhere. The session must hear about it.
-  it("reports a refused token, and only a refused one", async () => {
-    const handler = jest.fn();
-    const off = onUnauthorized(handler);
-    mockReadToken.mockResolvedValue("jwt");
-    global.fetch.mockResolvedValueOnce({ ok: false, status: 401, text: async () => "" });
-    await authedRequest("u");
-    expect(handler).toHaveBeenCalledTimes(1);
-
-    global.fetch.mockResolvedValueOnce({ ok: false, status: 500, text: async () => "" });
-    await authedRequest("u");
-    // No token at all is "signed out", not a refusal.
-    mockReadToken.mockResolvedValue(null);
-    await authedRequest("u");
-    expect(handler).toHaveBeenCalledTimes(1);
-    off();
   });
 });

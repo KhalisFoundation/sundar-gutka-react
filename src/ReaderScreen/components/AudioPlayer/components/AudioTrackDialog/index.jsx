@@ -38,6 +38,7 @@ const AudioTrackDialog = ({
   isPlaying,
 }) => {
   const styles = useAudioThemedStyles(audioTrackDialogStyles);
+  const fontFace = useSelector((state) => state.fontFace);
   const downloadRegistry = useSelector((state) => state.downloadRegistry);
   const { theme } = useAudioTheme();
   const { height: windowHeight } = useWindowDimensions();
@@ -476,10 +477,8 @@ const AudioTrackDialog = ({
         // Spin-wait for handleSelectTrack to finish its critical TrackPlayer operations (addAndPlayTrack)
         // so we don't cause a race condition with stopPreview()'s reset().
         while (previewActionInFlightRef.current) {
-          // eslint-disable-next-line no-await-in-loop
-          await new Promise((resolve) => {
-            setTimeout(resolve, 50);
-          });
+          // eslint-disable-next-line no-await-in-loop, no-promise-executor-return
+          await new Promise((resolve) => setTimeout(resolve, 50));
         }
 
         await stopPreview();
@@ -552,9 +551,7 @@ const AudioTrackDialog = ({
                   </CustomText>
                   <CustomText style={styles.subtitleText}>
                     {STRINGS.please_choose_a_track}{" "}
-                    {/* The title is Unicode Gurmukhi (the Reader resolves it so), which
-                        the UI face renders; the bani font may be ASCII-mapped. */}
-                    <CustomText>{title}</CustomText>
+                    <CustomText style={{ fontFamily: fontFace }}>{title}</CustomText>
                   </CustomText>
                   <CustomText style={styles.previewHintText}>
                     {STRINGS.AUDIO_PREVIEW_HINT}

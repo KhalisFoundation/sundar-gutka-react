@@ -8,15 +8,6 @@ import PropTypes from "prop-types";
 import useBaniLookup from "@common/hooks/useBaniLookup";
 import { openAppLink } from "@common/openAppLink";
 import { CustomText, STRINGS, constant, actions, trackDashboardEvent } from "@common";
-// Sri Darbar Sahib, cut out of its white background and cropped to the
-// building. It replaces a stroked vector glyph of the same subject, which at
-// this size read as a scribble. A drawing rather than a logotype, so it is
-// sized as one — see ILLUSTRATION_SIZE.
-import DARBAR_MARK from "../../assets/images/darbar-sahib-mark.png";
-import KHALIS_LOGO from "../../assets/images/khalis.png";
-import SEHAJ_PATH_LOGO from "../../assets/images/sehajpath.webp";
-import SHABADAVALI_LOGO from "../../assets/images/shabadavali.png";
-import STTM_LOGO from "../../assets/images/sikhi2max.webp";
 import { getRecentReadBanis, getRecentListenedBanis } from "../../database/analytics";
 import { getRestoredTopBanis } from "../../services/dashboard";
 import { bundledExploreLinks } from "../../services/dashboard/exploreBundled";
@@ -26,7 +17,18 @@ import useDashboardTheme from "./dashboardTheme";
 import SectionLabel from "./SectionLabel";
 import SkeletonBlock from "./SkeletonBlock";
 import { plateFor } from "./tilePlate";
+// eslint-disable-next-line import/order -- the image assets below are required, not imported
 import useAsyncSection from "./useAsyncSection";
+
+// Sri Darbar Sahib, cut out of its white background and cropped to the
+// building. It replaces a stroked vector glyph of the same subject, which at
+// this size read as a scribble. A drawing rather than a logotype, so it is
+// sized as one — see ILLUSTRATION_SIZE.
+const DARBAR_MARK = require("../../assets/images/darbar-sahib-mark.png");
+const KHALIS_LOGO = require("../../assets/images/khalis.png");
+const SEHAJ_PATH_LOGO = require("../../assets/images/sehajpath.webp");
+const SHABADAVALI_LOGO = require("../../assets/images/shabadavali.png");
+const STTM_LOGO = require("../../assets/images/sikhi2max.webp");
 
 // An illustration needs more of the box than a logotype does: a logo is a
 // simple mark that still reads at 32, where a drawing of a building has domes,
@@ -210,7 +212,8 @@ const styles = StyleSheet.create({
   tileSkeleton: { width: "100%", height: 88 },
 });
 
-const TileArtwork = ({ icon = null, mode, fallbackColor }) => {
+// eslint-disable-next-line react/require-default-props
+const TileArtwork = ({ icon, mode, fallbackColor }) => {
   const art = icon ? TILE_ICONS[icon] : null;
   if (!art) return <LinkIcon color={fallbackColor} />;
   if (art.Component) return <art.Component mode={mode} />;
@@ -227,6 +230,7 @@ TileArtwork.propTypes = {
   mode: PropTypes.oneOf(["light", "dark"]).isRequired,
   fallbackColor: PropTypes.string.isRequired,
 };
+TileArtwork.defaultProps = { icon: null };
 
 const ExploreGurbani = ({ refreshKey = 0 }) => {
   const { gold, mutedText, theme, c, palette } = useDashboardTheme();
@@ -357,9 +361,8 @@ const ExploreGurbani = ({ refreshKey = 0 }) => {
     });
   }, [loading, explore]);
 
-  // A render function, not a component: declared in here, a component was a
-  // new type on every render, so React remounted both tiles each time.
-  const renderContinueTile = ({ icon, label, item, withAudio }) => (
+  // eslint-disable-next-line react/no-unstable-nested-components
+  const ContinueTile = ({ icon, label, item, withAudio }) => (
     <DashboardCard style={styles.tile}>
       <Pressable
         onPress={() => openReader(item, withAudio)}
@@ -381,6 +384,13 @@ const ExploreGurbani = ({ refreshKey = 0 }) => {
       </Pressable>
     </DashboardCard>
   );
+  ContinueTile.propTypes = {
+    icon: PropTypes.string.isRequired,
+    label: PropTypes.string.isRequired,
+    // eslint-disable-next-line react/forbid-prop-types
+    item: PropTypes.object.isRequired,
+    withAudio: PropTypes.bool.isRequired,
+  };
 
   return (
     <View>
@@ -406,22 +416,22 @@ const ExploreGurbani = ({ refreshKey = 0 }) => {
 
         {/* New users with no read/listen history yet get no tile — never a
             fabricated "Continue" pointing at a bani they've never opened. */}
-        {!loading && lastRead
-          ? renderContinueTile({
-              icon: "book",
-              label: STRINGS.CONTINUE_READING,
-              item: lastRead,
-              withAudio: false,
-            })
-          : null}
-        {!loading && lastListened
-          ? renderContinueTile({
-              icon: "headphones",
-              label: STRINGS.CONTINUE_LISTENING,
-              item: lastListened,
-              withAudio: true,
-            })
-          : null}
+        {!loading && lastRead ? (
+          <ContinueTile
+            icon="book"
+            label={STRINGS.CONTINUE_READING}
+            item={lastRead}
+            withAudio={false}
+          />
+        ) : null}
+        {!loading && lastListened ? (
+          <ContinueTile
+            icon="headphones"
+            label={STRINGS.CONTINUE_LISTENING}
+            item={lastListened}
+            withAudio
+          />
+        ) : null}
 
         {explore.links.map((t, index) => {
           const plate = plateFor(t, theme, iconBg);

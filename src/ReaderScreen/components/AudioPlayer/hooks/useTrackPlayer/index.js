@@ -1,5 +1,4 @@
 import { useState, useEffect, useCallback, useRef } from "react";
-import { AppState } from "react-native";
 import { exists, stat } from "react-native-fs";
 import TrackPlayer, {
   usePlaybackState,
@@ -161,14 +160,15 @@ const useTrackPlayer = () => {
   // atom parsing before ExoPlayer can begin buffering audio data. A 500ms
   // watchdog fires during initial load and interferes with the state machine.
   useEffect(() => {
-    if (!isInitialized || !isAudio || !isAudioFeatureOn) return undefined;
-    if (playbackState?.state !== State.Buffering) return undefined;
-    if (!wasPlayingBeforeBufferRef.current) return undefined;
+    if (!isInitialized || !isAudio || !isAudioFeatureOn) return;
+    if (playbackState?.state !== State.Buffering) return;
+    if (!wasPlayingBeforeBufferRef.current) return;
 
     const timer = setTimeout(() => {
       TrackPlayer.play().catch(() => {});
     }, 5000);
 
+    // eslint-disable-next-line consistent-return
     return () => clearTimeout(timer);
   }, [isInitialized, isAudio, isAudioFeatureOn, playbackState?.state]);
 
@@ -208,26 +208,11 @@ const useTrackPlayer = () => {
   const attemptRecovery = useCallback(async () => {
     const rec = recoveryRef.current;
     if (!rec.active || !rec.track) return;
-    // The app left the foreground since the error: audio is paused on exit by
-    // product decision (usePauseAudioOnExit), and a retry firing now would
-    // start Gurbani playing in the background. Stand down instead.
-    if (AppState.currentState !== "active") {
-      cancelRecovery();
-      return;
-    }
     try {
       await TrackPlayer.reset();
       await addTrack(rec.track);
       await TrackPlayer.seekTo(rec.position);
       await playTrack();
-      // playTrack() reports and swallows its own failure, so success is read
-      // from the player: anything but playing (or buffering towards it) is a
-      // failed attempt, and goes to the backoff retry below. Loading counts as
-      // on its way: a stream reports it for a moment before buffering.
-      const { state } = (await TrackPlayer.getPlaybackState().catch(() => null)) || {};
-      if (![State.Playing, State.Buffering, State.Loading].includes(state)) {
-        throw new Error(`Playback did not resume (state: ${state ?? "unknown"})`);
-      }
       logMessage("Playback recovered after connection error");
       cancelRecovery();
     } catch (error) {
@@ -297,12 +282,12 @@ const useTrackPlayer = () => {
       try {
         await stopTrack();
       } catch (_) {
-        // Best effort: nothing may be playing to stop.
+        // nothing was playing to stop
       }
       try {
         await resetPlayer();
       } catch (_) {
-        // Best effort: player may already be reset.
+        // already reset; a second one is a no-op
       }
       currentTrackIdRef.current = null;
       setIsPlaying(false);
@@ -510,11 +495,7 @@ const useTrackPlayer = () => {
                 }
                 // Update the ref so subsequent operations know the track is local.
                 currentTrackIdRef.current = activeTrack.id;
-                // Back round the loop, not out of it: a seek made while this
-                // (slower) swap ran is waiting in pendingSeekRef, and the track
-                // is local now, so it takes the plain seek path.
-                // eslint-disable-next-line no-continue -- apply any seek queued during the swap
-                continue;
+                return;
               } catch (swapError) {
                 logError("Fast-seek local swap failed, falling back to remote seek:", swapError);
                 // Fall through to the original remote seekTo path below.
@@ -689,7 +670,7 @@ const useTrackPlayer = () => {
       }
       // eslint-disable-next-line react-hooks/exhaustive-deps
     },
-    [isInitialized, isAudio, isAudioFeatureOn, reset, play, prefetchForSeek, autoDownloadOnStream]
+    [isInitialized, isAudio, isAudioFeatureOn, reset, play, prefetchForSeek]
   );
 
   const setRate = useCallback(

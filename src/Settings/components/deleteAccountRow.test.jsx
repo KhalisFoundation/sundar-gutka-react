@@ -66,12 +66,12 @@ describe("the Delete Account row", () => {
     expect(getByTestId("delete-account-row")).toBeTruthy();
   });
 
-  // Google Play requires the in-app path too, not only App Review.
-  it("is offered on Android as well", () => {
+  it("is NOT offered on Android", () => {
     Platform.OS = "android";
-    const { getByTestId, getByLabelText } = render(<Account />);
+    const { queryByTestId, getByLabelText } = render(<Account />);
 
-    expect(getByTestId("delete-account-row")).toBeTruthy();
+    expect(queryByTestId("delete-account-row")).toBeNull();
+    // …and the rest of the account section is untouched there.
     expect(getByLabelText("Sign Out")).toBeTruthy();
   });
 

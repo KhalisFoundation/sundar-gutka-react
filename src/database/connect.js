@@ -6,15 +6,10 @@ import { constant, logError, logMessage, ensureDbExists, LOCAL_DB_PATH } from "@
 enablePromise(true);
 
 // ─── In-place data migrations for the shipped bani DB ──────────────────────────
-// The version the on-device bani DB is migrated to. Bump this (and add a
-// matching `if (version < N)` block below) whenever a content row is corrected.
-//
-// The bundled .db files are NOT edited for a correction, and stay at
-// user_version 0: a fresh install runs every migration like any other. The
-// bundled file has to stay byte-for-byte the published one — its checksum is
-// the .md5 sidecar, which seeding verifies the copy against, and which the
-// in-app update compares with the published remote DB. An edited file fails
-// the first and makes the second offer the old DB as an "update".
+// The version the CURRENT app build's bundled DB is shipped at. Bump this (and
+// add a matching `if (version < N)` block below) whenever a content row in the
+// shipped DB is corrected. The bundled .db files are set to this same
+// user_version, so a FRESH install skips the migration (it already has the fix).
 //
 // Why in-place UPDATEs instead of re-shipping the DB: bookmarks (Banis_Bookmarks)
 // live in the SAME gutka_v01.db as the content, and ensureDbExists() only
@@ -23,7 +18,7 @@ enablePromise(true);
 // we leave their file in place and patch just the corrected rows here, gated by
 // PRAGMA user_version (stored in the DB header, survives because we never
 // re-copy). Every migration must be idempotent.
-const LATEST_DB_VERSION = 2;
+const LATEST_DB_VERSION = 1;
 
 const runMigrations = async (db) => {
   const [res] = await db.executeSql("PRAGMA user_version");
@@ -40,16 +35,6 @@ const runMigrations = async (db) => {
       `UPDATE mv_Banis_Shabad
          SET Gurmukhi = 'bwrh mwhw ]', GurmukhiUni = 'ਬਾਰਹ ਮਾਹਾ ॥'
        WHERE Bani = 28 AND Seq = 1 AND header = 1`
-    );
-  }
-
-  // v2 — Japji Sahib's Pauri 34 bookmark (Banis_Bookmarks ID 36) carried the
-  // opening line of Pauri 33. Pauri 34 opens "ਰਾਤੀ ਰੁਤੀ ਥਿਤੀ ਵਾਰ".
-  if (version < 2) {
-    await db.executeSql(
-      `UPDATE Banis_Bookmarks
-         SET TukGurmukhi = 'rwqI ruqI iQqI vwr ]', TukGurmukhiUni = 'ਰਾਤੀ ਰੁਤੀ ਥਿਤੀ ਵਾਰ ॥'
-       WHERE ID = 36 AND Bani = 2`
     );
   }
 

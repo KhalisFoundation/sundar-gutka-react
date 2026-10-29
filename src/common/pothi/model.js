@@ -124,15 +124,6 @@ const DEFAULT_SIGNATURES = {
  */
 const LOCAL_DEFAULT_ID = { morning: MORNING_ID, evening: EVENING_ID };
 
-/** The pointers with every default among `ids` recorded as deleted. */
-const forgetDefaults = (defaultIds, ids) => {
-  const next = { ...defaultIds };
-  DEFAULT_KINDS.forEach((kind) => {
-    if (next[kind] && ids.includes(next[kind])) next[kind] = false;
-  });
-  return next;
-};
-
 /**
  * A seeded default exactly as a device seeded it: our fixed id, the stock
  * banis, and never touched since — an edit or a rename moves `updatedAt`.
@@ -149,22 +140,16 @@ const isPristineSeed = (folder) =>
       folder.updatedAt === folder.createdAt
   );
 
-// `false` records a default that was DELETED — here or on another client. It
-// is not guessed back by its banis: a pothi of the user's own that happens to
-// hold the stock list would otherwise be adopted as Morning Nitnem, and could
-// then no longer be renamed, pinned or deleted. Only our well-known id, which
-// can only be the role itself, brings it back.
 const resolveDefaultId = (kind, folders, recorded) => {
   if (recorded && folders.some((folder) => folder.id === recorded)) return recorded;
   const byWellKnownId = folders.find((folder) => folder.id === LOCAL_DEFAULT_ID[kind]);
   if (byWellKnownId) return byWellKnownId.id;
-  if (recorded === false) return false;
   const bySignature = folders.find((folder) => baniSignature(folder) === DEFAULT_SIGNATURES[kind]);
   return bySignature ? bySignature.id : null;
 };
 
 /** The id of a default pothi, or null. `kind` is "morning" or "evening". */
-export const defaultPothiId = (state, kind) => state?.defaultIds?.[kind] || null;
+export const defaultPothiId = (state, kind) => state?.defaultIds?.[kind] ?? null;
 
 /** The default pothi itself, or null. */
 export const defaultPothi = (state, kind) => {
@@ -198,9 +183,6 @@ export const emptyPothis = () => ({
   // did not have and adopted it as new — so every deleted pothi came back on
   // the next launch. A tombstone says "this absence is deliberate".
   deletedIds: [],
-  // The server's `syncedAt` from the last folders read, sent back as `since`
-  // so the next read reports what was deleted elsewhere in between.
-  syncWatermark: 0,
   // Which folder is Morning Nitnem and which is Evening — see resolveDefaultId.
   // Local only: the API has no such field, and `toUpsertBody` never sends it.
   defaultIds: { morning: null, evening: null },
@@ -273,10 +255,10 @@ export const addPothi = (state, pothi) => {
 };
 
 /**
- * Renames a pothi. Morning and Evening Nitnem are refused: they are shown by
- * role in each device's own language (see usePothiTitle), so a name typed over
- * one would never be seen, and a device with no pointer finds them by id or by
- * their banis, not by name. See resolveDefaultId.
+ * Renames a pothi. Morning and Evening Nitnem are refused: a device with no
+ * recorded pointer finds them by their banis or, once those are edited, by the
+ * account's English name — so a renamed, edited default is lost to that device
+ * and Today's Nitnem falls back to the stock list. See resolveDefaultId.
  */
 export const renamePothi = (state, id, name, now = Date.now()) =>
   isValidName(name) && !isDefaultPothi(state, id)
@@ -285,10 +267,14 @@ export const renamePothi = (state, id, name, now = Date.now()) =>
 
 export const deletePothi = (state, id) => {
   if (indexOf(state, id) < 0) return state;
-  // Recorded as deleted, not cleared: a cleared pointer is re-resolved by
-  // signature on the next reconcile, which could adopt an unrelated folder (see
-  // resolveDefaultId). The UI refuses to delete a default (see isDefaultPothi).
-  const defaultIds = forgetDefaults(state.defaultIds, [id]);
+  const defaultIds = { ...state.defaultIds };
+  // A dangling pointer would be re-resolved by signature on the next
+  // reconcile, which could adopt an unrelated folder. Clear it here instead.
+  // The UI refuses to delete a default (see isDefaultPothi); this covers a
+  // deletion that arrived from another client.
+  DEFAULT_KINDS.forEach((kind) => {
+    if (defaultIds[kind] === id) defaultIds[kind] = null;
+  });
   return {
     ...state,
     folders: state.folders.filter((folder) => folder.id !== id),
@@ -320,43 +306,6 @@ export const removeBani = (state, id, baaniId, now = Date.now()) => {
 };
 
 /**
- * `list` with the folders in `ordered` rearranged, in that order, among the
- * slots they already hold; every other folder stays exactly where it is.
- */
-const intoOwnSlots = (list, ordered) => {
-  const ids = new Set(ordered.map((folder) => folder.id));
-  let next = 0;
-  return list.map((folder) => {
-    if (!ids.has(folder.id)) return folder;
-    const placed = ordered[next];
-    next += 1;
-    return placed;
-  });
-};
-
-/**
- * Puts a pothi's banis back exactly as they were in `snapshot` — its items as
- * an editor opened with them — in their order, for an editor's Discard. Items
- * this app does not show are taken as they are NOW (another device may have
- * changed them meanwhile); one added since is kept, at the end. The SAME state
- * comes back when there is nothing to undo, so a discard of no edits stamps
- * nothing.
- */
-export const restoreItems = (state, id, snapshot, now = Date.now()) => {
-  const folder = state.folders[indexOf(state, id)];
-  if (!folder || !Array.isArray(snapshot)) return state;
-  const nowKept = new Map(folder.items.filter((i) => !isBaniItem(i)).map((i) => [i.id, i]));
-  const restored = snapshot
-    .map((item) => (isBaniItem(item) ? item : nowKept.get(item.id)))
-    .filter(Boolean);
-  const placed = new Set(restored.map((item) => item.id));
-  const items = [...restored, ...[...nowKept.values()].filter((item) => !placed.has(item.id))];
-  const same =
-    items.length === folder.items.length && items.every((item, at) => item === folder.items[at]);
-  return same ? state : patch(state, id, { items }, now);
-};
-
-/**
  * Reorder. Ids the caller invented, or folders that vanished, are dropped.
  *
  * Every pothi whose place changed is stamped: its position travels with it
@@ -366,19 +315,15 @@ export const restoreItems = (state, id, snapshot, now = Date.now()) => {
  */
 export const setOrder = (state, nextOrder, now = Date.now()) => {
   const byId = new Map(state.folders.map((folder) => [folder.id, folder]));
-  const moved = [...new Set(nextOrder)].map((id) => byId.get(id)).filter(Boolean);
-  // Anything the caller left out keeps its own slot, so a partial list (one
-  // lane of a two-lane screen) can neither delete a pothi nor shift the ones
-  // outside it — the defaults and the pinned lane would otherwise be stamped
-  // as moved on every drag, and their stale copies would beat edits made to
-  // them on another device.
-  const reordered = intoOwnSlots(state.folders, moved);
-  const folders = reordered.map((folder, index) =>
+  const moved = nextOrder.map((id) => byId.get(id)).filter(Boolean);
+  const movedIds = new Set(moved.map((folder) => folder.id));
+  // Anything the caller left out stays, in its existing order, so a partial
+  // list (one lane of a two-lane screen) can never delete a pothi.
+  const rest = state.folders.filter((folder) => !movedIds.has(folder.id));
+  const folders = [...moved, ...rest].map((folder, index) =>
     state.folders[index] === folder ? folder : { ...folder, updatedAt: now }
   );
-  return folders.every((folder, index) => folder === state.folders[index])
-    ? state
-    : { ...state, folders };
+  return { ...state, folders };
 };
 
 // A default can carry a stale `pinned` from an earlier build or another
@@ -419,8 +364,8 @@ export const pothisContaining = (state, baaniId) =>
     .map((folder) => folder.id);
 
 /**
- * Collapses EXACT copies of a default pothi — same name and the stock banis in
- * the stock order — keeping the first.
+ * Collapses folders that are EXACT copies — same name and the same banis in
+ * the same order — keeping the first.
  *
  * This is a self-heal, not a nicety. An earlier build minted a fresh random id
  * for the default pothis on every seed, so a device that seeded twice holds two
@@ -433,17 +378,9 @@ export const pothisContaining = (state, baaniId) =>
  * removing a folder someone deliberately made would be far worse than showing
  * a duplicate.
  */
-// Only copies of the default pair. Two pothis a user made alike — two empty
-// "Favourites" — are two pothis: collapsed here, the second vanished on the
-// next launch with no tombstone, and the next upload deleted it from the
-// account too.
-const isDefaultCopy = (folder) =>
-  DEFAULT_KINDS.some((kind) => baniSignature(folder) === DEFAULT_SIGNATURES[kind]);
-
 const dropExactDuplicates = (folders) => {
   const seen = new Set();
   return folders.filter((folder) => {
-    if (!isDefaultCopy(folder)) return true;
     const signature = folderSignature(folder);
     if (seen.has(signature)) return false;
     seen.add(signature);
@@ -527,10 +464,6 @@ export const reconcile = (persisted) => {
     deletedIds: Array.isArray(persisted.deletedIds)
       ? persisted.deletedIds.filter((id) => typeof id === "string")
       : [],
-    // Kept through rehydrate and every merge. Lost, the next read went out with
-    // no `since`, so it reported no deletions, and a pothi deleted on another
-    // device while this one was closed was kept here and uploaded back.
-    syncWatermark: Number.isFinite(persisted.syncWatermark) ? persisted.syncWatermark : 0,
     defaultIds,
   };
 };
@@ -549,18 +482,20 @@ export const seedDefaults = (state, pothis = []) => {
   // the list in the order given while addPothi stays the only place that knows
   // about the cap and the de-duplication.
   const seeded = [...pothis].reverse().reduce((acc, pothi) => addPothi(acc, pothi), state);
-  // Only a default that actually went in: addPothi refuses one past the folder
-  // cap, and a pointer at a folder that is not there would stand for it.
   const pick = (kind, id) =>
-    pothis.some((pothi) => pothi.id === id) && seeded.folders.some((f) => f.id === id)
-      ? id
-      : seeded.defaultIds?.[kind] ?? null;
+    pothis.some((pothi) => pothi.id === id) ? id : seeded.defaultIds?.[kind] ?? null;
   return {
     ...seeded,
     seededDefaults: true,
     defaultIds: { morning: pick("morning", MORNING_ID), evening: pick("evening", EVENING_ID) },
   };
 };
+
+/** Retires ONE tombstone, after the server confirmed that specific delete. */
+export const clearTombstone = (state, id) => ({
+  ...state,
+  deletedIds: (state.deletedIds ?? []).filter((buried) => buried !== id),
+});
 
 /**
  * The payload for `PUT /folders` — every pothi, the local-only fields stripped.
@@ -641,17 +576,14 @@ export const mergeRemote = (state, allRemote = [], now = Date.now(), deletedFold
     0,
     ...remoteFolders.filter((r) => mineById.has(r.id)).map((r) => r.updatedAt ?? 0)
   );
-  // The shared folders are rearranged among their own slots; a folder only the
-  // server has keeps its place. (A sort with "no opinion" for those is not a
-  // consistent order, and left the local reorder undone.)
-  const localIndex = new Map(state.folders.map((folder, index) => [folder.id, index]));
-  const shared = merged.filter((folder) => localIndex.has(folder.id));
+  const localIndex = (id) => state.folders.findIndex((folder) => folder.id === id);
   const ordered =
     newestLocal > newestRemote
-      ? intoOwnSlots(
-          merged,
-          [...shared].sort((a, b) => localIndex.get(a.id) - localIndex.get(b.id))
-        )
+      ? [...merged].sort((a, b) => {
+          const ia = localIndex(a.id);
+          const ib = localIndex(b.id);
+          return ia === -1 || ib === -1 ? 0 : ia - ib;
+        })
       : merged;
 
   // A local-only folder that is an EXACT copy of one the account already holds
@@ -664,9 +596,6 @@ export const mergeRemote = (state, allRemote = [], now = Date.now(), deletedFold
   // `reconcile` collapses exact copies too, but it keeps the FIRST it meets
   // and the local-only folders are prepended below — so without this the LOCAL
   // id won, which is the wrong half of the pair to keep.
-  //
-  // Nothing is lost by it: the folder dropped is identical to one the account
-  // keeps. (Unlike dropExactDuplicates, which ran over SYNCED folders too.)
   const remoteSignatures = new Set(ordered.map(folderSignature));
   [...local.values()].forEach((folder) => {
     if (remoteSignatures.has(folderSignature(folder))) local.delete(folder.id);
@@ -689,8 +618,6 @@ export const mergeRemote = (state, allRemote = [], now = Date.now(), deletedFold
     ...state,
     folders: [...local.values(), ...ordered],
     deletedIds: stillThere,
-    // A default deleted on another client stays deleted here (resolveDefaultId).
-    defaultIds: forgetDefaults(state.defaultIds, deletedFolderIds),
     // An account that already has a default — live, or deleted from another
     // client — has had its pair. Seeding again would add a second one, or
     // bring back the one that was deleted.

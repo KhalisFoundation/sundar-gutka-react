@@ -1,6 +1,5 @@
 import { setReminderBanis } from "@common/actions";
 import { reminderTitle } from "@common/reminders/title";
-import { asAppWrite } from "@common/settings/appWrite";
 import { scheduleReminders, constant, trackReminderEvent } from "@common";
 
 export { isCustomTitle } from "@common/reminders/title";
@@ -23,16 +22,7 @@ export const liveSection = (parsed, rows, editing) => {
   const stored = (parsed || []).find((item) => item.key === editing.key);
   if (!stored) return null;
   const row = (rows || []).find((item) => item.key === editing.key);
-  // The names come from the row, which re-resolved them from the database:
-  // the stored copy can hold empty ones after a cloud restore (see
-  // useFetchBani), and laid over the row it left the sheet with no bani name.
-  return {
-    ...editing,
-    ...row,
-    ...stored,
-    translit: row?.translit || stored.translit,
-    gurmukhi: row?.gurmukhi || stored.gurmukhi,
-  };
+  return { ...editing, ...row, ...stored };
 };
 
 const setDefaultReminders = async (
@@ -40,12 +30,7 @@ const setDefaultReminders = async (
   dispatch,
   isReminders,
   reminderSound,
-  isTransliteration = false,
-  // True when the APP fills an empty list, rather than the user asking for the
-  // defaults back (Reset). The fill is not an edit: synced as one, its fresh
-  // clocks outranked the account's own reminders for those banis, so opening
-  // Reminders on a new phone overwrote the times set on the old one.
-  { appWrite = false } = {}
+  isTransliteration = false
 ) => {
   const baniList = baniListData;
 
@@ -68,11 +53,9 @@ const setDefaultReminders = async (
   };
   const data = defaultReminders();
 
-  const write = () => dispatch(setReminderBanis(JSON.stringify(data)));
-  if (appWrite) asAppWrite(write);
-  else write();
+  dispatch(setReminderBanis(JSON.stringify(data)));
 
-  await scheduleReminders(isReminders, reminderSound, JSON.stringify(data), isTransliteration);
+  await scheduleReminders(isReminders, reminderSound, JSON.stringify(data));
   trackReminderEvent(constant.RESET_REMINDER, true);
 };
 

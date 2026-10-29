@@ -14,8 +14,9 @@ import useSsoActions from "./useSsoActions";
 const mockRequestDeletion = jest.fn();
 const mockDestroy = jest.fn();
 const mockPurge = jest.fn();
+const mockSwitchAnalytics = jest.fn();
 const mockWriteLastAccount = jest.fn();
-const mockEndSession = jest.fn();
+const mockClearToken = jest.fn();
 const mockShowConfirm = jest.fn();
 const mockErrorToast = jest.fn();
 const mockInfoToast = jest.fn();
@@ -55,8 +56,8 @@ jest.mock("../localization", () => ({
 
 jest.mock("../sso/accountScope", () => ({
   destroyLocalAccountData: (...a) => mockDestroy(...a),
-  leaveLocalAccount: jest.fn(),
   purgeLocalUserData: (...a) => mockPurge(...a),
+  switchAnalyticsAccount: (...a) => mockSwitchAnalytics(...a),
   writeLastAccount: (...a) => mockWriteLastAccount(...a),
 }));
 
@@ -65,11 +66,8 @@ jest.mock("../sso/deleteAccount", () => ({
 }));
 
 jest.mock("../sso/khalisSso", () => ({ startLogin: jest.fn(), startLogout: jest.fn() }));
-jest.mock("../sso/session", () => ({
-  beginSession: jest.fn(),
-  endSession: (...a) => mockEndSession(...a),
-}));
 jest.mock("../sso/tokenStore", () => ({
+  clearToken: (...a) => mockClearToken(...a),
   readToken: jest.fn(),
 }));
 jest.mock("../toast", () => ({
@@ -123,16 +121,8 @@ describe("when the server accepted", () => {
     await confirmDelete();
 
     expect(mockDestroy).toHaveBeenCalledTimes(1);
-    // By name: ending the session has already detached the account's history,
-    // so the wipe has to say whose file to empty.
-    expect(mockDestroy).toHaveBeenCalledWith(expect.any(Function), "a@b.c");
-    // Through the session's own end, which also disarms its expiry timer.
-    expect(mockEndSession).toHaveBeenCalledTimes(1);
-    // The session ends first: with the account disabled, a sync still out
-    // comes back 401, and a token still held would read that as an expiry.
-    expect(mockEndSession.mock.invocationCallOrder[0]).toBeLessThan(
-      mockDestroy.mock.invocationCallOrder[0]
-    );
+    expect(mockClearToken).toHaveBeenCalledTimes(1);
+    expect(mockDispatch).toHaveBeenCalledWith({ type: "CLEAR_AUTH_SESSION" });
     expect(mockInfoToast).toHaveBeenCalledWith("Your account has been deleted.");
   });
 });
@@ -151,25 +141,24 @@ describe("when it did not land", () => {
 
     expect(mockDestroy).not.toHaveBeenCalled();
     expect(mockPurge).not.toHaveBeenCalled();
-    expect(mockEndSession).not.toHaveBeenCalled();
+    expect(mockClearToken).not.toHaveBeenCalled();
+    expect(mockDispatch).not.toHaveBeenCalledWith({ type: "CLEAR_AUTH_SESSION" });
     expect(mockErrorToast).toHaveBeenCalledWith(message);
   });
 });
 
 // A 401 means the token was refused, so the account was never asked — the
-// session is worthless but the DATA is untouched and must stay that way, as on
-// an expiry: the account still exists, and signing back in finds it intact.
+// session is worthless but the DATA is untouched and must stay that way.
 describe("when the session was refused", () => {
   it("signs out locally without destroying anything", async () => {
     mockRequestDeletion.mockResolvedValue({ ok: false, reason: "session" });
     await confirmDelete();
 
     expect(mockDestroy).not.toHaveBeenCalled();
-    expect(mockPurge).not.toHaveBeenCalled();
-    // Still this device's owner, so a DIFFERENT account signing in purges.
-    expect(mockWriteLastAccount).not.toHaveBeenCalled();
-    // Through the session's own end, which also disarms its expiry timer.
-    expect(mockEndSession).toHaveBeenCalledTimes(1);
+    expect(mockSwitchAnalytics).toHaveBeenCalledWith(null);
+    expect(mockPurge).toHaveBeenCalledTimes(1);
+    expect(mockClearToken).toHaveBeenCalledTimes(1);
+    expect(mockDispatch).toHaveBeenCalledWith({ type: "CLEAR_AUTH_SESSION" });
     expect(mockErrorToast).toHaveBeenCalledWith("Session expired");
   });
 });

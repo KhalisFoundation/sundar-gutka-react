@@ -1,5 +1,6 @@
 /* eslint-env jest */
 import {
+  clearFeature,
   emptyOutbox,
   enqueue,
   heal,
@@ -88,19 +89,13 @@ describe("outbox", () => {
     expect(pendingCount(healed)).toBe(2);
     expect(heal(undefined)).toEqual(emptyOutbox());
   });
-});
 
-// A feature's changes reach the server in the order they were made: a later
-// op does not overtake an earlier one waiting out its backoff.
-describe("ordering behind a backoff", () => {
-  it("holds a later op behind an earlier one that is backing off", () => {
+  it("clearing a feature leaves the others alone", () => {
     let s = emptyOutbox();
-    s = enqueue(s, { feature: "reminders", kind: "create", key: 1, now: 0 });
-    const [first] = Object.keys(s.ops);
-    s = markFailed(s, first, { now: 1000, random: () => 0.5 });
-    s = enqueue(s, { feature: "reminders", kind: "update", key: 2, now: 1000 });
-
-    expect(nextRunnable(s, "reminders", 1001)).toBeNull();
-    expect(nextRunnable(s, "reminders", 10 * 60 * 1000).id).toBe(first);
+    s = enqueue(s, { feature: "reminders", kind: "upsert", key: 2 });
+    s = enqueue(s, { feature: "pothis", kind: "put", key: "mypothi" });
+    s = clearFeature(s, "reminders");
+    expect(pendingCount(s, "reminders")).toBe(0);
+    expect(pendingCount(s, "pothis")).toBe(1);
   });
 });

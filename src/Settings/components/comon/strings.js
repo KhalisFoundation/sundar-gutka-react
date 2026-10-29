@@ -1,6 +1,3 @@
-// Straight from the module, not the @common barrel: the barrel pulls in
-// firebase and native modules, and these lists are read where those are absent
-// (the font-registry test, for one).
 import constant from "../../../common/constant";
 
 export const getFontSizes = (strings) => [

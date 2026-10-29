@@ -226,8 +226,6 @@ describe("GurmukhiTextField placeholder", () => {
 
   it("draws the placeholder in Baloo, not through the native hint", () => {
     open({ placeholder: "e.g. Morning Banis" });
-    // Hidden from accessibility on purpose — the field reads it out as its
-    // hint — so the query has to include hidden elements to find it.
     const hint = screen.getByText("e.g. Morning Banis", { includeHiddenElements: true });
     expect(flatten(hint.props.style).fontFamily).toBe(type.body.fontFamily);
     // And nothing asks the native field for a hint of its own on top of it.
