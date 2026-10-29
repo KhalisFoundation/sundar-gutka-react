@@ -3,6 +3,10 @@ import { Animated, StyleSheet } from "react-native";
 import PropTypes from "prop-types";
 import useDashboardTheme from "./dashboardTheme";
 
+const styles = StyleSheet.create({
+  base: { borderRadius: 8 },
+});
+
 // Lightweight pulsing placeholder shown only while a section's first data
 // fetch is in flight (see useAsyncSection) — never re-shown after that.
 const SkeletonBlock = ({ style = null }) => {
@@ -23,27 +27,17 @@ const SkeletonBlock = ({ style = null }) => {
       Animated.sequence([
         Animated.timing(opacity, { toValue: 1, duration: 700, useNativeDriver: false }),
         Animated.timing(opacity, { toValue: 0.4, duration: 700, useNativeDriver: false }),
-      ]),
+      ])
     );
     loop.start();
     return () => loop.stop();
   }, [opacity]);
 
   return (
-    <Animated.View
-      style={[
-        styles.base,
-        { backgroundColor: c.surfaceSelected, opacity },
-        style,
-      ]}
-    />
+    <Animated.View style={[styles.base, { backgroundColor: c.surfaceSelected, opacity }, style]} />
   );
 };
 
 SkeletonBlock.propTypes = { style: PropTypes.oneOfType([PropTypes.object, PropTypes.array]) };
-
-const styles = StyleSheet.create({
-  base: { borderRadius: 8 },
-});
 
 export default SkeletonBlock;

@@ -1,9 +1,4 @@
 /* eslint-env jest */
-jest.mock("@react-native-async-storage/async-storage", () => ({
-  getItem: jest.fn(() => Promise.resolve(null)),
-  setItem: jest.fn(() => Promise.resolve()),
-}));
-
 import AsyncStorage from "@react-native-async-storage/async-storage";
 import {
   getLiveRate,
@@ -12,6 +7,11 @@ import {
   initExchangeRates,
   __resetExchangeRatesForTest,
 } from "./exchangeRates";
+
+jest.mock("@react-native-async-storage/async-storage", () => ({
+  getItem: jest.fn(() => Promise.resolve(null)),
+  setItem: jest.fn(() => Promise.resolve()),
+}));
 
 const okResponse = (rates) => ({ ok: true, json: () => Promise.resolve({ rates }) });
 const FULL = { CAD: 1.41, EUR: 0.88, GBP: 0.75, AUD: 1.43, INR: 96.56 };

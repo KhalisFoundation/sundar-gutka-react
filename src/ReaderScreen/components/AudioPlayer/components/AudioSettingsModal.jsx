@@ -57,6 +57,7 @@ const AudioSettingsModal = ({ isLyricsAvailable, isLyricsChecking = false, setRa
             <View style={styles.modalContainer}>
               <CustomText style={styles.settingItemTitle}>{setting.title}</CustomText>
               <View style={styles.settingHelperTextContainer}>
+                {/* eslint-disable-next-line no-nested-ternary -- unavailable / checking / switch states */}
                 {setting.disabled && !isLyricsAvailable && !isLyricsChecking ? (
                   <CustomText style={styles.settingHelperText}>
                     {STRINGS.SYNC_UNAVAILABLE}

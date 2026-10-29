@@ -1,8 +1,8 @@
 import React, { useEffect, useState, useRef } from "react";
 import { View, StyleSheet, Animated } from "react-native";
 import { paletteFor, themeForScreen } from "@theme/screenPalettes";
-import { weekdayNarrow } from "@common/dateLocale";
 import PropTypes from "prop-types";
+import { weekdayNarrow } from "@common/dateLocale";
 import { CustomText, useTheme, logError } from "@common";
 import { getDailyActivity } from "../../database/analytics";
 import { dayQualifies } from "../../services/streakDays";
@@ -27,6 +27,41 @@ const getCurrentWeek = () => {
     return { dateStr: `${y}-${m}-${day}`, dayNum: d.getDate(), dow: i };
   });
 };
+
+const CIRCLE = 30;
+
+const styles = StyleSheet.create({
+  wrapper: {
+    zIndex: 10,
+  },
+  container: {
+    flexDirection: "row",
+    paddingTop: 8,
+    paddingBottom: 10,
+    paddingHorizontal: 12,
+    borderBottomWidth: 1,
+  },
+  cell: {
+    flex: 1,
+    alignItems: "center",
+    gap: 4,
+  },
+  dayLetter: {
+    fontSize: 11,
+    fontWeight: "500",
+  },
+  circle: {
+    width: CIRCLE,
+    height: CIRCLE,
+    borderRadius: CIRCLE / 2,
+    alignItems: "center",
+    justifyContent: "center",
+    overflow: "hidden",
+  },
+  dayNum: {
+    fontSize: 12,
+  },
+});
 
 const SlimCalendarStrip = ({ refreshKey = 0 }) => {
   const { theme } = useTheme();
@@ -139,40 +174,5 @@ const SlimCalendarStrip = ({ refreshKey = 0 }) => {
 SlimCalendarStrip.propTypes = {
   refreshKey: PropTypes.number,
 };
-
-const CIRCLE = 30;
-
-const styles = StyleSheet.create({
-  wrapper: {
-    zIndex: 10,
-  },
-  container: {
-    flexDirection: "row",
-    paddingTop: 8,
-    paddingBottom: 10,
-    paddingHorizontal: 12,
-    borderBottomWidth: 1,
-  },
-  cell: {
-    flex: 1,
-    alignItems: "center",
-    gap: 4,
-  },
-  dayLetter: {
-    fontSize: 11,
-    fontWeight: "500",
-  },
-  circle: {
-    width: CIRCLE,
-    height: CIRCLE,
-    borderRadius: CIRCLE / 2,
-    alignItems: "center",
-    justifyContent: "center",
-    overflow: "hidden",
-  },
-  dayNum: {
-    fontSize: 12,
-  },
-});
 
 export default SlimCalendarStrip;

@@ -18,6 +18,26 @@ import SkeletonBlock from "./SkeletonBlock";
 import useAsyncSection from "./useAsyncSection";
 import useRefetchOnReconnect from "./useRefetchOnReconnect";
 
+const styles = StyleSheet.create({
+  row: { flexDirection: "row", gap: 14, paddingHorizontal: 20 },
+  // One card per line. `flex: 1` on the cards still applies but means nothing
+  // in a column, so each simply takes the full width.
+  rowStacked: { flexDirection: "column" },
+  // No fixed aspectRatio — a long shabad's translation needs to grow the card
+  // instead of being clipped by a locked square height.
+  card: { flex: 1, padding: 16 },
+  cardTag: { fontSize: 10, fontWeight: "600", letterSpacing: 0.8, marginBottom: 6 },
+  word: { fontSize: 20, lineHeight: androidLineHeight(26) },
+  bigNum: { fontSize: 20, lineHeight: androidLineHeight(24) },
+  translit: { fontSize: 12, marginTop: 2 },
+  meaning: { fontSize: 12, marginTop: 6, lineHeight: androidLineHeight(16) },
+  eventName: { fontSize: 12, fontWeight: "600", marginTop: 5, lineHeight: androidLineHeight(15) },
+  skeletonInner: { gap: 8, marginTop: 4 },
+  lineSkeletonWide: { width: "70%", height: 20 },
+  lineSkeletonNarrow: { width: "50%", height: 14 },
+  lineSkeletonBlock: { width: "100%", height: 30 },
+});
+
 const Discover = ({ refreshKey = 0 }) => {
   // Word of the Day and Upcoming sit side by side, each on half the width.
   // That column stops working once the text inside outgrows it — "Pure,\n  // selfless\n divine love." one word per line. No flex tweak helps: the column
@@ -202,25 +222,5 @@ const Discover = ({ refreshKey = 0 }) => {
 };
 
 Discover.propTypes = { refreshKey: PropTypes.number };
-
-const styles = StyleSheet.create({
-  row: { flexDirection: "row", gap: 14, paddingHorizontal: 20 },
-  // One card per line. `flex: 1` on the cards still applies but means nothing
-  // in a column, so each simply takes the full width.
-  rowStacked: { flexDirection: "column" },
-  // No fixed aspectRatio — a long shabad's translation needs to grow the card
-  // instead of being clipped by a locked square height.
-  card: { flex: 1, padding: 16 },
-  cardTag: { fontSize: 10, fontWeight: "600", letterSpacing: 0.8, marginBottom: 6 },
-  word: { fontSize: 20, lineHeight: androidLineHeight(26) },
-  bigNum: { fontSize: 20, lineHeight: androidLineHeight(24) },
-  translit: { fontSize: 12, marginTop: 2 },
-  meaning: { fontSize: 12, marginTop: 6, lineHeight: androidLineHeight(16) },
-  eventName: { fontSize: 12, fontWeight: "600", marginTop: 5, lineHeight: androidLineHeight(15) },
-  skeletonInner: { gap: 8, marginTop: 4 },
-  lineSkeletonWide: { width: "70%", height: 20 },
-  lineSkeletonNarrow: { width: "50%", height: 14 },
-  lineSkeletonBlock: { width: "100%", height: 30 },
-});
 
 export default Discover;

@@ -2,9 +2,9 @@ import React from "react";
 import { View, StyleSheet } from "react-native";
 import { useSafeAreaInsets } from "react-native-safe-area-context";
 import Svg, { Path } from "react-native-svg";
-import PropTypes from "prop-types";
 import { gold } from "@theme/palette";
 import { paletteFor } from "@theme/screenPalettes";
+import PropTypes from "prop-types";
 import { CustomText, useTheme, STRINGS, GradientDivider } from "@common";
 
 const styles = StyleSheet.create({
@@ -83,12 +83,7 @@ const JourneyHeader = ({ streak = 0 }) => {
 
       {streak > 0 && (
         <View style={[styles.rightControls, { top: safeTop + 4 }]}>
-          <View
-            style={[
-              styles.streakPill,
-              { backgroundColor: palette.journeyFlameBg },
-            ]}
-          >
+          <View style={[styles.streakPill, { backgroundColor: palette.journeyFlameBg }]}>
             <FlameIcon size={12} color={gold[400]} />
             <CustomText style={styles.streakNum}>{streak}</CustomText>
           </View>

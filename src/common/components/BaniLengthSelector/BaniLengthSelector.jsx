@@ -16,9 +16,9 @@ import createStyles from "./style";
 // Map each display label → its Redux constant value.
 // toUpperCase() fails for "Extra Long" → "EXTRA LONG" (space ≠ underscore).
 const LENGTH_CONSTANT_MAP = {
-  [STRINGS.short]:      constant.SHORT,
-  [STRINGS.medium]:     constant.MEDIUM ?? "MEDIUM",
-  [STRINGS.long]:       constant.LONG,
+  [STRINGS.short]: constant.SHORT,
+  [STRINGS.medium]: constant.MEDIUM ?? "MEDIUM",
+  [STRINGS.long]: constant.LONG,
   [STRINGS.extra_long]: constant.EXTRA_LONG,
 };
 

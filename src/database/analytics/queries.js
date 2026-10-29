@@ -1,3 +1,5 @@
+/* eslint-disable camelcase -- rows go in and come out in the SQLite column names
+   (bani_id, reading_seconds, ...), which every caller and the sync payloads share. */
 import { logError, logMessage } from "@common";
 import { getAnalyticsDB } from "./connect";
 import { runSerialized } from "./queue";
@@ -40,7 +42,7 @@ const upsertRow = (update, insert) =>
 
 const rowsToArray = (result) => {
   const rows = [];
-  for (let i = 0; i < result.rows.length; i++) {
+  for (let i = 0; i < result.rows.length; i += 1) {
     rows.push(result.rows.item(i));
   }
   return rows;
@@ -338,6 +340,7 @@ export const updateSummary = async (fields) => {
   if (keys.length === 0) return;
   const setClauses = keys.map((k) => `${k} = ?`).join(", ");
   const values = keys.map((k) => fields[k]);
+  // eslint-disable-next-line consistent-return
   return runQuery(
     `UPDATE user_stats_summary SET ${setClauses}, updated_at = strftime('%s','now') WHERE id = 1`,
     values
@@ -459,6 +462,7 @@ export const getDayDetail = async (dateStr) => {
 export const incrementBaniReadCount = async (baniId, baniTitle) => {
   if (!baniId) return;
   const today = new Date().toISOString().slice(0, 10);
+  // eslint-disable-next-line consistent-return
   return upsertRow(
     {
       sql: `UPDATE bani_read_counts SET
@@ -616,5 +620,6 @@ export const raiseAllTimeBaseline = async (incoming = {}) => {
 export const markSynced = async (table, ids) => {
   if (!ids || ids.length === 0) return;
   const placeholders = ids.map(() => "?").join(",");
+  // eslint-disable-next-line consistent-return
   return runQuery(`UPDATE ${table} SET sync_status = 1 WHERE id IN (${placeholders})`, ids);
 };

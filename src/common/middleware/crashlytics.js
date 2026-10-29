@@ -6,10 +6,7 @@ const MAX_STATE_KEYS = 10;
 // Actions that fire on every audio tick or every scroll frame — logging them to
 // Crashlytics on each dispatch would hammer the native bridge and drain the CPU
 // on low-end devices without adding any useful crash context.
-const HIGH_FREQUENCY_ACTIONS = new Set([
-  "SET_AUDIO_PROGRESS",
-  "SET_SCROLL_POSITION",
-]);
+const HIGH_FREQUENCY_ACTIONS = new Set(["SET_AUDIO_PROGRESS", "SET_SCROLL_POSITION"]);
 
 // Helper function to safely stringify values
 const safeStringify = (value) => {

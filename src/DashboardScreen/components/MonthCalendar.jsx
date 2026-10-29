@@ -84,6 +84,54 @@ DashedCircle.propTypes = {
   dash: PropTypes.string,
 };
 
+const styles = StyleSheet.create({
+  wrap: { paddingHorizontal: 20 },
+  card: { paddingVertical: 4 },
+  header: {
+    flexDirection: "row",
+    // "center" (not the original "baseline") — the label now sits inside a
+    // View row with icon buttons on either side, which has no text baseline
+    // for "baseline" alignment to key off.
+    alignItems: "center",
+    justifyContent: "space-between",
+    marginBottom: 14,
+  },
+  // flexShrink so the label can give up width to the arrows/daysCount instead
+  // of pushing them off a narrow phone; the arrows themselves (navBtn) never
+  // shrink, so they stay full touch-target size regardless.
+  monthNav: { flexDirection: "row", alignItems: "center", gap: 6, flexShrink: 1 },
+  monthLabelBtn: { flexShrink: 1 },
+  navBtn: { padding: 4, flexShrink: 0 },
+  /** Holds the back arrow's footprint at the history floor. Matches navBtn. */
+  navBtnPlaceholder: { padding: 4, flexShrink: 0, width: 16 },
+  // Month navigation is never disabled, so the only state to express is the
+  // touch itself — without it a tap that lands on an empty month gives no
+  // sign it registered.
+  navBtnPressed: { opacity: 0.45 },
+  monthText: { fontSize: 20, fontWeight: "600" },
+  daysCount: { fontSize: 13, flexShrink: 1, marginLeft: 8 },
+  weekRow: { flexDirection: "row", marginBottom: 4 },
+  cell: { flex: 1, alignItems: "center", paddingVertical: 2 },
+  dayLabel: { fontSize: 12, fontWeight: "500", paddingVertical: 4 },
+  // Deliberately NO borderRadius: this View is only a centering box — the circle
+  // itself is drawn by DayMarker's SVG. A borderRadius here makes Android mask
+  // the SVG child to the rounded shape and shave its edges. Width/height are
+  // applied inline from the responsive `circle` size.
+  dayCircle: {
+    alignItems: "center",
+    justifyContent: "center",
+  },
+  // Matches DayMarker's own width/height exactly (NOT absoluteFill — see the
+  // comment on DayMarker for why that clipped the circles).
+  dayMarkerSvg: { position: "absolute", top: 0, left: 0 },
+  dayNum: { fontSize: 13 },
+  emptyNote: { fontSize: 12, textAlign: "center", marginTop: 12 },
+  legend: { flexDirection: "row", alignItems: "center", gap: 5, marginTop: 14 },
+  legendText: { fontSize: 11 },
+  legendBox: { width: 14, height: 14, borderRadius: 4 },
+  legendDot: { width: 14, height: 14, marginLeft: 8 },
+});
+
 // Every ring/fill state for a day cell (heat fill, today's accent ring, missed
 // dashed ring) drawn in one SVG sharing a single cx/cy — so the fill and the
 // rings are always concentric.
@@ -343,6 +391,7 @@ const MonthCalendar = ({ refreshKey = 0 }) => {
       <View
         style={styles.card}
         onLayout={(e) => setGridWidth(e.nativeEvent.layout.width)}
+        // eslint-disable-next-line react/jsx-props-no-spreading
         {...panResponder.panHandlers}
       >
         <View style={styles.header}>
@@ -411,6 +460,7 @@ const MonthCalendar = ({ refreshKey = 0 }) => {
 
         <View style={styles.weekRow}>
           {weekdayNarrowRow(false).map((l, i) => (
+            // eslint-disable-next-line react/no-array-index-key
             <View key={i} style={styles.cell}>
               <CustomText style={[styles.dayLabel, { color: mutedText }]}>{l}</CustomText>
             </View>
@@ -419,8 +469,10 @@ const MonthCalendar = ({ refreshKey = 0 }) => {
 
         {loading
           ? Array.from({ length: 5 }).map((_, ri) => (
+              // eslint-disable-next-line react/no-array-index-key
               <View key={ri} style={styles.weekRow}>
                 {Array.from({ length: 7 }).map((_c, ci) => (
+                  // eslint-disable-next-line react/no-array-index-key
                   <View key={ci} style={styles.cell}>
                     <SkeletonBlock
                       style={{ width: circle, height: circle, borderRadius: circle / 2 }}
@@ -435,8 +487,10 @@ const MonthCalendar = ({ refreshKey = 0 }) => {
 
         {!loading && !error
           ? rows.map((row, ri) => (
+              // eslint-disable-next-line react/no-array-index-key
               <View key={ri} style={styles.weekRow}>
                 {row.map((d, ci) => {
+                  // eslint-disable-next-line react/no-array-index-key
                   if (!d) return <View key={`e-${ci}`} style={styles.cell} />;
                   const dateStr = `${year}-${String(month).padStart(2, "0")}-${String(d).padStart(
                     2,
@@ -456,6 +510,7 @@ const MonthCalendar = ({ refreshKey = 0 }) => {
                       <View style={[styles.dayCircle, { width: circle, height: circle }]}>
                         <DayMarker
                           size={circle}
+                          // eslint-disable-next-line no-nested-ternary
                           fillColor={isToday ? todayFill : level > 0 ? heatColor(level) : null}
                           todayColor={isToday ? accentBlue : null}
                           missedColor={missed ? palette.missedFill : null}
@@ -519,7 +574,12 @@ const MonthCalendar = ({ refreshKey = 0 }) => {
             {hasEverBeenActive ? (
               <>
                 <View style={styles.legendDot}>
-                  <DashedCircle size={14} strokeWidth={1.3} dash="2.5 2" color={palette.missedFill} />
+                  <DashedCircle
+                    size={14}
+                    strokeWidth={1.3}
+                    dash="2.5 2"
+                    color={palette.missedFill}
+                  />
                 </View>
                 <CustomText style={[styles.legendText, { color: mutedText }]}>
                   {STRINGS.MISSED}
@@ -561,53 +621,5 @@ const MonthCalendar = ({ refreshKey = 0 }) => {
 };
 
 MonthCalendar.propTypes = { refreshKey: PropTypes.number };
-
-const styles = StyleSheet.create({
-  wrap: { paddingHorizontal: 20 },
-  card: { paddingVertical: 4 },
-  header: {
-    flexDirection: "row",
-    // "center" (not the original "baseline") — the label now sits inside a
-    // View row with icon buttons on either side, which has no text baseline
-    // for "baseline" alignment to key off.
-    alignItems: "center",
-    justifyContent: "space-between",
-    marginBottom: 14,
-  },
-  // flexShrink so the label can give up width to the arrows/daysCount instead
-  // of pushing them off a narrow phone; the arrows themselves (navBtn) never
-  // shrink, so they stay full touch-target size regardless.
-  monthNav: { flexDirection: "row", alignItems: "center", gap: 6, flexShrink: 1 },
-  monthLabelBtn: { flexShrink: 1 },
-  navBtn: { padding: 4, flexShrink: 0 },
-  /** Holds the back arrow's footprint at the history floor. Matches navBtn. */
-  navBtnPlaceholder: { padding: 4, flexShrink: 0, width: 16 },
-  // Month navigation is never disabled, so the only state to express is the
-  // touch itself — without it a tap that lands on an empty month gives no
-  // sign it registered.
-  navBtnPressed: { opacity: 0.45 },
-  monthText: { fontSize: 20, fontWeight: "600" },
-  daysCount: { fontSize: 13, flexShrink: 1, marginLeft: 8 },
-  weekRow: { flexDirection: "row", marginBottom: 4 },
-  cell: { flex: 1, alignItems: "center", paddingVertical: 2 },
-  dayLabel: { fontSize: 12, fontWeight: "500", paddingVertical: 4 },
-  // Deliberately NO borderRadius: this View is only a centering box — the circle
-  // itself is drawn by DayMarker's SVG. A borderRadius here makes Android mask
-  // the SVG child to the rounded shape and shave its edges. Width/height are
-  // applied inline from the responsive `circle` size.
-  dayCircle: {
-    alignItems: "center",
-    justifyContent: "center",
-  },
-  // Matches DayMarker's own width/height exactly (NOT absoluteFill — see the
-  // comment on DayMarker for why that clipped the circles).
-  dayMarkerSvg: { position: "absolute", top: 0, left: 0 },
-  dayNum: { fontSize: 13 },
-  emptyNote: { fontSize: 12, textAlign: "center", marginTop: 12 },
-  legend: { flexDirection: "row", alignItems: "center", gap: 5, marginTop: 14 },
-  legendText: { fontSize: 11 },
-  legendBox: { width: 14, height: 14, borderRadius: 4 },
-  legendDot: { width: 14, height: 14, marginLeft: 8 },
-});
 
 export default MonthCalendar;

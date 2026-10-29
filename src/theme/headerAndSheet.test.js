@@ -189,9 +189,7 @@ describe("list row thickness", () => {
   });
 
   it("keeps the two-line row a step above it", () => {
-    expect(lightTheme.layout.row.minHeightTwoLine).toBeGreaterThan(
-      lightTheme.layout.row.minHeight
-    );
+    expect(lightTheme.layout.row.minHeightTwoLine).toBeGreaterThan(lightTheme.layout.row.minHeight);
   });
 
   it("pads both row types by the same step the bani list uses", () => {

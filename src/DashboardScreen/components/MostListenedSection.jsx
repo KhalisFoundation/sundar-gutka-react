@@ -2,14 +2,23 @@ import React, { useEffect, useState } from "react";
 import { View, StyleSheet } from "react-native";
 import Svg, { Path } from "react-native-svg";
 import { androidLineHeight } from "@theme/lineHeight";
-import PropTypes from "prop-types";
 import { paletteFor, themeForScreen } from "@theme/screenPalettes";
+import PropTypes from "prop-types";
 import { CustomText, useTheme, logError } from "@common";
 import { getTopListenedBanis } from "../../database/analytics";
 import { getRestoredTopBanis } from "../../services/dashboard";
 
 const HeadphoneIcon = ({ size = 22, color }) => (
-  <Svg width={size} height={size} viewBox="0 0 24 24" fill="none" stroke={color} strokeWidth="2.5" strokeLinecap="round" strokeLinejoin="round">
+  <Svg
+    width={size}
+    height={size}
+    viewBox="0 0 24 24"
+    fill="none"
+    stroke={color}
+    strokeWidth="2.5"
+    strokeLinecap="round"
+    strokeLinejoin="round"
+  >
     <Path d="M3 18v-6a9 9 0 0 1 18 0v6" />
     <Path d="M21 19a2 2 0 0 1-2 2h-1a2 2 0 0 1-2-2v-3a2 2 0 0 1 2-2h3z" />
     <Path d="M3 19a2 2 0 0 0 2 2h1a2 2 0 0 0 2-2v-3a2 2 0 0 0-2-2H3z" />
@@ -32,6 +41,76 @@ const formatDuration = (secs) => {
   if (h > 0) return `${h}h`;
   return `${m}m`;
 };
+
+const styles = StyleSheet.create({
+  container: {
+    paddingHorizontal: 20,
+    paddingTop: 20,
+    paddingBottom: 12,
+  },
+  titleRow: {
+    flexDirection: "row",
+    alignItems: "center",
+    justifyContent: "space-between",
+    marginBottom: 16,
+  },
+  sectionTitle: {
+    fontSize: 22,
+    fontWeight: "500",
+  },
+  card: {
+    flexDirection: "row",
+    alignItems: "center",
+    borderRadius: 16,
+    paddingVertical: 14,
+    paddingHorizontal: 14,
+    marginBottom: 12,
+    gap: 12,
+  },
+  playBtn: {
+    width: 46,
+    height: 46,
+    borderRadius: 12,
+    alignItems: "center",
+    justifyContent: "center",
+  },
+  textBlock: {
+    flex: 1,
+    gap: 3,
+  },
+  baniTitle: {
+    fontSize: 16,
+    fontWeight: "600",
+  },
+  artistName: {
+    fontSize: 13,
+    fontWeight: "400",
+  },
+  vertDivider: {
+    width: 1,
+    height: 40,
+    opacity: 0.5,
+  },
+  duration: {
+    fontSize: 20,
+    fontWeight: "600",
+    minWidth: 50,
+    textAlign: "right",
+  },
+  emptyCard: {
+    borderRadius: 14,
+    paddingVertical: 20,
+    paddingHorizontal: 16,
+    alignItems: "center",
+    justifyContent: "center",
+    marginBottom: 12,
+  },
+  emptyText: {
+    fontSize: 13,
+    textAlign: "center",
+    lineHeight: androidLineHeight(20),
+  },
+});
 
 const MostListenedSection = ({ refreshKey = 0 }) => {
   const { theme } = useTheme();
@@ -104,10 +183,7 @@ const MostListenedSection = ({ refreshKey = 0 }) => {
             </View>
 
             <View style={styles.textBlock}>
-              <CustomText
-                style={[styles.baniTitle, { color: c.textPrimary }]}
-                numberOfLines={1}
-              >
+              <CustomText style={[styles.baniTitle, { color: c.textPrimary }]} numberOfLines={1}>
                 {b.bani_title ?? `Bani ${b.bani_id}`}
               </CustomText>
               {artistName ? (
@@ -137,75 +213,5 @@ const MostListenedSection = ({ refreshKey = 0 }) => {
 MostListenedSection.propTypes = {
   refreshKey: PropTypes.number,
 };
-
-const styles = StyleSheet.create({
-  container: {
-    paddingHorizontal: 20,
-    paddingTop: 20,
-    paddingBottom: 12,
-  },
-  titleRow: {
-    flexDirection: "row",
-    alignItems: "center",
-    justifyContent: "space-between",
-    marginBottom: 16,
-  },
-  sectionTitle: {
-    fontSize: 22,
-    fontWeight: "500",
-  },
-  card: {
-    flexDirection: "row",
-    alignItems: "center",
-    borderRadius: 16,
-    paddingVertical: 14,
-    paddingHorizontal: 14,
-    marginBottom: 12,
-    gap: 12,
-  },
-  playBtn: {
-    width: 46,
-    height: 46,
-    borderRadius: 12,
-    alignItems: "center",
-    justifyContent: "center",
-  },
-  textBlock: {
-    flex: 1,
-    gap: 3,
-  },
-  baniTitle: {
-    fontSize: 16,
-    fontWeight: "600",
-  },
-  artistName: {
-    fontSize: 13,
-    fontWeight: "400",
-  },
-  vertDivider: {
-    width: 1,
-    height: 40,
-    opacity: 0.5,
-  },
-  duration: {
-    fontSize: 20,
-    fontWeight: "600",
-    minWidth: 50,
-    textAlign: "right",
-  },
-  emptyCard: {
-    borderRadius: 14,
-    paddingVertical: 20,
-    paddingHorizontal: 16,
-    alignItems: "center",
-    justifyContent: "center",
-    marginBottom: 12,
-  },
-  emptyText: {
-    fontSize: 13,
-    textAlign: "center",
-    lineHeight: androidLineHeight(20),
-  },
-});
 
 export default MostListenedSection;

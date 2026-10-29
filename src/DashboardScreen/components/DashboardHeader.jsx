@@ -36,6 +36,79 @@ MenuIcon.propTypes = { color: PropTypes.string.isRequired };
 // be orphaned even if a half has to wrap on a very narrow screen.
 const FATEH = "ਵਾਹਿਗੁਰੂ ਜੀ ਕਾ ਖਾਲਸਾ ॥\nਵਾਹਿਗੁਰੂ ਜੀ ਕੀ ਫਤਹਿ ॥";
 
+const styles = StyleSheet.create({
+  container: {
+    paddingHorizontal: 20,
+    paddingBottom: 12,
+  },
+  topRow: {
+    flexDirection: "row",
+    // Top-aligned so the dismiss button stays level with the Fateh's first
+    // line instead of drifting down when it wraps to two.
+    alignItems: "flex-start",
+    justifyContent: "space-between",
+    marginBottom: 10,
+  },
+  salutation: {
+    fontSize: 19,
+    lineHeight: androidLineHeight(28),
+    flex: 1,
+    paddingRight: 8,
+  },
+  closeBtn: {
+    padding: 2,
+  },
+  row: {
+    flexDirection: "row",
+    alignItems: "center",
+    justifyContent: "space-between",
+  },
+  nameBlock: {
+    flex: 1,
+    paddingRight: 12,
+  },
+  date: {
+    fontSize: 13,
+    lineHeight: androidLineHeight(18),
+    fontWeight: 650,
+    marginTop: 2,
+  },
+  syncLine: {
+    fontSize: 11,
+    lineHeight: androidLineHeight(15),
+    marginTop: 2,
+    opacity: 0.7,
+  },
+  controls: {
+    flexDirection: "row",
+    alignItems: "center",
+    gap: 10,
+  },
+  // The menu button and the avatar sit side by side, so they share one circle.
+  // They were 42 and 46, which reads as a mistake rather than a hierarchy.
+  iconBtn: {
+    width: 46,
+    height: 46,
+    borderRadius: 23,
+    alignItems: "center",
+    justifyContent: "center",
+  },
+  avatar: {
+    width: 46,
+    height: 46,
+    borderRadius: 23,
+    alignItems: "center",
+    justifyContent: "center",
+  },
+  avatarPressed: {
+    opacity: 0.7,
+  },
+  avatarInitial: {
+    fontSize: 20,
+    fontWeight: "600",
+  },
+});
+
 const DashboardHeader = ({
   onMenuPress = () => {},
   onClosePress = () => {},
@@ -232,78 +305,5 @@ DashboardHeader.propTypes = {
   onClosePress: PropTypes.func,
   onAvatarPress: PropTypes.func,
 };
-
-const styles = StyleSheet.create({
-  container: {
-    paddingHorizontal: 20,
-    paddingBottom: 12,
-  },
-  topRow: {
-    flexDirection: "row",
-    // Top-aligned so the dismiss button stays level with the Fateh's first
-    // line instead of drifting down when it wraps to two.
-    alignItems: "flex-start",
-    justifyContent: "space-between",
-    marginBottom: 10,
-  },
-  salutation: {
-    fontSize: 19,
-    lineHeight: androidLineHeight(28),
-    flex: 1,
-    paddingRight: 8,
-  },
-  closeBtn: {
-    padding: 2,
-  },
-  row: {
-    flexDirection: "row",
-    alignItems: "center",
-    justifyContent: "space-between",
-  },
-  nameBlock: {
-    flex: 1,
-    paddingRight: 12,
-  },
-  date: {
-    fontSize: 13,
-    lineHeight: androidLineHeight(18),
-    fontWeight: 650,
-    marginTop: 2,
-  },
-  syncLine: {
-    fontSize: 11,
-    lineHeight: androidLineHeight(15),
-    marginTop: 2,
-    opacity: 0.7,
-  },
-  controls: {
-    flexDirection: "row",
-    alignItems: "center",
-    gap: 10,
-  },
-  // The menu button and the avatar sit side by side, so they share one circle.
-  // They were 42 and 46, which reads as a mistake rather than a hierarchy.
-  iconBtn: {
-    width: 46,
-    height: 46,
-    borderRadius: 23,
-    alignItems: "center",
-    justifyContent: "center",
-  },
-  avatar: {
-    width: 46,
-    height: 46,
-    borderRadius: 23,
-    alignItems: "center",
-    justifyContent: "center",
-  },
-  avatarPressed: {
-    opacity: 0.7,
-  },
-  avatarInitial: {
-    fontSize: 20,
-    fontWeight: "600",
-  },
-});
 
 export default DashboardHeader;

@@ -51,6 +51,7 @@ const useKeepAwake = () => {
     };
 
     const subscription = AppState.addEventListener("change", handleAppStateChange);
+    // eslint-disable-next-line consistent-return
     return () => subscription.remove();
   }, [shouldStayAwake]);
 };

@@ -1,6 +1,5 @@
 import { clampTyped, parse } from "./TimePickerSheet";
 
-
 // The picker round-trips through a "h:mm A" string, because that is the format
 // the reminder store and `parseTimeString` in notifications.js both expect.
 // Getting this wrong schedules a reminder at the wrong hour, silently — so the

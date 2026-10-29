@@ -1,11 +1,6 @@
 /* eslint-env jest */
 // getLiveRate is the only outside coupling — mock it so we can drive both the
 // "no live rate yet → static fallback" and "live rate present" paths.
-jest.mock("./exchangeRates", () => ({
-  getLiveRate: jest.fn(() => null),
-}));
-
-import { getLiveRate } from "./exchangeRates";
 import {
   countryToCurrencyCode,
   resolveCurrency,
@@ -19,6 +14,11 @@ import {
   resolveLocalPresets,
   CURRENCIES,
 } from "./currency";
+import { getLiveRate } from "./exchangeRates";
+
+jest.mock("./exchangeRates", () => ({
+  getLiveRate: jest.fn(() => null),
+}));
 
 describe("currency", () => {
   beforeEach(() => getLiveRate.mockReturnValue(null)); // default: fall back to static rates

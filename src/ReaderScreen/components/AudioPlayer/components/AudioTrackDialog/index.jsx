@@ -62,9 +62,10 @@ const AudioTrackDialog = ({
   const previewSessionRef = useRef(0);
   const previewActionInFlightRef = useRef(false);
 
-  const wait = (ms) => new Promise((resolve) => {
-    setTimeout(resolve, ms);
-  });
+  const wait = (ms) =>
+    new Promise((resolve) => {
+      setTimeout(resolve, ms);
+    });
 
   /**
    * Check the track's current load state. Returns:
@@ -79,8 +80,7 @@ const AudioTrackDialog = ({
         TrackPlayer.getPlaybackState(),
       ]);
 
-      const isTargetActive =
-        activeTrack?.id != null && String(activeTrack.id) === String(trackId);
+      const isTargetActive = activeTrack?.id != null && String(activeTrack.id) === String(trackId);
       if (!isTargetActive) {
         return "inactive";
       }
@@ -210,8 +210,16 @@ const AudioTrackDialog = ({
         if (clampedElapsed >= PREVIEW_DURATION_MS) {
           clearPreviewInterval();
           if (previewSessionRef.current !== sessionId) return;
-          try { await stop(); } catch (_) { /* nothing was playing to stop */ }
-          try { await reset(); } catch (_) { /* already reset; a second one is a no-op */ }
+          try {
+            await stop();
+          } catch (_) {
+            /* nothing was playing to stop */
+          }
+          try {
+            await reset();
+          } catch (_) {
+            /* already reset; a second one is a no-op */
+          }
           await restoreNotificationCapabilities();
           setPreviewLoadingTrackId(null);
           setPreviewActiveTrackId(null);
@@ -288,10 +296,10 @@ const AudioTrackDialog = ({
     previewActionInFlightRef.current = true;
     const sessionId = previewSessionRef.current + 1;
     previewSessionRef.current = sessionId;
-    
+
     selectedTrackRef.current = track;
     setSelectedTrack(track);
-    
+
     setPreviewActiveTrackId(null);
 
     if (!isHeader) {
@@ -397,8 +405,16 @@ const AudioTrackDialog = ({
           // The local clip likely wrote truncated — drop it so it re-downloads
           // clean next time, and fall through to the full-track stream.
           await deletePreviewClip(canonicalUrl).catch(() => {});
-          try { await stop(); } catch (_) { /* nothing was playing to stop */ }
-          try { await reset(); } catch (_) { /* already reset; a second one is a no-op */ }
+          try {
+            await stop();
+          } catch (_) {
+            /* nothing was playing to stop */
+          }
+          try {
+            await reset();
+          } catch (_) {
+            /* already reset; a second one is a no-op */
+          }
           if (previewSessionRef.current !== sessionId) {
             setPreviewLoadingTrackId(null);
             return;
@@ -425,8 +441,16 @@ const AudioTrackDialog = ({
         setPreviewLoadingTrackId(null);
         setPreviewActiveTrackId(null);
         setPlayingTrack(null);
-        try { await stop(); } catch (_) { /* nothing was playing to stop */ }
-        try { await reset(); } catch (_) { /* already reset; a second one is a no-op */ }
+        try {
+          await stop();
+        } catch (_) {
+          /* nothing was playing to stop */
+        }
+        try {
+          await reset();
+        } catch (_) {
+          /* already reset; a second one is a no-op */
+        }
         await restoreNotificationCapabilities();
       }
     } catch (_) {
@@ -453,7 +477,7 @@ const AudioTrackDialog = ({
         // Spin-wait for handleSelectTrack to finish its critical TrackPlayer operations (addAndPlayTrack)
         // so we don't cause a race condition with stopPreview()'s reset().
         while (previewActionInFlightRef.current) {
-          // eslint-disable-next-line no-await-in-loop
+          // eslint-disable-next-line no-await-in-loop, no-promise-executor-return
           await new Promise((resolve) => setTimeout(resolve, 50));
         }
 
@@ -571,6 +595,7 @@ const AudioTrackDialog = ({
 
 AudioTrackDialog.propTypes = {
   title: PropTypes.string,
+  notificationTitle: PropTypes.string,
   tracks: PropTypes.arrayOf(
     PropTypes.shape({
       id: PropTypes.oneOfType([PropTypes.string, PropTypes.number]).isRequired,

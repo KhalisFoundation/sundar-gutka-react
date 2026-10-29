@@ -1,7 +1,7 @@
 import React, { useEffect, useState } from "react";
 import { View, StyleSheet } from "react-native";
-import PropTypes from "prop-types";
 import { paletteFor, themeForScreen } from "@theme/screenPalettes";
+import PropTypes from "prop-types";
 import { CustomText, useTheme, logError, STRINGS } from "@common";
 import { getOrCreateSummary, getAllTimeTotals } from "../../database/analytics";
 
@@ -12,6 +12,58 @@ const formatStatTime = (secs) => {
   return { value: String(Math.floor(secs / 3600)), unit: STRINGS.UNIT_HRS };
 };
 
+const styles = StyleSheet.create({
+  container: {
+    paddingHorizontal: 24,
+    paddingTop: 20,
+    paddingBottom: 20,
+  },
+  sectionTitle: {
+    fontSize: 22,
+    fontWeight: "600",
+    marginBottom: 20,
+  },
+  statsRow: {
+    flexDirection: "row",
+    alignItems: "flex-start",
+  },
+  row2: {
+    marginTop: 20,
+  },
+  statBlock: {
+    flex: 1,
+  },
+  vertDivider: {
+    width: 1,
+    height: 40,
+    marginHorizontal: 8,
+    alignSelf: "center",
+    opacity: 0.6,
+  },
+  valueRow: {
+    flexDirection: "row",
+    alignItems: "baseline",
+    marginBottom: 4,
+  },
+  bigNumber: {
+    fontSize: 36,
+    fontWeight: "600",
+  },
+  unit: {
+    fontSize: 13,
+    fontWeight: "500",
+    marginLeft: 2,
+  },
+  statLabel: {
+    fontSize: 11,
+    fontWeight: "600",
+    letterSpacing: 1.2,
+    // Uppercases Latin-script labels for the original look; a no-op for
+    // Devanagari/Gurmukhi (which have no letter case), so those read naturally.
+    textTransform: "uppercase",
+  },
+});
+
 const StatBlock = ({ value, unit, label, theme, accentBlue }) => (
   <View style={styles.statBlock}>
     <View style={styles.valueRow}>
@@ -20,9 +72,7 @@ const StatBlock = ({ value, unit, label, theme, accentBlue }) => (
       <CustomText style={[styles.bigNumber, { color: accentBlue }]}>{value}</CustomText>
       <CustomText style={[styles.unit, { color: accentBlue }]}> {unit}</CustomText>
     </View>
-    <CustomText style={[styles.statLabel, { color: theme.c.textSecondary }]}>
-      {label}
-    </CustomText>
+    <CustomText style={[styles.statLabel, { color: theme.c.textSecondary }]}>{label}</CustomText>
   </View>
 );
 
@@ -30,6 +80,7 @@ StatBlock.propTypes = {
   value: PropTypes.oneOfType([PropTypes.string, PropTypes.number]).isRequired,
   unit: PropTypes.string.isRequired,
   label: PropTypes.string.isRequired,
+  // eslint-disable-next-line react/forbid-prop-types
   theme: PropTypes.object.isRequired,
   accentBlue: PropTypes.string.isRequired,
 };
@@ -112,57 +163,5 @@ const LifetimeStats = ({ refreshKey = 0 }) => {
 LifetimeStats.propTypes = {
   refreshKey: PropTypes.number,
 };
-
-const styles = StyleSheet.create({
-  container: {
-    paddingHorizontal: 24,
-    paddingTop: 20,
-    paddingBottom: 20,
-  },
-  sectionTitle: {
-    fontSize: 22,
-    fontWeight: "600",
-    marginBottom: 20,
-  },
-  statsRow: {
-    flexDirection: "row",
-    alignItems: "flex-start",
-  },
-  row2: {
-    marginTop: 20,
-  },
-  statBlock: {
-    flex: 1,
-  },
-  vertDivider: {
-    width: 1,
-    height: 40,
-    marginHorizontal: 8,
-    alignSelf: "center",
-    opacity: 0.6,
-  },
-  valueRow: {
-    flexDirection: "row",
-    alignItems: "baseline",
-    marginBottom: 4,
-  },
-  bigNumber: {
-    fontSize: 36,
-    fontWeight: "600",
-  },
-  unit: {
-    fontSize: 13,
-    fontWeight: "500",
-    marginLeft: 2,
-  },
-  statLabel: {
-    fontSize: 11,
-    fontWeight: "600",
-    letterSpacing: 1.2,
-    // Uppercases Latin-script labels for the original look; a no-op for
-    // Devanagari/Gurmukhi (which have no letter case), so those read naturally.
-    textTransform: "uppercase",
-  },
-});
 
 export default LifetimeStats;

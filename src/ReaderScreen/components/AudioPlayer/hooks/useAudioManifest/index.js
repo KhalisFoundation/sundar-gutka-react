@@ -1,9 +1,9 @@
 import { useState, useEffect, useRef } from "react";
 import { exists, stat, unlink } from "react-native-fs";
 import { useSelector, useDispatch, useStore } from "react-redux";
-import { actions, logError, logNetworkError, STRINGS, useNetwork } from "@common";
 import constant from "@common/constant";
 import { reconcileDownloads } from "@common/services/audioReconcile";
+import { actions, logError, logNetworkError, STRINGS, useNetwork } from "@common";
 import { fetchRawBaniAudio, selectTracksForBani } from "@service";
 import { getLocalTrackPath, AUDIO_DIRECTORY_PATH } from "../../utils/audioDownloader";
 
@@ -49,6 +49,7 @@ const useAudioManifest = (baniID) => {
   const downloadRegistry = useSelector((state) => state.downloadRegistry) || {};
   // Gate manifest fetch on redux-persist rehydration — prevents re-downloading
   // tracks that are already on disk but whose manifest hasn't been restored yet.
+  // eslint-disable-next-line no-underscore-dangle -- _persist is redux-persist's own key
   const isRehydrated = useSelector((state) => state._persist?.rehydrated);
   const { isOnline } = useNetwork();
   // Tracks whether we've observed an offline period since mount, so the
@@ -71,6 +72,7 @@ const useAudioManifest = (baniID) => {
       .filter((item) => item != null && item.track_url)
       .map((item) => {
         const hasExplicitLyricsUrl = Object.prototype.hasOwnProperty.call(item, "lyrics_url");
+        // eslint-disable-next-line no-nested-ternary -- explicit lyrics_url, else derived from track_url, else null
         const lyricsUrl = hasExplicitLyricsUrl
           ? item.lyrics_url
           : item.track_url
@@ -99,7 +101,11 @@ const useAudioManifest = (baniID) => {
   // Merge downloaded tracks with remote (catalog) tracks. `registry` is passed
   // in rather than read from the closure because the merge also runs after the
   // reconcile pass has just changed it.
-  const mergeDownloadedTracks = async (apiTracks, downloadedTracks, registry = downloadRegistry) => {
+  const mergeDownloadedTracks = async (
+    apiTracks,
+    downloadedTracks,
+    registry = downloadRegistry
+  ) => {
     if (!apiTracks || apiTracks.length === 0) {
       // No remote data → surface valid downloaded tracks straight from disk.
       if (!downloadedTracks || downloadedTracks.length === 0) {
@@ -247,7 +253,8 @@ const useAudioManifest = (baniID) => {
             ...apiTrack,
             audioUrl: fullLocalPath,
             // If local lyrics are missing, keep remote lyricsUrl for sync-scroll.
-            lyricsUrl: validDownloadedTrack.lyricsUrl && hasLyrics ? lyricsUrlPath : apiTrack.lyricsUrl,
+            lyricsUrl:
+              validDownloadedTrack.lyricsUrl && hasLyrics ? lyricsUrlPath : apiTrack.lyricsUrl,
             remoteUrl: apiTrack.audioUrl,
             isLocallyDownloaded: true,
           };
@@ -286,6 +293,7 @@ const useAudioManifest = (baniID) => {
     //  2. Currently playing track — used when baniLength changes while audio
     //     is active; ensures currentPlaying gets the new-length URL instantly
     const preferredArtistId =
+      // eslint-disable-next-line no-nested-ternary -- saved preference, then current track, then none
       defaultAudio[baniID]?.artistID != null
         ? defaultAudio[baniID].artistID.toString()
         : currentPlaying?.artistID != null
@@ -392,7 +400,7 @@ const useAudioManifest = (baniID) => {
         if (isOnline && isStale) {
           const raw = await fetchRawBaniAudio(baniID);
           if (raw) {
-            groups = raw.groups;
+            ({ groups } = raw);
             fetchedFresh = true;
             dispatch(
               actions.setAudioCatalogEntry(baniID, {

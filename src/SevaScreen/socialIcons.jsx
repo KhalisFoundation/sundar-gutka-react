@@ -220,4 +220,3 @@ SocialBadge.propTypes = {
   size: PropTypes.number,
   dark: PropTypes.bool,
 };
-

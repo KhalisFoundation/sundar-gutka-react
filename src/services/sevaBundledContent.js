@@ -454,8 +454,7 @@ const LITERALS = {
   lit_khalis_facebook: "Khalis Foundation · Facebook",
 };
 
-const meansText = (key, lang) =>
-  key in LITERALS ? LITERALS[key] : pick(MEANS, key, lang);
+const meansText = (key, lang) => (key in LITERALS ? LITERALS[key] : pick(MEANS, key, lang));
 
 // Structured page models — mirror of seva-means/content/pages.ts.
 const PAGES = {

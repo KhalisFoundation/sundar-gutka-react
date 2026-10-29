@@ -28,7 +28,66 @@ const ChevronRight = ({ color }) => (
 );
 ChevronRight.propTypes = { color: PropTypes.string.isRequired };
 
-const RandomShabad = ({ refreshKey = 0, embedded = false, reloadNonce = 0, onLoadingChange = () => {} }) => {
+const styles = StyleSheet.create({
+  wrap: { paddingHorizontal: 20 },
+  card: { padding: 20 },
+  headerRow: {
+    flexDirection: "row",
+    alignItems: "center",
+    justifyContent: "space-between",
+    marginBottom: 16,
+  },
+  cardTitle: { fontSize: 12, fontWeight: "600", letterSpacing: 1.2 },
+  skeletonWrap: { alignItems: "center", gap: 10, paddingVertical: 18 },
+  lineSkeletonWide: { width: "80%", height: 18 },
+  lineSkeletonNarrow: { width: "55%", height: 18 },
+  gurmukhi: {
+    fontSize: 19,
+    textAlign: "center",
+    marginBottom: 6,
+    lineHeight: 31,
+    paddingHorizontal: 4,
+  },
+  footerDivider: { height: 1, marginVertical: 16 },
+  // `space-between` only produces a gap while there is room to spare. Once the
+  // raag and the link together exceed the row the gap collapses to nothing,
+  // they butt together and the link runs off the card. An explicit gap
+  // survives that, and the meta yields so the actionable half stays whole.
+  footer: {
+    flexDirection: "row",
+    alignItems: "center",
+    justifyContent: "space-between",
+    gap: 12,
+  },
+  meta: { fontSize: 13, flexShrink: 1 },
+  // Shrinks and wraps like the "Ang · Raag" meta it sits beside. It was
+  // flexShrink 0, so at a raised OS text size the meta gave way and this did
+  // not — one half of the footer wrapping while the other held its line read as
+  // lopsided. Both halves now yield, and the chevron keeps its size either way.
+  readLink: { flexDirection: "row", alignItems: "center", gap: 2, flexShrink: 1 },
+  readText: { fontSize: 14, fontWeight: "600", flexShrink: 1 },
+  shuffleBtn: {
+    flexDirection: "row",
+    alignItems: "center",
+    gap: 6,
+    paddingHorizontal: 12,
+    paddingVertical: 6,
+    borderRadius: 20,
+  },
+  // Dimmed while a shabad is in flight, so the control reads as busy rather
+  // than broken when it stops responding to taps.
+  shuffleBtnBusy: { opacity: 0.6 },
+  // Instant acknowledgement on touch-down, before any async work starts.
+  shuffleBtnPressed: { opacity: 0.5 },
+  shuffleText: { fontSize: 13, fontWeight: "600" },
+});
+
+const RandomShabad = ({
+  refreshKey = 0,
+  embedded = false,
+  reloadNonce = 0,
+  onLoadingChange = () => {},
+}) => {
   const { accentBlue, gold, theme, palette } = useDashboardTheme();
   // The card under these is a deep navy panel in BOTH themes, so the text on
   // it is light in both. Following the theme's text roles here put near-black
@@ -104,7 +163,11 @@ const RandomShabad = ({ refreshKey = 0, embedded = false, reloadNonce = 0, onLoa
 
       {!loading && !error
         ? (shabad?.lines ?? []).map((line, i) => (
-            <CustomText key={i} style={[styles.gurmukhi, { color: gurmukhiColor, fontFamily: gurmukhiFont }]}>
+            <CustomText
+              // eslint-disable-next-line react/no-array-index-key
+              key={i}
+              style={[styles.gurmukhi, { color: gurmukhiColor, fontFamily: gurmukhiFont }]}
+            >
               {line}
             </CustomText>
           ))
@@ -168,59 +231,5 @@ RandomShabad.propTypes = {
   reloadNonce: PropTypes.number,
   onLoadingChange: PropTypes.func,
 };
-
-const styles = StyleSheet.create({
-  wrap: { paddingHorizontal: 20 },
-  card: { padding: 20 },
-  headerRow: {
-    flexDirection: "row",
-    alignItems: "center",
-    justifyContent: "space-between",
-    marginBottom: 16,
-  },
-  cardTitle: { fontSize: 12, fontWeight: "600", letterSpacing: 1.2 },
-  skeletonWrap: { alignItems: "center", gap: 10, paddingVertical: 18 },
-  lineSkeletonWide: { width: "80%", height: 18 },
-  lineSkeletonNarrow: { width: "55%", height: 18 },
-  gurmukhi: {
-    fontSize: 19,
-    textAlign: "center",
-    marginBottom: 6,
-    lineHeight: 31,
-    paddingHorizontal: 4,
-  },
-  footerDivider: { height: 1, marginVertical: 16 },
-  // `space-between` only produces a gap while there is room to spare. Once the
-  // raag and the link together exceed the row the gap collapses to nothing,
-  // they butt together and the link runs off the card. An explicit gap
-  // survives that, and the meta yields so the actionable half stays whole.
-  footer: {
-    flexDirection: "row",
-    alignItems: "center",
-    justifyContent: "space-between",
-    gap: 12,
-  },
-  meta: { fontSize: 13, flexShrink: 1 },
-  // Shrinks and wraps like the "Ang · Raag" meta it sits beside. It was
-  // flexShrink 0, so at a raised OS text size the meta gave way and this did
-  // not — one half of the footer wrapping while the other held its line read as
-  // lopsided. Both halves now yield, and the chevron keeps its size either way.
-  readLink: { flexDirection: "row", alignItems: "center", gap: 2, flexShrink: 1 },
-  readText: { fontSize: 14, fontWeight: "600", flexShrink: 1 },
-  shuffleBtn: {
-    flexDirection: "row",
-    alignItems: "center",
-    gap: 6,
-    paddingHorizontal: 12,
-    paddingVertical: 6,
-    borderRadius: 20,
-  },
-  // Dimmed while a shabad is in flight, so the control reads as busy rather
-  // than broken when it stops responding to taps.
-  shuffleBtnBusy: { opacity: 0.6 },
-  // Instant acknowledgement on touch-down, before any async work starts.
-  shuffleBtnPressed: { opacity: 0.5 },
-  shuffleText: { fontSize: 13, fontWeight: "600" },
-});
 
 export default RandomShabad;

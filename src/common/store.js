@@ -16,7 +16,14 @@ import reducer from "./reducer";
 export const persistConfig = {
   key: "root",
   storage: AsyncStorage,
-  blacklist: ["navigation", "baniList", "audioManifest", "readerTapTick", "onboardingVisible", "auth"],
+  blacklist: [
+    "navigation",
+    "baniList",
+    "audioManifest",
+    "readerTapTick",
+    "onboardingVisible",
+    "auth",
+  ],
 };
 const persistedReducer = persistReducer(persistConfig, reducer);
 
@@ -30,7 +37,12 @@ const configure = () => {
         immutableCheck: __DEV__,
         serializableCheck: {
           // redux-persist dispatches non-serializable functions during persist/flush
-          ignoredActions: ['persist/PERSIST', 'persist/REHYDRATE', 'persist/FLUSH', 'persist/REGISTER'],
+          ignoredActions: [
+            "persist/PERSIST",
+            "persist/REHYDRATE",
+            "persist/FLUSH",
+            "persist/REGISTER",
+          ],
         },
       }).concat(crashlyticsMiddleware),
   });

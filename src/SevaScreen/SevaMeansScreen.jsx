@@ -225,12 +225,12 @@ const SevaMeansScreen = ({ route, navigation }) => {
             }}
           >
             {data.segments.map((seg, i) =>
-            seg.type === "html" ? (
-              // eslint-disable-next-line react/no-array-index-key
-              <React.Fragment key={`seg-${i}`}>
-                {renderHtmlSegment(seg.value, `seg-${i}`)}
-              </React.Fragment>
-            ) : null
+              seg.type === "html" ? (
+                // eslint-disable-next-line react/no-array-index-key
+                <React.Fragment key={`seg-${i}`}>
+                  {renderHtmlSegment(seg.value, `seg-${i}`)}
+                </React.Fragment>
+              ) : null
             )}
           </View>
         </Animated.ScrollView>

@@ -1,13 +1,13 @@
-import { useEffect, useRef, useState } from 'react';
-import { useDispatch, useSelector } from 'react-redux';
+import { useEffect, useRef, useState } from "react";
+import { exists, stat, unlink, readDir, getFSInfo } from "react-native-fs";
+import { useDispatch, useSelector } from "react-redux";
 import {
   createDownloadTask,
   getExistingDownloadTasks,
   completeHandler,
   setConfig,
-} from '@kesha-antonov/react-native-background-downloader';
-import NetInfo from '@react-native-community/netinfo';
-import { exists, stat, unlink, readDir, getFSInfo } from 'react-native-fs';
+} from "@kesha-antonov/react-native-background-downloader";
+import NetInfo from "@react-native-community/netinfo";
 import {
   logNetworkError,
   logMessage,
@@ -15,7 +15,12 @@ import {
   showSuccessToast,
   requestNotificationPermission,
   STRINGS,
-} from '@common';
+} from "@common";
+import {
+  AUDIO_DIRECTORY_PATH,
+  downloadLyricsOnly,
+  ensureArtistDirectory,
+} from "../../ReaderScreen/components/AudioPlayer/utils/audioDownloader";
 import {
   updateDownloadStatus,
   updateDownloadProgress,
@@ -23,13 +28,8 @@ import {
   requeuePausedDownloads,
   addDownloadEntry,
   enqueueDownload,
-} from '../actions';
-import {
-  AUDIO_DIRECTORY_PATH,
-  downloadLyricsOnly,
-  ensureArtistDirectory,
-} from '../../ReaderScreen/components/AudioPlayer/utils/audioDownloader';
-import withDeadline from '../withDeadline';
+} from "../actions";
+import withDeadline from "../withDeadline";
 
 // ─────────────────────────────────────────────────────────────────────────────
 // Native download engine — download / cancel / delete only (no pause/resume).
@@ -53,21 +53,21 @@ import withDeadline from '../withDeadline';
 // native is the source of truth for an in-flight transfer.
 // ─────────────────────────────────────────────────────────────────────────────
 
-const MAX_PARALLEL         = 3;
+const MAX_PARALLEL = 3;
 // How long the app-start reconcile waits for the download engine's answer.
 const REATTACH_TIMEOUT_MS = 10000;
-const MIN_VALID_BYTES      = 100_000;   // a real bani m4a is always well over 100 KB
-const RETRY_DELAYS         = [5_000, 15_000, 45_000];
+const MIN_VALID_BYTES = 100_000; // a real bani m4a is always well over 100 KB
+const RETRY_DELAYS = [5_000, 15_000, 45_000];
 const COMPLETED_CLEANUP_MS = 2_000;
 
 // Statuses that count as "a download is still in flight". Used to decide when a
 // batch has fully drained so we show a single "complete" toast at the end.
 const ACTIVE_STATUSES = [
-  'queued',
-  'downloading',
-  'paused_wifi_only',
-  'paused_no_network',
-  'paused_retry',
+  "queued",
+  "downloading",
+  "paused_wifi_only",
+  "paused_no_network",
+  "paused_retry",
 ];
 
 // If a 'downloading' task emits no progress for this long, treat it as dead and
@@ -101,10 +101,10 @@ const STARTING_STALE_MS = 30_000;
 // the file was deleted makes the downloader attempt a stale resume against a
 // missing file). Since we never resume, a fresh id per start is exactly right.
 const taskIdForKey = (trackKey) =>
-  `dl_${trackKey.replace(/[^a-zA-Z0-9]/g, '_')}_${Date.now().toString(36)}`;
+  `dl_${trackKey.replace(/[^a-zA-Z0-9]/g, "_")}_${Date.now().toString(36)}`;
 
 const parseUrl = (url) => {
-  const parts = url.split('/');
+  const parts = url.split("/");
   return { artistName: parts[parts.length - 2], fileName: parts[parts.length - 1] };
 };
 
@@ -122,7 +122,7 @@ const cleanupLegacyTempFiles = async () => {
         const files = await readDir(artist.path).catch(() => []);
         await Promise.all(
           files
-            .filter((f) => f.name.startsWith('.tmp_') || f.name.endsWith('_range'))
+            .filter((f) => f.name.startsWith(".tmp_") || f.name.endsWith("_range"))
             .map((f) => unlink(f.path).catch(() => {}))
         );
       })
@@ -147,6 +147,7 @@ const applyDownloadConfig = () => {
 // native tasks, which live inside the hook. The hook installs the real
 // implementation on mount; before that it's a safe no-op.
 export const downloadControls = {
+  // eslint-disable-next-line no-unused-vars -- placeholder until the manager mounts
   cancel: async (_trackKey) => {},
 };
 
@@ -186,10 +187,18 @@ const useGlobalDownloadManager = () => {
   // queue. Regaining a connection is exactly when they should start.
   const [networkTick, setNetworkTick] = useState(0);
 
-  useEffect(() => { queueRef.current = downloadQueue; }, [downloadQueue]);
-  useEffect(() => { wifiOnlyRef.current = downloadWifiOnly; }, [downloadWifiOnly]);
-  useEffect(() => { registryRef.current = downloadRegistry; }, [downloadRegistry]);
-  useEffect(() => { dispatchRef.current = dispatch; }, [dispatch]);
+  useEffect(() => {
+    queueRef.current = downloadQueue;
+  }, [downloadQueue]);
+  useEffect(() => {
+    wifiOnlyRef.current = downloadWifiOnly;
+  }, [downloadWifiOnly]);
+  useEffect(() => {
+    registryRef.current = downloadRegistry;
+  }, [downloadRegistry]);
+  useEffect(() => {
+    dispatchRef.current = dispatch;
+  }, [dispatch]);
 
   // ── Low-level task control ─────────────────────────────────────────────────
   const clearStallTimer = (trackKey) => {
@@ -219,12 +228,12 @@ const useGlobalDownloadManager = () => {
     clearStallTimer(trackKey);
     const t = setTimeout(() => {
       stallTimersRef.current.delete(trackKey);
-      if (queueRef.current[trackKey]?.status !== 'downloading') return;
+      if (queueRef.current[trackKey]?.status !== "downloading") return;
       // A stalled transfer is the network's doing and heals itself here — a
       // message, not a Crashlytics error.
       logMessage(`Stall detected for ${trackKey} — restarting`);
       stopActiveTask(trackKey);
-      dispatchRef.current(updateDownloadStatus(trackKey, 'queued'));
+      dispatchRef.current(updateDownloadStatus(trackKey, "queued"));
     }, STALL_TIMEOUT_MS);
     stallTimersRef.current.set(trackKey, t);
   };
@@ -242,7 +251,7 @@ const useGlobalDownloadManager = () => {
         await unlink(`${AUDIO_DIRECTORY_PATH}/${artistName}/${fileName}`).catch(() => {});
       }
     };
-  // eslint-disable-next-line react-hooks/exhaustive-deps
+    // eslint-disable-next-line react-hooks/exhaustive-deps
   }, []);
 
   // ── Failure → retry with backoff, then 'failed' ────────────────────────────
@@ -253,13 +262,15 @@ const useGlobalDownloadManager = () => {
     if (!current) return;
     const retryCount = (current.retryCount ?? 0) + 1;
     if (retryCount >= 3) {
-      dispatchRef.current(updateDownloadStatus(trackKey, 'failed', { errorMessage: message, retryCount }));
+      dispatchRef.current(
+        updateDownloadStatus(trackKey, "failed", { errorMessage: message, retryCount })
+      );
       return;
     }
-    dispatchRef.current(updateDownloadStatus(trackKey, 'paused_retry', { retryCount }));
+    dispatchRef.current(updateDownloadStatus(trackKey, "paused_retry", { retryCount }));
     setTimeout(() => {
-      if (queueRef.current[trackKey]?.status === 'paused_retry') {
-        dispatchRef.current(updateDownloadStatus(trackKey, 'queued', { retryCount }));
+      if (queueRef.current[trackKey]?.status === "paused_retry") {
+        dispatchRef.current(updateDownloadStatus(trackKey, "queued", { retryCount }));
       }
     }, RETRY_DELAYS[Math.min(retryCount - 1, 2)]);
   };
@@ -268,7 +279,18 @@ const useGlobalDownloadManager = () => {
   // Runs when a download completes — from the live `done` event, OR on the next
   // app start for downloads that finished while the app was terminated.
   const finalizeDownload = async (meta) => {
-    const { trackKey, audioUrl, displayName, baniTitle, baniNameUni, baniId, sizeMB, relativePath, finalPath, downloadNetwork } = meta;
+    const {
+      trackKey,
+      audioUrl,
+      displayName,
+      baniTitle,
+      baniNameUni,
+      baniId,
+      sizeMB,
+      relativePath,
+      finalPath,
+      downloadNetwork,
+    } = meta;
     clearStallTimer(trackKey);
     try {
       if (registryRef.current[relativePath]) {
@@ -277,7 +299,7 @@ const useGlobalDownloadManager = () => {
       }
       // The native layer only moves the file to `destination` once complete, so
       // its presence + size is our integrity check.
-      if (!(await exists(finalPath))) throw new Error('Completed file missing on disk');
+      if (!(await exists(finalPath))) throw new Error("Completed file missing on disk");
       const { size } = await stat(finalPath);
       if (Number(size) < MIN_VALID_BYTES) {
         await unlink(finalPath).catch(() => {});
@@ -287,24 +309,26 @@ const useGlobalDownloadManager = () => {
       // Companion lyrics file (small; best-effort, JS-thread fetch).
       await downloadLyricsOnly(audioUrl, displayName, { skipDirectorySetup: true }).catch(() => {});
 
-      dispatchRef.current(addDownloadEntry({
-        relativePath,
-        artistDisplayName: displayName,
-        baniTitle,
-        // Unicode Gurmukhi name — ManageDownloads renders this with the Unicode
-        // BalooPaaji font, so without it the row falls back to the legacy-ASCII
-        // baniTitle and shows gibberish ("jpuji swibh" instead of ਜਪੁਜੀ ਸਾਹਿਬ).
-        baniNameUni,
-        baniId,
-        sizeMB: sizeMB ?? 0,
-        // Exact on-disk byte count — used for deterministic integrity checks
-        // (a file that isn't exactly this size is truncated/corrupt).
-        sizeBytes: Number(size) || 0,
-        hasLyrics: false,
-        downloadedAt: Date.now(),
-      }));
+      dispatchRef.current(
+        addDownloadEntry({
+          relativePath,
+          artistDisplayName: displayName,
+          baniTitle,
+          // Unicode Gurmukhi name — ManageDownloads renders this with the Unicode
+          // BalooPaaji font, so without it the row falls back to the legacy-ASCII
+          // baniTitle and shows gibberish ("jpuji swibh" instead of ਜਪੁਜੀ ਸਾਹਿਬ).
+          baniNameUni,
+          baniId,
+          sizeMB: sizeMB ?? 0,
+          // Exact on-disk byte count — used for deterministic integrity checks
+          // (a file that isn't exactly this size is truncated/corrupt).
+          sizeBytes: Number(size) || 0,
+          hasLyrics: false,
+          downloadedAt: Date.now(),
+        })
+      );
       trackTrackDownload(baniId, displayName, baniTitle, downloadNetwork);
-      dispatchRef.current(updateDownloadStatus(trackKey, 'completed'));
+      dispatchRef.current(updateDownloadStatus(trackKey, "completed"));
       logMessage(`Download complete: ${relativePath}`);
 
       // Show a single "complete" toast once nothing else is still downloading —
@@ -316,7 +340,10 @@ const useGlobalDownloadManager = () => {
       );
       if (!othersActive) showSuccessToast(STRINGS.DOWNLOAD_COMPLETE);
 
-      setTimeout(() => dispatchRef.current(removeDownloadQueueEntry(trackKey)), COMPLETED_CLEANUP_MS);
+      setTimeout(
+        () => dispatchRef.current(removeDownloadQueueEntry(trackKey)),
+        COMPLETED_CLEANUP_MS
+      );
     } catch (err) {
       logNetworkError(`Finalize failed for ${displayName}: ${err?.message}`, err);
       handleFailure(trackKey, err?.message);
@@ -329,19 +356,25 @@ const useGlobalDownloadManager = () => {
   const attachHandlers = (task, meta) => {
     task
       .begin(() => {
-        dispatchRef.current(updateDownloadStatus(meta.trackKey, 'downloading'));
+        dispatchRef.current(updateDownloadStatus(meta.trackKey, "downloading"));
         dispatchRef.current(updateDownloadProgress(meta.trackKey, 0));
         armStallTimer(meta.trackKey);
       })
       .progress(({ bytesDownloaded, bytesTotal }) => {
         // Re-arm on every tick — the watchdog only fires if bytes stop flowing.
         armStallTimer(meta.trackKey);
-        dispatchRef.current(updateDownloadProgress(meta.trackKey, pctOf(bytesDownloaded, bytesTotal)));
+        dispatchRef.current(
+          updateDownloadProgress(meta.trackKey, pctOf(bytesDownloaded, bytesTotal))
+        );
       })
       .done(() => {
         finalizeDownload(meta).finally(() => {
           // Required so iOS releases the background URLSession; harmless on Android.
-          try { completeHandler(task.id); } catch (_) { /* best effort */ }
+          try {
+            completeHandler(task.id);
+          } catch (_) {
+            /* best effort */
+          }
         });
       })
       .error(({ error }) => {
@@ -406,15 +439,16 @@ const useGlobalDownloadManager = () => {
         // Connection the download starts on — recorded so the completion
         // analytics reports what the user actually used (always a concrete
         // value, never null).
+        // eslint-disable-next-line no-nested-ternary
         downloadNetwork: networkRef.current.isWifi
-          ? 'wifi'
+          ? "wifi"
           : networkRef.current.isConnected
-          ? 'mobile_data'
-          : 'unknown',
+          ? "mobile_data"
+          : "unknown",
         // Bani name (Punjabi) + artist (English) — the notification title.
-        groupName: [entry.baniNameUni || entry.baniTitle, entry.displayName]
-          .filter(Boolean)
-          .join('  •  ') || 'Sundar Gutka',
+        groupName:
+          [entry.baniNameUni || entry.baniTitle, entry.displayName].filter(Boolean).join("  •  ") ||
+          "Sundar Gutka",
       };
 
       // Already fully downloaded (e.g. re-enqueued) → finalize immediately.
@@ -432,13 +466,13 @@ const useGlobalDownloadManager = () => {
         const fsInfo = await getFSInfo().catch(() => null);
         const needBytes = meta.sizeMB * 1024 * 1024 * 1.1; // 10% headroom
         if (fsInfo && Number(fsInfo.freeSpace) < needBytes) {
-          throw new Error('NOT_ENOUGH_STORAGE');
+          throw new Error("NOT_ENOUGH_STORAGE");
         }
       }
 
       await ensureArtistDirectory(artistName);
 
-      dispatchRef.current(updateDownloadStatus(trackKey, 'downloading'));
+      dispatchRef.current(updateDownloadStatus(trackKey, "downloading"));
 
       if (!configAppliedRef.current) {
         configAppliedRef.current = true;
@@ -462,12 +496,14 @@ const useGlobalDownloadManager = () => {
       task.start();
     } catch (err) {
       logNetworkError(`Failed to start download for ${meta.displayName}: ${err?.message}`, err);
-      if (err?.message === 'NOT_ENOUGH_STORAGE') {
+      if (err?.message === "NOT_ENOUGH_STORAGE") {
         activeTasksRef.current.delete(trackKey);
-        dispatchRef.current(updateDownloadStatus(trackKey, 'failed', {
-          errorMessage: 'NOT_ENOUGH_STORAGE',
-          retryCount: 3,
-        }));
+        dispatchRef.current(
+          updateDownloadStatus(trackKey, "failed", {
+            errorMessage: "NOT_ENOUGH_STORAGE",
+            retryCount: 3,
+          })
+        );
       } else {
         handleFailure(trackKey, err?.message);
       }
@@ -479,7 +515,7 @@ const useGlobalDownloadManager = () => {
   // ── Native config — applied once before the queue processor runs ───────────
   useEffect(() => {
     applyDownloadConfig();
-  // eslint-disable-next-line react-hooks/exhaustive-deps
+    // eslint-disable-next-line react-hooks/exhaustive-deps
   }, []);
 
   // ── Queue processor — starts allowed 'queued' entries ──────────────────────
@@ -487,19 +523,19 @@ const useGlobalDownloadManager = () => {
     if (!networkReady) return;
 
     const { isConnected, isWifi } = networkRef.current;
-    const queued = Object.values(downloadQueue).filter((t) => t.status === 'queued');
+    const queued = Object.values(downloadQueue).filter((t) => t.status === "queued");
     if (queued.length === 0) return;
 
     if (!isConnected) {
-      queued.forEach((t) => dispatch(updateDownloadStatus(t.trackKey, 'paused_no_network')));
+      queued.forEach((t) => dispatch(updateDownloadStatus(t.trackKey, "paused_no_network")));
       return;
     }
     if (!isWifi && downloadWifiOnly) {
-      queued.forEach((t) => dispatch(updateDownloadStatus(t.trackKey, 'paused_wifi_only')));
+      queued.forEach((t) => dispatch(updateDownloadStatus(t.trackKey, "paused_wifi_only")));
       return;
     }
     queued.forEach((entry) => startTask(entry));
-  // eslint-disable-next-line react-hooks/exhaustive-deps
+    // eslint-disable-next-line react-hooks/exhaustive-deps
   }, [downloadQueue, downloadWifiOnly, networkReady, networkTick]);
 
   // ── Initial network state fetch (runs once on mount) ───────────────────────
@@ -517,19 +553,21 @@ const useGlobalDownloadManager = () => {
       if (state) {
         networkRef.current = {
           isConnected: Boolean(state.isConnected),
-          isWifi: state.type === 'wifi',
+          isWifi: state.type === "wifi",
         };
       } else {
         // Assume an allowed network rather than stalling the queue. If that is
         // wrong the download fails and retries, which is recoverable; never
         // starting is not.
-        logMessage('NetInfo did not answer in time — assuming an allowed network');
+        logMessage("NetInfo did not answer in time — assuming an allowed network");
         networkRef.current = { isConnected: true, isWifi: true };
       }
       setNetworkReady(true);
     });
-    return () => { mounted = false; };
-  // eslint-disable-next-line react-hooks/exhaustive-deps
+    return () => {
+      mounted = false;
+    };
+    // eslint-disable-next-line react-hooks/exhaustive-deps
   }, []);
 
   // ── App-start reconcile ────────────────────────────────────────────────────
@@ -559,58 +597,68 @@ const useGlobalDownloadManager = () => {
         return;
       }
 
-      await Promise.all(existing.map(async (task) => {
-        const meta = task.metadata && task.metadata.trackKey ? task.metadata : null;
-        if (!meta) {
+      await Promise.all(
+        existing.map(async (task) => {
+          const meta = task.metadata && task.metadata.trackKey ? task.metadata : null;
+          if (!meta) {
+            await task.stop().catch(() => {});
+            return;
+          }
+          // Ensure a Redux queue entry exists for the UI.
+          if (!queueRef.current[meta.trackKey]) {
+            dispatch(
+              enqueueDownload({
+                trackKey: meta.trackKey,
+                audioUrl: meta.audioUrl,
+                displayName: meta.displayName,
+                baniTitle: meta.baniTitle,
+                baniId: meta.baniId,
+                sizeMB: meta.sizeMB,
+              })
+            );
+          }
+
+          if (task.state === "DONE") {
+            attachHandlers(task, meta);
+            await finalizeDownload(meta);
+            try {
+              completeHandler(task.id);
+            } catch (_) {
+              /* best effort */
+            }
+            return;
+          }
+
+          if (task.state === "DOWNLOADING") {
+            // Still transferring in the background — adopt it and let it finish.
+            activeTasksRef.current.set(meta.trackKey, task);
+            attachHandlers(task, meta);
+            dispatch(updateDownloadStatus(meta.trackKey, "downloading"));
+            armStallTimer(meta.trackKey);
+            return;
+          }
+
+          // Anything else (PAUSED by the OS, etc.) — we don't resume; stop and
+          // re-queue for a clean restart from byte 0.
           await task.stop().catch(() => {});
-          return;
-        }
-        // Ensure a Redux queue entry exists for the UI.
-        if (!queueRef.current[meta.trackKey]) {
-          dispatch(enqueueDownload({
-            trackKey: meta.trackKey,
-            audioUrl: meta.audioUrl,
-            displayName: meta.displayName,
-            baniTitle: meta.baniTitle,
-            baniId: meta.baniId,
-            sizeMB: meta.sizeMB,
-          }));
-        }
-
-        if (task.state === 'DONE') {
-          attachHandlers(task, meta);
-          await finalizeDownload(meta);
-          try { completeHandler(task.id); } catch (_) { /* best effort */ }
-          return;
-        }
-
-        if (task.state === 'DOWNLOADING') {
-          // Still transferring in the background — adopt it and let it finish.
-          activeTasksRef.current.set(meta.trackKey, task);
-          attachHandlers(task, meta);
-          dispatch(updateDownloadStatus(meta.trackKey, 'downloading'));
-          armStallTimer(meta.trackKey);
-          return;
-        }
-
-        // Anything else (PAUSED by the OS, etc.) — we don't resume; stop and
-        // re-queue for a clean restart from byte 0.
-        await task.stop().catch(() => {});
-        dispatch(updateDownloadStatus(meta.trackKey, 'queued'));
-      }));
+          dispatch(updateDownloadStatus(meta.trackKey, "queued"));
+        })
+      );
     };
 
     reattach();
     cleanupLegacyTempFiles().catch(() => {});
 
-    return () => { cancelled = true; };
-  // eslint-disable-next-line react-hooks/exhaustive-deps
+    return () => {
+      cancelled = true;
+    };
+    // eslint-disable-next-line react-hooks/exhaustive-deps
   }, []);
 
   // ── Network listener ───────────────────────────────────────────────────────
   useEffect(() => {
     const unsubscribe = NetInfo.addEventListener(({ isConnected, type }) => {
-      const isWifi = type === 'wifi';
+      const isWifi = type === "wifi";
       networkRef.current = { isConnected: Boolean(isConnected), isWifi };
       // Wake the queue processor on every event, whatever the branches below
       // decide: coming back online must restart a queued download on its own.
@@ -619,18 +667,18 @@ const useGlobalDownloadManager = () => {
       if (!isConnected) {
         // Offline: stop any in-flight transfer and mark everything waiting.
         Object.values(queueRef.current).forEach((t) => {
-          if (t.status === 'downloading') stopActiveTask(t.trackKey);
-          if (t.status === 'downloading' || t.status === 'queued') {
-            dispatch(updateDownloadStatus(t.trackKey, 'paused_no_network'));
+          if (t.status === "downloading") stopActiveTask(t.trackKey);
+          if (t.status === "downloading" || t.status === "queued") {
+            dispatch(updateDownloadStatus(t.trackKey, "paused_no_network"));
           }
         });
       } else if (!isWifi && wifiOnlyRef.current) {
         // Switched to cellular while WiFi-only is ON — stop so no metered bytes
         // flow, and mark waiting. Restarts from zero when WiFi returns.
         Object.values(queueRef.current).forEach((t) => {
-          if (t.status === 'downloading') stopActiveTask(t.trackKey);
-          if (t.status === 'downloading' || t.status === 'queued') {
-            dispatch(updateDownloadStatus(t.trackKey, 'paused_wifi_only'));
+          if (t.status === "downloading") stopActiveTask(t.trackKey);
+          if (t.status === "downloading" || t.status === "queued") {
+            dispatch(updateDownloadStatus(t.trackKey, "paused_wifi_only"));
           }
         });
       } else {
@@ -638,26 +686,29 @@ const useGlobalDownloadManager = () => {
         // plus anything that exhausted its retries while offline ('failed') so
         // it heals itself without the user needing to tap retry. Storage
         // failures are skipped in the reducer (retrying won't free space).
-        dispatch(requeuePausedDownloads(['paused_no_network', 'paused_wifi_only', 'failed']));
+        dispatch(requeuePausedDownloads(["paused_no_network", "paused_wifi_only", "failed"]));
       }
     });
     return () => unsubscribe();
-  // eslint-disable-next-line react-hooks/exhaustive-deps
+    // eslint-disable-next-line react-hooks/exhaustive-deps
   }, []);
 
   // When WiFi-only is turned OFF while on cellular, release the gate.
   useEffect(() => {
     if (!downloadWifiOnly && networkRef.current.isConnected) {
-      dispatch(requeuePausedDownloads(['paused_wifi_only']));
+      dispatch(requeuePausedDownloads(["paused_wifi_only"]));
     }
-  // eslint-disable-next-line react-hooks/exhaustive-deps
+    // eslint-disable-next-line react-hooks/exhaustive-deps
   }, [downloadWifiOnly]);
 
   // Clean up all stall timers on unmount (defensive; mounted for the app's life).
-  useEffect(() => () => {
-    stallTimersRef.current.forEach((t) => clearTimeout(t));
-    stallTimersRef.current.clear();
-  }, []);
+  useEffect(
+    () => () => {
+      stallTimersRef.current.forEach((t) => clearTimeout(t));
+      stallTimersRef.current.clear();
+    },
+    []
+  );
 };
 
 export default useGlobalDownloadManager;

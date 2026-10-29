@@ -1,11 +1,12 @@
 // Function to fetch JSON lyrics content, disk-cache-first.
 
 import { readFile } from "react-native-fs";
-import { checkIsRemote, extractFilePath } from "./urlHelper";
 import { ensureLyricsCached, readCachedLyrics } from "./lyricsCache";
+import { checkIsRemote, extractFilePath } from "./urlHelper";
 
 // Module-level cache: avoids re-fetching the same LRC data when switching back
 // to a previously played track in the same session.
+// eslint-disable-next-line no-underscore-dangle -- module-private cache
 const _lrcCache = new Map();
 
 const toFiniteNumber = (value) => {

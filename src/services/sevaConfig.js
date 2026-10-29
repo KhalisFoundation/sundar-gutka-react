@@ -182,8 +182,7 @@ const buildConfig = (dyn, source = "network", lang = "en") => ({
   // localises it per currency), and `amountPresets` is an optional per-currency
   // map of LOCAL ladders (e.g. { INR: [100,1000,5000] }). Both fall back to the
   // app-local defaults when the backend hasn't sent them (offline / old server).
-  amounts:
-    Array.isArray(dyn?.amounts) && dyn.amounts.length ? dyn.amounts : FILLER_CONFIG.amounts,
+  amounts: Array.isArray(dyn?.amounts) && dyn.amounts.length ? dyn.amounts : FILLER_CONFIG.amounts,
   amountPresets:
     dyn?.amountPresets && typeof dyn.amountPresets === "object" ? dyn.amountPresets : {},
   // Only let the backend control the dot once we actually have a response.

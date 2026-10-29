@@ -2,8 +2,8 @@ import React, { useEffect, useState } from "react";
 import { View, StyleSheet } from "react-native";
 import Svg, { Path } from "react-native-svg";
 import { androidLineHeight } from "@theme/lineHeight";
-import PropTypes from "prop-types";
 import { paletteFor, themeForScreen } from "@theme/screenPalettes";
+import PropTypes from "prop-types";
 import { CustomText, useTheme, STRINGS, logError } from "@common";
 import { getTopReadBanis } from "../../database/analytics";
 import { getRestoredTopBanis } from "../../services/dashboard";
@@ -18,11 +18,86 @@ const formatDuration = (secs) => {
 };
 
 const SparkleIcon = ({ size = 22, color }) => (
-  <Svg width={size} height={size} viewBox="0 0 24 24" fill="none" stroke={color} strokeWidth="2" strokeLinecap="round" strokeLinejoin="round">
+  <Svg
+    width={size}
+    height={size}
+    viewBox="0 0 24 24"
+    fill="none"
+    stroke={color}
+    strokeWidth="2"
+    strokeLinecap="round"
+    strokeLinejoin="round"
+  >
     <Path d="M12 2l2.4 7.4H22l-6.2 4.5 2.4 7.4L12 17l-6.2 4.3 2.4-7.4L2 9.4h7.6z" />
   </Svg>
 );
 SparkleIcon.propTypes = { size: PropTypes.number, color: PropTypes.string.isRequired };
+
+const styles = StyleSheet.create({
+  container: {
+    paddingHorizontal: 20,
+    paddingTop: 20,
+    paddingBottom: 8,
+  },
+  titleRow: {
+    flexDirection: "row",
+    alignItems: "center",
+    justifyContent: "space-between",
+    marginBottom: 20,
+  },
+  sectionTitle: {
+    fontSize: 22,
+    fontWeight: "500",
+  },
+  row: {
+    flexDirection: "row",
+    alignItems: "center",
+    marginBottom: 22,
+    gap: 12,
+  },
+  rank: {
+    width: 20,
+    fontSize: 14,
+    fontWeight: "600",
+    textAlign: "center",
+  },
+  middle: {
+    flex: 1,
+  },
+  baniTitle: {
+    fontSize: 16,
+    fontWeight: "600",
+    marginBottom: 3,
+  },
+  barBg: {
+    height: 3,
+    borderRadius: 2,
+    overflow: "hidden",
+  },
+  bar: {
+    height: 3,
+    borderRadius: 2,
+  },
+  count: {
+    fontSize: 20,
+    fontWeight: "600",
+    minWidth: 36,
+    textAlign: "right",
+  },
+  emptyCard: {
+    borderRadius: 14,
+    paddingVertical: 20,
+    paddingHorizontal: 16,
+    alignItems: "center",
+    justifyContent: "center",
+    marginBottom: 12,
+  },
+  emptyText: {
+    fontSize: 13,
+    textAlign: "center",
+    lineHeight: androidLineHeight(20),
+  },
+});
 
 const MostReadSection = ({ refreshKey = 0 }) => {
   const { theme } = useTheme();
@@ -90,14 +165,9 @@ const MostReadSection = ({ refreshKey = 0 }) => {
         const pct = maxSeconds > 0 ? ((b.total_seconds ?? 0) / maxSeconds) * 100 : 0;
         return (
           <View key={b.bani_id ?? i} style={styles.row}>
-            <CustomText style={[styles.rank, { color: c.textSecondary }]}>
-              {i + 1}
-            </CustomText>
+            <CustomText style={[styles.rank, { color: c.textSecondary }]}>{i + 1}</CustomText>
             <View style={styles.middle}>
-              <CustomText
-                style={[styles.baniTitle, { color: c.textPrimary }]}
-                numberOfLines={1}
-              >
+              <CustomText style={[styles.baniTitle, { color: c.textPrimary }]} numberOfLines={1}>
                 {b.bani_title ?? `Bani ${b.bani_id}`}
               </CustomText>
               <View style={[styles.barBg, { backgroundColor: c.surfaceSelected }]}>
@@ -117,71 +187,5 @@ const MostReadSection = ({ refreshKey = 0 }) => {
 MostReadSection.propTypes = {
   refreshKey: PropTypes.number,
 };
-
-const styles = StyleSheet.create({
-  container: {
-    paddingHorizontal: 20,
-    paddingTop: 20,
-    paddingBottom: 8,
-  },
-  titleRow: {
-    flexDirection: "row",
-    alignItems: "center",
-    justifyContent: "space-between",
-    marginBottom: 20,
-  },
-  sectionTitle: {
-    fontSize: 22,
-    fontWeight: "500",
-  },
-  row: {
-    flexDirection: "row",
-    alignItems: "center",
-    marginBottom: 22,
-    gap: 12,
-  },
-  rank: {
-    width: 20,
-    fontSize: 14,
-    fontWeight: "600",
-    textAlign: "center",
-  },
-  middle: {
-    flex: 1,
-  },
-  baniTitle: {
-    fontSize: 16,
-    fontWeight: "600",
-    marginBottom: 3,
-  },
-  barBg: {
-    height: 3,
-    borderRadius: 2,
-    overflow: "hidden",
-  },
-  bar: {
-    height: 3,
-    borderRadius: 2,
-  },
-  count: {
-    fontSize: 20,
-    fontWeight: "600",
-    minWidth: 36,
-    textAlign: "right",
-  },
-  emptyCard: {
-    borderRadius: 14,
-    paddingVertical: 20,
-    paddingHorizontal: 16,
-    alignItems: "center",
-    justifyContent: "center",
-    marginBottom: 12,
-  },
-  emptyText: {
-    fontSize: 13,
-    textAlign: "center",
-    lineHeight: androidLineHeight(20),
-  },
-});
 
 export default MostReadSection;

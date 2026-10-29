@@ -37,9 +37,7 @@ const TrackItem = ({ track, selectedTrack, handleSelectTrack }) => {
       <PlayIcon
         size={30}
         color={
-          selectedTrack && selectedTrack.id === track.id
-            ? theme.c.onPrimary
-            : theme.c.textBrand
+          selectedTrack && selectedTrack.id === track.id ? theme.c.onPrimary : theme.c.textBrand
         }
       />
     </Pressable>

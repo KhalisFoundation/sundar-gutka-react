@@ -24,6 +24,23 @@ const SHADOW_RADIUS = 24;
 // reserve this much or the shadow gets cut off at the boundary.
 export const CARD_SHADOW_BLEED = SHADOW_OFFSET_Y + SHADOW_RADIUS;
 
+const styles = StyleSheet.create({
+  base: {
+    borderRadius: RADIUS,
+    borderWidth: 1,
+  },
+  shadow: {
+    // A StyleSheet is module scope, so this cannot read the theme. It only ever
+    // applies in light mode (see `!isDark` above), and it is the same slate the
+    // neutral ramp is built on.
+    shadowColor: neutral[600],
+    shadowOffset: { width: 0, height: SHADOW_OFFSET_Y },
+    shadowOpacity: 0.12,
+    shadowRadius: SHADOW_RADIUS,
+    elevation: 6,
+  },
+});
+
 // Platform note: shadowColor/shadowOpacity/shadowRadius are iOS-only. Android
 // only honors `elevation`, always a fixed neutral-gray shadow with no tint
 // control — so the blue-gray tint only shows on iOS; Android gets a plain
@@ -60,22 +77,5 @@ DashboardCard.propTypes = {
   style: PropTypes.oneOfType([PropTypes.object, PropTypes.array]),
   children: PropTypes.node,
 };
-
-const styles = StyleSheet.create({
-  base: {
-    borderRadius: RADIUS,
-    borderWidth: 1,
-  },
-  shadow: {
-    // A StyleSheet is module scope, so this cannot read the theme. It only ever
-    // applies in light mode (see `!isDark` above), and it is the same slate the
-    // neutral ramp is built on.
-    shadowColor: neutral[600],
-    shadowOffset: { width: 0, height: SHADOW_OFFSET_Y },
-    shadowOpacity: 0.12,
-    shadowRadius: SHADOW_RADIUS,
-    elevation: 6,
-  },
-});
 
 export default DashboardCard;

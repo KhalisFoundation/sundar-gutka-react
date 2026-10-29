@@ -11,6 +11,7 @@
  * only), zero after any reset, and inline font-size never rewritten.
  */
 /* global window, document, Element */
+// eslint-disable-next-line import/order -- the theme is required after jest.mock below
 import script from "./gutkaScript";
 
 jest.mock("react-native", () => ({ Platform: { OS: "ios" } }));

@@ -18,7 +18,9 @@ const useBaniList = () => {
   // language and order is skipped while one is running; a genuinely different
   // one (language switch, reorder) still goes through.
   const inFlightKeyRef = useRef(null);
-  useEffect(() => { baniListRef.current = baniList; }, [baniList]);
+  useEffect(() => {
+    baniListRef.current = baniList;
+  }, [baniList]);
   const dispatch = useDispatch();
 
   const fetchBaniList = useCallback(async () => {

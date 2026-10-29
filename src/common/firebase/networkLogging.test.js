@@ -54,8 +54,7 @@ const walk = (dir, out = []) => {
   return out;
 };
 
-const stripComments = (src) =>
-  src.replace(/\/\*[\s\S]*?\*\//g, "").replace(/^\s*\/\/.*$/gm, "");
+const stripComments = (src) => src.replace(/\/\*[\s\S]*?\*\//g, "").replace(/^\s*\/\/.*$/gm, "");
 
 const rel = (file) => path.relative(SRC, file).split(path.sep).join("/");
 

@@ -1,14 +1,14 @@
 import { useEffect, useRef } from "react";
 import { InteractionManager } from "react-native";
-import { useDispatch, useSelector, useStore } from "react-redux";
 import DeviceInfo from "react-native-device-info";
+import { useDispatch, useSelector, useStore } from "react-redux";
 import { logNetworkError } from "@common";
+import { ensureLyricsCached } from "../../ReaderScreen/components/AudioPlayer/utils/lyricsCache";
+import { fetchRawBaniAudio } from "../../services/audioApi";
+import { setAudioCatalogEntries, setAudioCatalogMeta } from "../actions";
 import constant from "../constant";
 import { useNetwork } from "../context";
-import { setAudioCatalogEntries, setAudioCatalogMeta } from "../actions";
 import { reconcileDownloads } from "./audioReconcile";
-import { fetchRawBaniAudio } from "../../services/audioApi";
-import { ensureLyricsCached } from "../../ReaderScreen/components/AudioPlayer/utils/lyricsCache";
 
 // ─────────────────────────────────────────────────────────────────────────────
 // Eager audio-catalog prefetch.
@@ -112,6 +112,7 @@ const runCatalogSync = async (dispatch, getState, appVersion) => {
 const useAudioCatalogSync = () => {
   const dispatch = useDispatch();
   const store = useStore();
+  // eslint-disable-next-line no-underscore-dangle -- _persist is redux-persist's own key
   const isRehydrated = useSelector((state) => state._persist?.rehydrated);
   const meta = useSelector((state) => state.audioCatalogMeta) || {};
   const { isOnline } = useNetwork();
@@ -128,6 +129,7 @@ const useAudioCatalogSync = () => {
     const isPastTtl = Date.now() - lastSyncAt > constant.AUDIO_CATALOG_TTL_MS;
 
     // Fresh install (lastSyncAt === 0), app update, or aged-out cache.
+    // eslint-disable-next-line consistent-return
     if (lastSyncAt > 0 && !versionChanged && !isPastTtl) return undefined;
 
     // Deferred: the sweep's result is only ever read on a LATER visit to a
@@ -144,6 +146,7 @@ const useAudioCatalogSync = () => {
         );
       });
     }, constant.AUDIO_CATALOG_SYNC_DELAY_MS);
+    // eslint-disable-next-line consistent-return
     return () => {
       cancelled = true;
       clearTimeout(timer);

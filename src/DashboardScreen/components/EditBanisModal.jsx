@@ -2,6 +2,7 @@ import React, { useEffect, useRef, useState, useCallback } from "react";
 import { View, ScrollView, Pressable, StyleSheet } from "react-native";
 import { useSelector, useDispatch } from "react-redux";
 import PropTypes from "prop-types";
+import { toTitleCase } from "@common/hooks/useBaniLookup";
 import {
   baniItems,
   createPothi,
@@ -23,7 +24,6 @@ import reportPothiEmptied from "../../Pothi/reportPothiEmptied";
 import CheckCircle from "./CheckCircle";
 import useDashboardTheme from "./dashboardTheme";
 import SheetModal from "./SheetModal";
-import { toTitleCase } from "@common/hooks/useBaniLookup";
 
 const styles = StyleSheet.create({
   // The sheet supplies a fixed, bounded height. Transfer it through this

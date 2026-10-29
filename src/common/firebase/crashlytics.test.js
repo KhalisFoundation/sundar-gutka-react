@@ -1,4 +1,7 @@
 /* eslint-env jest */
+import { didCrashOnPreviousExecution, recordError } from "@react-native-firebase/crashlytics";
+import { didCrashLastRun, logError } from "./crashlytics";
+
 jest.mock("@react-native-firebase/crashlytics", () => ({
   getCrashlytics: jest.fn(() => ({})),
   setCrashlyticsCollectionEnabled: jest.fn(() => Promise.resolve()),
@@ -8,9 +11,6 @@ jest.mock("@react-native-firebase/crashlytics", () => ({
   recordError: jest.fn(),
   didCrashOnPreviousExecution: jest.fn(() => Promise.resolve(false)),
 }));
-
-import { didCrashOnPreviousExecution, recordError } from "@react-native-firebase/crashlytics";
-import { didCrashLastRun, logError } from "./crashlytics";
 
 describe("logError", () => {
   beforeEach(() => {
@@ -54,9 +54,7 @@ describe("logError", () => {
     // [object Object]" bucket — by far the single biggest Crashlytics issue.
     logError({ message: "Network request failed", code: "ECONNRESET" });
     const recorded = recordError.mock.calls[0][1];
-    expect(recorded.message).toBe(
-      "Non-Error exception: Network request failed (code: ECONNRESET)"
-    );
+    expect(recorded.message).toBe("Non-Error exception: Network request failed (code: ECONNRESET)");
   });
 
   it("falls back to JSON for a plain object with no message", () => {

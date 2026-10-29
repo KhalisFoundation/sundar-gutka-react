@@ -16,14 +16,11 @@
  */
 import React, { useEffect, useRef, useCallback } from "react";
 import { View, Pressable, Animated, Vibration, StyleSheet } from "react-native";
+import { unlink } from "react-native-fs";
 import { useDispatch, useSelector } from "react-redux";
 import NetInfo from "@react-native-community/netinfo";
 import { Icon } from "@rneui/themed";
-import { Spinner } from "@common/components/ui";
-import { DownloadIcon } from "@common/icons";
 import PropTypes from "prop-types";
-import { unlink } from "react-native-fs";
-import { STRINGS, showConfirm, showInfoToast, navigate } from "@common";
 import {
   enqueueDownload,
   retryDownload,
@@ -31,20 +28,41 @@ import {
   removeDownloadEntries,
   toggleDownloadWifiOnly,
 } from "@common/actions";
+import { Spinner } from "@common/components/ui";
+import { DownloadIcon } from "@common/icons";
 import { downloadControls } from "@common/services/globalDownloadManager";
+import { STRINGS, showConfirm, showInfoToast, navigate } from "@common";
 import { useAudioTheme } from "../../useAudioTheme";
 import { getLocalTrackPath, AUDIO_DIRECTORY_PATH } from "../../utils/audioDownloader";
 
 // Canvas size for the icon slot (keeps every state visually aligned in the row).
 const SIZE = 40;
 
+const s = StyleSheet.create({
+  wrap: {
+    width: SIZE,
+    height: SIZE,
+    alignItems: "center",
+    justifyContent: "center",
+  },
+  // Small square centered inside the spinner — the "stop / tap to cancel" cue.
+  stopSquare: {
+    position: "absolute",
+    top: (SIZE - 8) / 2,
+    left: (SIZE - 8) / 2,
+    width: 8,
+    height: 8,
+    borderRadius: 1.5,
+  },
+});
+
 const DownloadButton = ({ track = null, baniTitle = "", baniNameUni = "", baniId = "" }) => {
   const { theme } = useAudioTheme();
   const dispatch = useDispatch();
 
-  const downloadQueue = useSelector((s) => s.downloadQueue);
-  const downloadRegistry = useSelector((s) => s.downloadRegistry);
-  const downloadWifiOnly = useSelector((s) => s.downloadWifiOnly);
+  const downloadQueue = useSelector((state) => state.downloadQueue);
+  const downloadRegistry = useSelector((state) => state.downloadRegistry);
+  const downloadWifiOnly = useSelector((state) => state.downloadWifiOnly);
 
   const trackKey = track?.audioUrl ? getLocalTrackPath(track.audioUrl) : null;
   const queueEntry = trackKey ? downloadQueue[trackKey] : null;
@@ -71,7 +89,7 @@ const DownloadButton = ({ track = null, baniTitle = "", baniNameUni = "", baniId
         Animated.sequence([
           Animated.timing(pulseAnim, { toValue: 0.3, duration: 700, useNativeDriver: true }),
           Animated.timing(pulseAnim, { toValue: 1, duration: 700, useNativeDriver: true }),
-        ]),
+        ])
       );
       pulseLoopRef.current.start();
     } else {
@@ -102,7 +120,7 @@ const DownloadButton = ({ track = null, baniTitle = "", baniNameUni = "", baniId
           baniNameUni: baniNameUni || baniTitle,
           baniId,
           sizeMB: track.trackSizeMB,
-        }),
+        })
       );
       showInfoToast(STRINGS.DOWNLOAD_STARTED);
     };
@@ -275,24 +293,6 @@ const DownloadButton = ({ track = null, baniTitle = "", baniNameUni = "", baniId
     </Pressable>
   );
 };
-
-const s = StyleSheet.create({
-  wrap: {
-    width: SIZE,
-    height: SIZE,
-    alignItems: "center",
-    justifyContent: "center",
-  },
-  // Small square centered inside the spinner — the "stop / tap to cancel" cue.
-  stopSquare: {
-    position: "absolute",
-    top: (SIZE - 8) / 2,
-    left: (SIZE - 8) / 2,
-    width: 8,
-    height: 8,
-    borderRadius: 1.5,
-  },
-});
 
 DownloadButton.propTypes = {
   track: PropTypes.shape({

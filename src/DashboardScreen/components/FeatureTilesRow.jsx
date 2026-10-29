@@ -3,9 +3,9 @@ import { View, ScrollView, Pressable, StyleSheet, Image, useWindowDimensions } f
 import Svg, { Path } from "react-native-svg";
 import { useNavigation } from "@react-navigation/native";
 import { androidLineHeight } from "@theme/lineHeight";
+import { paletteFor, themeForScreen } from "@theme/screenPalettes";
 import PropTypes from "prop-types";
 import useBaniLookup from "@common/hooks/useBaniLookup";
-import { paletteFor, themeForScreen } from "@theme/screenPalettes";
 import { CustomText, useTheme, STRINGS, openInAppBrowser, logError, constant } from "@common";
 import { getRecentReadBanis, getRecentListenedBanis } from "../../database/analytics";
 import { getRestoredTopBanis } from "../../services/dashboard";
@@ -144,8 +144,8 @@ const FeatureTilesRow = () => {
   // The one Dashboard blue. This was the seventh copy of the same local
   // ternary; see ActivityCalendar.
   const accentColor = palette.sectionAccentBlue;
-  const textPrimary = c.textPrimary;
-  const textSecondary = c.textSecondary;
+  const { textPrimary } = c;
+  const { textSecondary } = c;
   const iconBg = palette.tileIconBg;
 
   const [lastRead, setLastRead] = useState(null);
@@ -244,7 +244,9 @@ const FeatureTilesRow = () => {
               <HeadphonesIcon size={20} color={accentColor} />
             </View>
             <CustomText style={[styles.tileLabel, { color: textPrimary }]} numberOfLines={2}>
-              {nameOf(lastListened.bani_id) || lastListened.bani_title || `Bani ${lastListened.bani_id}`}
+              {nameOf(lastListened.bani_id) ||
+                lastListened.bani_title ||
+                `Bani ${lastListened.bani_id}`}
             </CustomText>
             {fmtDuration(lastListened.total_seconds) !== "" && (
               <CustomText style={[styles.tileMeta, { color: textSecondary }]}>

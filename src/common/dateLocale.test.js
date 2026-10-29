@@ -1,10 +1,4 @@
 /* eslint-env jest */
-jest.mock("./localization", () => ({
-  __esModule: true,
-  default: { getLanguage: jest.fn(() => "en-US") },
-}));
-
-import STRINGS from "./localization";
 import {
   monthLong,
   monthShort,
@@ -16,6 +10,12 @@ import {
   formatWeekdayLong,
   formatFullDate,
 } from "./dateLocale";
+import STRINGS from "./localization";
+
+jest.mock("./localization", () => ({
+  __esModule: true,
+  default: { getLanguage: jest.fn(() => "en-US") },
+}));
 
 describe("dateLocale", () => {
   afterEach(() => STRINGS.getLanguage.mockReturnValue("en-US"));

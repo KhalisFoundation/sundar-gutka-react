@@ -1,10 +1,11 @@
 import React, { useCallback, useEffect, useRef, useState } from "react";
 import { View, ScrollView, Pressable, StyleSheet, Image, Platform } from "react-native";
 import Svg, { Path, Defs, LinearGradient, Stop } from "react-native-svg";
+import { useDispatch, useSelector } from "react-redux";
+import { useNavigation } from "@react-navigation/native";
 import { brandMarks } from "@theme/palette";
 import PropTypes from "prop-types";
-import { useNavigation } from "@react-navigation/native";
-import { useDispatch, useSelector } from "react-redux";
+import useBaniLookup from "@common/hooks/useBaniLookup";
 import { openAppLink } from "@common/openAppLink";
 import { CustomText, STRINGS, constant, actions, trackDashboardEvent } from "@common";
 import { getRecentReadBanis, getRecentListenedBanis } from "../../database/analytics";
@@ -16,8 +17,8 @@ import useDashboardTheme from "./dashboardTheme";
 import SectionLabel from "./SectionLabel";
 import SkeletonBlock from "./SkeletonBlock";
 import { plateFor } from "./tilePlate";
+// eslint-disable-next-line import/order -- the image assets below are required, not imported
 import useAsyncSection from "./useAsyncSection";
-import useBaniLookup from "@common/hooks/useBaniLookup";
 
 // Sri Darbar Sahib, cut out of its white background and cropped to the
 // building. It replaces a stroked vector glyph of the same subject, which at
@@ -25,9 +26,9 @@ import useBaniLookup from "@common/hooks/useBaniLookup";
 // sized as one — see ILLUSTRATION_SIZE.
 const DARBAR_MARK = require("../../assets/images/darbar-sahib-mark.png");
 const KHALIS_LOGO = require("../../assets/images/khalis.png");
-const STTM_LOGO = require("../../assets/images/sikhi2max.webp");
 const SEHAJ_PATH_LOGO = require("../../assets/images/sehajpath.webp");
 const SHABADAVALI_LOGO = require("../../assets/images/shabadavali.png");
+const STTM_LOGO = require("../../assets/images/sikhi2max.webp");
 
 // An illustration needs more of the box than a logotype does: a logo is a
 // simple mark that still reads at 32, where a drawing of a building has domes,
@@ -37,7 +38,16 @@ const SHABADAVALI_LOGO = require("../../assets/images/shabadavali.png");
 const ILLUSTRATION_SIZE = { width: 40, height: 40 };
 
 const BookIcon = ({ color }) => (
-  <Svg width={22} height={22} viewBox="0 0 24 24" fill="none" stroke={color} strokeWidth="1.9" strokeLinecap="round" strokeLinejoin="round">
+  <Svg
+    width={22}
+    height={22}
+    viewBox="0 0 24 24"
+    fill="none"
+    stroke={color}
+    strokeWidth="1.9"
+    strokeLinecap="round"
+    strokeLinejoin="round"
+  >
     <Path d="M2 3h6a4 4 0 0 1 4 4v14a3 3 0 0 0-3-3H2z" />
     <Path d="M22 3h-6a4 4 0 0 0-4 4v14a3 3 0 0 1 3-3h7z" />
   </Svg>
@@ -45,7 +55,16 @@ const BookIcon = ({ color }) => (
 BookIcon.propTypes = { color: PropTypes.string.isRequired };
 
 const HeadphonesIcon = ({ color }) => (
-  <Svg width={22} height={22} viewBox="0 0 24 24" fill="none" stroke={color} strokeWidth="1.9" strokeLinecap="round" strokeLinejoin="round">
+  <Svg
+    width={22}
+    height={22}
+    viewBox="0 0 24 24"
+    fill="none"
+    stroke={color}
+    strokeWidth="1.9"
+    strokeLinecap="round"
+    strokeLinejoin="round"
+  >
     <Path d="M3 18v-6a9 9 0 0 1 18 0v6" />
     <Path d="M21 19a2 2 0 0 1-2 2h-1a2 2 0 0 1-2-2v-3a2 2 0 0 1 2-2h3z" />
     <Path d="M3 19a2 2 0 0 0 2 2h1a2 2 0 0 0 2-2v-3a2 2 0 0 0-2-2H3z" />
@@ -58,7 +77,16 @@ HeadphonesIcon.propTypes = { color: PropTypes.string.isRequired };
 // colour like the book and headphones, so it belongs to the row rather than
 // looking like a missing image.
 const LinkIcon = ({ color }) => (
-  <Svg width={22} height={22} viewBox="0 0 24 24" fill="none" stroke={color} strokeWidth="1.9" strokeLinecap="round" strokeLinejoin="round">
+  <Svg
+    width={22}
+    height={22}
+    viewBox="0 0 24 24"
+    fill="none"
+    stroke={color}
+    strokeWidth="1.9"
+    strokeLinecap="round"
+    strokeLinejoin="round"
+  >
     <Path d="M12 2a10 10 0 1 0 0 20 10 10 0 0 0 0-20z" />
     <Path d="M2 12h20" />
     <Path d="M12 2a15.3 15.3 0 0 1 4 10 15.3 15.3 0 0 1-4 10 15.3 15.3 0 0 1-4-10 15.3 15.3 0 0 1 4-10z" />
@@ -119,6 +147,72 @@ const TILE_ICONS = {
   gurdham: { Component: GurdhamIcon },
 };
 
+const styles = StyleSheet.create({
+  // A horizontal ScrollView clips to its bounds, so the row reserves the card
+  // shadow's full reach; `scroll` pulls the same amount back off the layout so
+  // the extra room costs no visible space.
+  row: {
+    paddingHorizontal: 20,
+    gap: 12,
+    paddingTop: CARD_SHADOW_BLEED,
+    paddingBottom: CARD_SHADOW_BLEED,
+  },
+  scroll: { marginTop: -CARD_SHADOW_BLEED, marginBottom: -CARD_SHADOW_BLEED + 4 },
+  // Sized to its content, not to a fixed width. At 128 the text box was 96dp,
+  // narrower than the single word "SikhiToTheMax" (~114dp at 16px), so RN split
+  // it mid-word; the longer French and Spanish labels truncated outright.
+  // minWidth keeps short tiles from looking cramped, maxWidth forces wrapping
+  // so one long translation can't stretch a tile across the screen. Tiles are
+  // stretched to a common height by the row, so they stay aligned.
+  tile: { minWidth: 150, maxWidth: 190 },
+  // The padding sits on the Pressable, not the card, and the Pressable fills
+  // the card: the row stretches every tile to the tallest one, and a tile
+  // with a one-line title used to have a dead band below its text where a
+  // tap did nothing.
+  tilePress: { flex: 1, paddingHorizontal: 16, paddingVertical: 20 },
+  pressed: { opacity: 0.75 },
+  iconRow: { flexDirection: "row", justifyContent: "space-between", alignItems: "flex-start" },
+  iconBox: {
+    width: 46,
+    height: 46,
+    borderRadius: 12,
+    alignItems: "center",
+    justifyContent: "center",
+    overflow: "hidden",
+    marginBottom: 14,
+  },
+  iconImg: { width: 32, height: 32 },
+  badge: { paddingHorizontal: 8, paddingVertical: 3, borderRadius: 8 },
+  // Colour comes from c.onGold at render: white on the mid-yellow gold fill
+  // measures about 2:1 and fails 1.4.3 outright, in BOTH themes.
+  // No fontWeight either — Baloo is a named TTF, so a weight loses the glyph.
+  badgeText: { fontSize: 10, letterSpacing: 0.5 },
+  // The title carries NO lineHeight, and that is the fix for the gap that opened
+  // between a card's title and its subtitle in pa/hi on Realme and on tablets.
+  //
+  // Baloo Paaji 2 is a 1000upem face with hhea ascent/descent 1157/-614, so its
+  // own line box is 1.771em — 28.3pt at this size. Pinning lineHeight to 24 left
+  // it 4pt short, and Android answers a too-small box by measuring a line it then
+  // never draws (facebook/react-native#53286). That phantom line is what pushed
+  // the subtitle down a full 24pt on some cards and not others. The face's own
+  // spacing is both correct and self-scaling, so it is left unset — the same
+  // conclusion HomeScreen's header title and the Reader header already reached.
+  //
+  // `includeFontPadding: false` used to sit on both of these and was removed: it
+  // is inert next to a lineHeight. RN's CustomLineHeightSpan ends by setting
+  // fm.top = fm.ascent and fm.bottom = fm.descent, which are the only two values
+  // setIncludePad() would have substituted. It was tested on device and changed
+  // nothing. Do not add it back expecting a vertical shift.
+  title: { fontSize: 16 },
+  // Keeps an explicit value because it wraps (numberOfLines={2}) and the gap
+  // between its two lines is worth controlling. 20 clears the clipping floor —
+  // ink box 1.541em vs hhea 1.771em leaves 0.091em a side, so 1.589em (19.1pt
+  // here) is the minimum before half-leading starts cutting into the glyphs.
+  subtitle: { fontSize: 12, lineHeight: 20, marginTop: 3 },
+  tileSkeleton: { width: "100%", height: 88 },
+});
+
+// eslint-disable-next-line react/require-default-props
 const TileArtwork = ({ icon, mode, fallbackColor }) => {
   const art = icon ? TILE_ICONS[icon] : null;
   if (!art) return <LinkIcon color={fallbackColor} />;
@@ -267,6 +361,7 @@ const ExploreGurbani = ({ refreshKey = 0 }) => {
     });
   }, [loading, explore]);
 
+  // eslint-disable-next-line react/no-unstable-nested-components
   const ContinueTile = ({ icon, label, item, withAudio }) => (
     <DashboardCard style={styles.tile}>
       <Pressable
@@ -292,6 +387,7 @@ const ExploreGurbani = ({ refreshKey = 0 }) => {
   ContinueTile.propTypes = {
     icon: PropTypes.string.isRequired,
     label: PropTypes.string.isRequired,
+    // eslint-disable-next-line react/forbid-prop-types
     item: PropTypes.object.isRequired,
     withAudio: PropTypes.bool.isRequired,
   };
@@ -340,38 +436,40 @@ const ExploreGurbani = ({ refreshKey = 0 }) => {
         {explore.links.map((t, index) => {
           const plate = plateFor(t, theme, iconBg);
           return (
-          <DashboardCard key={t.id} style={styles.tile}>
-            <Pressable
-              onPress={() => openTile(t, index)}
-              style={({ pressed }) => [styles.tilePress, pressed && styles.pressed]}
-              accessibilityRole="link"
-              accessibilityLabel={t.title}
-            >
-              <View style={styles.iconRow}>
-                <View style={[styles.iconBox, { backgroundColor: plate }]}>
-                  <TileArtwork icon={t.icon} mode={theme.mode} fallbackColor={iconColor} />
-                </View>
-                {t.badge ? (
-                  <View style={[styles.badge, { backgroundColor: gold }]}>
-                    <CustomText style={[styles.badgeText, { color: c.onGold }]}>{t.badge}</CustomText>
+            <DashboardCard key={t.id} style={styles.tile}>
+              <Pressable
+                onPress={() => openTile(t, index)}
+                style={({ pressed }) => [styles.tilePress, pressed && styles.pressed]}
+                accessibilityRole="link"
+                accessibilityLabel={t.title}
+              >
+                <View style={styles.iconRow}>
+                  <View style={[styles.iconBox, { backgroundColor: plate }]}>
+                    <TileArtwork icon={t.icon} mode={theme.mode} fallbackColor={iconColor} />
                   </View>
-                ) : null}
-              </View>
-              {/* Three lines, not two: the longest translations ("Rechercher
+                  {t.badge ? (
+                    <View style={[styles.badge, { backgroundColor: gold }]}>
+                      <CustomText style={[styles.badgeText, { color: c.onGold }]}>
+                        {t.badge}
+                      </CustomText>
+                    </View>
+                  ) : null}
+                </View>
+                {/* Three lines, not two: the longest translations ("Rechercher
                   sur SikhiToTheMax") need a third rather than being cut off.
                   The row stretches every tile to the tallest, so allowing it
                   costs alignment nothing. */}
-              <CustomText
-                style={[styles.title, { color: titleColor, fontFamily: titleFont }]}
-                numberOfLines={3}
-              >
-                {t.title}
-              </CustomText>
-              <CustomText style={[styles.subtitle, { color: mutedText }]} numberOfLines={2}>
-                {t.subtitle}
-              </CustomText>
-            </Pressable>
-          </DashboardCard>
+                <CustomText
+                  style={[styles.title, { color: titleColor, fontFamily: titleFont }]}
+                  numberOfLines={3}
+                >
+                  {t.title}
+                </CustomText>
+                <CustomText style={[styles.subtitle, { color: mutedText }]} numberOfLines={2}>
+                  {t.subtitle}
+                </CustomText>
+              </Pressable>
+            </DashboardCard>
           );
         })}
       </ScrollView>
@@ -380,62 +478,5 @@ const ExploreGurbani = ({ refreshKey = 0 }) => {
 };
 
 ExploreGurbani.propTypes = { refreshKey: PropTypes.number };
-
-const styles = StyleSheet.create({
-  // A horizontal ScrollView clips to its bounds, so the row reserves the card
-  // shadow's full reach; `scroll` pulls the same amount back off the layout so
-  // the extra room costs no visible space.
-  row: {
-    paddingHorizontal: 20,
-    gap: 12,
-    paddingTop: CARD_SHADOW_BLEED,
-    paddingBottom: CARD_SHADOW_BLEED,
-  },
-  scroll: { marginTop: -CARD_SHADOW_BLEED, marginBottom: -CARD_SHADOW_BLEED + 4 },
-  // Sized to its content, not to a fixed width. At 128 the text box was 96dp,
-  // narrower than the single word "SikhiToTheMax" (~114dp at 16px), so RN split
-  // it mid-word; the longer French and Spanish labels truncated outright.
-  // minWidth keeps short tiles from looking cramped, maxWidth forces wrapping
-  // so one long translation can't stretch a tile across the screen. Tiles are
-  // stretched to a common height by the row, so they stay aligned.
-  tile: { minWidth: 150, maxWidth: 190 },
-  // The padding sits on the Pressable, not the card, and the Pressable fills
-  // the card: the row stretches every tile to the tallest one, and a tile
-  // with a one-line title used to have a dead band below its text where a
-  // tap did nothing.
-  tilePress: { flex: 1, paddingHorizontal: 16, paddingVertical: 20 },
-  pressed: { opacity: 0.75 },
-  iconRow: { flexDirection: "row", justifyContent: "space-between", alignItems: "flex-start" },
-  iconBox: { width: 46, height: 46, borderRadius: 12, alignItems: "center", justifyContent: "center", overflow: "hidden", marginBottom: 14 },
-  iconImg: { width: 32, height: 32 },
-  badge: { paddingHorizontal: 8, paddingVertical: 3, borderRadius: 8 },
-  // Colour comes from c.onGold at render: white on the mid-yellow gold fill
-  // measures about 2:1 and fails 1.4.3 outright, in BOTH themes.
-  // No fontWeight either — Baloo is a named TTF, so a weight loses the glyph.
-  badgeText: { fontSize: 10, letterSpacing: 0.5 },
-  // The title carries NO lineHeight, and that is the fix for the gap that opened
-  // between a card's title and its subtitle in pa/hi on Realme and on tablets.
-  //
-  // Baloo Paaji 2 is a 1000upem face with hhea ascent/descent 1157/-614, so its
-  // own line box is 1.771em — 28.3pt at this size. Pinning lineHeight to 24 left
-  // it 4pt short, and Android answers a too-small box by measuring a line it then
-  // never draws (facebook/react-native#53286). That phantom line is what pushed
-  // the subtitle down a full 24pt on some cards and not others. The face's own
-  // spacing is both correct and self-scaling, so it is left unset — the same
-  // conclusion HomeScreen's header title and the Reader header already reached.
-  //
-  // `includeFontPadding: false` used to sit on both of these and was removed: it
-  // is inert next to a lineHeight. RN's CustomLineHeightSpan ends by setting
-  // fm.top = fm.ascent and fm.bottom = fm.descent, which are the only two values
-  // setIncludePad() would have substituted. It was tested on device and changed
-  // nothing. Do not add it back expecting a vertical shift.
-  title: { fontSize: 16 },
-  // Keeps an explicit value because it wraps (numberOfLines={2}) and the gap
-  // between its two lines is worth controlling. 20 clears the clipping floor —
-  // ink box 1.541em vs hhea 1.771em leaves 0.091em a side, so 1.589em (19.1pt
-  // here) is the minimum before half-leading starts cutting into the glyphs.
-  subtitle: { fontSize: 12, lineHeight: 20, marginTop: 3 },
-  tileSkeleton: { width: "100%", height: 88 },
-});
 
 export default ExploreGurbani;

@@ -65,7 +65,10 @@ describe("getSevaMeansPage", () => {
     expect(res.source).toBe("network");
     expect(res.title).toBe("Seva for Coders");
     expect(res.segments.length).toBeGreaterThan(0);
-    expect(res.segments[0]).toEqual({ type: "html", value: expect.stringContaining("Love to code?") });
+    expect(res.segments[0]).toEqual({
+      type: "html",
+      value: expect.stringContaining("Love to code?"),
+    });
     // Cached for offline use.
     expect(mockStore.get("@seva_means_v1:seva-by-coding:en")).toContain("Love to code?");
   });

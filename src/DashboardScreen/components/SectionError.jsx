@@ -23,6 +23,13 @@ const AlertIcon = ({ color }) => (
 );
 AlertIcon.propTypes = { color: PropTypes.string.isRequired };
 
+const styles = StyleSheet.create({
+  wrap: { alignItems: "center", justifyContent: "center", gap: 8, paddingVertical: 28 },
+  wrapCompact: { paddingVertical: 18 },
+  text: { fontSize: 13, fontWeight: "500", textAlign: "center" },
+  retry: { fontSize: 13, fontWeight: "700", marginTop: 2 },
+});
+
 // Shared inline error state for a dashboard section whose FIRST load failed
 // (a background refresh failure keeps showing last-known-good data instead —
 // see useAsyncSection). Retry re-runs just that section's own fetch.
@@ -40,12 +47,5 @@ const SectionError = ({ onRetry, compact = false }) => {
 };
 
 SectionError.propTypes = { onRetry: PropTypes.func.isRequired, compact: PropTypes.bool };
-
-const styles = StyleSheet.create({
-  wrap: { alignItems: "center", justifyContent: "center", gap: 8, paddingVertical: 28 },
-  wrapCompact: { paddingVertical: 18 },
-  text: { fontSize: 13, fontWeight: "500", textAlign: "center" },
-  retry: { fontSize: 13, fontWeight: "700", marginTop: 2 },
-});
 
 export default SectionError;

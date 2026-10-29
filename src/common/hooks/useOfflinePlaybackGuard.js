@@ -1,7 +1,7 @@
 import { useEffect } from "react";
 import TrackPlayer from "react-native-track-player";
-import { pauseTrack } from "../TrackPlayerUtils";
 import { useNetwork } from "../context";
+import { pauseTrack } from "../TrackPlayerUtils";
 
 // How long the device must stay DISCONNECTED before we pause a stream. A
 // wifi<->cellular handoff briefly reports disconnected/unreachable and recovers

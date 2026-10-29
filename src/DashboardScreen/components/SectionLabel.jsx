@@ -4,6 +4,34 @@ import PropTypes from "prop-types";
 import { CustomText } from "@common";
 import useDashboardTheme from "./dashboardTheme";
 
+const styles = StyleSheet.create({
+  row: {
+    flexDirection: "row",
+    alignItems: "center",
+    justifyContent: "space-between",
+    paddingHorizontal: 24,
+    marginBottom: 12,
+  },
+  title: {
+    fontSize: 12,
+    fontWeight: "600",
+    letterSpacing: 1.2,
+    // Give up width to `right` (which can hold action buttons that must stay
+    // full touch-target size) before overflowing on a narrow phone.
+    flexShrink: 1,
+  },
+  right: {
+    flexDirection: "row",
+    alignItems: "center",
+    // Shrinkable, but only its TEXT gives way: buttons and icons are flex
+    // items too and React Native defaults them to `flexShrink: 0`, so they
+    // keep full touch-target size. Rigid here meant the heading absorbed the
+    // entire overflow alone — "August" clipped to "Augus…" to protect a
+    // caption reading "8 days this month", which is the wrong one to save.
+    flexShrink: 1,
+  },
+});
+
 // Small uppercase section heading used above each dashboard section, with an
 // optional right-aligned action (e.g. "Edit banis", "Shuffle").
 //
@@ -50,33 +78,5 @@ SectionLabel.propTypes = {
   titleStyle: PropTypes.oneOfType([PropTypes.object, PropTypes.array]),
   uppercase: PropTypes.bool,
 };
-
-const styles = StyleSheet.create({
-  row: {
-    flexDirection: "row",
-    alignItems: "center",
-    justifyContent: "space-between",
-    paddingHorizontal: 24,
-    marginBottom: 12,
-  },
-  title: {
-    fontSize: 12,
-    fontWeight: "600",
-    letterSpacing: 1.2,
-    // Give up width to `right` (which can hold action buttons that must stay
-    // full touch-target size) before overflowing on a narrow phone.
-    flexShrink: 1,
-  },
-  right: {
-    flexDirection: "row",
-    alignItems: "center",
-    // Shrinkable, but only its TEXT gives way: buttons and icons are flex
-    // items too and React Native defaults them to `flexShrink: 0`, so they
-    // keep full touch-target size. Rigid here meant the heading absorbed the
-    // entire overflow alone — "August" clipped to "Augus…" to protect a
-    // caption reading "8 days this month", which is the wrong one to save.
-    flexShrink: 1,
-  },
-});
 
 export default SectionLabel;

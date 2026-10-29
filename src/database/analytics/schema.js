@@ -65,6 +65,7 @@ const CREATE_BANI_READ_COUNTS = `
   );
 `;
 
+// eslint-disable-next-line import/prefer-default-export
 export const initSchema = async (db) => {
   await db.executeSql(CREATE_BANI_READ_HISTORY);
   await db.executeSql(CREATE_AUDIO_HISTORY);

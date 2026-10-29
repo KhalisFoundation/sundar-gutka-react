@@ -27,7 +27,6 @@ jest.mock("react-redux", () => ({
   useSelector: (fn) => fn({ pothis: [] }),
 }));
 
-
 jest.mock("@common/hooks/useTokens", () => () => ({
   space: { sm: 8, md: 12, lg: 16 },
 }));

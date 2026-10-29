@@ -173,11 +173,21 @@ export const downloadAudioOnly = async (url, trackTitle, options = {}) => {
         await unlink(fullAudioPath).catch(() => {});
       } else {
         logMessage(`Audio already downloaded: ${fileName}`);
-        return { relativePath: audioRelativePath, alreadyExists: true, downloaded: false, jobId: null };
+        return {
+          relativePath: audioRelativePath,
+          alreadyExists: true,
+          downloaded: false,
+          jobId: null,
+        };
       }
     } else {
       logMessage(`Audio already downloaded: ${fileName}`);
-      return { relativePath: audioRelativePath, alreadyExists: true, downloaded: false, jobId: null };
+      return {
+        relativePath: audioRelativePath,
+        alreadyExists: true,
+        downloaded: false,
+        jobId: null,
+      };
     }
   }
 
@@ -192,7 +202,7 @@ export const downloadAudioOnly = async (url, trackTitle, options = {}) => {
     },
   });
 
-  const jobId = audioDownloadTask.jobId;
+  const { jobId } = audioDownloadTask;
   const audioResult = await audioDownloadTask.promise;
 
   // ── Strict validation: reject anything that isn't a clean 200 download ──
@@ -300,6 +310,7 @@ export const prefetchPreviews = async (tracks) => {
   for (const track of tracks) {
     const canonical = track?.remoteUrl || track?.audioUrl;
     const previewUrl = getPreviewRemoteUrl(canonical);
+    // eslint-disable-next-line no-continue -- skip invalid or duplicate preview URLs
     if (!previewUrl || !/^https?:\/\//i.test(previewUrl) || seen.has(previewUrl)) continue;
     seen.add(previewUrl);
     queue.push({ canonical, title: track?.displayName || "Preview" });
@@ -389,6 +400,7 @@ export const prunePrefetchCache = async (maxTracks = Infinity) => {
     for (const [fullPath, ts] of verifiedEntries) {
       if (keepSet.has(fullPath)) {
         nextIndex[fullPath] = ts;
+        // eslint-disable-next-line no-continue -- kept entries are not deleted
         continue;
       }
       // eslint-disable-next-line no-await-in-loop
@@ -399,6 +411,7 @@ export const prunePrefetchCache = async (maxTracks = Infinity) => {
     const children = await readDir(PREFETCH_AUDIO_DIRECTORY).catch(() => []);
     for (const entry of children) {
       if (!entry.isDirectory || !entry.isDirectory()) {
+        // eslint-disable-next-line no-continue -- skip non-directory entries
         continue;
       }
       // eslint-disable-next-line no-await-in-loop
@@ -488,7 +501,10 @@ export const downloadTrack = async (url, trackTitle, expectedSizeMB = 0) => {
 
     await ensureArtistDirectory(artistName);
 
-    const audioResult = await downloadAudioOnly(url, trackTitle, { skipDirectorySetup: true, expectedSizeMB });
+    const audioResult = await downloadAudioOnly(url, trackTitle, {
+      skipDirectorySetup: true,
+      expectedSizeMB,
+    });
     const lyricsResult = await downloadLyricsOnly(url, trackTitle, { skipDirectorySetup: true });
     const lyricsAvailable = !lyricsResult.remoteMissing;
     const lyricsSatisfied = lyricsAvailable

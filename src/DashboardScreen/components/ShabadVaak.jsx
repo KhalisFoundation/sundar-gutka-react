@@ -12,6 +12,57 @@ import TodaysVaak from "./TodaysVaak";
 // rather than cutting the building out of frame.
 const DARBAR_SAHIB = require("../../assets/images/darbar-sahib.jpg");
 
+const styles = StyleSheet.create({
+  wrap: { paddingHorizontal: 20 },
+  backdrop: {
+    position: "absolute",
+    top: 0,
+    left: 0,
+    right: 0,
+    bottom: 0,
+    borderRadius: CARD_RADIUS,
+    overflow: "hidden",
+  },
+  backdropImage: { width: "100%", height: "100%" },
+  card: { padding: 18 },
+  header: {
+    flexDirection: "row",
+    alignItems: "center",
+    justifyContent: "space-between",
+    marginBottom: 16,
+  },
+  tabsGroup: { flexDirection: "row", gap: 6, flexShrink: 1 },
+  // One pill per row, each taking the full width of the card.
+  tabsGroupStacked: { flexDirection: "column", alignSelf: "stretch", flexShrink: 0 },
+  // The shuffle button moves to the top of the column rather than sitting
+  // beside a two-storey stack.
+  headerStacked: { alignItems: "flex-start" },
+  // The group shrinking is not enough on its own: a child that cannot shrink
+  // keeps its full width and simply overflows the shrunken parent, which is how
+  // the shuffle button ended up painted ON TOP of "RANDOM SHABAD".
+  tab: { paddingHorizontal: 12, paddingVertical: 7, borderRadius: 16, flexShrink: 1 },
+  tabText: { fontSize: 13, fontWeight: "600" },
+  // Icon-only circular button (text "Shuffle" was overflowing the row alongside
+  // the two tab pills); keeps the header on a single line.
+  shuffleBtn: {
+    width: 36,
+    height: 36,
+    borderRadius: 18,
+    alignItems: "center",
+    justifyContent: "center",
+    marginLeft: 8,
+    // Round, icon-only and already at the touch-target floor.
+    flexShrink: 0,
+  },
+  // Dimmed while a shabad is in flight, so the control reads as busy rather
+  // than broken when it stops responding to taps.
+  shuffleBtnBusy: { opacity: 0.6 },
+  // Instant acknowledgement on touch-down, before any async work starts.
+  shuffleBtnPressed: { opacity: 0.5 },
+  shown: { display: "flex" },
+  hidden: { display: "none" },
+});
+
 // Combined card: a segmented toggle (inside the card, like the audio bar's
 // Tracks/Options pills) switches between Today's Vaak and Random Shabad. Both
 // children stay mounted (toggled via display) so the shabad pre-fetches while the
@@ -157,56 +208,5 @@ const ShabadVaak = ({ refreshKey = 0 }) => {
 };
 
 ShabadVaak.propTypes = { refreshKey: PropTypes.number };
-
-const styles = StyleSheet.create({
-  wrap: { paddingHorizontal: 20 },
-  backdrop: {
-    position: "absolute",
-    top: 0,
-    left: 0,
-    right: 0,
-    bottom: 0,
-    borderRadius: CARD_RADIUS,
-    overflow: "hidden",
-  },
-  backdropImage: { width: "100%", height: "100%" },
-  card: { padding: 18 },
-  header: {
-    flexDirection: "row",
-    alignItems: "center",
-    justifyContent: "space-between",
-    marginBottom: 16,
-  },
-  tabsGroup: { flexDirection: "row", gap: 6, flexShrink: 1 },
-  // One pill per row, each taking the full width of the card.
-  tabsGroupStacked: { flexDirection: "column", alignSelf: "stretch", flexShrink: 0 },
-  // The shuffle button moves to the top of the column rather than sitting
-  // beside a two-storey stack.
-  headerStacked: { alignItems: "flex-start" },
-  // The group shrinking is not enough on its own: a child that cannot shrink
-  // keeps its full width and simply overflows the shrunken parent, which is how
-  // the shuffle button ended up painted ON TOP of "RANDOM SHABAD".
-  tab: { paddingHorizontal: 12, paddingVertical: 7, borderRadius: 16, flexShrink: 1 },
-  tabText: { fontSize: 13, fontWeight: "600" },
-  // Icon-only circular button (text "Shuffle" was overflowing the row alongside
-  // the two tab pills); keeps the header on a single line.
-  shuffleBtn: {
-    width: 36,
-    height: 36,
-    borderRadius: 18,
-    alignItems: "center",
-    justifyContent: "center",
-    marginLeft: 8,
-    // Round, icon-only and already at the touch-target floor.
-    flexShrink: 0,
-  },
-  // Dimmed while a shabad is in flight, so the control reads as busy rather
-  // than broken when it stops responding to taps.
-  shuffleBtnBusy: { opacity: 0.6 },
-  // Instant acknowledgement on touch-down, before any async work starts.
-  shuffleBtnPressed: { opacity: 0.5 },
-  shown: { display: "flex" },
-  hidden: { display: "none" },
-});
 
 export default ShabadVaak;

@@ -656,7 +656,7 @@ const userProfile = createReducer(
       ...action.value,
       modifiedAt: action.value?.modifiedAt ?? Date.now(),
     }),
-  },
+  }
 );
 
 // Khalis SSO session state. Blacklisted from redux-persist (see store.js): the
@@ -679,7 +679,7 @@ const auth = createReducer(
       busy: false,
     }),
     [actionTypes.SET_AUTH_BUSY]: (state, action) => ({ ...state, busy: !!action.value }),
-  },
+  }
 );
 
 const defaultLayout = () => ({ order: [...DEFAULT_DASHBOARD_ORDER], hidden: [], modifiedAt: 0 });
@@ -832,7 +832,7 @@ const todaysNitnem = createReducer(
       });
       return { ...state, completed };
     },
-  },
+  }
 );
 
 // My Pothi. Every transition delegates to `pothi/model`, which owns the rules

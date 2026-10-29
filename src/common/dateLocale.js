@@ -42,17 +42,108 @@ const resolveLang = () => {
 
 // ── Month names (index 0 = January) ──────────────────────────────────────────
 const MONTHS_LONG = {
-  en: ["January", "February", "March", "April", "May", "June", "July", "August", "September", "October", "November", "December"],
-  fr: ["janvier", "février", "mars", "avril", "mai", "juin", "juillet", "août", "septembre", "octobre", "novembre", "décembre"],
-  it: ["gennaio", "febbraio", "marzo", "aprile", "maggio", "giugno", "luglio", "agosto", "settembre", "ottobre", "novembre", "dicembre"],
-  es: ["enero", "febrero", "marzo", "abril", "mayo", "junio", "julio", "agosto", "septiembre", "octubre", "noviembre", "diciembre"],
-  hi: ["जनवरी", "फ़रवरी", "मार्च", "अप्रैल", "मई", "जून", "जुलाई", "अगस्त", "सितंबर", "अक्तूबर", "नवंबर", "दिसंबर"],
-  pa: ["ਜਨਵਰੀ", "ਫ਼ਰਵਰੀ", "ਮਾਰਚ", "ਅਪ੍ਰੈਲ", "ਮਈ", "ਜੂਨ", "ਜੁਲਾਈ", "ਅਗਸਤ", "ਸਤੰਬਰ", "ਅਕਤੂਬਰ", "ਨਵੰਬਰ", "ਦਸੰਬਰ"],
+  en: [
+    "January",
+    "February",
+    "March",
+    "April",
+    "May",
+    "June",
+    "July",
+    "August",
+    "September",
+    "October",
+    "November",
+    "December",
+  ],
+  fr: [
+    "janvier",
+    "février",
+    "mars",
+    "avril",
+    "mai",
+    "juin",
+    "juillet",
+    "août",
+    "septembre",
+    "octobre",
+    "novembre",
+    "décembre",
+  ],
+  it: [
+    "gennaio",
+    "febbraio",
+    "marzo",
+    "aprile",
+    "maggio",
+    "giugno",
+    "luglio",
+    "agosto",
+    "settembre",
+    "ottobre",
+    "novembre",
+    "dicembre",
+  ],
+  es: [
+    "enero",
+    "febrero",
+    "marzo",
+    "abril",
+    "mayo",
+    "junio",
+    "julio",
+    "agosto",
+    "septiembre",
+    "octubre",
+    "noviembre",
+    "diciembre",
+  ],
+  hi: [
+    "जनवरी",
+    "फ़रवरी",
+    "मार्च",
+    "अप्रैल",
+    "मई",
+    "जून",
+    "जुलाई",
+    "अगस्त",
+    "सितंबर",
+    "अक्तूबर",
+    "नवंबर",
+    "दिसंबर",
+  ],
+  pa: [
+    "ਜਨਵਰੀ",
+    "ਫ਼ਰਵਰੀ",
+    "ਮਾਰਚ",
+    "ਅਪ੍ਰੈਲ",
+    "ਮਈ",
+    "ਜੂਨ",
+    "ਜੁਲਾਈ",
+    "ਅਗਸਤ",
+    "ਸਤੰਬਰ",
+    "ਅਕਤੂਬਰ",
+    "ਨਵੰਬਰ",
+    "ਦਸੰਬਰ",
+  ],
 };
 
 const MONTHS_SHORT = {
   en: ["Jan", "Feb", "Mar", "Apr", "May", "Jun", "Jul", "Aug", "Sep", "Oct", "Nov", "Dec"],
-  fr: ["janv.", "févr.", "mars", "avr.", "mai", "juin", "juil.", "août", "sept.", "oct.", "nov.", "déc."],
+  fr: [
+    "janv.",
+    "févr.",
+    "mars",
+    "avr.",
+    "mai",
+    "juin",
+    "juil.",
+    "août",
+    "sept.",
+    "oct.",
+    "nov.",
+    "déc.",
+  ],
   it: ["gen", "feb", "mar", "apr", "mag", "giu", "lug", "ago", "set", "ott", "nov", "dic"],
   es: ["ene", "feb", "mar", "abr", "may", "jun", "jul", "ago", "sept", "oct", "nov", "dic"],
   // Devanagari/Gurmukhi have no conventional 3-letter abbreviations — use the
@@ -132,7 +223,9 @@ export const formatWeekdayLong = (date) => weekdayLong(date.getDay());
  * Hukamnama card's established format).
  */
 export const formatFullDate = (date) =>
-  `${weekdayLong(date.getDay())}, ${date.getDate()} ${monthLong(date.getMonth())} ${date.getFullYear()}`;
+  `${weekdayLong(date.getDay())}, ${date.getDate()} ${monthLong(
+    date.getMonth()
+  )} ${date.getFullYear()}`;
 
 /**
  * A localised date + 24h time, e.g. "January 5, 14:30" / "5 janvier, 14:30".

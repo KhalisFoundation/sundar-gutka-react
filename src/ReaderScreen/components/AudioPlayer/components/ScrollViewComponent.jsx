@@ -27,8 +27,7 @@ export const isOfflineAvailable = (track, downloadRegistry) => {
   );
 };
 
-const byDisplayNameAlpha = (a, b) =>
-  (a.displayName || "").localeCompare(b.displayName || "");
+const byDisplayNameAlpha = (a, b) => (a.displayName || "").localeCompare(b.displayName || "");
 
 const ScrollViewComponent = ({
   tracks,
@@ -120,6 +119,7 @@ const ScrollViewComponent = ({
               color={isSelected ? theme.c.onPrimary : theme.c.textBrand}
             />
           )}
+          {/* eslint-disable-next-line no-nested-ternary -- loading / stop / play icon states */}
           {previewLoadingTrackId && previewLoadingTrackId === track.id ? (
             <Spinner size="small" color={rightIconColor} />
           ) : playingTrack && playingTrack.id === track.id && isPlaying ? (

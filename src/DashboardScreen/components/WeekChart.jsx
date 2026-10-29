@@ -1,7 +1,7 @@
 import React, { useCallback, useMemo, useState } from "react";
 import { View, Pressable, StyleSheet } from "react-native";
-import { weekdayNarrow } from "@common/dateLocale";
 import PropTypes from "prop-types";
+import { weekdayNarrow } from "@common/dateLocale";
 import { ChevronLeftIcon, ChevronRight } from "@common/icons";
 import { CustomText, STRINGS, constant, trackDashboardEvent } from "@common";
 import { getDayActivity } from "../../database/analytics";
@@ -30,6 +30,30 @@ const daysForOffset = (offsetWeeks) => {
     return d;
   });
 };
+
+const styles = StyleSheet.create({
+  wrap: { paddingHorizontal: 20 },
+  card: { paddingVertical: 8 },
+  // Yields before the week range does — the date is the heading, the average
+  // is a caption.
+  avg: { fontSize: 12, flexShrink: 1 },
+  navRow: { flexDirection: "row", alignItems: "center", gap: 4 },
+  navBtn: { padding: 4 },
+  navBtnDisabled: { opacity: 0.3 },
+  chart: { flexDirection: "row", alignItems: "flex-end", height: 120, gap: 8 },
+  barCol: { flex: 1, alignItems: "center", height: "100%", justifyContent: "flex-end" },
+  barTrack: { flex: 1, width: 18, justifyContent: "flex-end" },
+  // bar: { width: 18, borderRadius: 9 },
+  bar: {
+    width: 18,
+    borderTopLeftRadius: 6,
+    borderTopRightRadius: 6,
+    borderBottomLeftRadius: 4,
+    borderBottomRightRadius: 4,
+  },
+  barLabel: { fontSize: 12, marginTop: 8, fontWeight: "500" },
+  barSkeleton: { width: 18, height: 60, borderRadius: 8 },
+});
 
 const WeekChart = ({ refreshKey = 0 }) => {
   const { mutedText, brandText, theme, palette } = useDashboardTheme();
@@ -133,6 +157,7 @@ const WeekChart = ({ refreshKey = 0 }) => {
           {loading ? (
             <View style={styles.chart}>
               {Array.from({ length: 7 }).map((_, i) => (
+                // eslint-disable-next-line react/no-array-index-key
                 <View key={i} style={styles.barCol}>
                   <SkeletonBlock style={styles.barSkeleton} />
                 </View>
@@ -143,6 +168,7 @@ const WeekChart = ({ refreshKey = 0 }) => {
           {!loading && !error ? (
             <View style={styles.chart}>
               {bars.map((b, i) => (
+                // eslint-disable-next-line react/no-array-index-key
                 <View key={i} style={styles.barCol}>
                   <View style={styles.barTrack}>
                     <View
@@ -171,29 +197,5 @@ const WeekChart = ({ refreshKey = 0 }) => {
 };
 
 WeekChart.propTypes = { refreshKey: PropTypes.number };
-
-const styles = StyleSheet.create({
-  wrap: { paddingHorizontal: 20 },
-  card: { paddingVertical: 8 },
-  // Yields before the week range does — the date is the heading, the average
-  // is a caption.
-  avg: { fontSize: 12, flexShrink: 1 },
-  navRow: { flexDirection: "row", alignItems: "center", gap: 4 },
-  navBtn: { padding: 4 },
-  navBtnDisabled: { opacity: 0.3 },
-  chart: { flexDirection: "row", alignItems: "flex-end", height: 120, gap: 8 },
-  barCol: { flex: 1, alignItems: "center", height: "100%", justifyContent: "flex-end" },
-  barTrack: { flex: 1, width: 18, justifyContent: "flex-end" },
-  // bar: { width: 18, borderRadius: 9 },
-  bar: {
-    width: 18,
-    borderTopLeftRadius: 6,
-    borderTopRightRadius: 6,
-    borderBottomLeftRadius: 4,
-    borderBottomRightRadius: 4,
-  },
-  barLabel: { fontSize: 12, marginTop: 8, fontWeight: "500" },
-  barSkeleton: { width: 18, height: 60, borderRadius: 8 },
-});
 
 export default WeekChart;

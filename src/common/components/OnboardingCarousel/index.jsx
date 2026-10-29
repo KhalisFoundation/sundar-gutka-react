@@ -1,18 +1,18 @@
 import React, { useCallback, useEffect, useRef, useState } from "react";
 import { View, Image, Pressable, FlatList, useWindowDimensions, BackHandler } from "react-native";
-import { useDispatch, useSelector } from "react-redux";
 import { useSafeAreaInsets } from "react-native-safe-area-context";
+import { useDispatch, useSelector } from "react-redux";
 import { Icon } from "@rneui/themed";
-import { pickByMode } from "@theme/colorUtils";
 import { getLanguages } from "@settings/components/comon/strings";
+import { pickByMode } from "@theme/colorUtils";
 import { androidLineHeight } from "@theme/lineHeight";
-import { trackTourEvent } from "../../firebase/analytics";
-import CustomText from "../CustomText";
-import STRINGS from "../../localization";
-import useTheme from "../../context";
-import useThemedStyles from "../../hooks/useThemedStyles";
-import constant from "../../constant";
 import { setLanguage, setOnboardingSeen, setOnboardingVisible } from "../../actions";
+import constant from "../../constant";
+import useTheme from "../../context";
+import { trackTourEvent } from "../../firebase/analytics";
+import useThemedStyles from "../../hooks/useThemedStyles";
+import STRINGS from "../../localization";
+import CustomText from "../CustomText";
 import { ONBOARDING_SLIDES } from "./slides";
 import createStyles from "./style";
 
@@ -82,6 +82,7 @@ const OnboardingCarousel = () => {
     trackTourEvent("started", { step_count: slides.length });
     setIndex(0);
     setLangOpen(false);
+    // eslint-disable-next-line no-undef -- a React Native global
     requestAnimationFrame(() => {
       listRef.current?.scrollToOffset({ offset: 0, animated: false });
     });
@@ -98,6 +99,7 @@ const OnboardingCarousel = () => {
     };
 
     const backHandler = BackHandler.addEventListener("hardwareBackPress", onBack);
+    // eslint-disable-next-line consistent-return
     return () => backHandler.remove();
   }, [visible, finish]);
 
@@ -111,7 +113,7 @@ const OnboardingCarousel = () => {
 
   const onMomentumEnd = useCallback(
     (e) => {
-      const x = e.nativeEvent.contentOffset.x;
+      const { x } = e.nativeEvent.contentOffset;
       setIndex(width > 0 ? Math.round(x / width) : 0);
     },
     [width]
@@ -132,7 +134,11 @@ const OnboardingCarousel = () => {
       const titleSize = Math.round(22 * scale);
       const bodySize = Math.round(15 * scale);
       const bodyLineHeight = androidLineHeight(Math.round(22 * scale));
-      const screenshot = pickByMode(theme, { dark: item.imageDark, light: item.imageLight }, item.image);
+      const screenshot = pickByMode(
+        theme,
+        { dark: item.imageDark, light: item.imageLight },
+        item.image
+      );
       return (
         <View style={{ width, height: listHeight }}>
           <View style={styles.slide}>
@@ -143,7 +149,12 @@ const OnboardingCarousel = () => {
                 </View>
               ) : (
                 <View style={styles.placeholder}>
-                  <Icon name="image" type="material" size={Math.round(48 * scale)} color={theme.c.primary} />
+                  <Icon
+                    name="image"
+                    type="material"
+                    size={Math.round(48 * scale)}
+                    color={theme.c.primary}
+                  />
                   <CustomText style={styles.placeholderText}>{item.key}</CustomText>
                 </View>
               )}
@@ -155,7 +166,9 @@ const OnboardingCarousel = () => {
                 </CustomText>
               )}
               {!!STRINGS[item.bodyKey] && (
-                <CustomText style={[styles.body, { fontSize: bodySize, lineHeight: bodyLineHeight }]}>
+                <CustomText
+                  style={[styles.body, { fontSize: bodySize, lineHeight: bodyLineHeight }]}
+                >
                   {STRINGS[item.bodyKey]}
                 </CustomText>
               )}
@@ -179,13 +192,10 @@ const OnboardingCarousel = () => {
           accessibilityRole="button"
           accessibilityLabel="change-language"
         >
-          <Icon
-            name="language"
-            type="material"
-            size={20}
-            color={theme.c.headerFg}
-          />
-          {!!currentLangTitle && <CustomText style={styles.globeLabel}>{currentLangTitle}</CustomText>}
+          <Icon name="language" type="material" size={20} color={theme.c.headerFg} />
+          {!!currentLangTitle && (
+            <CustomText style={styles.globeLabel}>{currentLangTitle}</CustomText>
+          )}
         </Pressable>
       </View>
 
@@ -220,7 +230,9 @@ const OnboardingCarousel = () => {
           <View style={styles.skipButton} />
         )}
         <Pressable style={styles.nextButton} onPress={goNext} hitSlop={8}>
-          <CustomText style={styles.nextText}>{isLast ? STRINGS.TOUR_DONE : STRINGS.TOUR_NEXT}</CustomText>
+          <CustomText style={styles.nextText}>
+            {isLast ? STRINGS.TOUR_DONE : STRINGS.TOUR_NEXT}
+          </CustomText>
         </Pressable>
       </View>
 
@@ -238,7 +250,10 @@ const OnboardingCarousel = () => {
                 }}
               >
                 <CustomText
-                  style={[styles.langItemText, effectiveLanguage === key && styles.langItemTextActive]}
+                  style={[
+                    styles.langItemText,
+                    effectiveLanguage === key && styles.langItemTextActive,
+                  ]}
                 >
                   {title}
                 </CustomText>

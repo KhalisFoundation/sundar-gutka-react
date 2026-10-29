@@ -1,5 +1,13 @@
 /* eslint-env jest */
 
+// eslint-disable-next-line import/order -- rnfs is required after jest.mock below
+import {
+  getCachedLyricsRelativePath,
+  getCachedLyricsFullPath,
+  ensureLyricsCached,
+  readCachedLyrics,
+} from "./lyricsCache";
+
 jest.mock("react-native-fs", () => ({
   DocumentDirectoryPath: "/test/documents",
   exists: jest.fn(() => Promise.resolve(false)),
@@ -8,15 +16,8 @@ jest.mock("react-native-fs", () => ({
   writeFile: jest.fn(() => Promise.resolve()),
   unlink: jest.fn(() => Promise.resolve()),
 }));
-
-import {
-  getCachedLyricsRelativePath,
-  getCachedLyricsFullPath,
-  ensureLyricsCached,
-  readCachedLyrics,
-} from "./lyricsCache";
-
 const rnfs = require("react-native-fs");
+
 const CACHE_DIR = "/test/documents/audio_lyrics";
 
 describe("lyricsCache path keying", () => {

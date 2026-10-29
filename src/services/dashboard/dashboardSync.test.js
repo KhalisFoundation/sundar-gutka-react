@@ -546,4 +546,4 @@ describe("applyServerActivity — who owns the streak", () => {
     const stored = JSON.parse(await AsyncStorage.getItem("@dashboard_account_today_v1"));
     expect(stored).toEqual({ date: dayKey(today), seconds: 0 });
   });
-});
+});

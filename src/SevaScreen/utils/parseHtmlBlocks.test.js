@@ -52,9 +52,7 @@ describe("parseHtmlBlocks", () => {
   });
 
   it("strips <style> blocks — styling is owned by the app's themed StyleSheet", () => {
-    const blocks = parseHtmlBlocks(
-      "<style>h1 { color: red; }</style><h1>Title</h1><p>Body.</p>"
-    );
+    const blocks = parseHtmlBlocks("<style>h1 { color: red; }</style><h1>Title</h1><p>Body.</p>");
     expect(blocks.map((b) => b.tag)).toEqual(["h1", "p"]);
     expect(JSON.stringify(blocks)).not.toContain("color: red");
   });

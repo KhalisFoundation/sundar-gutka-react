@@ -48,7 +48,8 @@
       "error",
       {
         "trailingComma": "es5",
-        "printWidth": 100
+        "printWidth": 100,
+        "endOfLine": "auto"
       }
     ],
     "import/order": [
@@ -201,6 +202,10 @@
   ],
   "plugins": [
     "prettier",
-    "react-native"
-  ]
+    "react-native",
+    "react-hooks"
+  ],
+  "globals": {
+    "__DEV__": "readonly"
+  }
 }

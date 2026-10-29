@@ -12,7 +12,6 @@
 // validator rejects anything not listed, which catches a typo like
 // `backgroundColour` at import time instead of leaving it silently ignored.
 
-/* global __DEV__ */
 import darkBase from "./bases/darkBase";
 import lightBase from "./bases/lightBase";
 import deriveFromPalette from "./derive";

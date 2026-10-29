@@ -23,6 +23,7 @@ const BottomNavigation = ({
   activeKey,
   context = "home",
   visible = true,
+  // eslint-disable-next-line react/require-default-props
   navigation: propNavigation,
   themed = undefined,
 }) => {
@@ -281,11 +282,7 @@ const BottomNavigation = ({
                     <View style={{ position: "relative" }}>
                       <IconComponent
                         size={24}
-                        color={
-                          item.key === activeKey
-                            ? theme.c.primary
-                            : theme.c.onPrimary
-                        }
+                        color={item.key === activeKey ? theme.c.primary : theme.c.onPrimary}
                       />
                       {item.showDot > 0 && (
                         <View
@@ -306,9 +303,7 @@ const BottomNavigation = ({
                             paddingHorizontal: item.showDot > 1 ? 2 : 0,
                             borderWidth: 1.2,
                             borderColor:
-                              item.key === activeKey
-                                ? theme.c.onPrimary
-                                : theme.c.primary,
+                              item.key === activeKey ? theme.c.onPrimary : theme.c.primary,
                           }}
                         >
                           {/* 1 = plain dot, no text; 2+ = the real count */}

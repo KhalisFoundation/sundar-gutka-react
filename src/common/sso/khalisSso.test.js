@@ -1,6 +1,5 @@
 /* eslint-env jest */
 import { InAppBrowser } from "react-native-inappbrowser-reborn";
-
 import { startLogin, startLogout } from "./khalisSso";
 
 // InAppBrowser keeps ONE redirect handler and asserts it is unset before

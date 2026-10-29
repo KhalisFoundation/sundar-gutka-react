@@ -113,9 +113,7 @@ const KhalisAppsCarousel = () => {
 
   return (
     <View style={styles.container}>
-      <CustomText style={[styles.sectionTitle, { color: theme.c.textPrimary }]}>
-        Explore
-      </CustomText>
+      <CustomText style={[styles.sectionTitle, { color: theme.c.textPrimary }]}>Explore</CustomText>
       <ScrollView
         horizontal
         showsHorizontalScrollIndicator={false}

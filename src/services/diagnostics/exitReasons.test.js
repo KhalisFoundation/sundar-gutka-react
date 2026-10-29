@@ -1,7 +1,7 @@
 /* eslint-env jest */
-import AsyncStorage from "@react-native-async-storage/async-storage";
 import { NativeModules, Platform } from "react-native";
-
+import AsyncStorage from "@react-native-async-storage/async-storage";
+// eslint-disable-next-line import/no-named-as-default
 import reportRecentExits, { describeExit, exitAttributes, summariseExit } from "./exitReasons";
 
 // The whole point of this module is the deaths Crashlytics never sees. A Low

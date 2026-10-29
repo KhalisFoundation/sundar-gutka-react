@@ -1,7 +1,7 @@
+const { Platform } = require("react-native");
 const TrackPlayer = require("react-native-track-player").default;
 const { Event, State } = require("react-native-track-player");
 const AsyncStorage = require("@react-native-async-storage/async-storage").default;
-const { Platform } = require("react-native");
 
 /**
  * Background Playback Service (RNTP v4)
@@ -33,13 +33,19 @@ module.exports = async function () {
   const safeStopAndReset = async () => {
     try {
       await TrackPlayer.pause();
-    } catch (_) {}
+    } catch (_) {
+      // nothing was playing to pause
+    }
     try {
       await TrackPlayer.stop();
-    } catch (_) {}
+    } catch (_) {
+      // nothing was playing to stop
+    }
     try {
       await TrackPlayer.reset();
-    } catch (_) {}
+    } catch (_) {
+      // already reset; a second one is a no-op
+    }
     shouldResumeAfterDuck = false;
   };
 
@@ -53,7 +59,7 @@ module.exports = async function () {
   TrackPlayer.addEventListener(Event.RemoteNext, () => TrackPlayer.skipToNext().catch(() => {}));
 
   TrackPlayer.addEventListener(Event.RemotePrevious, () =>
-    TrackPlayer.skipToPrevious().catch(() => {}),
+    TrackPlayer.skipToPrevious().catch(() => {})
   );
 
   // ── Audio focus / call & alarm interruptions ───────────────────────────────
@@ -100,6 +106,7 @@ module.exports = async function () {
     if (shouldResumeAfterDuck) {
       shouldResumeAfterDuck = false;
       // Brief delay so the OS audio session is fully restored on all OEMs.
+      // eslint-disable-next-line no-promise-executor-return
       await new Promise((resolve) => setTimeout(resolve, 300));
       await TrackPlayer.play().catch(() => {});
     }
@@ -124,7 +131,7 @@ module.exports = async function () {
   // so we poll every 600ms for up to ~5 seconds to guarantee the sync.
   if (Platform.OS === "ios") {
     const { NativeModules } = require("react-native");
-    const NowPlayingHelper = NativeModules.NowPlayingHelper;
+    const { NowPlayingHelper } = NativeModules;
     let rateSyncTimer = null;
 
     const forceRateNow = async () => {

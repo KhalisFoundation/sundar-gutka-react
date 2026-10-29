@@ -16,7 +16,6 @@ import constant from "@common/constant";
 /** Stored value for the tile that follows the device's own light/dark setting. */
 export const SYSTEM = constant.Default;
 
-
 const APPEARANCE_RECORD_IDS = new Set(["light", "dark"]);
 
 /**

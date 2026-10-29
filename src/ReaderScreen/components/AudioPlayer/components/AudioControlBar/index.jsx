@@ -219,9 +219,8 @@ const AudioControlBar = ({
     // if the native player reports a duration far beyond the manifest value
     // (e.g. the edit list still references the original full-file length),
     // fall back to the manifest value so the slider doesn't collapse.
-    const isNativeSuspect =
-      manifestDuration > 0 && nativeDuration > manifestDuration * 1.1;
-    const nextDuration = isNativeSuspect ? manifestDuration : (nativeDuration || 0);
+    const isNativeSuspect = manifestDuration > 0 && nativeDuration > manifestDuration * 1.1;
+    const nextDuration = isNativeSuspect ? manifestDuration : nativeDuration || 0;
     setDisplayDuration(nextDuration);
     setDurationTrackId(currentTrackId);
   }, [currentPlaying?.id, progress.duration]);
@@ -229,56 +228,61 @@ const AudioControlBar = ({
   const sliderMax =
     durationTrackId && durationTrackId === getTrackId(currentPlaying) && displayDuration > 0
       ? displayDuration
-      : (Number(currentPlaying?.trackLengthSec) || 0);
+      : Number(currentPlaying?.trackLengthSec) || 0;
 
-  const safePosition = useMemo(
-    () => {
-      // While loadActiveTrack hasn't confirmed the new track in RNTP yet,
-      // progress.position may still be the previous track's stale value (e.g.
-      // 4:44 from a just-left track). Show saved/restore position or 0 instead.
-      if (confirmedCurrentTrackId !== String(currentPlaying?.id ?? "")) {
-        const savedProgress = audioProgress?.[baniID];
-        if (savedProgress?.trackId && String(savedProgress.trackId) === String(currentPlaying?.id)) {
-          const candidatePos = savedProgress.position || 0;
-          const manifestDuration = Number(currentPlaying?.trackLengthSec) || 0;
-          const trackCompleted = manifestDuration > 0 && candidatePos >= manifestDuration - 5;
-          if (!trackCompleted && candidatePos > 0) {
-            return sliderMax > 0 ? sanitizePosition(candidatePos, sliderMax) : candidatePos;
-          }
-        }
-        return 0;
-      }
-
-      let basePosition = progress.position;
-
-      // If native player hasn't caught up (position is 0 or near-0 right after
-      // addAndPlayTrack / reset), show the Redux-saved position to avoid a 0:00 flash.
-      // isSeekLoading is intentionally excluded: keeping it here caused the stale
-      // Redux position to flash over the live player position on every focus return.
-      if (!basePosition || basePosition < 0.5) {
-        const savedProgress = audioProgress?.[baniID];
-        if (savedProgress?.trackId && String(savedProgress.trackId) === String(currentPlaying?.id)) {
-          const candidatePos = savedProgress.position || basePosition;
-          const manifestDuration = Number(currentPlaying?.trackLengthSec) || 0;
-          const trackCompleted = manifestDuration > 0 && candidatePos >= manifestDuration - 5;
-          if (!trackCompleted) {
-            basePosition = candidatePos;
-          }
+  const safePosition = useMemo(() => {
+    // While loadActiveTrack hasn't confirmed the new track in RNTP yet,
+    // progress.position may still be the previous track's stale value (e.g.
+    // 4:44 from a just-left track). Show saved/restore position or 0 instead.
+    if (confirmedCurrentTrackId !== String(currentPlaying?.id ?? "")) {
+      const savedProgress = audioProgress?.[baniID];
+      if (savedProgress?.trackId && String(savedProgress.trackId) === String(currentPlaying?.id)) {
+        const candidatePos = savedProgress.position || 0;
+        const manifestDuration = Number(currentPlaying?.trackLengthSec) || 0;
+        const trackCompleted = manifestDuration > 0 && candidatePos >= manifestDuration - 5;
+        if (!trackCompleted && candidatePos > 0) {
+          return sliderMax > 0 ? sanitizePosition(candidatePos, sliderMax) : candidatePos;
         }
       }
+      return 0;
+    }
 
-      if (optimisticSeekPosition != null) {
-        basePosition = optimisticSeekPosition;
+    let basePosition = progress.position;
+
+    // If native player hasn't caught up (position is 0 or near-0 right after
+    // addAndPlayTrack / reset), show the Redux-saved position to avoid a 0:00 flash.
+    // isSeekLoading is intentionally excluded: keeping it here caused the stale
+    // Redux position to flash over the live player position on every focus return.
+    if (!basePosition || basePosition < 0.5) {
+      const savedProgress = audioProgress?.[baniID];
+      if (savedProgress?.trackId && String(savedProgress.trackId) === String(currentPlaying?.id)) {
+        const candidatePos = savedProgress.position || basePosition;
+        const manifestDuration = Number(currentPlaying?.trackLengthSec) || 0;
+        const trackCompleted = manifestDuration > 0 && candidatePos >= manifestDuration - 5;
+        if (!trackCompleted) {
+          basePosition = candidatePos;
+        }
       }
+    }
 
-      if (sliderMax <= 0) {
-        return basePosition;
-      }
+    if (optimisticSeekPosition != null) {
+      basePosition = optimisticSeekPosition;
+    }
 
-      return sanitizePosition(basePosition, sliderMax);
-    },
-    [progress.position, sliderMax, optimisticSeekPosition, audioProgress, baniID, currentPlaying?.id, confirmedCurrentTrackId]
-  );
+    if (sliderMax <= 0) {
+      return basePosition;
+    }
+
+    return sanitizePosition(basePosition, sliderMax);
+  }, [
+    progress.position,
+    sliderMax,
+    optimisticSeekPosition,
+    audioProgress,
+    baniID,
+    currentPlaying?.id,
+    confirmedCurrentTrackId,
+  ]);
 
   useEffect(() => {
     if (optimisticSeekPosition == null) {
@@ -451,6 +455,7 @@ const AudioControlBar = ({
       // effect to prevent the destructive double-load race condition.
       // M4A moov parse takes seconds — a second reset() kills it.
       if (skipNextLoadRef?.current) {
+        // eslint-disable-next-line no-param-reassign -- mutating a ref's .current is the intended pattern
         skipNextLoadRef.current = false;
         setConfirmedCurrentTrackId(String(currentPlaying.id));
         return;
@@ -503,7 +508,8 @@ const AudioControlBar = ({
         if (initialProgressRef.current) {
           const savedProgress = initialProgressRef.current;
           const isSavedProgressForCurrentTrack =
-            savedProgress.trackId != null && String(savedProgress.trackId) === String(currentPlaying.id);
+            savedProgress.trackId != null &&
+            String(savedProgress.trackId) === String(currentPlaying.id);
 
           // Restore exact saved position if it belongs to the currently selected track.
           // We intentionally avoid restoring from sequence ID to prevent snapping backwards
@@ -541,7 +547,8 @@ const AudioControlBar = ({
       const currentTrack = currentPlayingRef.current;
       const trackId = currentTrack?.id;
       const unmountDuration =
-        sanitizeDuration(currentProgress?.duration) || sanitizeDuration(currentTrack?.trackLengthSec);
+        sanitizeDuration(currentProgress?.duration) ||
+        sanitizeDuration(currentTrack?.trackLengthSec);
       const unmountPosition = sanitizePosition(currentProgress?.position, unmountDuration);
       if (trackId) {
         if (
@@ -651,169 +658,169 @@ const AudioControlBar = ({
       )}
       {!isMinimized && (
         <View style={[styles.mainContainer, Platform.OS === "ios" && styles.mainContainerIOS]}>
-        {Platform.OS === "ios" && (
-          <BlurView
-            style={styles.blurOverlay}
-            blurType={theme.chrome.blurType}
-            blurAmount={5}
-            reducedTransparencyFallbackColor={theme.c.surface}
-          />
-        )}
-        {/* Top Control Bar */}
-        <View style={styles.topControlBar}>
-          <View style={styles.leftControls}>
-            {actionComponents.map((component) => (
-              <ActionComponents
-                key={component.text}
-                selector={component.selector}
-                toggle={component.toggle}
-                Icon={component.Icon}
-                text={component.text}
-              />
-            ))}
-          </View>
-
-          <View style={styles.rightControls}>
-            {!isMoreTracksModalOpen && !isSettingsModalOpen && currentPlaying && (
-              <Pressable
-                style={styles.controlIcon}
-                onPress={() => setMinimized(true, "control")}
-              >
-                <ExpandCollapseIcon size={26} color={theme.c.textBrand} />
-              </Pressable>
-            )}
-            {actionItems.map((item) => (
-              <Pressable key={item.id} style={styles.controlIcon} onPress={item.onPress}>
-                <item.Icon size={30} color={theme.c.textBrand} />
-              </Pressable>
-            ))}
-          </View>
-        </View>
-
-        {/* Separator */}
-        <View style={styles.separator} />
-        <Animated.View
-          style={[styles.modalAnimation, { maxHeight: modalHeight, opacity: modalOpacity }]}
-        >
-          {isSettingsModalOpen && (
-            <AudioSettingsModal
-              isLyricsAvailable={isLyricsAvailable}
-              isLyricsChecking={isLyricsChecking}
-              setRate={setRate}
+          {Platform.OS === "ios" && (
+            <BlurView
+              style={styles.blurOverlay}
+              blurType={theme.chrome.blurType}
+              blurAmount={5}
+              reducedTransparencyFallbackColor={theme.c.surface}
             />
           )}
+          {/* Top Control Bar */}
+          <View style={styles.topControlBar}>
+            <View style={styles.leftControls}>
+              {actionComponents.map((component) => (
+                <ActionComponents
+                  key={component.text}
+                  selector={component.selector}
+                  toggle={component.toggle}
+                  Icon={component.Icon}
+                  text={component.text}
+                />
+              ))}
+            </View>
 
-          {isMoreTracksModalOpen && (
-            <View style={styles.moreTracksModalContainer}>
-              {/* The heading rides INSIDE the scroller. Above it, in a panel
+            <View style={styles.rightControls}>
+              {!isMoreTracksModalOpen && !isSettingsModalOpen && currentPlaying && (
+                <Pressable style={styles.controlIcon} onPress={() => setMinimized(true, "control")}>
+                  <ExpandCollapseIcon size={26} color={theme.c.textBrand} />
+                </Pressable>
+              )}
+              {actionItems.map((item) => (
+                <Pressable key={item.id} style={styles.controlIcon} onPress={item.onPress}>
+                  <item.Icon size={30} color={theme.c.textBrand} />
+                </Pressable>
+              ))}
+            </View>
+          </View>
+
+          {/* Separator */}
+          <View style={styles.separator} />
+          <Animated.View
+            style={[styles.modalAnimation, { maxHeight: modalHeight, opacity: modalOpacity }]}
+          >
+            {isSettingsModalOpen && (
+              <AudioSettingsModal
+                isLyricsAvailable={isLyricsAvailable}
+                isLyricsChecking={isLyricsChecking}
+                setRate={setRate}
+              />
+            )}
+
+            {isMoreTracksModalOpen && (
+              <View style={styles.moreTracksModalContainer}>
+                {/* The heading rides INSIDE the scroller. Above it, in a panel
                   capped by an animated maxHeight, it was the first thing lost
                   at a raised OS text size — and lost silently, since there was
                   no way to scroll up to something clipped off the top. */}
-              <ScrollViewComponent
-                tracks={tracks}
-                selectedTrack={currentPlaying}
-                playingTrack={currentPlaying}
-                isPlaying={isPlaying}
-                isOffline={isOffline}
-                handleSelectTrack={handleInlineTrackSelect}
-                header={
-                  <CustomText style={styles.moreTracksHeaderText}>
-                    {STRINGS.please_choose_a_track}{" "}
-                    <CustomText style={{ fontFamily: fontFace }}>{title}</CustomText>
-                  </CustomText>
-                }
-              />
-            </View>
-          )}
-        </Animated.View>
+                <ScrollViewComponent
+                  tracks={tracks}
+                  selectedTrack={currentPlaying}
+                  playingTrack={currentPlaying}
+                  isPlaying={isPlaying}
+                  isOffline={isOffline}
+                  handleSelectTrack={handleInlineTrackSelect}
+                  header={
+                    <CustomText style={styles.moreTracksHeaderText}>
+                      {STRINGS.please_choose_a_track}{" "}
+                      <CustomText style={{ fontFamily: fontFace }}>{title}</CustomText>
+                    </CustomText>
+                  }
+                />
+              </View>
+            )}
+          </Animated.View>
 
-        {isMoreTracksModalOpen && <View style={styles.separator} />}
+          {isMoreTracksModalOpen && <View style={styles.separator} />}
 
-        {/* Main Playback Section */}
-        <View style={[styles.mainSection]}>
-          <View style={styles.trackInfo}>
-            {/* Artist name. Gives way to the download icon and the timestamp,
+          {/* Main Playback Section */}
+          <View style={[styles.mainSection]}>
+            <View style={styles.trackInfo}>
+              {/* Artist name. Gives way to the download icon and the timestamp,
                 which keep their size — but STARTS from its own width rather
                 than from zero. `flex: 1` here meant `flexBasis: 0`, so the pair
                 on the right was served in full and the name lived on the
                 remainder, which at a raised OS text size is a couple of words
                 wide. */}
-            <View style={[styles.trackInfoLeft, { flexGrow: 1, flexShrink: 1, flexBasis: "auto" }]}>
-              {currentPlaying && currentPlaying.displayName && (
-                // No line cap. One line gave "Bhai Jarnai…"; two gave "Bibi /
-                // Indermoha…" — each cap is a guess at how many lines a reciter's
-                // name needs, and the guess fails on the next longer name. A
-                // truncated name identifies nobody, which defeats the one job
-                // this label has. Nothing in the player has a fixed height, so
-                // it takes the lines it needs.
-                <CustomText style={styles.trackName}>{currentPlaying.displayName}</CustomText>
-              )}
-            </View>
-            {/* Download indicator + timestamp — stay right-aligned as a unit */}
-            <View style={{ flexDirection: 'row', alignItems: 'center', gap: 8, flexShrink: 0 }}>
-              {currentPlaying && (
-                <DownloadButton
-                  track={currentPlaying}
-                  baniTitle={title}
-                  baniNameUni={notificationTitle || title}
-                  baniId={baniID}
-                />
-              )}
-              <CustomText style={[styles.timestamp, styles.timestampWithColor]}>
-                {formatTime(safePosition)}
-              </CustomText>
-            </View>
-          </View>
-
-          <View style={styles.playbackControls}>
-            <Pressable
-              style={styles.playButton}
-              onPress={handlePlayPause}
-              disabled={!isAudioEnabled || isPlayerActionLoading || isBuffering}
-            >
-              {isPlayerActionLoading || isBuffering ? (
-                <Spinner
-                  testID="player-action-loading-indicator"
-                  size="small"
-                  color={theme.c.textBrand}
-                  style={styles.playButtonLoadingSpinner}
-                />
-              ) : isPlaying ? (
-                <PauseIcon size={30} color={theme.c.textBrand} />
-              ) : (
-                <PlayIcon size={30} color={theme.c.textBrand} />
-              )}
-            </Pressable>
-
-            <View style={styles.progressContainer}>
-              <View style={styles.progressBar}>
-                {isSeekLoading && (
-                  <View style={styles.seekLoadingOverlay} testID="seek-loading-indicator">
-                    <Spinner size="small" color={theme.c.textBrand} />
-                  </View>
+              <View
+                style={[styles.trackInfoLeft, { flexGrow: 1, flexShrink: 1, flexBasis: "auto" }]}
+              >
+                {currentPlaying && currentPlaying.displayName && (
+                  // No line cap. One line gave "Bhai Jarnai…"; two gave "Bibi /
+                  // Indermoha…" — each cap is a guess at how many lines a reciter's
+                  // name needs, and the guess fails on the next longer name. A
+                  // truncated name identifies nobody, which defeats the one job
+                  // this label has. Nothing in the player has a fixed height, so
+                  // it takes the lines it needs.
+                  <CustomText style={styles.trackName}>{currentPlaying.displayName}</CustomText>
                 )}
-                <Slider
-                  value={safePosition}
-                  minimumValue={0}
-                  maximumValue={sliderMax}
-                  onSlidingComplete={handleSliderSeekComplete}
-                  minimumTrackTintColor={sliderMinTrackColor}
-                  maximumTrackTintColor={theme.c.surfaceSelected}
-                  disabled={!isAudioEnabled || isSeekLoading}
-                  trackStyle={{
-                    height: 6,
-                    borderRadius: 3,
-                  }}
-                  thumbTintColor={sliderMinTrackColor}
-                  thumbStyle={{
-                    width: 10,
-                    height: 10,
-                  }}
-                />
+              </View>
+              {/* Download indicator + timestamp — stay right-aligned as a unit */}
+              <View style={{ flexDirection: "row", alignItems: "center", gap: 8, flexShrink: 0 }}>
+                {currentPlaying && (
+                  <DownloadButton
+                    track={currentPlaying}
+                    baniTitle={title}
+                    baniNameUni={notificationTitle || title}
+                    baniId={baniID}
+                  />
+                )}
+                <CustomText style={[styles.timestamp, styles.timestampWithColor]}>
+                  {formatTime(safePosition)}
+                </CustomText>
+              </View>
+            </View>
+
+            <View style={styles.playbackControls}>
+              <Pressable
+                style={styles.playButton}
+                onPress={handlePlayPause}
+                disabled={!isAudioEnabled || isPlayerActionLoading || isBuffering}
+              >
+                {/* eslint-disable-next-line no-nested-ternary -- loading / pause / play icon states */}
+                {isPlayerActionLoading || isBuffering ? (
+                  <Spinner
+                    testID="player-action-loading-indicator"
+                    size="small"
+                    color={theme.c.textBrand}
+                    style={styles.playButtonLoadingSpinner}
+                  />
+                ) : isPlaying ? (
+                  <PauseIcon size={30} color={theme.c.textBrand} />
+                ) : (
+                  <PlayIcon size={30} color={theme.c.textBrand} />
+                )}
+              </Pressable>
+
+              <View style={styles.progressContainer}>
+                <View style={styles.progressBar}>
+                  {isSeekLoading && (
+                    <View style={styles.seekLoadingOverlay} testID="seek-loading-indicator">
+                      <Spinner size="small" color={theme.c.textBrand} />
+                    </View>
+                  )}
+                  <Slider
+                    value={safePosition}
+                    minimumValue={0}
+                    maximumValue={sliderMax}
+                    onSlidingComplete={handleSliderSeekComplete}
+                    minimumTrackTintColor={sliderMinTrackColor}
+                    maximumTrackTintColor={theme.c.surfaceSelected}
+                    disabled={!isAudioEnabled || isSeekLoading}
+                    trackStyle={{
+                      height: 6,
+                      borderRadius: 3,
+                    }}
+                    thumbTintColor={sliderMinTrackColor}
+                    thumbStyle={{
+                      width: 10,
+                      height: 10,
+                    }}
+                  />
+                </View>
               </View>
             </View>
           </View>
-        </View>
         </View>
       )}
     </View>

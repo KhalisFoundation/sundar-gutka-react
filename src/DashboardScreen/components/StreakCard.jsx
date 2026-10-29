@@ -1,8 +1,8 @@
 import React, { useState, useCallback, useMemo } from "react";
 import { View, ScrollView, Image, Pressable, StyleSheet } from "react-native";
 import Svg, { Polyline } from "react-native-svg";
-import { weekdayNarrow } from "@common/dateLocale";
 import PropTypes from "prop-types";
+import { weekdayNarrow } from "@common/dateLocale";
 // Aliased: this file already defines its own local ChevronRight (the
 // flower-strip scroll hint below) — importing the shared icon under the same
 // name would collide with it.
@@ -273,6 +273,7 @@ const StreakCard = ({ refreshKey = 0 }) => {
         <SkeletonBlock style={[styles.lineSkeletonSmall, { marginTop: 42 }]} />
         <View style={[styles.weekRow, { marginTop: 6 }]}>
           {Array.from({ length: 7 }).map((_, i) => (
+            // eslint-disable-next-line react/no-array-index-key
             <SkeletonBlock key={i} style={styles.dotSkeleton} />
           ))}
         </View>

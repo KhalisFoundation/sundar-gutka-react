@@ -21,6 +21,16 @@ import DashboardHeader from "./components/DashboardHeader";
 import { SECTION_REGISTRY } from "./components/sectionRegistry";
 import SectionsModal from "./components/SectionsModal";
 
+const styles = StyleSheet.create({
+  content: {
+    flexGrow: 1,
+    paddingBottom: 32,
+  },
+  section: {
+    marginTop: 24,
+  },
+});
+
 // Registry-driven dashboard. Sections render in the user's persisted order and
 // visibility (see dashboardLayout slice). Add a new section by registering it in
 // sectionRegistry.js + reducer.js DEFAULT_DASHBOARD_ORDER.
@@ -179,15 +189,5 @@ const DashboardScreen = () => {
     </SafeArea>
   );
 };
-
-const styles = StyleSheet.create({
-  content: {
-    flexGrow: 1,
-    paddingBottom: 32,
-  },
-  section: {
-    marginTop: 24,
-  },
-});
 
 export default DashboardScreen;

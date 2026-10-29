@@ -35,7 +35,9 @@ if (NativeModules.TrackPlayerModule != null) {
 } else {
   // This will never happen on a correctly installed production build, but
   // prevents a full startup crash during development / after a clean install.
-  console.error("[TrackPlayer] NativeModules.TrackPlayerModule is null. Audio is disabled. Reinstall or rebuild the app.");
+  console.error(
+    "[TrackPlayer] NativeModules.TrackPlayerModule is null. Audio is disabled. Reinstall or rebuild the app."
+  );
 }
 
 AppRegistry.registerComponent(appName, () => App);

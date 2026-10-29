@@ -25,8 +25,7 @@ import AsyncStorage from "@react-native-async-storage/async-storage";
 
 // base=USD so every value is "local per USD" — the same convention currency.js
 // uses for its static fallback rates, so the two are drop-in interchangeable.
-const ENDPOINT =
-  "https://api.frankfurter.dev/v1/latest?base=USD&symbols=CAD,EUR,GBP,AUD,INR";
+const ENDPOINT = "https://api.frankfurter.dev/v1/latest?base=USD&symbols=CAD,EUR,GBP,AUD,INR";
 const CACHE_KEY = "@fx_rates_v1";
 const TTL_MS = 7 * 24 * 60 * 60 * 1000; // refresh at most once a week — donation
 // suggestion amounts don't need day-to-day FX precision, and this keeps network
@@ -132,6 +131,7 @@ export const initExchangeRates = async () => {
 };
 
 /** Test-only: clear in-memory state so each test starts from a known baseline. */
+// eslint-disable-next-line no-underscore-dangle -- the prefix marks it test-only
 export const __resetExchangeRatesForTest = () => {
   liveRates = null;
   liveFetchedAt = 0;

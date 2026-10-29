@@ -1,14 +1,11 @@
 import React, { useState, useEffect, useRef, useMemo, useCallback } from "react";
 import { Linking } from "react-native";
 import TrackPlayer from "react-native-track-player";
-import { useIsFocused, useNavigation } from "@react-navigation/native";
 import { useSelector, useDispatch } from "react-redux";
+import { useIsFocused, useNavigation } from "@react-navigation/native";
 import PropTypes from "prop-types";
-import {
-  toggleAudio,
-  setDefaultAudio,
-  setAudioProgress,
-} from "@common/actions";
+import { toggleAudio, setDefaultAudio, setAudioProgress } from "@common/actions";
+import useListeningSession from "@common/hooks/useListeningSession";
 import { showErrorToast } from "@common/toast";
 import { handlePlayerError } from "@common/TrackPlayerUtils";
 import {
@@ -22,9 +19,8 @@ import {
 } from "@common";
 import { AudioTrackDialog, AudioControlBar, ErrorFallback, Loading } from "./components";
 import { useTrackPlayer, useAudioSyncScroll, useAudioManifest } from "./hooks";
-import useListeningSession from "@common/hooks/useListeningSession";
-import { getSequenceFromPosition } from "./utils/getSequenceFromPosition";
 import { getLocalTrackPath, prefetchPreviews } from "./utils/audioDownloader";
+import { getSequenceFromPosition } from "./utils/getSequenceFromPosition";
 
 // How far RNTP's reported duration may sit from the manifest's before the two
 // are taken to be different tracks. A couple of seconds absorbs the usual
@@ -35,6 +31,7 @@ const TRACK_MATCH_TOLERANCE_SEC = 2;
 const AudioPlayer = ({
   baniID,
   title,
+  // eslint-disable-next-line react/prop-types
   notificationTitle,
   webViewRef,
   isNavBarVisible = false,
@@ -122,7 +119,9 @@ const AudioPlayer = ({
 
   // Ref so handleTrackSelect can read current position without triggering effect re-runs every 100ms
   const progressRef = useRef(progress);
-  useEffect(() => { progressRef.current = progress; }, [progress]);
+  useEffect(() => {
+    progressRef.current = progress;
+  }, [progress]);
 
   // How far into a track the reader actually got, reported once on leaving.
   //
@@ -297,12 +296,13 @@ const AudioPlayer = ({
         if (previousTrack?.id && previousPosition != null) {
           let currentSequence = null;
           if (previousTrack?.lyricsUrl) {
-            currentSequence = await getSequenceFromPosition(previousTrack.lyricsUrl, previousPosition);
+            currentSequence = await getSequenceFromPosition(
+              previousTrack.lyricsUrl,
+              previousPosition
+            );
           }
 
-          dispatch(
-            setAudioProgress(baniID, previousTrack.id, previousPosition, currentSequence)
-          );
+          dispatch(setAudioProgress(baniID, previousTrack.id, previousPosition, currentSequence));
         }
 
         // Dispatch Redux action BEFORE setting React state so that when the
@@ -335,7 +335,6 @@ const AudioPlayer = ({
           );
           setIsPlayerActionLoading(false);
         }
-
       } catch (error) {
         handlePlayerError("switching track", error);
         showErrorToast(`${STRINGS.UNABLE_TO_SWITCH_TRACK} ${STRINGS.PLEASE_TRY_AGAIN}`);
@@ -401,21 +400,14 @@ const AudioPlayer = ({
     const hasCurrentTrack = Boolean(currentPlaying?.id);
     const hasSavedDefaultTrack = Boolean(
       defaultAudio?.[baniID]?.id &&
-      tracks?.some((t) => String(t.artistID) === String(defaultAudio[baniID].artistID))
+        tracks?.some((t) => String(t.artistID) === String(defaultAudio[baniID].artistID))
     );
 
     if (hasTracks && (hasCurrentTrack || hasSavedDefaultTrack)) {
       setShowTrackModal(false);
       setHasAutoRestoredView(true);
     }
-  }, [
-    hasAutoRestoredView,
-    showTrackModal,
-    tracks,
-    currentPlaying?.id,
-    defaultAudio,
-    baniID,
-  ]);
+  }, [hasAutoRestoredView, showTrackModal, tracks, currentPlaying?.id, defaultAudio, baniID]);
 
   // Safe-exit: fires when bani length changes and the new track list no longer
   // includes the currently playing artist (e.g. InderMohan on Long/XL) or is
@@ -430,7 +422,7 @@ const AudioPlayer = ({
     if (isSelectingTrackRef.current) return;
 
     const tracksEmpty = !Array.isArray(tracks) || tracks.length === 0;
-    const currentArtistTrackInNewManifest = 
+    const currentArtistTrackInNewManifest =
       currentPlaying?.artistID != null && Array.isArray(tracks)
         ? tracks.find((t) => String(t.artistID) === String(currentPlaying.artistID))
         : null;
@@ -452,16 +444,16 @@ const AudioPlayer = ({
         currentArtistTrackInNewManifest.remoteUrl || currentArtistTrackInNewManifest.audioUrl
       ) !== getLocalTrackPath(currentPlaying.remoteUrl || currentPlaying.audioUrl);
 
-    // If the component remounted (e.g. returning from Settings), currentPlaying 
-    // initializes to null. If the modal is hidden (because the app expected 
-    // defaultAudio to be valid), but the saved artist is actually invalid for 
+    // If the component remounted (e.g. returning from Settings), currentPlaying
+    // initializes to null. If the modal is hidden (because the app expected
+    // defaultAudio to be valid), but the saved artist is actually invalid for
     // this length, we are stuck on a blank player. Force the modal open.
     const isStuckOnBlankPlayer =
       !showTrackModal &&
       !currentPlaying?.id &&
       Array.isArray(tracks) &&
       tracks.length > 0 &&
-      !Boolean(
+      !(
         defaultAudio?.[baniID]?.id &&
         tracks.some((t) => String(t.artistID) === String(defaultAudio[baniID].artistID))
       );
@@ -470,21 +462,33 @@ const AudioPlayer = ({
     // we must exit and reset the player to show the modal again.
     const defaultAudioWiped = currentPlaying?.id != null && !defaultAudio?.[baniID]?.id;
 
-    const needsExit = tracksEmpty || currentArtistGone || currentTrackUrlChanged || isStuckOnBlankPlayer || defaultAudioWiped;
+    const needsExit =
+      tracksEmpty ||
+      currentArtistGone ||
+      currentTrackUrlChanged ||
+      isStuckOnBlankPlayer ||
+      defaultAudioWiped;
 
     // Only execute if we actually need to change state (prevents infinite loop of stop/reset)
     if (needsExit && (!showTrackModal || currentPlaying != null)) {
       // Stop and reset the player silently, then surface the selection UI.
       (async () => {
-        try { await stop(); } catch (_) {}
-        try { await reset(); } catch (_) {}
+        try {
+          await stop();
+        } catch (_) {
+          // nothing was playing to stop
+        }
+        try {
+          await reset();
+        } catch (_) {
+          // already reset; a second one is a no-op
+        }
       })();
       setCurrentPlaying(null);
       setShowTrackModal(true);
       setHasAutoRestoredView(true); // prevent autoRestore from hiding the modal immediately
     }
   }, [tracks, isTracksLoading, showTrackModal, currentPlaying?.id, defaultAudio, baniID]);
-
 
   const handleSeek = async (value) => {
     if (!isAudioEnabled || !isInitialized) return;

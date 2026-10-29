@@ -5,6 +5,7 @@
 // (StreakCard, MonthCalendar, YourPractice, WeekChart, computeStreaks...), so
 // this isn't rare. Running them one at a time removes the race entirely,
 // regardless of the exact native-side cause.
+// eslint-disable-next-line no-underscore-dangle -- module-private chain
 let _chain = Promise.resolve();
 
 // A wedged native call (e.g. the SQLite bridge left in a bad state after a

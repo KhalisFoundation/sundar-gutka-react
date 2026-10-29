@@ -128,13 +128,13 @@ describe("useAudioSyncScroll", () => {
 
     // Wait until the scroll message is sent
     await waitFor(() => {
-      const calls = webViewRef.current.postMessage.mock.calls;
-      const scrollCalls = calls.filter(call => JSON.parse(call[0]).action === "scrollToSequence");
+      const { calls } = webViewRef.current.postMessage.mock;
+      const scrollCalls = calls.filter((call) => JSON.parse(call[0]).action === "scrollToSequence");
       expect(scrollCalls.length).toBe(1);
     });
 
-    const calls = webViewRef.current.postMessage.mock.calls;
-    const scrollCalls = calls.filter(call => JSON.parse(call[0]).action === "scrollToSequence");
+    const { calls } = webViewRef.current.postMessage.mock;
+    const scrollCalls = calls.filter((call) => JSON.parse(call[0]).action === "scrollToSequence");
     const message = JSON.parse(scrollCalls[0][0]);
     expect(message.action).toBe("scrollToSequence");
     expect(message.sequence).toBe(1);
@@ -181,8 +181,8 @@ describe("useAudioSyncScroll", () => {
     // Give the effect a chance to run
     await waitFor(() => {
       // still should not have sent any scroll message
-      const calls = webViewRef.current.postMessage.mock.calls;
-      const scrollCalls = calls.filter(call => {
+      const { calls } = webViewRef.current.postMessage.mock;
+      const scrollCalls = calls.filter((call) => {
         try {
           return JSON.parse(call[0]).action === "scrollToSequence";
         } catch (e) {

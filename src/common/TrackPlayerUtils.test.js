@@ -6,14 +6,14 @@
 
 // TrackPlayerUtils pulls logError/logMessage from the heavy @common barrel —
 // stub the two it uses so the module loads in isolation.
+import { AppState } from "react-native";
+import TrackPlayer from "react-native-track-player";
+import { TrackPlayerSetup } from "./TrackPlayerUtils";
+
 jest.mock("./index", () => ({
   logError: jest.fn(),
   logMessage: jest.fn(),
 }));
-
-import { AppState } from "react-native";
-import TrackPlayer from "react-native-track-player";
-import { TrackPlayerSetup } from "./TrackPlayerUtils";
 
 describe("TrackPlayerSetup foreground guard", () => {
   afterEach(() => {

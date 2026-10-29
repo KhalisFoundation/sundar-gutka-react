@@ -355,7 +355,7 @@ export const getBaniTransliterations = async (baniIds) => {
           baniIds,
           (_tx, results) => {
             const map = {};
-            for (let i = 0; i < results.rows.length; i++) {
+            for (let i = 0; i < results.rows.length; i += 1) {
               const row = results.rows.item(i);
               try {
                 const json = JSON.parse(row.Transliterations);

@@ -61,6 +61,51 @@ const MIN_SPIN_MS = 700;
 // the rest of the day.
 const AUTO_RECHECK_MS = 10 * 60 * 1000;
 
+const styles = StyleSheet.create({
+  wrap: { paddingHorizontal: 20 },
+  card: { padding: 22 },
+  cardTitle: {
+    fontSize: 12,
+    fontWeight: "600",
+    letterSpacing: 1.2,
+    textAlign: "center",
+    marginBottom: 14,
+  },
+  dateLine: {
+    fontSize: 12,
+    textAlign: "center",
+    marginBottom: 14,
+  },
+  gurmukhi: {
+    fontSize: 19,
+    textAlign: "center",
+    marginBottom: 6,
+    lineHeight: 31,
+    paddingHorizontal: 4,
+  },
+  footerDivider: { height: 1, marginVertical: 16 },
+  // `space-between` only yields a gap while there is room to spare; once there
+  // is not, the two halves butt together ("…ਰਾਗੁ ਸੋਰਠਿRead Hukamnama") and the
+  // link runs off the card. Same defect as RandomShabad, same fix.
+  footer: {
+    flexDirection: "row",
+    alignItems: "center",
+    justifyContent: "space-between",
+    gap: 12,
+  },
+  meta: { fontSize: 13, flexShrink: 1 },
+  // Shrinks and wraps like the "Ang · Raag" meta beside it — same reasoning as
+  // Random Shabad's identical footer: one half wrapping while the other held
+  // its line read as lopsided. The chevron keeps its size either way.
+  readLink: { flexDirection: "row", alignItems: "center", gap: 2, flexShrink: 1 },
+  // No fontWeight — matches the "Ang · Raag" meta text beside it (Baloo Paaji
+  // Regular via CustomText's default resolution) instead of the bold brand font.
+  readText: { fontSize: 14, fontWeight: "600", flexShrink: 1 },
+  skeletonInner: { alignItems: "center", gap: 10, paddingVertical: 6 },
+  lineSkeletonWide: { width: "80%", height: 18 },
+  lineSkeletonNarrow: { width: "55%", height: 18 },
+});
+
 const TodaysVaak = ({
   refreshKey = 0,
   embedded = false,
@@ -266,7 +311,11 @@ const TodaysVaak = ({
       {/* dailyVaak.js already filters the heading verse out and picks exactly
           2 lines, matching Random Shabad's short preview. */}
       {(vaak?.lines ?? []).map((line, i) => (
-        <CustomText key={i} style={[styles.gurmukhi, { color: gurmukhiColor, fontFamily: gurmukhiFont }]}>
+        <CustomText
+          // eslint-disable-next-line react/no-array-index-key
+          key={i}
+          style={[styles.gurmukhi, { color: gurmukhiColor, fontFamily: gurmukhiFont }]}
+        >
           {line}
         </CustomText>
       ))}
@@ -335,50 +384,5 @@ TodaysVaak.propTypes = {
   reloadNonce: PropTypes.number,
   onLoadingChange: PropTypes.func,
 };
-
-const styles = StyleSheet.create({
-  wrap: { paddingHorizontal: 20 },
-  card: { padding: 22 },
-  cardTitle: {
-    fontSize: 12,
-    fontWeight: "600",
-    letterSpacing: 1.2,
-    textAlign: "center",
-    marginBottom: 14,
-  },
-  dateLine: {
-    fontSize: 12,
-    textAlign: "center",
-    marginBottom: 14,
-  },
-  gurmukhi: {
-    fontSize: 19,
-    textAlign: "center",
-    marginBottom: 6,
-    lineHeight: 31,
-    paddingHorizontal: 4,
-  },
-  footerDivider: { height: 1, marginVertical: 16 },
-  // `space-between` only yields a gap while there is room to spare; once there
-  // is not, the two halves butt together ("…ਰਾਗੁ ਸੋਰਠਿRead Hukamnama") and the
-  // link runs off the card. Same defect as RandomShabad, same fix.
-  footer: {
-    flexDirection: "row",
-    alignItems: "center",
-    justifyContent: "space-between",
-    gap: 12,
-  },
-  meta: { fontSize: 13, flexShrink: 1 },
-  // Shrinks and wraps like the "Ang · Raag" meta beside it — same reasoning as
-  // Random Shabad's identical footer: one half wrapping while the other held
-  // its line read as lopsided. The chevron keeps its size either way.
-  readLink: { flexDirection: "row", alignItems: "center", gap: 2, flexShrink: 1 },
-  // No fontWeight — matches the "Ang · Raag" meta text beside it (Baloo Paaji
-  // Regular via CustomText's default resolution) instead of the bold brand font.
-  readText: { fontSize: 14, fontWeight: "600", flexShrink: 1 },
-  skeletonInner: { alignItems: "center", gap: 10, paddingVertical: 6 },
-  lineSkeletonWide: { width: "80%", height: 18 },
-  lineSkeletonNarrow: { width: "55%", height: 18 },
-});
 
 export default TodaysVaak;

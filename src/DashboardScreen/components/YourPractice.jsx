@@ -55,6 +55,18 @@ ClockIcon.propTypes = { color: PropTypes.string.isRequired };
 //   return { value: String(Math.floor(secs / 3600)), unit: "hrs" };
 // };
 
+const styles = StyleSheet.create({
+  wrap: { paddingHorizontal: 20 },
+  heroRow: { flexDirection: "row", alignItems: "flex-start", gap: 12 },
+  heroBox: { flex: 1, padding: 18 },
+  hero: { flex: 1, gap: 5 },
+  heroValue: { fontSize: 39, marginTop: -5 },
+  heroLabel: { fontSize: 13, marginTop: -15 },
+  heroSub: { fontSize: 11 },
+  heroSkeleton: { width: "70%", height: 40, alignSelf: "flex-start" },
+  errorBox: { flex: 1, padding: 18 },
+});
+
 // numFont/labelFont: explicit fontFamily with NO fontWeight alongside it — these
 // are custom TTFs (same convention as StreakCard/TodaysNitnem), and pairing them
 // with a numeric fontWeight makes Android synthesize a fake bold and silently
@@ -272,18 +284,6 @@ const YourPractice = ({ refreshKey = 0 }) => {
 };
 
 YourPractice.propTypes = { refreshKey: PropTypes.number };
-
-const styles = StyleSheet.create({
-  wrap: { paddingHorizontal: 20 },
-  heroRow: { flexDirection: "row", alignItems: "flex-start", gap: 12 },
-  heroBox: { flex: 1, padding: 18 },
-  hero: { flex: 1, gap: 5 },
-  heroValue: { fontSize: 39, marginTop: -5 },
-  heroLabel: { fontSize: 13, marginTop: -15 },
-  heroSub: { fontSize: 11 },
-  heroSkeleton: { width: "70%", height: 40, alignSelf: "flex-start" },
-  errorBox: { flex: 1, padding: 18 },
-});
 
 // Paired with the commented-out MiniStat component/JSX above — kept for a quick
 // re-enable if the lifetime mini-stats ever come back to the UI.

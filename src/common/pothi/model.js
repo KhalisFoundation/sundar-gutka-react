@@ -629,4 +629,3 @@ export const mergeRemote = (state, allRemote = [], now = Date.now(), deletedFold
       ),
   });
 };
-

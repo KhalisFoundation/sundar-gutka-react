@@ -1,7 +1,7 @@
+import { accent, gold, navy } from "@theme/palette";
 import { rolesFor } from "@theme/screenPalettes";
 import useScreenPalette from "@common/hooks/useScreenPalette";
 import useTokens from "@common/hooks/useTokens";
-import { accent, gold, navy } from "@theme/palette";
 
 // The Dashboard's palette, now sourced entirely from the app's token layer.
 //

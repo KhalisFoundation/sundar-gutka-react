@@ -46,9 +46,10 @@ const describeNonError = (value) => {
   if (value == null) return String(value);
   if (typeof value === "object") {
     if (typeof value.message === "string" && value.message) {
-      const code = typeof value.code === "string" || typeof value.code === "number"
-        ? ` (code: ${value.code})`
-        : "";
+      const code =
+        typeof value.code === "string" || typeof value.code === "number"
+          ? ` (code: ${value.code})`
+          : "";
       return `${value.message}${code}`;
     }
     try {

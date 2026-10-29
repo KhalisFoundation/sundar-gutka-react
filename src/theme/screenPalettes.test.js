@@ -125,7 +125,10 @@ describe("restored screen palettes", () => {
 describe("themeForScreen", () => {
   // The single resolution point every screen-scoped stylesheet goes through.
   // When user themes land, only the registry behind it changes.
-  const base = { mode: "dark", c: { surface: "#SEMANTIC", textPrimary: "#SEMANTIC", other: "#KEEP" } };
+  const base = {
+    mode: "dark",
+    c: { surface: "#SEMANTIC", textPrimary: "#SEMANTIC", other: "#KEEP" },
+  };
 
   it("resolves a screen's roles to that screen's own values", () => {
     const { c } = themeForScreen(base, "seva");

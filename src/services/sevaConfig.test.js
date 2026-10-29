@@ -212,7 +212,11 @@ describe("sevaConfig", () => {
       global.fetch = jest.fn().mockRejectedValue(new Error("network down"));
       const config = await getSevaConfig("it");
       expect(config.source).toBe("fallback");
-      expect(config.content.segments.some((s) => s.type === "html" && s.value.includes("Support our mission"))).toBe(false);
+      expect(
+        config.content.segments.some(
+          (s) => s.type === "html" && s.value.includes("Support our mission")
+        )
+      ).toBe(false);
     });
 
     it("a returning offline user in a language that WAS cached still gets their real cached content", async () => {

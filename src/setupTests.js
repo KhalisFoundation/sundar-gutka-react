@@ -125,6 +125,7 @@ jest.mock("@rneui/themed", () => {
   const RN = require("react-native");
   return {
     __esModule: true,
+    // eslint-disable-next-line react/prop-types -- a test stand-in, not a component
     Icon: ({ name, ...rest }) =>
       React.createElement(RN.View, { accessibilityLabel: name, ...rest }),
   };

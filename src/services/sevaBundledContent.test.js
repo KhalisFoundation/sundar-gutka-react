@@ -60,7 +60,9 @@ describe("sevaBundledContent — offline mirror of the backend layout", () => {
       const page = buildBundledMeansPage("seva-by-coding", "en");
       expect(page.title).toBe("Seva for Coders");
       expect(page.content).toContain('class="seva-footer"');
-      expect(page.content).toContain('href="https://github.com/KhalisFoundation/sundar-gutka-react"');
+      expect(page.content).toContain(
+        'href="https://github.com/KhalisFoundation/sundar-gutka-react"'
+      );
     });
 
     it("describes the Slack link as the request form it opens, in every language", () => {

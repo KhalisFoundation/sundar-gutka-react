@@ -2,6 +2,7 @@ import React from "react";
 import { Image, Pressable, View } from "react-native";
 import PropTypes from "prop-types";
 import { STRINGS, CustomText, useThemedStyles } from "@common";
+// eslint-disable-next-line import/order -- the logo below is an image asset require
 import createStyles from "../styles";
 
 const baniDbLogo = require("../../../images/banidblogo.png");

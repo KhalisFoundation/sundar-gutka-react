@@ -83,6 +83,7 @@ describe("BottomNavigation", () => {
 
   afterEach(async () => {
     // Flush microtasks to allow the mocked fetch checkInternetConnection to resolve and set component state safely inside act boundaries
+    // eslint-disable-next-line no-promise-executor-return
     await waitFor(() => new Promise((resolve) => setTimeout(resolve, 0)));
   });
 

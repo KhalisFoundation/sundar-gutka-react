@@ -85,7 +85,7 @@ describe("parseSevaContent", () => {
 
   it("parses CARD open/close markers around slots into card segments", () => {
     const result = parseSevaContent(
-      '<h1>Hero</h1><!--CARD:donate--><h2>Title</h2><!--SLOT:donate_widget--><!--/CARD--><h2>Section</h2>'
+      "<h1>Hero</h1><!--CARD:donate--><h2>Title</h2><!--SLOT:donate_widget--><!--/CARD--><h2>Section</h2>"
     );
     expect(result).toEqual([
       { type: "html", value: "<h1>Hero</h1>" },

@@ -16,8 +16,6 @@ import { fetchRemoteThemes } from "../themesApi";
 // a row this build could not render; the registry sanitises again on read,
 // which costs nothing and keeps the two independent.
 
-/* global __DEV__ */
-
 /**
  * How long a catalogue stays fresh for the BACKGROUND top-up.
  *

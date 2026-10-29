@@ -1,11 +1,4 @@
-import {
-  DocumentDirectoryPath,
-  exists,
-  mkdir,
-  readFile,
-  writeFile,
-  unlink,
-} from "react-native-fs";
+import { DocumentDirectoryPath, exists, mkdir, readFile, writeFile, unlink } from "react-native-fs";
 import {
   NO_CACHE_HEADERS,
   readValidatorMeta,

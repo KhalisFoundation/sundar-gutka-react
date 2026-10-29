@@ -27,4 +27,3 @@ ChevronDownIcon.propTypes = {
   size: PropTypes.number,
   color: PropTypes.string,
 };
-

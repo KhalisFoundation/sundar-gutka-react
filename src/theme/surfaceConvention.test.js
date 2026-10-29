@@ -183,7 +183,11 @@ describe("dashboard section headings are one treatment", () => {
 // that already exist rather than a new colour.
 describe("audio action pills", () => {
   const source = require("fs").readFileSync(
-    require("path").join(__dirname, "..", "ReaderScreen/components/AudioPlayer/components/ActionComponent.jsx"),
+    require("path").join(
+      __dirname,
+      "..",
+      "ReaderScreen/components/AudioPlayer/components/ActionComponent.jsx"
+    ),
     "utf8"
   );
 

@@ -3,9 +3,9 @@
 /* eslint-env jest */
 
 import React from "react";
+import TrackPlayer from "react-native-track-player";
 
 import { render, fireEvent, act, waitFor } from "@testing-library/react-native";
-import TrackPlayer from "react-native-track-player";
 
 import { useDownloadManager } from "../../hooks";
 

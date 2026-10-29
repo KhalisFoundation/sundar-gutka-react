@@ -45,6 +45,20 @@ const ClockIcon = ({ color }) => (
 );
 ClockIcon.propTypes = { color: PropTypes.string.isRequired };
 
+const styles = StyleSheet.create({
+  wrap: { paddingHorizontal: 20 },
+  box: {
+    alignItems: "center",
+    justifyContent: "center",
+    gap: 10,
+    paddingVertical: 28,
+    paddingHorizontal: 20,
+  },
+  boxCompact: { paddingVertical: 18 },
+  text: { fontSize: 14, fontWeight: "500", textAlign: "center" },
+  retry: { fontSize: 13, fontWeight: "700", marginTop: 2 },
+});
+
 // Shared "this section has nothing to show" state for network-backed sections.
 // `message` lets a section show context-specific copy (e.g. Today's Vaak)
 // instead of the generic line. `onRetry`, when given, adds a manual re-check
@@ -81,19 +95,5 @@ OfflineNotice.propTypes = {
   onRetry: PropTypes.func,
   variant: PropTypes.oneOf(["offline", "waiting"]),
 };
-
-const styles = StyleSheet.create({
-  wrap: { paddingHorizontal: 20 },
-  box: {
-    alignItems: "center",
-    justifyContent: "center",
-    gap: 10,
-    paddingVertical: 28,
-    paddingHorizontal: 20,
-  },
-  boxCompact: { paddingVertical: 18 },
-  text: { fontSize: 14, fontWeight: "500", textAlign: "center" },
-  retry: { fontSize: 13, fontWeight: "700", marginTop: 2 },
-});
 
 export default OfflineNotice;

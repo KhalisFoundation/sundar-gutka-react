@@ -1,3 +1,22 @@
+import { logEvent, setAnalyticsCollectionEnabled } from "@react-native-firebase/analytics";
+import {
+  allowTracking,
+  trackBaniOpen,
+  trackBaniListen,
+  trackBaniListenCompletion,
+  trackBaniArtistDefault,
+  trackTrackDownload,
+  trackAudioLinkRequest,
+  trackScrollProgress,
+  trackSettingEvent,
+  trackAudioEvent,
+  trackReaderEvent,
+  trackReminderEvent,
+  trackScreenView,
+  trackSevaEvent,
+} from "./analytics";
+import { logError } from "./crashlytics";
+
 jest.mock("@react-native-firebase/app", () => ({
   getApp: jest.fn(() => ({})),
 }));
@@ -15,30 +34,9 @@ jest.mock("./crashlytics", () => ({
 // Passthrough — lets safeStr/safeInt values reach logEvent unchanged
 jest.mock("./helper", () => ({
   sanitizeName: jest.fn((value, maxLen, fallback) =>
-    value != null && String(value).trim() !== ""
-      ? String(value).slice(0, maxLen)
-      : fallback
+    value != null && String(value).trim() !== "" ? String(value).slice(0, maxLen) : fallback
   ),
 }));
-
-import { logEvent, setAnalyticsCollectionEnabled } from "@react-native-firebase/analytics";
-import { logError } from "./crashlytics";
-import {
-  allowTracking,
-  trackBaniOpen,
-  trackBaniListen,
-  trackBaniListenCompletion,
-  trackBaniArtistDefault,
-  trackTrackDownload,
-  trackAudioLinkRequest,
-  trackScrollProgress,
-  trackSettingEvent,
-  trackAudioEvent,
-  trackReaderEvent,
-  trackReminderEvent,
-  trackScreenView,
-  trackSevaEvent,
-} from "./analytics";
 
 // Shorthand — second arg to logEvent is the event name, third is params object
 const lastEventName = () => logEvent.mock.calls[0][1];
@@ -249,9 +247,7 @@ describe("trackBaniListenCompletion", () => {
 
   it("does not throw when logEvent rejects", async () => {
     logEvent.mockRejectedValueOnce(new Error("err"));
-    await expect(
-      trackBaniListenCompletion("2", "t", "a", 50, 100)
-    ).resolves.toBeUndefined();
+    await expect(trackBaniListenCompletion("2", "t", "a", 50, 100)).resolves.toBeUndefined();
     expect(logError).toHaveBeenCalled();
   });
 });
@@ -555,13 +551,13 @@ describe("trackReminderEvent", () => {
 
 describe("null safety — no (not set) across all dedicated events", () => {
   const cases = [
-    ["trackBaniOpen",              () => trackBaniOpen(null, null, null)],
-    ["trackBaniListen",            () => trackBaniListen(null, null, null, null, null)],
-    ["trackBaniListenCompletion",  () => trackBaniListenCompletion(null, null, null, null, null)],
-    ["trackBaniArtistDefault",     () => trackBaniArtistDefault(null, null)],
-    ["trackTrackDownload",         () => trackTrackDownload(null, null, null)],
-    ["trackAudioLinkRequest",      () => trackAudioLinkRequest(null, null, null)],
-    ["trackScrollProgress",        () => trackScrollProgress(null, null, null, null)],
+    ["trackBaniOpen", () => trackBaniOpen(null, null, null)],
+    ["trackBaniListen", () => trackBaniListen(null, null, null, null, null)],
+    ["trackBaniListenCompletion", () => trackBaniListenCompletion(null, null, null, null, null)],
+    ["trackBaniArtistDefault", () => trackBaniArtistDefault(null, null)],
+    ["trackTrackDownload", () => trackTrackDownload(null, null, null)],
+    ["trackAudioLinkRequest", () => trackAudioLinkRequest(null, null, null)],
+    ["trackScrollProgress", () => trackScrollProgress(null, null, null, null)],
   ];
 
   test.each(cases)(
@@ -570,7 +566,7 @@ describe("null safety — no (not set) across all dedicated events", () => {
       await fn();
       expect(logEvent).toHaveBeenCalledTimes(1);
       const params = lastParams();
-      Object.entries(params).forEach(([key, value]) => {
+      Object.entries(params).forEach(([, value]) => {
         expect(value).not.toBeUndefined();
         expect(value).not.toBeNull();
         // Firebase shows (not set) for null/undefined — this confirms none slip through
@@ -585,22 +581,45 @@ describe("null safety — no (not set) across all dedicated events", () => {
 // ─────────────────────────────────────────────────────────────────────────────
 
 describe("canonical artist names — only approved display names used in events", () => {
-  const CANONICAL_NAMES = [
-    "Bhai Jarnail Singh",
-    "Bibi Indermohan Kaur",
-    "Giani Gurdev Singh",
-  ];
+  const CANONICAL_NAMES = ["Bhai Jarnail Singh", "Bibi Indermohan Kaur", "Giani Gurdev Singh"];
 
   const artistEvents = [
-    ["bani_open — Bhai Jarnail Singh",       () => trackBaniOpen("2", "Japji Sahib", "Bhai Jarnail Singh")],
-    ["bani_open — Bibi Indermohan Kaur",     () => trackBaniOpen("2", "Japji Sahib", "Bibi Indermohan Kaur")],
-    ["bani_open — Giani Gurdev Singh",        () => trackBaniOpen("2", "Japji Sahib", "Giani Gurdev Singh")],
-    ["bani_listen — Bhai Jarnail Singh",     () => trackBaniListen("2", "Japji Sahib", "Bhai Jarnail Singh", 90, 985)],
-    ["bani_listen — Bibi Indermohan Kaur",   () => trackBaniListen("2", "Japji Sahib", "Bibi Indermohan Kaur", 90, 985)],
-    ["bani_listen — Giani Gurdev Singh",      () => trackBaniListen("2", "Japji Sahib", "Giani Gurdev Singh", 90, 985)],
-    ["bani_listen_completion — Bibi Indermohan Kaur", () => trackBaniListenCompletion("2", "Japji Sahib", "Bibi Indermohan Kaur", 500, 985)],
-    ["bani_artist_default — Bibi Indermohan Kaur",    () => trackBaniArtistDefault("2", "Bibi Indermohan Kaur")],
-    ["track_download — Giani Gurdev Singh",            () => trackTrackDownload("2", "Giani Gurdev Singh", "Japji Sahib")],
+    [
+      "bani_open — Bhai Jarnail Singh",
+      () => trackBaniOpen("2", "Japji Sahib", "Bhai Jarnail Singh"),
+    ],
+    [
+      "bani_open — Bibi Indermohan Kaur",
+      () => trackBaniOpen("2", "Japji Sahib", "Bibi Indermohan Kaur"),
+    ],
+    [
+      "bani_open — Giani Gurdev Singh",
+      () => trackBaniOpen("2", "Japji Sahib", "Giani Gurdev Singh"),
+    ],
+    [
+      "bani_listen — Bhai Jarnail Singh",
+      () => trackBaniListen("2", "Japji Sahib", "Bhai Jarnail Singh", 90, 985),
+    ],
+    [
+      "bani_listen — Bibi Indermohan Kaur",
+      () => trackBaniListen("2", "Japji Sahib", "Bibi Indermohan Kaur", 90, 985),
+    ],
+    [
+      "bani_listen — Giani Gurdev Singh",
+      () => trackBaniListen("2", "Japji Sahib", "Giani Gurdev Singh", 90, 985),
+    ],
+    [
+      "bani_listen_completion — Bibi Indermohan Kaur",
+      () => trackBaniListenCompletion("2", "Japji Sahib", "Bibi Indermohan Kaur", 500, 985),
+    ],
+    [
+      "bani_artist_default — Bibi Indermohan Kaur",
+      () => trackBaniArtistDefault("2", "Bibi Indermohan Kaur"),
+    ],
+    [
+      "track_download — Giani Gurdev Singh",
+      () => trackTrackDownload("2", "Giani Gurdev Singh", "Japji Sahib"),
+    ],
   ];
 
   test.each(artistEvents)("%s: artist param is a canonical name", async (_label, fn) => {

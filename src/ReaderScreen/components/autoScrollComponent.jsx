@@ -1,8 +1,10 @@
 import React, { useState, useEffect, useCallback } from "react";
 import { View, Pressable, StyleSheet } from "react-native";
 import { useDispatch, useSelector } from "react-redux";
-import { Icon } from "@rneui/themed";
+import { Slider } from "@miblanchard/react-native-slider";
 import { useIsFocused } from "@react-navigation/native";
+import { Icon } from "@rneui/themed";
+import { withAlpha } from "@theme/colorUtils";
 import PropTypes from "prop-types";
 import {
   useTheme,
@@ -14,10 +16,57 @@ import {
   STRINGS,
 } from "@common";
 
-import { withAlpha } from "@theme/colorUtils";
-import { Slider } from "@miblanchard/react-native-slider";
+const localStyles = StyleSheet.create({
+  outerContainer: {
+    width: "100%",
+    maxWidth: 500,
+    borderRadius: 24,
+    paddingHorizontal: 20,
+    paddingVertical: 14,
+    shadowOffset: { width: 0, height: 4 },
+    shadowOpacity: 0.25,
+    shadowRadius: 8,
+    elevation: 8,
+  },
+  row: {
+    flexDirection: "row",
+    alignItems: "center",
+    height: 48,
+  },
+  sliderWrapper: {
+    flex: 1,
+    marginHorizontal: 16,
+    justifyContent: "center",
+  },
+  sliderTrack: {
+    height: 2,
+    borderRadius: 1,
+  },
+  sliderThumb: {
+    width: 12,
+    height: 12,
+    borderRadius: 6,
+    // No shadow, and the fill comes from the theme at the call site.
+    //
+    // The dot and the filled track are the SAME white (`c.onPrimary`), but a
+    // black shadow under a 12pt dot darkened its edges enough that it read as a
+    // duller grey than the track it sits on. There is nothing for it to lift off
+    // either — the bar behind it is one solid fill.
+  },
+  currentValueText: {
+    fontSize: 16,
+    fontWeight: "normal",
+    minWidth: 36,
+    textAlign: "right",
+  },
+});
 
-const AutoScrollComponent = ({ shabadID, webViewRef, webViewLoadTick = 0, onActivity = undefined }) => {
+const AutoScrollComponent = ({
+  shabadID,
+  webViewRef,
+  webViewLoadTick = 0,
+  onActivity = undefined,
+}) => {
   const { theme } = useTheme();
   const isFocused = useIsFocused();
   const [isPaused, togglePaused] = useState(true);
@@ -68,7 +117,7 @@ const AutoScrollComponent = ({ shabadID, webViewRef, webViewLoadTick = 0, onActi
         logError("Error sending auto-scroll message:", error);
       }
     }
-  // eslint-disable-next-line react-hooks/exhaustive-deps
+    // eslint-disable-next-line react-hooks/exhaustive-deps
   }, [isPaused, sliderValue, isFocused, isAutoScroll, webViewLoadTick]);
 
   // Send stop signal on unmount so the WebView doesn't keep scrolling
@@ -113,11 +162,7 @@ const AutoScrollComponent = ({ shabadID, webViewRef, webViewLoadTick = 0, onActi
           hitSlop={8}
           accessibilityLabel={isPaused ? STRINGS.AUTO_SCROLL_PLAY : STRINGS.AUTO_SCROLL_PAUSE}
         >
-          <Icon
-            name={isPaused ? "play-arrow" : "pause"}
-            color={textColor}
-            size={24}
-          />
+          <Icon name={isPaused ? "play-arrow" : "pause"} color={textColor} size={24} />
         </Pressable>
 
         {/* Slider */}
@@ -132,12 +177,17 @@ const AutoScrollComponent = ({ shabadID, webViewRef, webViewLoadTick = 0, onActi
               onActivity?.();
             }}
             onSlidingComplete={handleSlidingComplete}
-            thumbStyle={localStyles.sliderThumb}
-            // The library's own prop, NOT a backgroundColor in `thumbStyle`.
-            // It renders the thumb as { backgroundColor: thumbTintColor, ...thumbStyle },
-            // so an ARRAY passed as thumbStyle spreads to { 0: ..., 1: ... } and the
-            // colour inside it is silently dropped — leaving the default #343434,
-            // which is why the dot stayed blackish grey.
+            thumbStyle={localStyles.sliderThumb}
+            // The library's own prop, NOT a backgroundColor in `thumbStyle`.
+
+            // It renders the thumb as { backgroundColor: thumbTintColor, ...thumbStyle },
+
+            // so an ARRAY passed as thumbStyle spreads to { 0: ..., 1: ... } and the
+
+            // colour inside it is silently dropped — leaving the default #343434,
+
+            // which is why the dot stayed blackish grey.
+
             thumbTintColor={textColor}
             trackStyle={localStyles.sliderTrack}
             minimumTrackTintColor={textColor}
@@ -153,51 +203,6 @@ const AutoScrollComponent = ({ shabadID, webViewRef, webViewLoadTick = 0, onActi
     </View>
   );
 };
-
-const localStyles = StyleSheet.create({
-  outerContainer: {
-    width: "100%",
-    maxWidth: 500,
-    borderRadius: 24,
-    paddingHorizontal: 20,
-    paddingVertical: 14,
-    shadowOffset: { width: 0, height: 4 },
-    shadowOpacity: 0.25,
-    shadowRadius: 8,
-    elevation: 8,
-  },
-  row: {
-    flexDirection: "row",
-    alignItems: "center",
-    height: 48,
-  },
-  sliderWrapper: {
-    flex: 1,
-    marginHorizontal: 16,
-    justifyContent: "center",
-  },
-  sliderTrack: {
-    height: 2,
-    borderRadius: 1,
-  },
-  sliderThumb: {
-    width: 12,
-    height: 12,
-    borderRadius: 6,
-    // No shadow, and the fill comes from the theme at the call site.
-    //
-    // The dot and the filled track are the SAME white (`c.onPrimary`), but a
-    // black shadow under a 12pt dot darkened its edges enough that it read as a
-    // duller grey than the track it sits on. There is nothing for it to lift off
-    // either — the bar behind it is one solid fill.
-  },
-  currentValueText: {
-    fontSize: 16,
-    fontWeight: "normal",
-    minWidth: 36,
-    textAlign: "right",
-  },
-});
 
 AutoScrollComponent.propTypes = {
   /** Only used to look up this bani's speed in the old per-bani map. */

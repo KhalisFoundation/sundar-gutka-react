@@ -86,8 +86,7 @@ const ThemedSwitch = ({
             // either track in either theme where a fixed white does not — but a
             // caller on a coloured card needs to say so, because there the
             // surface role IS the card and the thumb would vanish into it.
-            backgroundColor:
-              (!value && offThumbColor) || (value && onThumbColor) || c.surface,
+            backgroundColor: (!value && offThumbColor) || (value && onThumbColor) || c.surface,
             // A hairline keeps a pale thumb legible on a pale track.
             ...(thumbBorderColor ? { borderWidth: 0.5, borderColor: thumbBorderColor } : {}),
             transform: [{ translateX }],

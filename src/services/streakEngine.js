@@ -44,6 +44,7 @@ const accountSecondsToday = async (today) => {
   }
 };
 
+// eslint-disable-next-line import/prefer-default-export
 export const computeStreaks = async () => {
   try {
     const today = getLocalDate();

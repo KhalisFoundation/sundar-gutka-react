@@ -1,6 +1,6 @@
 import React, { useState, useEffect, useMemo } from "react";
-import PropTypes from "prop-types";
 import NetInfo from "@react-native-community/netinfo";
+import PropTypes from "prop-types";
 import { configureNetwork } from "../services/networkManager";
 import NetworkContext, { DEFAULT_NETWORK_STATE } from "./NetworkContext";
 

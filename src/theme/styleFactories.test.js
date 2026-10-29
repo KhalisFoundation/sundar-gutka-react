@@ -1,6 +1,5 @@
 import fs from "fs";
 import path from "path";
-
 import darkTheme from "./darkTheme";
 import lightTheme from "./lightTheme";
 
