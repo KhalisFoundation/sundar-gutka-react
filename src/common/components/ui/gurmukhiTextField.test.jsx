@@ -226,7 +226,7 @@ describe("GurmukhiTextField placeholder", () => {
 
   it("draws the placeholder in Baloo, not through the native hint", () => {
     open({ placeholder: "e.g. Morning Banis" });
-    const hint = screen.getByText("e.g. Morning Banis");
+    const hint = screen.getByText("e.g. Morning Banis", { includeHiddenElements: true });
     expect(flatten(hint.props.style).fontFamily).toBe(type.body.fontFamily);
     // And nothing asks the native field for a hint of its own on top of it.
     const inputs = screen.UNSAFE_root.findAll((node) => node.type === "TextInput");
@@ -236,6 +236,6 @@ describe("GurmukhiTextField placeholder", () => {
 
   it("hides the placeholder once there is a value", () => {
     open({ placeholder: "e.g. Morning Banis", value: "Mine" });
-    expect(screen.queryByText("e.g. Morning Banis")).toBeNull();
+    expect(screen.queryByText("e.g. Morning Banis", { includeHiddenElements: true })).toBeNull();
   });
 });
