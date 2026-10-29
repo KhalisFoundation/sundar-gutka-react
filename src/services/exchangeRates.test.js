@@ -1,18 +1,17 @@
 /* eslint-env jest */
+jest.mock("@react-native-async-storage/async-storage", () => ({
+  getItem: jest.fn(() => Promise.resolve(null)),
+  setItem: jest.fn(() => Promise.resolve()),
+}));
+
 import AsyncStorage from "@react-native-async-storage/async-storage";
 import {
   getLiveRate,
   hasLiveRates,
   refreshExchangeRates,
   initExchangeRates,
-  onRatesRefreshed,
   __resetExchangeRatesForTest,
 } from "./exchangeRates";
-
-jest.mock("@react-native-async-storage/async-storage", () => ({
-  getItem: jest.fn(() => Promise.resolve(null)),
-  setItem: jest.fn(() => Promise.resolve()),
-}));
 
 const okResponse = (rates) => ({ ok: true, json: () => Promise.resolve({ rates }) });
 const FULL = { CAD: 1.41, EUR: 0.88, GBP: 0.75, AUD: 1.43, INR: 96.56 };
@@ -40,23 +39,6 @@ describe("exchangeRates", () => {
     expect(getLiveRate("CAD")).toBe(1.41);
     expect(getLiveRate("USD")).toBe(1); // base injected
     expect(AsyncStorage.setItem).toHaveBeenCalledTimes(1);
-  });
-
-  it("tells listeners when fresh rates land, and only then", async () => {
-    const listener = jest.fn();
-    const unsubscribe = onRatesRefreshed(listener);
-
-    global.fetch.mockResolvedValue(okResponse({ CAD: 1.41 })); // incomplete
-    await refreshExchangeRates();
-    expect(listener).not.toHaveBeenCalled();
-
-    global.fetch.mockResolvedValue(okResponse(FULL));
-    await refreshExchangeRates();
-    expect(listener).toHaveBeenCalledTimes(1);
-
-    unsubscribe();
-    await refreshExchangeRates();
-    expect(listener).toHaveBeenCalledTimes(1);
   });
 
   it("rejects an incomplete payload wholesale (keeps falling back)", async () => {

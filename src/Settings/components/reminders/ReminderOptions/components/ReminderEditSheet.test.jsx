@@ -74,9 +74,8 @@ jest.mock("@common", () => {
       MINUTE: "Minute",
       TIME_EDIT_HINT: "hint",
     },
-    logError: jest.fn(),
     showConfirm: jest.fn(),
-    scheduleReminders: jest.fn(() => Promise.resolve()),
+    scheduleReminders: jest.fn(),
     trackReminderEvent: jest.fn(),
   };
 });

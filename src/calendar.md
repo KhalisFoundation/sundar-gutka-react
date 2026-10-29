@@ -1,0 +1,187 @@
+nanakshahi-js
+A JavaScript library to get Nanakshahi dates and Gurpurabs
+
+npm GitHub Workflow Status (event) GitHub license GitHub issues GitHub pull requests
+
+Contents
+Usage
+NPM
+Notes
+Nanakshahi Calendar
+JavaScript Date() Object
+API
+getNanakshahiDate()
+getGurpurabsForMonth()
+getGurpurabsForDate()
+getDateFromNanakshahi()
+findMovableGurpurab()
+Acknowledgements
+Contributing
+License
+Usage
+NPM
+Install the library via NPM:
+
+npm install nanakshahi
+The library can be imported into Node as ESM:
+
+import {
+findMovableGurpurab,
+getDateFromNanakshahi,
+getGurpurabsForDate,
+getGurpurabsForMonth,
+getNanakshahiDate,
+} from 'nanakshahi'
+
+const date = new Date()
+
+getNanakshahiDate(date)
+getDateFromNanakshahi(550, 10, 23)
+getGurpurabsForDate(date)
+getGurpurabsForMonth(1)
+findMovableGurpurab('gurunanak')
+Notes
+Nanakshahi Calendar
+This library is based on the Nanakshahi calendar passed by Sri Akal Takht Sahib in 2003 CE.
+
+All Gurpurabs and historical dates are reckoned with their solar dates. An exception to this are the movable lunar dates which are to be reckoned using the Bikrami calendar until further Panthic consensus.
+
+The Nanakshahi functions will only calculate dates after Nanakshahi adoption in 2003 CE. Any dates before March 14, 2003 CE (535 NS) will return with an Out of Range error.
+
+JavaScript Date() Object
+In this library, the Date object has been given in the local time of the client. This ensures that the Gregorian date calculated by the functions is correct regardless of timezone.
+
+API
+getNanakshahiDate()
+getNanakshahiDate(gregorianDate?): NanakshahiDate
+
+Converts a Gregorian date to the corresponding Nanakshahi date.
+
+Parameters
+
+Parameter Type Description
+gregorianDate Date JavaScript Date object (default: current date).
+Returns
+
+NanakshahiDate
+
+Nanakshahi date in English and Punjabi.
+
+Example
+
+getNanakshahiDate(new Date())
+getGurpurabsForMonth()
+getGurpurabsForMonth(month, year?): GurpurabsForMonth
+
+Returns all Gurpurabs for a Nanakshahi month.
+
+Parameters
+
+Parameter Type Description
+month number Nanakshahi month (1-12).
+year number Nanakshahi year (default: current Nanakshahi year).
+Returns
+
+GurpurabsForMonth
+
+Gurpurab list for the month with Gregorian and localized date fields.
+
+Example
+
+getGurpurabsForMonth(1)
+getGurpurabsForDate()
+getGurpurabsForDate(gregorianDate?): GurpurabName[]
+
+Returns all Gurpurabs that fall on a Gregorian date.
+
+Parameters
+
+Parameter Type Description
+gregorianDate Date JavaScript Date object (default: current date).
+Returns
+
+GurpurabName[]
+
+Gurpurabs for the day with name fields in English and Punjabi.
+
+Example
+
+getGurpurabsForDate(new Date())
+getDateFromNanakshahi()
+getDateFromNanakshahi(year, month, date): NanakshahiDate
+
+Converts a Nanakshahi date into its Gregorian equivalent.
+
+Parameters
+
+Parameter Type Description
+year number Nanakshahi year.
+month number Nanakshahi month (1-12).
+date number Nanakshahi day.
+Returns
+
+NanakshahiDate
+
+Gregorian date plus Nanakshahi date in English and Punjabi.
+
+Example
+
+getDateFromNanakshahi(550, 10, 23)
+findMovableGurpurab()
+findMovableGurpurab(gurpurab, year?): MovableGurpurab
+
+Returns Gregorian date info for a movable Gurpurab between 2003 CE and 2100 CE.
+
+Supported keys:
+
+gurunanak - Parkash Guru Nanak Dev Ji
+bandichhorr - Bandi Chhorr Divas
+holla - Holla Mahalla
+kabeer - Birthday Bhagat Kabeer Ji
+ravidaas - Birthday Bhagat Ravidaas Ji
+naamdev - Birthday Bhagat Naamdev Ji
+Parameters
+
+Parameter Type Description
+gurpurab "ravidaas" | "holla" | "kabeer" | "bandichhorr" | "naamdev" | "gurunanak" Movable Gurpurab key.
+year number Gregorian year (default: current year, range: 2003...2100).
+Returns
+
+MovableGurpurab
+
+Gurpurab date and localized name fields.
+
+Example
+
+findMovableGurpurab('gurunanak')
+Acknowledgements
+Guru Sahib, who inspires us into Sikhi.
+
+Pal Singh Purewal, who explained various concepts in the Bikrami and Nanakshahi Calendars to me and answered my various technical and historical questions. Spent countless hours verifying the calculations done by me.
+
+E. M. Reingold and N. Dershowitz for their Calendrical Calculations book and their calendar functions, which serve as the base for the movable Gurpurab calculations done in this library.
+
+My father, Jasjit Singh, whose curiosity in the Nanakshahi and Bikrami calendar systems inspired me to find answers to his technical questions.
+
+Contributing
+To get started, clone this repo and run npm install inside this directory.
+
+This repository follows the Airbnb's Javascript Style Guide, with a few minor modifications. Notably, spaces should be included inside parentheses and brackets (weird, right!). An ESLint file is provided, and your code will automatically be checked on-commit for style. It is recommended to install an ESLint plugin for your editor (VS Code's ESLint plugin works out of the box), so you can receive linter suggestions as you type.
+
+When writing commit messages, please follow the Conventional Commits specification.
+
+Markdown and HTML JSDoc documentation is generated automatically, on commit, however, if you'd like to preview any changes to documentation, npm run build-docs will update README.md. README.md should not be edited, instead apply modifications to README.hbs.
+
+The general workflow for contributing:
+
+Fork/create a new branch.
+Write or update existing tests with expected results
+Implement functions/changes
+Add JSDoc function documentation and examples
+Create a pull request with the changes
+License
+This Source Code Form is subject to the terms of the Mozilla Public License, v. 2.0. If a copy of the MPL was not distributed with this file, You can obtain one at https://mozilla.org/MPL/2.0/.
+
+Covered Software is provided under this License on an “as is” basis, without warranty of any kind, either expressed, implied, or statutory, including, without limitation, warranties that the Covered Software is free of defects, merchantable, fit for a particular purpose or non-infringing. The entire risk as to the quality and performance of the Covered Software is with You. Should any Covered Software prove defective in any respect, You (not any Contributor) assume the cost of any necessary servicing, repair, or correction. This disclaimer of warranty constitutes an essential part of this License. No use of any Covered Software is authorized under this License except under this disclaimer.
+
+Under no circumstances and under no legal theory, whether tort (including negligence), contract, or otherwise, shall any Contributor, or anyone who distributes Covered Software as permitted above, be liable to You for any direct, indirect, special, incidental, or consequential damages of any character including, without limitation, damages for lost profits, loss of goodwill, work stoppage, computer failure or malfunction, or any and all other commercial damages or losses, even if such party shall have been informed of the possibility of such damages. This limitation of liability shall not apply to liability for death or personal injury resulting from such party’s negligence to the extent applicable law prohibits such limitation. Some jurisdictions do not allow the exclusion or limitation of incidental or consequential damages, so this exclusion and limitation may not apply to You.

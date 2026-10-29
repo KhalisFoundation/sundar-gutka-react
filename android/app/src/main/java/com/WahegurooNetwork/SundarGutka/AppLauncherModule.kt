@@ -29,15 +29,8 @@ class AppLauncherModule(reactContext: ReactApplicationContext) :
       return
     }
     launchIntent.addFlags(Intent.FLAG_ACTIVITY_NEW_TASK)
-    // A launcher activity that is disabled, or a package mid-update, throws
-    // here. Uncaught on the native-modules thread that takes the app down;
-    // resolving false lets the tap fall through to the store or the web.
-    try {
-      reactApplicationContext.startActivity(launchIntent)
-      promise.resolve(true)
-    } catch (e: Exception) {
-      promise.resolve(false)
-    }
+    reactApplicationContext.startActivity(launchIntent)
+    promise.resolve(true)
   }
 
   /**

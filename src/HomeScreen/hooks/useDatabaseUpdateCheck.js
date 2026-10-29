@@ -32,14 +32,12 @@ const useDatabaseUpdateCheck = () => {
       }
 
       const result = await resolveUpdateCheck({ isOnline: !isOffline });
-
-      // Only a real answer moves the badge or starts the 24-hour clock.
-      // Offline or a failed request (a server error, a bad response) says
-      // nothing about the database: clearing the badge would hide a known
-      // update, and stamping would skip the check for a day over one moment's
-      // fault.
-      if (result === UPDATE_CHECK.OFFLINE || result === UPDATE_CHECK.FAILED) return;
       dispatch(actions.toggleDatabaseUpdateAvailable(result === UPDATE_CHECK.AVAILABLE));
+
+      // Only a real answer starts the 24-hour clock. Stamping it after an
+      // offline attempt would hide the check for a day over a moment with no
+      // signal, and the badge would stay wrong until the day was up.
+      if (result === UPDATE_CHECK.OFFLINE) return;
       await AsyncStorage.setItem(DB_UPDATE_CHECK_KEY, String(Date.now()));
     } catch (error) {
       // `resolveUpdateCheck` swallows the network cases itself, so anything

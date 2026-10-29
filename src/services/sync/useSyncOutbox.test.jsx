@@ -25,6 +25,7 @@ jest.mock("@common", () => ({
 jest.mock("@common/actions", () => {
   const types = jest.requireActual("@common/actions/actionTypes");
   return {
+    clearSyncFeature: (feature) => ({ type: types.CLEAR_SYNC_FEATURE, payload: { feature } }),
     syncOpDone: (id) => ({ type: types.SYNC_OP_DONE, payload: { id } }),
     syncOpFailed: (id, error) => ({ type: types.SYNC_OP_FAILED, payload: { id, error } }),
     syncOpSending: (id) => ({ type: types.SYNC_OP_SENDING, payload: { id } }),
@@ -110,16 +111,10 @@ describe("useSyncOutbox", () => {
     expect(mockLogError).toHaveBeenCalled();
   });
 
-  it("on a conflict, hands the feature to its bulk reconcile, which finishes the queue", async () => {
-    const store = makeStore();
-    // A reconcile marks done the ops its push carried (see syncRegistry).
-    const reconcile = jest.fn(async () => {
-      ops(store).forEach(({ id }) =>
-        store.dispatch({ type: actionTypes.SYNC_OP_DONE, payload: { id } })
-      );
-      return true;
-    });
+  it("on a conflict, hands the feature to its bulk reconcile and clears its queue", async () => {
+    const reconcile = jest.fn(async () => true);
     registerSyncFeature("reminders", { drain: async () => "conflict", reconcile });
+    const store = makeStore();
     signIn(store);
     enqueue(store, "reminders", "upsert", 2);
     enqueue(store, "reminders", "upsert", 4);
@@ -131,48 +126,6 @@ describe("useSyncOutbox", () => {
     await settle();
     expect(reconcile).toHaveBeenCalledTimes(1);
     expect(ops(store)).toEqual([]);
-  });
-
-  // The conflicting change is not dropped ahead of a reconcile that may not
-  // get through: it stays queued and is retried with backoff.
-  it("keeps the conflicting op, rescheduled, when the reconcile fails", async () => {
-    registerSyncFeature("reminders", {
-      drain: async () => "conflict",
-      reconcile: async () => false,
-    });
-    const store = makeStore();
-    signIn(store);
-    enqueue(store, "reminders", "upsert", 2);
-    render(
-      <Provider store={store}>
-        <Host />
-      </Provider>
-    );
-    await settle();
-    expect(ops(store)).toHaveLength(1);
-    expect(ops(store)[0]).toMatchObject({ status: "queued", lastError: "conflict" });
-    expect(ops(store)[0].nextAttemptAt).toBeGreaterThan(Date.now());
-  });
-
-  // A conflict can join a reconcile that was already running, built before
-  // this op existed. It answers true but never finished the op, which was left
-  // "sending" and held up every later op of the feature.
-  it("re-queues a conflicting op that the reconcile it joined did not carry", async () => {
-    registerSyncFeature("reminders", {
-      drain: async () => "conflict",
-      reconcile: async () => true,
-    });
-    const store = makeStore();
-    signIn(store);
-    enqueue(store, "reminders", "upsert", 2);
-    render(
-      <Provider store={store}>
-        <Host />
-      </Provider>
-    );
-    await settle();
-    expect(ops(store)).toHaveLength(1);
-    expect(ops(store)[0].status).toBe("queued");
   });
 
   it("does not send while signed out or offline", async () => {

@@ -3,7 +3,6 @@ import { View } from "react-native";
 import PropTypes from "prop-types";
 import useBaniTitle from "@common/hooks/useBaniTitle";
 import useTokens from "@common/hooks/useTokens";
-import baniItemTitle from "@common/pothi/itemTitle";
 import { makeBaniItem } from "@common/pothi/model";
 import { STRINGS } from "@common";
 import { GurmukhiTextField, Text } from "../../common/components/ui";
@@ -76,14 +75,7 @@ const PickBanisStep = ({ picked, onChange, baniListData, query }) => {
   // Leaf banis only. A bundled folder is a container, not something a pothi can
   // hold — its children are offered individually instead.
   const options = useMemo(() => {
-    const seen = new Set();
-    const leaves = (baniListData ?? [])
-      .flatMap((b) => (Array.isArray(b.folder) ? b.folder : [b]))
-      .filter((b) => {
-        if (b?.id == null || Array.isArray(b.folder) || seen.has(b.id)) return false;
-        seen.add(b.id);
-        return true;
-      });
+    const leaves = (baniListData ?? []).filter((b) => !Array.isArray(b.folder) && b.id != null);
     const needle = query.trim().toLowerCase();
     if (!needle) return leaves;
     return leaves.filter((bani) =>
@@ -100,7 +92,7 @@ const PickBanisStep = ({ picked, onChange, baniListData, query }) => {
       onChange(picked.filter((item) => item.baaniId !== bani.id));
       return;
     }
-    onChange([...picked, makeBaniItem({ baaniId: bani.id, title: baniItemTitle(bani) })]);
+    onChange([...picked, makeBaniItem({ baaniId: bani.id, title: titleFor(bani) })]);
   };
 
   return (

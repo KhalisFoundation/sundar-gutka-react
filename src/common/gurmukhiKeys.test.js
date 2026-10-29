@@ -1,4 +1,3 @@
-import punjabiLayout from "simple-keyboard-layouts/build/commonjs/layouts/punjabi";
 import {
   AKHAR,
   ALL_KEYS,
@@ -7,26 +6,9 @@ import {
   KEY_ROWS,
   MATRAS,
   NUKTA_LETTERS,
+  packageCharacters,
   PUNCTUATION,
 } from "./gurmukhiKeys";
-
-// The package is a dev dependency: the app ships the arrangement below, and
-// only this check reads the package, to prove every character is one it has.
-/** Every single character the package's layout contains, across both layers. */
-const packageCharacters = () => {
-  const layers = punjabiLayout.default?.layout ?? punjabiLayout.layout ?? {};
-  const chars = new Set();
-  Object.values(layers).forEach((rows) => {
-    rows.forEach((row) => {
-      row.split(" ").forEach((key) => {
-        // Skip the control tokens and the multi-character conjunct keys.
-        if (!key || key.startsWith("{")) return;
-        [...key].forEach((ch) => chars.add(ch));
-      });
-    });
-  });
-  return chars;
-};
 
 // The keyboard shows the whole alphabet. The InScript layout the package ships
 // is a typist's layout that hides half the letters behind shift, so only about

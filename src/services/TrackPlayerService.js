@@ -1,7 +1,7 @@
-const { Platform } = require("react-native");
 const TrackPlayer = require("react-native-track-player").default;
 const { Event, State } = require("react-native-track-player");
 const AsyncStorage = require("@react-native-async-storage/async-storage").default;
+const { Platform } = require("react-native");
 
 /**
  * Background Playback Service (RNTP v4)
@@ -14,7 +14,7 @@ const AsyncStorage = require("@react-native-async-storage/async-storage").defaul
  *  - Autoplay ON  → pause on interrupt, auto-resume when interrupt ends.
  *  - Notification volume duck → OS handles volume dip natively, no pause.
  */
-module.exports = async function playbackService() {
+module.exports = async function () {
   let shouldResumeAfterDuck = false;
 
   const getIsAutoPlay = async () => {
@@ -24,8 +24,8 @@ module.exports = async function playbackService() {
         const state = JSON.parse(rawState);
         return JSON.parse(state.isAudioAutoPlay || "false");
       }
-    } catch {
-      // Non-critical: AsyncStorage read failure — default to false
+    } catch (e) {
+      console.error("Failed to read autoplay pref", e);
     }
     return false;
   };
@@ -33,19 +33,13 @@ module.exports = async function playbackService() {
   const safeStopAndReset = async () => {
     try {
       await TrackPlayer.pause();
-    } catch (_e) {
-      /* intentional no-op */
-    }
+    } catch (_) {}
     try {
       await TrackPlayer.stop();
-    } catch (_e) {
-      /* intentional no-op */
-    }
+    } catch (_) {}
     try {
       await TrackPlayer.reset();
-    } catch (_e) {
-      /* intentional no-op */
-    }
+    } catch (_) {}
     shouldResumeAfterDuck = false;
   };
 
@@ -59,7 +53,7 @@ module.exports = async function playbackService() {
   TrackPlayer.addEventListener(Event.RemoteNext, () => TrackPlayer.skipToNext().catch(() => {}));
 
   TrackPlayer.addEventListener(Event.RemotePrevious, () =>
-    TrackPlayer.skipToPrevious().catch(() => {})
+    TrackPlayer.skipToPrevious().catch(() => {}),
   );
 
   // ── Audio focus / call & alarm interruptions ───────────────────────────────
@@ -106,9 +100,7 @@ module.exports = async function playbackService() {
     if (shouldResumeAfterDuck) {
       shouldResumeAfterDuck = false;
       // Brief delay so the OS audio session is fully restored on all OEMs.
-      await new Promise((resolve) => {
-        setTimeout(resolve, 300);
-      });
+      await new Promise((resolve) => setTimeout(resolve, 300));
       await TrackPlayer.play().catch(() => {});
     }
   });
@@ -132,7 +124,7 @@ module.exports = async function playbackService() {
   // so we poll every 600ms for up to ~5 seconds to guarantee the sync.
   if (Platform.OS === "ios") {
     const { NativeModules } = require("react-native");
-    const { NowPlayingHelper } = NativeModules;
+    const NowPlayingHelper = NativeModules.NowPlayingHelper;
     let rateSyncTimer = null;
 
     const forceRateNow = async () => {
@@ -144,7 +136,7 @@ module.exports = async function playbackService() {
         if (NowPlayingHelper) {
           NowPlayingHelper.forcePlaybackRate(currentRate);
         }
-      } catch (_e) {
+      } catch (_) {
         // Non-critical — the polling backstop will retry.
       }
     };
@@ -184,7 +176,7 @@ module.exports = async function playbackService() {
           if (NowPlayingHelper) {
             NowPlayingHelper.forcePlaybackRate(currentRate);
           }
-        } catch (_e) {
+        } catch (_) {
           // Non-critical — next iteration will retry.
         }
 
@@ -213,7 +205,6 @@ module.exports = async function playbackService() {
   });
 
   TrackPlayer.addEventListener(Event.PlaybackError, ({ code, message }) => {
-    // eslint-disable-next-line no-console
-    console.warn("[TrackPlayer] Playback error:", code, message);
+    console.error("[TrackPlayer] Playback error:", code, message);
   });
 };

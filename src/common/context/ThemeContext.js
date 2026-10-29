@@ -30,9 +30,6 @@ export const useTheme = () => {
   // reached a designed theme at all. That is why the settings-scoped
   // call-to-action pair never applied and Rename stayed invisible on Sanjh.
   const applyScreen = Boolean(screen);
-  // KNOWN: resolved per consumer, so every row on a scoped screen builds its
-  // own copy of the theme. Resolving once in ScreenRolesProvider and providing
-  // it would share it. A performance note, not a bug; planned for an upcoming PR.
   const scoped = useMemo(
     () =>
       context && applyScreen

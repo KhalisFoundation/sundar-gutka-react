@@ -1,6 +1,15 @@
-// Khalis backend base URL (reading themes, audio, Seva, account sync and the
-// Dashboard).
+// Khalis backend base URL (Seva + Dashboard APIs).
+//
+// ── PRODUCTION (Azure Container Apps) ───────────────────────────────────────
 const KHALIS_API_BASE = "https://users.khalis.net";
+//
+// ── LOCAL DEV ───────────────────────────────────────────────────────────────
+// To test against the backend running on THIS machine (khalis-users-api → PORT
+// 3500), swap in the line below. On a USB device/emulator run once:
+//   adb reverse tcp:3500 tcp:3500
+// (cleartext to localhost is allowed — see android res/xml/
+// network_security_config.xml). Reset Metro: react-native start --reset-cache.
+// const KHALIS_API_BASE = "http://localhost:3500";
 
 export default {
   DB: "gutka_v01",
@@ -29,6 +38,30 @@ export default {
   // the listing. The iOS id is the App Store's, not the bundle id.
   APP_ANDROID_PACKAGE: "com.WahegurooNetwork.SundarGutka",
   APP_IOS_APP_ID: "431446112",
+  // The current onboarding-carousel version. The carousel auto-opens whenever a
+  // user's persisted `seenOnboardingVersion` is below this number, so every
+  // build that bumps this re-shows the carousel exactly once to EVERYONE on
+  // their next launch — fresh installs, updaters from old versions, and users
+  // who already saw an earlier onboarding alike. Bump it whenever the
+  // onboarding content should be force-shown again.
+  ONBOARDING_VERSION: 1,
+  // Master switch for the onboarding carousel. While false the carousel never
+  // auto-opens and the Settings "Revisit Tutorial" row is hidden, so it cannot
+  // be reached at all. The carousel and its slides stay in the build untouched:
+  // set this back to true to restore the feature with no other change.
+  ONBOARDING_ENABLED: false,
+  // Master switch for My Pothi — the folders a USER makes. While false, Home
+  // has no tab bar at all: it is one bani list with Sundar Gutka's own bundled
+  // folders sitting in it, exactly as it was before My Pothi existed. The
+  // reader's add-to-pothi button is hidden with it, so there is no way to
+  // create, rename, reorder, pin or delete a pothi. The feature stays in the
+  // build: set this back to true to restore it with no other change.
+  //
+  // The pothi SLICE and usePothiSync keep running either way, deliberately.
+  // Today's Nitnem on the Dashboard IS the Morning Nitnem pothi (see
+  // TodaysNitnem), so disabling those would empty that section — and for
+  // signed-in users especially, whose copy comes from the server pull.
+  POTHI_ENABLED: true,
   EXTRA_SMALL: "EXTRA_SMALL",
   SMALL: "SMALL",
   MEDIUM: "MEDIUM",
@@ -72,6 +105,8 @@ export default {
   WAKE_UP_JAP: "wake_up_jap",
   REMINDERS_WAKE_UP: "Reminders wake up jap",
   FOLDERSCREEN: "FolderScreen",
+  POTHI_READER: "PothiReader",
+  MY_POTHIS: "MyPothis",
   HOME_SCREEN: "Home Screen",
   ABOUT_SCREEN: "About Screen",
   FALLBACK_SCREEN: "Fallback Screen",
@@ -122,21 +157,14 @@ export default {
     titleUni: "ਗੁਰ ਮੰਤ੍ਰ",
   },
   ICON_SIZE_SMALL: 18,
-  // Master switch for My Pothi — the folders a USER makes. While false, Home
-  // has no tab bar at all: it is one bani list with Sundar Gutka's own bundled
-  // folders sitting in it, exactly as it was before My Pothi existed. The
-  // reader's add-to-pothi button is hidden with it, so there is no way to
-  // create, rename, reorder, pin or delete a pothi. The feature stays in the
-  // build: set this back to true to restore it with no other change.
-  //
-  // The pothi SLICE and usePothiSync keep running either way, deliberately:
-  // pothis already on the account must not be lost to a switch flip.
-  POTHI_ENABLED: true,
+  ANALYTICS_DB_NAME: "analytics_v01.db",
   // A day counts toward the streak when reading and listening COMBINED reach
   // this many seconds. The two channels POOL — 3 min read + 3 min listened is
   // an active day. They were previously judged separately (>=240 in EITHER
   // channel), which silently failed anyone who split their time between them.
   MIN_DAILY_ACTIVE_SECONDS: 240,
+  KHALIS_APPS_API_URL: "",
+  ANALYTICS_SYNC_API_URL: "",
 
   // ─── Dashboard redesign ───────────────────────────────────────────────────
   // Section keys for the customizable dashboard layout (order below = default order).
@@ -167,7 +195,7 @@ export default {
   // ─── Khalis SSO ───────────────────────────────────────────────────────────
   // The Service Provider fronts a SAML IdP and hands us a plain JWT — this app
   // never speaks SAML. Point SSO_SERVICE_URL at a staging SP to test against a
-  // non-production IdP.
+  // non-production IdP. See docs/SSO.md.
   SSO_SERVICE_URL: "https://serviceprovider.khalis.net",
   // The IdP itself, which owns the ACCOUNT rather than the session. Only
   // account deletion talks to it: the SP issues and ends sessions, but only
@@ -196,7 +224,7 @@ export default {
   // It must not be flipped ahead of the server. While the backend still keyed
   // on deviceId, restoring after a switch fetched this DEVICE's latest
   // snapshot — handing the new account the previous one's data, the exact bug
-  // the purge exists to fix.
+  // the purge exists to fix. See docs/SSO.md.
   SSO_ACCOUNT_SCOPED_SYNC: true,
   // Show the TECHNICAL reason a sync did not happen under the dashboard date —
   // "never (HTTP 500)", "never (restore-pending)" and so on.
@@ -212,8 +240,7 @@ export default {
   // to get that back rather than deleting the machinery.
   SYNC_DIAGNOSTICS: false,
 
-  // The Khalis account API (signed-in requests): settings, pothis, reminders
-  // and the dashboard.
+  // Khalis backend endpoints (all derived from KHALIS_API_BASE above).
   DASHBOARD_API_BASE_URL: KHALIS_API_BASE,
   // Push device registry (src/push in the API). Registers this device's FCM
   // token — anonymously before sign-in, attached to the account after — so a
@@ -236,6 +263,7 @@ export default {
   // JWT. The backend's dashboard controller has no auth guard (unlike its
   // favourite-shabads/folders/shortcuts controllers) and does not persist a
   // user id, so attaching an Authorization header here would achieve nothing.
+  // Per-account sync needs backend work first; see docs/SSO.md.
   DASHBOARD_SYNC_API_URL: `${KHALIS_API_BASE}/dashboard/cache`, // POST, no auth
   DASHBOARD_LATEST_API_URL: `${KHALIS_API_BASE}/dashboard/latest`, // GET, no auth
   // Khalis audio catalog (public, no auth): GET /audios/:baniId. This is the
@@ -265,10 +293,13 @@ export default {
   // everything it competes with at launch does: on a fresh install the bundled
   // DB seed alone is multiple seconds of I/O. Measured on device.
   AUDIO_CATALOG_SYNC_DELAY_MS: 12000,
-  // How long after launch the reading-theme catalogue may be topped up. It is
-  // ONE small request, read only when the theme picker is opened, so it has no
-  // launch deadline, while the DB seed and the first Home mount do.
+  // How long after launch the reading-theme catalogue may be topped up. Same
+  // reasoning as the sweep above and shorter only because it is ONE small
+  // request: the catalogue is read when the theme picker is opened, so it has
+  // no launch deadline, while the DB seed and the first Home mount do.
   THEMES_SYNC_DELAY_MS: 8000,
+  // Random Shabad stays on BaniDB directly (backend proxy was dropped).
+  RANDOM_SHABAD_API_URL: "",
   // Backend serves the yearly Gurpurab/events feed here (CMS-style — updated
   // server-side once a year, no app release needed). The app falls back to its
   // bundled local computation when this is unreachable or not yet deployed, so it
@@ -282,6 +313,7 @@ export default {
   // (account, local day, device) that the server SUMS, so a phone and a tablet
   // used on the same day add up instead of overwriting one another.
   DASHBOARD_ACTIVITY_API_URL: `${KHALIS_API_BASE}/dashboard/activity`,
+  NANAKSHAHI_API_URL: "",
   // Reachability probe for dashboard network services (see services/dashboard/
   // connectivity.js). Same globally-distributed 204 endpoint the app's NetInfo
   // layer uses (services/networkManager.js) — returns HTTP 204 when there is

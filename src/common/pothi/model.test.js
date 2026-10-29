@@ -654,12 +654,24 @@ describe("reconcile", () => {
   });
 
   it("caps the folder count at the server's limit", () => {
+    // Distinct names: identical empty folders are exact copies and would be
+    // collapsed by the de-duplication below before the cap could apply.
     const folders = Array.from({ length: 80 }, (_, i) => ({
       id: `p${i}`,
       name: `n${i}`,
       items: [],
     }));
     expect(reconcile({ folders }).folders).toHaveLength(MAX_FOLDERS);
+  });
+
+  it("collapses exact duplicates — same name AND same banis", () => {
+    // The self-heal for devices that seeded the defaults twice under an older
+    // build: those copies have DIFFERENT random ids, so only matching on
+    // content finds them.
+    const dupe = (id) => ({ id, name: "Morning Nitnem", items: [{ baaniId: 2 }, { baaniId: 4 }] });
+    const s = reconcile({ folders: [dupe("p_a"), dupe("p_b")] });
+    expect(s.folders).toHaveLength(1);
+    expect(s.folders[0].id).toBe("p_a");
   });
 
   it("keeps two pothis that merely share a name", () => {
@@ -763,147 +775,5 @@ describe("whose order stands after a pull", () => {
     const merged = mergeRemote(s, [remote("b", 1001), remote("a", 1000), remote("new", 1002)]);
     expect(ids(merged).slice(0, 2)).toEqual(["a", "b"]);
     expect(ids(merged)).toContain("new");
-  });
-});
-
-describe("review fixes", () => {
-  const M = require("./model");
-  const banis = (list) => list.map((baaniId) => M.makeBaniItem({ baaniId, title: `B${baaniId}` }));
-  const folder = (id, extra = {}) =>
-    M.createPothi({ id, name: id, items: banis([id.length]), now: 1, ...extra });
-  const morning = () =>
-    M.createPothi({
-      id: M.MORNING_ID,
-      name: "Morning",
-      items: banis(M.MORNING_NITNEM_IDS),
-      now: 1,
-    });
-
-  it("keeps the sync watermark through rehydrate and merges", () => {
-    const state = { ...M.emptyPothis(), syncWatermark: 555 };
-    expect(M.reconcile(state).syncWatermark).toBe(555);
-    expect(M.mergeRemote(state, [], 10).syncWatermark).toBe(555);
-    expect(M.reconcile({ folders: [] }).syncWatermark).toBe(0);
-  });
-
-  it("reorders one lane without moving or stamping anything outside it", () => {
-    const pinned = folder("pin", { pinned: true });
-    const state = M.reconcile({ folders: [morning(), pinned, folder("a"), folder("bb")] });
-    const next = M.setOrder(state, ["bb", "a"], 99);
-    expect(next.folders.map((f) => f.id)).toEqual([M.MORNING_ID, "pin", "bb", "a"]);
-    expect(next.folders[0]).toBe(state.folders[0]);
-    expect(next.folders[1]).toBe(state.folders[1]);
-    expect(next.folders[2].updatedAt).toBe(99);
-  });
-
-  it("a drag dropped where it started changes nothing", () => {
-    const state = M.reconcile({ folders: [morning(), folder("a"), folder("bb")] });
-    expect(M.setOrder(state, ["a", "bb"], 99)).toBe(state);
-  });
-
-  it("a pull keeps a newer local reorder when the server also has a new folder", () => {
-    const a = folder("a", { now: 1 });
-    const b = folder("bb", { now: 1 });
-    // Local: B dragged above A, so both are stamped newer than the server's copies.
-    const local = M.reconcile({
-      folders: [
-        { ...b, updatedAt: 50 },
-        { ...a, updatedAt: 50 },
-      ],
-    });
-    const remoteNew = folder("ccc", { now: 20 });
-    const merged = M.mergeRemote(local, [a, remoteNew, b], 60);
-    const order = merged.folders.map((f) => f.id).filter((id) => id !== "ccc");
-    expect(order).toEqual(["bb", "a"]);
-    expect(merged.folders.map((f) => f.id)).toContain("ccc");
-  });
-
-  it("does not adopt a user's own pothi when Morning Nitnem is deleted elsewhere", () => {
-    const mine = M.createPothi({ id: "mine", name: "My Path", items: banis(M.MORNING_NITNEM_IDS) });
-    const state = M.reconcile({
-      folders: [morning(), mine],
-      defaultIds: { morning: M.MORNING_ID, evening: null },
-    });
-    const merged = M.mergeRemote(state, [{ ...mine }], 10, [M.MORNING_ID]);
-    expect(M.isDefaultPothi(merged, "mine")).toBe(false);
-    expect(M.defaultPothiId(merged, "morning")).toBeNull();
-  });
-
-  it("does not adopt one after a local delete of the default either", () => {
-    const mine = M.createPothi({ id: "mine", name: "My Path", items: banis(M.MORNING_NITNEM_IDS) });
-    const state = M.reconcile({
-      folders: [morning(), mine],
-      defaultIds: { morning: M.MORNING_ID, evening: null },
-    });
-    const next = M.reconcile(M.deletePothi(state, M.MORNING_ID));
-    expect(M.isDefaultPothi(next, "mine")).toBe(false);
-  });
-
-  it("still finds the pair by its banis on a device that never had a pointer", () => {
-    const mine = M.createPothi({ id: "mine", name: "Nitnem", items: banis(M.MORNING_NITNEM_IDS) });
-    expect(M.defaultPothiId(M.reconcile({ folders: [mine] }), "morning")).toBe("mine");
-  });
-});
-
-describe("pothis made alike", () => {
-  const M = require("./model");
-  it("keeps two pothis a user made with the same name and contents", () => {
-    const folders = [
-      { id: "a", name: "Favourites", items: [] },
-      { id: "b", name: "Favourites", items: [] },
-    ];
-    expect(M.reconcile({ folders }).folders.map((f) => f.id)).toEqual(["a", "b"]);
-  });
-
-  it("still collapses two stock copies of a default", () => {
-    const stock = M.MORNING_NITNEM_IDS.map((baaniId) => ({
-      id: `i${baaniId}`,
-      type: "bani",
-      baaniId,
-      title: `B${baaniId}`,
-    }));
-    const folders = [
-      { id: "old1", name: "Morning Nitnem", items: stock },
-      { id: "old2", name: "Morning Nitnem", items: stock },
-    ];
-    expect(M.reconcile({ folders }).folders.map((f) => f.id)).toEqual(["old1"]);
-  });
-});
-
-describe("restoreItems (an editor's Discard)", () => {
-  const M = require("./model");
-  const b = (baaniId) => ({ id: `i${baaniId}`, type: "bani", baaniId, title: `B${baaniId}` });
-  const shabad = { id: "s1", type: "shabad", shabadId: 1, verseId: 2, title: "S" };
-  const start = () =>
-    M.reconcile({
-      folders: [{ id: "p", name: "P", items: [b(2), shabad, b(4), b(6)], updatedAt: 1 }],
-    });
-
-  it("puts a removed bani back in its own place, not at the end", () => {
-    const opened = start().folders[0].items;
-    const edited = M.removeBani(start(), "p", 2, 5);
-    const back = M.restoreItems(edited, "p", opened, 9);
-    expect(back.folders[0].items.map((i) => i.baaniId ?? i.id)).toEqual([2, "s1", 4, 6]);
-  });
-
-  it("stamps nothing when there is nothing to undo", () => {
-    const state = start();
-    expect(M.restoreItems(state, "p", state.folders[0].items, 9)).toBe(state);
-  });
-});
-
-describe("seeding at the folder cap", () => {
-  const M = require("./model");
-  it("records no pointer for a default that did not fit", () => {
-    const full = M.reconcile({
-      folders: Array.from({ length: M.MAX_FOLDERS }, (_, i) => ({
-        id: `p${i}`,
-        name: `n${i}`,
-        items: [],
-      })),
-    });
-    const seeded = M.seedDefaults(full, [M.createPothi({ id: M.MORNING_ID, name: "Morning" })]);
-    expect(seeded.folders.some((f) => f.id === M.MORNING_ID)).toBe(false);
-    expect(M.defaultPothiId(seeded, "morning")).toBeNull();
   });
 });

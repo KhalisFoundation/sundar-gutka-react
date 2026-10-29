@@ -22,11 +22,12 @@ import { convertToUnicode, STRINGS } from "@common";
  *
  * MORNING AND EVENING NITNEM ARE NAMED BY ROLE, NOT BY THEIR STORED NAME.
  *
- * The stored name is whatever language the device that seeded the pair was in,
- * and a device with no recorded pointer finds the pair by its well-known id or
- * its banis — never by name (see resolveDefaultId). So what is stored and what
- * is shown are deliberately two different things: the stored name syncs as it
- * is, and each device shows the pair in its own language. Keyed on the id the pointer records, so it follows
+ * The account's pair is stored in English — the API seeds it that way, and the
+ * English name is also how a device with no recorded pointer finds the pair
+ * (see resolveDefaultId), which is why a default cannot be renamed. So what is
+ * stored and what is shown are deliberately two different things: the stored
+ * name stays English and in sync on every device, and each device shows the
+ * pair in its own language. Keyed on the id the pointer records, so it follows
  * the pothi rather than whatever name it happens to carry.
  */
 const usePothiTitle = () => {

@@ -10,7 +10,6 @@ import { reminderTitle } from "@common/reminders/title";
 import {
   ConfirmDialogHost,
   constant,
-  logError,
   showConfirm,
   STRINGS,
   trackReminderEvent,
@@ -71,23 +70,16 @@ const ReminderEditSheet = ({ section = null, visible, onClose }) => {
   const handleTimePicked = (formattedTime) => {
     const array = JSON.parse(reminderBanis);
     const targetIndex = array.findIndex((item) => item.key === Number(key));
-    toggleTimePicker(false);
-    // Gone already — deleted on another device while this sheet was open.
-    if (targetIndex === -1) {
-      onClose();
-      return;
+    if (targetIndex !== -1) {
+      array[targetIndex] = {
+        ...array[targetIndex],
+        enabled: true,
+        time: formattedTime,
+      };
     }
-    array[targetIndex] = {
-      ...array[targetIndex],
-      enabled: true,
-      time: formattedTime,
-    };
     dispatch(setReminderBanis(JSON.stringify(array)));
-    // The time is saved by the dispatch above; a failed reschedule must not
-    // surface as an unhandled rejection that looks like the save failed.
-    scheduleReminders(isReminders, reminderSound, JSON.stringify(array), isTransliteration).catch(
-      logError
-    );
+    toggleTimePicker(false);
+    scheduleReminders(isReminders, reminderSound, JSON.stringify(array), isTransliteration);
     trackReminderEvent(constant.UPDATE_REMINDER, array[targetIndex]);
     onClose();
   };
@@ -105,9 +97,7 @@ const ReminderEditSheet = ({ section = null, visible, onClose }) => {
         // Rewrite the OS schedule too. Without this the reminder vanished from
         // the list but its notification stayed registered and kept firing —
         // deleting it only ever changed the app's own copy.
-        scheduleReminders(isReminders, reminderSound, JSON.stringify(arr), isTransliteration).catch(
-          logError
-        );
+        scheduleReminders(isReminders, reminderSound, JSON.stringify(arr), isTransliteration);
         onClose();
       },
     });

@@ -253,16 +253,6 @@ const PothiList = ({ baniListData, onOpenPothi, onCreatePress, onPinLimit, activ
     </View>
   );
 
-  // Stable, like renderPothi: an inline arrow here was a new function on every
-  // render, so every cell re-rendered as a drag settled whatever the
-  // callbacks above kept stable.
-  const renderDraggable = useCallback(
-    ({ item, drag }) => (
-      <ScaleDecorator>{renderPothi(item, { drag: canReorder ? drag : null })}</ScaleDecorator>
-    ),
-    [renderPothi, canReorder]
-  );
-
   return (
     // DraggableFlatList needs a gesture root with a real height. Without one the
     // list renders but neither scrolls nor drags — exactly how this behaved.
@@ -291,7 +281,9 @@ const PothiList = ({ baniListData, onOpenPothi, onCreatePress, onPinLimit, activ
           // It costs the list nothing: the pull only ever claims a downward
           // drag at the very top, where there is nothing left to scroll to.
           simultaneousHandlers={pullRef}
-          renderItem={renderDraggable}
+          renderItem={({ item, drag }) => (
+            <ScaleDecorator>{renderPothi(item, { drag: canReorder ? drag : null })}</ScaleDecorator>
+          )}
           ItemSeparatorComponent={ListSeparator}
           ListHeaderComponent={header}
           // Measured against EVERY user pothi, not against this list's data.

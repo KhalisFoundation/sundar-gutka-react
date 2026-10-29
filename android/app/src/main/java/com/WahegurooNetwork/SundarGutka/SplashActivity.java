@@ -14,9 +14,9 @@ public class SplashActivity extends AppCompatActivity {
         // navigation bar unless a window opts out, and the setting is
         // PER WINDOW. This activity is the launcher, so its window is the
         // first one on screen — MainActivity's own opt-out comes too late to
-        // cover it. Set in code here rather than in this activity's theme,
-        // which is shared with the rest of the app; the splash Dialog that
-        // follows takes the same setting from values-v29/styles.xml.
+        // cover it. There is no theme attribute for this: the underlying
+        // `enforceNavigationBarContrast` is @hide and not in public.xml, so
+        // the Java API is the only supported way to set it.
         if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.Q) {
             getWindow().setNavigationBarContrastEnforced(false);
         }

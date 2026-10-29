@@ -21,9 +21,9 @@ import createStyles from "./style";
 
 const BottomNavigation = ({
   activeKey,
-  context = "reader",
+  context = "home",
   visible = true,
-  navigation: propNavigation = undefined,
+  navigation: propNavigation,
   themed = undefined,
 }) => {
   const hookNavigation = useNavigation();
@@ -55,7 +55,6 @@ const BottomNavigation = ({
 
   // 0 = no dot, 1 = plain dot, 2+ = numbered badge (see render below).
   const [sevaDotCount, setSevaDotCount] = useState(0);
-
   const translateY = useRef(new Animated.Value(0)).current;
 
   // Helper function to get current route name
@@ -84,18 +83,11 @@ const BottomNavigation = ({
   // Load the seva dot state from config, then stay subscribed: markSevaSeen()
   // (fired when the user opens the Seva page) pushes an immediate clear here, so
   // the dot disappears without waiting for the next refetch. Also re-checks on
-  // every foreground, so a version bump pushed while the app was already open
-  // surfaces without a relaunch. Only the home tab bar shows the Seva tab, so
-  // the Reader's bar does not fetch.
-  //
-  // KNOWN: a foreground on the Seva tab can raise the dot over the page being
-  // read, since the page itself refreshes on focus, not on foreground.
-  //
-  // KNOWN: that is the whole config, content included, for a count. A
-  // version-only endpoint is planned in an upcoming PR; until then this is one
-  // request per foreground.
+  // every foreground — without this, a version bump pushed while the app was
+  // already open (backgrounded or just idle) would never surface until the
+  // user fully force-closed and relaunched, which for most users is rare to
+  // never once the app is already installed and running.
   useEffect(() => {
-    if (context !== "home") return undefined;
     let cancelled = false;
     const refresh = () => {
       getSevaConfig(language)
@@ -116,14 +108,14 @@ const BottomNavigation = ({
       unsubscribe();
       appStateSub.remove();
     };
-  }, [context, language]);
+  }, []);
 
   // Connectivity is handled globally and event-driven now: NetworkProvider is
   // the single source of truth, and useOfflinePlaybackGuard (mounted once in
-  // GlobalServices) pauses streaming playback when real internet is lost. The
+  // GlobalServices) stops streaming playback when real internet is lost. The
   // old per-instance polling watchdog that lived here has been removed.
 
-  // Home tab bar items.
+  // Standard home screen navigator items
   const homeNavigationItems = [
     {
       key: "Home",
@@ -172,9 +164,7 @@ const BottomNavigation = ({
           await pauseTrack();
           dispatch(actions.toggleAudio(false));
         }
-        // To the All Banis TAB, not just the root: popToTop alone lands on
-        // whichever tab was last showing.
-        navigation.popTo("MainTabs", { screen: "Home" });
+        navigation.popToTop();
       },
       text: STRINGS.ALL_BANIS, // Maps to "All Banis" localization key
     },
@@ -291,36 +281,57 @@ const BottomNavigation = ({
                     <View style={{ position: "relative" }}>
                       <IconComponent
                         size={24}
-                        color={item.key === activeKey ? theme.c.primary : theme.c.onPrimary}
+                        color={
+                          item.key === activeKey
+                            ? theme.c.primary
+                            : theme.c.onPrimary
+                        }
                       />
                       {item.showDot > 0 && (
                         <View
-                          style={[
-                            item.showDot > 1 ? styles.badgeNumbered : styles.badgeDot,
-                            {
-                              borderColor:
-                                item.key === activeKey ? theme.c.onPrimary : theme.c.primary,
-                            },
-                          ]}
+                          style={{
+                            position: "absolute",
+                            // A plain dot has no digits to hold, so it is a
+                            // small 10px circle; only the numbered badge needs
+                            // the larger 16px box (and it sits slightly
+                            // further out to clear the icon).
+                            top: item.showDot > 1 ? -7 : -4,
+                            right: item.showDot > 1 ? -9 : -5,
+                            backgroundColor: theme.c.error,
+                            borderRadius: item.showDot > 1 ? 9 : 5,
+                            minWidth: item.showDot > 1 ? 16 : 10,
+                            height: item.showDot > 1 ? 16 : 10,
+                            alignItems: "center",
+                            justifyContent: "center",
+                            paddingHorizontal: item.showDot > 1 ? 2 : 0,
+                            borderWidth: 1.2,
+                            borderColor:
+                              item.key === activeKey
+                                ? theme.c.onPrimary
+                                : theme.c.primary,
+                          }}
                         >
                           {/* 1 = plain dot, no text; 2+ = the real count */}
                           {item.showDot > 1 && (
-                            <CustomText style={styles.badgeText}>{item.showDot}</CustomText>
+                            <CustomText
+                              style={{
+                                color: theme.c.onError,
+                                fontSize: 9,
+                                fontWeight: "bold",
+                                fontFamily: theme.typography.fonts.balooPaajiSemiBold,
+                                textAlign: "center",
+                                lineHeight: 13,
+                              }}
+                            >
+                              {item.showDot}
+                            </CustomText>
                           )}
                         </View>
                       )}
                     </View>
                   </View>
                   {activeKey !== item.key && (
-                    <CustomText
-                      style={styles.iconText}
-                      // One line, shrunk to fit: a wrapped label grows the bar
-                      // past the height the Reader lays its chrome out from.
-                      numberOfLines={1}
-                      adjustsFontSizeToFit
-                    >
-                      {item.text}
-                    </CustomText>
+                    <CustomText style={styles.iconText}>{item.text}</CustomText>
                   )}
                 </Pressable>
               );

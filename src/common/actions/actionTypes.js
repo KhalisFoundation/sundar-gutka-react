@@ -7,8 +7,9 @@ export const SET_LANGUAGE = "SET_LANGUAGE";
 export const TOGGLE_TRANSLITERATION = "TOGGLE_TRANSLITERATION";
 export const SET_TRANSLITERATION = "SET_TRANSLITERATION";
 export const SET_THEME = "SET_THEME";
+// Records that a designed theme's suggested display settings have been applied
+// once, so choosing it again never overrides a later manual change.
 export const MARK_READER_THEME_SEEDED = "MARK_READER_THEME_SEEDED";
-export const SET_REMOTE_THEMES = "SET_REMOTE_THEMES";
 export const TOGGLE_SCREEN_AWAKE = "TOGGLE_SCREEN_AWAKE";
 export const TOGGLE_STATUS_BAR = "TOGGLE_STATUS_BAR";
 export const TOGGLE_AUTO_SCROLL = "TOGGLE_AUTO_SCROLL";
@@ -48,68 +49,59 @@ export const SET_CURRENT_BANI = "SET_CURRENT_BANI";
 // Manifest actions
 export const SET_AUDIO_MANIFEST = "SET_AUDIO_MANIFEST";
 
-// Audio progress actions
-export const SET_AUDIO_PROGRESS = "SET_AUDIO_PROGRESS";
-export const CLEAR_AUDIO_PROGRESS = "CLEAR_AUDIO_PROGRESS";
-
-// ── Audio catalog, the floating player and downloads ──────────────────────
-
 // Audio catalog cache — the persisted offline copy of the backend /audios
 // manifest, keyed by baniId. Populated by the eager catalog sync and per-bani
 // lazy refresh; read as the offline source for the audio player.
 export const SET_AUDIO_CATALOG_ENTRIES = "SET_AUDIO_CATALOG_ENTRIES";
-
 export const SET_AUDIO_CATALOG_ENTRY = "SET_AUDIO_CATALOG_ENTRY";
-
 export const SET_AUDIO_CATALOG_META = "SET_AUDIO_CATALOG_META";
-
 export const CLEAR_AUDIO_CATALOG = "CLEAR_AUDIO_CATALOG";
+
+// Audio progress actions
+export const SET_AUDIO_PROGRESS = "SET_AUDIO_PROGRESS";
+export const CLEAR_AUDIO_PROGRESS = "CLEAR_AUDIO_PROGRESS";
 
 // Reader tap signal — incremented on each tap in the bani WebView so the
 // floating mini player can toggle its expanded/collapsed state.
 export const BUMP_READER_TAP = "BUMP_READER_TAP";
-
 // Scroll DOWN in the reader. The counterpart of the tap above: a tap grows the
 // floating audio player back to its pill, scrolling away shrinks it to the
 // circle. See MinimizePlayer.
 export const BUMP_READER_SCROLL_DOWN = "BUMP_READER_SCROLL_DOWN";
+
+// Seva Donor actions
+export const SET_DONOR_STATE = "SET_DONOR_STATE";
+export const CLEAR_DONOR_STATE = "CLEAR_DONOR_STATE";
 
 // Floating mini-player drag state — used to disable WebView scroll while dragging
 export const SET_PLAYER_DRAGGING = "SET_PLAYER_DRAGGING";
 
 // Download queue
 export const ENQUEUE_DOWNLOAD = "ENQUEUE_DOWNLOAD";
-
 export const UPDATE_DOWNLOAD_STATUS = "UPDATE_DOWNLOAD_STATUS";
-
-// The previous release's downloads have been adopted into the registry. Kept in
-// the store beside the registry, so both are persisted in the same write.
-export const MARK_AUDIO_STORAGE_MIGRATED = "MARK_AUDIO_STORAGE_MIGRATED";
-
 export const UPDATE_DOWNLOAD_PROGRESS = "UPDATE_DOWNLOAD_PROGRESS";
-
 export const REMOVE_DOWNLOAD_QUEUE_ENTRY = "REMOVE_DOWNLOAD_QUEUE_ENTRY";
-
 export const RETRY_DOWNLOAD = "RETRY_DOWNLOAD";
-
 export const REQUEUE_PAUSED_DOWNLOADS = "REQUEUE_PAUSED_DOWNLOADS";
 
 // Download registry
 export const ADD_DOWNLOAD_ENTRY = "ADD_DOWNLOAD_ENTRY";
-
 export const REMOVE_DOWNLOAD_ENTRIES = "REMOVE_DOWNLOAD_ENTRIES";
-
 export const UPDATE_DOWNLOAD_ENTRIES = "UPDATE_DOWNLOAD_ENTRIES";
-
 export const SET_DOWNLOAD_REGISTRY = "SET_DOWNLOAD_REGISTRY";
-
 export const CLEAR_DOWNLOAD_REGISTRY = "CLEAR_DOWNLOAD_REGISTRY";
 
 // Download settings
 export const TOGGLE_DOWNLOAD_WIFI_ONLY = "TOGGLE_DOWNLOAD_WIFI_ONLY";
-
 export const TOGGLE_AUTO_DOWNLOAD = "TOGGLE_AUTO_DOWNLOAD";
 
+// Onboarding carousel guide
+// Transient visibility of the full-screen onboarding carousel (not persisted —
+// see store.js blacklist). Toggled true on a fresh install and by "Revisit".
+export const SET_ONBOARDING_VISIBLE = "SET_ONBOARDING_VISIBLE";
+// Persisted "the user has finished/skipped the carousel once" flag, so the
+// first-run auto-open never resurfaces on later launches.
+export const SET_ONBOARDING_SEEN = "SET_ONBOARDING_SEEN";
 // ─── Khalis SSO session ─────────────────────────────────────────────────────
 // Decoded claims only — the raw JWT lives in the Keychain, never in Redux.
 export const SET_AUTH_SESSION = "SET_AUTH_SESSION";
@@ -145,8 +137,6 @@ export const RENAME_POTHI = "RENAME_POTHI";
 export const DELETE_POTHI = "DELETE_POTHI";
 export const ADD_BANI_TO_POTHI = "ADD_BANI_TO_POTHI";
 export const REMOVE_BANI_FROM_POTHI = "REMOVE_BANI_FROM_POTHI";
-// An editor's Discard: the items it opened with, back in their order.
-export const RESTORE_POTHI_ITEMS = "RESTORE_POTHI_ITEMS";
 export const SET_POTHI_ORDER = "SET_POTHI_ORDER";
 export const TOGGLE_POTHI_PIN = "TOGGLE_POTHI_PIN";
 // Seeded once: Morning + Evening Nitnem. Tracked so a user who deletes them
@@ -155,17 +145,24 @@ export const SEED_DEFAULT_POTHIS = "SEED_DEFAULT_POTHIS";
 // Cloud sync — folder-level last-write-wins against GET /folders.
 export const MERGE_REMOTE_POTHIS = "MERGE_REMOTE_POTHIS";
 export const SET_POTHIS_SYNCED_AT = "SET_POTHIS_SYNCED_AT";
+// One tombstone retired, after DELETE /folders/:id came back 204.
+export const POTHI_DELETE_SYNCED = "POTHI_DELETE_SYNCED";
 // The server watermark from the last folders read, sent back as `since`.
 export const SET_POTHI_SYNC_WATERMARK = "SET_POTHI_SYNC_WATERMARK";
+// "Replace with cloud copy": local pothis give way to the account's.
 
 // Sync outbox — changes to account data waiting to reach the server.
 export const ENQUEUE_SYNC_OP = "ENQUEUE_SYNC_OP";
 export const SYNC_OP_SENDING = "SYNC_OP_SENDING";
 export const SYNC_OP_DONE = "SYNC_OP_DONE";
 export const SYNC_OP_FAILED = "SYNC_OP_FAILED";
+export const CLEAR_SYNC_FEATURE = "CLEAR_SYNC_FEATURE";
 
 // Reminder sync bookkeeping: per-reminder clocks, tombstones, server bases.
 export const MERGE_REMINDER_SYNC_META = "MERGE_REMINDER_SYNC_META";
+
+// Reading themes served by the backend, merged over the bundled set.
+export const SET_REMOTE_THEMES = "SET_REMOTE_THEMES";
 
 // Settings sync bookkeeping: per-key clocks and server bases.
 export const MERGE_SETTINGS_SYNC_META = "MERGE_SETTINGS_SYNC_META";

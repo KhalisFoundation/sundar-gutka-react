@@ -2,11 +2,11 @@
 
 // Use the real constant module (pure, no RN deps) so length-variant handling
 // and AUDIO_API_BASE match production exactly.
-import { selectTracksForBani, fetchRawBaniAudio, fetchManifest } from "./audioApi";
-
 jest.mock("@common", () => ({
   constant: jest.requireActual("@common/constant").default,
 }));
+
+import { selectTracksForBani, fetchRawBaniAudio, fetchManifest } from "./audioApi";
 
 const constant = jest.requireActual("@common/constant").default;
 
@@ -116,18 +116,8 @@ describe("fetchRawBaniAudio", () => {
     );
   });
 
-  it("answers a 404 as a definite 'no audio', not as no answer", async () => {
+  it("returns null on a 404 (bani without audio)", async () => {
     global.fetch = jest.fn(() => Promise.resolve({ ok: false, status: 404 }));
-    expect(await fetchRawBaniAudio(1)).toEqual({
-      baniId: 1,
-      baniName: "",
-      groups: {},
-      noAudio: true,
-    });
-  });
-
-  it("returns null on a server error, which says nothing about the bani", async () => {
-    global.fetch = jest.fn(() => Promise.resolve({ ok: false, status: 503 }));
     expect(await fetchRawBaniAudio(1)).toBeNull();
   });
 
@@ -150,10 +140,7 @@ describe("fetchManifest", () => {
   it("returns { status, data } with the selected tracks", async () => {
     const groups = { long: { artists: [artist()] } };
     global.fetch = jest.fn(() =>
-      Promise.resolve({
-        ok: true,
-        json: () => Promise.resolve({ baaniName: "Japji", data: groups }),
-      })
+      Promise.resolve({ ok: true, json: () => Promise.resolve({ baaniName: "Japji", data: groups }) })
     );
     const manifest = await fetchManifest(2, constant.LONG);
     expect(manifest.status).toBe("success");
@@ -171,10 +158,7 @@ describe("fetchManifest", () => {
     // can show the length-specific message instead of a network error.
     const groups = { short: { artists: [artist({ trackId: 2009 })] } };
     global.fetch = jest.fn(() =>
-      Promise.resolve({
-        ok: true,
-        json: () => Promise.resolve({ baaniName: "Chaupai", data: groups }),
-      })
+      Promise.resolve({ ok: true, json: () => Promise.resolve({ baaniName: "Chaupai", data: groups }) })
     );
     const manifest = await fetchManifest(9, constant.EXTRA_LONG);
     expect(manifest).toEqual({ status: "success", data: [] });

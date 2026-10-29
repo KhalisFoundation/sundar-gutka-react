@@ -6,12 +6,10 @@ const MAX_STATE_KEYS = 10;
 // Actions that fire on every audio tick or every scroll frame — logging them to
 // Crashlytics on each dispatch would hammer the native bridge and drain the CPU
 // on low-end devices without adding any useful crash context.
-const HIGH_FREQUENCY_ACTIONS = new Set(["SET_AUDIO_PROGRESS", "SET_SCROLL_POSITION"]);
-
-// Actions whose value is about a PERSON — the SSO session carries an email and
-// a SAML nameID. Their type is still recorded; the value never leaves the
-// phone in a crash report, whatever the Statistics setting.
-const PERSONAL_ACTIONS = new Set(["SET_AUTH_SESSION"]);
+const HIGH_FREQUENCY_ACTIONS = new Set([
+  "SET_AUDIO_PROGRESS",
+  "SET_SCROLL_POSITION",
+]);
 
 // Helper function to safely stringify values
 const safeStringify = (value) => {
@@ -67,9 +65,7 @@ const crashlyticsMiddleware = (store) => (next) => (action) => {
     setCustomKey("last-action", action.type);
 
     const actionValue = action.value !== undefined ? action.value : action.payload;
-    if (PERSONAL_ACTIONS.has(action.type)) {
-      setCustomKey("last-action-value", "[redacted]");
-    } else if (actionValue !== undefined) {
+    if (actionValue !== undefined) {
       setCustomKey("last-action-value", safeStringify(actionValue));
     }
 

@@ -1,14 +1,5 @@
 /* eslint-env jest */
 
-// eslint-disable-next-line import/order -- rnfs is required after jest.mock below
-import {
-  getCachedLyricsRelativePath,
-  getCachedLyricsFullPath,
-  ensureLyricsCached,
-  onLyricsChanged,
-  readCachedLyrics,
-} from "./lyricsCache";
-
 jest.mock("react-native-fs", () => ({
   DocumentDirectoryPath: "/test/documents",
   exists: jest.fn(() => Promise.resolve(false)),
@@ -17,8 +8,15 @@ jest.mock("react-native-fs", () => ({
   writeFile: jest.fn(() => Promise.resolve()),
   unlink: jest.fn(() => Promise.resolve()),
 }));
-const rnfs = require("react-native-fs");
 
+import {
+  getCachedLyricsRelativePath,
+  getCachedLyricsFullPath,
+  ensureLyricsCached,
+  readCachedLyrics,
+} from "./lyricsCache";
+
+const rnfs = require("react-native-fs");
 const CACHE_DIR = "/test/documents/audio_lyrics";
 
 describe("lyricsCache path keying", () => {
@@ -126,50 +124,6 @@ describe("ensureLyricsCached revalidation", () => {
     const metaWrite = rnfs.writeFile.mock.calls.find(([p]) => p === metaPath);
     expect(metaWrite).toBeTruthy();
     expect(JSON.parse(metaWrite[1])).toMatchObject({ etag: "new-etag" });
-  });
-
-  it("tells subscribers when a file is replaced, and not when it is unchanged", async () => {
-    const seen = [];
-    const unsubscribe = onLyricsChanged((key) => seen.push(key));
-    global.fetch.mockResolvedValueOnce({ ok: false, status: 304, headers: headers({}) });
-    await ensureLyricsCached(url, { revalidate: true });
-    expect(seen).toEqual([]);
-
-    global.fetch.mockResolvedValueOnce({
-      ok: true,
-      status: 200,
-      text: () => Promise.resolve('[{"start":0,"end":1}]'),
-      headers: headers({ etag: "new-etag" }),
-    });
-    await ensureLyricsCached(url, { revalidate: true });
-    expect(seen).toEqual([url]);
-    unsubscribe();
-  });
-
-  it("runs a revalidation only after a fetch of the same file already in flight", async () => {
-    // A cold on-view fetch is mid-flight when a revalidation arrives.
-    rnfs.exists.mockResolvedValueOnce(false);
-    let finishFirst;
-    global.fetch
-      .mockImplementationOnce(
-        () =>
-          new Promise((resolve) => {
-            finishFirst = () => resolve({ ok: true, text: () => Promise.resolve("[1]") });
-          })
-      )
-      .mockResolvedValueOnce({ ok: false, status: 304, headers: headers({}) });
-
-    const first = ensureLyricsCached(url);
-    const second = ensureLyricsCached(url, { revalidate: true });
-    await new Promise((r) => {
-      setTimeout(r, 0);
-    });
-    // The revalidation has not sent its request while the first is unfinished.
-    expect(global.fetch).toHaveBeenCalledTimes(1);
-
-    finishFirst();
-    await Promise.all([first, second]);
-    expect(global.fetch).toHaveBeenCalledTimes(2);
   });
 
   it("never drops a good cache when the revalidation request fails (offline)", async () => {

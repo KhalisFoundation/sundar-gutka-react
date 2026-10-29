@@ -69,7 +69,7 @@ export const getWordStyle = (
         break;
       default:
         style += "color:";
-        style += vishraamPositions[index] === "v" ? `${themedLong};` : `${themedShort};`;
+        style += vishraamPositions[index] === "v" ? `${themedLong}` : `${themedShort};`;
         break;
     }
   }

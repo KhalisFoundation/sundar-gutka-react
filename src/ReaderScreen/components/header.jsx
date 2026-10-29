@@ -202,7 +202,7 @@ Header.propTypes = {
   title: PropTypes.string.isRequired,
   handleBackPress: PropTypes.func.isRequired,
   handleBookmarkPress: PropTypes.func.isRequired,
-  /** Opens the add-to-pothi sheet. */
+  /** Opens the add-to-pothi sheet, or sends a signed-out user to Settings. */
   handleAddToPothiPress: PropTypes.func.isRequired,
   isHeader: PropTypes.bool.isRequired,
 };

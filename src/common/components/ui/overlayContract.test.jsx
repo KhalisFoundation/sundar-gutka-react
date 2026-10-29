@@ -1,9 +1,8 @@
 import fs from "fs";
 import path from "path";
 
-import React from "react";
-
 import { render } from "@testing-library/react-native";
+import React from "react";
 
 import Overlay from "./Overlay";
 
@@ -37,8 +36,7 @@ describe("every overlay in the app is configured in one place", () => {
     // `useWindowDimensions` still reported the full display — anything measured
     // against the screen then overflowed its own window.
     const offenders = sourceFiles.filter(
-      (f) =>
-        !f.endsWith(`${path.sep}Overlay.jsx`) && /<Modal[\s/>]/.test(fs.readFileSync(f, "utf8"))
+      (f) => !f.endsWith(`${path.sep}Overlay.jsx`) && /<Modal[\s/>]/.test(fs.readFileSync(f, "utf8"))
     );
     expect(offenders.map((f) => path.relative(SRC, f))).toEqual([]);
   });

@@ -38,15 +38,8 @@ describe("SYNCED_SETTINGS", () => {
       "autoScrollSpeed",
       "defaultAudio",
       "fontFace",
-      // A reading mode, and switching it on turns this phone's audio off.
-      "isAutoScroll",
     ];
     perDevice.forEach((key) => expect(SYNCED_SETTING_KEYS).not.toContain(key));
-  });
-
-  // The one font a reader chooses. The app's own font is fixed and stays out.
-  it("syncs the Bani font", () => {
-    expect(SYNCED_SETTING_KEYS).toContain("baniFontFace");
   });
 });
 

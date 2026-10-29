@@ -155,24 +155,15 @@ const PURATAN_TALL_RE = /[>Â∆åO9E]/g;
  * The padding, in em, a Puratan line needs so its tallest glyph clears the line
  * above. Zero when nothing in it rises past the baseline room it already has.
  */
-// The markup a line can carry: vishraam and Larivaar Assist spans. A tag opens
-// with a letter or a slash — which the ASCII Ik Onkar `<>` does not, so the
-// glyph being measured survives.
-const MARKUP_RE = /<\/?[a-zA-Z][^>]*>/g;
-
 export const puratanHeadroom = (content, lineHeightRatio) => {
-  // The text only. Scanned as HTML, the `>` closing a vishraam or Larivaar
-  // Assist <span style='…'> read as the tall Ik Onkar and padded every such
-  // line by about one and a half em.
-  const text = String(content ?? "").replace(MARKUP_RE, "");
   let tallest = 0;
   // `lastIndex` is reset because the regex is global and shared.
   PURATAN_TALL_RE.lastIndex = 0;
-  let hit = PURATAN_TALL_RE.exec(text);
+  let hit = PURATAN_TALL_RE.exec(content);
   while (hit !== null) {
     const y = PURATAN_TALL[hit[0]];
     if (y > tallest) tallest = y;
-    hit = PURATAN_TALL_RE.exec(text);
+    hit = PURATAN_TALL_RE.exec(content);
   }
   if (!tallest) return 0;
   const ratio = lineHeightRatio || PURATAN_NATURAL_RATIO;
@@ -200,10 +191,7 @@ export const createDiv = (
   // markup to the Reader's original. The shadow applies to Gurmukhi alone; on a
   // translation line it would just blur the reading.
   const { lineHeightRatio, letterSpacing } = readerTheme.typography;
-  // The same lookup as the heading colour, so a string header keys both alike.
-  const gurbaniSlot = GURMUKHI_HEADING_LEVELS[header]
-    ? readerTheme.text.gurbaniHeading
-    : readerTheme.text.gurbani;
+  const gurbaniSlot = header === 1 ? readerTheme.text.gurbaniHeading : readerTheme.text.gurbani;
   const shadow = type === GURMUKHI_LC ? gurbaniSlot.shadow : null;
   // Concatenated rather than built as an array and joined: same string, one
   // fewer array per div, and a long bani emits thousands of them.

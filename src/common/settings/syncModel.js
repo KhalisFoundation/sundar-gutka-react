@@ -10,12 +10,7 @@ import * as actionTypes from "../actions/actionTypes";
 // every rule has a unit test.
 //
 // Per-key clocks, not one clock for the document: two devices changing two
-// DIFFERENT settings both win.
-//
-// KNOWN: the clocks are each device's own wall clock, so a phone whose clock
-// is far off wins (fast) or loses (slow) every conflict on the same key.
-// Server-assigned clocks need backend support and are planned in an upcoming
-// PR. Clocks live in the `settingsSync` slice:
+// DIFFERENT settings both win. Clocks live in the `settingsSync` slice:
 //   clocks        { [key]: ms }  when THIS device last changed the setting
 //   base          { [key]: ms }  the server clock last seen per key — sent as
 //                                `baseUpdatedAt` so a write over a version this
@@ -24,14 +19,10 @@ import * as actionTypes from "../actions/actionTypes";
 //
 // What is NOT synced, deliberately: language is included, statistics consent,
 // download policy (Wi-Fi only / auto-download), the per-shabad maps
-// (auto-scroll speed, default reciter) and the app's own font are not. The
-// first is a privacy decision made per device; the download rules describe this
-// phone's plan and storage; and the maps are large and per-bani rather than
-// preferences. Auto-scroll on/off is a reading mode rather than a preference,
-// and switching it on also switches this phone's audio off (TOGGLE_AUTO_SCROLL
-// reaches the audio slices), so another device's choice would silently take
-// audio away here. The app's font is fixed by HomeScreen; the Bani font is a
-// reading preference, and syncs.
+// (auto-scroll speed, default reciter) and the Home list font are not. The
+// first is a privacy decision made per device; the download rules describe
+// this phone's plan and storage; the maps are large and per-bani rather than
+// preferences; and the Home font is forced by HomeScreen on every visit.
 
 /**
  * Setting key → the action type that writes it. The value is applied with a
@@ -48,6 +39,7 @@ export const SYNCED_SETTINGS = Object.freeze({
   theme: actionTypes.SET_THEME,
   isStatusBar: actionTypes.TOGGLE_STATUS_BAR,
   isScreenAwake: actionTypes.TOGGLE_SCREEN_AWAKE,
+  isAutoScroll: actionTypes.TOGGLE_AUTO_SCROLL,
   isAudioAutoPlay: actionTypes.TOGGLE_AUDIO_AUTO_PLAY,
   isAudioSyncScroll: actionTypes.TOGGLE_AUDIO_SYNC_SCROLL,
   audioPlaybackSpeed: actionTypes.SET_AUDIO_PLAYBACK_SPEED,
@@ -107,7 +99,7 @@ export const buildSyncPayload = ({ snapshot, meta }) => ({
     (key) => meta.clocks[key] > 0 && snapshot[key] !== undefined
   ).map((key) => ({
     key,
-    value: snapshot[key],
+    value: snapshot[key] === undefined ? null : snapshot[key],
     updatedAt: meta.clocks[key],
   })),
   lastSyncedAt: meta.lastSyncedAt || 0,

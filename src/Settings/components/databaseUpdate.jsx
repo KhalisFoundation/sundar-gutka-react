@@ -2,8 +2,9 @@ import React from "react";
 import { Image, Pressable, View } from "react-native";
 import PropTypes from "prop-types";
 import { STRINGS, CustomText, useThemedStyles } from "@common";
-import baniDbLogo from "../../../images/banidblogo.png";
 import createStyles from "../styles";
+
+const baniDbLogo = require("../../../images/banidblogo.png");
 
 const DatabaseUpdateBanner = ({ navigate }) => {
   const styles = useThemedStyles(createStyles);

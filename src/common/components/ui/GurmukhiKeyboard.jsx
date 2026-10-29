@@ -12,10 +12,10 @@ import Text from "./Text";
 // An on-screen Punjabi keyboard.
 //
 // ── The layout is not ours ────────────────────────────────────────────────
-// Its characters are the InScript Punjabi set of `simple-keyboard-layouts`
-// (MIT), the layout set behind react-simple-keyboard — verified against it in
-// gurmukhiKeys.test.js, never typed from memory. The arrangement (see
-// gurmukhiKeys) and the renderer are ours; that package draws to the DOM.
+// It comes from `simple-keyboard-layouts` (MIT), the layout set behind
+// react-simple-keyboard: the standard InScript Punjabi arrangement, the same
+// one Android and iOS ship, so anyone who already types Punjabi recognises the
+// key positions. Only the RENDERER is ours — that package draws to the DOM.
 //
 // ── Why it is full-bleed ──────────────────────────────────────────────────
 // InScript is a DESKTOP layout: twelve keys on the widest row. Inside the

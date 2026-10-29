@@ -5,18 +5,10 @@ buildscript {
     ext {
         buildToolsVersion = "35.0.0"
         minSdkVersion = 24
-        compileSdkVersion = 36
+        compileSdkVersion = 35
         targetSdkVersion = 36
         ndkVersion = "27.1.12297006"
         kotlinVersion = "2.0.21"
-        // react-native-inappbrowser-reborn otherwise asks for dynamic ranges
-        // (annotation 1.5.+, browser 1.4.+). Resolving a range lists versions
-        // from the legacy oss.sonatype.org snapshots repo, which often 504s and
-        // fails the build. It reads these two names instead, so it asks for
-        // fixed versions; conflict resolution still picks the highest version
-        // any other library requests, so nothing is downgraded.
-        androidXAnnotation = "1.5.0"
-        androidXBrowser = "1.4.0"
     }
     repositories {
         google()
@@ -35,3 +27,18 @@ buildscript {
 }
 
 apply plugin: "com.facebook.react.rootproject"
+
+// react-native-inappbrowser-reborn declares androidx.annotation:annotation as a
+// dynamic "1.5.+" range. Resolving a range requires Gradle to query a repo's
+// version list (not just fetch a pinned artifact), and that lookup hits the
+// legacy oss.sonatype.org snapshots host, which is unreliable/being
+// decommissioned and frequently 504s. Every other module in this project already
+// resolves this dependency to 1.6.0 via a constraint, so force that same version
+// everywhere and skip the flaky range lookup entirely.
+allprojects {
+    configurations.all {
+        resolutionStrategy {
+            force "androidx.annotation:annotation:1.6.0"
+        }
+    }
+}

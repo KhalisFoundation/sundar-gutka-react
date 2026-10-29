@@ -335,16 +335,6 @@ const TodaysNitnem = ({ refreshKey = 0 }) => {
   const { ids: selectedBaniIds, emptied } = useMemo(() => nitnemSelection(morning), [morning]);
   const { map: baniMap, nameOf } = useBaniLookup();
 
-  // No Morning Nitnem here YET — the account boundary reset the pothis and
-  // the account's copy has not arrived, or the defaults have not been seeded.
-  // An edit now would be written over the account's own list when it lands (a
-  // fresh copy wins the merge), so there is nothing to edit until it does.
-  // `seededDefaults` is what says it has: set by the first pull that found a
-  // default, or by the seed. After that, no Morning Nitnem means it is gone —
-  // deleted elsewhere — and the editor rebuilds it.
-  const morningPending = useSelector(
-    (state) => !defaultPothi(state.pothis, "morning") && !state.pothis?.seededDefaults
-  );
   const [editVisible, setEditVisible] = useState(false);
   // This card edits the Morning Nitnem POTHI. Signed in, the two are one list
   // and the change syncs on the account; signed out the nitnem is still the
@@ -514,15 +504,13 @@ const TodaysNitnem = ({ refreshKey = 0 }) => {
       <SectionLabel
         title={STRINGS.TODAYS_NITNEM}
         right={
-          morningPending ? null : (
-            <Pressable onPress={openEditor} hitSlop={8} style={styles.editRow}>
-              {/* Icon and label are ONE control and share one colour. */}
-              <EditIcon color={accentBlue} />
-              <CustomText style={[styles.editLink, { color: accentBlue }]}>
-                {STRINGS.EDIT_BANIS}
-              </CustomText>
-            </Pressable>
-          )
+          <Pressable onPress={openEditor} hitSlop={8} style={styles.editRow}>
+            {/* Icon and label are ONE control and share one colour. */}
+            <EditIcon color={accentBlue} />
+            <CustomText style={[styles.editLink, { color: accentBlue }]}>
+              {STRINGS.EDIT_BANIS}
+            </CustomText>
+          </Pressable>
         }
       />
 
@@ -561,12 +549,7 @@ const TodaysNitnem = ({ refreshKey = 0 }) => {
             {cells.map((cell) => {
               if (cell.type === "add") {
                 return (
-                  <Pressable
-                    key="add"
-                    style={styles.gridItem}
-                    onPress={morningPending ? undefined : openEditor}
-                    disabled={morningPending}
-                  >
+                  <Pressable key="add" style={styles.gridItem} onPress={openEditor}>
                     <PlusCircle color={accentBlue} />
                     <CustomText style={[styles.baniName, { color: accentBlue }]} numberOfLines={2}>
                       {STRINGS.ADD_BANI}

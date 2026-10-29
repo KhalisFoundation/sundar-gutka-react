@@ -33,14 +33,7 @@ const OPTIONS = {
 
 export const saveToken = async (token) => {
   try {
-    // A failed store resolves `false` rather than throwing. Taken as success,
-    // a session began with no token behind it: signed in on screen, every
-    // request refused, and signed out again on the next launch.
-    const stored = await Keychain.setGenericPassword(ACCOUNT, token, OPTIONS);
-    if (!stored) {
-      logError(new Error("SSO tokenStore.saveToken: the Keychain did not store the token"));
-      return false;
-    }
+    await Keychain.setGenericPassword(ACCOUNT, token, OPTIONS);
     return true;
   } catch (err) {
     logError(new Error(`SSO tokenStore.saveToken failed: ${err?.message || err}`));

@@ -1,6 +1,6 @@
 import { exists } from "react-native-fs";
-import { getCachedLyricsFullPath } from "./lyricsCache";
 import { checkIsRemote, extractFilePath } from "./urlHelper";
+import { getCachedLyricsFullPath } from "./lyricsCache";
 
 const checkLyricsFileAvailable = async (lyricsUrl = null) => {
   try {

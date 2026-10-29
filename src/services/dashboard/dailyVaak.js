@@ -1,6 +1,6 @@
 import { constant, logNetworkError } from "@common";
 import { isOnline, OfflineError } from "./connectivity";
-import { readAnyCache, readFreshCache, writeCache } from "./dailyCache";
+import { readFreshCache, writeCache } from "./dailyCache";
 import { UnavailableError } from "./dataFailures";
 
 // Persist today's vaak so it stays available offline for the same IST day.
@@ -232,16 +232,9 @@ export const getDailyVaak = async ({ requireOnline = false, force = false } = {}
   //    and a control that re-reads the cache would agree with itself every time
   //    and look broken.
   if (!force) {
-    const cached = await readFreshCache(CACHE_KEY, today);
+    const cached =
+      (await readFreshCache(CACHE_KEY, today)) ?? (await readFreshCache(CACHE_KEY, previous));
     if (cached) return cached;
-    // The previous day's entry only while it is a stand-in with a life left.
-    // Yesterday's FINAL entry has no expiry — it was final for yesterday — and
-    // read as fresh it pinned the card to yesterday's hukamnama all of today,
-    // with no request made to see whether today's had been published.
-    const prior = await readAnyCache(CACHE_KEY);
-    if (prior?.date === previous && prior.expiresAt && Date.now() <= prior.expiresAt) {
-      return prior.data;
-    }
   }
 
   // 2. No fresh cache. If offline, surface it — we never present a previous

@@ -15,7 +15,7 @@ diff --git a/node_modules/@kesha-antonov/react-native-background-downloader/andr
 index 5b50d9a..f0c6c6a 100644
 --- a/node_modules/@kesha-antonov/react-native-background-downloader/android/src/main/java/com/eko/Downloader.kt
 +++ b/node_modules/@kesha-antonov/react-native-background-downloader/android/src/main/java/com/eko/Downloader.kt
-@@ -29,8 +29,39 @@ class Downloader(private val context: Context, private val storageManager: com.e
+@@ -29,8 +29,41 @@ class Downloader(private val context: Context, private val storageManager: com.e
  
    companion object {
      private const val TAG = "RNBackgroundDownloader"
@@ -31,11 +31,13 @@ index 5b50d9a..f0c6c6a 100644
    }
  
 +  /**
-+   * Patched (sundar-gutka): DownloadManager.enqueue parses the id out of the
-+   * downloads provider's insert result without a null check (AOSP
-+   * DownloadManager.enqueue), so a provider that is disabled or not answering
-+   * throws a NullPointerException. Named, so the caller can fall back to the
-+   * resumable downloader for exactly this case and no other.
++   * Patched (sundar-gutka): DownloadManager.enqueue could not hand the download
++   * to the downloads provider. Two forms reach the field: a provider that is
++   * installed but not answering returns a null insert result, which enqueue
++   * parses without a check (NullPointerException); a provider that is disabled
++   * or absent makes ContentResolver.insert throw IllegalArgumentException
++   * "Unknown URL content://downloads/my_downloads". Named, so the caller can fall
++   * back to the resumable downloader for exactly these cases and no other.
 +   */
 +  class DownloadManagerUnavailableException(cause: Throwable) :
 +    IllegalStateException("DownloadManager could not enqueue: the downloads provider is unavailable", cause)
@@ -55,7 +57,7 @@ index 5b50d9a..f0c6c6a 100644
    val downloadManager: DownloadManager = context.getSystemService(Context.DOWNLOAD_SERVICE) as DownloadManager
  
    // Service for background resumable downloads
-@@ -50,7 +81,34 @@ class Downloader(private val context: Context, private val storageManager: com.e
+@@ -50,7 +83,34 @@ class Downloader(private val context: Context, private val storageManager: com.e
    // Service connection
    private val serviceConnection = object : ServiceConnection {
      override fun onServiceConnected(name: ComponentName?, service: IBinder?) {
@@ -91,7 +93,7 @@ index 5b50d9a..f0c6c6a 100644
        downloadService = binder.getService()
        serviceBound = true
        RNBackgroundDownloaderModuleImpl.logD(TAG, "ResumableDownloadService connected")
-@@ -139,7 +197,11 @@ class Downloader(private val context: Context, private val storageManager: com.e
+@@ -139,7 +199,15 @@ class Downloader(private val context: Context, private val storageManager: com.e
    }
  
    fun download(request: DownloadManager.Request): Long {
@@ -99,6 +101,10 @@ index 5b50d9a..f0c6c6a 100644
 +    try {
 +      return downloadManager.enqueue(request)
 +    } catch (e: NullPointerException) {
++      throw DownloadManagerUnavailableException(e)
++    } catch (e: IllegalArgumentException) {
++      // The provider refused the insert, so DownloadManager will not take this
++      // download. The resumable downloader does not go through it at all.
 +      throw DownloadManagerUnavailableException(e)
 +    }
    }

@@ -18,10 +18,6 @@ import { glyphsForSurface, useNavBarSurface } from "../../systemBars";
 // so it goes on claiming its navy while a pushed screen covers it. A screen
 // mounting over the bar claims after it and therefore outranks it, and hands
 // back on pop.
-//
-// `edges` defaults to none. The old `SafeArea.defaultProps` (`['left','right']`)
-// was already ignored: React 19 drops defaultProps on function components, so
-// this was the effective default before as well.
 const SafeArea = ({ children, backgroundColor, edges = [], flex = 1 }) => {
   const ownsBottom = flex === 1 && edges.includes("bottom");
   useNavBarSurface(ownsBottom ? glyphsForSurface(backgroundColor) : null);

@@ -65,7 +65,7 @@ const useBaniLookup = () => {
       // Gurmukhi Unicode name in the data.
       return b.gurmukhiUni || toTitleCase(b.translit) || null;
     },
-    [map]
+    [map],
   );
 
   return { map, nameOf };

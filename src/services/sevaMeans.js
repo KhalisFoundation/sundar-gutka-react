@@ -2,7 +2,6 @@ import AsyncStorage from "@react-native-async-storage/async-storage";
 import { constant, logNetworkError } from "@common";
 import { parseSevaContent } from "../SevaScreen/utils/sevaContentParser";
 import { buildBundledMeansPage } from "./sevaBundledContent";
-import { fetchJson, langToApi } from "./sevaRequest";
 
 /**
  * "Seva by other means" content service — server-driven UI that mirrors the Seva
@@ -27,9 +26,21 @@ export const SEVA_MEANS_PATHS = {
 
 export const SEVA_MEANS_PAGE_KEYS = Object.keys(SEVA_MEANS_PATHS);
 
+const SUPPORTED_LANGS = ["en", "hi", "pa", "fr", "it", "es"];
+
 // Cache key is versioned so a shape change is a clean miss (→ bundled default
 // until the next successful fetch), never a crash on an old cached shape.
 const CACHE_PREFIX = "@seva_means_v1";
+
+/** Maps the app's language state (e.g. "DEFAULT", "en-US", "pa") to an API lang. */
+export const langToApi = (lang) => {
+  const l = String(lang || "")
+    .trim()
+    .toLowerCase();
+  if (!l || l === "default") return "en";
+  const primary = l.split(/[-_]/)[0];
+  return SUPPORTED_LANGS.includes(primary) ? primary : "en";
+};
 
 const cacheKey = (path, lang) => `${CACHE_PREFIX}:${path}:${lang}`;
 
@@ -38,6 +49,18 @@ const cacheKey = (path, lang) => `${CACHE_PREFIX}:${path}:${lang}`;
 // mirror of the backend's translated content across all six app languages. Used
 // only when a page has never been fetched AND the device is offline; real
 // backend content (translated) always replaces it the moment it's fetched.
+
+const fetchJson = async (url) => {
+  const controller = new AbortController();
+  const timeoutId = setTimeout(() => controller.abort(), 8000);
+  try {
+    const res = await fetch(url, { signal: controller.signal });
+    if (!res.ok) throw new Error(`HTTP ${res.status}`);
+    return await res.json();
+  } finally {
+    clearTimeout(timeoutId);
+  }
+};
 
 const readCache = async (key) => {
   try {

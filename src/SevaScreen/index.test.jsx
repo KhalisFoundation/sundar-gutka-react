@@ -5,7 +5,7 @@ import { TextInput } from "react-native";
 
 import { render, waitFor, fireEvent } from "@testing-library/react-native";
 
-import { buildQgivUrl, getSevaConfig, markSevaSeen } from "../services/sevaConfig";
+import { getSevaConfig, markSevaSeen } from "../services/sevaConfig";
 
 import SevaScreen from ".";
 
@@ -84,14 +84,17 @@ const mockOpenInAppBrowser = jest.fn();
 const mockShowInfoToast = jest.fn();
 const mockTrackSevaEvent = jest.fn();
 const mockLogError = jest.fn();
+// Switchable so the headline can be asserted in BOTH themes (see the
+// light/dark parity test below). Reset to "light" in beforeEach.
+let mockThemeMode = "light";
 
 jest.mock("@common", () => {
   const { View, Text } = require("react-native");
   const buildTheme = () => ({
-    mode: "light",
+    mode: mockThemeMode,
     // The real semantic layer, so the stylesheet resolves the same roles the
     // app does instead of a hand-rolled subset that drifts from it.
-    c: require("@theme/semanticColors").light,
+    c: require("@theme/semanticColors")[mockThemeMode === "dark" ? "dark" : "light"],
     // Likewise the real sizing tokens, so a size the screen reads (the close
     // cross) is the one the app actually renders.
     layout: require("@theme/layout").default,
@@ -239,6 +242,7 @@ describe("SevaScreen", () => {
   beforeEach(() => {
     jest.clearAllMocks();
     mockState = { language: "en" };
+    mockThemeMode = "light";
     mockFocusListeners.length = 0;
     mockFocusCleanups.length = 0;
   });
@@ -390,10 +394,10 @@ describe("SevaScreen", () => {
         },
       ])
     );
-    const { getByText, getByTestId } = render(<SevaScreen />);
+    const { getByText, getByLabelText } = render(<SevaScreen />);
 
     await waitFor(() => expect(getByText("Seva for coders")).toBeTruthy());
-    fireEvent.press(getByTestId("seva-means-coding"));
+    fireEvent.press(getByLabelText("seva-means-coding"));
     expect(mockNavigation.navigate).toHaveBeenCalledWith("SevaMeans", { page: "coding" });
   });
 
@@ -412,14 +416,14 @@ describe("SevaScreen", () => {
         },
       ])
     );
-    const { getByText, getByTestId, queryByTestId } = render(<SevaScreen />);
+    const { getByText, getByLabelText, queryByTestId } = render(<SevaScreen />);
 
     await waitFor(() => expect(getByText("Seva by testing our work")).toBeTruthy());
 
     // The row must LOOK like it leaves the app, not like it pushes a screen.
     expect(queryByTestId("external-link-icon")).toBeTruthy();
 
-    fireEvent.press(getByTestId("seva-means-qa"));
+    fireEvent.press(getByLabelText("seva-means-qa"));
 
     // The `&` in the form URL must survive the round trip intact.
     expect(mockOpenInAppBrowser).toHaveBeenCalledWith(form, expect.any(Object));
@@ -447,43 +451,6 @@ describe("SevaScreen", () => {
     const { getByText } = render(<SevaScreen />);
     await waitFor(() => expect(getByText("₹1,000")).toBeTruthy());
     expect(getByText("₹5,000")).toBeTruthy();
-  });
-
-  it("re-picks the default when a later config changes the currency", async () => {
-    // First load offline: no countryCode, so USD and the $10 default.
-    getSevaConfig.mockResolvedValue(nativeFallbackConfig);
-    const { getByLabelText, getByText } = render(<SevaScreen />);
-    await waitFor(() => expect(getByText("$10")).toBeTruthy());
-
-    // Back online, the backend places the donor in India. A left-over 10 would
-    // read as ₹10: under the ₹100 floor, so Donate would go dead.
-    getSevaConfig.mockResolvedValue({ ...nativeFallbackConfig, countryCode: "IN" });
-    focusScreen();
-
-    await waitFor(() => expect(getByText("₹1,000")).toBeTruthy());
-    expect(getByLabelText("Donate").props.accessibilityState).toEqual({ disabled: false });
-  });
-
-  it("keeps the donor on the tier they picked when the ladder is re-converted", async () => {
-    getSevaConfig.mockResolvedValue({
-      ...nativeFallbackConfig,
-      amountPresets: { USD: [10, 50, 100] },
-    });
-    const { getByLabelText, getByText } = render(<SevaScreen />);
-    await waitFor(() => expect(getByText("$50")).toBeTruthy());
-    fireEvent.press(getByText("$50"));
-
-    // A refresh brings new figures for the same currency: the middle tier is
-    // still the middle tier, not the first.
-    getSevaConfig.mockResolvedValue({
-      ...nativeFallbackConfig,
-      amountPresets: { USD: [15, 60, 120] },
-    });
-    focusScreen();
-    await waitFor(() => expect(getByText("$60")).toBeTruthy());
-    fireEvent.press(getByLabelText("Donate"));
-    await waitFor(() => expect(buildQgivUrl).toHaveBeenCalled());
-    expect(buildQgivUrl.mock.calls.at(-1)[0]).toMatchObject({ amount: 60 });
   });
 
   it("reports the Qgiv hand-off once, with real values on every required param", async () => {

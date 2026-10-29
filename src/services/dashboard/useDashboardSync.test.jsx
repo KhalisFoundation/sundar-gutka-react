@@ -27,7 +27,7 @@ import {
   DASHBOARD_APPLIED_AT_KEY,
   DASHBOARD_LOCAL_MUTATED_AT_KEY,
 } from "./syncKeys";
-import { requestFlush, requestPush, requestPull, resetSyncSignal } from "./syncSignal";
+import { requestPush, requestPull, resetSyncSignal } from "./syncSignal";
 import useDashboardSync from "./useDashboardSync";
 
 // ── The module under test's collaborators ──────────────────────────────────
@@ -865,12 +865,10 @@ describe("refusing to overwrite the account with nothing", () => {
 });
 
 describe("the other account features ride along with the dashboard's sync", () => {
-  // Sign-in, foreground and connectivity returning are useAccountSync's, which
-  // runs syncAll itself. Run here too, every one of them ran twice.
-  it("leaves the automatic moments to the account sync", async () => {
+  it("reconciles reminders and pothis on the sign-in pull", async () => {
     mount();
     await flush();
-    expect(mockSyncAll).not.toHaveBeenCalled();
+    expect(mockSyncAll).toHaveBeenCalledTimes(1);
   });
 
   it("reconciles them on pull-to-refresh as well", async () => {
@@ -888,9 +886,6 @@ describe("the other account features ride along with the dashboard's sync", () =
     mockAuthState = { status: "signedOut", user: null };
     mount();
     await flush();
-    await act(async () => {
-      await requestPull("pull-to-refresh");
-    });
     expect(mockSyncAll).not.toHaveBeenCalled();
   });
 });
@@ -949,119 +944,5 @@ describe("history from the server's summed activity rows", () => {
     expect(mockGetState).not.toHaveBeenCalled();
     expect(mockApplyActivity).not.toHaveBeenCalled();
     expect(mockSeed).toHaveBeenCalledWith({ streaks: {} }, { merge: true });
-  });
-});
-
-// Sign-out purges while the session still names the account, and a pull can be
-// out for several requests' worth of time. Answering after the boundary, it
-// wrote the account's name, layout and history into the signed-out store,
-// where the next sign-in claimed them as its own.
-describe("an answer from before the account changed", () => {
-  afterEach(() => {
-    mockReduxState.accountEpoch = 0;
-  });
-
-  it("applies nothing once the account's data has been cleared", async () => {
-    // Every answer lands after a purge, so no run ever finds its own account.
-    mockGetSnapshot.mockImplementation(async () => {
-      mockReduxState.accountEpoch = (mockReduxState.accountEpoch ?? 0) + 1;
-      return { status: "ok", payload: { streaks: { current: 3 } }, syncedAt: "2026-10-01" };
-    });
-    mount();
-    await flush();
-    await flush();
-    expect(mockApplyRestore).not.toHaveBeenCalled();
-    expect(mockSeed).not.toHaveBeenCalled();
-    expect(mockStorageMap.get(DASHBOARD_RESTORED_KEY)).toBeUndefined();
-    mockGetSnapshot.mockResolvedValue({ status: "empty" });
-  });
-
-  // "This account has never synced" lifts the push gate. Answered for the
-  // account just left, it lifted it for the signed-out state instead.
-  it("does not open the push gate on an empty answer from before the boundary", async () => {
-    mockGetSnapshot.mockImplementation(async () => {
-      mockReduxState.accountEpoch = (mockReduxState.accountEpoch ?? 0) + 1;
-      return { status: "empty" };
-    });
-    mount();
-    await flush();
-    await flush();
-    expect(mockStorageMap.get(DASHBOARD_RESTORED_KEY)).toBeUndefined();
-    mockGetSnapshot.mockResolvedValue({ status: "empty" });
-  });
-
-  // Signing out and straight back in: the new session's pull was turned away
-  // while the stale one ran, and nothing tried again — sync stalled.
-  it("pulls again for the session that follows", async () => {
-    mockGetSnapshot.mockImplementationOnce(async () => {
-      mockReduxState.accountEpoch = (mockReduxState.accountEpoch ?? 0) + 1;
-      return { status: "empty" };
-    });
-    mount();
-    await flush();
-    await flush();
-    expect(mockStorageMap.get(DASHBOARD_RESTORED_KEY)).toBeUndefined();
-    await act(async () => {
-      jest.advanceTimersByTime(2100);
-      await Promise.resolve();
-    });
-    await flush();
-    expect(mockGetSnapshot).toHaveBeenCalledTimes(2);
-    expect(mockStorageMap.get(DASHBOARD_RESTORED_KEY)).toBe("1");
-  });
-
-  it("does not push a snapshot built after the account's data was cleared", async () => {
-    mockStorageMap.set(DASHBOARD_RESTORED_KEY, "1");
-    mockBuildPayload.mockImplementation(async () => {
-      mockReduxState.accountEpoch = (mockReduxState.accountEpoch ?? 0) + 1;
-      return nonEmptyPayload();
-    });
-    mount();
-    await flush();
-    await act(async () => {
-      jest.advanceTimersByTime(2500);
-      await Promise.resolve();
-    });
-    await flush();
-    expect(mockBuildPayload).toHaveBeenCalled();
-    expect(mockPush).not.toHaveBeenCalled();
-    mockBuildPayload.mockImplementation(async () => nonEmptyPayload());
-  });
-});
-
-// Sign-out drops the dashboard's slices. A tick still waiting in the push
-// debounce never reached the account.
-describe("a flush on the way out", () => {
-  it("pushes a change still waiting in the debounce, at once", async () => {
-    mockStorageMap.set(DASHBOARD_RESTORED_KEY, "1");
-    mount();
-    await flush();
-    await act(async () => {
-      jest.advanceTimersByTime(2500);
-      await Promise.resolve();
-    });
-    await flush();
-    mockPush.mockClear();
-    act(() => mockDispatchChange("todaysNitnem", { completed: { "2026-10-01": [2] } }));
-    await act(async () => {
-      await requestFlush("sign-out");
-    });
-    expect(mockPush).toHaveBeenCalledTimes(1);
-  });
-
-  it("sends nothing when nothing is waiting", async () => {
-    mockStorageMap.set(DASHBOARD_RESTORED_KEY, "1");
-    mount();
-    await flush();
-    await act(async () => {
-      jest.advanceTimersByTime(2500);
-      await Promise.resolve();
-    });
-    await flush();
-    mockPush.mockClear();
-    await act(async () => {
-      await requestFlush("sign-out");
-    });
-    expect(mockPush).not.toHaveBeenCalled();
   });
 });

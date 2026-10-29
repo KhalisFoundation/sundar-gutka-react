@@ -3,7 +3,6 @@ import { AppState, InteractionManager } from "react-native";
 import { useDispatch, useStore } from "react-redux";
 import { mergeThemeRegistry, sanitizeRemoteTheme } from "@theme/reader/registry";
 import { setRemoteThemes, setTheme } from "@common/actions";
-import { asAppWrite } from "@common/settings/appWrite";
 import { constant, logError, trackThemeEvent, useNetwork } from "@common";
 import { fetchRemoteThemes } from "../themesApi";
 
@@ -16,6 +15,8 @@ import { fetchRemoteThemes } from "../themesApi";
 // Rows are sanitised BEFORE they are stored, so the persisted slice never holds
 // a row this build could not render; the registry sanitises again on read,
 // which costs nothing and keeps the two independent.
+
+/* global __DEV__ */
 
 /**
  * How long a catalogue stays fresh for the BACKGROUND top-up.
@@ -94,8 +95,7 @@ const healWithdrawnTheme = (store, dispatch, previous, themes) => {
   // in the registry at all and must never be touched.
   if (!before) return;
   if (mergeThemeRegistry({ themes }).byId[selected]) return;
-  // The app falling back from a withdrawn theme, not the person choosing one.
-  asAppWrite(() => dispatch(setTheme(before.base === "dark" ? constant.Dark : constant.Light)));
+  dispatch(setTheme(before.base === "dark" ? constant.Dark : constant.Light));
 };
 
 /**
@@ -127,20 +127,7 @@ export const refreshRemoteThemes = async (
     // an `enabled: false` row, which keeps the list non-empty. So nothing is
     // the one answer that changes nothing.
     if (themes.length === 0 && current.themes?.length) return;
-    // Unchanged content keeps the SAME array, so only `fetchedAt` moves and
-    // nothing that resolves a theme rebuilds. A new array here rebuilt every
-    // remote theme record, which changed the Reader's page source and reloaded
-    // the bani mid-read. Compared by content, not version, so an edit made
-    // without a version bump still lands.
-    const sameThemes =
-      Array.isArray(current.themes) && JSON.stringify(current.themes) === JSON.stringify(themes);
-    dispatch(
-      setRemoteThemes({
-        version: res.version,
-        themes: sameThemes ? current.themes : themes,
-        fetchedAt: Date.now(),
-      })
-    );
+    dispatch(setRemoteThemes({ version: res.version, themes, fetchedAt: Date.now() }));
     healWithdrawnTheme(store, dispatch, current, themes);
     // Only when the catalogue actually moved — otherwise every launch would
     // report a "load" that changed nothing.

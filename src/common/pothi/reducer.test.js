@@ -33,7 +33,6 @@ describe("the pothis slice is wired into the root reducer", () => {
       seededDefaults: false,
       lastSyncedAt: null,
       deletedIds: [],
-      syncWatermark: 0,
       // Local only — which folder is Morning Nitnem and which is Evening.
       // Never sent: `toUpsertBody` takes only `folders`.
       defaultIds: { morning: null, evening: null },
@@ -48,17 +47,6 @@ describe("the pothis slice is wired into the root reducer", () => {
     const store = fs.readFileSync(path.join(__dirname, "..", "store.js"), "utf8");
     const blacklist = store.match(/blacklist:\s*\[([^\]]*)\]/)?.[1] ?? "";
     expect(blacklist).not.toMatch(/["']pothis["']/);
-  });
-});
-
-describe("an account change", () => {
-  // Pothis sync to the account they were made under, so the next account
-  // must not inherit them (USER_DATA_SLICES in reducer.js).
-  it("clears the pothis with the rest of the account's data", () => {
-    const pothi = createPothi({ id: "p1", name: "Nitnem" });
-    const s = apply(apply(initial(), actions.createPothi(pothi)), actions.clearUserData());
-    expect(s.pothis.folders).toEqual([]);
-    expect(s.pothis.seededDefaults).toBe(false);
   });
 });
 
@@ -182,7 +170,6 @@ describe("rehydrate", () => {
       seededDefaults: false,
       lastSyncedAt: null,
       deletedIds: [],
-      syncWatermark: 0,
       defaultIds: { morning: null, evening: null },
     });
   });

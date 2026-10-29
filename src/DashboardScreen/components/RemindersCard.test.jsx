@@ -4,8 +4,6 @@ import { AppState } from "react-native";
 
 import { act, fireEvent, render } from "@testing-library/react-native";
 
-import { isAppWrite } from "../../common/settings/appWrite";
-
 import RemindersCard from "./RemindersCard";
 
 // The Dashboard card is the second way to turn reminders on, and it shipped
@@ -126,11 +124,6 @@ const open = async () => {
 let appStateHandler;
 beforeEach(() => {
   jest.clearAllMocks();
-  // Whether each write was made as the app's own (not synced as a choice).
-  mockDispatch.mockImplementation((action) => {
-    // eslint-disable-next-line no-param-reassign
-    if (action && typeof action === "object") action.appWrite = isAppWrite();
-  });
   mockState = {
     isReminders: false,
     reminderBanis: "[]",
@@ -201,13 +194,8 @@ describe("turning the first reminder on", () => {
     await flush();
     await flush();
 
-    expect(dispatched("TOGGLE_REMINDERS")).toEqual([
-      [expect.objectContaining({ type: "TOGGLE_REMINDERS", value: true })],
-    ]);
-    // The suggestions first, as the app's own write; then the user's switch.
-    const [suggestions, write] = dispatched("SET_REMINDER_BANIS");
-    expect(suggestions[0].appWrite).toBe(true);
-    expect(write[0].appWrite).toBe(false);
+    expect(dispatched("TOGGLE_REMINDERS")).toEqual([[{ type: "TOGGLE_REMINDERS", value: true }]]);
+    const [write] = dispatched("SET_REMINDER_BANIS");
     const list = JSON.parse(write[0].value);
     expect(list.map((r) => r.enabled)).toEqual([false, true, false, false]);
     expect(mockScheduleReminders).toHaveBeenCalledWith(true, "default", write[0].value, false);
@@ -226,10 +214,8 @@ describe("turning the first reminder on", () => {
     });
     await flush();
 
-    expect(dispatched("TOGGLE_REMINDERS")).toEqual([
-      [expect.objectContaining({ type: "TOGGLE_REMINDERS", value: true })],
-    ]);
-    expect(dispatched("SET_REMINDER_BANIS").filter(([a]) => !a.appWrite)).toHaveLength(1);
+    expect(dispatched("TOGGLE_REMINDERS")).toEqual([[{ type: "TOGGLE_REMINDERS", value: true }]]);
+    expect(dispatched("SET_REMINDER_BANIS")).toHaveLength(1);
   });
 });
 
@@ -303,9 +289,6 @@ describe("tapping a reminder row", () => {
     fireEvent.press(getAllByRole("button")[3]);
 
     const [write] = dispatched("SET_REMINDER_BANIS");
-    // Opening a row is not a choice: the account must not take the
-    // suggestions over its own reminders.
-    expect(write[0].appWrite).toBe(true);
     const stored = JSON.parse(write[0].value);
     expect(stored).toHaveLength(4);
     expect(stored.every((r) => r.enabled === false)).toBe(true);

@@ -1,4 +1,3 @@
-import { Platform } from "react-native";
 import NetInfo from "@react-native-community/netinfo";
 
 /**
@@ -12,16 +11,14 @@ import NetInfo from "@react-native-community/netinfo";
  *               NET_CAPABILITY_VALIDATED — the OS itself validates real internet.
  *
  * So we do NOT poll a URL on a timer. We subscribe once (see NetworkProvider)
- * and let the OS push changes in real time. How "is there REAL internet"
- * (captive-portal / connected-but-no-internet) is validated:
+ * and let the OS push changes in real time. The only thing configured here is
+ * how "is there REAL internet" (captive-portal / connected-but-no-internet) is
+ * validated:
  *   • Android → `useNativeReachability: true` uses the OS-validated signal
  *     (zero extra network requests — identical to native apps).
- *   • iOS     → not validated. The OS offers no such signal, and NetInfo's
- *     fallback is a request to a probe URL every minute. A third-party probe
- *     (e.g. Google's generate_204) reads as offline wherever that host is
- *     blocked, so no probe runs and iOS goes by the connection alone. See
- *     REACHABILITY_VALIDATED, which NetworkProvider uses to ignore
- *     isInternetReachable on iOS.
+ *   • iOS     → falls back to a lightweight 204 probe (the same technique Chrome
+ *     and the OS use for captive-portal detection), run on NetInfo's adaptive
+ *     schedule (slow when healthy, fast when struggling) — never on our own timer.
  *
  * This layer is intentionally transport-agnostic: it answers "do we have
  * internet", NOT "is the audio CDN up". Feature-specific reachability (audio,
@@ -29,10 +26,9 @@ import NetInfo from "@react-native-community/netinfo";
  * than gate on a preflight check.
  */
 
-// Whether isInternetReachable is a real, OS-validated answer on this platform.
-// With the probe off, NetInfo reports iOS as unreachable (false), not unknown,
-// so it must not be read there.
-export const REACHABILITY_VALIDATED = Platform.OS === "android";
+// A tiny, globally-distributed 204 endpoint. Used only on iOS (Android uses the
+// native validated capability). Same endpoint family the OS itself probes.
+const REACHABILITY_URL = "https://clients3.google.com/generate_204";
 
 let isConfigured = false;
 
@@ -42,11 +38,19 @@ export const configureNetwork = () => {
   isConfigured = true;
 
   NetInfo.configure({
+    reachabilityUrl: REACHABILITY_URL,
+    reachabilityMethod: "HEAD",
     // Prefer the OS's own validated-internet signal where available (Android).
+    // On iOS this has no effect and the 204 probe below is used instead.
     useNativeReachability: true,
-    // Never send a probe request (see above). Android always reports a native
-    // boolean, so NetInfo never falls back to the probe there anyway.
-    reachabilityShouldRun: () => false,
+    reachabilityTest: async (response) => response.status === 204,
+    // Healthy → re-validate infrequently to save battery/data.
+    reachabilityLongTimeout: 60 * 1000,
+    // Struggling/unsure → re-validate quickly so recovery is near-instant.
+    reachabilityShortTimeout: 5 * 1000,
+    // Abort a hung probe so a stalled connection doesn't wedge the state.
+    reachabilityRequestTimeout: 15 * 1000,
+    reachabilityShouldRun: () => true,
     // We never need the Wi-Fi SSID — skip it to avoid location-permission prompts.
     shouldFetchWiFiSSID: false,
   });

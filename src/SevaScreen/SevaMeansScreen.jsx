@@ -12,13 +12,13 @@ import {
   useTheme,
   useThemedStyles,
   STRINGS,
+  openInAppBrowser,
   useCustomScrollbar,
 } from "@common";
 import { ChevronRight } from "../common/icons";
 import { getSevaMeansPage } from "../services/sevaMeans";
 import createStyles from "./sevaMeansStyles";
 import { detectSocialBrand, SocialBadge } from "./socialIcons";
-import useBrowserOnce from "./useBrowserOnce";
 import { parseHtmlBlocks, blockText } from "./utils/parseHtmlBlocks";
 
 /**
@@ -72,42 +72,49 @@ const SevaMeansScreen = ({ route, navigation }) => {
   const [loading, setLoading] = useState(true);
   const [failed, setFailed] = useState(false);
   const [data, setData] = useState(null);
+  const isBrowserOpenRef = useRef(false);
 
-  // Only the latest request may apply its answer: a Retry still in flight when
-  // the language changes, or a request outliving the screen, is ignored.
-  const requestRef = useRef(0);
-  useEffect(
-    () => () => {
-      requestRef.current += 1;
+  const fetchPage = useCallback(
+    async (isActive) => {
+      setLoading(true);
+      setFailed(false);
+      const res = await getSevaMeansPage({ page, lang: language });
+      if (isActive && !isActive()) return;
+      if (res?.segments?.length) {
+        setData(res);
+      } else {
+        setFailed(true);
+      }
+      setLoading(false);
     },
-    []
+    [page, language]
   );
-  const fetchPage = useCallback(async () => {
-    requestRef.current += 1;
-    const request = requestRef.current;
-    setLoading(true);
-    setFailed(false);
-    const res = await getSevaMeansPage({ page, lang: language });
-    if (request !== requestRef.current) return;
-    if (res?.segments?.length) {
-      setData(res);
-    } else {
-      setFailed(true);
-    }
-    setLoading(false);
-  }, [page, language]);
 
   useEffect(() => {
-    fetchPage();
+    let active = true;
+    fetchPage(() => active);
+    return () => {
+      active = false;
+    };
   }, [fetchPage]);
 
-  const { open: openBrowserForUrl } = useBrowserOnce(c);
+  const openBrowserForUrl = useCallback(
+    async (url) => {
+      if (!url || isBrowserOpenRef.current) return;
+      const barColor = c.surface;
+      const controlColor = c.textPrimary;
+      isBrowserOpenRef.current = true;
+      try {
+        await openInAppBrowser(url, { barColor, controlColor });
+      } finally {
+        isBrowserOpenRef.current = false;
+      }
+    },
+    [isDark, theme]
+  );
 
   // Renders one `{type:"html"}` segment (identical approach to SevaScreen's
   // renderHtmlSegment) into native Text/View using the fragment's class hints.
-  //
-  // KNOWN: the segment-to-Text rendering is duplicated with SevaScreen's.
-  // Moving both onto one shared block renderer is planned in an upcoming PR.
   const renderHtmlSegment = (html, keyPrefix) =>
     parseHtmlBlocks(html).map((block, i) => {
       const key = `${keyPrefix}-block-${i}`;
@@ -218,12 +225,12 @@ const SevaMeansScreen = ({ route, navigation }) => {
             }}
           >
             {data.segments.map((seg, i) =>
-              seg.type === "html" ? (
-                // eslint-disable-next-line react/no-array-index-key
-                <React.Fragment key={`seg-${i}`}>
-                  {renderHtmlSegment(seg.value, `seg-${i}`)}
-                </React.Fragment>
-              ) : null
+            seg.type === "html" ? (
+              // eslint-disable-next-line react/no-array-index-key
+              <React.Fragment key={`seg-${i}`}>
+                {renderHtmlSegment(seg.value, `seg-${i}`)}
+              </React.Fragment>
+            ) : null
             )}
           </View>
         </Animated.ScrollView>

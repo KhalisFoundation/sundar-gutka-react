@@ -40,7 +40,11 @@ const GradientDivider = ({ style = null, color = null }) => {
 };
 
 GradientDivider.propTypes = {
-  style: PropTypes.oneOfType([PropTypes.object, PropTypes.array, PropTypes.number]),
+  style: PropTypes.oneOfType([
+    PropTypes.object,
+    PropTypes.array,
+    PropTypes.number,
+  ]),
   /**
    * Overrides the brand navy. Only the Reader passes one: its header sits
    * directly on the Bani, so the line under it belongs to the reading theme —

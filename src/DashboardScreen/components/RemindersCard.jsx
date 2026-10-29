@@ -19,7 +19,6 @@ import {
   trackDashboardEvent,
 } from "@common";
 import { getBaniList } from "@database";
-import { asAppWrite } from "../../common/settings/appWrite";
 import { ReminderEditSheet } from "../../Settings/components/reminders/ReminderOptions/components";
 import useDashboardTheme from "./dashboardTheme";
 import SectionLabel from "./SectionLabel";
@@ -214,26 +213,16 @@ const RemindersCard = () => {
   const [editingKey, setEditingKey] = useState(null);
   const editingSection = stored.find((item) => item.key === editingKey) ?? null;
 
-  // The suggestions, stored as the APP's write rather than the user's — the
-  // way Settings fills an empty list (setDefaultReminders). The reminders sync
-  // takes a user write as a choice, with a fresh clock, so storing four
-  // disabled suggestions as one replaced the account's own reminders for those
-  // banis on every device, for nothing more than a look at a row.
-  const storeSuggestions = useCallback(() => {
-    if (stored.length || !placeholders.length) return;
-    asAppWrite(() => dispatch(actions.setReminderBanis(JSON.stringify(placeholders))));
-  }, [stored.length, placeholders, dispatch]);
-
   // A suggested row is not stored yet, and the sheet edits the stored list by
-  // key, so the suggestions are stored first, every row still off. What the
-  // sheet then saves is the user's own edit, and only that reaches the account.
+  // key, so the suggestions are written first: the same write the switch makes,
+  // every row still off.
   const openEditor = useCallback(
     (key) => {
-      storeSuggestions();
+      if (!stored.length) dispatch(actions.setReminderBanis(JSON.stringify(placeholders)));
       trackDashboardEvent("reminder_edit_opened");
       setEditingKey(key);
     },
-    [storeSuggestions]
+    [stored.length, placeholders, dispatch]
   );
 
   // Writes the toggle through and schedules. `remindersOn` is passed rather
@@ -246,12 +235,10 @@ const RemindersCard = () => {
       if (idx === -1) return;
       const array = base.map((item, i) => (i === idx ? { ...item, enabled: value } : item));
       const json = JSON.stringify(array);
-      // Only the switched row is the user's; the others stay suggestions.
-      storeSuggestions();
       dispatch(actions.setReminderBanis(json));
       await scheduleReminders(remindersOn, reminderSound, json, isTransliteration);
     },
-    [stored, placeholders, reminderSound, dispatch, storeSuggestions]
+    [stored, placeholders, reminderSound, dispatch]
   );
 
   // A tap that had to wait for a trip to system settings. Finished by the

@@ -1,18 +1,17 @@
-// eslint-disable-next-line import/prefer-default-export -- named export kept for consumers
 export const createStyles = (theme) => ({
   wrapper: {
-    flexDirection: "row",
-    alignItems: "center",
-    justifyContent: "center",
+    flexDirection: 'row',
+    alignItems: 'center',
+    justifyContent: 'center',
     minWidth: 44,
     minHeight: 44,
     paddingHorizontal: theme.spacing.xs ?? 4,
     gap: 4,
   },
   pressable: {
-    flexDirection: "row",
-    alignItems: "center",
-    justifyContent: "center",
+    flexDirection: 'row',
+    alignItems: 'center',
+    justifyContent: 'center',
     minWidth: 44,
     minHeight: 44,
     paddingHorizontal: theme.spacing.xs ?? 4,
@@ -21,8 +20,8 @@ export const createStyles = (theme) => ({
   ringContainer: {
     width: 34,
     height: 34,
-    alignItems: "center",
-    justifyContent: "center",
+    alignItems: 'center',
+    justifyContent: 'center',
   },
   label: {
     fontFamily: theme.typography.fonts.balooPaaji,

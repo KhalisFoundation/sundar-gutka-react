@@ -5,7 +5,6 @@ import ScreenRolesProvider from "@theme/ScreenRolesProvider";
 import PropTypes from "prop-types";
 import { NEST_OVERLAYS_IN_SHEET } from "@common/components/ui/Overlay";
 import useTokens from "@common/hooks/useTokens";
-import baniItemTitle from "@common/pothi/itemTitle";
 import {
   baniItems,
   emptyPothis,
@@ -58,7 +57,7 @@ const AddToPothiSheet = ({ visible, onClose, bani = null }) => {
       onClose();
       return;
     }
-    const item = makeBaniItem({ baaniId: bani.id, title: baniItemTitle(bani) });
+    const item = makeBaniItem({ baaniId: bani.id, title: bani.gurmukhiUni || bani.gurmukhi });
     dispatch(actions.addBaniToPothi(pothi.id, item));
     trackPothiEvent("bani_added", { bani_id: bani.id, size: baniItems(pothi).length + 1 });
     showToast(STRINGS.formatString(STRINGS.POTHI_ADDED, { name: titleFor(pothi) }), "success");
@@ -94,15 +93,7 @@ const AddToPothiSheet = ({ visible, onClose, bani = null }) => {
       seedBani={bani}
       baniListData={baniListData}
       onCreated={(pothi) => {
-        // The bani starts ticked but can be unticked before Create, so say
-        // "added" only when it is actually in there.
-        const filed = baniItems(pothi).some((item) => item.baaniId === bani?.id);
-        showToast(
-          filed
-            ? STRINGS.formatString(STRINGS.POTHI_ADDED, { name: titleFor(pothi) })
-            : STRINGS.POTHI_CREATED,
-          "success"
-        );
+        showToast(STRINGS.formatString(STRINGS.POTHI_ADDED, { name: titleFor(pothi) }), "success");
         onClose();
       }}
     />
@@ -178,6 +169,4 @@ AddToPothiSheet.propTypes = {
   }),
 };
 
-// Memoised: the Reader keeps it mounted while closed, so its slide-out is not
-// cut off, and the Reader re-renders on every scroll and playback tick.
-export default React.memo(AddToPothiSheet);
+export default AddToPothiSheet;

@@ -43,7 +43,6 @@ jest.mock("@common/hooks/useTokens", () => () => ({
 }));
 jest.mock("@common/icons", () => ({ PlusIcon: () => null }));
 jest.mock("@common", () => ({
-  useBackHandler: () => {},
   actions: {},
   BaniList: () => null,
   constant: {},
@@ -53,6 +52,7 @@ jest.mock("@common", () => ({
   StatusBarComponent: () => null,
   STRINGS: {},
 }));
+jest.mock("../HomeScreen/hooks", () => ({ useBaniList: () => ({ baniListData: [] }) }));
 jest.mock("../Pothi/components/AddBanisSheet", () => () => null);
 jest.mock("../Pothi/components/BaniPickRow", () => () => null);
 jest.mock("../Pothi/components/PothiActionsSheet", () => () => null);

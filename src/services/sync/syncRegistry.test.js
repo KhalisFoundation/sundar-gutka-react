@@ -72,25 +72,4 @@ describe("syncRegistry", () => {
     await Promise.all([first, second]);
     expect(reconcile).toHaveBeenCalledTimes(1);
   });
-
-  // A run already out was built before the latest edits. Sign-out, which
-  // drops the outbox next, needs one that includes them.
-  it("runs again after the one in flight when asked for a fresh sync", async () => {
-    let resolve;
-    const reconcile = jest
-      .fn()
-      .mockImplementationOnce(
-        () =>
-          new Promise((r) => {
-            resolve = r;
-          })
-      )
-      .mockResolvedValue(true);
-    registerSyncFeature("a", { reconcile });
-    const first = syncAll();
-    const fresh = syncAll({ fresh: true });
-    resolve(true);
-    await Promise.all([first, fresh]);
-    expect(reconcile).toHaveBeenCalledTimes(2);
-  });
 });

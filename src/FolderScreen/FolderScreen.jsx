@@ -3,7 +3,6 @@ import { Platform, Pressable, ScrollView, View } from "react-native";
 import { useDispatch, useSelector } from "react-redux";
 import { Icon } from "@rneui/themed";
 import PropTypes from "prop-types";
-import useBaniTitle from "@common/hooks/useBaniTitle";
 import useTokens from "@common/hooks/useTokens";
 import { PlusIcon } from "@common/icons";
 import { baniItems, isDefaultPothi } from "@common/pothi/model";
@@ -17,20 +16,15 @@ import {
   showConfirm,
   StatusBarComponent,
   STRINGS,
-  useBackHandler,
 } from "@common";
 import { Button, Row, ScreenHeader, Sheet, Text } from "../common/components/ui";
+import { useBaniList } from "../HomeScreen/hooks";
 import AddBanisSheet from "../Pothi/components/AddBanisSheet";
 import BaniPickRow from "../Pothi/components/BaniPickRow";
 import PothiActionsSheet from "../Pothi/components/PothiActionsSheet";
 import useDeletePothi from "../Pothi/hooks/useDeletePothi";
 import usePothiTitle from "../Pothi/hooks/usePothiTitle";
-import useSetPothiBanis from "../Pothi/hooks/useSetPothiBanis";
 import reportPothiEmptied from "../Pothi/reportPothiEmptied";
-
-// One empty list, so a store without one yet does not hand out a new array
-// per render.
-const NO_BANIS = [];
 
 // Migrated onto the design system. The separate `header.js` and `styles.js` are
 // deleted: the header is now the shared `ScreenHeader`, which centres its title
@@ -63,24 +57,10 @@ const FolderScreen = ({ navigation, route }) => {
   const [renaming, setRenaming] = useState(false);
   // Non-null puts the screen in delete-selection mode; the Set holds bani ids.
   const [picked, setPicked] = useState(null);
-  // The live bani list, so a user pothi can resolve its bani ids to rows. Read
-  // from the store, where Home keeps it in order, rather than fetched again
-  // here: that copy started empty, so a full pothi showed as empty until it
-  // landed, and every opening fetched the whole list again.
-  const baniListData = useSelector((state) => state.baniList) ?? NO_BANIS;
+  const { baniListData } = useBaniList();
   // The same confirm-then-delete the Folders tab's long-press raises. See
   // useDeletePothi — one implementation, so the two cannot word it differently.
   const confirmDeletePothi = useDeletePothi();
-  const setBanis = useSetPothiBanis();
-  // The system Back (Android's button and gesture) leaves a delete selection
-  // before the screen, as the header's back arrow does; otherwise it is the
-  // navigator's.
-  const leaveSelection = useCallback(() => {
-    if (picked === null) return false;
-    setPicked(null);
-    return true;
-  }, [picked]);
-  useBackHandler(leaveSelection);
 
   // What the overflow menu's chosen row still has to do once the menu is off
   // the screen.
@@ -132,8 +112,6 @@ const FolderScreen = ({ navigation, route }) => {
   // Nitnem read in the app's language instead of the English they are stored in.
   const { titleFor } = usePothiTitle();
   const title = pothi ? titleFor(pothi) : routeTitle;
-  // Shown in the delete selection exactly as the list behind it shows them.
-  const { titleFor: baniTitleFor, titleFontFamily } = useBaniTitle();
   const rows = useMemo(
     () =>
       pothi
@@ -143,13 +121,6 @@ const FolderScreen = ({ navigation, route }) => {
           )
         : data,
     [pothi, baniListData, data]
-  );
-  // One object per pothi, name and size, not one per render: the rename sheet
-  // starts over whenever it is handed a new one, and any re-render — a sync
-  // landing — threw away the name being typed.
-  const sheetPothi = useMemo(
-    () => (pothi ? { id: pothi.id, name: pothi.name, count: rows.length } : null),
-    [pothi?.id, pothi?.name, rows.length]
   );
 
   useEffect(() => {
@@ -184,15 +155,13 @@ const FolderScreen = ({ navigation, route }) => {
         // database cannot resolve is in the pothi but not in the list.
         const removing = new Set(ids);
         const items = baniItems(pothi);
-        const kept = items.filter((item) => !removing.has(item.baaniId));
-        // Through the one remove path, so these count as removals in analytics
-        // exactly as they do from Add Banis.
-        setBanis(pothi, kept);
-        reportPothiEmptied(items.length, kept.length, "folder_screen");
+        const left = items.filter((item) => !removing.has(item.baaniId)).length;
+        ids.forEach((id) => dispatch(actions.removeBaniFromPothi(pothiId, id)));
+        reportPothiEmptied(items.length, left, "folder_screen");
         setPicked(null);
       },
     });
-  }, [picked, setBanis, pothi]);
+  }, [picked, dispatch, pothiId, pothi]);
 
   const onPress = (row) => {
     const { item } = row;
@@ -388,8 +357,7 @@ const FolderScreen = ({ navigation, route }) => {
               {rows.map((bani) => (
                 <BaniPickRow
                   key={bani.id}
-                  title={baniTitleFor(bani)}
-                  fontFamily={titleFontFamily}
+                  title={bani.gurmukhiUni || bani.gurmukhi}
                   checked={picked.has(bani.id)}
                   onPress={() => togglePick(bani.id)}
                 />
@@ -476,7 +444,7 @@ const FolderScreen = ({ navigation, route }) => {
       {/* Rename reuses the pothi actions sheet, which already owns rename and
           delete for a whole pothi — opened straight into its rename state. */}
       <PothiActionsSheet
-        pothi={sheetPothi}
+        pothi={pothi ? { id: pothi.id, name: pothi.name, count: rows.length } : null}
         visible={renaming}
         startRenaming
         onClose={() => setRenaming(false)}

@@ -38,6 +38,7 @@ const AudioTrackDialog = ({
   isPlaying,
 }) => {
   const styles = useAudioThemedStyles(audioTrackDialogStyles);
+  const fontFace = useSelector((state) => state.fontFace);
   const downloadRegistry = useSelector((state) => state.downloadRegistry);
   const { theme } = useAudioTheme();
   const { height: windowHeight } = useWindowDimensions();
@@ -61,10 +62,9 @@ const AudioTrackDialog = ({
   const previewSessionRef = useRef(0);
   const previewActionInFlightRef = useRef(false);
 
-  const wait = (ms) =>
-    new Promise((resolve) => {
-      setTimeout(resolve, ms);
-    });
+  const wait = (ms) => new Promise((resolve) => {
+    setTimeout(resolve, ms);
+  });
 
   /**
    * Check the track's current load state. Returns:
@@ -79,7 +79,8 @@ const AudioTrackDialog = ({
         TrackPlayer.getPlaybackState(),
       ]);
 
-      const isTargetActive = activeTrack?.id != null && String(activeTrack.id) === String(trackId);
+      const isTargetActive =
+        activeTrack?.id != null && String(activeTrack.id) === String(trackId);
       if (!isTargetActive) {
         return "inactive";
       }
@@ -169,6 +170,37 @@ const AudioTrackDialog = ({
     }
   }, []);
 
+  /**
+   * The preview ticker owns stopping the audio at the end of the 15-second
+   * window. It deliberately holds no render state: the on-screen countdown is
+   * drawn by PreviewSweep on the native driver, so this interval never touches
+   * React and never re-renders the track list while a preview runs.
+   */
+  const startPreviewTicker = useCallback(
+    (track, sessionId) => {
+      clearPreviewInterval();
+      previewStartedAtRef.current = Date.now();
+
+      previewIntervalRef.current = setInterval(async () => {
+        const elapsed = Date.now() - previewStartedAtRef.current;
+        const clampedElapsed = Math.min(elapsed, PREVIEW_DURATION_MS);
+
+        // Time's up — stop audio
+        if (clampedElapsed >= PREVIEW_DURATION_MS) {
+          clearPreviewInterval();
+          if (previewSessionRef.current !== sessionId) return;
+          try { await stop(); } catch (_) { /* nothing was playing to stop */ }
+          try { await reset(); } catch (_) { /* already reset; a second one is a no-op */ }
+          await restoreNotificationCapabilities();
+          setPreviewLoadingTrackId(null);
+          setPreviewActiveTrackId(null);
+          setPlayingTrack((current) => (current?.id === track.id ? null : current));
+        }
+      }, 250);
+    },
+    [clearPreviewInterval, stop, reset, restoreNotificationCapabilities]
+  );
+
   // Restore full notification capabilities after a preview ends.
   // Called after stop()+reset() so there is no queue left to show controls for,
   // but this also guards against any race where the notification lingers.
@@ -189,45 +221,6 @@ const AudioTrackDialog = ({
       // Non-critical: full controls will be restored on next normal playback setup.
     }
   }, []);
-
-  /**
-   * The preview ticker owns stopping the audio at the end of the 15-second
-   * window. It deliberately holds no render state: the on-screen countdown is
-   * drawn by PreviewSweep on the native driver, so this interval never touches
-   * React and never re-renders the track list while a preview runs.
-   */
-  const startPreviewTicker = useCallback(
-    (track, sessionId) => {
-      clearPreviewInterval();
-      previewStartedAtRef.current = Date.now();
-
-      previewIntervalRef.current = setInterval(async () => {
-        const elapsed = Date.now() - previewStartedAtRef.current;
-        const clampedElapsed = Math.min(elapsed, PREVIEW_DURATION_MS);
-
-        // Time's up — stop audio
-        if (clampedElapsed >= PREVIEW_DURATION_MS) {
-          clearPreviewInterval();
-          if (previewSessionRef.current !== sessionId) return;
-          try {
-            await stop();
-          } catch (_) {
-            /* nothing was playing to stop */
-          }
-          try {
-            await reset();
-          } catch (_) {
-            /* already reset; a second one is a no-op */
-          }
-          await restoreNotificationCapabilities();
-          setPreviewLoadingTrackId(null);
-          setPreviewActiveTrackId(null);
-          setPlayingTrack((current) => (current?.id === track.id ? null : current));
-        }
-      }, 250);
-    },
-    [clearPreviewInterval, stop, reset, restoreNotificationCapabilities]
-  );
 
   const stopPreview = useCallback(async () => {
     previewSessionRef.current += 1;
@@ -295,10 +288,10 @@ const AudioTrackDialog = ({
     previewActionInFlightRef.current = true;
     const sessionId = previewSessionRef.current + 1;
     previewSessionRef.current = sessionId;
-
+    
     selectedTrackRef.current = track;
     setSelectedTrack(track);
-
+    
     setPreviewActiveTrackId(null);
 
     if (!isHeader) {
@@ -404,16 +397,8 @@ const AudioTrackDialog = ({
           // The local clip likely wrote truncated — drop it so it re-downloads
           // clean next time, and fall through to the full-track stream.
           await deletePreviewClip(canonicalUrl).catch(() => {});
-          try {
-            await stop();
-          } catch (_) {
-            /* nothing was playing to stop */
-          }
-          try {
-            await reset();
-          } catch (_) {
-            /* already reset; a second one is a no-op */
-          }
+          try { await stop(); } catch (_) { /* nothing was playing to stop */ }
+          try { await reset(); } catch (_) { /* already reset; a second one is a no-op */ }
           if (previewSessionRef.current !== sessionId) {
             setPreviewLoadingTrackId(null);
             return;
@@ -440,16 +425,8 @@ const AudioTrackDialog = ({
         setPreviewLoadingTrackId(null);
         setPreviewActiveTrackId(null);
         setPlayingTrack(null);
-        try {
-          await stop();
-        } catch (_) {
-          /* nothing was playing to stop */
-        }
-        try {
-          await reset();
-        } catch (_) {
-          /* already reset; a second one is a no-op */
-        }
+        try { await stop(); } catch (_) { /* nothing was playing to stop */ }
+        try { await reset(); } catch (_) { /* already reset; a second one is a no-op */ }
         await restoreNotificationCapabilities();
       }
     } catch (_) {
@@ -477,9 +454,7 @@ const AudioTrackDialog = ({
         // so we don't cause a race condition with stopPreview()'s reset().
         while (previewActionInFlightRef.current) {
           // eslint-disable-next-line no-await-in-loop
-          await new Promise((resolve) => {
-            setTimeout(resolve, 50);
-          });
+          await new Promise((resolve) => setTimeout(resolve, 50));
         }
 
         await stopPreview();
@@ -552,9 +527,7 @@ const AudioTrackDialog = ({
                   </CustomText>
                   <CustomText style={styles.subtitleText}>
                     {STRINGS.please_choose_a_track}{" "}
-                    {/* The title is Unicode Gurmukhi (the Reader resolves it so), which
-                        the UI face renders; the bani font may be ASCII-mapped. */}
-                    <CustomText>{title}</CustomText>
+                    <CustomText style={{ fontFamily: fontFace }}>{title}</CustomText>
                   </CustomText>
                   <CustomText style={styles.previewHintText}>
                     {STRINGS.AUDIO_PREVIEW_HINT}
@@ -598,7 +571,6 @@ const AudioTrackDialog = ({
 
 AudioTrackDialog.propTypes = {
   title: PropTypes.string,
-  notificationTitle: PropTypes.string,
   tracks: PropTypes.arrayOf(
     PropTypes.shape({
       id: PropTypes.oneOfType([PropTypes.string, PropTypes.number]).isRequired,

@@ -100,16 +100,3 @@ describe("buildDefaultPothis", () => {
     expect(morning.id).not.toBe(evening.id);
   });
 });
-
-describe("a Nitnem bani inside a folder", () => {
-  it("is still found, so the pair is seeded", () => {
-    const rows = [...MORNING_NITNEM_IDS, ...EVENING_NITNEM_IDS].map((id) => ({
-      id,
-      gurmukhi: `b${id}`,
-      gurmukhiUni: `ਬ${id}`,
-    }));
-    const [first, ...rest] = rows;
-    const list = [...rest, { id: 999, gurmukhi: "folder", folder: [first] }];
-    expect(buildDefaultPothis(list, { morning: "M", evening: "E" })).toHaveLength(2);
-  });
-});

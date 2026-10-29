@@ -1,5 +1,4 @@
 import { to12h, to24h } from "./time";
-import { isCustomTitle } from "./title";
 
 // Reminders across devices — the pure half.
 //
@@ -39,17 +38,11 @@ export const parseReminders = (json) => {
 
 const keyOf = (item) => Number(item.key);
 
-/**
- * The part of a reminder the account stores. The title only when the user
- * wrote it — recognised the way the app shows it (isCustomTitle), which also
- * knows titles renamed before the `titleCustom` flag existed. Read from the
- * flag alone, those went up as "no title" and came back as the stock one, so
- * the person's own words were replaced on every device.
- */
+/** The part of a reminder the account stores. */
 export const toWire = (item) => ({
   time: to24h(item.time),
   enabled: !!item.enabled,
-  title: isCustomTitle(item) ? String(item.title) : null,
+  title: item.titleCustom && item.title ? String(item.title) : null,
 });
 
 const sameWire = (a, b) =>
@@ -122,13 +115,8 @@ export const itemFromRow = (row, { existing = null, bani = null, timeForPrefix =
     translit,
     enabled: !!row.enabled,
     time: to12h(row.time),
-    // A stock title is resolved when shown (reminders/title), so the one this
-    // device already holds is kept; rebuilt here it differed, and every sync
-    // rewrote the list and the OS schedule over a title nobody changed.
     title:
-      customTitle ||
-      (existing && !isCustomTitle(existing) && existing.title) ||
-      (translit ? `${timeForPrefix} ${translit}`.trim() : existing?.title || ""),
+      customTitle || (translit ? `${timeForPrefix} ${translit}`.trim() : existing?.title || ""),
     titleCustom: !!customTitle,
   };
 };
@@ -142,6 +130,7 @@ export const applySyncResult = (
   { items, meta, baniById = new Map(), timeForPrefix = "" }
 ) => {
   const existingByKey = new Map(items.map((it) => [keyOf(it), it]));
+  const deleted = new Set(result.deletedBaniIds ?? []);
   const nextItems = (result.reminders ?? []).map((row) =>
     itemFromRow(row, {
       existing: existingByKey.get(row.baniId) ?? null,
@@ -157,12 +146,13 @@ export const applySyncResult = (
     base[row.baniId] = row.updatedAt;
     clocks[row.baniId] = row.updatedAt;
   });
-  // Every tombstone went up with the sync this answers, and the answer is the
-  // merged truth: the deletion was honoured (the reminder is gone) or it lost
-  // to a newer edit elsewhere (the reminder is back, live). Either way it is
-  // settled. Kept for a reminder the server still lists, it went up again
-  // beside the live copy with the same clock on every later sync.
-  const tombstones = {};
+  const tombstones = { ...meta.tombstones };
+  deleted.forEach((id) => delete tombstones[id]);
+  // Anything the server no longer lists is gone: a tombstone this device
+  // sent has been honoured, or another device's deletion won.
+  Object.keys(tombstones).forEach((id) => {
+    if (!base[id]) delete tombstones[id];
+  });
   const settings = result.settings
     ? { enabled: !!result.settings.enabled, sound: result.settings.sound }
     : null;

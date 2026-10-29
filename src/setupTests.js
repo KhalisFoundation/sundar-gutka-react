@@ -125,7 +125,6 @@ jest.mock("@rneui/themed", () => {
   const RN = require("react-native");
   return {
     __esModule: true,
-    // eslint-disable-next-line react/prop-types -- a test stand-in, not a component
     Icon: ({ name, ...rest }) =>
       React.createElement(RN.View, { accessibilityLabel: name, ...rest }),
   };
@@ -227,6 +226,7 @@ jest.mock("@react-native-firebase/crashlytics", () => ({
   setAttribute: jest.fn(),
   log: jest.fn(),
   recordError: jest.fn(),
+  didCrashOnPreviousExecution: jest.fn(() => Promise.resolve(false)),
 }));
 
 // Mock react-native-keychain (native module; no JS fallback in Jest).

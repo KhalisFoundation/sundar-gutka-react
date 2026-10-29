@@ -13,7 +13,6 @@ import {
 } from "@react-native-firebase/messaging";
 import { logError, logMessage } from "@common/firebase/crashlytics";
 import { hasNotificationPermission, requestNotificationPermission } from "@common/notifications";
-import withDeadline from "@common/withDeadline";
 import { detachPushDevice, registerPushDevice } from "./pushApi";
 import { displayRemoteMessage, ensurePushChannel } from "./pushMessages";
 import { topicsFor, topicsToLeave } from "./pushTopics";
@@ -43,22 +42,12 @@ import { topicsFor, topicsToLeave } from "./pushTopics";
 
 const LAST_REGISTRATION_KEY = "@push_last_registration_v1";
 const LAST_TOPICS_KEY = "@push_last_topics_v1";
-// Asked once per INSTALL, as the comment above says — not once per launch. In
-// memory only, a user who denied was asked again on every cold start, and on
-// Android 13+ that request hangs, holding registration for its whole deadline.
-const PERMISSION_ASKED_KEY = "@push_permission_asked_v1";
 
 /** What the last successful registration looked like, so a repeat is skipped. */
 const signatureOf = ({ token, userEmail, language, appVersion }) =>
   [token, userEmail || "", language, appVersion].join("|");
 
 export const PUSH_LANG_FALLBACK = "en";
-
-// notifee's request can hang for good — on Android 13+ once the user has
-// denied, there is no prompt left to show and it never settles. Unbounded, the
-// registration it opens never finished, so this device was not registered, nor
-// its topics joined, for the rest of the session.
-const PERMISSION_DEADLINE_MS = 10000;
 
 /** The app's language as a short tag: "pa", "en", … */
 const langTag = (language) => {
@@ -81,46 +70,24 @@ const usePushRegistration = () => {
   // what a cold start looks like before the Keychain read resolves.
   const attachedToRef = useRef(null);
   const inFlightRef = useRef(null);
-  // A call that arrives while a run is out — a sign-in landing mid-run — asks
-  // for one more run once it finishes. Joining it instead dropped the change:
-  // that run had already read the account and language it started with.
-  const rerunRef = useRef(false);
-  // Read by `register` at call time. The foreground and token-refresh
-  // listeners are attached once, on mount, and keep that render's `register`;
-  // reading the account and language from its closure registered, and moved
-  // the topics, back to the launch-time language on every foreground.
-  const latestRef = useRef({ userEmail, language });
-  latestRef.current = { userEmail, language };
 
   const register = async (reason) => {
-    if (inFlightRef.current) {
-      rerunRef.current = true;
-      return inFlightRef.current;
-    }
+    if (inFlightRef.current) return inFlightRef.current;
     inFlightRef.current = (async () => {
       try {
-        const { userEmail: email, language: currentLanguage } = latestRef.current;
         const messaging = getMessaging();
         if (!askedRef.current) {
           askedRef.current = true;
-          const askedBefore = await AsyncStorage.getItem(PERMISSION_ASKED_KEY);
-          if (!askedBefore && !(await hasNotificationPermission())) {
-            await AsyncStorage.setItem(PERMISSION_ASKED_KEY, "1");
-            await withDeadline(
-              requestNotificationPermission().catch(() => false),
-              PERMISSION_DEADLINE_MS,
-              false
-            );
-          }
+          if (!(await hasNotificationPermission())) await requestNotificationPermission();
         }
         await ensurePushChannel();
         const token = tokenRef.current || (await getToken(messaging));
         if (!token) return;
         tokenRef.current = token;
 
-        const lang = langTag(currentLanguage);
+        const lang = langTag(language);
         const appVersion = getVersion();
-        const signature = signatureOf({ token, userEmail: email, language: lang, appVersion });
+        const signature = signatureOf({ token, userEmail, language: lang, appVersion });
         const last = await AsyncStorage.getItem(LAST_REGISTRATION_KEY);
         if (last !== signature) {
           const res = await registerPushDevice({
@@ -131,12 +98,12 @@ const usePushRegistration = () => {
           });
           if (res.ok) {
             await AsyncStorage.setItem(LAST_REGISTRATION_KEY, signature);
-            if (email && res.data?.attachedToUser) attachedToRef.current = email;
+            if (userEmail && res.data?.attachedToUser) attachedToRef.current = userEmail;
           } else {
             logMessage(`push: register failed (${res.error ?? res.status}) [${reason}]`);
           }
-        } else if (email) {
-          attachedToRef.current = email;
+        } else if (userEmail) {
+          attachedToRef.current = userEmail;
         }
 
         const wanted = topicsFor({ platform: Platform.OS, lang });
@@ -149,10 +116,6 @@ const usePushRegistration = () => {
         logError(error);
       } finally {
         inFlightRef.current = null;
-        if (rerunRef.current) {
-          rerunRef.current = false;
-          register("rerun");
-        }
       }
     })();
     return inFlightRef.current;
@@ -165,7 +128,7 @@ const usePushRegistration = () => {
       if (next === "active") register("foreground");
     });
     return () => sub.remove();
-    // `register` reads the latest account and language through latestRef.
+    // `register` reads the latest props through closure on each call.
   }, []);
 
   // Token rotation, and foreground display.

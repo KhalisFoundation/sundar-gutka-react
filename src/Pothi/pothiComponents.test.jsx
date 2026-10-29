@@ -7,6 +7,7 @@ import SheetActions from "../common/components/ui/SheetActions";
 import { createPothi } from "../common/pothi/model";
 
 import PothiRow, { baniCountLabel } from "./components/PothiRow";
+import PothiShabadRow from "./components/PothiShabadRow";
 
 // The row is where the two sources meet: a user pothi is renameable, pinnable
 // and reorderable; a Sundar Gutka folder is none of those and must not offer
@@ -167,6 +168,30 @@ describe("PothiRow", () => {
     const flat = Array.isArray(styles) ? Object.assign({}, ...styles.filter(Boolean)) : styles;
     expect(flat.height).toBeUndefined();
     expect(flat.minHeight).toBeGreaterThan(0);
+  });
+});
+
+describe("PothiShabadRow", () => {
+  const bani = { id: 4, gurmukhi: "jpujI swihb", gurmukhiUni: "ਜਪੁਜੀ ਸਾਹਿਬ" };
+
+  it("renders the Unicode name under Baloo", () => {
+    render(<PothiShabadRow bani={bani} onPress={jest.fn()} />);
+    expect(screen.getByText("ਜਪੁਜੀ ਸਾਹਿਬ")).toBeTruthy();
+  });
+
+  it("offers remove only when the parent allows it", () => {
+    render(<PothiShabadRow bani={bani} onPress={jest.fn()} />);
+    expect(screen.queryByLabelText("Remove from pothi")).toBeNull();
+
+    render(<PothiShabadRow bani={bani} onPress={jest.fn()} onRemove={jest.fn()} />);
+    expect(screen.getByLabelText("Remove from pothi")).toBeTruthy();
+  });
+
+  it("opens the shabad when pressed", () => {
+    const onPress = jest.fn();
+    render(<PothiShabadRow bani={bani} onPress={onPress} />);
+    fireEvent.press(screen.getByLabelText("ਜਪੁਜੀ ਸਾਹਿਬ"));
+    expect(onPress).toHaveBeenCalled();
   });
 });
 

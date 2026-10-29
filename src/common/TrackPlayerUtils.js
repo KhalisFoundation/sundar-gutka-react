@@ -25,7 +25,6 @@ const waitForForeground = () =>
 // evaluates. When the native module is null (stale APK / hot-reload mismatch)
 // that IIFE throws and prevents AppRegistry.registerComponent from ever running,
 // crashing the entire app before it starts.
-// eslint-disable-next-line no-underscore-dangle -- module-private lazy RNTP handle
 let _rntp = null;
 const loadRNTP = () => {
   if (!_rntp) {
@@ -34,10 +33,7 @@ const loadRNTP = () => {
   return _rntp;
 };
 
-const delay = (ms) =>
-  new Promise((resolve) => {
-    setTimeout(resolve, ms);
-  });
+const delay = (ms) => new Promise((resolve) => setTimeout(resolve, ms));
 
 // What the native module answers with, on both platforms, whenever its service
 // connection is gone: never set up, or set up and since lost (the task swiped
@@ -91,7 +87,6 @@ class TrackPlayerService {
     // Create initialization promise
     this.initPromise = (async () => {
       try {
-        // eslint-disable-next-line no-underscore-dangle -- module-private setup helper
         await this._setupWithRetry();
         this.setInitialized(true);
         logMessage("TrackPlayer service initialized successfully");
@@ -111,7 +106,7 @@ class TrackPlayerService {
           // pick this back up.
           this.setInitialized(false);
           logMessage(
-            `TrackPlayer setup deferred (foreground service not allowed): ${error?.message}`
+            `TrackPlayer setup deferred (foreground service not allowed): ${error?.message}`,
           );
         } else {
           logError(`TrackPlayer initialization failed: ${error?.message || "Unknown error"}`);
@@ -126,7 +121,6 @@ class TrackPlayerService {
     return this.initPromise;
   }
 
-  // eslint-disable-next-line no-underscore-dangle -- module-private setup helper
   async _setupWithRetry(attempt = 1) {
     // Never start the player's foreground service from the background —
     // wait until the app is foreground first (Android 12+ FGS restriction).
@@ -163,10 +157,9 @@ class TrackPlayerService {
         // Native's own foreground tracker hadn't caught up with RN's AppState
         // yet — give it a beat and try again rather than stranding the player.
         logMessage(
-          `TrackPlayer setup hit the foreground race (attempt ${attempt}/${MAX_SETUP_ATTEMPTS}), retrying...`
+          `TrackPlayer setup hit the foreground race (attempt ${attempt}/${MAX_SETUP_ATTEMPTS}), retrying...`,
         );
         await delay(RETRY_DELAY_MS);
-        // eslint-disable-next-line no-underscore-dangle -- module-private setup helper
         return this._setupWithRetry(attempt + 1);
       }
       throw error;
@@ -194,7 +187,6 @@ class TrackPlayerService {
       ],
       compactCapabilities: [Capability.Play, Capability.Pause, Capability.SkipToNext],
     });
-    return undefined;
   }
 
   // The flag only says what THIS side did; the native service can go away

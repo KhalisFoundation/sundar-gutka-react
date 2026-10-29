@@ -89,23 +89,10 @@ const DownloadComponent = () => {
       setDownloadSuccess(true);
       dispatch(actions.toggleDatabaseUpdateAvailable(false));
     } catch (err) {
-      // Report and show the failure first: the cleanup below can itself fail
-      // (no .download file yet when the update CHECK is what failed, or no saved
-      // checksum to restore), and it must not swallow the report or leave the
-      // screen without a failure state.
+      await unlink(`${LOCAL_DB_PATH}.download`);
+      await revertMD5Hash(currentMD5Hash);
       logNetworkError(`updateDatabaseIfNeeded error: ${err?.message || err}`, err);
       setDownloadSuccess(false);
-      const tmpPath = `${LOCAL_DB_PATH}.download`;
-      try {
-        if (await exists(tmpPath)) await unlink(tmpPath);
-      } catch (cleanupError) {
-        logMessage(`Could not remove partial DB download: ${cleanupError.message}`);
-      }
-      try {
-        if (currentMD5Hash) await revertMD5Hash(currentMD5Hash);
-      } catch (cleanupError) {
-        logMessage(`Could not restore the DB checksum: ${cleanupError.message}`);
-      }
     } finally {
       setDownloading(false);
     }

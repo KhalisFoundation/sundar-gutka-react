@@ -19,12 +19,10 @@
 
 import { Linking } from "react-native";
 import { InAppBrowser } from "react-native-inappbrowser-reborn";
-import AsyncStorage from "@react-native-async-storage/async-storage";
 import { brandMarks } from "@theme/palette";
-import { request } from "../../services/khalisRequest";
 import constant from "../constant";
-import { logError, logMessage } from "../firebase/crashlytics";
-import { decodeJwtPayload, isTokenValid, normaliseEmail, toSessionUser } from "./jwt";
+import { logError, logMessage, logNetworkError } from "../firebase/crashlytics";
+import { decodeJwtPayload, isTokenValid, toSessionUser } from "./jwt";
 import { saveToken, clearToken } from "./tokenStore";
 
 // Same chrome as the app's other in-app browser usage (see inAppBrowser.js).
@@ -91,53 +89,11 @@ export const parseTokenFromRedirect = (url) => {
  *
  * Returns { user, expiresAt } on success, or null.
  */
-// A sign-in this app started, and when. The return link is a custom scheme,
-// so ANY page or app can open sundargutka://login?token=…; without this, one
-// with no login behind it — a forged token, or Android re-delivering an old
-// sign-in link from Recents after a sign-out — started a session and set off
-// the account-change purge. Persisted, not held in memory: Android can kill
-// the app while the login browser is in front, and the link then cold-starts
-// it. Used up by the sign-in it was for.
-const LOGIN_STARTED_KEY = "@sso_login_started_at_v1";
-// Long enough to sign in, including fetching a password; short enough that a
-// link opened much later is not mistaken for this login's return.
-export const LOGIN_WINDOW_MS = 15 * 60 * 1000;
-
-const markLoginStarted = () =>
-  AsyncStorage.setItem(LOGIN_STARTED_KEY, String(Date.now())).catch(() => {});
-export const clearLoginStarted = () => AsyncStorage.removeItem(LOGIN_STARTED_KEY).catch(() => {});
-const loginInProgress = async () => {
-  try {
-    const at = Number(await AsyncStorage.getItem(LOGIN_STARTED_KEY));
-    return at > 0 && Date.now() - at < LOGIN_WINDOW_MS;
-  } catch (_) {
-    return false;
-  }
-};
-
-/**
- * Take a token as the session: valid, vouched for by the Service Provider,
- * and stored.
- *
- * `isTokenValid` reads the claims; it does not, and cannot, check the
- * signature (the app holds no key). The SP's /user can, so it is asked once
- * here, at sign-in, where the network is needed anyway, and must name the
- * same person.
- */
 export const acceptToken = async (token) => {
   if (!token || !isTokenValid(token)) return null;
-  // eslint-disable-next-line no-use-before-define -- defined with the other SP calls below
-  const vouched = await fetchSsoUser(token);
-  if (!vouched.valid) return null;
-  const payload = decodeJwtPayload(token);
-  // Case and surrounding space are not a different person.
-  const email = normaliseEmail(payload?.email);
-  if (!email || normaliseEmail(vouched.user.email) !== email) return null;
   const saved = await saveToken(token);
   if (!saved) return null;
-  // The user from the token's claims, as a restore at launch builds it, so a
-  // session shows the same identity however it began. The SP has just
-  // vouched for those claims.
+  const payload = decodeJwtPayload(token);
   return { user: toSessionUser(payload), expiresAt: payload.exp * 1000 };
 };
 
@@ -149,15 +105,6 @@ export const acceptToken = async (token) => {
 // Keychain exactly once.
 let lastConsumedToken = null;
 let lastConsumedResult = null;
-let lastConsumedAt = 0;
-// The repeat is the same sign-in arriving twice, moments apart. Past this, a
-// repeat is an old link re-delivered (Android re-creating the activity from
-// Recents) and must not bring a session back.
-const REPEAT_WINDOW_MS = 60 * 1000;
-// The acceptance in progress, per token. Both deliveries can arrive before
-// either has finished writing, so the check above alone let both through to
-// the Keychain; the second now waits on the first.
-const consuming = new Map();
 
 export const consumeLoginRedirect = async (url) => {
   if (!url || !url.startsWith(constant.SSO_LOGIN_REDIRECT)) return null;
@@ -169,27 +116,19 @@ export const consumeLoginRedirect = async (url) => {
   // whichever caller lost the race, showing an error toast on a login that
   // actually succeeded. Re-dispatching an identical session is harmless; only
   // the redundant Keychain write is worth avoiding.
-  if (token === lastConsumedToken && Date.now() - lastConsumedAt < REPEAT_WINDOW_MS) {
-    return lastConsumedResult;
-  }
-  if (consuming.has(token)) return consuming.get(token);
+  if (token === lastConsumedToken) return lastConsumedResult;
 
-  const run = (async () => {
-    if (!(await loginInProgress())) {
-      logMessage("SSO: ignored a sign-in link with no sign-in in progress");
-      return null;
-    }
-    const accepted = await acceptToken(token);
-    if (accepted) {
-      lastConsumedToken = token;
-      lastConsumedResult = accepted;
-      lastConsumedAt = Date.now();
-      await clearLoginStarted();
-    }
-    return accepted;
-  })().finally(() => consuming.delete(token));
-  consuming.set(token, run);
-  return run;
+  const accepted = await acceptToken(token);
+  if (accepted) {
+    lastConsumedToken = token;
+    lastConsumedResult = accepted;
+  }
+  return accepted;
+};
+
+export const resetConsumedRedirect = () => {
+  lastConsumedToken = null;
+  lastConsumedResult = null;
 };
 
 /**
@@ -214,7 +153,6 @@ let logoutInFlight = null;
 
 const runLogin = async () => {
   const url = buildLoginUrl();
-  await markLoginStarted();
   try {
     const result = await InAppBrowser.openAuth(url, constant.SSO_LOGIN_REDIRECT, {
       ...AUTH_BROWSER_OPTIONS,
@@ -235,11 +173,7 @@ const runLogin = async () => {
         ? { status: "success", user: accepted.user, expiresAt: accepted.expiresAt }
         : { status: "error" };
     }
-    // "cancel" (user dismissed) / "dismiss" (programmatic close). The marker
-    // is NOT cleared here: on Android openAuth races the tab's dismissal
-    // against the redirect, and a "cancel" that won still has the real return
-    // link on its way to the Linking listener, which needs the marker. It
-    // lapses on its own; a link it lets through still needs the SP to vouch.
+    // "cancel" (user dismissed) / "dismiss" (programmatic close).
     return { status: "cancelled" };
   } catch (err) {
     // No Custom Tabs-capable browser, or the native module failed. Hand off to
@@ -257,13 +191,6 @@ const runLogin = async () => {
       return { status: "error" };
     }
   }
-};
-
-/** Drop the remembered sign-in, so nothing can replay it. On every session end. */
-export const forgetConsumedLogin = () => {
-  lastConsumedToken = null;
-  lastConsumedResult = null;
-  lastConsumedAt = 0;
 };
 
 export const startLogin = () => {
@@ -311,10 +238,7 @@ const runLogout = async (token) => {
     try {
       await Linking.openURL(url);
       logMessage(`SSO startLogout used the system browser: ${err?.message || err}`);
-      // Handed over, not confirmed: the user may close the browser first, or
-      // it may hold no IdP cookie. Say so, rather than claim the IdP session
-      // ended and skip the "signed out on this device only" notice.
-      return { remote: false };
+      return { remote: true };
     } catch (fallbackErr) {
       logError(new Error(`SSO startLogout openAuth failed: ${err?.message || err}`));
       logError(
@@ -336,9 +260,9 @@ export const startLogout = (token) => {
 /**
  * Ask the SP to decode a token (GET /user).
  *
- * Used once per sign-in, by acceptToken, as the signature check the app cannot
- * do itself. NOT used on the launch path: a stored token was vouched for when
- * it was accepted, and the local expiry check works offline.
+ * NOT used on the launch path, and deliberately so: the JWT is self-describing,
+ * so the local expiry check is authoritative and works offline. This exists for
+ * a future server-side-revocation check.
  *
  * Note the SP's quirk — on a missing/invalid/expired token it 302-redirects to
  * /login/sso instead of returning 401. `fetch` follows redirects, so a bad
@@ -347,12 +271,20 @@ export const startLogout = (token) => {
  */
 export const fetchSsoUser = async (token) => {
   if (!token) return { valid: false };
-  // Through khalisRequest for its timeout: a stalled network at the end of a
-  // sign-in otherwise held the login, and the Sign In spinner, forever. A
-  // redirect to the login page arrives as HTML, which parses to no data.
-  const res = await request(`${constant.SSO_SERVICE_URL}/user`, { token });
-  if (!res.ok || !res.data?.email) return { valid: false };
-  return { valid: true, user: toSessionUser(res.data) };
+  try {
+    const res = await fetch(`${constant.SSO_SERVICE_URL}/user`, {
+      headers: { Authorization: `Bearer ${token}` },
+    });
+    if (res.url && res.url.includes("/login/sso")) return { valid: false };
+    const contentType = res.headers.get("content-type") || "";
+    if (!contentType.includes("application/json")) return { valid: false };
+    const payload = await res.json();
+    if (!payload?.email) return { valid: false };
+    return { valid: true, user: toSessionUser(payload) };
+  } catch (err) {
+    logNetworkError(`SSO fetchSsoUser failed: ${err?.message || err}`, err);
+    return { valid: false };
+  }
 };
 
 export default {
@@ -364,4 +296,5 @@ export default {
   startLogout,
   fetchSsoUser,
   consumeLoginRedirect,
+  resetConsumedRedirect,
 };

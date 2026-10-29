@@ -1,31 +1,12 @@
-/* eslint-disable camelcase -- rows go in and come out in the SQLite column names
-   (bani_id, reading_seconds, ...), which every caller and the sync payloads share. */
 import { logError, logMessage } from "@common";
-import { currentAccountKey } from "./accountDb";
 import { getAnalyticsDB } from "./connect";
 import { runSerialized } from "./queue";
 
 // Serialized (see queue.js) — the Dashboard mounts many independent reads at
 // once, and react-native-sqlite-storage's native bridge isn't safe under that
 // much concurrency.
-//
-// Bound to the file that was open when it was ISSUED. A pull issues its
-// writes one after another, across awaits, for the account it began for; one
-// issued before a switch but reached after it would otherwise run against the
-// next account's file — the signed-out store, which the next sign-in claims.
-// Refused instead: it belonged to an account that is no longer here.
-export class AccountSwitchedError extends Error {}
-
-const assertSameFile = (issuedFor) => {
-  if (currentAccountKey() !== issuedFor) {
-    throw new AccountSwitchedError("analytics query issued for another account");
-  }
-};
-
-const runQuery = (sql, params = []) => {
-  const issuedFor = currentAccountKey();
-  return runSerialized(async () => {
-    assertSameFile(issuedFor);
+const runQuery = (sql, params = []) =>
+  runSerialized(async () => {
     try {
       const db = await getAnalyticsDB();
       const [result] = await db.executeSql(sql, params);
@@ -36,17 +17,14 @@ const runQuery = (sql, params = []) => {
       throw err;
     }
   });
-};
 
 // Insert-or-update without `ON CONFLICT … DO UPDATE`: that syntax needs SQLite
 // 3.24, and Android uses the OS's own SQLite — Android 9 ships 3.22, Android 7
 // (our floor) 3.9 — so on those phones an upsert was a syntax error on every
 // call and the row was never written. UPDATE first, INSERT only when nothing
 // was there. One serialized task, so no other writer can slip in between.
-const upsertRow = (update, insert) => {
-  const issuedFor = currentAccountKey();
-  return runSerialized(async () => {
-    assertSameFile(issuedFor);
+const upsertRow = (update, insert) =>
+  runSerialized(async () => {
     const db = await getAnalyticsDB();
     try {
       const [updated] = await db.executeSql(update.sql, update.params);
@@ -59,11 +37,10 @@ const upsertRow = (update, insert) => {
       throw err;
     }
   });
-};
 
 const rowsToArray = (result) => {
   const rows = [];
-  for (let i = 0; i < result.rows.length; i += 1) {
+  for (let i = 0; i < result.rows.length; i++) {
     rows.push(result.rows.item(i));
   }
   return rows;
@@ -198,23 +175,18 @@ export const upsertDailyActivity = async ({
   const total = reading + listening;
   return upsertRow(
     {
-      // The own_ columns move with it: this is work THIS device did, and
-      // they are what the activity push sends (see getActivityUpdatedSince).
       sql: `UPDATE daily_activity SET
-              reading_seconds       = reading_seconds       + ?,
-              listening_seconds     = listening_seconds     + ?,
-              total_seconds         = total_seconds         + ?,
-              own_reading_seconds   = own_reading_seconds   + ?,
-              own_listening_seconds = own_listening_seconds + ?,
-              updated_at            = strftime('%s','now')
+              reading_seconds   = reading_seconds   + ?,
+              listening_seconds = listening_seconds + ?,
+              total_seconds     = total_seconds     + ?,
+              updated_at        = strftime('%s','now')
             WHERE date = ?`,
-      params: [reading, listening, total, reading, listening, date],
+      params: [reading, listening, total, date],
     },
     {
-      sql: `INSERT INTO daily_activity (date, reading_seconds, listening_seconds, total_seconds,
-                                        own_reading_seconds, own_listening_seconds, updated_at)
-            VALUES (?, ?, ?, ?, ?, ?, strftime('%s','now'))`,
-      params: [date, reading, listening, total, reading, listening],
+      sql: `INSERT INTO daily_activity (date, reading_seconds, listening_seconds, total_seconds, updated_at)
+            VALUES (?, ?, ?, ?, strftime('%s','now'))`,
+      params: [date, reading, listening, total],
     }
   );
 };
@@ -342,7 +314,7 @@ export const getActivityUpdatedSince = async (unixSeconds) => {
   const result = await runQuery(
     `SELECT * FROM daily_activity
        WHERE updated_at > 0 AND updated_at >= ?
-       ORDER BY date DESC LIMIT 400`,
+       ORDER BY date ASC LIMIT 400`,
     [Math.floor(unixSeconds)]
   );
   return rowsToArray(result);
@@ -363,7 +335,7 @@ export const getOrCreateSummary = async () => {
 
 export const updateSummary = async (fields) => {
   const keys = Object.keys(fields);
-  if (keys.length === 0) return null;
+  if (keys.length === 0) return;
   const setClauses = keys.map((k) => `${k} = ?`).join(", ");
   const values = keys.map((k) => fields[k]);
   return runQuery(
@@ -485,7 +457,7 @@ export const getDayDetail = async (dateStr) => {
 // ─── Per-bani read counter ────────────────────────────────────────────────────
 
 export const incrementBaniReadCount = async (baniId, baniTitle) => {
-  if (!baniId) return null;
+  if (!baniId) return;
   const today = new Date().toISOString().slice(0, 10);
   return upsertRow(
     {
@@ -642,7 +614,7 @@ export const raiseAllTimeBaseline = async (incoming = {}) => {
 // ─── Sync helpers ─────────────────────────────────────────────────────────────
 
 export const markSynced = async (table, ids) => {
-  if (!ids || ids.length === 0) return null;
+  if (!ids || ids.length === 0) return;
   const placeholders = ids.map(() => "?").join(",");
   return runQuery(`UPDATE ${table} SET sync_status = 1 WHERE id IN (${placeholders})`, ids);
 };

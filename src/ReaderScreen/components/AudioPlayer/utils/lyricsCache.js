@@ -1,4 +1,11 @@
-import { DocumentDirectoryPath, exists, mkdir, readFile, writeFile, unlink } from "react-native-fs";
+import {
+  DocumentDirectoryPath,
+  exists,
+  mkdir,
+  readFile,
+  writeFile,
+  unlink,
+} from "react-native-fs";
 import {
   NO_CACHE_HEADERS,
   readValidatorMeta,
@@ -64,28 +71,6 @@ const ensureDirFor = async (fullPath) => {
 // instead of racing to write — interleaved writes would truncate the JSON.
 const inFlight = new Map();
 
-// Who to tell when a lyrics file on disk is replaced with new content, so an
-// in-memory copy (fetchLRC's) is dropped instead of serving the old timings
-// for the rest of the process. Keyed by the remote URL or the local path.
-const changeListeners = new Set();
-
-/** Subscribe to lyrics-file replacements. Returns the unsubscribe function. */
-export const onLyricsChanged = (listener) => {
-  changeListeners.add(listener);
-  return () => changeListeners.delete(listener);
-};
-
-/** Tell subscribers that the lyrics stored for `key` were replaced. */
-export const notifyLyricsChanged = (key) => {
-  changeListeners.forEach((listener) => {
-    try {
-      listener(key);
-    } catch (_) {
-      // A listener's failure must not stop the others.
-    }
-  });
-};
-
 /**
  * Ensure a remote lyrics JSON is cached on disk, returning its full local path
  * (or `null` for a non-remote url or a fetch/parse failure with nothing cached).
@@ -107,15 +92,11 @@ export const ensureLyricsCached = async (url, options = {}) => {
   const fullPath = getCachedLyricsFullPath(url);
   if (!fullPath) return null;
 
-  // A fast-path (non-revalidating) call joins whatever is in flight for this
-  // file. A revalidation still runs, but only AFTER the call in flight: two
-  // tasks writing the same file at once is the interleaved-write truncation
-  // this map exists to prevent.
-  const prior = inFlight.get(fullPath);
-  if (!revalidate && prior) return prior;
+  // Dedupe only fast-path (non-revalidating) calls; a revalidation should still
+  // run even if an on-view fetch of the same file is in flight.
+  if (!revalidate && inFlight.has(fullPath)) return inFlight.get(fullPath);
 
   const task = (async () => {
-    if (prior) await prior.catch(() => null);
     const fileExisted = await exists(fullPath);
     if (fileExisted && !revalidate) return fullPath;
 
@@ -167,7 +148,6 @@ export const ensureLyricsCached = async (url, options = {}) => {
         ...validatorsFromResponse(response),
         revalidatedAt: Date.now(),
       });
-      if (fileExisted) notifyLyricsChanged(url);
       return fullPath;
     } catch (_) {
       // Never drop a previously-good cache on a transient/offline error.
@@ -179,14 +159,10 @@ export const ensureLyricsCached = async (url, options = {}) => {
     }
   })();
 
-  // Every call is registered, revalidations included, so a later call waits
-  // for (or joins) it rather than writing alongside it.
-  inFlight.set(fullPath, task);
-  task
-    .finally(() => {
-      if (inFlight.get(fullPath) === task) inFlight.delete(fullPath);
-    })
-    .catch(() => {});
+  if (!revalidate) {
+    inFlight.set(fullPath, task);
+    task.finally(() => inFlight.delete(fullPath));
+  }
   return task;
 };
 

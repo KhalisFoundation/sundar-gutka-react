@@ -16,7 +16,6 @@ import { DASHBOARD_LOCAL_MUTATED_AT_KEY } from "./syncKeys";
 
 const pushListeners = new Set();
 const pullListeners = new Set();
-const flushListeners = new Set();
 
 /**
  * "Local data changed; sync it when convenient."
@@ -80,31 +79,8 @@ export const subscribePull = (notify) => {
   return () => pullListeners.delete(notify);
 };
 
-/**
- * "Send what is waiting, now." Signing out drops the dashboard's slices, and
- * the push of a change made moments before is still sitting in its debounce —
- * the account would never see it. AWAITABLE, so the sign-out can wait for it.
- */
-export const requestFlush = async (reason) => {
-  await Promise.all(
-    [...flushListeners].map(async (notify) => {
-      try {
-        await notify(reason);
-      } catch (_) {
-        /* signing out goes on whatever the push did */
-      }
-    })
-  );
-};
-
-export const subscribeFlush = (notify) => {
-  flushListeners.add(notify);
-  return () => flushListeners.delete(notify);
-};
-
 /** Test seam. */
 export const resetSyncSignal = () => {
   pushListeners.clear();
   pullListeners.clear();
-  flushListeners.clear();
 };

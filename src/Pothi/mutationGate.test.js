@@ -23,11 +23,10 @@ import path from "path";
 
 const SRC = path.join(__dirname, "..");
 
-/** The transitions that change a pothi and therefore need syncing. */
+/** The seven transitions that change a pothi and therefore need syncing. */
 const MUTATIONS = [
   "addBaniToPothi",
   "removeBaniFromPothi",
-  "restorePothiItems",
   "renamePothi",
   "deletePothi",
   "createPothi",
@@ -81,18 +80,17 @@ describe("every pothi mutation is ungated", () => {
     // A registry, so a NEW write site has to be added here deliberately and
     // looked at rather than being waved through by the check above.
     //
-    // Two hooks and five components. `useSetPothiBanis` and `useDeletePothi`
+    // Two hooks and four components. `useSetPothiBanis` and `useDeletePothi`
     // exist precisely so the callers that share those jobs cannot word them
-    // differently — FolderScreen's multi-select remove goes through the first.
-    // Add Banis writes directly only for its Discard, which restores rather
-    // than edits.
+    // differently; FolderScreen writes directly only for the multi-select
+    // remove, which has no other caller.
     expect(
       writers()
         .map(({ rel }) => rel)
         .sort()
     ).toEqual([
+      "FolderScreen/FolderScreen.jsx",
       "Pothi/PothiList.jsx",
-      "Pothi/components/AddBanisSheet.jsx",
       "Pothi/components/AddToPothiSheet.jsx",
       "Pothi/components/CreatePothiSheet.jsx",
       "Pothi/components/PothiActionsSheet.jsx",

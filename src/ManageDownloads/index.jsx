@@ -1,15 +1,12 @@
-import React, { useState, useEffect, useCallback, useMemo, useLayoutEffect } from "react";
-import { View, SectionList, Pressable } from "react-native";
-import { exists, unlink } from "react-native-fs";
-import TrackPlayer from "react-native-track-player";
-import { useDispatch, useSelector } from "react-redux";
-import { Icon } from "@rneui/themed";
-import PropTypes from "prop-types";
-import { removeDownloadEntries, retryDownload } from "@common/actions";
-import constant from "@common/constant";
-import useTokens from "@common/hooks/useTokens";
-import useTokenStyles from "@common/hooks/useTokenStyles";
-import { downloadControls } from "@common/services/globalDownloadManager";
+import React, { useState, useEffect, useCallback, useMemo, useLayoutEffect } from 'react';
+import { View, SectionList, Pressable } from 'react-native';
+import { useDispatch, useSelector } from 'react-redux';
+import { Icon } from '@rneui/themed';
+import { exists, unlink } from 'react-native-fs';
+import { removeDownloadEntries, removeDownloadQueueEntry, retryDownload } from '@common/actions';
+import constant from '@common/constant';
+import useTokens from '@common/hooks/useTokens';
+import useTokenStyles from '@common/hooks/useTokenStyles';
 import {
   SafeArea,
   StatusBarComponent,
@@ -19,26 +16,26 @@ import {
   CustomText,
   showConfirm,
   convertToUnicode,
-} from "@common";
-import { ScreenHeader, Spinner, Text } from "../common/components/ui";
+} from '@common';
+import { ScreenHeader, Spinner, Text } from '../common/components/ui';
 import {
   AUDIO_DIRECTORY_PATH,
   getLocalTrackPath,
-} from "../ReaderScreen/components/AudioPlayer/utils/audioDownloader";
-import createStyles from "./styles";
+} from '../ReaderScreen/components/AudioPlayer/utils/audioDownloader';
+import createStyles from './styles';
 
 const formatMB = (mb) => {
-  if (!mb || mb <= 0) return "?";
+  if (!mb || mb <= 0) return '?';
   return mb >= 100 ? String(Math.round(mb)) : mb.toFixed(1);
 };
 
 const ManageDownloads = ({ navigation }) => {
   const { c, layout } = useTokens();
-  const styles = useTokenStyles(createStyles);
-  const dispatch = useDispatch();
+  const styles     = useTokenStyles(createStyles);
+  const dispatch   = useDispatch();
 
   const downloadRegistry = useSelector((s) => s.downloadRegistry);
-  const downloadQueue = useSelector((s) => s.downloadQueue);
+  const downloadQueue    = useSelector((s) => s.downloadQueue);
   const audioCatalog = useSelector((s) => s.audioCatalog);
 
   // Reciter names come from the live catalog, keyed the way the registry is
@@ -60,10 +57,10 @@ const ManageDownloads = ({ navigation }) => {
   // Settings that drive the bani name shown on the home list — read the same
   // ones here so download names stay in sync with it (transliteration on/off,
   // and the Gurmukhi font when it's off).
-  const fontFace = useSelector((s) => s.fontFace);
+  const fontFace         = useSelector((s) => s.fontFace);
   const isTransliteration = useSelector((s) => s.isTransliteration);
-  const baniList = useSelector((s) => s.baniList);
-  const isUnicode = fontFace === constant.BALOO_PAAJI;
+  const baniList         = useSelector((s) => s.baniList);
+  const isUnicode        = fontFace === constant.BALOO_PAAJI;
 
   // Look up a downloaded track's bani by id so we can render its name live from
   // the same source the home list uses (baniList already carries `translit`
@@ -79,27 +76,24 @@ const ManageDownloads = ({ navigation }) => {
   // Mirror BaniList's getBaniTuk so names match the home list exactly. Falls
   // back to the name snapshot stored at download time when the bani can't be
   // resolved (e.g. baniId missing on an older entry, or removed from the DB).
-  const getDisplayName = useCallback(
-    (item) => {
-      const bani = item.baniId != null ? baniById[item.baniId] : null;
-      const fallback = item.baniNameUni || item.baniTitle;
-      if (!bani) return fallback;
-      if (isTransliteration) return bani.translit || fallback;
-      if (isUnicode) return bani.gurmukhiUni || convertToUnicode(bani.gurmukhi);
-      return bani.gurmukhi || fallback;
-    },
-    [baniById, isTransliteration, isUnicode]
-  );
+  const getDisplayName = useCallback((item) => {
+    const bani = item && item.baniId != null ? baniById[item.baniId] : null;
+    const fallback = item.baniNameUni || item.baniTitle;
+    if (!bani) return fallback;
+    if (isTransliteration) return bani.translit || fallback;
+    if (isUnicode) return bani.gurmukhiUni || convertToUnicode(bani.gurmukhi);
+    return bani.gurmukhi || fallback;
+  }, [baniById, isTransliteration, isUnicode]);
 
   // Font override for the name: legacy/Unicode Gurmukhi uses the selected
   // fontFace; transliteration uses the default (Latin/Devanagari) font. Matches
   // BaniList's `displayFont = !isTransliteration ? fontFace : null`.
   const nameFontStyle = useMemo(
     () => ({ fontFamily: isTransliteration ? null : fontFace }),
-    [isTransliteration, fontFace]
+    [isTransliteration, fontFace],
   );
 
-  const [selected, setSelected] = useState(new Set());
+  const [selected, setSelected]   = useState(new Set());
   const [validated, setValidated] = useState(false);
 
   // Tell the native stack to hide its own header — we render AppBar ourselves.
@@ -128,7 +122,7 @@ const ManageDownloads = ({ navigation }) => {
       setValidated(true);
     };
     validate();
-    // eslint-disable-next-line react-hooks/exhaustive-deps
+  // eslint-disable-next-line react-hooks/exhaustive-deps
   }, []);
 
   // SectionList data: completed entries grouped by bani, plus in-progress queue
@@ -138,7 +132,7 @@ const ManageDownloads = ({ navigation }) => {
     // Key on baniId where present; fall back to the stored name for older
     // entries that predate baniId so they still group sensibly.
     const keyFor = (baniId, baniNameUni, baniTitle) =>
-      baniId != null ? `id:${baniId}` : `name:${baniNameUni || baniTitle || "Unknown"}`;
+      (baniId != null ? `id:${baniId}` : `name:${baniNameUni || baniTitle || 'Unknown'}`);
     const ensureGroup = (key, identity) => {
       if (!byBani[key]) byBani[key] = { ...identity, data: [] };
       return byBani[key];
@@ -157,7 +151,7 @@ const ManageDownloads = ({ navigation }) => {
       });
     });
     Object.entries(downloadQueue).forEach(([trackKey, task]) => {
-      if (task.status === "completed") return;
+      if (task.status === 'completed') return;
       const key = keyFor(task.baniId, task.baniNameUni, task.baniTitle);
       const group = ensureGroup(key, {
         baniId: task.baniId,
@@ -167,7 +161,7 @@ const ManageDownloads = ({ navigation }) => {
       if (!group.data.find((t) => t.relativePath === trackKey)) {
         group.data.push({
           relativePath: trackKey,
-          artistDisplayName: task.displayName || "Unknown",
+          artistDisplayName: task.displayName || 'Unknown',
           baniTitle: task.baniTitle || trackKey,
           baniNameUni: task.baniNameUni,
           baniId: task.baniId,
@@ -183,7 +177,7 @@ const ManageDownloads = ({ navigation }) => {
       .sort((a, b) => {
         // Canonical bani order by id; nameless/idless entries fall to the end.
         if (a.baniId == null && b.baniId == null) {
-          return (a.baniTitle ?? "").localeCompare(b.baniTitle ?? "");
+          return (a.baniTitle ?? '').localeCompare(b.baniTitle ?? '');
         }
         if (a.baniId == null) return 1;
         if (b.baniId == null) return -1;
@@ -191,8 +185,8 @@ const ManageDownloads = ({ navigation }) => {
       })
       .map((group) => ({
         ...group,
-        data: group.data.sort((a, b) =>
-          (a.artistDisplayName ?? "").localeCompare(b.artistDisplayName ?? "")
+        data: group.data.sort(
+          (a, b) => (a.artistDisplayName ?? '').localeCompare(b.artistDisplayName ?? ''),
         ),
       }));
   }, [downloadRegistry, downloadQueue, liveArtistName]);
@@ -202,11 +196,7 @@ const ManageDownloads = ({ navigation }) => {
 
   const selectableKeys = useMemo(() => {
     const keys = [];
-    sections.forEach((sec) =>
-      sec.data.forEach((item) => {
-        if (!item.isQueued) keys.push(item.relativePath);
-      })
-    );
+    sections.forEach((sec) => sec.data.forEach((item) => { if (!item.isQueued) keys.push(item.relativePath); }));
     return keys;
   }, [sections]);
 
@@ -219,8 +209,7 @@ const ManageDownloads = ({ navigation }) => {
   const toggleSelect = useCallback((key) => {
     setSelected((prev) => {
       const next = new Set(prev);
-      if (next.has(key)) next.delete(key);
-      else next.add(key);
+      next.has(key) ? next.delete(key) : next.add(key);
       return next;
     });
   }, []);
@@ -228,28 +217,19 @@ const ManageDownloads = ({ navigation }) => {
   const confirmDelete = useCallback(() => {
     const keys = [...selected];
     const deletedMB = keys.reduce((s, k) => s + (downloadRegistry[k]?.sizeMB ?? 0), 0);
-    const sizeStr = deletedMB > 0 ? ` (${formatMB(deletedMB)} MB)` : "";
+    const sizeStr = deletedMB > 0 ? ` (${formatMB(deletedMB)} MB)` : '';
     showConfirm({
       title: STRINGS.DELETE_CONFIRM_TITLE,
-      message: STRINGS.DELETE_CONFIRM_MESSAGE.replace("{count}", String(keys.length)) + sizeStr,
+      message: STRINGS.DELETE_CONFIRM_MESSAGE.replace('{count}', String(keys.length)) + sizeStr,
       cancelText: STRINGS.cancel,
       confirmText: STRINGS.delete,
       destructive: true,
       onConfirm: async () => {
-        // The file the player has loaded is left in place (unlinking it under
-        // the player fails the next seek or buffer refill); it leaves the
-        // registry with the rest, and the reconcile sweep deletes it once
-        // nothing is playing it.
-        const active = await TrackPlayer.getActiveTrack().catch(() => null);
-        const loadedKey = active?.url ? getLocalTrackPath(String(active.url)) : null;
-        await Promise.all(
-          keys.map(async (key) => {
-            if (key === loadedKey) return;
-            const base = `${AUDIO_DIRECTORY_PATH}/${key}`;
-            await unlink(base).catch(() => {});
-            await unlink(base.replace(/\.m4a$/, ".json")).catch(() => {});
-          })
-        );
+        await Promise.all(keys.map(async (key) => {
+          const base = `${AUDIO_DIRECTORY_PATH}/${key}`;
+          await unlink(base).catch(() => {});
+          await unlink(base.replace(/\.m4a$/, '.json')).catch(() => {});
+        }));
         dispatch(removeDownloadEntries(keys));
         setSelected(new Set());
       },
@@ -259,39 +239,33 @@ const ManageDownloads = ({ navigation }) => {
   const cancelQueueEntry = useCallback((trackKey, displayName) => {
     showConfirm({
       title: STRINGS.CANCEL_DOWNLOAD_TITLE,
-      message: STRINGS.CANCEL_DOWNLOAD_BODY.replace("{title}", displayName ?? ""),
+      message: STRINGS.CANCEL_DOWNLOAD_BODY.replace('{title}', displayName ?? ''),
       cancelText: STRINGS.CANCEL_DOWNLOAD_KEEP,
       confirmText: STRINGS.CANCEL_DOWNLOAD_CONFIRM,
       destructive: true,
-      // The manager stops the live native task and clears the queue entry,
-      // as the player's DownloadButton does. Clearing the entry alone left
-      // the task running, and its completion registered the track anyway.
-      onConfirm: () => downloadControls.cancel(trackKey),
+      onConfirm: () => dispatch(removeDownloadQueueEntry(trackKey)),
     });
-  }, []);
+  }, [dispatch]);
 
   // Tapping a failed row retries it (matching the player's DownloadButton). A
   // storage failure can't be retried away, so we explain that instead.
-  const retryQueueEntry = useCallback(
-    (item) => {
-      if (item.errorMessage === "NOT_ENOUGH_STORAGE") {
-        showConfirm({
-          title: STRINGS.NOT_ENOUGH_STORAGE_TITLE,
-          message: STRINGS.NOT_ENOUGH_STORAGE_BODY,
-          confirmText: STRINGS.ok,
-        });
-        return;
-      }
-      dispatch(retryDownload(item.relativePath));
-    },
-    [dispatch]
-  );
+  const retryQueueEntry = useCallback((item) => {
+    if (item.errorMessage === 'NOT_ENOUGH_STORAGE') {
+      showConfirm({
+        title: STRINGS.NOT_ENOUGH_STORAGE_TITLE,
+        message: STRINGS.NOT_ENOUGH_STORAGE_BODY,
+        confirmText: STRINGS.ok,
+      });
+      return;
+    }
+    dispatch(retryDownload(item.relativePath));
+  }, [dispatch]);
 
   const queueStatusLabel = (queueStatus) => {
-    if (queueStatus === "downloading") return STRINGS.DOWNLOADING;
-    if (queueStatus === "paused_wifi_only") return STRINGS.DOWNLOAD_PAUSED_WIFI;
-    if (queueStatus === "paused_no_network") return STRINGS.DOWNLOAD_WAITING_NETWORK;
-    if (queueStatus === "failed") return STRINGS.DOWNLOAD_FAILED_RETRY;
+    if (queueStatus === 'downloading') return STRINGS.DOWNLOADING;
+    if (queueStatus === 'paused_wifi_only') return STRINGS.DOWNLOAD_PAUSED_WIFI;
+    if (queueStatus === 'paused_no_network') return STRINGS.DOWNLOAD_WAITING_NETWORK;
+    if (queueStatus === 'failed') return STRINGS.DOWNLOAD_FAILED_RETRY;
     return STRINGS.DOWNLOAD_QUEUED;
   };
 
@@ -319,59 +293,58 @@ const ManageDownloads = ({ navigation }) => {
   // in one view, so the first and last row of each bani carry the rounding and
   // the rows between them are separated by an inset hairline. Same shape as a
   // Settings group.
-  const renderItem = useCallback(
-    ({ item, index, section }) => {
-      const isFirst = index === 0;
-      const isLast = index === section.data.length - 1;
-      const card = [isFirst && styles.cardTop, isLast && styles.cardBottom];
+  const renderItem = useCallback(({ item, index, section }) => {
+    const isFirst = index === 0;
+    const isLast = index === section.data.length - 1;
+    const card = [isFirst && styles.cardTop, isLast && styles.cardBottom];
 
-      if (item.isQueued) {
-        const isFailed = item.queueStatus === "failed";
-        return (
-          <Pressable
-            style={[styles.trackRow, ...card, styles.inProgressRow]}
-            onPress={() =>
-              isFailed
-                ? retryQueueEntry(item)
-                : cancelQueueEntry(item.relativePath, item.artistDisplayName)
-            }
-          >
-            <View style={styles.trackInfo}>
-              <CustomText style={styles.trackName}>{item.artistDisplayName}</CustomText>
-              <CustomText style={styles.trackMeta}>{queueStatusLabel(item.queueStatus)}</CustomText>
-            </View>
-            {isFailed ? (
-              <Icon name="error-outline" type="material" size={layout.icon.sm} color={c.error} />
-            ) : (
-              // c.accent, not the brand navy: navy is invisible on a dark ground.
-              <Spinner size="small" color={c.accent} />
-            )}
-          </Pressable>
-        );
-      }
-
-      const isChecked = selected.has(item.relativePath);
+    if (item.isQueued) {
+      const isFailed = item.queueStatus === 'failed';
       return (
         <Pressable
-          style={[styles.trackRow, ...card, isChecked && styles.trackRowChecked]}
-          onPress={() => toggleSelect(item.relativePath)}
+          style={[styles.trackRow, ...card, styles.inProgressRow]}
+          onPress={() =>
+            isFailed
+              ? retryQueueEntry(item)
+              : cancelQueueEntry(item.relativePath, item.artistDisplayName)
+          }
         >
-          <View style={[styles.checkbox, isChecked && styles.checkboxChecked]}>
-            {isChecked && (
-              <Icon name="check" type="material" size={layout.icon.xs} color={c.onAccent} />
-            )}
-          </View>
           <View style={styles.trackInfo}>
             <CustomText style={styles.trackName}>{item.artistDisplayName}</CustomText>
+            <CustomText style={styles.trackMeta}>
+              {queueStatusLabel(item.queueStatus)}
+            </CustomText>
           </View>
-          {item.sizeMB > 0 && (
-            <CustomText style={styles.trackSize}>{formatMB(item.sizeMB)} MB</CustomText>
+          {isFailed ? (
+            <Icon name="error-outline" type="material" size={layout.icon.sm} color={c.error} />
+          ) : (
+            // c.accent, not the brand navy: navy is invisible on a dark ground.
+            <Spinner size="small" color={c.accent} />
           )}
         </Pressable>
       );
-    },
-    [selected, toggleSelect, cancelQueueEntry, styles, c, layout]
-  );
+    }
+
+    const isChecked = selected.has(item.relativePath);
+    return (
+      <Pressable
+        style={[styles.trackRow, ...card, isChecked && styles.trackRowChecked]}
+        onPress={() => toggleSelect(item.relativePath)}
+      >
+        <View style={[styles.checkbox, isChecked && styles.checkboxChecked]}>
+          {isChecked && (
+            <Icon name="check" type="material" size={layout.icon.xs} color={c.onAccent} />
+          )}
+        </View>
+        <View style={styles.trackInfo}>
+          <CustomText style={styles.trackName}>{item.artistDisplayName}</CustomText>
+        </View>
+        {item.sizeMB > 0 && (
+          <CustomText style={styles.trackSize}>{formatMB(item.sizeMB)} MB</CustomText>
+        )}
+      </Pressable>
+    );
+  }, [selected, toggleSelect, cancelQueueEntry, styles, c, layout]);
 
   const isEmpty = sections.length === 0 && validated;
 
@@ -445,10 +418,9 @@ const ManageDownloads = ({ navigation }) => {
           )}
           {totalTracks > 0 && (
             <CustomText style={styles.selectionSummary}>
-              {STRINGS.TOTAL_DOWNLOADS_LABEL.replace("{count}", String(totalTracks)).replace(
-                "{size}",
-                formatMB(totalMB)
-              )}
+              {STRINGS.TOTAL_DOWNLOADS_LABEL
+                .replace('{count}', String(totalTracks))
+                .replace('{size}', formatMB(totalMB))}
             </CustomText>
           )}
         </View>
@@ -456,7 +428,12 @@ const ManageDownloads = ({ navigation }) => {
 
       {isEmpty ? (
         <View style={styles.emptyContainer}>
-          <Icon name="cloud-off" type="material" size={72} color={c.textDisabled} />
+          <Icon
+            name="cloud-off"
+            type="material"
+            size={72}
+            color={c.textDisabled}
+          />
           <CustomText style={styles.emptyTitle}>{STRINGS.NO_DOWNLOADS}</CustomText>
           <CustomText style={styles.emptyHint}>{STRINGS.DOWNLOAD_OFFLINE_HINT}</CustomText>
         </View>
@@ -470,20 +447,12 @@ const ManageDownloads = ({ navigation }) => {
           renderSectionHeader={renderSectionHeader}
           // Between rows of the same bani only — never after the last, so the
           // card's bottom edge stays clean.
-          // eslint-disable-next-line react/no-unstable-nested-components -- closes over token-derived styles
           ItemSeparatorComponent={() => <View style={styles.rowSeparator} />}
           stickySectionHeadersEnabled={false}
         />
       )}
     </SafeArea>
   );
-};
-
-ManageDownloads.propTypes = {
-  navigation: PropTypes.shape({
-    setOptions: PropTypes.func,
-    goBack: PropTypes.func,
-  }).isRequired,
 };
 
 export default ManageDownloads;

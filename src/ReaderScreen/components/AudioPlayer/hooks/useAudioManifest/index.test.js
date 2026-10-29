@@ -25,10 +25,6 @@ jest.mock("@common", () => ({
       payload: { baniId, entry },
     })),
     removeDownloadEntries: jest.fn((keys) => ({ type: "REMOVE_DOWNLOAD_ENTRIES", payload: keys })),
-    updateDownloadEntries: jest.fn((patches) => ({
-      type: "UPDATE_DOWNLOAD_ENTRIES",
-      payload: patches,
-    })),
   },
   logError: jest.fn(),
   logMessage: jest.fn(),
@@ -193,25 +189,12 @@ describe("useAudioManifest", () => {
   });
 
   it("online but the bani has no audio yields empty tracks with no error", async () => {
-    fetchRawBaniAudio.mockResolvedValueOnce({ baniId: 2, baniName: "", groups: {}, noAudio: true });
-    // The real selection has nothing to pick from an empty manifest.
-    selectTracksForBani.mockReturnValue([]);
+    fetchRawBaniAudio.mockResolvedValueOnce(null); // 404
     const { getResult, unmount } = renderHook(2);
 
     await waitFor(() => expect(getResult()?.isTracksLoading).toBe(false));
     expect(getResult().tracks).toEqual([]);
     expect(getResult().manifestError).toBeNull();
-    unmount();
-  });
-
-  it("online but the request failed, with nothing cached, offers a retry", async () => {
-    // Server error, timeout or captive portal: not the same as "no audio".
-    fetchRawBaniAudio.mockResolvedValueOnce(null);
-    const { getResult, unmount } = renderHook(2);
-
-    await waitFor(() => expect(getResult()?.isTracksLoading).toBe(false));
-    expect(getResult().tracks).toEqual([]);
-    expect(getResult().manifestError).toBeTruthy();
     unmount();
   });
 
@@ -280,9 +263,8 @@ describe("useAudioManifest", () => {
   });
 });
 
-// A refetch while a reciter is playing must not disturb that reciter: opening
-// the list refetches whenever the manifest is a few minutes old, so this is a
-// common case.
+// A refetch while a reciter is playing must not disturb that reciter: the
+// list opening now refetches every time, so this is the common case.
 describe("refetch while playing", () => {
   const start = async () => {
     setMockState({
@@ -331,108 +313,6 @@ describe("refetch while playing", () => {
     selectTracksForBani.mockReturnValue([intermediateTrack({ track_url: other })]);
     await getResult().refreshManifestSilently();
     await waitFor(() => expect(getResult().currentPlaying.audioUrl).toBe(other));
-    unmount();
-  });
-
-  it("plays a download the registry knows about after a restart, with its lyrics", async () => {
-    // The session list is empty after a restart; the persisted registry is not.
-    setMockState({
-      defaultAudio: {},
-      audioManifest: {},
-      audioCatalog: { 2: { groups: { long: {} }, fetchedAt: Date.now() } },
-      baniLength: "LONG",
-      downloadRegistry: {
-        "BhaiJarnailSingh/JapjiSahib.m4a": { relativePath: "BhaiJarnailSingh/JapjiSahib.m4a" },
-      },
-      _persist: { rehydrated: true },
-    });
-    selectTracksForBani.mockReturnValue([intermediateTrack({ track_size_mb: 0 })]);
-
-    const { getResult, unmount } = renderHook(2);
-    await waitFor(() => expect(getResult()?.isTracksLoading).toBe(false));
-
-    expect(getResult().tracks[0]).toMatchObject({
-      audioUrl: `${AUDIO_DIR}/BhaiJarnailSingh/JapjiSahib.m4a`,
-      lyricsUrl: `${AUDIO_DIR}/BhaiJarnailSingh/JapjiSahib.json`,
-      isLocallyDownloaded: true,
-    });
-    // Adopted with no bani (a previous-release download): the catalog match
-    // records it, so it can be offered offline later.
-    expect(getMockDispatch()).toHaveBeenCalledWith({
-      type: "UPDATE_DOWNLOAD_ENTRIES",
-      payload: { "BhaiJarnailSingh/JapjiSahib.m4a": { baniId: 2 } },
-    });
-    unmount();
-  });
-
-  it("does not refetch when the list opens with a manifest fetched minutes ago", async () => {
-    setMockState({
-      defaultAudio: {},
-      audioManifest: {},
-      audioCatalog: { 2: { groups: { long: {} }, fetchedAt: Date.now() } },
-      baniLength: "LONG",
-      downloadRegistry: {},
-      _persist: { rehydrated: true },
-    });
-    selectTracksForBani.mockReturnValue([intermediateTrack()]);
-    const { getResult, unmount } = renderHook(2);
-    await waitFor(() => expect(getResult()?.isTracksLoading).toBe(false));
-
-    fetchRawBaniAudio.mockClear();
-    await getResult().refreshManifestSilently();
-    expect(fetchRawBaniAudio).not.toHaveBeenCalled();
-    unmount();
-  });
-
-  it("never lets an older fetch overwrite the tracks of a newer length", async () => {
-    setMockState({
-      defaultAudio: {},
-      audioManifest: {},
-      audioCatalog: {},
-      baniLength: "LONG",
-      downloadRegistry: {},
-      _persist: { rehydrated: true },
-    });
-    const pending = [];
-    fetchRawBaniAudio.mockImplementation(
-      () =>
-        new Promise((resolve) => {
-          pending.push(resolve);
-        })
-    );
-    selectTracksForBani.mockImplementation((_groups, _id, length) => [
-      intermediateTrack({ track_id: length === "SHORT" ? 2 : 1, artist_name: length }),
-    ]);
-
-    let latest;
-    const capture = (result) => {
-      latest = result;
-    };
-    const { rerender, unmount } = render(<TestComponent baniID={2} onResult={capture} />);
-    await waitFor(() => expect(pending).toHaveLength(1));
-
-    setMockState({
-      defaultAudio: {},
-      audioManifest: {},
-      audioCatalog: {},
-      baniLength: "SHORT",
-      downloadRegistry: {},
-      _persist: { rehydrated: true },
-    });
-    rerender(<TestComponent baniID={2} onResult={capture} />);
-    await waitFor(() => expect(pending).toHaveLength(2));
-
-    // The newer (SHORT) fetch finishes first, then the older (LONG) one.
-    pending[1]({ groups: { short: {} } });
-    await waitFor(() => expect(latest?.tracks?.[0]?.displayName).toBe("SHORT"));
-    pending[0]({ groups: { long: {} } });
-    await new Promise((r) => {
-      setTimeout(r, 20);
-    });
-    expect(latest.tracks[0].displayName).toBe("SHORT");
-
-    fetchRawBaniAudio.mockReset();
-    selectTracksForBani.mockReset();
     unmount();
   });
 });

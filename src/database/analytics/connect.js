@@ -1,7 +1,6 @@
 import { openDatabase, enablePromise } from "react-native-sqlite-storage";
 import { logError, logMessage } from "@common";
 import { currentAccountKey, dbNameFor, setAccountKey } from "./accountDb";
-import { runSerialized } from "./queue";
 import { initSchema } from "./schema";
 
 enablePromise(true);
@@ -21,7 +20,7 @@ let analyticsInitPromise = null;
  * Nothing is deleted. Each account's history stays on disk, so signing back in
  * finds it again — including whatever had not been pushed yet.
  */
-const switchAccountNow = async (email) => {
+export const useAnalyticsAccount = async (email) => {
   const changed = setAccountKey(email);
   if (!changed) return false;
   // In-flight opens belong to the OLD key; drop the promise so the next caller
@@ -39,13 +38,6 @@ const switchAccountNow = async (email) => {
   return true;
 };
 
-// Through the query queue, like every read and write. A pull queues hundreds
-// of writes for the account it began for; switching the file underneath them
-// sent the rest into the next store — the signed-out one, which the next
-// sign-in then claims as its own activity. Queued, they finish on the file
-// they were meant for, and only then does the handle move.
-export const useAnalyticsAccount = (email) => runSerialized(() => switchAccountNow(email));
-
 export const getAnalyticsDB = async () => {
   const key = currentAccountKey();
   if (analyticsInstance.value && openedForKey === key) {
@@ -61,12 +53,6 @@ export const getAnalyticsDB = async () => {
     location: "Documents",
   })
     .then(async (db) => {
-      // Opened for a key that is no longer current: handing it back would put
-      // this caller's writes in another account's file.
-      if (currentAccountKey() !== key) {
-        await db.close().catch(() => {});
-        throw new Error(`Analytics DB opened for ${key} after a switch`);
-      }
       await initSchema(db);
       analyticsInstance.value = db;
       analyticsInitPromise = null;

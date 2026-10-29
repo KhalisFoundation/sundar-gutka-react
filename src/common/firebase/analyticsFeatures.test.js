@@ -1,6 +1,6 @@
 /* eslint-env jest */
 import { logEvent } from "@react-native-firebase/analytics";
-import { trackDashboardEvent, trackSsoEvent, trackThemeEvent } from "./analytics";
+import { trackDashboardEvent, trackSsoEvent, trackThemeEvent, trackTourEvent } from "./analytics";
 import { logError } from "./crashlytics";
 
 // The dashboard / theme / SSO trackers follow the Seva and Pothi rule: a fixed
@@ -19,10 +19,6 @@ jest.mock("@react-native-firebase/analytics", () => ({
 
 jest.mock("./crashlytics", () => ({
   logError: jest.fn(),
-}));
-
-jest.mock("./performance", () => ({
-  initializePerformanceMonitoring: jest.fn(),
 }));
 
 jest.mock("./helper", () => ({
@@ -146,6 +142,30 @@ describe("trackThemeEvent", () => {
   });
 });
 
+describe("trackTourEvent", () => {
+  it("separates the three ways out of the tour, which is the whole question", async () => {
+    await trackTourEvent("completed", { step_id: "download", step_index: 3, step_count: 4 });
+
+    expect(lastEventName()).toBe("tour_completed");
+    expect(lastParams()).toEqual({ step_id: "download", step_index: 3, step_count: 4 });
+
+    logEvent.mockClear();
+    await trackTourEvent("skipped", { step_id: "tracks", step_index: 0 });
+    expect(lastEventName()).toBe("tour_skipped");
+
+    logEvent.mockClear();
+    await trackTourEvent("dismissed");
+    expect(lastEventName()).toBe("tour_dismissed");
+  });
+
+  it("names the opening event, which is what the exits are measured against", async () => {
+    await trackTourEvent("started", { step_count: 4 });
+
+    expect(lastEventName()).toBe("tour_started");
+    expect(lastParams()).toEqual({ step_count: 4 });
+  });
+});
+
 describe("trackSsoEvent", () => {
   it("emits one event per outcome", async () => {
     await trackSsoEvent("sign_in_success");

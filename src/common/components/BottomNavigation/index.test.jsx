@@ -25,9 +25,8 @@ jest.mock("@react-navigation/native", () => ({
 // the global @common mock), which transitively loads react-native-localization
 // — whose native module isn't available in Jest and throws on import. The
 // component only needs getSevaConfig() to decide the Seva dot, so mock it.
-const mockGetSevaConfig = jest.fn(() => Promise.resolve({ showSevaDot: false, sevaDotCount: 0 }));
 jest.mock("../../../services/sevaConfig", () => ({
-  getSevaConfig: (...args) => mockGetSevaConfig(...args),
+  getSevaConfig: jest.fn(() => Promise.resolve({ showSevaDot: false, sevaDotCount: 0 })),
   subscribeSevaDot: jest.fn(() => () => {}),
 }));
 
@@ -53,7 +52,7 @@ global.fetch = mockFetch;
 
 const createNavigation = ({ currentRoute = "Home" } = {}) => {
   const navigate = jest.fn();
-  const popTo = jest.fn();
+  const popToTop = jest.fn();
   const goBack = jest.fn();
   const addListener = jest.fn(() => jest.fn()); // Returns unsubscribe function
   const routes = [{ name: "Home" }, { name: "Reader" }, { name: "Settings" }];
@@ -67,7 +66,7 @@ const createNavigation = ({ currentRoute = "Home" } = {}) => {
     routes,
     index,
   }));
-  return { navigate, getState, popTo, goBack, addListener };
+  return { navigate, getState, popToTop, goBack, addListener };
 };
 
 describe("BottomNavigation", () => {
@@ -84,12 +83,7 @@ describe("BottomNavigation", () => {
 
   afterEach(async () => {
     // Flush microtasks to allow the mocked fetch checkInternetConnection to resolve and set component state safely inside act boundaries
-    await waitFor(
-      () =>
-        new Promise((resolve) => {
-          setTimeout(resolve, 0);
-        })
-    );
+    await waitFor(() => new Promise((resolve) => setTimeout(resolve, 0)));
   });
 
   // The Read/Music tabs live in the reader-context bar (Home/Read/Music/Settings).
@@ -122,8 +116,7 @@ describe("BottomNavigation", () => {
 
     fireEvent.press(getByLabelText("bottomnav-Home"));
 
-    // The All Banis tab, whichever tab was showing before the Reader opened.
-    expect(mockNavigation.popTo).toHaveBeenCalledWith("MainTabs", { screen: "Home" });
+    expect(mockNavigation.popToTop).toHaveBeenCalled();
   });
 
   test("pressing Read when audio is on toggles audio to false", async () => {
@@ -239,8 +232,7 @@ describe("BottomNavigation", () => {
 
     fireEvent.press(getByLabelText("bottomnav-Settings"));
 
-    // The reader bar opens Settings with its bar kept (Read/Music reachable).
-    expect(mockNavigation.navigate).toHaveBeenCalledWith("Settings", { fromReader: true });
+    expect(mockNavigation.navigate).toHaveBeenCalledWith("Settings");
   });
 
   test("pressing Music while already open restarts audio into preview mode", async () => {
@@ -265,52 +257,21 @@ describe("BottomNavigation", () => {
 
   test("As a user on the home tab bar I want only home tabs (Read/Music live in the reader bar)", () => {
     mockNavigation = createNavigation({ currentRoute: "Settings" });
+    mockNavigation.getState.mockReturnValue({
+      routes: [{ name: "Home" }, { name: "Settings" }],
+      index: 1,
+    });
     mockUseNavigation.mockReturnValue(mockNavigation);
 
-    const { getByLabelText, queryByLabelText } = render(
-      <BottomNavigation activeKey="Settings" context="home" />
-    );
+    const { getByLabelText, queryByLabelText } = render(<BottomNavigation activeKey="Settings" />);
 
+    // Home and Settings should be visible
     expect(getByLabelText("bottomnav-Home")).toBeTruthy();
-    expect(getByLabelText("bottomnav-Seva")).toBeTruthy();
     expect(getByLabelText("bottomnav-Settings")).toBeTruthy();
 
     // Read and Music are reader-context tabs — absent from the home bar
     expect(queryByLabelText("bottomnav-Read")).toBeNull();
     expect(queryByLabelText("bottomnav-Music")).toBeNull();
-  });
-
-  test("the home tab bar switches tabs by name", () => {
-    mockNavigation = createNavigation({ currentRoute: "Home" });
-    mockUseNavigation.mockReturnValue(mockNavigation);
-
-    const { getByLabelText } = render(<BottomNavigation activeKey="Home" context="home" />);
-    fireEvent.press(getByLabelText("bottomnav-Seva"));
-    fireEvent.press(getByLabelText("bottomnav-Settings"));
-
-    expect(mockNavigation.navigate).toHaveBeenCalledWith("Seva");
-    // The Settings TAB, without the reader bar.
-    expect(mockNavigation.navigate).toHaveBeenCalledWith("Settings");
-  });
-
-  test("the Seva tab shows the count the Seva config reports", async () => {
-    mockGetSevaConfig.mockResolvedValueOnce({ showSevaDot: true, sevaDotCount: 3 });
-    mockNavigation = createNavigation({ currentRoute: "Home" });
-    mockUseNavigation.mockReturnValue(mockNavigation);
-
-    const { findByText } = render(<BottomNavigation activeKey="Home" context="home" />);
-
-    expect(await findByText("3")).toBeTruthy();
-  });
-
-  test("the reader bar does not fetch the Seva config", () => {
-    mockNavigation = createNavigation({ currentRoute: "Reader" });
-    mockUseNavigation.mockReturnValue(mockNavigation);
-    mockGetSevaConfig.mockClear();
-
-    render(<BottomNavigation activeKey="Read" context="reader" />);
-
-    expect(mockGetSevaConfig).not.toHaveBeenCalled();
   });
 
   test("As a user on the reader tab bar I want Read and Music tabs visible", () => {

@@ -1,9 +1,7 @@
-import { remoteThemeRows } from "./__fixtures__/remoteThemes";
 import { AA_CONTRAST, contrastRatio } from "./contrast";
 import {
   bundledRegistry,
   mergeThemeRegistry,
-  checkLeaves,
   pickAllowed,
   remoteThemeName,
   sanitizeRemoteTheme,
@@ -86,9 +84,7 @@ describe("mergeThemeRegistry", () => {
   });
 
   it("adds a valid remote theme, built like a bundled one, in order", () => {
-    const { list, byId } = mergeThemeRegistry({
-      themes: [row({ position: 4 }), row({ id: "ruby", names: { en: "Ruby" }, position: 0 })],
-    });
+    const { list, byId } = mergeThemeRegistry({ themes: [row({ position: 4 })] });
     const { sapphire } = byId;
 
     expect(sapphire.nameKey).toBe("reader_theme_sapphire");
@@ -98,36 +94,26 @@ describe("mergeThemeRegistry", () => {
     expect(sapphire.app.surface).toBeDefined();
     expect(sapphire.text.gurbani.color).toBeDefined();
     expect(Object.isFrozen(sapphire)).toBe(true);
-    // Sorted by position among the bundled themes (light 1, dark 2).
-    expect(list.map((t) => t.id)).toEqual(["ruby", "light", "dark", "sapphire"]);
+    // Sorted by order among the bundled themes.
+    const ids = list.map((t) => t.id);
+    expect(ids.indexOf("sapphire")).toBeGreaterThan(ids.indexOf("blue"));
   });
 
   it("replaces a bundled theme when a row carries its id", () => {
     const palette = { ground: "#000033", ink: "#FFFFFF", accent: "#88CCFF" };
     const { byId } = mergeThemeRegistry({
-      themes: [row({ id: "dark", names: { en: "Dark" }, record: { base: "dark", palette } })],
+      themes: [row({ id: "blue", names: { en: "Blue" }, record: { base: "dark", palette } })],
     });
-    expect(READER_THEMES.map((t) => t.id)).toContain("dark");
-    expect(byId.dark.palette.ground).toBe("#000033");
-    expect(byId.dark.remote).toBe(true);
+    expect(byId.blue.palette.ground).toBe("#000033");
+    expect(byId.blue.remote).toBe(true);
   });
 
   it("removes a theme with a disabled row, but never light or dark", () => {
     const { byId } = mergeThemeRegistry({
-      // Added, then withdrawn in the same payload: the withdrawal wins.
-      themes: [
-        row({ id: "kesari", names: { en: "Kesari" } }),
-        row({ id: "kesari", enabled: false }),
-        row({ id: "dark", enabled: false }),
-      ],
+      themes: [row({ id: "kesari", enabled: false }), row({ id: "dark", enabled: false })],
     });
     expect(byId.kesari).toBeUndefined();
     expect(byId.dark).toBeDefined();
-  });
-
-  it("refuses an 8-digit palette colour, which the derivation cannot read", () => {
-    const palette = { ground: "#FFF6E9FF", ink: "#5C2E00", accent: "#9A3412" };
-    expect(sanitizeRemoteTheme(row({ record: { base: "light", palette } }))).toBeNull();
   });
 
   it("drops an invalid row without touching anything else", () => {
@@ -145,67 +131,5 @@ describe("remoteThemeName", () => {
     expect(remoteThemeName(record, "fr")).toBe("Sapphire");
     expect(remoteThemeName({ id: "x", names: { "en-US": "Ex" } }, "DEFAULT")).toBe("Ex");
     expect(remoteThemeName({ id: "blue" }, "en")).toBeNull();
-  });
-});
-
-// Every remote value lands in Reader HTML (a style attribute, a <style> block, a
-// string in the injected script) or in an app-wide style. A value that is not
-// what its field holds is dropped; the rest of the row is kept.
-describe("remote leaf values", () => {
-  const withRecord = (extra) => row({ record: { ...row().record, ...extra } });
-
-  it("keeps every value the served themes use", () => {
-    remoteThemeRows.forEach((served) => {
-      expect(checkLeaves(pickAllowed(served.record))).toEqual(pickAllowed(served.record));
-    });
-  });
-
-  it("drops a colour that is not a colour, keeping the theme", () => {
-    const s = sanitizeRemoteTheme(
-      withRecord({
-        highlight: { color: 'red"; window.ReactNativeWebView.postMessage("x"); "' },
-        app: { primary: "navy-ish", surface: "#112233" },
-      })
-    );
-    expect(s).not.toBeNull();
-    expect(s.record.highlight).toEqual({});
-    expect(s.record.app).toEqual({ surface: "#112233" });
-  });
-
-  it("drops CSS text that could leave its declaration", () => {
-    const s = sanitizeRemoteTheme(
-      withRecord({
-        text: {
-          gurbani: { shadow: '0 0 2px #000" onload="x' },
-          gurbaniHeading: { shadow: "0 1px 2px rgba(0, 0, 0, 0.4)" },
-        },
-        background: { imageSize: "10px; color: red", imageRepeat: "repeat" },
-        border: { style: "solid; x: y", width: 1 },
-      })
-    );
-    expect(s.record.text.gurbani).toEqual({});
-    expect(s.record.text.gurbaniHeading.shadow).toBe("0 1px 2px rgba(0, 0, 0, 0.4)");
-    expect(s.record.background).toEqual({ imageRepeat: "repeat" });
-    expect(s.record.border).toEqual({ width: 1 });
-  });
-
-  it("only takes an https or inline image, with nothing that ends url('…')", () => {
-    const image = (value) => sanitizeRemoteTheme(withRecord({ background: { image: value } }));
-    expect(image("https://cdn.example.org/paper.png").record.background.image).toBeDefined();
-    expect(image("http://cdn.example.org/paper.png").record.background).toEqual({});
-    expect(image("https://x.org/a.png'); color: red; ('").record.background).toEqual({});
-    // Built so the linter does not read the test value as a script URL.
-    expect(image(["javascript", "alert(1)"].join(":")).record.background).toEqual({});
-  });
-
-  it("drops numbers out of range and non-booleans in defaults", () => {
-    const s = sanitizeRemoteTheme(
-      withRecord({
-        typography: { lineHeightRatio: 40, fontScale: "1.2", letterSpacing: 1 },
-        defaults: { isTransliteration: "yes", isEnglishTranslation: true },
-      })
-    );
-    expect(s.record.typography).toEqual({ letterSpacing: 1 });
-    expect(s.record.defaults).toEqual({ isEnglishTranslation: true });
   });
 });

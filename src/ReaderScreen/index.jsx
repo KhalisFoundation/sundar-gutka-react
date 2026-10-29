@@ -69,9 +69,6 @@ const PLAYER_TOUCH_ECHO_MS = 500;
 // eslint-disable-next-line no-underscore-dangle
 const isDevBuild = Boolean(global.__DEV__);
 
-// How often the reading position is saved while the page moves.
-const POSITION_SAVE_MS = 5000;
-
 const Reader = ({ navigation, route }) => {
   const { theme } = useTheme();
   const styles = useThemedStyles(createStyles);
@@ -112,7 +109,6 @@ const Reader = ({ navigation, route }) => {
   const isAudioFeatureOn = isAudioFeatureEnabled ?? true;
   const isTransliteration = useSelector((state) => state.isTransliteration);
   const fontSize = useSelector((state) => state.fontSize);
-  // The bani is drawn in the Bani font; the rest of the app is Baloo Paaji.
   const baniFontFace = useSelector((state) => state.baniFontFace);
   const isLarivaar = useSelector((state) => state.isLarivaar);
   const isLarivaarAssist = useSelector((state) => state.isLarivaarAssist);
@@ -155,7 +151,8 @@ const Reader = ({ navigation, route }) => {
   // postMessages sent to a stale WebView instance).
   const [webViewLoadTick, setWebViewLoadTick] = useState(0);
   const [titleText, setTitleText] = useState(null);
-  // Whether the add-to-pothi sheet is up.
+  // Whether the add-to-pothi sheet is up. Signed out it never opens — see
+  // handleAddToPothiPress.
   const [filing, setFiling] = useState(false);
   const readSavedPosition = (entry) => {
     if (!entry) return { elementId: null, sequence: null };
@@ -281,17 +278,6 @@ const Reader = ({ navigation, route }) => {
   // bars stay up (see the "edge" message) and the idle auto-hide stands down.
   const atEdgeRef = useRef(false);
 
-  // How much of the PAGE the header covers right now, for a restore to clear.
-  // The WebView already starts `webViewTop` below the screen's top, so the
-  // header hides only what it reaches past that, and nothing while it is
-  // hidden. Clearing the full header height parked the line lower on screen,
-  // and the next position report saved the earlier line now at the top, so
-  // every open walked the position back.
-  const restoreTopInset = useCallback(
-    () => (isHeaderRef.current ? Math.max(0, headerOverlayHeight - webViewTop) : 0),
-    [headerOverlayHeight, webViewTop]
-  );
-
   useEffect(() => {
     isAutoScrollRef.current = isAutoScroll;
   }, [isAutoScroll]);
@@ -398,19 +384,6 @@ const Reader = ({ navigation, route }) => {
       dispatch(actions.setPosition(elementIdToSave, id, sequenceToSave));
     }
   }, [dispatch, id]);
-  // The periodic save while reading (see the scroll-elementId message). Read
-  // through a ref so the message handler need not change with `id`; cleared on
-  // a bani swap, where it would file the old bani's place under the new one.
-  const saveScrollPositionRef = useRef(saveScrollPosition);
-  saveScrollPositionRef.current = saveScrollPosition;
-  const positionSaveTimerRef = useRef(null);
-  useEffect(
-    () => () => {
-      clearTimeout(positionSaveTimerRef.current);
-      positionSaveTimerRef.current = null;
-    },
-    [id]
-  );
 
   useEffect(() => {
     dispatch(actions.setCurrentBani({ id, title, titleUni }));
@@ -496,9 +469,6 @@ const Reader = ({ navigation, route }) => {
 
   useEffect(() => {
     const unsubscribeBlur = navigation.addListener("blur", () => {
-      // The position lives in refs while reading (see handleMessage), so leaving
-      // for Bookmarks, Settings or Home writes it here.
-      saveScrollPosition();
       pauseAudioPlayback();
       trackScrollProgress(id, titleUni || title, scrollPercentRef.current, isAudioSyncScroll);
       // iPad: Activate scroll guard when leaving the screen. WKWebView can
@@ -510,7 +480,7 @@ const Reader = ({ navigation, route }) => {
     });
 
     return unsubscribeBlur;
-  }, [navigation, saveScrollPosition, pauseAudioPlayback, id, titleUni, title, isAudioSyncScroll]);
+  }, [navigation, pauseAudioPlayback, id, titleUni, title, isAudioSyncScroll]);
 
   // iPad: Restore WebView scroll position when returning from Bookmarks.
   // The scroll guard stays active for a grace period after focus so that
@@ -531,7 +501,7 @@ const Reader = ({ navigation, route }) => {
       if (webViewRef.current && currentElementIdRef.current && !isBookmarkJump) {
         const scrollMessage = {
           action: "scrollToPosition",
-          topInset: restoreTopInset(),
+          topInset: headerOverlayHeight,
           elementId: currentElementIdRef.current,
           sequence: currentSequenceRef.current,
         };
@@ -546,7 +516,7 @@ const Reader = ({ navigation, route }) => {
     });
 
     return unsubscribeFocus;
-  }, [navigation, restoreTopInset]);
+  }, [navigation]);
 
   // Memoize WebView key to prevent unnecessary remounts
   const webViewKey = useMemo(() => {
@@ -639,21 +609,6 @@ const Reader = ({ navigation, route }) => {
     };
   }, [saveScrollPosition]);
 
-  // A bani swapped in with no place of its own starts at the top. The refs
-  // still held the previous bani's place: the page was restored to its
-  // element or sequence, and the periodic save filed it under this bani.
-  const positionForIdRef = useRef(id);
-  useEffect(() => {
-    if (positionForIdRef.current === id) return;
-    positionForIdRef.current = id;
-    if (!savePosition?.[id]) {
-      currentElementIdRef.current = null;
-      currentSequenceRef.current = null;
-    }
-    // Only on a swap: `savePosition` changes on every save of this bani.
-    // eslint-disable-next-line react-hooks/exhaustive-deps
-  }, [id]);
-
   // Set currentElementId from savePosition when it changes
   useEffect(() => {
     if (savePosition && id && savePosition[id]) {
@@ -685,7 +640,6 @@ const Reader = ({ navigation, route }) => {
   // Open signed out: the pothi the shabad is filed into lives on the device
   // until there is an account to carry it. See usePothiSync.
   const handleAddToPothiPress = useCallback(() => setFiling(true), []);
-  const closeFiling = useCallback(() => setFiling(false), []);
 
   // The bani being read, in the shape the pothi model stores. `id` is coerced
   // because a route param can arrive as a string and every stored `baaniId` is
@@ -707,12 +661,7 @@ const Reader = ({ navigation, route }) => {
       // the blank bottom inset in view — not the progress percentage. That
       // reaches 100% while the last lines are still where the returning nav bar
       // lands, so bringing the bars back on it covered them.
-      //
-      // Except inside the iOS scroll guard below: WKWebView's spurious
-      // scroll-to-0 on return from Bookmarks posts "edge" too, and taken as the
-      // top it kept the idle auto-hide off until the reader scrolled.
       if (data === "edge") {
-        if (iPadScrollGuardRef.current) return;
         atEdgeRef.current = true;
         clearBarsIdleTimer();
         setBarsVisible(true, "scroll_edge");
@@ -774,22 +723,12 @@ const Reader = ({ navigation, route }) => {
       } else if (data.includes("scroll-elementId-")) {
         // Capture element ID (and optional sequence) from WebView scroll events.
         // Only update refs here — do NOT dispatch to Redux on every scroll tick.
-        // saveScrollPosition() reads these refs and dispatches once on blur,
-        // back, unmount or backgrounding.
-        // A foreground crash or OOM kill skips all four, so the position is
-        // also saved while reading — at most once every few seconds, not per
-        // tick as `dev` did.
+        // saveScrollPosition() reads these refs and dispatches once on blur/unmount.
         const payload = data.split("scroll-elementId-")[1];
         const [elementId, seqPart] = payload.split("|seq-");
         const sequence = seqPart || null;
         currentElementIdRef.current = elementId;
         currentSequenceRef.current = sequence;
-        if (!positionSaveTimerRef.current) {
-          positionSaveTimerRef.current = setTimeout(() => {
-            positionSaveTimerRef.current = null;
-            saveScrollPositionRef.current();
-          }, POSITION_SAVE_MS);
-        }
         if (shouldNavigateBack) {
           navigation.goBack();
           setShouldNavigateBack(false);
@@ -821,10 +760,7 @@ const Reader = ({ navigation, route }) => {
             duration: 0,
             useNativeDriver: false,
           }).start();
-          // Unrounded: the reading session's idle check needs to see a slow
-          // auto-scroll move, and on a long bani that stays inside one whole
-          // percent for more than ten minutes. Analytics rounds it on the way out.
-          scrollPercentRef.current = pct * 100;
+          scrollPercentRef.current = Math.round(pct * 100);
           // Leaving the edge hands the bars back to the idle auto-hide.
           if (pct > 0 && pct < 1) atEdgeRef.current = false;
         }
@@ -856,19 +792,11 @@ const Reader = ({ navigation, route }) => {
   }, []);
 
   const handleLoadEnd = useCallback(() => {
-    // The bottom inset first, so the restore below measures the page at its
-    // full height. Waiting for webViewLoadTick (500ms on) left a position near
-    // the end landing short, with its last lines under the nav.
-    if (webViewRef.current) {
-      webViewRef.current.postMessage(
-        JSON.stringify({ action: "setBottomInset", value: navChromeHeight })
-      );
-    }
     // Scroll to saved element ID after WebView is fully loaded
     if (webViewRef.current && currentElementIdRef.current) {
       const scrollMessage = {
         action: "scrollToPosition",
-        topInset: restoreTopInset(),
+        topInset: headerOverlayHeight,
         elementId: currentElementIdRef.current,
         sequence: currentSequenceRef.current,
       };
@@ -890,7 +818,7 @@ const Reader = ({ navigation, route }) => {
     setTimeout(() => {
       setWebViewLoadTick((prev) => prev + 1);
     }, 500);
-  }, [navChromeHeight, restoreTopInset]);
+  }, []);
 
   const handleError = useCallback((syntheticEvent) => {
     const { nativeEvent } = syntheticEvent;
@@ -926,7 +854,7 @@ const Reader = ({ navigation, route }) => {
           and filing one from a list are the one flow — including the "New
           Pothi" row that creates a pothi and drops this bani straight into it,
           without leaving the bani being read. */}
-      <AddToPothiSheet visible={filing} onClose={closeFiling} bani={filingBani} />
+      <AddToPothiSheet visible={filing} onClose={() => setFiling(false)} bani={filingBani} />
       {isLoading && <Spinner size="small" color={theme.c.primary} />}
       {/* Don't mount the WebView until the shabad has loaded. Mounting on the
           initial empty shabad ([]) renders a placeholder page whose height equals

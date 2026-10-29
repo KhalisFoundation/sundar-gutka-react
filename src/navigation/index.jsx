@@ -28,6 +28,8 @@ import EditBaniOrder from "../EditBaniOrder";
 import FolderScreen from "../FolderScreen";
 import HomeScreen from "../HomeScreen";
 import ManageDownloads from "../ManageDownloads";
+import MyPothisScreen from "../Pothi/MyPothisScreen";
+import PothiReaderScreen from "../Pothi/PothiReaderScreen";
 import ReaderScreen from "../ReaderScreen";
 import Settings from "../Settings";
 import ReminderOptions from "../Settings/components/reminders/ReminderOptions";
@@ -49,23 +51,17 @@ const ReminderOptionsScreen = withScreenRoles(ReminderOptions, "settings");
 const ThemesScreen = withScreenRoles(Themes, "settings");
 const EditBaniOrderScreen = withScreenRoles(EditBaniOrder, "settings");
 const DatabaseUpdate = withScreenRoles(DatabaseUpdateScreen, "settings");
+const ManageDownloadsScreen = withScreenRoles(ManageDownloads, "settings");
 const About = withScreenRoles(AboutScreen, "settings");
 const BookmarksScreen = withScreenRoles(Bookmarks, "settings");
-const ManageDownloadsScreen = withScreenRoles(ManageDownloads, "settings");
+// Reached from Settings, so it wears the same palette as its siblings.
+const MyPothis = withScreenRoles(MyPothisScreen, "settings");
 // The pothi detail list, pushed from the Folders tab — same palette as the
 // other pushed utility screens it now looks like.
 const FolderDetail = withScreenRoles(FolderScreen, "settings");
 
 const Stack = createNativeStackNavigator();
 const Tab = createBottomTabNavigator();
-
-// The screen actually showing, through nested navigators: the tabs all sit
-// under one root route, so timing that would put Home, Dashboard, Seva and
-// Settings in a single "MainTabs" trace.
-const focusedRouteName = (state) => {
-  const route = state?.routes?.[state.index];
-  return route?.state ? focusedRouteName(route.state) : route?.name;
-};
 
 // Custom tab bar that uses the refactored context-aware BottomNavigation component
 const CustomTabBar = (props) => {
@@ -110,22 +106,25 @@ CustomTabBar.propTypes = {
 // eslint-disable-next-line react/jsx-props-no-spreading
 const renderTabBar = (barProps) => <CustomTabBar {...barProps} />;
 
-// Main tab navigator for Home, Dashboard, Seva and Settings.
+// Main tab navigator for Home, Dashboard, Seva, Settings
 const MainTabs = () => {
   return (
     <Tab.Navigator
       tabBar={renderTabBar}
-      // No tabBarHideOnKeyboard: it only reaches React Navigation's own bar,
-      // and this one is custom, so the bar stays up over the keyboard.
       screenOptions={{
         headerShown: false,
+        tabBarHideOnKeyboard: true,
       }}
-      // Android back returns to Home from any tab, rather than leaving the app:
-      // with "none" a tab with no back handler of its own (Dashboard, Seva) let the press
-      // fall through to the root stack, which sits at index 0 while the tabs
-      // are showing, and the app exited. "initialRoute" is the platform
-      // convention: back walks toward the start destination, and only Home
-      // itself exits.
+      // Android back returns to Home from any tab, rather than leaving the app.
+      //
+      // This was "none", which tells the tab navigator not to handle back AT
+      // ALL. Settings hid that: it has its own handler falling back to Home. The
+      // Dashboard and Seva tabs have none, so their back press fell through to
+      // the root stack — which sits at index 0 while the tabs are showing — and
+      // the app exited from what is, to the user, a page they navigated into.
+      //
+      // "initialRoute" is the platform convention: back always walks toward the
+      // start destination, and only Home itself exits.
       backBehavior="initialRoute"
     >
       <Tab.Screen name="Home" component={HomeScreen} />
@@ -160,12 +159,13 @@ const Navigation = () => {
         await stopTrace(trace.current);
         trace.current = resetTrace();
       }
-      trace.current = await startPerformanceTrace(focusedRouteName(state));
+      const currentRouteName = state.routes[state.index].name;
+      trace.current = await startPerformanceTrace(currentRouteName);
     } catch (error) {
       // Silently fail - performance monitoring should never crash the app
       logError(
         new Error(
-          `Performance trace failed for route: ${focusedRouteName(state) || "unknown"} - ${
+          `Performance trace failed for route: ${state.routes[state.index]?.name || "unknown"} - ${
             error?.message || "Unknown error"
           }`
         )
@@ -174,19 +174,9 @@ const Navigation = () => {
     }
   };
 
-  // Trace updates run one after another. Fired independently, two quick screen
-  // changes both stopped the same trace (the second stop reported as a failure)
-  // and both started one, leaving a trace that was never stopped.
-  const traceQueue = useRef(Promise.resolve());
-  const queuePerformanceTrace = (state) => {
-    traceQueue.current = traceQueue.current
-      .then(() => handlePerformanceTrace(state))
-      .catch(() => {});
-  };
-
   const handleStateChange = (state) => {
     // Fire-and-forget — never await Firebase on the navigation state change path
-    queuePerformanceTrace(state);
+    handlePerformanceTrace(state).catch(() => {});
 
     const previousRouteName = routeNameRef.current;
     // Through `isReady()`, never `navigationRef.current` directly. The ref is
@@ -213,11 +203,14 @@ const Navigation = () => {
   };
 
   return (
-    // The ground UNDER the navigator. The theme and contentStyle paint each
-    // scene, but the stack container that holds the scenes paints nothing of its
-    // own — so during Android's push transition the column between the outgoing
-    // and incoming screens showed the Activity window, which the native theme
-    // leaves light. This View is what lies beneath now, in the scenes' colour.
+    // The ground UNDER the navigator. The theme and contentStyle above paint
+    // each scene, but the stack container that holds the scenes paints nothing
+    // of its own — so during Android's push transition, where the outgoing
+    // screen drifts left while the incoming one is still arriving, the column
+    // between them showed whatever lay beneath: the Activity window, which the
+    // native theme leaves light. This View is what lies beneath now, in the
+    // same colour as the scenes, and it follows the app theme where a native
+    // windowBackground could not.
     <View style={{ flex: 1, backgroundColor: sceneGround }}>
       <NavigationContainer
         ref={navigationRef}
@@ -226,11 +219,6 @@ const Navigation = () => {
           const route = navigationRef.isReady() ? navigationRef.getCurrentRoute() : null;
           routeNameRef.current = route?.name;
           setReaderFocused(route?.name === constant.READER);
-          // onStateChange doesn't fire for the initial screen, so start its trace
-          // here; otherwise the first screen of every session has no timing.
-          if (navigationRef.isReady()) {
-            queuePerformanceTrace(navigationRef.getRootState());
-          }
           // A notification that launched the app is taken only now.
           flushPendingNotificationRoute();
         }}
@@ -240,8 +228,9 @@ const Navigation = () => {
           screenOptions={{
             headerShown: true,
             headerTitleAlign: "center",
-            // The native scene's own background — the View above covers the gap
-            // behind it; this covers the scene itself before its first frame.
+            // The native scene's own background — the container theme above
+            // covers the gap behind it; this covers the scene itself before its
+            // first frame has painted.
             contentStyle: { backgroundColor: sceneGround },
           }}
         >
@@ -256,27 +245,22 @@ const Navigation = () => {
           />
           {/* Stack screens - these push with animation */}
           <Stack.Screen name="Reader" component={ReaderScreen} options={{ headerShown: false }} />
-          {/* Screens that draw their own ScreenHeader opt out of the native one
-              here, not in an effect, so the native bar never paints for a frame
-              first (the stacked double header).
-
-              Settings is also a tab. This stack copy is the one the Reader and
-              a folder push, so Back returns to them. */}
-          <Stack.Screen
-            name="Settings"
-            component={SettingsScreen}
-            options={{ headerShown: false }}
-          />
           <Stack.Screen name="About" component={About} options={{ headerShown: false }} />
           <Stack.Screen
             name="FolderScreen"
             component={FolderDetail}
             options={{ headerShown: false }}
           />
+          <Stack.Screen name="MyPothis" component={MyPothis} options={{ headerShown: false }} />
           <Stack.Screen
+            name="PothiReader"
+            component={PothiReaderScreen}
+            options={{ headerShown: false }}
+          />
+          <Stack.Screen
+            options={{ headerShown: false }}
             name="EditBaniOrder"
             component={EditBaniOrderScreen}
-            options={{ headerShown: false }}
           />
           <Stack.Screen
             name="Bookmarks"
@@ -294,14 +278,23 @@ const Navigation = () => {
             options={{ headerShown: false }}
           />
           <Stack.Screen name="Themes" component={ThemesScreen} options={{ headerShown: false }} />
+          {/* Declared here rather than switched off at runtime: the stack
+              defaults to headerShown:true, so a screen that renders its own
+              header must opt out. Doing it in an effect lets the native bar paint
+              for a frame first, which is the stacked double header. */}
+          <Stack.Screen
+            name="DatabaseUpdate"
+            component={DatabaseUpdate}
+            options={{ headerShown: false }}
+          />
           <Stack.Screen
             name="ManageDownloads"
             component={ManageDownloadsScreen}
             options={{ headerShown: false }}
           />
           <Stack.Screen
-            name="DatabaseUpdate"
-            component={DatabaseUpdate}
+            name="Settings"
+            component={SettingsScreen}
             options={{ headerShown: false }}
           />
         </Stack.Navigator>

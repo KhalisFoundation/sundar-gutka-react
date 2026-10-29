@@ -19,14 +19,20 @@ import { NATURAL_LINE_BOX } from "./lineHeight";
 const ROOT = path.join(__dirname, "..");
 
 const GUARDED = [
-  "SevaScreen/styles.js",
-  "SevaScreen/sevaMeansStyles.js",
-  "DatabaseUpdate/components/styles.jsx",
   "ReaderScreen/components/AudioPlayer/style.js",
   "ManageDownloads/styles.js",
+  "SevaScreen/styles.js",
+  "SevaScreen/sevaMeansStyles.js",
   "DashboardScreen/components/DashboardHeader.jsx",
   "DashboardScreen/components/DayDetailModal.jsx",
   "DashboardScreen/components/Discover.jsx",
+  "DashboardScreen/components/FeatureTilesRow.jsx",
+  "DashboardScreen/components/KhalisAppsCarousel.jsx",
+  "DashboardScreen/components/MostListenedSection.jsx",
+  "DashboardScreen/components/MostReadSection.jsx",
+  "DatabaseUpdate/components/styles.jsx",
+  "common/components/OnboardingCarousel/style.jsx",
+  "common/components/OnboardingCarousel/index.jsx",
 ];
 
 const read = (rel) => fs.readFileSync(path.join(ROOT, rel), "utf8");
@@ -48,6 +54,21 @@ describe.each(GUARDED)("%s", (rel) => {
 
   it("imports the helper it uses", () => {
     expect(src).toMatch(/import \{ androidLineHeight \} from "@theme\/lineHeight";/);
+  });
+});
+
+// The two values the pill's own layout depends on, kept honest against the
+// metrics rather than against a remembered number.
+describe("the collapsed audio pill", () => {
+  const style = read("ReaderScreen/components/AudioPlayer/style.js");
+
+  it("sizes to its content instead of pinning a height", () => {
+    // Without a pinned line height the two stacked lines measure
+    // 12 * 1.771 + 14 * 1.771 - 1.5 ~= 44.5 on iOS, which a fixed 44 clipped.
+    const stack = (12 + 14) * NATURAL_LINE_BOX.baloo - 1.5;
+    expect(stack).toBeGreaterThan(44);
+    expect(style).toMatch(/minHeight: 44,/);
+    expect(style).not.toMatch(/^\s+height: 44,$/m);
   });
 });
 
@@ -100,20 +121,5 @@ describe("the bottom navigation bar", () => {
       .map(([n, line]) => `${n}: ${line.trim()}`);
 
     expect(rawInset).toEqual([]);
-  });
-});
-
-// The two values the pill's own layout depends on, kept honest against the
-// metrics rather than against a remembered number.
-describe("the collapsed audio pill", () => {
-  const style = read("ReaderScreen/components/AudioPlayer/style.js");
-
-  it("sizes to its content instead of pinning a height", () => {
-    // Without a pinned line height the two stacked lines measure
-    // 12 * 1.771 + 14 * 1.771 - 1.5 ~= 44.5 on iOS, which a fixed 44 clipped.
-    const stack = (12 + 14) * NATURAL_LINE_BOX.baloo - 1.5;
-    expect(stack).toBeGreaterThan(44);
-    expect(style).toMatch(/minHeight: 44,/);
-    expect(style).not.toMatch(/^\s+height: 44,$/m);
   });
 });

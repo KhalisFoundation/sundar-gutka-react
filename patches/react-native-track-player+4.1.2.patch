@@ -1,8 +1,8 @@
 diff --git a/node_modules/react-native-track-player/android/src/main/java/com/doublesymmetry/trackplayer/module/MusicModule.kt b/node_modules/react-native-track-player/android/src/main/java/com/doublesymmetry/trackplayer/module/MusicModule.kt
-index b2409a0..dbe6e7b 100644
+index b2409a0..af97fa9 100644
 --- a/node_modules/react-native-track-player/android/src/main/java/com/doublesymmetry/trackplayer/module/MusicModule.kt
 +++ b/node_modules/react-native-track-player/android/src/main/java/com/doublesymmetry/trackplayer/module/MusicModule.kt
-@@ -34,6 +34,18 @@ class MusicModule(reactContext: ReactApplicationContext) : ReactContextBaseJavaM
+@@ -34,6 +34,13 @@ class MusicModule(reactContext: ReactApplicationContext) : ReactContextBaseJavaM
      private var playerOptions: Bundle? = null
      private var isServiceBound = false
      private var playerSetUpPromise: Promise? = null
@@ -12,16 +12,11 @@ index b2409a0..dbe6e7b 100644
 +    // setupPlayer() sees isServiceBound and answers player_already_initialized,
 +    // which the JS side reads as success — leaving an audio player on screen
 +    // that can never play anything.
-+    //
-+    // Deliberately never cleared, including by reset/destroy: the causes it
-+    // records (a cross-process binder, a cloned install) last for the life of
-+    // the process, so the only recovery is a process restart.
 +    private var playerSetUpFailed = false
-+    private var musicEvents: MusicEvents? = null
      private val scope = MainScope()
      private lateinit var musicService: MusicService
      private val context = reactContext
-@@ -52,9 +64,59 @@ class MusicModule(reactContext: ReactApplicationContext) : ReactContextBaseJavaM
+@@ -52,9 +59,54 @@ class MusicModule(reactContext: ReactApplicationContext) : ReactContextBaseJavaM
          scope.launch {
              // If a binder already exists, don't get a new one
              if (!::musicService.isInitialized) {
@@ -72,18 +67,13 @@ index b2409a0..dbe6e7b 100644
 +                        "Could not set up the player: ${e.message}"
 +                    )
 +                    playerSetUpPromise = null
-+                    // Left unbound, as in the binder == null branch above: the
-+                    // service's player was never created, so any call that got
-+                    // past verifyServiceBoundOrReject would touch an uninitialized
-+                    // player and crash. playerSetUpFailed already stops a retry
-+                    // from reporting player_already_initialized.
-+                    isServiceBound = false
++                    isServiceBound = true
 +                    return@launch
 +                }
                  playerSetUpPromise?.resolve(null)
              }
  
-@@ -161,6 +223,14 @@ class MusicModule(reactContext: ReactApplicationContext) : ReactContextBaseJavaM
+@@ -161,6 +213,14 @@ class MusicModule(reactContext: ReactApplicationContext) : ReactContextBaseJavaM
  
      @ReactMethod
      fun setupPlayer(data: ReadableMap?, promise: Promise) {
@@ -98,25 +88,8 @@ index b2409a0..dbe6e7b 100644
          if (isServiceBound) {
              promise.reject(
                  "player_already_initialized",
-@@ -229,18 +299,38 @@ class MusicModule(reactContext: ReactApplicationContext) : ReactContextBaseJavaM
-         playerOptions = bundledData
- 
- 
--        LocalBroadcastManager.getInstance(context).registerReceiver(
--            MusicEvents(context),
--            IntentFilter(EVENT_INTENT)
--        )
-+        // One receiver per module: setupPlayer can now be retried after a failed
-+        // service start, and registering again on each attempt would deliver
-+        // every player event to JS once per retry.
-+        if (musicEvents == null) {
-+            musicEvents = MusicEvents(context).also {
-+                LocalBroadcastManager.getInstance(context).registerReceiver(
-+                    it,
-+                    IntentFilter(EVENT_INTENT)
-+                )
-+            }
-+        }
+@@ -235,12 +295,25 @@ class MusicModule(reactContext: ReactApplicationContext) : ReactContextBaseJavaM
+         )
  
          Intent(context, MusicService::class.java).also { intent ->
 -            if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.O) {
@@ -147,10 +120,10 @@ index b2409a0..dbe6e7b 100644
      }
  
 diff --git a/node_modules/react-native-track-player/android/src/main/java/com/doublesymmetry/trackplayer/service/MusicService.kt b/node_modules/react-native-track-player/android/src/main/java/com/doublesymmetry/trackplayer/service/MusicService.kt
-index afa6b0f..407fd02 100644
+index afa6b0f..6fe93c5 100644
 --- a/node_modules/react-native-track-player/android/src/main/java/com/doublesymmetry/trackplayer/service/MusicService.kt
 +++ b/node_modules/react-native-track-player/android/src/main/java/com/doublesymmetry/trackplayer/service/MusicService.kt
-@@ -94,8 +94,22 @@ class MusicService : HeadlessJsTaskService() {
+@@ -94,8 +94,20 @@ class MusicService : HeadlessJsTaskService() {
      private var compactCapabilities: List<Capability> = emptyList()
  
      override fun onStartCommand(intent: Intent?, flags: Int, startId: Int): Int {
@@ -161,11 +134,9 @@ index afa6b0f..407fd02 100644
 +            stopSelf(startId)
 +            return START_NOT_STICKY
 +        }
-+        // The helper handles its own exception, so a failed startForeground()
-+        // has to be reported back: without this the service went on to start its
-+        // headless task and return START_STICKY, the restart this guard is here
-+        // to prevent.
-+        if (!startAndStopEmptyNotificationToAvoidANR()) {
++        try {
++            startAndStopEmptyNotificationToAvoidANR()
++        } catch (e: Exception) {
 +            stopSelf(startId)
 +            return START_NOT_STICKY
 +        }
@@ -174,19 +145,17 @@ index afa6b0f..407fd02 100644
          return START_STICKY
      }
  
-@@ -104,25 +118,34 @@ class MusicService : HeadlessJsTaskService() {
-      * within 5s" ANR and crash by creating an empty notification and stopping it right after. For more
+@@ -105,24 +117,31 @@ class MusicService : HeadlessJsTaskService() {
       * information see https://github.com/doublesymmetry/react-native-track-player/issues/1666
       */
--    private fun startAndStopEmptyNotificationToAvoidANR() {
+     private fun startAndStopEmptyNotificationToAvoidANR() {
 -        val notificationManager = this.getSystemService(Context.NOTIFICATION_SERVICE) as NotificationManager
 -        if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.O) {
 -            notificationManager.createNotificationChannel(
 -                NotificationChannel(getString(TrackPlayerR.string.rntp_temporary_channel_id), getString(TrackPlayerR.string.rntp_temporary_channel_name), NotificationManager.IMPORTANCE_LOW)
 -            )
 -        }
-+    private fun startAndStopEmptyNotificationToAvoidANR(): Boolean {
-+        return try {
++        try {
 +            val notificationManager = this.getSystemService(Context.NOTIFICATION_SERVICE) as NotificationManager
 +            if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.O) {
 +                notificationManager.createNotificationChannel(
@@ -211,13 +180,11 @@ index afa6b0f..407fd02 100644
 +            startForeground(EMPTY_NOTIFICATION_ID, notification)
 +            @Suppress("DEPRECATION")
 +            stopForeground(true)
-+            true
 +        } catch (e: Exception) {
 +            // ForegroundServiceStartNotAllowedException (Android 12+) or any other FGS
 +            // restriction — the OS state does not permit starting a foreground service here.
 +            // Abort the service cleanly instead of crashing.
 +            stopSelf()
-+            false
          }
 -        val notification = notificationBuilder.build()
 -        startForeground(EMPTY_NOTIFICATION_ID, notification)

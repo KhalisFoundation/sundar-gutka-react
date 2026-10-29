@@ -1,6 +1,5 @@
 /* eslint-env jest */
 import React from "react";
-
 import { render, fireEvent } from "@testing-library/react-native";
 
 import ScrollViewComponent, { isOfflineAvailable } from "./ScrollViewComponent";
@@ -54,16 +53,13 @@ jest.mock("@common/hooks/useThemedStyles", () => {
 
 jest.mock("@rneui/themed", () => {
   const { Text } = require("react-native");
-  // eslint-disable-next-line react/jsx-props-no-spreading -- test mock forwards all props
   return { Icon: (props) => <Text testID="offline-pin-icon" {...props} /> };
 });
 
 jest.mock("@common/icons", () => {
   const { Text } = require("react-native");
   return {
-    // eslint-disable-next-line react/jsx-props-no-spreading -- test mock forwards all props
     PlayIcon: (props) => <Text testID="play-icon" {...props} />,
-    // eslint-disable-next-line react/jsx-props-no-spreading -- test mock forwards all props
     StopIcon: (props) => <Text testID="stop-icon" {...props} />,
   };
 });
@@ -75,7 +71,6 @@ jest.mock("@common", () => {
       DOWNLOADED: "Downloaded",
       NOT_DOWNLOADED: "Not Downloaded",
     },
-    // eslint-disable-next-line react/jsx-props-no-spreading -- test mock forwards all props
     CustomText: (props) => <Text {...props} />,
   };
 });
@@ -96,10 +91,7 @@ describe("ScrollViewComponent", () => {
   it("groups downloaded tracks above non-downloaded tracks", () => {
     mockState.downloadRegistry = { "ArtistZ/z.m4a": true };
     const tracks = [
-      track("z", "Artist Z", {
-        audioUrl: "https://example.com/ArtistZ/z.m4a",
-        remoteUrl: "https://example.com/ArtistZ/z.m4a",
-      }),
+      track("z", "Artist Z", { audioUrl: "https://example.com/ArtistZ/z.m4a", remoteUrl: "https://example.com/ArtistZ/z.m4a" }),
       track("a", "Artist A"),
     ];
 

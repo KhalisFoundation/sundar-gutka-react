@@ -90,7 +90,7 @@ const A = "a@khalis.net";
 const B = "b@khalis.net";
 
 /** A day of reading sitting in whichever store is currently open. */
-const oneDay = [{ date: "2026-08-20", own_reading_seconds: 300, own_listening_seconds: 60 }];
+const oneDay = [{ date: "2026-08-20", reading_seconds: 300, listening_seconds: 60 }];
 
 beforeEach(async () => {
   // mockReset on OUR mocks specifically, and neither of the blunt instruments.

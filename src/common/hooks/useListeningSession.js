@@ -1,5 +1,4 @@
-import { useEffect, useRef, useCallback, useState } from "react";
-import { AppState } from "react-native";
+import { useEffect, useRef, useCallback } from "react";
 import { useNavigation } from "@react-navigation/native";
 import { logError, logMessage, trackAudioStarted, trackAudioCompleted } from "@common";
 import {
@@ -9,11 +8,6 @@ import {
 } from "../../database/analytics";
 import { requestPush } from "../../services/dashboard/syncSignal";
 import { secondsPerDay, splitSpanByLocalDay } from "../../services/streakDays";
-
-// How often time played is written down while audio keeps going. Audio plays
-// on with the phone locked, and an app killed there (swiped away, or the OS
-// reclaiming it) lost every minute since the Reader was last left.
-const CHECKPOINT_MS = 60 * 1000;
 
 const useListeningSession = ({
   baniId,
@@ -32,22 +26,6 @@ const useListeningSession = ({
   const bucketsRef = useRef({});
   const playStartRef = useRef(null);
   const hasTrackedStartRef = useRef(false);
-  // The bani the session in progress belongs to, taken when it begins. The
-  // Reader is REUSED across banis, and the save used to close over the props:
-  // a swap filed the time under the wrong bani, and the save the old closure
-  // made closed the playing segment for good — nothing reopened it, so every
-  // minute after the swap went unrecorded.
-  const sessionBaniRef = useRef(null);
-  const takeBani = () => {
-    if (!sessionBaniRef.current) sessionBaniRef.current = { baniId, baniTitle };
-  };
-  // A title that arrives a render after its id belongs to the same session.
-  if (sessionBaniRef.current?.baniId === baniId && baniTitle) {
-    sessionBaniRef.current.baniTitle = baniTitle;
-  }
-  // Seconds of this session already written to the day rows by a checkpoint.
-  // The session's own row is written once, at the end, with the whole of it.
-  const checkpointedRef = useRef(0);
 
   // Closes the segment currently playing and files it under the day(s) it
   // covered. Safe to call when nothing is playing.
@@ -74,24 +52,9 @@ const useListeningSession = ({
     artistNameRef.current = artistName;
   }, [artistName]);
 
-  // The playback state is the one global player's, so a Reader left under
-  // another Reader saw its audio as playing too and counted the same seconds a
-  // second time. Only the Reader in front counts; a Reader pauses its own audio
-  // when it loses focus, so nothing it played is missed.
-  const [focused, setFocused] = useState(() => navigation.isFocused?.() ?? true);
+  // Accumulate wall-clock time while isPlaying = true; fire analytics on first play
   useEffect(() => {
-    const offFocus = navigation.addListener("focus", () => setFocused(true));
-    const offBlur = navigation.addListener("blur", () => setFocused(false));
-    return () => {
-      offFocus();
-      offBlur();
-    };
-  }, [navigation]);
-  const counting = isPlaying && focused;
-
-  // Accumulate wall-clock time while it plays here; fire analytics on first play
-  useEffect(() => {
-    if (counting) {
+    if (isPlaying) {
       if (!hasTrackedStartRef.current) {
         hasTrackedStartRef.current = true;
         logMessage(
@@ -105,107 +68,54 @@ const useListeningSession = ({
           artistNameRef.current ?? null
         ).catch(() => {});
       }
-      takeBani();
       playStartRef.current = Date.now();
     } else {
       closeSegment();
     }
-    // `takeBani` reads the current props; the session's bani is fixed once taken.
-    // eslint-disable-next-line react-hooks/exhaustive-deps
-  }, [counting, closeSegment]);
+  }, [isPlaying, closeSegment]);
 
-  // Writes the time played so far to the day rows. Playing on, the open
-  // segment is closed here and a new one starts at once, so nothing is counted
-  // twice and nothing between the two is lost.
-  const checkpoint = useCallback(() => {
-    const playing = !!playStartRef.current;
+  // Synchronous — flushes accumulated time and queues DB work; returns instantly.
+  const saveSession = useCallback(() => {
     closeSegment();
-    if (playing) playStartRef.current = Date.now();
     const daySlices = secondsPerDay(bucketsRef.current);
     bucketsRef.current = {};
-    const seconds = daySlices.reduce((sum, slice) => sum + slice.seconds, 0);
-    if (seconds <= 0) return;
-    checkpointedRef.current += seconds;
+
+    const durationSeconds = daySlices.reduce((sum, slice) => sum + slice.seconds, 0);
+    if (durationSeconds <= 0) return;
     enqueueAnalyticsWrite(async () => {
       try {
-        await Promise.all(
-          daySlices.map((slice) =>
+        await Promise.all([
+          insertAudioSession({
+            audio_id: currentPlayingIdRef.current ?? null,
+            bani_id: baniId,
+            bani_title: baniTitle ?? null,
+            artist_id: artistIdRef.current ?? null,
+            artist_name: artistNameRef.current ?? null,
+            duration_played: durationSeconds,
+            completed: false,
+          }),
+          ...daySlices.map((slice) =>
             upsertDailyActivity({
               date: slice.date,
               reading_seconds_delta: 0,
               listening_seconds_delta: slice.seconds,
             })
-          )
-        );
+          ),
+        ]);
+        trackAudioCompleted(durationSeconds, artistIdRef.current ?? null).catch(() => {});
         // Local totals just moved, so the cloud copy is stale. Fire-and-forget:
-        // the sync hook debounces, so a long listening session is one push.
+        // the sync hook debounces, so a long listening session that ends in
+        // several saves still results in one push.
         requestPush("listening-session");
       } catch (err) {
         logError(new Error(`useListeningSession save failed: ${err?.message || err}`));
       }
     });
-  }, [closeSegment]);
+  }, [baniId, baniTitle, closeSegment]);
 
-  // Synchronous — the last checkpoint, then the session's own row.
-  const saveSession = useCallback(() => {
-    closeSegment();
-    checkpoint();
-    const durationSeconds = checkpointedRef.current;
-    checkpointedRef.current = 0;
-    const bani = sessionBaniRef.current;
-    sessionBaniRef.current = null;
-    if (durationSeconds <= 0 || !bani) return;
-    enqueueAnalyticsWrite(async () => {
-      try {
-        await insertAudioSession({
-          audio_id: currentPlayingIdRef.current ?? null,
-          bani_id: bani.baniId,
-          bani_title: bani.baniTitle ?? null,
-          artist_id: artistIdRef.current ?? null,
-          artist_name: artistNameRef.current ?? null,
-          duration_played: durationSeconds,
-          completed: false,
-        });
-        trackAudioCompleted(durationSeconds, artistIdRef.current ?? null).catch(() => {});
-      } catch (err) {
-        logError(new Error(`useListeningSession save failed: ${err?.message || err}`));
-      }
-    });
-  }, [closeSegment, checkpoint]);
-
-  // While it plays, and as the app goes to the background — where audio plays
-  // on and the app may never come back to save on leaving the screen.
+  // Audio plays through app background — only save when leaving the screen
   useEffect(() => {
-    if (!counting) return undefined;
-    const timer = setInterval(checkpoint, CHECKPOINT_MS);
-    return () => clearInterval(timer);
-  }, [counting, checkpoint]);
-
-  useEffect(() => {
-    const sub = AppState.addEventListener("change", (state) => {
-      // `inactive` too: iOS's app switcher, from which a swipe ends the app.
-      if (state === "background" || state === "inactive") checkpoint();
-    });
-    return () => sub.remove();
-  }, [checkpoint]);
-
-  // The bani swapped while it played: what was heard is the old bani's, and
-  // the new one goes on from here.
-  useEffect(() => {
-    const { current } = sessionBaniRef;
-    if (!current || current.baniId === baniId) return;
-    const playing = !!playStartRef.current;
-    saveSession();
-    if (playing) {
-      takeBani();
-      playStartRef.current = Date.now();
-    }
-    // eslint-disable-next-line react-hooks/exhaustive-deps
-  }, [baniId, saveSession]);
-
-  // The session ends when the screen is left.
-  useEffect(() => {
-    const unsubBlur = navigation.addListener("blur", () => saveSession());
+    const unsubBlur = navigation.addListener("blur", saveSession);
     return () => {
       unsubBlur();
       saveSession();

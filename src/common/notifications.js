@@ -1,4 +1,4 @@
-import { AppState, Linking, Platform } from "react-native";
+import { Linking, Platform } from "react-native";
 import notifee, {
   TriggerType,
   RepeatFrequency,
@@ -152,25 +152,13 @@ export const channelIdFor = (sound) => {
  * ever, so the user sees several near-identical "Reminders" entries and can
  * silence one that is not the one being used.
  */
-// Reminder channels only — one per reminder sound, named by channelIdFor, and
-// the unversioned ids earlier builds created (`sound`, …), which otherwise sat
-// beside the new ones in system settings for good. The
-// push channel (general_vN, services/push) is versioned the same way, and a
-// bare `_vN` match deleted it on every reminder edit, so campaigns shown by the
-// app posted to a channel that no longer existed and Android dropped them.
-const REMINDER_CHANNEL = new RegExp(
-  `^(${[constant.SOUND.toLowerCase(), constant.WAHEGURU_SOUL, constant.WAKE_UP_JAP].join(
-    "|"
-  )})(_v\\d+)?$`
-);
-
 export const pruneStaleChannels = async (keepIds) => {
   if (Platform.OS !== "android") return;
   try {
     const existing = await notifee.getChannels();
     await Promise.all(
       existing
-        .filter((ch) => REMINDER_CHANNEL.test(ch.id) && !keepIds.includes(ch.id))
+        .filter((ch) => /_v\d+$/.test(ch.id) && !keepIds.includes(ch.id))
         .map((ch) => notifee.deleteChannel(ch.id))
     );
   } catch (error) {
@@ -221,11 +209,6 @@ export const createReminder = async (notification, sound, isTransliteration = fa
     // Create notification
     await notifee.createTriggerNotification(
       {
-        // One id per reminder, so scheduling it again REPLACES it. Random ids
-        // let two overlapping cancel-then-create runs (a quick double toggle,
-        // a foreground re-arm meeting a sync) leave every reminder scheduled
-        // twice, with nothing tying the copies to the reminder to cancel them.
-        id: `reminder-${notification.id}`,
         // Resolved at SCHEDULE time, not read from the stored string: the name
         // must follow the transliteration setting, and a title written months
         // ago cannot know what that setting is now.
@@ -262,15 +245,65 @@ export const createReminder = async (notification, sound, isTransliteration = fa
 };
 
 /**
- * Creates this build's reminder channels and drops older ones. Idempotent.
+ * Rewrites the pending schedule without disturbing anything already on screen.
  *
- * Every path that schedules must run it first. The re-arm on foreground did
- * not: after an update moved the channels to new ids, the first launch
- * cancelled the working triggers and rescheduled them onto channels that did
- * not exist yet, and Android drops a notification aimed at a missing channel —
- * so every reminder went silent until the user happened to edit one.
+ * `updateReminders` calls `cancelAllNotifications()`, which clears DELIVERED
+ * notifications as well as pending triggers. That is right when the user has
+ * just changed a setting, but wrong for the periodic re-arm: it would wipe the
+ * reminder currently sitting in the shade before the user had read it. This
+ * cancels only the TRIGGERS.
+ *
+ * Silent by design — it runs on app launch, where a permission prompt would be
+ * ambush. If exact alarms are not permitted it simply does nothing; the
+ * Settings screen is where the user is asked.
+ *
+ * @returns {Promise<number>} how many reminders were re-armed.
  */
-const ensureReminderChannels = async () => {
+export const rearmReminders = async (sound, remindersList, isTransliteration = false) => {
+  if (!(await canScheduleExactAlarms())) return 0;
+
+  let reminders;
+  try {
+    reminders = JSON.parse(remindersList).filter((item) => item.enabled);
+  } catch (error) {
+    logError(error);
+    return 0;
+  }
+  if (reminders.length === 0) return 0;
+
+  await notifee.cancelTriggerNotifications();
+  await Promise.all(
+    reminders.map((reminder) => createReminder(reminder, sound, isTransliteration))
+  );
+  return reminders.length;
+};
+
+export const resetBadgeCount = async () => {
+  await notifee.setBadgeCount(0);
+};
+
+// NET-04: Return the scheduled notification IDs so callers can use them
+export const getScheduleNotifications = async () => {
+  return notifee.getTriggerNotificationIds();
+};
+
+export const removeAllDeliveredNotifications = async () => {
+  resetBadgeCount();
+  await notifee.cancelDisplayedNotification();
+};
+
+export const cancelAllReminders = async () => {
+  resetBadgeCount();
+  await notifee.cancelAllNotifications();
+};
+
+export const updateReminders = async (
+  remindersOn,
+  sound,
+  remindersList,
+  isTransliteration = false
+) => {
+  await cancelAllReminders();
   const channels = [
     {
       id: constant.SOUND,
@@ -305,91 +338,6 @@ const ensureReminderChannels = async () => {
   // Drop channels from earlier versions so the settings screen does not fill up
   // with near-identical entries the app no longer posts to.
   await pruneStaleChannels(channelIds);
-};
-
-// Every rewrite of the OS schedule runs after the one before it has finished.
-// Fixed ids stop two overlapping rewrites doubling a reminder, but not a STALE
-// one: a foreground re-arm started from the old list, interleaved with the
-// rewrite of an edit, re-created the reminder the person had just switched off.
-let scheduleChain = Promise.resolve();
-const serially = (write) => {
-  const run = scheduleChain.then(write, write);
-  scheduleChain = run.catch(() => {});
-  return run;
-};
-
-const rearmNow = async (sound, remindersList, isTransliteration) => {
-  if (!(await canScheduleExactAlarms())) return 0;
-
-  let reminders;
-  try {
-    reminders = JSON.parse(remindersList).filter((item) => item.enabled);
-  } catch (error) {
-    logError(error);
-    return 0;
-  }
-  // Cleared even when nothing is left to schedule: a list emptied or switched
-  // off reminder by reminder (here, or synced from another device) must take
-  // the old triggers with it, or the deleted reminders keep firing.
-  await notifee.cancelTriggerNotifications();
-  if (reminders.length === 0) return 0;
-
-  await ensureReminderChannels();
-  await Promise.all(
-    reminders.map((reminder) => createReminder(reminder, sound, isTransliteration))
-  );
-  return reminders.length;
-};
-
-/**
- * Rewrites the pending schedule without disturbing anything already on screen.
- *
- * `updateReminders` calls `cancelAllNotifications()`, which clears DELIVERED
- * notifications as well as pending triggers. That is right when the user has
- * just changed a setting, but wrong for the periodic re-arm: it would wipe the
- * reminder currently sitting in the shade before the user had read it. This
- * cancels only the TRIGGERS.
- *
- * Silent by design — it runs on app launch, where a permission prompt would be
- * ambush. If exact alarms are not permitted it simply does nothing; the
- * Settings screen is where the user is asked.
- *
- * @returns {Promise<number>} how many reminders were re-armed.
- */
-export const rearmReminders = (sound, remindersList, isTransliteration = false) =>
-  serially(() => rearmNow(sound, remindersList, isTransliteration));
-
-export const resetBadgeCount = async () => {
-  await notifee.setBadgeCount(0);
-};
-
-// NET-04: Return the scheduled notification IDs so callers can use them
-export const getScheduleNotifications = async () => {
-  return notifee.getTriggerNotificationIds();
-};
-
-export const removeAllDeliveredNotifications = async () => {
-  resetBadgeCount();
-  await notifee.cancelDisplayedNotification();
-};
-
-/**
- * Takes the schedule down without touching what is already on screen — for
- * changes the person did not make here (another device switching reminders
- * off), where clearing the shade would throw away a reminder still unread.
- */
-export const cancelReminderTriggers = async () => {
-  await notifee.cancelTriggerNotifications();
-};
-
-export const cancelAllReminders = async () => {
-  resetBadgeCount();
-  await notifee.cancelAllNotifications();
-};
-
-const updateNow = async (remindersOn, sound, remindersList, isTransliteration) => {
-  await cancelAllReminders();
-  await ensureReminderChannels();
 
   if (!remindersOn) return { scheduled: 0, blocked: false };
 
@@ -413,32 +361,15 @@ const updateNow = async (remindersOn, sound, remindersList, isTransliteration) =
   return { scheduled: reminders.length, blocked: false };
 };
 
-export const updateReminders = (remindersOn, sound, remindersList, isTransliteration = false) =>
-  serially(() => updateNow(remindersOn, sound, remindersList, isTransliteration));
-
 // Explicitly prompt for notification permission (Android 13+ POST_NOTIFICATIONS /
 // iOS alert). Used before the first download so the foreground-service download
 // notification is actually visible instead of silently denied.
-// While the permission prompt is on screen. The system dialog takes focus from
-// the app (AppState goes "inactive" on iOS, "background" on Android), which is
-// indistinguishable from the user leaving; usePauseAudioOnExit reads this so
-// the prompt raised by a track's first download does not pause that track.
-// Capped, because on Android 13+ the request below may never settle.
-const PERMISSION_PROMPT_MAX_MS = 10000;
-let permissionPromptOpenUntil = 0;
-
-/** True while the notification permission prompt may be on screen. */
-export const isPermissionPromptOpen = () => Date.now() < permissionPromptOpenUntil;
-
 export const requestNotificationPermission = async () => {
-  permissionPromptOpenUntil = Date.now() + PERMISSION_PROMPT_MAX_MS;
   try {
     const settings = await notifee.requestPermission();
     return settings.authorizationStatus >= AuthorizationStatus.AUTHORIZED;
   } catch (_) {
     return false;
-  } finally {
-    permissionPromptOpenUntil = 0;
   }
 };
 
@@ -479,14 +410,7 @@ export const requestNotificationPermission = async () => {
 //   - the one request is raced against a timeout, so even that first tap can
 //     never be swallowed. A timeout is treated as "not granted", which is what
 //     it means in practice.
-//
-// The timeout applies only while NO prompt is on screen. A real prompt takes
-// focus from the app (AppState leaves "active"), and then the person is reading
-// it: timed out at 4s, a slower "Allow" left the permission granted and the
-// switch off. While a prompt is up the request is left to settle on its
-// answer, capped so a prompt that never reports back cannot hold the tap.
 const PERMISSION_PROMPT_TIMEOUT_MS = 4000;
-const PERMISSION_PROMPT_ANSWER_CAP_MS = 60000;
 let permissionPromptShown = false;
 
 const isAuthorized = (settings) => settings?.authorizationStatus >= AuthorizationStatus.AUTHORIZED;
@@ -512,20 +436,10 @@ export const checkPermissions = async () => {
   if (permissionPromptShown) return false;
   permissionPromptShown = true;
 
-  let promptShowing = false;
-  const focus = AppState.addEventListener("change", (state) => {
-    if (state !== "active") promptShowing = true;
-  });
   let timer;
-  let capTimer;
   const timeout = new Promise((resolve) => {
-    timer = setTimeout(() => {
-      if (!promptShowing) resolve(null);
-    }, PERMISSION_PROMPT_TIMEOUT_MS);
-    capTimer = setTimeout(() => resolve(null), PERMISSION_PROMPT_ANSWER_CAP_MS);
+    timer = setTimeout(() => resolve(null), PERMISSION_PROMPT_TIMEOUT_MS);
   });
-  // The reminder prompt takes focus too, and must not pause playback either.
-  permissionPromptOpenUntil = Date.now() + PERMISSION_PROMPT_ANSWER_CAP_MS;
   try {
     const settings = await Promise.race([notifee.requestPermission(), timeout]);
     return isAuthorized(settings);
@@ -534,9 +448,6 @@ export const checkPermissions = async () => {
     return false;
   } finally {
     clearTimeout(timer);
-    clearTimeout(capTimer);
-    focus.remove();
-    permissionPromptOpenUntil = 0;
   }
 };
 

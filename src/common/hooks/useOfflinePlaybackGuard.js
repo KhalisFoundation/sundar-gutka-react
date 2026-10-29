@@ -1,9 +1,7 @@
 import { useEffect } from "react";
-import TrackPlayer, { State } from "react-native-track-player";
-import { useNetwork } from "../context";
-import STRINGS from "../localization";
-import { showErrorToast } from "../toast";
+import TrackPlayer from "react-native-track-player";
 import { pauseTrack } from "../TrackPlayerUtils";
+import { useNetwork } from "../context";
 
 // How long the device must stay DISCONNECTED before we pause a stream. A
 // wifi<->cellular handoff briefly reports disconnected/unreachable and recovers
@@ -43,12 +41,7 @@ const useOfflinePlaybackGuard = () => {
       // must accept both — otherwise downloaded tracks get wrongly paused offline.
       const isLocal = url.startsWith("file://") || url.startsWith("/");
       if (!activeTrack || isLocal) return;
-      const playback = await TrackPlayer.getPlaybackState().catch(() => null);
-      const wasPlaying = playback?.state === State.Playing;
       await pauseTrack().catch(() => {});
-      // Say why the audio stopped: a silent pause reads as a broken player.
-      // Only when it was actually playing, so a paused track stays quiet.
-      if (wasPlaying) showErrorToast(STRINGS.NETWORK_ERROR);
     }, OFFLINE_PAUSE_DELAY_MS);
 
     // Connectivity returned before the delay (it was just a switch/blip) →

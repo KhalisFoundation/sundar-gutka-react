@@ -18,6 +18,7 @@ import rootReducer from "./reducer";
 const setAuthSession = (value) => ({ type: actionTypes.SET_AUTH_SESSION, value });
 const clearAuthSession = () => ({ type: actionTypes.CLEAR_AUTH_SESSION });
 const setAuthBusy = (value) => ({ type: actionTypes.SET_AUTH_BUSY, value });
+const setUserProfile = (value) => ({ type: actionTypes.SET_USER_PROFILE, value });
 const clearUserData = () => ({ type: actionTypes.CLEAR_USER_DATA });
 
 const initial = () => rootReducer(undefined, { type: "@@INIT" });
@@ -50,13 +51,11 @@ describe("setAuthSession", () => {
     expect(state.auth).toEqual({ status: "signedIn", user: USER, expiresAt, busy: false });
   });
 
-  // Busy belongs to the action that set it. A session beginning mid-action
-  // (the Android return link while startLogin still waits) clearing it
-  // re-enabled the row with a login browser still open.
-  it("leaves the busy flag to the action that set it", () => {
+  it("clears a pending busy flag, so a spinner cannot outlive the sign-in", () => {
     let state = rootReducer(undefined, setAuthBusy(true));
-    state = rootReducer(state, setAuthSession({ user: USER, expiresAt: 1 }));
     expect(state.auth.busy).toBe(true);
+    state = rootReducer(state, setAuthSession({ user: USER, expiresAt: 1 }));
+    expect(state.auth.busy).toBe(false);
   });
 
   it("tolerates a missing payload rather than throwing", () => {
@@ -81,12 +80,10 @@ describe("clearAuthSession", () => {
 
   // Sign-out is reachable while a request is in flight; a stuck busy flag would
   // leave the row spinning forever.
-  // A 401 ending the session during sign-out must not re-enable the row
-  // while the logout browser is still open.
-  it("leaves busy alone too", () => {
+  it("clears busy as well", () => {
     let state = rootReducer(undefined, setAuthBusy(true));
     state = rootReducer(state, clearAuthSession());
-    expect(state.auth.busy).toBe(true);
+    expect(state.auth.busy).toBe(false);
   });
 });
 
@@ -107,9 +104,27 @@ describe("setAuthBusy", () => {
   });
 });
 
+describe("auth is kept separate from userProfile", () => {
+  // userProfile.name is written by the device-keyed cloud restore. If the two
+  // were merged, a stale snapshot could overwrite the signed-in user's real
+  // name — so signing in must not touch userProfile at all.
+  it("signing in does not write to userProfile", () => {
+    const before = initial().userProfile;
+    const state = rootReducer(undefined, setAuthSession({ user: USER, expiresAt: Date.now() }));
+    expect(state.userProfile).toEqual(before);
+  });
+
+  it("a userProfile update does not touch the auth session", () => {
+    const signedIn = rootReducer(undefined, setAuthSession({ user: USER, expiresAt: Date.now() }));
+    const state = rootReducer(signedIn, setUserProfile({ name: "From Cloud Restore" }));
+    expect(state.auth.user).toEqual(USER);
+    expect(state.userProfile.name).toBe("From Cloud Restore");
+  });
+});
+
 /**
- * CLEAR_USER_DATA is what actually fixes "sign out as A, sign in as B, still
- * have A's bookmarks and reminders". The two halves matter equally: person-scoped state must go,
+ * CLEAR_USER_DATA is what actually fixes "sign out as A, sign in as B, still see
+ * A's dashboard". The two halves matter equally: person-scoped state must go,
  * and device-scoped state must NOT — wiping downloadRegistry would orphan real
  * audio files on disk, and wiping display preferences would reset the phone's
  * setup for no reason.
@@ -118,16 +133,33 @@ describe("CLEAR_USER_DATA", () => {
   // A state carrying A's data plus non-default device preferences.
   const populated = () => {
     let s = rootReducer(undefined, { type: "@@INIT" });
+    s = rootReducer(s, setUserProfile({ name: "Account A" }));
+    s = rootReducer(s, {
+      type: actionTypes.SET_DASHBOARD_LAYOUT,
+      value: { order: ["streak"], hidden: ["explore"] },
+    });
+    // WHICH banis are in the nitnem belongs to the pothi now, so the slice's own
+    // user data is the per-day completion map.
+    s = rootReducer(s, {
+      type: actionTypes.TOGGLE_NITNEM_DONE,
+      payload: { date: "2026-08-13", baniId: 2 },
+    });
     s = rootReducer(s, { type: actionTypes.SET_BOOKMARK_POSITION, value: 1234 });
+    // A folder the user made. Wire shape, mirroring pothi/model createPothi.
+    s = rootReducer(s, {
+      type: actionTypes.CREATE_POTHI,
+      value: {
+        id: "p_account_a",
+        name: "A pothi",
+        source: "mypothi",
+        items: [],
+        createdAt: 1,
+        updatedAt: 1,
+        isPublic: false,
+        pinned: false,
+      },
+    });
     s = rootReducer(s, { type: actionTypes.TOGGLE_REMINDERS, value: true });
-    s = rootReducer(s, {
-      type: actionTypes.MERGE_SETTINGS_SYNC_META,
-      payload: { clocks: { baniOrder: 5 } },
-    });
-    s = rootReducer(s, {
-      type: actionTypes.ENQUEUE_SYNC_OP,
-      payload: { feature: "settings", kind: "put", key: "baniOrder" },
-    });
     // Device-scoped, must survive.
     s = rootReducer(s, {
       type: actionTypes.ADD_DOWNLOAD_ENTRY,
@@ -138,72 +170,39 @@ describe("CLEAR_USER_DATA", () => {
     return s;
   };
 
-  it("resets the account's sync data to its defaults", () => {
+  it("resets the person-scoped slices to their defaults", () => {
     const before = populated();
-    expect(Object.keys(before.syncOutbox.ops)).toHaveLength(1);
+    expect(before.userProfile.name).toBe("Account A");
+    expect(before.todaysNitnem.completed["2026-08-13"]).toEqual([2]);
 
     const after = rootReducer(before, clearUserData());
     const fresh = rootReducer(undefined, { type: "@@INIT" });
 
-    // The outgoing account's sync clocks and unsent changes.
-    expect(after.settingsSync).toEqual(fresh.settingsSync);
-    expect(after.syncOutbox.ops).toEqual(fresh.syncOutbox.ops);
-  });
-
-  // Reminders sync to the account now, so they go with it — and their clocks
-  // with them, or the next account's first sync would carry the previous one's.
-  it("clears the reminders and their sync clocks", () => {
-    let before = populated();
-    before = rootReducer(before, {
-      type: actionTypes.SET_REMINDER_BANIS,
-      value: JSON.stringify([{ key: 2, id: 2, time: "5:00 AM", enabled: true }]),
-    });
-    before = rootReducer(before, {
-      type: actionTypes.MERGE_REMINDER_SYNC_META,
-      payload: { clocks: { 2: 9 }, lastSyncedAt: 7 },
-    });
-    const after = rootReducer(before, clearUserData());
-    const fresh = rootReducer(undefined, { type: "@@INIT" });
-    expect(after.isReminders).toBe(false);
-    expect(after.reminderBanis).toBe(fresh.reminderBanis);
-    expect(after.remindersSync).toEqual(fresh.remindersSync);
-  });
-
-  // The Reader's pending jump to a bookmark points into the outgoing person's
-  // reading. The saved bookmarks themselves are in the bani database, not here.
-  it("drops the pending bookmark jump", () => {
-    const after = rootReducer(populated(), clearUserData());
-    const fresh = rootReducer(undefined, { type: "@@INIT" });
-    expect(after.bookmarkPosition).toBe(fresh.bookmarkPosition);
-  });
-
-  // The Dashboard's own preferences come back from the account snapshot.
-  it("drops the dashboard's profile, layout and nitnem ticks", () => {
-    let before = rootReducer(undefined, { type: "@@INIT" });
-    before = rootReducer(before, { type: actionTypes.SET_USER_PROFILE, value: { name: "A" } });
-    before = rootReducer(before, {
-      type: actionTypes.TOGGLE_NITNEM_DONE,
-      payload: { date: "2026-10-01", baniId: 2 },
-    });
-    const after = rootReducer(before, clearUserData());
-    const fresh = rootReducer(undefined, { type: "@@INIT" });
-    expect(after.userProfile.name).toBe("");
-    expect(after.todaysNitnem).toEqual(fresh.todaysNitnem);
+    expect(after.userProfile).toEqual(fresh.userProfile);
     expect(after.dashboardLayout).toEqual(fresh.dashboardLayout);
+    expect(after.todaysNitnem).toEqual(fresh.todaysNitnem);
+    expect(after.bookmarkPosition).toEqual(fresh.bookmarkPosition);
+    expect(after.bookmarkSequenceString).toEqual(fresh.bookmarkSequenceString);
+    expect(after.isReminders).toEqual(fresh.isReminders);
+    expect(after.reminderBanis).toEqual(fresh.reminderBanis);
+    expect(after.reminderSound).toEqual(fresh.reminderSound);
+    expect(after.pothis).toEqual(fresh.pothis);
   });
 
-  // An op sent before the reset can still answer after it. Ids end in the
-  // sequence number, so a counter restarted at 0 handed that late answer a
-  // NEW op with the same id, which it then completed unsent.
-  it("keeps the outbox counting, so new ops never reuse an in-flight id", () => {
+  // My Pothi was added AFTER this list existed and was never opted into it, so
+  // account A's folders survived the switch — and usePothiSync then uploaded
+  // them into account B on its first push. A leak, not merely stale state.
+  it("resets the pothis, so one account's folders cannot follow into another", () => {
     const before = populated();
-    const [oldId] = Object.keys(before.syncOutbox.ops);
-    const cleared = rootReducer(before, clearUserData());
-    const again = rootReducer(cleared, {
-      type: actionTypes.ENQUEUE_SYNC_OP,
-      payload: { feature: "settings", kind: "put", key: "baniOrder" },
-    });
-    expect(Object.keys(again.syncOutbox.ops)).not.toContain(oldId);
+    expect(before.pothis.folders).toHaveLength(1);
+    expect(before.pothis.folders[0].name).toBe("A pothi");
+
+    const after = rootReducer(before, clearUserData());
+    expect(after.pothis.folders).toEqual([]);
+    // Tombstones are account-scoped too: A's deletions must not suppress a
+    // folder of B's that happens to share an id.
+    expect(after.pothis.deletedIds).toEqual([]);
+    expect(after.pothis).toEqual(initial().pothis);
   });
 
   // Downloaded audio belongs to the phone, not the person. Clearing the registry
@@ -224,6 +223,7 @@ describe("CLEAR_USER_DATA", () => {
     expect(after.language).toEqual(before.language);
     expect(after.isNightMode).toEqual(before.isNightMode);
     expect(after.fontFace).toEqual(before.fontFace);
+    expect(after.baniFontFace).toEqual(before.baniFontFace);
   });
 
   // The purge runs while signing IN, before setAuthSession — it must not wipe

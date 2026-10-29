@@ -57,9 +57,7 @@ const useFetchBani = (setBaniListData, setReminderBaniData, setStateData, parsed
           })
         );
       } else {
-        await setDefaultReminders(data, dispatch, isReminders, reminderSound, isTransliteration, {
-          appWrite: true,
-        });
+        await setDefaultReminders(data, dispatch, isReminders, reminderSound, isTransliteration);
       }
     } catch (error) {
       // Logged only. FallBack is the error-boundary SCREEN; calling a component

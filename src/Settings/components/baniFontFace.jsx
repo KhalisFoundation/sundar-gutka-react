@@ -37,8 +37,6 @@ const BaniFontFaceComponent = () => {
         actionConstant={FONT_FACES}
         onPressAction={() => toggleVisible(true)}
       />
-      {/* Always mounted: the sheet stays rendered when closed so it can slide
-          away, rather than vanishing the instant isVisible flips. */}
       <BottomSheetComponent
         isVisible={isVisible}
         // Remembered as the reader's own face, which a theme with none of its

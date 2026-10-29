@@ -1,8 +1,9 @@
 // Gurmukhi input rules.
 //
-// The characters are checked against `simple-keyboard-layouts` (MIT), the
-// standard InScript Punjabi set Android and iOS use (see gurmukhiKeys.test.js);
-// the arrangement and the renderer are our own.
+// The layout comes from `simple-keyboard-layouts` (MIT) — the standard InScript
+// Punjabi arrangement, the same one Android and iOS use, so anyone who already
+// types Punjabi recognises it. That package ships DATA only; its renderer is
+// DOM-based, so the keys are drawn by our own component.
 //
 // A layout alone is not enough. Nothing in it stops a dependent sign being typed
 // where there is no letter to attach to, which is how "ਅਨੀਾਾਿਿੀੁੁ" happened —

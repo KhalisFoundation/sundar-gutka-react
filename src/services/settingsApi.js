@@ -12,9 +12,11 @@ import { authedRequest } from "./khalisRequest";
 
 const BASE = `${constant.DASHBOARD_API_BASE_URL}/settings`;
 
+export const fetchSettings = () => authedRequest(BASE);
+
 export const putSetting = (key, body) =>
   authedRequest(`${BASE}/${encodeURIComponent(key)}`, { method: "PUT", body });
 
 export const syncSettings = (body) => authedRequest(`${BASE}/sync`, { method: "POST", body });
 
-export default { putSetting, syncSettings };
+export default { fetchSettings, putSetting, syncSettings };

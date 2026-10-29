@@ -13,10 +13,12 @@
 // purged after a 30-day grace period, which is what the confirmation copy
 // promises and why 409 ("already scheduled") is a success rather than an error.
 
-import { logError } from "@common";
-import { request } from "../../services/khalisRequest";
+import { isNetworkFailure, logError, logMessage } from "@common";
 import constant from "../constant";
 import { readToken } from "./tokenStore";
+
+/** Matches the SP calls in services/khalisRequest — long enough for a cold IdP. */
+const TIMEOUT_MS = 15000;
 
 export const deleteAccountUrl = () =>
   `${constant.SSO_IDP_URL}/wp-json/khalis/v1/account?confirm=true`;
@@ -43,22 +45,35 @@ export const requestAccountDeletion = async () => {
   // and nothing to retry.
   if (!token) return { ok: false, reason: "session" };
 
-  // khalisRequest's own timeout, and its offline/timeout classification:
-  // status 0 means the request never got an answer.
-  const res = await request(deleteAccountUrl(), { method: "DELETE", token });
+  const controller = new AbortController();
+  const timer = setTimeout(() => controller.abort(), TIMEOUT_MS);
+  try {
+    const res = await fetch(deleteAccountUrl(), {
+      method: "DELETE",
+      signal: controller.signal,
+      headers: { Authorization: `Bearer ${token}` },
+    });
 
-  if (res.status === 200) return { ok: true, reason: "deleted" };
-  // The account is already on its way out. Reporting a failure here would
-  // strand the user on a device still holding data for an account that no
-  // longer exists, with no way to try again.
-  if (res.status === 409) return { ok: true, reason: "already" };
-  if (res.status === 401) return { ok: false, reason: "session" };
-  // No answer: unreachable or timed out. A fault in the request itself is
-  // already reported by khalisRequest, and is not "offline".
-  if (res.status === 0) return { ok: false, reason: res.error === "failed" ? "server" : "offline" };
+    if (res.status === 200) return { ok: true, reason: "deleted" };
+    // The account is already on its way out. Reporting a failure here would
+    // strand the user on a device still holding data for an account that no
+    // longer exists, with no way to try again.
+    if (res.status === 409) return { ok: true, reason: "already" };
+    if (res.status === 401) return { ok: false, reason: "session" };
 
-  logError(new Error(`SSO deleteAccount failed: HTTP ${res.status}`));
-  return { ok: false, reason: "server", httpStatus: res.status };
+    logError(new Error(`SSO deleteAccount failed: HTTP ${res.status}`));
+    return { ok: false, reason: "server", httpStatus: res.status };
+  } catch (err) {
+    // An abort is this app's own timeout, not a fault worth a crash report.
+    if (err?.name === "AbortError" || isNetworkFailure(err)) {
+      logMessage(`SSO deleteAccount unreachable: ${err?.message || err}`);
+      return { ok: false, reason: "offline" };
+    }
+    logError(new Error(`SSO deleteAccount failed: ${err?.message || err}`));
+    return { ok: false, reason: "server" };
+  } finally {
+    clearTimeout(timer);
+  }
 };
 
 export default requestAccountDeletion;

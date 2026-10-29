@@ -1,14 +1,14 @@
 import { useEffect, useRef } from "react";
 import { InteractionManager } from "react-native";
-import DeviceInfo from "react-native-device-info";
 import { useDispatch, useSelector, useStore } from "react-redux";
-import { logMessage, logNetworkError } from "@common";
-import { ensureLyricsCached } from "../../ReaderScreen/components/AudioPlayer/utils/lyricsCache";
-import { fetchRawBaniAudio } from "../../services/audioApi";
-import { setAudioCatalogEntries, setAudioCatalogMeta } from "../actions";
+import DeviceInfo from "react-native-device-info";
+import { logNetworkError } from "@common";
 import constant from "../constant";
 import { useNetwork } from "../context";
+import { setAudioCatalogEntries, setAudioCatalogMeta } from "../actions";
 import { reconcileDownloads } from "./audioReconcile";
+import { fetchRawBaniAudio } from "../../services/audioApi";
+import { ensureLyricsCached } from "../../ReaderScreen/components/AudioPlayer/utils/lyricsCache";
 
 // ─────────────────────────────────────────────────────────────────────────────
 // Eager audio-catalog prefetch.
@@ -74,12 +74,9 @@ const runCatalogSync = async (dispatch, getState, appVersion) => {
   //    whole persisted store, so a per-bani dispatch loop scales its cost with
   //    the catalog. One write covers eight banis or eighty.
   const entries = {};
-  // Banis that gave an answer: a manifest, or a definite "no audio" (404).
-  let answered = 0;
   await runWithConcurrency(baniIds, concurrency, async (baniId) => {
     const raw = await fetchRawBaniAudio(baniId);
-    if (raw) answered += 1;
-    if (!raw || raw.noAudio) return; // 404 (no audio) or offline — skip, leave uncached.
+    if (!raw) return; // 404 (no audio) or offline — skip, leave uncached.
     entries[baniId] = {
       groups: raw.groups,
       baniName: raw.baniName,
@@ -106,25 +103,15 @@ const runCatalogSync = async (dispatch, getState, appVersion) => {
   Object.entries(entries).forEach(([baniId, entry]) => {
     manifests[baniId] = entry.groups;
   });
-  // Lyrics were revalidated in step 2, so reconcile skips its own pass.
-  await reconcileDownloads({ manifests, getState, dispatch, revalidateLyrics: false });
+  await reconcileDownloads({ manifests, getState, dispatch });
 
-  // 4. Record the sweep so it doesn't re-run until the next update / TTL — but
-  //    only once every bani has answered. A backend outage or a timeout on
-  //    some banis is not a completed sweep: recording it left those banis
-  //    (or the whole offline catalog) uncached for the whole TTL.
-  if (answered < baniIds.length) {
-    logMessage(`Audio catalog sync incomplete (${answered}/${baniIds.length}) — will try again`);
-    return false;
-  }
+  // 4. Record the sweep so it doesn't re-run until the next update / TTL.
   dispatch(setAudioCatalogMeta({ lastFullSyncAt: Date.now(), appVersion }));
-  return true;
 };
 
 const useAudioCatalogSync = () => {
   const dispatch = useDispatch();
   const store = useStore();
-  // eslint-disable-next-line no-underscore-dangle -- _persist is redux-persist's own key
   const isRehydrated = useSelector((state) => state._persist?.rehydrated);
   const meta = useSelector((state) => state.audioCatalogMeta) || {};
   const { isOnline } = useNetwork();
@@ -133,7 +120,7 @@ const useAudioCatalogSync = () => {
   const hasRunRef = useRef(false);
 
   useEffect(() => {
-    if (!isRehydrated || !isOnline || hasRunRef.current) return undefined;
+    if (!isRehydrated || !isOnline || hasRunRef.current) return;
 
     const appVersion = safeGetAppVersion();
     const lastSyncAt = Number(meta.lastFullSyncAt) || 0;
@@ -152,15 +139,9 @@ const useAudioCatalogSync = () => {
       InteractionManager.runAfterInteractions(() => {
         if (cancelled || hasRunRef.current) return;
         hasRunRef.current = true;
-        runCatalogSync(dispatch, () => store.getState(), appVersion)
-          .then((complete) => {
-            // Incomplete: let the next reconnect in this session try again.
-            if (!complete) hasRunRef.current = false;
-          })
-          .catch((error) => {
-            hasRunRef.current = false;
-            logNetworkError(`Audio catalog sync failed: ${error?.message || error}`, error);
-          });
+        runCatalogSync(dispatch, () => store.getState(), appVersion).catch((error) =>
+          logNetworkError(`Audio catalog sync failed: ${error?.message || error}`, error)
+        );
       });
     }, constant.AUDIO_CATALOG_SYNC_DELAY_MS);
     return () => {

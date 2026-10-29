@@ -27,27 +27,13 @@ const transliterationLanguage = createReducer(constant.ENGLISH, {
   [actionTypes.SET_TRANSLITERATION]: (state, action) => action.value,
 });
 
-// The app's own font — lists, headers, titles. Fixed to Baloo Paaji now: the
-// one font a reader chooses is the Bani font below. See HomeScreen.
 const fontFace = createReducer(constant.BALOO_PAAJI, {
   [actionTypes.SET_FONT_FACE]: (state, action) => action.value,
 });
 
 // Font used only for the Bani (scripture) text inside the Reader's WebView —
 // independent of `fontFace`, which drives Gurmukhi titles elsewhere in the app.
-//
-// Until this split, `fontFace` WAS the Bani font. A reader who had chosen one
-// keeps it: on the first launch that has no `baniFontFace` persisted, the old
-// choice is carried across once.
 const baniFontFace = createReducer(constant.GURBANI_AKHAR_TRUE, {
-  "persist/REHYDRATE": (state, action) => {
-    const persisted = action.payload;
-    if (!persisted) return state;
-    if (persisted.baniFontFace !== undefined) return persisted.baniFontFace;
-    return typeof persisted.fontFace === "string" && persisted.fontFace
-      ? persisted.fontFace
-      : state;
-  },
   [actionTypes.SET_BANI_FONT_FACE]: (state, action) => action.value,
 });
 
@@ -71,25 +57,28 @@ const theme = createReducer(constant.Default, {
 
 // Theme ids whose suggested translation/transliteration defaults have already
 // been applied once. Persisted, so a theme never re-seeds across launches and a
-// user's later manual toggle is permanent. See applyTheme().
-const readerThemeSeeded = (state = {}, action) =>
-  action.type === actionTypes.MARK_READER_THEME_SEEDED ? { ...state, [action.value]: true } : state;
-
-// The backend's reading-theme catalogue (see services/themes). Persisted, so a
-// theme chosen from it still resolves offline.
-const remoteThemes = (state = { version: 0, fetchedAt: 0, themes: [] }, action) => {
-  switch (action.type) {
-    case actionTypes.SET_REMOTE_THEMES:
-      return {
-        version: Number(action.payload?.version) || 0,
-        fetchedAt: Number(action.payload?.fetchedAt) || 0,
-        themes: Array.isArray(action.payload?.themes) ? action.payload.themes : [],
-      };
-    default:
-      return state;
+// user's later manual toggle is permanent. See setReaderTheme().
+const readerThemeSeeded = createReducer(
+  {},
+  {
+    [actionTypes.MARK_READER_THEME_SEEDED]: (state, action) => ({
+      ...state,
+      [action.value]: true,
+    }),
   }
-};
+);
 
+// `true` means HIDDEN — it is the value of the "Hide Status Bar" switch, not of
+// the bar. It ships ON: a first launch is full screen, which is what a reading
+// app wants, and the clock and battery are one tap away for anyone who wants
+// them back.
+//
+// From then on the switch is the only thing that decides it. The value is
+// persisted (it is not in the `store.js` blacklist) and nothing overwrites it —
+// no migration, and, since MainActivity stopped hiding `Type.systemBars()`, no
+// native re-apply either. That native override is why the setting used to look
+// like it was not remembered: it was saved correctly and then overruled a
+// moment after every launch.
 const isStatusBar = createReducer(true, {
   [actionTypes.TOGGLE_STATUS_BAR]: (state, action) => action.value,
 });
@@ -223,6 +212,38 @@ const remindersSync = createReducer(emptyRemindersSync(), {
   },
 });
 
+// Per-setting sync clocks and server bases — see settings/syncModel.
+// Persisted, and reset with the rest of the account's data on a switch
+// (USER_DATA_SLICES), so one person's pending edits never reach another.
+const settingsSync = createReducer(emptySettingsSync(), {
+  [actionTypes.MERGE_SETTINGS_SYNC_META]: (state, action) => {
+    const p = action.payload || {};
+    if (p.replace) return { ...emptySettingsSync(), ...p.replace };
+    const clocks = { ...state.clocks, ...(p.clocks || {}) };
+    const base = { ...state.base, ...(p.base || {}) };
+    (p.removeClocks || []).forEach((key) => delete clocks[key]);
+    return {
+      clocks,
+      base,
+      lastSyncedAt: p.lastSyncedAt ?? state.lastSyncedAt,
+    };
+  },
+});
+
+// Changes to account data not yet at the server — see sync/outboxModel. On
+// rehydrate nothing is in flight any more, so "sending" goes back to the queue.
+const syncOutbox = createReducer(outbox.emptyOutbox(), {
+  "persist/REHYDRATE": (state, action) =>
+    action.payload?.syncOutbox ? outbox.heal(action.payload.syncOutbox) : state,
+  [actionTypes.ENQUEUE_SYNC_OP]: (state, action) => outbox.enqueue(state, action.payload),
+  [actionTypes.SYNC_OP_SENDING]: (state, action) => outbox.markSending(state, action.payload.id),
+  [actionTypes.SYNC_OP_DONE]: (state, action) => outbox.markDone(state, action.payload.id),
+  [actionTypes.SYNC_OP_FAILED]: (state, action) =>
+    outbox.markFailed(state, action.payload.id, { error: action.payload.error }),
+  [actionTypes.CLEAR_SYNC_FEATURE]: (state, action) =>
+    outbox.clearFeature(state, action.payload.feature),
+});
+
 const isHeaderFooter = createReducer(false, {
   [actionTypes.TOGGLE_HEADER_FOOTER]: (state, action) => action.value,
 });
@@ -239,6 +260,44 @@ const audioManifest = (state = {}, action) => {
         ...state,
         [action.payload.baniId]: action.payload.tracks,
       };
+    default:
+      return state;
+  }
+};
+
+// Audio catalog cache — the persisted offline copy of the backend /audios
+// manifest, keyed by baniId. Each entry holds the RAW length-grouped API
+// response ({ groups, baniName, fetchedAt }); the length-group selection that
+// turns it into a playable track list happens at read time (see
+// selectTracksForBani), so a single cache entry serves every bani length. This
+// replaces the former hardcoded EMERGENCY_MANIFEST — it is the app's only
+// offline audio source, populated by useAudioCatalogSync + per-bani lazy fetch.
+// Persisted (intentionally NOT in the store.js blacklist).
+const audioCatalog = (state = {}, action) => {
+  switch (action.type) {
+    case actionTypes.SET_AUDIO_CATALOG_ENTRY:
+      return {
+        ...state,
+        [action.payload.baniId]: action.payload.entry,
+      };
+    case actionTypes.SET_AUDIO_CATALOG_ENTRIES:
+      return { ...state, ...action.payload.entries };
+    case actionTypes.CLEAR_AUDIO_CATALOG:
+      return {};
+    default:
+      return state;
+  }
+};
+
+// Bookkeeping for the eager catalog prefetch: when it last completed a full
+// sweep and the app version that ran it, so the sweep only re-runs on a fresh
+// install, an app update, or once the TTL has elapsed. Persisted.
+const audioCatalogMeta = (state = {}, action) => {
+  switch (action.type) {
+    case actionTypes.SET_AUDIO_CATALOG_META:
+      return { ...state, ...action.payload };
+    case actionTypes.CLEAR_AUDIO_CATALOG:
+      return {};
     default:
       return state;
   }
@@ -347,46 +406,6 @@ const currentBani = createReducer(null, {
   [actionTypes.SET_CURRENT_BANI]: (state, action) => action.value,
 });
 
-// ── Audio catalog, the floating player and downloads ──────────────────────
-
-// Audio catalog cache — the persisted offline copy of the backend /audios
-// manifest, keyed by baniId. Each entry holds the RAW length-grouped API
-// response ({ groups, baniName, fetchedAt }); the length-group selection that
-// turns it into a playable track list happens at read time (see
-// selectTracksForBani), so a single cache entry serves every bani length. This
-// replaces the former hardcoded EMERGENCY_MANIFEST — it is the app's only
-// offline audio source, populated by useAudioCatalogSync + per-bani lazy fetch.
-// Persisted (intentionally NOT in the store.js blacklist).
-const audioCatalog = (state = {}, action) => {
-  switch (action.type) {
-    case actionTypes.SET_AUDIO_CATALOG_ENTRY:
-      return {
-        ...state,
-        [action.payload.baniId]: action.payload.entry,
-      };
-    case actionTypes.SET_AUDIO_CATALOG_ENTRIES:
-      return { ...state, ...action.payload.entries };
-    case actionTypes.CLEAR_AUDIO_CATALOG:
-      return {};
-    default:
-      return state;
-  }
-};
-
-// Bookkeeping for the eager catalog prefetch: when it last completed a full
-// sweep and the app version that ran it, so the sweep only re-runs on a fresh
-// install, an app update, or once the TTL has elapsed. Persisted.
-const audioCatalogMeta = (state = {}, action) => {
-  switch (action.type) {
-    case actionTypes.SET_AUDIO_CATALOG_META:
-      return { ...state, ...action.payload };
-    case actionTypes.CLEAR_AUDIO_CATALOG:
-      return {};
-    default:
-      return state;
-  }
-};
-
 // Two counters rather than one "last reader gesture" value: the floating audio
 // player reacts to each in the opposite direction, and a single value could not
 // tell "the same gesture again" from "no gesture".
@@ -402,6 +421,16 @@ const isPlayerDragging = createReducer(false, {
   [actionTypes.SET_PLAYER_DRAGGING]: (state, action) => action.value,
 });
 
+const donor = createReducer(false, {
+  [actionTypes.SET_DONOR_STATE]: (state, action) => action.value.donor,
+  [actionTypes.CLEAR_DONOR_STATE]: () => false,
+});
+
+const donorType = createReducer(null, {
+  [actionTypes.SET_DONOR_STATE]: (state, action) => action.value.donorType,
+  [actionTypes.CLEAR_DONOR_STATE]: () => null,
+});
+
 // Download queue — entries stuck in 'downloading' at rehydrate had their native
 // job killed; reset them to 'queued' so the engine restarts them from scratch.
 const downloadQueue = (state = {}, action) => {
@@ -414,10 +443,6 @@ const downloadQueue = (state = {}, action) => {
       // restart. Both resolve to 'queued' so the engine reconciles them.
       const reset = new Set(["downloading", "paused_retry"]);
       Object.entries(persisted).forEach(([k, t]) => {
-        // 'completed' lives only until its 2s cleanup timer, which a kill can
-        // beat. Left in the queue, it made ENQUEUE_DOWNLOAD a no-op for that
-        // track forever, so it could never be downloaded again once deleted.
-        if (t.status === "completed") return;
         healed[k] = reset.has(t.status) ? { ...t, status: "queued", progress: 0, jobId: null } : t;
       });
       return healed;
@@ -531,81 +556,25 @@ const autoDownloadOnStream = createReducer(true, {
   [actionTypes.TOGGLE_AUTO_DOWNLOAD]: (state, action) => action.value,
 });
 
-// Whether the previous release's downloads have been adopted into
-// downloadRegistry (see useStorageMigration). Persisted with the registry in the
-// same write — a flag stored separately could survive a kill that lost the
-// entries, and the orphan sweep would then delete every one of those files.
-const audioStorageMigrated = createReducer(false, {
-  [actionTypes.MARK_AUDIO_STORAGE_MIGRATED]: () => true,
+// Transient visibility of the full-screen onboarding carousel. NOT persisted
+// (see store.js blacklist) so it never re-shows on its own after a restart —
+// the persisted `seenOnboardingVersion` below drives the first-run auto-open.
+const onboardingVisible = createReducer(false, {
+  [actionTypes.SET_ONBOARDING_VISIBLE]: (state, action) => action.value,
 });
 
-// Per-setting sync clocks and server bases — see settings/syncModel.
-// Persisted, and reset with the rest of the account's data on a switch
-// (USER_DATA_SLICES), so one person's pending edits never reach another.
-const settingsSync = createReducer(emptySettingsSync(), {
-  [actionTypes.MERGE_SETTINGS_SYNC_META]: (state, action) => {
-    const p = action.payload || {};
-    if (p.replace) return { ...emptySettingsSync(), ...p.replace };
-    const clocks = { ...state.clocks, ...(p.clocks || {}) };
-    const base = { ...state.base, ...(p.base || {}) };
-    (p.removeClocks || []).forEach((key) => delete clocks[key]);
-    return {
-      clocks,
-      base,
-      lastSyncedAt: p.lastSyncedAt ?? state.lastSyncedAt,
-    };
-  },
+// The onboarding-carousel version this user has completed (finished or skipped).
+// useOnboardingTrigger auto-opens the carousel whenever this is below
+// constant.ONBOARDING_VERSION, so the carousel shows exactly once per onboarding
+// version — fresh installs, upgraders from old versions, and users who already
+// saw an earlier onboarding all see the current one once (bumping
+// ONBOARDING_VERSION re-shows it to everyone). Defaults to 0 = never completed.
+// Renaming the key from the old boolean also resets existing users, so the very
+// first build carrying this change re-shows the carousel to everyone once.
+// "Revisit Tutorial" reopens the carousel regardless of this value.
+const seenOnboardingVersion = createReducer(0, {
+  [actionTypes.SET_ONBOARDING_SEEN]: (state, action) => action.value,
 });
-
-// Changes to account data not yet at the server — see sync/outboxModel. On
-// rehydrate nothing is in flight any more, so "sending" goes back to the queue.
-const syncOutbox = createReducer(outbox.emptyOutbox(), {
-  "persist/REHYDRATE": (state, action) =>
-    action.payload?.syncOutbox ? outbox.heal(action.payload.syncOutbox) : state,
-  [actionTypes.ENQUEUE_SYNC_OP]: (state, action) => outbox.enqueue(state, action.payload),
-  [actionTypes.SYNC_OP_SENDING]: (state, action) => outbox.markSending(state, action.payload.id),
-  [actionTypes.SYNC_OP_DONE]: (state, action) => outbox.markDone(state, action.payload.id),
-  [actionTypes.SYNC_OP_FAILED]: (state, action) =>
-    outbox.markFailed(state, action.payload.id, { error: action.payload.error }),
-});
-
-// Bumped by every CLEAR_USER_DATA, which is the account boundary. A request
-// made for one account can answer after the boundary has moved even while
-// `auth` still names the same person (sign-out purges before the logout
-// browser closes), so code that must not write one account's answer into the
-// next compares this rather than the session.
-const accountEpoch = createReducer(0, {
-  [actionTypes.CLEAR_USER_DATA]: (state) => state + 1,
-});
-
-// Khalis SSO session state. Blacklisted from redux-persist (see store.js): the
-// claims carry an email + SAML nameID and redux-persist writes unencrypted
-// AsyncStorage. Blacklisting also guarantees "unknown" on cold start, so the UI
-// cannot flash a signed-in state before the Keychain read resolves.
-const auth = createReducer(
-  { status: "unknown", user: null, expiresAt: null, busy: false },
-  {
-    // `busy` is left to the action that set it (useSsoActions clears it when
-    // it finishes). A session event mid-action — a 401 ending the session
-    // during sign-out, the Android return link beginning one while
-    // startLogin still waits — used to clear it, re-enabling the row while
-    // a login browser was still open, and a second tap broke openAuth.
-    [actionTypes.SET_AUTH_SESSION]: (state, action) => ({
-      ...state,
-      status: "signedIn",
-      user: action.value?.user ?? null,
-      expiresAt: action.value?.expiresAt ?? null,
-    }),
-    [actionTypes.CLEAR_AUTH_SESSION]: (state) => ({
-      ...state,
-      status: "signedOut",
-      user: null,
-      expiresAt: null,
-    }),
-    [actionTypes.SET_AUTH_BUSY]: (state, action) => ({ ...state, busy: !!action.value }),
-  }
-);
-
 // ─── Dashboard redesign ───────────────────────────────────────────────────
 // Default top-to-bottom section order from the new design.
 // Today first, then the day's reading — streak, nitnem, hukamnama — followed by
@@ -687,7 +656,30 @@ const userProfile = createReducer(
       ...action.value,
       modifiedAt: action.value?.modifiedAt ?? Date.now(),
     }),
-  }
+  },
+);
+
+// Khalis SSO session state. Blacklisted from redux-persist (see store.js): the
+// claims carry an email + SAML nameID and redux-persist writes unencrypted
+// AsyncStorage. Blacklisting also guarantees "unknown" on cold start, so the UI
+// cannot flash a signed-in state before the Keychain read resolves.
+const auth = createReducer(
+  { status: "unknown", user: null, expiresAt: null, busy: false },
+  {
+    [actionTypes.SET_AUTH_SESSION]: (state, action) => ({
+      status: "signedIn",
+      user: action.value?.user ?? null,
+      expiresAt: action.value?.expiresAt ?? null,
+      busy: false,
+    }),
+    [actionTypes.CLEAR_AUTH_SESSION]: () => ({
+      status: "signedOut",
+      user: null,
+      expiresAt: null,
+      busy: false,
+    }),
+    [actionTypes.SET_AUTH_BUSY]: (state, action) => ({ ...state, busy: !!action.value }),
+  },
 );
 
 const defaultLayout = () => ({ order: [...DEFAULT_DASHBOARD_ORDER], hidden: [], modifiedAt: 0 });
@@ -718,9 +710,7 @@ const dashboardLayout = createReducer(defaultLayout(), {
       modifiedAt: action.value?.modifiedAt ?? Date.now(),
     };
   },
-  // Stamped like any edit: at 0 a reset never reached the account, and the
-  // next snapshot from another device put the old layout straight back.
-  [actionTypes.RESET_DASHBOARD_LAYOUT]: () => ({ ...defaultLayout(), modifiedAt: Date.now() }),
+  [actionTypes.RESET_DASHBOARD_LAYOUT]: () => defaultLayout(),
 });
 
 // What has been READ today, and nothing else.
@@ -838,16 +828,11 @@ const todaysNitnem = createReducer(
       if (!incoming) return state;
       const completed = { ...state.completed };
       Object.keys(incoming).forEach((date) => {
-        // A bani un-ticked HERE that day stays un-ticked: the account's copy
-        // still holds the tick from before, and the union brought it straight
-        // back on the next sync.
-        const unticked = state.untickedAt?.[date] ?? {};
-        const theirs = (incoming[date] ?? []).filter((id) => unticked[id] == null);
-        completed[date] = [...new Set([...(completed[date] ?? []), ...theirs])];
+        completed[date] = [...new Set([...(completed[date] ?? []), ...(incoming[date] ?? [])])];
       });
       return { ...state, completed };
     },
-  }
+  },
 );
 
 // My Pothi. Every transition delegates to `pothi/model`, which owns the rules
@@ -869,8 +854,6 @@ const pothis = createReducer(pothiModel.emptyPothis(), {
     pothiModel.addBani(state, action.payload.id, action.payload.item),
   [actionTypes.REMOVE_BANI_FROM_POTHI]: (state, action) =>
     pothiModel.removeBani(state, action.payload.id, action.payload.baaniId),
-  [actionTypes.RESTORE_POTHI_ITEMS]: (state, action) =>
-    pothiModel.restoreItems(state, action.payload.id, action.payload.items),
   [actionTypes.SET_POTHI_ORDER]: (state, action) => pothiModel.setOrder(state, action.value),
   [actionTypes.TOGGLE_POTHI_PIN]: (state, action) => pothiModel.togglePin(state, action.value),
   [actionTypes.SEED_DEFAULT_POTHIS]: (state, action) =>
@@ -881,6 +864,8 @@ const pothis = createReducer(pothiModel.emptyPothis(), {
     ...state,
     syncWatermark: Number(action.value) || 0,
   }),
+  [actionTypes.POTHI_DELETE_SYNCED]: (state, action) =>
+    pothiModel.clearTombstone(state, action.value),
   // This slice deliberately does NOT handle CLEAR_AUTH_SESSION or
   // SET_AUTH_SESSION. Reacting to the auth actions coupled My Pothi to the
   // sign-in/sign-out path, which is not this feature's business — the auth
@@ -894,7 +879,27 @@ const pothis = createReducer(pothiModel.emptyPothis(), {
   }),
 });
 
+// Reading themes served by the backend — raw rows, sanitised on the way in
+// (useRemoteThemesSync) and built into records on the way out
+// (theme/reader/registry). Persisted, so a device offline for a month keeps
+// the themes it last saw; NOT user data — a theme list is the same for
+// every account, so it survives sign-out and an account switch.
+const remoteThemes = (state = { version: 0, fetchedAt: 0, themes: [] }, action) => {
+  switch (action.type) {
+    case actionTypes.SET_REMOTE_THEMES:
+      return {
+        version: Number(action.payload?.version) || 0,
+        fetchedAt: Number(action.payload?.fetchedAt) || 0,
+        themes: Array.isArray(action.payload?.themes) ? action.payload.themes : [],
+      };
+    default:
+      return state;
+  }
+};
+
 const appReducer = combineReducers({
+  donor,
+  donorType,
   isNightMode,
   fontSize,
   fontFace,
@@ -905,7 +910,6 @@ const appReducer = combineReducers({
   isTransliteration,
   theme,
   readerThemeSeeded,
-  remoteThemes,
   isAutoScroll,
   isAudio,
   isAudioFeatureEnabled,
@@ -932,6 +936,9 @@ const appReducer = combineReducers({
   isReminders,
   reminderBanis,
   reminderSound,
+  remindersSync,
+  settingsSync,
+  syncOutbox,
   autoScrollSpeed,
   autoScrollSpeedObj,
   baniOrder,
@@ -941,9 +948,11 @@ const appReducer = combineReducers({
   isHeaderFooter,
   isDatabaseUpdateAvailable,
   audioManifest,
-  audioProgress,
   audioCatalog,
   audioCatalogMeta,
+  remoteThemes,
+  audioProgress,
+  currentBani,
   readerTapTick,
   readerScrollDownTick,
   isPlayerDragging,
@@ -951,53 +960,36 @@ const appReducer = combineReducers({
   downloadRegistry,
   downloadWifiOnly,
   autoDownloadOnStream,
-  audioStorageMigrated,
-  currentBani,
-  auth,
-  accountEpoch,
-  settingsSync,
-  syncOutbox,
-  pothis,
-  remindersSync,
+  onboardingVisible,
+  seenOnboardingVersion,
   userProfile,
+  auth,
   dashboardLayout,
   todaysNitnem,
+  pothis,
 });
-
 // Slices holding data that belongs to a PERSON, not to this device.
 //
 // Deliberately NOT here: downloadRegistry (real audio files on disk — dropping
 // the registry orphans them) and every display preference (theme, font size,
 // language). Those describe how this phone is set up, not who is holding it.
-//
-// Only what the account holds a copy of, so a person signing back in gets it
-// all back. Saved bookmarks are not in redux at all (they live in the bani
-// database), so they stay on the phone.
 const USER_DATA_SLICES = [
   // A pothi is the clearest case of person-owned data there is: the folders a
   // user built, synced to THEIR account. Left out, they survived an account
   // switch and usePothiSync uploaded the previous account's folders into the
   // new one on its first push.
   "pothis",
-  // The Dashboard's own: the name on its header, the section layout and the
-  // days' Nitnem ticks, all carried in the account's dashboard snapshot.
   "userProfile",
   "dashboardLayout",
   "todaysNitnem",
-  // The Reader's pending jump to a bookmark. Not synced, but it points into
-  // the outgoing person's reading, so it goes with them.
   "bookmarkPosition",
   "bookmarkSequenceString",
-  // The reminders and their switches sync to the account too, so they go with
-  // it — and so do the clocks that go with them. The schedule already handed
-  // to the OS is cancelled with them (accountScope.purgeLocalUserData).
   "isReminders",
   "reminderBanis",
   "reminderSound",
+  // The clocks that go with the reminders, and every change of the outgoing
+  // account still waiting to be sent — neither may reach the next account.
   "remindersSync",
-  // The clocks that go with the synced settings, and every change of the
-  // outgoing account still waiting to be sent — neither may reach the next
-  // account.
   "settingsSync",
   "syncOutbox",
 ];
@@ -1012,12 +1004,7 @@ const rootReducer = (state, action) => {
     // hand each of these reducers `undefined`, so they return their own initial
     // state — no separate copy of the defaults to drift out of sync.
     USER_DATA_SLICES.forEach((key) => delete next[key]);
-    const cleared = appReducer(next, action);
-    // The outbox restarts empty but keeps counting: an op from before the
-    // reset may still be in flight, and its late done/failed must not land on
-    // a new op that reused its id (ids end in the sequence number).
-    const seq = state.syncOutbox?.seq ?? cleared.syncOutbox.seq;
-    return { ...cleared, syncOutbox: { ...cleared.syncOutbox, seq } };
+    return appReducer(next, action);
   }
   return appReducer(state, action);
 };

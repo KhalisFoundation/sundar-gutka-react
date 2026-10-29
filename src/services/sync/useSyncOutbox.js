@@ -1,8 +1,8 @@
 import { useCallback, useEffect, useRef } from "react";
 import { AppState } from "react-native";
 import { useDispatch, useSelector, useStore } from "react-redux";
-import { syncOpDone, syncOpFailed, syncOpSending } from "@common/actions";
-import { nextAttemptAt, nextRunnable, pendingCount } from "@common/sync/outboxModel";
+import { clearSyncFeature, syncOpDone, syncOpFailed, syncOpSending } from "@common/actions";
+import { nextAttemptAt, nextRunnable } from "@common/sync/outboxModel";
 import { logError, logMessage, logNetworkError, useNetwork } from "@common";
 import {
   getSyncFeature,
@@ -10,7 +10,6 @@ import {
   OUTCOME_DONE,
   OUTCOME_RETRY,
   syncFeatureNames,
-  syncRegistryVersion,
 } from "./syncRegistry";
 
 // Drains the outbox.
@@ -21,38 +20,14 @@ import {
 // the network is away. On a conflict — the server refused because another
 // device changed the same thing first — the feature's queue is handed to its
 // bulk reconcile, which pushes the current local state and takes back the
-// merged result, and marks done the ops it carried. Until it succeeds they
-// stay queued: a reconcile that fails leaves the conflicting op to be retried
-// with backoff, so nothing is lost to a server blip or a killed app.
+// merged result; the queued ops are then moot and are dropped.
 //
 // Mounted once, in GlobalServices, so a change made on any screen goes up
 // whether or not that screen is still open.
 const useSyncOutbox = () => {
   const store = useStore();
   const dispatch = useDispatch();
-  // Each feature's op count and soonest retry, not the whole outbox: every
-  // send replaces the outbox object, and each one would otherwise re-run the
-  // drain pass and re-arm every timer. This changes when an op is added,
-  // finished or rescheduled, which are the moments a pass is owed.
-  //
-  // Cached by outbox reference: this runs on every dispatch in the app, and
-  // nearly none of them touch the outbox.
-  const keyCacheRef = useRef({ outbox: null, version: -1, key: "" });
-  const retryKey = useSelector((state) => {
-    const cache = keyCacheRef.current;
-    const version = syncRegistryVersion();
-    if (state.syncOutbox === cache.outbox && version === cache.version) return cache.key;
-    const key = syncFeatureNames()
-      .map(
-        (name) =>
-          `${name}:${pendingCount(state.syncOutbox, name)}:${
-            nextAttemptAt(state.syncOutbox, name) ?? "-"
-          }`
-      )
-      .join("|");
-    keyCacheRef.current = { outbox: state.syncOutbox, version, key };
-    return key;
-  });
+  const outbox = useSelector((state) => state.syncOutbox);
   const signedIn = useSelector((state) => state.auth?.status === "signedIn");
   const { isOnline } = useNetwork();
   // One drain per feature at a time; a second trigger while one is running
@@ -62,11 +37,6 @@ const useSyncOutbox = () => {
   const timersRef = useRef(new Map());
   const signedInRef = useRef(signedIn);
   signedInRef.current = signedIn;
-  // Read by every pass, whatever started it: a foreground while offline would
-  // otherwise fire requests that can only fail, each one pushing the op's
-  // retry further out, so it then waited minutes after the network came back.
-  const onlineRef = useRef(isOnline);
-  onlineRef.current = isOnline;
 
   const drainFeature = useCallback(
     async (name) => {
@@ -80,7 +50,7 @@ const useSyncOutbox = () => {
         if (!impl) return;
         // eslint-disable-next-line no-constant-condition
         while (true) {
-          if (!signedInRef.current || !onlineRef.current) return;
+          if (!signedInRef.current) return;
           const op = nextRunnable(store.getState().syncOutbox, name);
           if (!op) break;
           dispatch(syncOpSending(op.id));
@@ -98,19 +68,12 @@ const useSyncOutbox = () => {
             dispatch(syncOpFailed(op.id, "retry"));
             break;
           } else if (outcome === OUTCOME_CONFLICT) {
-            // The bulk sync carries every pending change up in one go, and
-            // marks done the ops it carried. If it does not get through, this
-            // op is retried later rather than dropped.
+            // The bulk sync carries every pending change up in one go, so the
+            // queue for this feature is finished with, whatever it held.
+            dispatch(clearSyncFeature(name));
             // eslint-disable-next-line no-await-in-loop
             const ok = await impl.reconcile?.();
             if (!ok) logMessage(`sync: ${name} reconcile after conflict did not complete`);
-            // Still here means the reconcile did not carry it: it failed, or
-            // this joined one already running that was built before the op
-            // existed. Back to the queue, or it would sit "sending" and hold
-            // up every later op of the feature.
-            if (store.getState().syncOutbox.ops[op.id]) {
-              dispatch(syncOpFailed(op.id, "conflict"));
-            }
             break;
           } else {
             logError(new Error(`sync: ${name} op ${op.kind}/${op.key} rejected by the server`));
@@ -137,9 +100,8 @@ const useSyncOutbox = () => {
     // a tunnel goes up on its own once the backoff lapses — not only when the
     // user next touches something.
     const timers = timersRef.current;
-    const { syncOutbox } = store.getState();
     syncFeatureNames().forEach((name) => {
-      const at = nextAttemptAt(syncOutbox, name);
+      const at = nextAttemptAt(outbox, name);
       const existing = timers.get(name);
       if (existing) clearTimeout(existing);
       if (at == null) return;
@@ -152,7 +114,7 @@ const useSyncOutbox = () => {
       timers.forEach((t) => clearTimeout(t));
       timers.clear();
     };
-  }, [retryKey, signedIn, isOnline, drainAll, drainFeature, store]);
+  }, [outbox, signedIn, isOnline, drainAll, drainFeature]);
 
   // Returning to the foreground is worth a pass too: a retry time may have
   // lapsed while the app was in the background.

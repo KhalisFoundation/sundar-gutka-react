@@ -32,9 +32,7 @@ const useAudioSyncScroll = (progress, isPlaying, webViewRef, lyricsUrl, seekSync
     if (webViewRef?.current?.postMessage) {
       try {
         webViewRef.current.postMessage(JSON.stringify({ resetHighlight: true }));
-      } catch (_) {
-        // Best effort: WebView may be unmounted or not ready to receive messages.
-      }
+      } catch (_) {}
     }
 
     // Clear stale LRC data immediately so the old track's timestamps cannot
@@ -60,6 +58,7 @@ const useAudioSyncScroll = (progress, isPlaying, webViewRef, lyricsUrl, seekSync
       isMounted = false;
     };
   }, [lyricsUrl, isAudioSyncScroll]);
+
 
   // Find current sequence based on audio progress.
   // LRC entries are sorted by start time, so we can binary-search instead of
@@ -161,13 +160,10 @@ const useAudioSyncScroll = (progress, isPlaying, webViewRef, lyricsUrl, seekSync
       webViewRef.current.postMessage(JSON.stringify(scrollMessage));
 
       // Reset scrolling flag after a short delay
-      scrollTimeoutRef.current = setTimeout(
-        () => {
-          isScrollingRef.current = false;
-          scrollTimeoutRef.current = null;
-        },
-        force ? 80 : 150
-      );
+      scrollTimeoutRef.current = setTimeout(() => {
+        isScrollingRef.current = false;
+        scrollTimeoutRef.current = null;
+      }, force ? 80 : 150);
       return true;
     } catch (error) {
       isScrollingRef.current = false;
@@ -301,9 +297,7 @@ const useAudioSyncScroll = (progress, isPlaying, webViewRef, lyricsUrl, seekSync
             // Sync scroll disabled or lyrics unavailable — clear highlight.
             webViewRef.current.postMessage(JSON.stringify({ resetHighlight: true }));
           }
-        } catch (_) {
-          // Best effort: WebView may be unmounted or not ready to receive messages.
-        }
+        } catch (_) {}
       }
     }
   }, [isAudioSyncScroll, isPlaying, baniLRC]);
@@ -315,9 +309,7 @@ const useAudioSyncScroll = (progress, isPlaying, webViewRef, lyricsUrl, seekSync
       if (webViewRef?.current?.postMessage) {
         try {
           webViewRef.current.postMessage(JSON.stringify({ resetHighlight: true }));
-        } catch (_) {
-          // Best effort: WebView may be unmounted or not ready to receive messages.
-        }
+        } catch (_) {}
       }
     };
   }, []); // eslint-disable-line react-hooks/exhaustive-deps

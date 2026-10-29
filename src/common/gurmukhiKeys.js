@@ -1,3 +1,5 @@
+import punjabiLayout from "simple-keyboard-layouts/build/commonjs/layouts/punjabi";
+
 // The full Gurmukhi character set, laid out the way it is taught.
 //
 // The InScript layout from `simple-keyboard-layouts` is the right INVENTORY but
@@ -90,5 +92,21 @@ export const KEY_ROWS = KEY_PAGES.flat();
 
 /** Every key the keyboard offers — used by the test to check the inventory. */
 export const ALL_KEYS = KEY_ROWS.flat();
+
+/** Every single character the package's layout contains, across both layers. */
+export const packageCharacters = () => {
+  const layers = punjabiLayout.default?.layout ?? punjabiLayout.layout ?? {};
+  const chars = new Set();
+  Object.values(layers).forEach((rows) => {
+    rows.forEach((row) => {
+      row.split(" ").forEach((key) => {
+        // Skip the control tokens and the multi-character conjunct keys.
+        if (!key || key.startsWith("{")) return;
+        [...key].forEach((ch) => chars.add(ch));
+      });
+    });
+  });
+  return chars;
+};
 
 export default KEY_ROWS;

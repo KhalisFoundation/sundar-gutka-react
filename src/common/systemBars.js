@@ -88,10 +88,6 @@ export const navBarGlyphsAreDark = () => resolved();
  *   go dark. Null (or undefined) to claim nothing — for a bar that is mounted
  *   but hidden, which must not speak for the screen in front of it.
  */
-// KNOWN: a claim whose `light` changes is moved to the end of the list. Effects
-// re-run in tree order, so the screen in front still claims last on a theme
-// change; only a hidden screen changing alone could take the front. Updating
-// the claim in place is planned in an upcoming PR.
 export const useNavBarSurface = (light) => {
   const entry = useRef({ light });
 

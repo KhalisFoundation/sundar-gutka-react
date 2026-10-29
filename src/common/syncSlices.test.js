@@ -39,47 +39,59 @@ describe("syncOutbox slice", () => {
     expect(rehydrated.syncOutbox.ops[id].status).toBe("queued");
   });
 
-  it("is wiped, with the settings clocks, when a different account signs in", () => {
-    let s = reduce(init(), op("settings", "put", "baniOrder"), {
-      type: actionTypes.MERGE_SETTINGS_SYNC_META,
-      payload: { clocks: { baniOrder: 5 } },
+  it("is wiped, with the reminder clocks, when a different account signs in", () => {
+    let s = reduce(init(), op("reminders", "upsert", 2), {
+      type: actionTypes.MERGE_REMINDER_SYNC_META,
+      payload: { clocks: { 2: 5 } },
     });
     expect(Object.keys(s.syncOutbox.ops)).toHaveLength(1);
     s = reduce(s, { type: actionTypes.CLEAR_USER_DATA });
     expect(s.syncOutbox.ops).toEqual({});
-    expect(s.settingsSync.clocks).toEqual({});
+    expect(s.remindersSync.clocks).toEqual({});
   });
 });
 
-describe("settingsSync slice", () => {
-  it("merges clocks and bases, removes on request, and keeps the watermark", () => {
+describe("remindersSync slice", () => {
+  it("merges clocks, tombstones and bases, and removes on request", () => {
     let s = reduce(init(), {
-      type: actionTypes.MERGE_SETTINGS_SYNC_META,
-      payload: { clocks: { theme: 10, fontSize: 4 }, base: { theme: 9 }, lastSyncedAt: 7 },
+      type: actionTypes.MERGE_REMINDER_SYNC_META,
+      payload: { clocks: { 2: 10 }, tombstones: { 4: 11 }, base: { 2: 9 }, settingsUpdatedAt: 7 },
     });
-    expect(s.settingsSync).toEqual({
-      clocks: { theme: 10, fontSize: 4 },
-      base: { theme: 9 },
-      lastSyncedAt: 7,
+    expect(s.remindersSync).toMatchObject({
+      clocks: { 2: 10 },
+      tombstones: { 4: 11 },
+      base: { 2: 9 },
+      settingsUpdatedAt: 7,
     });
     s = reduce(s, {
-      type: actionTypes.MERGE_SETTINGS_SYNC_META,
-      payload: { removeClocks: ["fontSize"] },
+      type: actionTypes.MERGE_REMINDER_SYNC_META,
+      payload: { removeTombstones: [4], removeClocks: [2], lastSyncedAt: 100 },
     });
-    expect(s.settingsSync.clocks).toEqual({ theme: 10 });
-    expect(s.settingsSync.lastSyncedAt).toBe(7);
+    expect(s.remindersSync).toMatchObject({
+      clocks: {},
+      tombstones: {},
+      base: {},
+      lastSyncedAt: 100,
+    });
   });
 
   it("replace swaps the whole record", () => {
-    let s = reduce(init(), {
-      type: actionTypes.MERGE_SETTINGS_SYNC_META,
-      payload: { clocks: { theme: 10 } },
+    const s = reduce(
+      init(),
+      { type: actionTypes.MERGE_REMINDER_SYNC_META, payload: { clocks: { 2: 10 } } },
+      {
+        type: actionTypes.MERGE_REMINDER_SYNC_META,
+        payload: { replace: { base: { 9: 1 }, lastSyncedAt: 5 } },
+      }
+    );
+    expect(s.remindersSync).toEqual({
+      clocks: {},
+      tombstones: {},
+      base: { 9: 1 },
+      settingsUpdatedAt: 0,
+      settingsBase: 0,
+      lastSyncedAt: 5,
     });
-    s = reduce(s, {
-      type: actionTypes.MERGE_SETTINGS_SYNC_META,
-      payload: { replace: { base: { theme: 3 } } },
-    });
-    expect(s.settingsSync).toEqual({ clocks: {}, base: { theme: 3 }, lastSyncedAt: 0 });
   });
 });
 
@@ -93,19 +105,13 @@ describe("preference clocks", () => {
     expect(s.dashboardLayout.modifiedAt).toBeGreaterThanOrEqual(before);
     s = reduce(s, {
       type: actionTypes.SET_USER_PROFILE,
-      value: { name: "Simran", modifiedAt: 123 },
+      value: { name: "Bhuvesh", modifiedAt: 123 },
     });
-    expect(s.userProfile).toEqual({ name: "Simran", modifiedAt: 123 });
+    expect(s.userProfile).toEqual({ name: "Bhuvesh", modifiedAt: 123 });
     const rehydrated = rootReducer(init(), {
       type: "persist/REHYDRATE",
       payload: { dashboardLayout: { ...s.dashboardLayout, modifiedAt: 456 } },
     });
     expect(rehydrated.dashboardLayout.modifiedAt).toBe(456);
   });
-});
-
-it("stamps a layout reset, so it reaches the account like any edit", () => {
-  const before = Date.now();
-  const s = reduce(init(), { type: actionTypes.RESET_DASHBOARD_LAYOUT });
-  expect(s.dashboardLayout.modifiedAt).toBeGreaterThanOrEqual(before);
 });

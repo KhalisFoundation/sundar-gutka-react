@@ -35,7 +35,12 @@ const Dialog = ({
   const { height } = useWindowDimensions();
 
   return (
-    <Overlay visible={visible} animationType="fade" onRequestClose={onCancel} testID={testID}>
+    <Overlay
+      visible={visible}
+      animationType="fade"
+      onRequestClose={onCancel}
+      testID={testID}
+    >
       <View
         style={{
           flex: 1,

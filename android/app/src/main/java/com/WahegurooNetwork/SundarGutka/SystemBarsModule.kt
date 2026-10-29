@@ -1,7 +1,5 @@
 package com.WahegurooNetwork.SundarGutka
 
-import android.os.Build
-import android.view.WindowManager
 import androidx.core.view.WindowCompat
 import com.facebook.react.bridge.ReactApplicationContext
 import com.facebook.react.bridge.ReactContextBaseJavaModule
@@ -55,30 +53,6 @@ class SystemBarsModule(reactContext: ReactApplicationContext) :
         val window = activity.window
         WindowCompat.getInsetsController(window, window.decorView)
             .isAppearanceLightNavigationBars = light
-      }
-    }
-  }
-
-  /**
-   * Puts the window back edge-to-edge after React Native's StatusBar has shown
-   * the status bar. On Android 11+ showing it calls
-   * `setDecorFitsSystemWindows(true)` and resets the cutout mode, so a screen
-   * that mounts a StatusBar padded itself above both system bars and lost its
-   * safe-area insets until the next focus change (see MainActivity).
-   */
-  @ReactMethod
-  fun restoreEdgeToEdge() {
-    val activity = currentActivity ?: return
-    activity.runOnUiThread {
-      if (!activity.isFinishing && !activity.isDestroyed) {
-        val window = activity.window
-        WindowCompat.setDecorFitsSystemWindows(window, false)
-        if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.P) {
-          val params = window.attributes
-          params.layoutInDisplayCutoutMode =
-              WindowManager.LayoutParams.LAYOUT_IN_DISPLAY_CUTOUT_MODE_SHORT_EDGES
-          window.attributes = params
-        }
       }
     }
   }

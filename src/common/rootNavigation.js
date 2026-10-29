@@ -1,5 +1,5 @@
 import { Linking } from "react-native";
-import { createNavigationContainerRef, StackActions } from "@react-navigation/native";
+import { createNavigationContainerRef } from "@react-navigation/native";
 import { getBaniByID } from "@database";
 import constant from "./constant";
 import { logError, logMessage } from "./firebase/crashlytics";
@@ -32,28 +32,20 @@ export const navigate = (name, params) => {
 // Only the latest is kept — the one the user tapped last is the one they want.
 let pendingNotificationRoute = null;
 
-// `go` performs the navigation; it is held as a function so a destination
-// that needs an action rather than a plain navigate (a tab) is held the same way.
-const whenReady = (go) => {
-  if (navigationRef.isReady()) go();
-  else pendingNotificationRoute = go;
+const navigateWhenReady = (name, params) => {
+  if (navigationRef.isReady()) {
+    navigationRef.navigate(name, params);
+  } else {
+    pendingNotificationRoute = { name, params };
+  }
 };
-
-const navigateWhenReady = (name, params) => whenReady(() => navigationRef.navigate(name, params));
-
-// A tab of the main tab bar. It exists only inside MainTabs, so a plain
-// navigate from a stack screen (the Reader, About) found nothing to resolve
-// against and the tap did nothing. Back to the one MainTabs at the root, on
-// that tab — as the Donate row does; a navigate would push a second MainTabs.
-const openTabWhenReady = (screen) =>
-  whenReady(() => navigationRef.dispatch(StackActions.popTo("MainTabs", { screen })));
 
 /** Takes a notification's held destination. Called once the navigator is ready. */
 export const flushPendingNotificationRoute = () => {
   if (!pendingNotificationRoute || !navigationRef.isReady()) return;
-  const go = pendingNotificationRoute;
+  const { name, params } = pendingNotificationRoute;
   pendingNotificationRoute = null;
-  go();
+  navigationRef.navigate(name, params);
 };
 
 // Opens the bani a reminder or a campaign points at.
@@ -93,20 +85,8 @@ const openOwnStoreListing = async () => {
  * on its data payload — see pushRouting for the routes. A payload this build
  * cannot place opens the app where it was, and says so in the breadcrumbs.
  */
-// One tap can be reported twice: on iOS notifee and FCM both hear a tap on a
-// notification the system drew, and each hands it here. Routed twice, a url or
-// store campaign opened the browser or the store twice.
-const SAME_TAP_MS = 2000;
-let lastTap = { key: null, at: 0 };
-
 export const navigateTo = async (incoming) => {
   const target = routeForNotification(incoming?.notification?.data);
-  // Keyed on WHERE it goes, not on the payload: the two reports of one iOS tap
-  // carry different extras (FCM's own keys survive in notifee's copy only).
-  const key = target ? JSON.stringify(target) : null;
-  const now = Date.now();
-  if (key && key === lastTap.key && now - lastTap.at < SAME_TAP_MS) return;
-  lastTap = { key, at: now };
   if (!target) {
     logMessage("navigateTo: notification carried no route this build knows");
     return;
@@ -116,13 +96,13 @@ export const navigateTo = async (incoming) => {
       await openBani(target);
       return;
     case ROUTE_SEVA:
-      openTabWhenReady(constant.SEVA);
-      return;
-    case ROUTE_DASHBOARD:
-      openTabWhenReady(constant.DASHBOARD);
+      navigateWhenReady(constant.SEVA);
       return;
     case ROUTE_UPDATE:
       navigateWhenReady(constant.DATABASE_UPDATE);
+      return;
+    case ROUTE_DASHBOARD:
+      navigateWhenReady(constant.DASHBOARD);
       return;
     case ROUTE_SETTINGS:
       navigateWhenReady(constant.SETTINGS);
