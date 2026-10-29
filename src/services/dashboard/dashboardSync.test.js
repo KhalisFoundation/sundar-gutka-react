@@ -440,10 +440,7 @@ describe("applyServerActivity", () => {
       last_active_date: null,
     });
 
-    await applyServerActivity(
-      { totals: { daysActive: 84 }, streaks: { longest: 9 }, days: {} },
-      monthKey(new Date(TODAY))
-    );
+    await applyServerActivity({ totals: { daysActive: 84 }, streaks: { longest: 9 }, days: {} });
 
     expect(analytics.updateSummary).toHaveBeenCalledWith({
       longest_streak: 12,
@@ -458,10 +455,7 @@ describe("applyServerActivity", () => {
       last_active_date: null,
     });
 
-    await applyServerActivity(
-      { totals: { daysActive: 84 }, streaks: { longest: 9 }, days: {} },
-      monthKey(new Date(TODAY))
-    );
+    await applyServerActivity({ totals: { daysActive: 84 }, streaks: { longest: 9 }, days: {} });
 
     expect(analytics.updateSummary).toHaveBeenCalledWith({
       longest_streak: 9,
@@ -473,17 +467,14 @@ describe("applyServerActivity", () => {
     const today = new Date(TODAY);
     const earlier = new Date(2026, 7, 17);
     analytics.getOrCreateSummary.mockResolvedValue({ last_active_date: dayKey(today) });
-    await applyServerActivity(
-      { totals: {}, streaks: {}, days: { [dayKey(earlier)]: [10, 0] } },
-      monthKey(today)
-    );
+    await applyServerActivity({ totals: {}, streaks: {}, days: { [dayKey(earlier)]: [10, 0] } });
     expect(analytics.updateSummary).toHaveBeenCalledWith(
       expect.objectContaining({ last_active_date: dayKey(today) })
     );
   });
 
   it("is a no-op for a missing state", async () => {
-    await applyServerActivity(null, "2026-08");
+    await applyServerActivity(null);
     expect(analytics.setDailyActivity).not.toHaveBeenCalled();
     expect(analytics.updateSummary).not.toHaveBeenCalled();
   });
@@ -523,13 +514,9 @@ describe("applyServerActivity — who owns the streak", () => {
     // The server counts with its own rule and the app recomputes with the
     // app's; with both writing, the number flipped between them on every
     // refresh. The app's rule wins, applied to the account's seconds.
-    const today = new Date();
     analytics.getOrCreateSummary.mockResolvedValue({ last_active_date: null });
 
-    await applyServerActivity(
-      { totals: {}, streaks: { current: 5, longest: 9 }, days: {} },
-      monthKey(today)
-    );
+    await applyServerActivity({ totals: {}, streaks: { current: 5, longest: 9 }, days: {} });
 
     const fields = analytics.updateSummary.mock.calls[0][0];
     expect(fields).not.toHaveProperty("current_streak");
@@ -543,10 +530,7 @@ describe("applyServerActivity — who owns the streak", () => {
     const today = new Date();
     analytics.getOrCreateSummary.mockResolvedValue({ last_active_date: null });
 
-    await applyServerActivity(
-      { totals: {}, streaks: {}, days: { [dayKey(today)]: [300, 60] } },
-      monthKey(today)
-    );
+    await applyServerActivity({ totals: {}, streaks: {}, days: { [dayKey(today)]: [300, 60] } });
 
     const stored = JSON.parse(await AsyncStorage.getItem("@dashboard_account_today_v1"));
     expect(stored).toEqual({ date: dayKey(today), seconds: 360 });
@@ -557,7 +541,7 @@ describe("applyServerActivity — who owns the streak", () => {
     const today = new Date();
     analytics.getOrCreateSummary.mockResolvedValue({ last_active_date: null });
 
-    await applyServerActivity({ totals: {}, streaks: {}, days: {} }, monthKey(today));
+    await applyServerActivity({ totals: {}, streaks: {}, days: {} });
 
     const stored = JSON.parse(await AsyncStorage.getItem("@dashboard_account_today_v1"));
     expect(stored).toEqual({ date: dayKey(today), seconds: 0 });

@@ -84,17 +84,14 @@ const mockOpenInAppBrowser = jest.fn();
 const mockShowInfoToast = jest.fn();
 const mockTrackSevaEvent = jest.fn();
 const mockLogError = jest.fn();
-// Switchable so the headline can be asserted in BOTH themes (see the
-// light/dark parity test below). Reset to "light" in beforeEach.
-let mockThemeMode = "light";
 
 jest.mock("@common", () => {
   const { View, Text } = require("react-native");
   const buildTheme = () => ({
-    mode: mockThemeMode,
+    mode: "light",
     // The real semantic layer, so the stylesheet resolves the same roles the
     // app does instead of a hand-rolled subset that drifts from it.
-    c: require("@theme/semanticColors")[mockThemeMode === "dark" ? "dark" : "light"],
+    c: require("@theme/semanticColors").light,
     // Likewise the real sizing tokens, so a size the screen reads (the close
     // cross) is the one the app actually renders.
     layout: require("@theme/layout").default,
@@ -242,7 +239,6 @@ describe("SevaScreen", () => {
   beforeEach(() => {
     jest.clearAllMocks();
     mockState = { language: "en" };
-    mockThemeMode = "light";
     mockFocusListeners.length = 0;
     mockFocusCleanups.length = 0;
   });
