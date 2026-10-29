@@ -1230,10 +1230,4 @@ const SevaScreen = () => {
   );
 };
 
-SevaScreen.propTypes = {
-  // Only the one method this screen calls; PropTypes.object is forbidden and
-  // describes nothing anyway.
-  navigation: PropTypes.shape({ navigate: PropTypes.func }),
-};
-
 export default SevaScreen;

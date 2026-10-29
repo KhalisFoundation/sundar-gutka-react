@@ -1,5 +1,4 @@
 import { useState, useEffect, useCallback, useRef } from "react";
-import { Platform } from "react-native";
 import { exists, stat } from "react-native-fs";
 import TrackPlayer, { usePlaybackState, useProgress, State, Event } from "react-native-track-player";
 import { useSelector } from "react-redux";

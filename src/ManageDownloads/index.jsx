@@ -77,7 +77,7 @@ const ManageDownloads = ({ navigation }) => {
   // back to the name snapshot stored at download time when the bani can't be
   // resolved (e.g. baniId missing on an older entry, or removed from the DB).
   const getDisplayName = useCallback((item) => {
-    const bani = item && item.baniId != null ? baniById[item.baniId] : null;
+    const bani = item.baniId != null ? baniById[item.baniId] : null;
     const fallback = item.baniNameUni || item.baniTitle;
     if (!bani) return fallback;
     if (isTransliteration) return bani.translit || fallback;

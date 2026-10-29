@@ -35,7 +35,7 @@ const scheduleReminders = async (remindersOn, sound, remindersList, isTransliter
     });
   }
 
-  return result ?? { scheduled: 0, blocked: false };
+  return result;
 };
 
 export default scheduleReminders;

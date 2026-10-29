@@ -170,6 +170,27 @@ const AudioTrackDialog = ({
     }
   }, []);
 
+  // Restore full notification capabilities after a preview ends.
+  // Called after stop()+reset() so there is no queue left to show controls for,
+  // but this also guards against any race where the notification lingers.
+  const restoreNotificationCapabilities = useCallback(async () => {
+    try {
+      const { Capability } = require("react-native-track-player"); // eslint-disable-line
+      await TrackPlayer.updateOptions({
+        capabilities: [
+          Capability.Play,
+          Capability.Pause,
+          Capability.SkipToNext,
+          Capability.SkipToPrevious,
+          Capability.Stop,
+        ],
+        compactCapabilities: [Capability.Play, Capability.Pause, Capability.SkipToNext],
+      });
+    } catch (_) {
+      // Non-critical: full controls will be restored on next normal playback setup.
+    }
+  }, []);
+
   /**
    * The preview ticker owns stopping the audio at the end of the 15-second
    * window. It deliberately holds no render state: the on-screen countdown is
@@ -200,27 +221,6 @@ const AudioTrackDialog = ({
     },
     [clearPreviewInterval, stop, reset, restoreNotificationCapabilities]
   );
-
-  // Restore full notification capabilities after a preview ends.
-  // Called after stop()+reset() so there is no queue left to show controls for,
-  // but this also guards against any race where the notification lingers.
-  const restoreNotificationCapabilities = useCallback(async () => {
-    try {
-      const { Capability } = require("react-native-track-player"); // eslint-disable-line
-      await TrackPlayer.updateOptions({
-        capabilities: [
-          Capability.Play,
-          Capability.Pause,
-          Capability.SkipToNext,
-          Capability.SkipToPrevious,
-          Capability.Stop,
-        ],
-        compactCapabilities: [Capability.Play, Capability.Pause, Capability.SkipToNext],
-      });
-    } catch (_) {
-      // Non-critical: full controls will be restored on next normal playback setup.
-    }
-  }, []);
 
   const stopPreview = useCallback(async () => {
     previewSessionRef.current += 1;

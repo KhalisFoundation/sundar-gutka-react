@@ -327,7 +327,7 @@ const useAudioManifest = (baniID) => {
   const applyGroups = async (groups, registry, downloadedTracks) => {
     let mappedData = tracksFromGroups(groups);
     if (downloadedTracks && downloadedTracks.length > 0) {
-      mappedData = await mergeDownloadedTracks(mappedData || [], downloadedTracks, registry);
+      mappedData = await mergeDownloadedTracks(mappedData, downloadedTracks, registry);
     }
 
     if (mappedData && mappedData.length > 0) {

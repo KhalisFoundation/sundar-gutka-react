@@ -671,7 +671,7 @@ export const buildActivityPayload = async ({ deviceId, since = 0 }) => {
   const rows = await getActivityUpdatedSince(since);
   return {
     deviceId,
-    days: (rows || []).map((r) => ({
+    days: rows.map((r) => ({
       date: String(r.date),
       readingSeconds: Math.max(0, Math.round(r.reading_seconds ?? 0)),
       listeningSeconds: Math.max(0, Math.round(r.listening_seconds ?? 0)),
