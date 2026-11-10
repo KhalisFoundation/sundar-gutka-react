@@ -184,6 +184,12 @@ jest.mock("@common/hooks/useBaniLookup", () => ({
 // The Add to Pothi sheet is exercised by its own suite. Stubbed here so this
 // one stays about the Reader and does not have to mock the whole pothi slice.
 jest.mock("../Pothi/components/AddToPothiSheet", () => () => null);
+// Autopilot (mic in the header) loads native modules; the Reader tests only need it off.
+jest.mock("../autopilot", () => ({
+  useAutopilotControl: () => ({ on: false, toggle: null, status: "off", progress: 0 }),
+  AutopilotStatus: () => null,
+  MicIcon: () => null,
+}));
 
 jest.mock("@common", () => ({
   // The header title is resolved through this, the same way the bani list

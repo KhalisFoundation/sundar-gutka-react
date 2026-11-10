@@ -112,6 +112,9 @@ const clearAllHighlights = () => {
   }
 };
 
+// Autopilot does not scroll for a few seconds after the reader touches the page.
+let lastTouch = 0;
+
 const clearScrollTimeout=()=> {
   if (autoScrollTimeout != null) {
     clearTimeout(autoScrollTimeout);
@@ -505,6 +508,7 @@ ${listener}.addEventListener("touchstart", (e)=> {
 });
 ${listener}.addEventListener("touchmove", (e)=> {
   isManuallyScrolling = true;
+  lastTouch = Date.now();
   if (!tapMoved && e.touches && e.touches.length > 0) {
     const dx = Math.abs(e.touches[0].clientX - tapStartX);
     const dy = Math.abs(e.touches[0].clientY - tapStartY);
@@ -589,6 +593,22 @@ ${listener}.addEventListener(
       if (highlightTimeout != null) {
         clearTimeout(highlightTimeout);
         highlightTimeout = null;
+      }
+    }
+    if (message.hasOwnProperty("autopilot")) {
+      // Autopilot: mark the pangti being read (its Gurmukhi line only, not the translations) and
+      // centre it, unless the reader touched the page in the last 6 s. Its scroll must not toggle
+      // the bars; like audio sync, it counts as reading.
+      const prev = document.querySelector(".autopilot-now");
+      const row = message.autopilot && document.getElementById(message.autopilot);
+      const el = row && (row.querySelector('.content-item[data-type="gurmukhi"]') || row);
+      if (prev && prev !== el) prev.classList.remove("autopilot-now");
+      if (el && el !== prev) {
+        el.classList.add("autopilot-now");
+        if (!isManuallyScrolling && Date.now() - lastTouch > 6000) {
+          syncScrollUntil = Date.now() + 2000;
+          el.scrollIntoView({ behavior: "smooth", block: "center" });
+        }
       }
     }
     if (message.hasOwnProperty("autoScroll")) {

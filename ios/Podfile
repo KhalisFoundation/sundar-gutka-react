@@ -16,6 +16,7 @@ if linkage != nil
 end
 
 target 'SundarGutka' do
+  pod 'onnxruntime-c', '1.24.3' # Autopilot: same ONNX Runtime as Android (onnxruntime-react-native leaves it unpinned)
   pod 'Firebase', :modular_headers => true
   pod 'FirebaseCore', :modular_headers => true
   # 8.1.4 or later: 8.1.1/8.1.2 fix a race crash in GULNetworkURLSession, and
@@ -54,6 +55,11 @@ target 'SundarGutka' do
       # Some pods still declare iOS 9.0, which current Xcode no longer supports.
       if Gem::Version.new(config.build_settings['IPHONEOS_DEPLOYMENT_TARGET'].to_s) < Gem::Version.new(min_ios_version_supported)
         config.build_settings['IPHONEOS_DEPLOYMENT_TARGET'] = min_ios_version_supported
+      end
+      # fmt (via React Native) fails with Xcode 26+ clang under C++20 (consteval format strings);
+      # it builds fine as C++17.
+      if target.name == 'fmt'
+        config.build_settings['CLANG_CXX_LANGUAGE_STANDARD'] = 'c++17'
       end
     end
   end

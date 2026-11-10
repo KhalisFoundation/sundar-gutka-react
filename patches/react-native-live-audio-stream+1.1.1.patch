@@ -1,0 +1,153 @@
+diff --git a/node_modules/react-native-live-audio-stream/android/src/main/java/com/imxiqi/rnliveaudiostream/RNLiveAudioStreamModule.java b/node_modules/react-native-live-audio-stream/android/src/main/java/com/imxiqi/rnliveaudiostream/RNLiveAudioStreamModule.java
+index 20f454f..a766a03 100644
+--- a/node_modules/react-native-live-audio-stream/android/src/main/java/com/imxiqi/rnliveaudiostream/RNLiveAudioStreamModule.java
++++ b/node_modules/react-native-live-audio-stream/android/src/main/java/com/imxiqi/rnliveaudiostream/RNLiveAudioStreamModule.java
+@@ -27,7 +27,10 @@ public class RNLiveAudioStreamModule extends ReactContextBaseJavaModule {
+ 
+     private AudioRecord recorder;
+     private int bufferSize;
+-    private boolean isRecording;
++    // Sundar Gutka Autopilot: each recording has its own token, thread and recorder, so a quick
++    // stop + start never leaves an old recorder running or two threads reading.
++    private volatile Object recording;
++    private Thread recordingThread;
+ 
+     public RNLiveAudioStreamModule(ReactApplicationContext reactContext) {
+         super(reactContext);
+@@ -65,7 +68,10 @@ public class RNLiveAudioStreamModule extends ReactContextBaseJavaModule {
+             audioSource = options.getInt("audioSource");
+         }
+ 
+-        isRecording = false;
++        stopRecording();
++        // a recorder made by an earlier init and never started is released here (a started one is
++        // released by its recording thread)
++        if (recorder != null && recorder.getRecordingState() != AudioRecord.RECORDSTATE_RECORDING) recorder.release();
+         eventEmitter = reactContext.getJSModule(DeviceEventManagerModule.RCTDeviceEventEmitter.class);
+ 
+         bufferSize = AudioRecord.getMinBufferSize(sampleRateInHz, channelConfig, audioFormat);
+@@ -80,29 +86,37 @@ public class RNLiveAudioStreamModule extends ReactContextBaseJavaModule {
+ 
+     @ReactMethod
+     public void start() {
+-        isRecording = true;
+-        recorder.startRecording();
++        final AudioRecord rec = recorder;
++        recorder = null; // owned by this recording's thread from here on
++        if (rec == null || rec.getState() != AudioRecord.STATE_INITIALIZED) {
++            if (rec != null) rec.release();
++            return;
++        }
++        final Object token = new Object();
++        recording = token;
++        rec.startRecording();
+ 
+-        Thread recordingThread = new Thread(new Runnable() {
++        recordingThread = new Thread(new Runnable() {
+             public void run() {
+                 try {
+                     int bytesRead;
+                     int count = 0;
+-                    String base64Data;
+                     byte[] buffer = new byte[bufferSize];
+ 
+-                    while (isRecording) {
+-                        bytesRead = recorder.read(buffer, 0, buffer.length);
++                    while (recording == token) {
++                        bytesRead = rec.read(buffer, 0, buffer.length);
++                        if (bytesRead < 0) break; // audio error: stop instead of spinning
+ 
+                         // skip first 2 buffers to eliminate "click sound"
+                         if (bytesRead > 0 && ++count > 2) {
+-                            base64Data = Base64.encodeToString(buffer, Base64.NO_WRAP);
+-                            eventEmitter.emit("data", base64Data);
++                            eventEmitter.emit("data", Base64.encodeToString(buffer, 0, bytesRead, Base64.NO_WRAP));
+                         }
+                     }
+-                    recorder.stop();
+                 } catch (Exception e) {
+                     e.printStackTrace();
++                } finally {
++                    try { rec.stop(); } catch (Exception e) { /* already stopped */ }
++                    rec.release();
+                 }
+             }
+         });
+@@ -110,8 +124,18 @@ public class RNLiveAudioStreamModule extends ReactContextBaseJavaModule {
+         recordingThread.start();
+     }
+ 
++    private void stopRecording() {
++        recording = null;
++        Thread t = recordingThread;
++        recordingThread = null;
++        if (t != null) {
++            try { t.join(500); } catch (InterruptedException e) { /* give up waiting */ }
++        }
++    }
++
+     @ReactMethod
+     public void stop(Promise promise) {
+-        isRecording = false;
++        stopRecording();
++        if (promise != null) promise.resolve(null);
+     }
+ }
+diff --git a/node_modules/react-native-live-audio-stream/ios/RNLiveAudioStream.m b/node_modules/react-native-live-audio-stream/ios/RNLiveAudioStream.m
+index a6f2317..7ccec1e 100644
+--- a/node_modules/react-native-live-audio-stream/ios/RNLiveAudioStream.m
++++ b/node_modules/react-native-live-audio-stream/ios/RNLiveAudioStream.m
+@@ -28,12 +28,15 @@ RCT_EXPORT_METHOD(start) {
+     // Apple recommended:
+     // Instead of setting your category and mode properties independently, set them at the same time
+     if (@available(iOS 10.0, *)) {
++        // Sundar Gutka Autopilot: plain capture (no call-style voice processing, which weakens the voice
++        // reciting Paath), other audio is not ducked, and app sounds still play from the speaker.
+         success = [audioSession setCategory: AVAudioSessionCategoryPlayAndRecord
+-                                       mode: AVAudioSessionModeVoiceChat
+-                                    options: AVAudioSessionCategoryOptionDuckOthers |
+-                                             AVAudioSessionCategoryOptionAllowBluetooth |
+-                                             AVAudioSessionCategoryOptionAllowAirPlay
++                                       mode: AVAudioSessionModeDefault
++                                    options: AVAudioSessionCategoryOptionMixWithOthers |
++                                             AVAudioSessionCategoryOptionDefaultToSpeaker |
++                                             AVAudioSessionCategoryOptionAllowBluetoothA2DP
+                                       error: &error];
++        success = [audioSession setActive: YES error: &error] && success;
+     } else {
+         success = [audioSession setCategory: AVAudioSessionCategoryPlayAndRecord withOptions: AVAudioSessionCategoryOptionDuckOthers error: &error];
+         success = [audioSession setMode: AVAudioSessionModeVoiceChat error: &error] && success;
+@@ -43,11 +46,12 @@ RCT_EXPORT_METHOD(start) {
+         return;
+     }
+ 
+-    _recordState.mIsRunning = true;
+-
+     OSStatus status = AudioQueueNewInput(&_recordState.mDataFormat, HandleInputBuffer, &_recordState, NULL, NULL, 0, &_recordState.mQueue);
+     if (status != 0) {
+         RCTLog(@"[RNLiveAudioStream] Record Failed. Cannot initialize AudioQueueNewInput. status: %i", (int) status);
++        // Hand the audio session back so the microphone indicator does not stay on.
++        [audioSession setActive: NO withOptions: AVAudioSessionSetActiveOptionNotifyOthersOnDeactivation error: nil];
++        [audioSession setCategory: AVAudioSessionCategorySoloAmbient error: nil];
+         return;
+     }
+ 
+@@ -55,6 +59,7 @@ RCT_EXPORT_METHOD(start) {
+         AudioQueueAllocateBuffer(_recordState.mQueue, _recordState.bufferByteSize, &_recordState.mBuffers[i]);
+         AudioQueueEnqueueBuffer(_recordState.mQueue, _recordState.mBuffers[i], 0, NULL);
+     }
++    _recordState.mIsRunning = true; // only once the queue exists, so stop() never disposes nothing
+     AudioQueueStart(_recordState.mQueue, NULL);
+ }
+ 
+@@ -67,6 +72,10 @@ RCT_EXPORT_METHOD(stop) {
+             AudioQueueFreeBuffer(_recordState.mQueue, _recordState.mBuffers[i]);
+         }
+         AudioQueueDispose(_recordState.mQueue, true);
++        // Give the audio session back: the app's own default, other apps' audio un-ducked.
++        AVAudioSession *audioSession = [AVAudioSession sharedInstance];
++        [audioSession setActive: NO withOptions: AVAudioSessionSetActiveOptionNotifyOthersOnDeactivation error: nil];
++        [audioSession setCategory: AVAudioSessionCategorySoloAmbient error: nil];
+     }
+ }
+ 

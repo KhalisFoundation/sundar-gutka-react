@@ -294,6 +294,11 @@ const htmlTemplate = (
     .right{
       text-align:right
     }
+    .autopilot-now{
+      background: var(--highlight); /* the reading theme's highlight, as audio sync uses */
+      border-radius: 8px;
+      transition: background 0.3s;
+    }
   </style>
   <script>${script(readerTheme)}</script>
 </head>

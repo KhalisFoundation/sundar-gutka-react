@@ -29,6 +29,7 @@ import {
   trackScrollProgress,
   trackNavBar,
 } from "@common";
+import { useAutopilotControl, AutopilotStatus } from "../autopilot";
 import AddToPothiSheet from "../Pothi/components/AddToPothiSheet";
 import { Header, AutoScrollComponent, AudioPlayer, ReaderScrollbar } from "./components";
 import { useBookmarks, useFetchShabad } from "./hooks";
@@ -165,6 +166,13 @@ const Reader = ({ navigation, route }) => {
   const initialSaved = readSavedPosition(savePosition[id]);
   const currentElementIdRef = useRef(initialSaved.elementId);
   const currentSequenceRef = useRef(initialSaved.sequence);
+  const autopilot = useAutopilotControl({
+    navigation,
+    webViewRef,
+    baniId: id,
+    isParagraphMode,
+    off: isAudioFeatureOn && isAudio,
+  });
 
   const dispatch = useDispatch();
   const { shabad, isLoading } = useFetchShabad(id);
@@ -849,6 +857,8 @@ const Reader = ({ navigation, route }) => {
         handleBookmarkPress={handleBookmarkPress}
         handleAddToPothiPress={handleAddToPothiPress}
         isHeader={isHeader}
+        isAutopilot={autopilot.on}
+        handleAutopilotPress={autopilot.toggle}
       />
       {/* The same sheet the Folders tab opens, so filing a bani from the reader
           and filing one from a list are the one flow — including the "New
@@ -955,7 +965,13 @@ const Reader = ({ navigation, route }) => {
           />
         </Animated.View>
       )}
-      {isAutoScroll && (
+      {/* In the Auto Scroll bar's slot (that bar is hidden while Autopilot is on). */}
+      <AutopilotStatus
+        status={autopilot.status}
+        progress={autopilot.progress}
+        bottom={styles.autoScrollFixedView.bottom + bottomNavInset(insetBottom)}
+      />
+      {isAutoScroll && !autopilot.on && (
         <View
           testID="auto-scroll-bar-wrapper"
           // Hidden by opacity, NOT display:none. The speed slider measures its

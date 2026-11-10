@@ -1,0 +1,12 @@
+diff --git a/node_modules/onnxruntime-react-native/android/build.gradle b/node_modules/onnxruntime-react-native/android/build.gradle
+index 41b4359..a2062af 100644
+--- a/node_modules/onnxruntime-react-native/android/build.gradle
++++ b/node_modules/onnxruntime-react-native/android/build.gradle
+@@ -127,6 +127,7 @@ android {
+       "META-INF",
+       "META-INF/**",
+       "**/libjsi.so",
++      "**/libreactnative.so", // the app ships React Native's own (RN >= 0.76 merges its libraries into this one)
+       "**/libfbjni.so",
+       "**/libreact_nativemodule_core.so",
+       "**/libturbomodulejsijni.so"
