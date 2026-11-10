@@ -6,6 +6,7 @@ import { foldableTopSpace, useFoldableInsetTop } from "@common/deviceForm";
 import useTokens from "@common/hooks/useTokens";
 import { BackArrowIcon, BookmarkIcon, PlusIcon } from "@common/icons";
 import { constant, CustomText, GradientDivider, STRINGS, useThemedStyles } from "@common";
+import { MicIcon } from "../../autopilot";
 import createStyles from "../styles";
 import { barMotion } from "../utils/barMotion";
 
@@ -19,6 +20,8 @@ const Header = ({
   handleBookmarkPress,
   handleAddToPothiPress,
   isHeader,
+  isAutopilot,
+  handleAutopilotPress = null,
 }) => {
   const styles = useThemedStyles(createStyles);
   // This bar is opaque and physically contiguous with the Bani text, so it
@@ -74,6 +77,18 @@ const Header = ({
   // in the corner it has always been in.
   const headerRight = () => (
     <>
+      {/* Autopilot: shown only where the phone can run it (handleAutopilotPress is null otherwise). */}
+      {handleAutopilotPress && (
+        <Pressable
+          onPress={handleAutopilotPress}
+          accessibilityRole="button"
+          accessibilityLabel={STRINGS.AUTOPILOT}
+          accessibilityState={{ selected: isAutopilot }}
+          hitSlop={layout.hitSlop}
+        >
+          <MicIcon size={25} color={headerForeground} on={isAutopilot} />
+        </Pressable>
+      )}
       {/* Hidden with the feature off — filing a bani needs somewhere to file
           it to, and there are no user pothis then. See constant.POTHI_ENABLED. */}
       {constant.POTHI_ENABLED && (
@@ -205,5 +220,8 @@ Header.propTypes = {
   /** Opens the add-to-pothi sheet, or sends a signed-out user to Settings. */
   handleAddToPothiPress: PropTypes.func.isRequired,
   isHeader: PropTypes.bool.isRequired,
+  isAutopilot: PropTypes.bool.isRequired,
+  // eslint-disable-next-line react/require-default-props -- defaults to null (no Autopilot button)
+  handleAutopilotPress: PropTypes.func,
 };
 export default Header;

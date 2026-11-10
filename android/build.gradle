@@ -42,3 +42,15 @@ allprojects {
         }
     }
 }
+
+// Autopilot: pin ONNX Runtime's native library to the JS package's version (onnxruntime-react-native
+// asks for "latest", which changes builds without a code change).
+subprojects {
+    configurations.all {
+        resolutionStrategy.eachDependency { details ->
+            if (details.requested.group == "com.microsoft.onnxruntime" && details.requested.name == "onnxruntime-android") {
+                details.useVersion "1.24.3"
+            }
+        }
+    }
+}

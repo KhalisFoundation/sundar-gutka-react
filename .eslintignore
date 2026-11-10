@@ -1,0 +1,4 @@
+src/autopilot/engine/follower.js
+src/autopilot/engine/compared.js
+src/autopilot/engine/spoken.js
+src/autopilot/engine/vocab.js

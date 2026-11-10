@@ -9,6 +9,7 @@
          progress notification is visible. Requested at runtime before the first
          download (requestNotificationPermission). -->
     <uses-permission android:name="android.permission.POST_NOTIFICATIONS" />
+    <uses-permission android:name="android.permission.RECORD_AUDIO" />
 
     <!-- Android 11+ package-visibility: without declaring a target package here,
          PackageManager.getLaunchIntentForPackage() always returns null for it

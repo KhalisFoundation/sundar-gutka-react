@@ -201,6 +201,29 @@ PODS:
     - nanopb/encode (= 3.30910.0)
   - nanopb/decode (3.30910.0)
   - nanopb/encode (3.30910.0)
+  - onnxruntime-c (1.24.3)
+  - onnxruntime-react-native (1.24.3):
+    - DoubleConversion
+    - glog
+    - hermes-engine
+    - onnxruntime-c
+    - RCT-Folly (= 2024.11.18.00)
+    - RCTRequired
+    - RCTTypeSafety
+    - React-Core
+    - React-debug
+    - React-Fabric
+    - React-featureflags
+    - React-graphics
+    - React-ImageManager
+    - React-NativeModulesApple
+    - React-RCTFabric
+    - React-rendererdebug
+    - React-utils
+    - ReactCodegen
+    - ReactCommon/turbomodule/bridging
+    - ReactCommon/turbomodule/core
+    - Yoga
   - PromisesObjC (2.4.1)
   - PromisesSwift (2.4.1):
     - PromisesObjC (= 2.4.1)
@@ -1899,6 +1922,8 @@ PODS:
     - ReactCommon/turbomodule/bridging
     - ReactCommon/turbomodule/core
     - Yoga
+  - RNLiveAudioStream (1.1.1):
+    - React
   - RNNotifee (9.1.8):
     - React-Core
     - RNNotifee/NotifeeCore (= 9.1.8)
@@ -2097,6 +2122,8 @@ DEPENDENCIES:
   - GoogleUtilities (>= 8.1.4)
   - hermes-engine (from `../node_modules/react-native/sdks/hermes-engine/hermes-engine.podspec`)
   - nanopb
+  - onnxruntime-c (= 1.24.3)
+  - onnxruntime-react-native (from `../node_modules/onnxruntime-react-native`)
   - RCT-Folly (from `../node_modules/react-native/third-party-podspecs/RCT-Folly.podspec`)
   - RCT-Folly/Fabric (from `../node_modules/react-native/third-party-podspecs/RCT-Folly.podspec`)
   - RCTDeprecation (from `../node_modules/react-native/ReactApple/Libraries/RCTFoundation/RCTDeprecation`)
@@ -2182,6 +2209,7 @@ DEPENDENCIES:
   - RNGestureHandler (from `../node_modules/react-native-gesture-handler`)
   - RNInAppBrowser (from `../node_modules/react-native-inappbrowser-reborn`)
   - RNKeychain (from `../node_modules/react-native-keychain`)
+  - RNLiveAudioStream (from `../node_modules/react-native-live-audio-stream`)
   - "RNNotifee (from `../node_modules/@notifee/react-native`)"
   - RNReanimated (from `../node_modules/react-native-reanimated`)
   - RNScreens (from `../node_modules/react-native-screens`)
@@ -2214,6 +2242,7 @@ SPEC REPOS:
     - MMKV
     - MMKVCore
     - nanopb
+    - onnxruntime-c
     - PromisesObjC
     - PromisesSwift
     - SocketRocket
@@ -2237,6 +2266,8 @@ EXTERNAL SOURCES:
   hermes-engine:
     :podspec: "../node_modules/react-native/sdks/hermes-engine/hermes-engine.podspec"
     :tag: hermes-2025-01-13-RNv0.78.0-a942ef374897d85da38e9c8904574f8376555388
+  onnxruntime-react-native:
+    :path: "../node_modules/onnxruntime-react-native"
   RCT-Folly:
     :podspec: "../node_modules/react-native/third-party-podspecs/RCT-Folly.podspec"
   RCTDeprecation:
@@ -2403,6 +2434,8 @@ EXTERNAL SOURCES:
     :path: "../node_modules/react-native-inappbrowser-reborn"
   RNKeychain:
     :path: "../node_modules/react-native-keychain"
+  RNLiveAudioStream:
+    :path: "../node_modules/react-native-live-audio-stream"
   RNNotifee:
     :path: "../node_modules/@notifee/react-native"
   RNReanimated:
@@ -2450,6 +2483,8 @@ SPEC CHECKSUMS:
   MMKV: d37bccee64404d7c3e1457fabd9368e78d69a80f
   MMKVCore: a58d2ce5b580948122e85be3ddf378c9b1ef739e
   nanopb: fad817b59e0457d11a5dfbde799381cd727c1275
+  onnxruntime-c: 4a1a1a81da2087869dc9b6357f182952db2df29c
+  onnxruntime-react-native: f9d0edfd70ea9ede52326b3727d2b71568ad5904
   PromisesObjC: 752c3227f599e3467650e47ea36f433eeb10c273
   PromisesSwift: 217dea0fd5d2ad65222a109c48698add13cc1c5b
   RCT-Folly: e78785aa9ba2ed998ea4151e314036f6c49e6d82
@@ -2535,6 +2570,7 @@ SPEC CHECKSUMS:
   RNGestureHandler: ad015e3e265886e27abea7c31ee0be3d5da110b3
   RNInAppBrowser: 904d24dc75e8e6c6c98a3160329192608946f9df
   RNKeychain: 654353c6e4cb729d187e1444bccec0924c1dda9f
+  RNLiveAudioStream: 02584d52711b6b9f268cb371a4b1bdd76ab3e079
   RNNotifee: 5e3b271e8ea7456a36eec994085543c9adca9168
   RNReanimated: 666727b2692dd3bcb09eb7006d181ffe14355af8
   RNScreens: 5d9178f8e1ca89229d6ea2919a600183e9bf037d
@@ -2546,6 +2582,6 @@ SPEC CHECKSUMS:
   SwiftAudioEx: f6aa653770f3a0d3851edaf8d834a30aee4a7646
   Yoga: 6eb60fc2c0eef63e7d2ef4a56e0a3353534143a2
 
-PODFILE CHECKSUM: 27c40d97214fede528eba66a4a9c0c2f671a7876
+PODFILE CHECKSUM: 4a259b3283f61b43d70537e7626c411e08e472a0
 
 COCOAPODS: 1.16.2
