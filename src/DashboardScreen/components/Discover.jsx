@@ -3,6 +3,7 @@ import { View, StyleSheet, useWindowDimensions } from "react-native";
 import { androidLineHeight } from "@theme/lineHeight";
 import PropTypes from "prop-types";
 import { gurmukhiToDevanagari } from "@common/gurmukhiToDevanagari";
+import useTokens from "@common/hooks/useTokens";
 import { CustomText, STRINGS } from "@common";
 import {
   getWordOfDay,
@@ -46,7 +47,9 @@ const Discover = ({ refreshKey = 0 }) => {
   // The test is the RATIO, not either number alone: the column shrinks with the
   // screen (a raised display size) while the text grows with the OS font
   // setting, and it is the two together that break it.
-  const { width, fontScale } = useWindowDimensions();
+  const { width } = useWindowDimensions();
+  const { scale } = useTokens();
+  const { fontScale } = scale;
   const columnWidth = (width - 40 - 14) / 2; // page gutters + the row gap
   // 120 is the narrowest column the pair still reads well in at text scale 1;
   // the requirement grows with the setting. Tuned so nothing changes for a

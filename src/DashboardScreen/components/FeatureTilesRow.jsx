@@ -1,11 +1,12 @@
 import React, { useEffect, useState } from "react";
-import { View, ScrollView, Pressable, StyleSheet, Image, useWindowDimensions } from "react-native";
+import { View, ScrollView, Pressable, StyleSheet, Image } from "react-native";
 import Svg, { Path } from "react-native-svg";
 import { useNavigation } from "@react-navigation/native";
 import { androidLineHeight } from "@theme/lineHeight";
 import { paletteFor, themeForScreen } from "@theme/screenPalettes";
 import PropTypes from "prop-types";
 import useBaniLookup from "@common/hooks/useBaniLookup";
+import useTokens from "@common/hooks/useTokens";
 import { CustomText, useTheme, STRINGS, openInAppBrowser, logError, constant } from "@common";
 import { getRecentReadBanis, getRecentListenedBanis } from "../../database/analytics";
 import { getRestoredTopBanis } from "../../services/dashboard";
@@ -127,7 +128,8 @@ const FeatureTilesRow = () => {
   // just means one fewer on screen at a time. At a fixed 148 the labels
   // ("Learn Gurmukhi Words") ran to three lines and clipped against
   // numberOfLines={2}. Growing with the text keeps them readable.
-  const { fontScale } = useWindowDimensions();
+  const { scale } = useTokens();
+  const { fontScale } = scale;
   const tileWidth = Math.round(148 * Math.min(Math.max(fontScale || 1, 1), 1.5));
 
   const navigation = useNavigation();

@@ -1,5 +1,5 @@
 import React, { useState, useEffect, useCallback } from "react";
-import { View, Pressable, ScrollView, StyleSheet, useWindowDimensions } from "react-native";
+import { View, Pressable, ScrollView, StyleSheet } from "react-native";
 import DraggableFlatList, {
   ShadowDecorator,
   ScaleDecorator,
@@ -7,6 +7,7 @@ import DraggableFlatList, {
 import { GestureHandlerRootView } from "react-native-gesture-handler";
 import { useSelector, useDispatch } from "react-redux";
 import PropTypes from "prop-types";
+import useTokens from "@common/hooks/useTokens";
 import { ChevronRight, DragHandleIcon, EyeIcon } from "@common/icons";
 import {
   CustomText,
@@ -129,7 +130,8 @@ const SectionsModal = ({ visible, onClose, onSelectSection }) => {
   // Past this the header's three parts stop sharing a line — see headerBar.
   // The same threshold the shared list Row uses for its title/value pair, so
   // the app breaks to two lines at one size rather than several.
-  const { fontScale } = useWindowDimensions();
+  const { scale } = useTokens();
+  const { fontScale } = scale;
   const stackHeader = fontScale >= 1.3;
 
   const [editing, setEditing] = useState(false);

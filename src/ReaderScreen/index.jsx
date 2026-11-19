@@ -1,5 +1,12 @@
 import React, { useState, useRef, useEffect, useLayoutEffect, useCallback, useMemo } from "react";
-import { AppState, Platform, View, Animated, NativeModules } from "react-native";
+import {
+  AppState,
+  Platform,
+  View,
+  Animated,
+  NativeModules,
+  useWindowDimensions,
+} from "react-native";
 import { useSafeAreaInsets } from "react-native-safe-area-context";
 import { WebView } from "react-native-webview";
 import { useDispatch, useSelector } from "react-redux";
@@ -121,6 +128,7 @@ const Reader = ({ navigation, route }) => {
   const savePosition = useSelector((state) => state.savePosition);
   const isAudioSyncScroll = useSelector((state) => state.isAudioSyncScroll);
   const isPlayerDragging = useSelector((state) => state.isPlayerDragging);
+  const { fontScale } = useWindowDimensions();
 
   const webViewRef = useRef(null);
   const { webView } = styles;
@@ -536,7 +544,8 @@ const Reader = ({ navigation, route }) => {
         isSpanishTranslation,
         readerTheme,
         isLarivaar,
-        pageTopMarginRef.current
+        pageTopMarginRef.current,
+        fontScale
       ),
       baseUrl: Platform.OS === "ios" ? "./" : "",
     };
@@ -553,6 +562,7 @@ const Reader = ({ navigation, route }) => {
     isSpanishTranslation,
     readerTheme,
     isLarivaar,
+    fontScale,
   ]);
 
   // Called by useBookmarks immediately before the jump is posted to the WebView.
@@ -868,6 +878,7 @@ const Reader = ({ navigation, route }) => {
           webviewDebuggingEnabled={isDevBuild}
           javaScriptEnabled
           originWhitelist={["*"]}
+          textZoom={100}
           onLoadStart={handleLoadStart}
           onLoadEnd={handleLoadEnd}
           ref={webViewRef}

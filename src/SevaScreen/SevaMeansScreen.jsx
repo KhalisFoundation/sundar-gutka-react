@@ -1,9 +1,9 @@
 import React, { useState, useEffect, useCallback, useRef } from "react";
-import { View, Animated, Pressable, Text, useWindowDimensions } from "react-native";
+import { View, Animated, Pressable, useWindowDimensions } from "react-native";
 import { useSelector } from "react-redux";
 import { themeForScreen } from "@theme/screenPalettes";
 import PropTypes from "prop-types";
-import { ScreenHeader, Spinner } from "@common/components/ui";
+import { ScreenHeader, Spinner, Text } from "@common/components/ui";
 import {
   SafeArea,
   StatusBarComponent,

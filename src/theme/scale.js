@@ -25,7 +25,7 @@
 
 /** The font scale range the layout is designed to absorb. */
 export const FONT_SCALE_MIN = 0.85;
-export const FONT_SCALE_MAX = 1.5;
+export const FONT_SCALE_MAX = 2.0;
 
 /** Spacing moves at half the rate of text. */
 const SPACE_DAMPING = 0.5;

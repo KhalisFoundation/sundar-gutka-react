@@ -1,5 +1,5 @@
 import React, { useEffect, useMemo } from "react";
-import { Platform, View } from "react-native";
+import { Platform, View, useWindowDimensions } from "react-native";
 import { WebView } from "react-native-webview";
 import { useSelector } from "react-redux";
 import { useReaderTheme } from "@theme/reader";
@@ -38,6 +38,7 @@ const PothiReaderScreen = ({ navigation, route }) => {
   const isLarivaar = useSelector((state) => state.isLarivaar);
 
   const { shabad, isLoading } = useFetchPothi(baniIds);
+  const { fontScale } = useWindowDimensions();
   // See ReaderScreen: a WebView is mounted only once Android has said it can
   // create one, and the notice takes its place when it cannot.
   const { available: webViewAvailable, recheck: recheckWebView } = useWebViewAvailable();
@@ -59,7 +60,9 @@ const PothiReaderScreen = ({ navigation, route }) => {
         isPunjabiTranslation,
         isSpanishTranslation,
         readerTheme,
-        isLarivaar
+        isLarivaar,
+        0,
+        fontScale
       ),
       baseUrl: Platform.OS === "ios" ? "./" : "",
     }),
@@ -73,6 +76,7 @@ const PothiReaderScreen = ({ navigation, route }) => {
       isSpanishTranslation,
       readerTheme,
       isLarivaar,
+      fontScale,
     ]
   );
 
@@ -100,6 +104,7 @@ const PothiReaderScreen = ({ navigation, route }) => {
         javaScriptEnabled
         originWhitelist={["*"]}
         source={source}
+        textZoom={100}
         backgroundColor={readerBg}
         decelerationRate={0.998}
         bounces={false}

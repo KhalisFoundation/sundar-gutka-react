@@ -289,6 +289,12 @@ describe("fontSizeForReader", () => {
     expect(fontSizeForReader("SMALL", 0, false)).toBe(base);
     expect(fontSizeForReader("SMALL", 0, false, 0)).toBe(base);
   });
+
+  it("multiplies the phone's font scale into the calculated size", () => {
+    const base = fontSizeForReader("SMALL", 0, false);
+    expect(fontSizeForReader("SMALL", 0, false, 1, 1.25)).toBeCloseTo(base * 1.25);
+    expect(fontSizeForReader("SMALL", 0, false, 1, 0)).toBe(base);
+  });
 });
 
 // Which column a font is fed, and what it falls back to. Both are decided in

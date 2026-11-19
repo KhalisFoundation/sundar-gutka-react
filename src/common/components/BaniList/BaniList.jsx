@@ -1,13 +1,12 @@
 import React, { useCallback } from "react";
 import { FlatList, Animated, View, Platform, Pressable, useWindowDimensions } from "react-native";
-import { useSelector } from "react-redux";
 import PropTypes from "prop-types";
 import useBanisWithAudio from "@common/hooks/useBanisWithAudio";
 import useBaniTitle from "@common/hooks/useBaniTitle";
 import useScreenPalette from "@common/hooks/useScreenPalette";
 import useTokens from "@common/hooks/useTokens";
 import { FolderIcon, MusicIcon } from "@common/icons";
-import { baseFontSize, ListItemTitle, STRINGS, useCustomScrollbar } from "@common";
+import { baseFontSize, ListItemTitle, STRINGS, useCustomScrollbar, constant } from "@common";
 import { ListSeparator } from "../ui";
 
 const AnimatedFlatList = Animated.createAnimatedComponent(FlatList);
@@ -24,7 +23,6 @@ const BaniList = React.memo(({ data, onPress, showAudio = false }) => {
   // The bani list keeps its own ground; every other colour here is a role.
   const baniListPalette = useScreenPalette("baniList");
   const { scrollViewProps, Indicator } = useCustomScrollbar();
-  const fontSize = useSelector((state) => state.fontSize);
   // The one implementation of "what does this bani's name say, and in what
   // face" — see useBaniTitle. It used to be a private `getBaniTuk` here, which
   // is how My Pothi ended up with a second copy that ignored transliteration.
@@ -40,7 +38,7 @@ const BaniList = React.memo(({ data, onPress, showAudio = false }) => {
       const itemTextColor = c.textPrimary;
       const displayFont = titleFontFamily;
       const title = titleFor(row.item);
-      const titleSize = baseFontSize(fontSize, isTransliteration);
+      const titleSize = baseFontSize(constant.SMALL, isTransliteration);
       const hasAudio = showAudio && !row.item.folder && banisWithAudio.has(row.item.id);
 
       // Rows are separated by a faint INSET hairline (see ItemSeparator below),
@@ -122,7 +120,6 @@ const BaniList = React.memo(({ data, onPress, showAudio = false }) => {
       space,
       layout,
       scale,
-      fontSize,
       titleFor,
       titleFontFamily,
       isTransliteration,

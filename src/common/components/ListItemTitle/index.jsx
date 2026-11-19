@@ -1,8 +1,9 @@
 import React from "react";
-import { Text } from "react-native";
+import { StyleSheet, Text } from "react-native";
 import { FONT_SCALE_MAX } from "@theme/scale";
 import PropTypes from "prop-types";
 import useTheme from "@common/context";
+import useTextScale from "@common/hooks/useTextScale";
 
 // Plain Text (not rneui ListItem.Title, which didn't reliably honour the
 // text props we pass). flexShrink bounds its width inside the row so a long
@@ -18,8 +19,19 @@ import useTheme from "@common/context";
 // renders at a different size per row (e.g. "Thème" at 16 next to
 // "Téléchargement automatique en Wi-Fi" at ~10). Wrapping keeps every row
 // consistent, and the row grows to fit.
-const ListItemTitle = ({ title, style = null, numberOfLines = 2 }) => {
+const ListItemTitle = ({
+  title,
+  style = null,
+  numberOfLines = 2,
+  maxFontSizeMultiplier: propMaxScale = undefined,
+}) => {
   const { theme } = useTheme();
+  const multiplier = useTextScale();
+
+  // Labels pinned with maxFontSizeMultiplier={1} stay pinned.
+  const isPinned = propMaxScale === 1;
+  const scale = isPinned ? 1 : multiplier;
+
   // A DEFAULT colour, not just a font. Without one this fell through to the
   // platform's default text colour — black — so any caller whose style omitted
   // `color` rendered black-on-near-black in dark mode. The Database Update
@@ -43,11 +55,26 @@ const ListItemTitle = ({ title, style = null, numberOfLines = 2 }) => {
   };
   const textStyle = Array.isArray(style) ? [base, ...style] : [base, style];
 
+  let finalStyle = textStyle;
+  if (scale !== 1) {
+    const flat = StyleSheet.flatten(textStyle) || {};
+    const extra = {};
+    if (flat.fontSize != null) {
+      extra.fontSize = flat.fontSize * scale;
+    }
+    if (flat.lineHeight != null) {
+      extra.lineHeight = flat.lineHeight * scale;
+    }
+    finalStyle = [...textStyle, extra];
+  }
+
+  const maxMultiplier = isPinned ? 1 : propMaxScale ?? Math.min(FONT_SCALE_MAX, 2.0 / scale);
+
   return (
     <Text
-      style={textStyle}
+      style={finalStyle}
       allowFontScaling
-      maxFontSizeMultiplier={FONT_SCALE_MAX}
+      maxFontSizeMultiplier={maxMultiplier}
       numberOfLines={numberOfLines}
     >
       {title}
@@ -59,6 +86,7 @@ ListItemTitle.propTypes = {
   title: PropTypes.string.isRequired,
   style: PropTypes.oneOfType([PropTypes.object, PropTypes.array]),
   numberOfLines: PropTypes.number,
+  maxFontSizeMultiplier: PropTypes.number,
 };
 
 export default ListItemTitle;

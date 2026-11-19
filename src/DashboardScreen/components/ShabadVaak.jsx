@@ -1,6 +1,7 @@
 import React, { useState } from "react";
-import { View, Pressable, StyleSheet, Image, useWindowDimensions } from "react-native";
+import { View, Pressable, StyleSheet, Image } from "react-native";
 import PropTypes from "prop-types";
+import useTokens from "@common/hooks/useTokens";
 import { CustomText, STRINGS, trackDashboardEvent } from "@common";
 import DashboardCard, { CARD_RADIUS } from "./DashboardCard";
 import useDashboardTheme from "./dashboardTheme";
@@ -73,7 +74,8 @@ const ShabadVaak = ({ refreshKey = 0 }) => {
   // small screen has once the labels grow — "RANDOM SHABAD" clipped to
   // "RANDO…". Stacking them puts each on its own full-width row, which reads
   // better than two half-legible pills.
-  const { fontScale } = useWindowDimensions();
+  const { scale } = useTokens();
+  const { fontScale } = scale;
   const stackedTabs = (fontScale || 1) > 1.15;
 
   const { mutedText, gold, palette } = useDashboardTheme();

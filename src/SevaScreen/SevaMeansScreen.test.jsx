@@ -57,6 +57,7 @@ jest.mock("@common/components/ui", () => {
   return {
     ScreenHeader: ({ title }) => <Text>{title}</Text>,
     Spinner: () => <View testID="spinner" />,
+    Text,
   };
 });
 

@@ -93,11 +93,15 @@ export const fontSizeForReader = (
   fontSizeString,
   headerLevel,
   hasTransliteration,
-  themeFontScale = 1
+  themeFontScale = 1,
+  phoneFontScale = 1
 ) => {
   const SCALE_FACTOR = 0.9;
   const fontSize =
-    baseFontSize(fontSizeString, hasTransliteration) * SCALE_FACTOR * (themeFontScale || 1);
+    baseFontSize(fontSizeString, hasTransliteration) *
+    SCALE_FACTOR *
+    (themeFontScale || 1) *
+    (phoneFontScale || 1);
   switch (headerLevel) {
     case 6:
       return fontSize * 0.75;
@@ -183,7 +187,8 @@ export const createDiv = (
   readerTheme,
   isLarivaar,
   punjabiTranslation = "",
-  fontFace = null
+  fontFace = null,
+  phoneFontScale = 1
 ) => {
   const fontClass = type === GURMUKHI_LC || punjabiTranslation !== "" ? GURMUKHI_LC : type;
   // Optional per-theme text treatment. Emitted ONLY when the theme sets it, so
@@ -215,7 +220,8 @@ export const createDiv = (
     fontSize,
     header,
     type === TRANSLITERATION_LC || type === TRANSLATION_LC,
-    readerTheme.typography.fontScale
+    readerTheme.typography.fontScale,
+    phoneFontScale
   )}px; font-size: var(--fs); font-family: ${fontFamilyFor(fontFace)}; color: ${fontColorForReader(
     header,
     readerTheme,
@@ -238,7 +244,8 @@ export const loadHTML = (
   isSpanishTranslation,
   readerTheme,
   isLarivaar,
-  pageTopMargin
+  pageTopMargin,
+  phoneFontScale = 1
 ) => {
   try {
     // The reading theme's ground. Its light/dark records take this from
@@ -268,7 +275,8 @@ export const loadHTML = (
           readerTheme,
           isLarivaar,
           "",
-          fontFace
+          fontFace,
+          phoneFontScale
         );
 
         if (isTransliteration) {
@@ -279,7 +287,10 @@ export const loadHTML = (
             textAlign,
             fontSize,
             readerTheme,
-            isLarivaar
+            isLarivaar,
+            "",
+            null,
+            phoneFontScale
           );
         }
 
@@ -291,7 +302,10 @@ export const loadHTML = (
             textAlign,
             fontSize,
             readerTheme,
-            isLarivaar
+            isLarivaar,
+            "",
+            null,
+            phoneFontScale
           );
         }
 
@@ -305,7 +319,8 @@ export const loadHTML = (
             readerTheme,
             isLarivaar,
             GURMUKHI_LC,
-            constant.GURBANI_AKHAR_TRUE
+            constant.GURBANI_AKHAR_TRUE,
+            phoneFontScale
           );
         }
 
@@ -317,7 +332,10 @@ export const loadHTML = (
             textAlign,
             fontSize,
             readerTheme,
-            isLarivaar
+            isLarivaar,
+            "",
+            null,
+            phoneFontScale
           );
         }
 

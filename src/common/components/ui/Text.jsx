@@ -1,7 +1,8 @@
 import React from "react";
-import { Text as RNText } from "react-native";
+import { StyleSheet, Text as RNText } from "react-native";
 import { FONT_SCALE_MAX } from "@theme/scale";
 import PropTypes from "prop-types";
+import useTextScale from "../../hooks/useTextScale";
 import useTokens from "../../hooks/useTokens";
 
 // The app's text primitive. Replaces `CustomText`.
@@ -36,19 +37,40 @@ const Text = ({
   accessibilityRole = undefined,
   accessibilityLabel = undefined,
   testID = undefined,
+  maxFontSizeMultiplier: propMaxScale = undefined,
   ...rest
 }) => {
   const { c, type } = useTokens();
+  const multiplier = useTextScale();
   const role = type[variant] ?? type.body;
   // A role name resolves through the theme; anything else is passed straight
   // through, so a one-off literal is still possible but stands out in review.
   const resolved = c[color] ?? color;
 
+  // Labels pinned with maxFontSizeMultiplier={1} stay pinned.
+  const isPinned = propMaxScale === 1;
+  const scale = isPinned ? 1 : multiplier;
+
+  let textStyle = [role, { color: resolved }, align ? { textAlign: align } : null, style];
+  if (scale !== 1) {
+    const flat = StyleSheet.flatten([role, style]) || {};
+    const extra = {};
+    if (flat.fontSize != null) {
+      extra.fontSize = flat.fontSize * scale;
+    }
+    if (flat.lineHeight != null) {
+      extra.lineHeight = flat.lineHeight * scale;
+    }
+    textStyle = [...textStyle, extra];
+  }
+
+  const maxMultiplier = isPinned ? 1 : propMaxScale ?? Math.min(FONT_SCALE_MAX, 2.0 / scale);
+
   return (
     <RNText
-      style={[role, { color: resolved }, align ? { textAlign: align } : null, style]}
+      style={textStyle}
       allowFontScaling
-      maxFontSizeMultiplier={FONT_SCALE_MAX}
+      maxFontSizeMultiplier={maxMultiplier}
       numberOfLines={numberOfLines}
       onPress={onPress}
       onLongPress={onLongPress}
@@ -79,6 +101,7 @@ Text.propTypes = {
   accessibilityRole: PropTypes.string,
   accessibilityLabel: PropTypes.string,
   testID: PropTypes.string,
+  maxFontSizeMultiplier: PropTypes.number,
 };
 
 export default Text;

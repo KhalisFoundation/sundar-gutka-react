@@ -2,9 +2,11 @@ import React, { useState } from "react";
 import { TextInput, View } from "react-native";
 import { useDispatch, useSelector } from "react-redux";
 import { withAlpha } from "@theme/colorUtils";
+import { FONT_SCALE_MAX } from "@theme/scale";
 import PropTypes from "prop-types";
 import { setReminderBanis } from "@common/actions";
 import Overlay from "@common/components/ui/Overlay";
+import useTextScale from "@common/hooks/useTextScale";
 import useTokens from "@common/hooks/useTokens";
 import { logError, scheduleReminders, STRINGS } from "@common";
 import { Button, Text } from "../../../../../common/components/ui";
@@ -33,6 +35,7 @@ export const cleanTitle = (raw) =>
 
 const LabelModal = ({ section, onHide }) => {
   const { c, space, layout, radii, elevation } = useTokens();
+  const multiplier = useTextScale();
   const { title } = section;
   const [reminderTitle, setReminderTitle] = useState(title);
   const reminderBanis = useSelector((state) => state.reminderBanis);
@@ -106,6 +109,8 @@ const LabelModal = ({ section, onHide }) => {
             // Android paints this colour as given, iOS already thins its own.
             selectionColor={withAlpha(c.accent, 0.35)}
             placeholderTextColor={c.textDisabled}
+            allowFontScaling
+            maxFontSizeMultiplier={Math.min(FONT_SCALE_MAX, 2.0 / multiplier)}
             style={{
               minHeight: layout.touchTarget,
               borderRadius: radii.sm,
@@ -114,7 +119,7 @@ const LabelModal = ({ section, onHide }) => {
               paddingHorizontal: space.md,
               color: c.textPrimary,
               backgroundColor: c.surface,
-              fontSize: 16,
+              fontSize: 16 * multiplier,
             }}
           />
 
