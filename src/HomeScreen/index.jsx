@@ -266,7 +266,7 @@ const HomeScreen = React.memo(({ navigation }) => {
             ]}
           >
             <View style={{ width }}>
-              <BaniList data={baniRows} onPress={onPress} />
+              <BaniList data={baniRows} onPress={onPress} showAudio />
             </View>
             {constant.POTHI_ENABLED && (
               <View style={{ width }}>

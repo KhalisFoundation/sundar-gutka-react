@@ -194,9 +194,34 @@ export const audioControlBarStyles = (theme) => ({
   // a name fitting on one line and wrapping.
   trackInfo: {
     flexDirection: "row",
+    flexWrap: "wrap",
     justifyContent: "space-between",
     alignItems: "center",
+    columnGap: theme.spacing.md,
+    rowGap: theme.spacing.xs,
     width: "100%",
+  },
+  // The name starts from its own one-line width. When that and the download icon
+  // and clock don't fit on one line (a long name, the largest OS text sizes, an
+  // hour-long track) the row wraps: the clock moves under the name, and the name
+  // has the whole width to wrap in — between words, never through one, which a
+  // share of the row squeezed it into at large text ("Inde / rmohan").
+  trackInfoName: {
+    flexGrow: 1,
+    flexShrink: 1,
+    flexBasis: "auto",
+  },
+  // Right-aligned on the name's line or, after a wrap, on its own. Allowed to shrink
+  // and wrap inside itself, so even a clock wider than the whole row breaks at its
+  // spaces rather than running out of the player.
+  trackMeta: {
+    flexDirection: "row",
+    flexWrap: "wrap",
+    flexShrink: 1,
+    justifyContent: "flex-end",
+    alignItems: "center",
+    gap: theme.spacing.md,
+    marginLeft: "auto",
   },
   trackInfoLeft: {
     flexDirection: "row",
@@ -262,6 +287,15 @@ export const audioControlBarStyles = (theme) => ({
     fontVariant: ["tabular-nums"],
     minWidth: theme.typography.sizes.md * 2.75,
     textAlign: "right",
+  },
+  // The invisible copy of the widest clock the track can show, measured to size the
+  // real one. Out of the layout, so it takes no space of its own, and untouchable, so
+  // it can't swallow a tap meant for the download button.
+  clockMeasure: {
+    position: "absolute",
+    right: 0,
+    opacity: 0,
+    pointerEvents: "none",
   },
   seekLoadingOverlay: {
     position: "absolute",

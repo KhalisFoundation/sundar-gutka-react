@@ -28,7 +28,8 @@ export const getBaniLengths = (strings) => [
 ];
 
 export const getLanguages = (strings) => [
-  { key: "DEFAULT", title: `${strings.default}` },
+  // "DEFAULT" falls back to the first locale in STRINGS, en-US, so the label says which it is.
+  { key: "DEFAULT", title: `${strings.default} (${strings.english})` },
   { key: "en-US", title: constant.ENGLISH_TITLE_CASE },
   { key: "es", title: constant.ESPANOL },
   { key: "fr", title: constant.FRANCAIS },

@@ -266,7 +266,7 @@ const FolderScreen = ({ navigation, route }) => {
         ) : null}
       </View>
     ) : (
-      <BaniList data={rows} onPress={onPress} />
+      <BaniList data={rows} onPress={onPress} showAudio />
     );
 
   return (

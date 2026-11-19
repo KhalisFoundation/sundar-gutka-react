@@ -185,11 +185,13 @@ const AudioControlBar = ({
 
   const getTrackId = (track) => (track?.id != null ? String(track.id) : null);
 
+  // m:ss, and h:mm:ss from an hour up, so a long recording reads 1:32:10 rather than 92:10.
   const formatTime = (seconds) => {
     const safeSeconds = sanitizePosition(seconds, 0);
-    const mins = Math.floor(safeSeconds / 60);
-    const secs = Math.floor(safeSeconds % 60);
-    return `${mins}:${secs.toString().padStart(2, "0")}`;
+    const hours = Math.floor(safeSeconds / 3600);
+    const mins = Math.floor((safeSeconds % 3600) / 60);
+    const secs = Math.floor(safeSeconds % 60).toString().padStart(2, "0");
+    return hours > 0 ? `${hours}:${mins.toString().padStart(2, "0")}:${secs}` : `${mins}:${secs}`;
   };
 
   // Memoize slider color to avoid recalculating on every render
@@ -620,6 +622,9 @@ const AudioControlBar = ({
   // collapsed pill is absolutely positioned and contributes nothing to that
   // height, so its known footprint is used instead.
   const [footerHeight, setFooterHeight] = useState(0);
+  // The clock's width at its widest for this track, measured from an invisible copy, so
+  // the clock holds one width while it ticks and the name beside it never shifts.
+  const [clockWidth, setClockWidth] = useState(0);
   const handleFooterLayout = useCallback((e) => {
     setFooterHeight(e.nativeEvent.layout.height);
   }, []);
@@ -629,6 +634,11 @@ const AudioControlBar = ({
     // normal resting offset.
     return () => setToastBottomReservation(0);
   }, [isMinimized, footerHeight]);
+
+  const elapsedLabel = formatTime(safePosition);
+  const durationLabel = sliderMax > 0 ? formatTime(sliderMax) : "0:00";
+  // Elapsed never has more digits than the length, so this is the widest the clock gets.
+  const widestClockLabel = `${durationLabel} / ${durationLabel}`;
 
   return (
     // onTouchStart here catches EVERY form and control in one place: the full
@@ -647,8 +657,8 @@ const AudioControlBar = ({
           setMinimized={setMinimized}
           handlePlayPause={handlePlayPause}
           isPlaying={isPlaying}
-          progress={formatTime(safePosition)}
-          duration={sliderMax > 0 ? formatTime(sliderMax) : "0:00"}
+          progress={elapsedLabel}
+          duration={durationLabel}
           displayName={currentPlaying?.displayName || ""}
           isDragging={isPlayerDragging}
           isNavBarVisible={isNavBarVisible}
@@ -736,15 +746,10 @@ const AudioControlBar = ({
           {/* Main Playback Section */}
           <View style={[styles.mainSection]}>
             <View style={styles.trackInfo}>
-              {/* Artist name. Gives way to the download icon and the timestamp,
-                which keep their size — but STARTS from its own width rather
-                than from zero. `flex: 1` here meant `flexBasis: 0`, so the pair
-                on the right was served in full and the name lived on the
-                remainder, which at a raised OS text size is a couple of words
-                wide. */}
-              <View
-                style={[styles.trackInfoLeft, { flexGrow: 1, flexShrink: 1, flexBasis: "auto" }]}
-              >
+              {/* Artist name. When it and the download icon and clock can't share
+                a line, they move to a line of their own (see `trackInfoName`)
+                instead of squeezing the name. */}
+              <View style={[styles.trackInfoLeft, styles.trackInfoName]}>
                 {currentPlaying && currentPlaying.displayName && (
                   // No line cap. One line gave "Bhai Jarnai…"; two gave "Bibi /
                   // Indermoha…" — each cap is a guess at how many lines a reciter's
@@ -755,8 +760,8 @@ const AudioControlBar = ({
                   <CustomText style={styles.trackName}>{currentPlaying.displayName}</CustomText>
                 )}
               </View>
-              {/* Download indicator + timestamp — stay right-aligned as a unit */}
-              <View style={{ flexDirection: "row", alignItems: "center", gap: 8, flexShrink: 0 }}>
+              {/* Download indicator + elapsed / length — stay right-aligned as a unit */}
+              <View style={styles.trackMeta}>
                 {currentPlaying && (
                   <DownloadButton
                     track={currentPlaying}
@@ -765,8 +770,22 @@ const AudioControlBar = ({
                     baniId={baniID}
                   />
                 )}
-                <CustomText style={[styles.timestamp, styles.timestampWithColor]}>
-                  {formatTime(safePosition)}
+                <CustomText
+                  style={[
+                    styles.timestamp,
+                    styles.timestampWithColor,
+                    clockWidth > 0 && { minWidth: clockWidth },
+                  ]}
+                >
+                  {`${elapsedLabel} / ${durationLabel}`}
+                </CustomText>
+                <CustomText
+                  style={[styles.timestamp, styles.clockMeasure]}
+                  onLayout={(e) => setClockWidth(e.nativeEvent.layout.width)}
+                  accessibilityElementsHidden
+                  importantForAccessibility="no-hide-descendants"
+                >
+                  {widestClockLabel}
                 </CustomText>
               </View>
             </View>
