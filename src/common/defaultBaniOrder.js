@@ -1,4 +1,7 @@
-const defaultBaniOrder = {
+import audioFirstOrder from "./audioFirstOrder";
+import constant from "./constant";
+
+const bundledBaniOrder = {
   baniOrder: [
     {
       id: 1,
@@ -357,4 +360,10 @@ const defaultBaniOrder = {
     },
   ],
 };
+
+// Audio banis first. Only the bundled default; a saved user order is untouched.
+const defaultBaniOrder = {
+  baniOrder: audioFirstOrder(bundledBaniOrder.baniOrder, constant.AUDIO_BANI_IDS),
+};
+
 export default defaultBaniOrder;

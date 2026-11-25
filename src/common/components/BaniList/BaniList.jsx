@@ -5,11 +5,15 @@ import PropTypes from "prop-types";
 import useBaniTitle from "@common/hooks/useBaniTitle";
 import useScreenPalette from "@common/hooks/useScreenPalette";
 import useTokens from "@common/hooks/useTokens";
-import { FolderIcon } from "@common/icons";
+import { FolderIcon, MusicNoteIcon } from "@common/icons";
 import { baseFontSize, ListItemTitle, useCustomScrollbar } from "@common";
+import constant from "../../constant";
 import { ListSeparator } from "../ui";
 
 const AnimatedFlatList = Animated.createAnimatedComponent(FlatList);
+
+// Banis with audio get a trailing note icon.
+const audioBaniIds = new Set(constant.AUDIO_BANI_IDS);
 
 const BaniList = React.memo(({ data, onPress }) => {
   const { c, space, layout } = useTokens();
@@ -82,6 +86,7 @@ const BaniList = React.memo(({ data, onPress }) => {
               />
             )}
           </View>
+          {audioBaniIds.has(row.item.id) && <MusicNoteIcon size={20} color={c.textSecondary} />}
         </Pressable>
       );
 
